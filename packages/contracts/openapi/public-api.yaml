@@ -1,0 +1,68 @@
+openapi: 3.1.0
+info:
+  title: Verified AI Public API
+  version: 0.1.0
+paths:
+  /api/v1/platform/health:
+    get:
+      summary: Public platform liveness check
+      responses:
+        "200":
+          description: API process is alive
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformHealthResponse"
+  /api/v1/platform/readiness:
+    get:
+      summary: Public platform readiness check
+      responses:
+        "200":
+          description: API dependencies are ready
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformHealthResponse"
+        "503":
+          description: API is alive but not ready
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformHealthResponse"
+components:
+  schemas:
+    PlatformHealthResponse:
+      type: object
+      required: [status, service, environment, correlationId, timestamp]
+      properties:
+        status:
+          type: string
+          enum: [UP, READY, NOT_READY]
+        service:
+          type: string
+        environment:
+          type: string
+        correlationId:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+    ProblemDetails:
+      type: object
+      required: [type, title, status, code, traceId, details]
+      properties:
+        type:
+          type: string
+          format: uri
+        title:
+          type: string
+        status:
+          type: integer
+        code:
+          type: string
+        traceId:
+          type: string
+        details:
+          type: object
+          additionalProperties: true
+

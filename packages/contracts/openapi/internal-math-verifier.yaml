@@ -1,0 +1,83 @@
+openapi: 3.1.0
+info:
+  title: Verified AI Internal Math Verifier API
+  version: 0.1.0
+paths:
+  /health:
+    get:
+      summary: Verifier liveness
+      responses:
+        "200":
+          description: Verifier process is alive
+  /internal/v1/verify/equivalence:
+    post:
+      summary: Internal symbolic equivalence check
+      security:
+        - internalToken: []
+      parameters:
+        - in: header
+          name: X-Request-Id
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EquivalenceVerificationRequest"
+      responses:
+        "200":
+          description: Deterministic equivalence result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EquivalenceVerificationResponse"
+        "401":
+          description: Internal authentication required
+        "422":
+          description: Expression outside supported verifier subset
+components:
+  securitySchemes:
+    internalToken:
+      type: apiKey
+      in: header
+      name: X-Internal-Token
+  schemas:
+    EquivalenceVerificationRequest:
+      type: object
+      required: [left, right]
+      properties:
+        left:
+          type: string
+          minLength: 1
+          maxLength: 256
+        right:
+          type: string
+          minLength: 1
+          maxLength: 256
+        variables:
+          type: array
+          maxItems: 12
+          items:
+            type: string
+        method:
+          type: string
+          default: symbolic_equivalence
+    EquivalenceVerificationResponse:
+      type: object
+      required: [status, method, equivalent, reason, verifierVersion, correlationId]
+      properties:
+        status:
+          type: string
+          enum: [VERIFIED, CONTRADICTED, UNSUPPORTED]
+        method:
+          type: string
+        equivalent:
+          type: [boolean, "null"]
+        reason:
+          type: string
+        verifierVersion:
+          type: string
+        correlationId:
+          type: string
+

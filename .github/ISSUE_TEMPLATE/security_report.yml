@@ -1,0 +1,12 @@
+name: Security Report
+description: Use private disclosure for sensitive details.
+title: "[Security]: "
+body:
+  - type: markdown
+    attributes:
+      value: Do not include secrets, exploit details, or private data in public issues.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+

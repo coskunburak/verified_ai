@@ -1,0 +1,22 @@
+name: Documentation CI
+
+on:
+  pull_request:
+    paths:
+      - "docs/**"
+      - "scripts/quality/docs_check.py"
+      - ".github/workflows/docs-link-check.yml"
+  push:
+    branches: [main]
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Documentation check
+        run: python3 scripts/quality/docs_check.py
+

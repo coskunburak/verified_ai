@@ -1,0 +1,4 @@
+#include "Base.xcconfig"
+APP_ENVIRONMENT = staging
+API_BASE_URL = https:/$()/staging-api.verified-ai-learning.example
+

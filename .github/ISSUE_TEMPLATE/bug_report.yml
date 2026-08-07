@@ -1,0 +1,16 @@
+name: Bug Report
+description: Report a reproducible defect.
+title: "[Bug]: "
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Include logs, commands, screenshots, or failing tests when relevant.
+

@@ -1,0 +1,81 @@
+# Production V1 Capability Coverage Matrix
+
+## Purpose
+
+This matrix answers a single question: can Production V1 ship without silently forgetting a required capability?
+
+It is not a feature backlog. It is a coverage contract that maps Product V1 capabilities to phase/sprint ownership, source documents, acceptance evidence, and current implementation status.
+
+Status values:
+
+- `Complete` means implemented and validated.
+- `Partial` means foundation exists but product behavior is not complete.
+- `Pending` means planned and not implemented.
+- `Deferred` means intentionally outside Production V1.
+- `Conditional` means gated by later evidence.
+
+## Production V1 Coverage
+
+| Capability ID | Capability | V1 Required | Owning phase/sprints | Source of truth | Current status | Minimum V1 evidence |
+|---|---|---:|---|---|---|---|
+| CAP-FOUND-001 | Product semantics, vocabulary, invariants, ADRs | Yes | Phase 1 | `00_MASTER_INDEX.md`, `domain/10_DOMAIN_INVARIANTS_AND_BUSINESS_RULES.md`, ADRs | Complete | Phase 1 execution report accepted. |
+| CAP-FOUND-002 | Production repository/platform foundation | Yes | Phase 2 | `quality/56_COMPLETE_PRODUCTION_REPOSITORY_FILE_HIERARCHY.md` | Complete | Phase 2 execution report, tests, CI, Docker validation. |
+| CAP-ID-001 | Sign in with Apple | Yes | Sprint 3.1 | `ios/18_IOS_AUTH_STOREKIT_AND_DEVICE_SECURITY.md` | Pending | Backend verifies Apple token signature, issuer, audience, nonce, expiry; iOS E2E login test. |
+| CAP-ID-002 | Access/refresh sessions, rotation, revocation, reuse detection | Yes | Sprint 3.2 | `backend/21_AUTHORIZATION_RATE_LIMITING_AND_ABUSE.md` | Pending | Token lifecycle tests, replay/reuse tests, logout/revoke tests. |
+| CAP-ID-003 | Session/device management foundation | Yes | Sprint 3.2, Sprint 3.8 | `security/35_SECURITY_THREAT_MODEL.md` | Pending | Device/session records, revoke-other-sessions flow, audit trail. |
+| CAP-PROFILE-001 | Learner profile and onboarding | Yes | Sprint 3.3 | `domain/07_DOMAIN_MODEL_AND_AGGREGATES.md`, `product/03_END_TO_END_USER_JOURNEYS.md` | Pending | User and LearningProfile separated; onboarding completion and edit flows tested. |
+| CAP-BILL-001 | Server-authoritative entitlement | Yes | Sprint 3.4, Sprint 10.2 | `product/05_MONETIZATION_AND_ENTITLEMENTS.md` | Pending | Client cannot grant access; backend entitlement guards and tests pass. |
+| CAP-BILL-002 | StoreKit 2 purchase/restore local UX | Yes | Sprint 3.5 | `ios/18_IOS_AUTH_STOREKIT_AND_DEVICE_SECURITY.md` | Pending | Sandbox purchase/restore tests and idempotent backend sync. |
+| CAP-BILL-003 | App Store Server API and notifications | Yes | Sprint 3.6 | `product/05_MONETIZATION_AND_ENTITLEMENTS.md` | Pending | Signed notification validation, replay safety, state reconciliation. |
+| CAP-BILL-004 | Subscription lifecycle state machine | Yes | Sprint 3.4, Sprint 3.6, Sprint 10.2 | `product/05_MONETIZATION_AND_ENTITLEMENTS.md` | Pending | ACTIVE/GRACE/BILLING_RETRY/EXPIRED/REVOKED transitions tested. |
+| CAP-PRIV-001 | Account deletion, export, privacy controls | Yes | Sprint 3.7, Sprint 11.5 | `security/36_PRIVACY_AND_STUDENT_DATA_PROTECTION.md`, `data/23_DATA_LIFECYCLE_RETENTION_AND_AUDIT.md` | Pending | Deletion/export workflow covers identity, assets, learning state, billing metadata retention. |
+| CAP-CAPTURE-001 | Camera capture and gallery import | Yes | Sprint 4.1 | `product/04_FEATURE_CATALOG_AND_PRODUCT_RULES.md`, `ios/15_IOS_ARCHITECTURE_AND_FILE_HIERARCHY.md` | Pending | Capture/import UX tests, permissions, recovery states, accessibility pass. |
+| CAP-CAPTURE-002 | Presigned upload and object lifecycle | Yes | Sprint 4.2 | `data/24_CACHING_STORAGE_AND_FILE_ASSETS.md` | Pending | Assets stored outside PostgreSQL; upload retry/idempotency and lifecycle tests. |
+| CAP-CAPTURE-003 | Image preprocessing and quality gates | Yes | Sprint 4.3 | `product/04_FEATURE_CATALOG_AND_PRODUCT_RULES.md` | Pending | Blur/glare/crop quality evidence and user recovery. |
+| CAP-PROBLEM-001 | OCR/vision ingestion evidence | Yes | Sprint 4.4 | `architecture/13_ASYNC_PROCESSING_AND_JOB_ORCHESTRATION.md` | Pending | Raw recognition evidence stored with provider/schema provenance. |
+| CAP-PROBLEM-002 | Structured parser and canonical problem schema | Yes | Sprint 4.5, Sprint 4.6 | `domain/47_MATHEMATICAL_CANONICAL_REPRESENTATION.md` | Pending | Schema validation, semantic validation, unsupported-problem recovery. |
+| CAP-PROBLEM-003 | Subject/topic/skill/difficulty classification | Yes | Sprint 4.7 | `domain/46_CURRICULUM_SKILL_ONTOLOGY_AND_TAXONOMY.md` | Pending | Canonical skill IDs, confidence handling, evaluation slices. |
+| CAP-PROBLEM-004 | User-correctable parse revisions | Yes | Sprint 4.8 | `domain/10_DOMAIN_INVARIANTS_AND_BUSINESS_RULES.md` | Pending | Revision history immutable; solving uses selected parse. |
+| CAP-PROBLEM-005 | Problem history/retry/recovery | Yes | Sprint 4.9 | `product/03_END_TO_END_USER_JOURNEYS.md` | Pending | User can recover, retry, and inspect prior problem sessions. |
+| CAP-AI-001 | Provider-neutral AI gateway | Yes | Sprint 5.1 | `ai/25_AI_ORCHESTRATION_AND_MODEL_ROUTING.md`, ADR-003, ADR-005 | Pending | Domain modules do not depend on provider SDKs. |
+| CAP-AI-002 | Prompt/schema governance | Yes | Sprint 5.2 | `ai/26_PROMPT_SCHEMA_AND_VERSIONING.md` | Pending | Versioned prompts, schema fixtures, rollout/rollback. |
+| CAP-AI-003 | Model router, cost budgets, fallback policy | Yes | Sprint 5.3 | `ai/29_AI_COST_LATENCY_AND_RELIABILITY.md`, `ai/60_AI_UNIT_ECONOMICS_AND_INFERENCE_COST_ENGINEERING.md` | Pending | Route telemetry, timeout/fallback, cost regression gates. |
+| CAP-SOLVE-001 | Primary solver pipeline | Yes | Sprint 5.4 | `ai/25_AI_ORCHESTRATION_AND_MODEL_ROUTING.md` | Pending | Structured solution candidate with provenance and failure states. |
+| CAP-SOLVE-002 | Conditional secondary solver | Yes | Sprint 5.5 | `ai/57_API_FIRST_HYBRID_AI_STRATEGY_AND_MODEL_EVOLUTION.md` | Pending | Escalation policy tests; no unconditional two-solver cost. |
+| CAP-VERIFY-001 | Verification planner and deterministic methods | Yes | Sprint 5.7, Sprint 5.8, Sprint 5.9, Sprint 5.10 | `ai/27_VERIFICATION_ENGINE.md` | Partial | Phase 2 verifier foundation exists; full policy/method coverage pending. |
+| CAP-VERIFY-002 | Human-honest arbitration and uncertainty | Yes | Sprint 5.11 | `domain/10_DOMAIN_INVARIANTS_AND_BUSINESS_RULES.md` | Pending | VERIFIED/PARTIAL/UNVERIFIED semantics tested and visible. |
+| CAP-EVAL-001 | Golden dataset AI/release gate | Yes | Sprint 5.12 | `ai/28_AI_EVALUATION_AND_GOLDEN_DATASET.md` | Pending | No high-impact model/prompt/router promotion without regression report. |
+| CAP-SOLUTION-001 | Step-by-step solution UX | Yes | Sprint 6.1 | `product/04_FEATURE_CATALOG_AND_PRODUCT_RULES.md` | Pending | Loading/success/error/offline states, accessibility/localization checks. |
+| CAP-SOLUTION-002 | Verification transparency UX | Yes | Sprint 6.2 | `ai/27_VERIFICATION_ENGINE.md` | Pending | User-safe evidence, no private chain-of-thought leakage. |
+| CAP-TUTOR-001 | Explanation depth and personalization | Yes | Sprint 6.3 | `learning/34_TUTORING_AND_PEDAGOGICAL_BEHAVIOR.md` | Pending | Quick/standard/deep/beginner modes and level tests. |
+| CAP-TUTOR-002 | Tutor session persistence and Socratic behavior | Yes | Sprint 6.4, Sprint 6.5 | `learning/34_TUTORING_AND_PEDAGOGICAL_BEHAVIOR.md` | Pending | Tutor state machine, persistence, safety/recovery tests. |
+| CAP-TUTOR-003 | Hints, analyze-my-work, alternate methods | Yes | Sprint 6.6, Sprint 6.7, Sprint 6.8 | `product/04_FEATURE_CATALOG_AND_PRODUCT_RULES.md` | Pending | Attempt separation, hint cost semantics, method comparison evidence. |
+| CAP-LEARN-001 | Attempt domain and student work representation | Yes | Sprint 7.1, Sprint 7.2 | `domain/10_DOMAIN_INVARIANTS_AND_BUSINESS_RULES.md` | Pending | Student attempt immutable and distinct from reference solution. |
+| CAP-LEARN-002 | Mistake classification and mistake book | Yes | Sprint 7.3, Sprint 7.4, Sprint 7.5 | `learning/30_MISTAKE_INTELLIGENCE.md` | Pending | Concrete evidence references, review flows, precision/recall slices. |
+| CAP-LEARN-003 | Mastery model and knowledge graph | Yes | Sprint 7.6, Sprint 7.7, Sprint 7.8, Sprint 7.9 | `learning/31_MASTERY_AND_KNOWLEDGE_GRAPH.md` | Pending | User x Skill state, confidence/history, algorithm version, UI evidence. |
+| CAP-ADAPT-001 | Next-best action and adaptive practice | Yes | Sprint 8.1, Sprint 8.2 | `learning/32_ADAPTIVE_LEARNING_AND_STUDY_PLANNER.md` | Pending | Recommendations explain inputs and avoid unsupported skills. |
+| CAP-ADAPT-002 | Spaced repetition, daily plan, reports | Yes | Sprint 8.3, Sprint 8.4, Sprint 8.5, Sprint 8.9 | `learning/32_ADAPTIVE_LEARNING_AND_STUDY_PLANNER.md` | Pending | Plan history preserved, missed-day recovery tested. |
+| CAP-EXAM-001 | Exam definitions, goals, mock runtime, scoring | Yes | Phase 9 | `learning/33_EXAM_MODE_AND_ASSESSMENT_ENGINE.md` | Pending | Exam readiness and scoring evidence traceable to canonical skills. |
+| CAP-OPS-001 | Analytics, feature flags, support/admin traces | Yes | Sprint 10.6, Sprint 10.7, Sprint 10.8 | `operations/48_ANALYTICS_EVENT_CATALOG_AND_PRODUCT_METRICS.md`, `operations/49_FEATURE_FLAGS_REMOTE_CONFIG_AND_EXPERIMENTATION.md` | Partial | Phase 2 observability foundation exists; product analytics/admin pending. |
+| CAP-OPS-002 | Notifications, lifecycle messaging, growth hooks | Yes | Sprint 10.4, Sprint 10.5, Sprint 10.9 | `product/03_END_TO_END_USER_JOURNEYS.md` | Pending | Preference center, abuse-safe messaging, opt-out/quiet hours. |
+| CAP-FINOPS-001 | AI COGS dashboards and safeguards | Yes | Sprint 10.10 | `operations/63_AI_CAPACITY_FINOPS_AND_PROVIDER_BUDGET_OPERATIONS.md` | Pending | Cost per paid learner, route budget alerts, margin safeguards. |
+| CAP-LAUNCH-001 | Performance, load, database, security and privacy hardening | Yes | Sprint 11.1 through Sprint 11.8 | `operations/37_OBSERVABILITY_SLOS_AND_INCIDENTS.md`, `security/35_SECURITY_THREAT_MODEL.md` | Pending | Load/security/privacy/backup evidence and runbooks. |
+| CAP-LAUNCH-002 | TestFlight beta, App Store, production rollout | Yes | Sprint 11.9 through Sprint 11.12 | `operations/38_CI_CD_ENVIRONMENTS_AND_RELEASES.md` | Pending | Beta feedback loop, release candidate freeze, App Store readiness, rollback gate. |
+| CAP-POST-001 | Advanced calculus/trig/linear algebra/statistics | No | Phase 12 | `sprints/phase12_post_launch_scale_and_product_expansion/` | Deferred | Promote only after V1 metrics justify breadth. |
+| CAP-POST-002 | PDF/course workspace, teacher, parent, Android/web | No | Phase 12 and future phases | `roadmap/67_PRODUCT_PROGRAM_STRUCTURE.md` | Deferred | Separate phase proposal or Phase 12 sprint evidence. |
+| CAP-ML-001 | Proprietary models/self-hosted inference | Conditional | Phase 13 | ADR-005, ADR-006, ADR-007, documents 57-64 | Conditional | Entry gates prove data eligibility, quality, economics, rollback. |
+
+## V1 Coverage Gate
+
+Production V1 cannot be declared ready while any `V1 Required = Yes` row is `Pending` or `Blocked`, unless an explicit release exception records:
+
+- omitted capability;
+- user impact;
+- safety/privacy/security impact;
+- commercial impact;
+- replacement or mitigation;
+- owner;
+- expiry date or remediation sprint.
+
+Exceptions are not allowed for false `VERIFIED` prevention, backend-authoritative entitlement, account deletion obligations, or secret/privacy invariants.
+

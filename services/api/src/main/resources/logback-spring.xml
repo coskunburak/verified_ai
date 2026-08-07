@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <springProperty scope="context" name="environment" source="app.environment" defaultValue="local"/>
+
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>{"timestamp":"%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX}","level":"%level","service":"verified-ai-api","environment":"${environment}","traceId":"%X{traceId:-}","correlationId":"%X{correlationId:-}","logger":"%logger{36}","message":"%replace(%msg){'&quot;','\\&quot;'}"}%n</pattern>
+    </encoder>
+  </appender>
+
+  <root level="INFO">
+    <appender-ref ref="CONSOLE"/>
+  </root>
+</configuration>
+

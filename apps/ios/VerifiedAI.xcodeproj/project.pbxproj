@@ -1,0 +1,638 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		100000000000000000000001 /* VerifiedAIApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000001 /* VerifiedAIApp.swift */; };
+		100000000000000000000002 /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000002 /* AppEnvironment.swift */; };
+		100000000000000000000003 /* AppDependencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000003 /* AppDependencies.swift */; };
+		100000000000000000000004 /* AppRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000004 /* AppRouter.swift */; };
+		100000000000000000000005 /* DeepLinkRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000005 /* DeepLinkRouter.swift */; };
+		100000000000000000000006 /* AppLifecycleHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000006 /* AppLifecycleHandler.swift */; };
+		100000000000000000000007 /* AppLaunchState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000007 /* AppLaunchState.swift */; };
+		100000000000000000000008 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000008 /* RootView.swift */; };
+		100000000000000000000009 /* HTTPMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000009 /* HTTPMethod.swift */; };
+		10000000000000000000000A /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000000A /* Endpoint.swift */; };
+		10000000000000000000000B /* HTTPRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000000B /* HTTPRequest.swift */; };
+		10000000000000000000000C /* HTTPResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000000C /* HTTPResponse.swift */; };
+		10000000000000000000000D /* ProblemDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000000D /* ProblemDetails.swift */; };
+		10000000000000000000000E /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000000E /* NetworkError.swift */; };
+		10000000000000000000000F /* AuthTokenProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000000F /* AuthTokenProvider.swift */; };
+		100000000000000000000010 /* RequestInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000010 /* RequestInterceptor.swift */; };
+		100000000000000000000011 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000011 /* APIClient.swift */; };
+		100000000000000000000012 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000012 /* NetworkMonitor.swift */; };
+		100000000000000000000013 /* SecureStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000013 /* SecureStorage.swift */; };
+		100000000000000000000014 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000014 /* KeychainStore.swift */; };
+		100000000000000000000015 /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000015 /* AppLogger.swift */; };
+		100000000000000000000016 /* CorrelationContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000016 /* CorrelationContext.swift */; };
+		100000000000000000000017 /* ColorTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000017 /* ColorTokens.swift */; };
+		100000000000000000000018 /* TypographyTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000018 /* TypographyTokens.swift */; };
+		100000000000000000000019 /* SpacingTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000019 /* SpacingTokens.swift */; };
+		10000000000000000000001A /* RadiusTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000001A /* RadiusTokens.swift */; };
+		10000000000000000000001B /* FeatureFlag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000001B /* FeatureFlag.swift */; };
+		10000000000000000000001C /* Identifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000001C /* Identifier.swift */; };
+		10000000000000000000001D /* HomePlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000001D /* HomePlaceholderView.swift */; };
+		10000000000000000000001E /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000001E /* Localizable.xcstrings */; };
+		10000000000000000000001F /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000001F /* PrivacyInfo.xcprivacy */; };
+		100000000000000000000020 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000020 /* Assets.xcassets */; };
+		100000000000000000000021 /* AppEnvironmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000021 /* AppEnvironmentTests.swift */; };
+		100000000000000000000022 /* AppRouterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000022 /* AppRouterTests.swift */; };
+		100000000000000000000023 /* APIClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000023 /* APIClientTests.swift */; };
+		100000000000000000000024 /* SecureStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000024 /* SecureStorageTests.swift */; };
+		100000000000000000000025 /* VerifiedAIUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000025 /* VerifiedAIUITests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		300000000000000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 400000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 500000000000000000000001;
+			remoteInfo = VerifiedAI;
+		};
+		300000000000000000000002 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 400000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 500000000000000000000001;
+			remoteInfo = VerifiedAI;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		200000000000000000000001 /* VerifiedAIApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/App/VerifiedAIApp.swift; sourceTree = "<group>"; };
+		200000000000000000000002 /* AppEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/App/AppEnvironment.swift; sourceTree = "<group>"; };
+		200000000000000000000003 /* AppDependencies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/App/AppDependencies.swift; sourceTree = "<group>"; };
+		200000000000000000000004 /* AppRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/App/AppRouter.swift; sourceTree = "<group>"; };
+		200000000000000000000005 /* DeepLinkRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/App/DeepLinkRouter.swift; sourceTree = "<group>"; };
+		200000000000000000000006 /* AppLifecycleHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/App/AppLifecycleHandler.swift; sourceTree = "<group>"; };
+		200000000000000000000007 /* AppLaunchState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/App/AppLaunchState.swift; sourceTree = "<group>"; };
+		200000000000000000000008 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/App/RootView.swift; sourceTree = "<group>"; };
+		200000000000000000000009 /* HTTPMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Core/Networking/HTTPMethod.swift; sourceTree = "<group>"; };
+		20000000000000000000000A /* Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Core/Networking/Endpoint.swift; sourceTree = "<group>"; };
+		20000000000000000000000B /* HTTPRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Core/Networking/HTTPRequest.swift; sourceTree = "<group>"; };
+		20000000000000000000000C /* HTTPResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Core/Networking/HTTPResponse.swift; sourceTree = "<group>"; };
+		20000000000000000000000D /* ProblemDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Core/Networking/ProblemDetails.swift; sourceTree = "<group>"; };
+		20000000000000000000000E /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Core/Networking/NetworkError.swift; sourceTree = "<group>"; };
+		20000000000000000000000F /* AuthTokenProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Core/Networking/AuthTokenProvider.swift; sourceTree = "<group>"; };
+		200000000000000000000010 /* RequestInterceptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Core/Networking/RequestInterceptor.swift; sourceTree = "<group>"; };
+		200000000000000000000011 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Core/Networking/APIClient.swift; sourceTree = "<group>"; };
+		200000000000000000000012 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Core/Networking/NetworkMonitor.swift; sourceTree = "<group>"; };
+		200000000000000000000013 /* SecureStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Core/Security/SecureStorage.swift; sourceTree = "<group>"; };
+		200000000000000000000014 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Core/Security/KeychainStore.swift; sourceTree = "<group>"; };
+		200000000000000000000015 /* AppLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Core/Observability/AppLogger.swift; sourceTree = "<group>"; };
+		200000000000000000000016 /* CorrelationContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Core/Observability/CorrelationContext.swift; sourceTree = "<group>"; };
+		200000000000000000000017 /* ColorTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Core/DesignSystem/Tokens/ColorTokens.swift; sourceTree = "<group>"; };
+		200000000000000000000018 /* TypographyTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Core/DesignSystem/Tokens/TypographyTokens.swift; sourceTree = "<group>"; };
+		200000000000000000000019 /* SpacingTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Core/DesignSystem/Tokens/SpacingTokens.swift; sourceTree = "<group>"; };
+		20000000000000000000001A /* RadiusTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Core/DesignSystem/Tokens/RadiusTokens.swift; sourceTree = "<group>"; };
+		20000000000000000000001B /* FeatureFlag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Core/FeatureFlags/FeatureFlag.swift; sourceTree = "<group>"; };
+		20000000000000000000001C /* Identifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/SharedDomain/Identifiers/Identifier.swift; sourceTree = "<group>"; };
+		20000000000000000000001D /* HomePlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Home/Presentation/HomePlaceholderView.swift; sourceTree = "<group>"; };
+		20000000000000000000001E /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = VerifiedAI/Resources/Localizable.xcstrings; sourceTree = "<group>"; };
+		20000000000000000000001F /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = VerifiedAI/Resources/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		200000000000000000000020 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = VerifiedAI/Resources/Assets.xcassets; sourceTree = "<group>"; };
+		200000000000000000000021 /* AppEnvironmentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/AppEnvironmentTests.swift; sourceTree = "<group>"; };
+		200000000000000000000022 /* AppRouterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/AppRouterTests.swift; sourceTree = "<group>"; };
+		200000000000000000000023 /* APIClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/APIClientTests.swift; sourceTree = "<group>"; };
+		200000000000000000000024 /* SecureStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/SecureStorageTests.swift; sourceTree = "<group>"; };
+		200000000000000000000025 /* VerifiedAIUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAIUITests/VerifiedAIUITests.swift; sourceTree = "<group>"; };
+		200000000000000000000026 /* VerifiedAI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VerifiedAI.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		200000000000000000000027 /* VerifiedAITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VerifiedAITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		200000000000000000000028 /* VerifiedAIUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VerifiedAIUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		200000000000000000000029 /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config/Base.xcconfig; sourceTree = "<group>"; };
+		20000000000000000000002A /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config/Debug.xcconfig; sourceTree = "<group>"; };
+		20000000000000000000002B /* Staging.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config/Staging.xcconfig; sourceTree = "<group>"; };
+		20000000000000000000002C /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config/Release.xcconfig; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		600000000000000000000001 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		600000000000000000000002 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		600000000000000000000003 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		700000000000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				700000000000000000000003 /* Config */,
+				700000000000000000000004 /* VerifiedAI */,
+				700000000000000000000005 /* VerifiedAITests */,
+				700000000000000000000006 /* VerifiedAIUITests */,
+				700000000000000000000002 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		700000000000000000000002 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				200000000000000000000026 /* VerifiedAI.app */,
+				200000000000000000000027 /* VerifiedAITests.xctest */,
+				200000000000000000000028 /* VerifiedAIUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		700000000000000000000003 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				200000000000000000000029 /* Base.xcconfig */,
+				20000000000000000000002A /* Debug.xcconfig */,
+				20000000000000000000002B /* Staging.xcconfig */,
+				20000000000000000000002C /* Release.xcconfig */,
+			);
+			name = Config;
+			sourceTree = "<group>";
+		};
+		700000000000000000000004 /* VerifiedAI */ = {
+			isa = PBXGroup;
+			children = (
+				200000000000000000000001 /* VerifiedAIApp.swift */,
+				200000000000000000000002 /* AppEnvironment.swift */,
+				200000000000000000000003 /* AppDependencies.swift */,
+				200000000000000000000004 /* AppRouter.swift */,
+				200000000000000000000005 /* DeepLinkRouter.swift */,
+				200000000000000000000006 /* AppLifecycleHandler.swift */,
+				200000000000000000000007 /* AppLaunchState.swift */,
+				200000000000000000000008 /* RootView.swift */,
+				200000000000000000000009 /* HTTPMethod.swift */,
+				20000000000000000000000A /* Endpoint.swift */,
+				20000000000000000000000B /* HTTPRequest.swift */,
+				20000000000000000000000C /* HTTPResponse.swift */,
+				20000000000000000000000D /* ProblemDetails.swift */,
+				20000000000000000000000E /* NetworkError.swift */,
+				20000000000000000000000F /* AuthTokenProvider.swift */,
+				200000000000000000000010 /* RequestInterceptor.swift */,
+				200000000000000000000011 /* APIClient.swift */,
+				200000000000000000000012 /* NetworkMonitor.swift */,
+				200000000000000000000013 /* SecureStorage.swift */,
+				200000000000000000000014 /* KeychainStore.swift */,
+				200000000000000000000015 /* AppLogger.swift */,
+				200000000000000000000016 /* CorrelationContext.swift */,
+				200000000000000000000017 /* ColorTokens.swift */,
+				200000000000000000000018 /* TypographyTokens.swift */,
+				200000000000000000000019 /* SpacingTokens.swift */,
+				20000000000000000000001A /* RadiusTokens.swift */,
+				20000000000000000000001B /* FeatureFlag.swift */,
+				20000000000000000000001C /* Identifier.swift */,
+				20000000000000000000001D /* HomePlaceholderView.swift */,
+				20000000000000000000001E /* Localizable.xcstrings */,
+				20000000000000000000001F /* PrivacyInfo.xcprivacy */,
+				200000000000000000000020 /* Assets.xcassets */,
+			);
+			name = VerifiedAI;
+			sourceTree = "<group>";
+		};
+		700000000000000000000005 /* VerifiedAITests */ = {
+			isa = PBXGroup;
+			children = (
+				200000000000000000000021 /* AppEnvironmentTests.swift */,
+				200000000000000000000022 /* AppRouterTests.swift */,
+				200000000000000000000023 /* APIClientTests.swift */,
+				200000000000000000000024 /* SecureStorageTests.swift */,
+			);
+			name = VerifiedAITests;
+			sourceTree = "<group>";
+		};
+		700000000000000000000006 /* VerifiedAIUITests */ = {
+			isa = PBXGroup;
+			children = (
+				200000000000000000000025 /* VerifiedAIUITests.swift */,
+			);
+			name = VerifiedAIUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		500000000000000000000001 /* VerifiedAI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 900000000000000000000002 /* Build configuration list for PBXNativeTarget "VerifiedAI" */;
+			buildPhases = (
+				800000000000000000000001 /* Sources */,
+				600000000000000000000001 /* Frameworks */,
+				800000000000000000000002 /* Resources */,
+			);
+			buildRules = ();
+			dependencies = ();
+			name = VerifiedAI;
+			productName = VerifiedAI;
+			productReference = 200000000000000000000026 /* VerifiedAI.app */;
+			productType = "com.apple.product-type.application";
+		};
+		500000000000000000000002 /* VerifiedAITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 900000000000000000000003 /* Build configuration list for PBXNativeTarget "VerifiedAITests" */;
+			buildPhases = (
+				800000000000000000000003 /* Sources */,
+				600000000000000000000002 /* Frameworks */,
+				800000000000000000000004 /* Resources */,
+			);
+			buildRules = ();
+			dependencies = (
+				300000000000000000000003 /* PBXTargetDependency */,
+			);
+			name = VerifiedAITests;
+			productName = VerifiedAITests;
+			productReference = 200000000000000000000027 /* VerifiedAITests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		500000000000000000000003 /* VerifiedAIUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 900000000000000000000004 /* Build configuration list for PBXNativeTarget "VerifiedAIUITests" */;
+			buildPhases = (
+				800000000000000000000005 /* Sources */,
+				600000000000000000000003 /* Frameworks */,
+				800000000000000000000006 /* Resources */,
+			);
+			buildRules = ();
+			dependencies = (
+				300000000000000000000004 /* PBXTargetDependency */,
+			);
+			name = VerifiedAIUITests;
+			productName = VerifiedAIUITests;
+			productReference = 200000000000000000000028 /* VerifiedAIUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		400000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1630;
+				LastUpgradeCheck = 1630;
+				TargetAttributes = {
+					500000000000000000000001 = {
+						CreatedOnToolsVersion = 16.3;
+					};
+					500000000000000000000002 = {
+						CreatedOnToolsVersion = 16.3;
+						TestTargetID = 500000000000000000000001;
+					};
+					500000000000000000000003 = {
+						CreatedOnToolsVersion = 16.3;
+						TestTargetID = 500000000000000000000001;
+					};
+				};
+			};
+			buildConfigurationList = 900000000000000000000001 /* Build configuration list for PBXProject "VerifiedAI" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 700000000000000000000001;
+			productRefGroup = 700000000000000000000002 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				500000000000000000000001 /* VerifiedAI */,
+				500000000000000000000002 /* VerifiedAITests */,
+				500000000000000000000003 /* VerifiedAIUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		800000000000000000000002 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				10000000000000000000001E /* Localizable.xcstrings in Resources */,
+				10000000000000000000001F /* PrivacyInfo.xcprivacy in Resources */,
+				100000000000000000000020 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		800000000000000000000004 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		800000000000000000000006 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		800000000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				100000000000000000000001 /* VerifiedAIApp.swift in Sources */,
+				100000000000000000000002 /* AppEnvironment.swift in Sources */,
+				100000000000000000000003 /* AppDependencies.swift in Sources */,
+				100000000000000000000004 /* AppRouter.swift in Sources */,
+				100000000000000000000005 /* DeepLinkRouter.swift in Sources */,
+				100000000000000000000006 /* AppLifecycleHandler.swift in Sources */,
+				100000000000000000000007 /* AppLaunchState.swift in Sources */,
+				100000000000000000000008 /* RootView.swift in Sources */,
+				100000000000000000000009 /* HTTPMethod.swift in Sources */,
+				10000000000000000000000A /* Endpoint.swift in Sources */,
+				10000000000000000000000B /* HTTPRequest.swift in Sources */,
+				10000000000000000000000C /* HTTPResponse.swift in Sources */,
+				10000000000000000000000D /* ProblemDetails.swift in Sources */,
+				10000000000000000000000E /* NetworkError.swift in Sources */,
+				10000000000000000000000F /* AuthTokenProvider.swift in Sources */,
+				100000000000000000000010 /* RequestInterceptor.swift in Sources */,
+				100000000000000000000011 /* APIClient.swift in Sources */,
+				100000000000000000000012 /* NetworkMonitor.swift in Sources */,
+				100000000000000000000013 /* SecureStorage.swift in Sources */,
+				100000000000000000000014 /* KeychainStore.swift in Sources */,
+				100000000000000000000015 /* AppLogger.swift in Sources */,
+				100000000000000000000016 /* CorrelationContext.swift in Sources */,
+				100000000000000000000017 /* ColorTokens.swift in Sources */,
+				100000000000000000000018 /* TypographyTokens.swift in Sources */,
+				100000000000000000000019 /* SpacingTokens.swift in Sources */,
+				10000000000000000000001A /* RadiusTokens.swift in Sources */,
+				10000000000000000000001B /* FeatureFlag.swift in Sources */,
+				10000000000000000000001C /* Identifier.swift in Sources */,
+				10000000000000000000001D /* HomePlaceholderView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		800000000000000000000003 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				100000000000000000000021 /* AppEnvironmentTests.swift in Sources */,
+				100000000000000000000022 /* AppRouterTests.swift in Sources */,
+				100000000000000000000023 /* APIClientTests.swift in Sources */,
+				100000000000000000000024 /* SecureStorageTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		800000000000000000000005 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				100000000000000000000025 /* VerifiedAIUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		300000000000000000000003 /* PBXTargetDependency */ = {isa = PBXTargetDependency; target = 500000000000000000000001 /* VerifiedAI */; targetProxy = 300000000000000000000001 /* PBXContainerItemProxy */; };
+		300000000000000000000004 /* PBXTargetDependency */ = {isa = PBXTargetDependency; target = 500000000000000000000001 /* VerifiedAI */; targetProxy = 300000000000000000000002 /* PBXContainerItemProxy */; };
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		900000000000000000000005 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1 $(inherited)";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		900000000000000000000006 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		900000000000000000000007 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 20000000000000000000002A /* Debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Verified AI";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		900000000000000000000008 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 20000000000000000000002C /* Release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Verified AI";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		900000000000000000000009 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 20000000000000000000002A /* Debug.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.verifiedai.learning.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/VerifiedAI.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/VerifiedAI";
+			};
+			name = Debug;
+		};
+		90000000000000000000000A /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 20000000000000000000002C /* Release.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.verifiedai.learning.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/VerifiedAI.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/VerifiedAI";
+			};
+			name = Release;
+		};
+		90000000000000000000000B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 20000000000000000000002A /* Debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.verifiedai.learning.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_TARGET_NAME = VerifiedAI;
+			};
+			name = Debug;
+		};
+		90000000000000000000000C /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 20000000000000000000002C /* Release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.verifiedai.learning.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_TARGET_NAME = VerifiedAI;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		900000000000000000000001 /* Build configuration list for PBXProject "VerifiedAI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				900000000000000000000005 /* Debug */,
+				900000000000000000000006 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		900000000000000000000002 /* Build configuration list for PBXNativeTarget "VerifiedAI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				900000000000000000000007 /* Debug */,
+				900000000000000000000008 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		900000000000000000000003 /* Build configuration list for PBXNativeTarget "VerifiedAITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				900000000000000000000009 /* Debug */,
+				90000000000000000000000A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		900000000000000000000004 /* Build configuration list for PBXNativeTarget "VerifiedAIUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				90000000000000000000000B /* Debug */,
+				90000000000000000000000C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 400000000000000000000001 /* Project object */;
+}

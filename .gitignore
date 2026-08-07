@@ -1,0 +1,56 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+!infra/local/env/.env.example
+*.pem
+*.p12
+*.mobileprovision
+*.xcconfig
+!apps/ios/Config/*.xcconfig
+!apps/ios/Config/Secrets.xcconfig.example
+
+# IDE/user state
+.idea/
+.vscode/
+*.xcuserstate
+xcuserdata/
+*.xcscmblueprint
+
+# Xcode and Swift
+DerivedData/
+build/
+.build/
+*.ipa
+*.dSYM
+*.xcarchive
+apps/ios/Config/Generated/
+
+# Java/Maven
+target/
+.mvn/wrapper/maven-wrapper.jar
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+htmlcov/
+
+# Docker/local infrastructure
+infra/local/data/
+docker-data/
+
+# Generated artifacts
+.generated/
+coverage/
+reports/

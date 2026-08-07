@@ -1,0 +1,26 @@
+name: Math Verifier CI
+
+on:
+  pull_request:
+    paths:
+      - "services/math-verifier/**"
+      - ".github/workflows/math-verifier-ci.yml"
+  push:
+    branches: [main]
+
+jobs:
+  verifier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install verifier
+        working-directory: services/math-verifier
+        run: python -m pip install -e ".[dev]"
+      - name: Test verifier
+        working-directory: services/math-verifier
+        run: python -m pytest
+
