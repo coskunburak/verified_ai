@@ -66,7 +66,18 @@ Sprint 3.7/3.8 privacy and abuse metrics:
 - `security.rate_limit.degraded_open.total`
 - `security.request.rejected.total`
 
-Metric labels must remain low-cardinality and must not contain raw profile answers, user IDs, access tokens, or provider secrets.
+Sprint 4.2 problem asset upload metrics:
+- `problem.asset.reservation.success.total`
+- `problem.asset.reservation.failure.total`
+- `problem.asset.upload.complete.success.total`
+- `problem.asset.upload.complete.failure.total`
+- `problem.asset.checksum_mismatch.total`
+- `problem.asset.size_mismatch.total`
+- `problem.asset.pending_expired.total`
+- `problem.asset.presign.latency`
+- `problem.asset.completion.verification.latency`
+
+Metric labels must remain low-cardinality and must not contain raw profile answers, user IDs, access tokens, provider secrets, filenames, local paths, object keys, OCR text, or raw problem content.
 
 ## SLOs
 
@@ -84,6 +95,7 @@ Actionable alerts:
 - App Store Server API reconciliation failures,
 - elevated account deletion/export failures,
 - rate-limit denied spikes or Redis limiter degraded-open spikes,
+- upload storage unavailable, checksum/size mismatch spikes, or pending-upload expiry spikes,
 - provider outage without fallback,
 - verification quality anomaly,
 - unexpected AI cost spike.

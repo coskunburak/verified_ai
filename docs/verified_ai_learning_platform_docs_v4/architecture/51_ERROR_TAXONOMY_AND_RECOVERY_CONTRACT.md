@@ -23,6 +23,14 @@ Errors should be semantically stable across backend and iOS. User recovery depen
 ### INPUT
 - ASSET_TOO_LARGE
 - UNSUPPORTED_FILE_TYPE
+- UPLOAD_CONTENT_TYPE_UNSUPPORTED
+- UPLOAD_TOO_LARGE
+- UPLOAD_RESERVATION_EXPIRED
+- UPLOAD_OBJECT_NOT_FOUND
+- UPLOAD_CHECKSUM_MISMATCH
+- UPLOAD_SIZE_MISMATCH
+- UPLOAD_INVALID_STATE
+- UPLOAD_STORAGE_UNAVAILABLE
 - IMAGE_UNREADABLE
 - PROBLEM_PARSE_FAILED
 - PROBLEM_UNSUPPORTED
@@ -56,6 +64,16 @@ Errors should be semantically stable across backend and iOS. User recovery depen
 - ADVANCED_USAGE_LIMIT_REACHED
 - TEMPORARY_UNAVAILABLE
 - INTERNAL_ERROR
+
+### Sprint 4.2 upload recovery
+
+Upload reservation and completion failures are stable client contracts:
+
+- `UPLOAD_CONTENT_TYPE_UNSUPPORTED` and `UPLOAD_TOO_LARGE` are non-transient input failures; the client should pick another file or regenerate a compliant local asset.
+- `UPLOAD_RESERVATION_EXPIRED`, `UPLOAD_OBJECT_NOT_FOUND`, `UPLOAD_CHECKSUM_MISMATCH`, and `UPLOAD_SIZE_MISMATCH` are recoverable by retrying from the local accepted asset. The backend does not mark the asset AVAILABLE.
+- `UPLOAD_INVALID_STATE` means the reservation is not in a state that accepts completion.
+- `UPLOAD_STORAGE_UNAVAILABLE` is transient infrastructure failure; client retry is bounded and must use idempotency.
+- `RESOURCE_FORBIDDEN` is used for wrong-owner or unknown upload IDs without confirming resource existence.
 
 ## Recovery semantics
 

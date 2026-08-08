@@ -11,6 +11,7 @@ struct RootView: View {
     @State private var entitlementViewModel: EntitlementViewModel
     @State private var paywallViewModel: PaywallViewModel
     @State private var problemCaptureViewModel: ProblemCaptureViewModel
+    @State private var problemAssetUploadViewModel: ProblemAssetUploadViewModel
     @State private var isPaywallPresented = false
     @State private var isAccountSettingsPresented = false
     @State private var isProblemCapturePresented = false
@@ -52,6 +53,13 @@ struct RootView: View {
             cameraClient: dependencies.problemCameraClient,
             assetStore: dependencies.capturedAssetStore,
             qualityAnalyzer: dependencies.captureQualityAnalyzer,
+            logger: dependencies.logger
+        ))
+        _problemAssetUploadViewModel = State(initialValue: ProblemAssetUploadViewModel(
+            uploadAPI: dependencies.problemAssetUploadAPI,
+            objectUploader: dependencies.presignedObjectUploader,
+            assetStore: dependencies.capturedAssetStore,
+            networkMonitor: dependencies.networkMonitor,
             logger: dependencies.logger
         ))
     }
@@ -144,6 +152,7 @@ struct RootView: View {
                 startProblemCapture: {
                     Task {
                         await problemCaptureViewModel.cancel()
+                        problemAssetUploadViewModel.reset()
                         problemCaptureViewModel.open()
                         isProblemCapturePresented = true
                     }
@@ -167,6 +176,7 @@ struct RootView: View {
             }) {
                 ProblemCaptureView(
                     viewModel: problemCaptureViewModel,
+                    uploadViewModel: problemAssetUploadViewModel,
                     cameraClient: dependencies.problemCameraClient,
                     onDismiss: { isProblemCapturePresented = false }
                 )
@@ -200,6 +210,7 @@ struct RootView: View {
         accountSettingsViewModel.reset()
         entitlementViewModel.reset()
         paywallViewModel.reset()
+        problemAssetUploadViewModel.reset()
         Task { await problemCaptureViewModel.cancel() }
     }
 

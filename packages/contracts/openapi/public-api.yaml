@@ -364,6 +364,158 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+  /api/v1/uploads/presign:
+    post:
+      summary: Reserve a private user-owned problem asset upload and return a presigned PUT URL
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PresignProblemAssetUploadRequest"
+      responses:
+        "201":
+          description: Upload reservation created or idempotently replayed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PresignProblemAssetUploadResponse"
+        "400":
+          description: Idempotency key or upload request body is missing
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "401":
+          description: Access token is invalid or expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Account or entitlement does not allow upload reservation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "409":
+          description: Idempotency key was reused with different upload metadata
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "413":
+          description: Upload is larger than the Sprint 4.2 server limit
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "422":
+          description: Content type, checksum, crop, or asset metadata is unsupported
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "429":
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "503":
+          description: Object storage is unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /api/v1/uploads/{uploadId}/complete:
+    post:
+      summary: Complete a reserved problem asset upload after backend object verification
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: uploadId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            maxLength: 128
+      responses:
+        "200":
+          description: Upload verified and marked AVAILABLE, or idempotently replayed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompleteProblemAssetUploadResponse"
+        "400":
+          description: Idempotency key is missing
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "401":
+          description: Access token is invalid or expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Account is not active
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Upload reservation was not found for the authenticated owner
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "409":
+          description: Upload object size or checksum does not match the reservation, or state is invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "410":
+          description: Upload reservation expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "422":
+          description: Uploaded object is missing or has unsupported content metadata
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "429":
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "503":
+          description: Object storage is unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
   /api/v1/me/billing/apple/configuration:
     get:
       summary: Return backend-owned App Store purchase configuration for the authenticated user
@@ -702,6 +854,103 @@ components:
         version:
           type: [integer, "null"]
           format: int64
+    PresignProblemAssetUploadRequest:
+      type: object
+      required: [source, assetKind, contentType, sizeBytes, checksumSha256]
+      properties:
+        source:
+          type: string
+          enum: [camera, photoLibrary, file, pdf]
+        assetKind:
+          type: string
+          enum: [image, pdf]
+        contentType:
+          type: string
+          enum: [image/jpeg, application/pdf]
+        sizeBytes:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 20971520
+        checksumSha256:
+          type: string
+          pattern: "^[a-fA-F0-9]{64}$"
+        imageWidth:
+          type: [integer, "null"]
+          minimum: 1
+          maximum: 12000
+        imageHeight:
+          type: [integer, "null"]
+          minimum: 1
+          maximum: 12000
+        pageCount:
+          type: [integer, "null"]
+          minimum: 1
+          maximum: 500
+        cropX:
+          type: [number, "null"]
+          minimum: 0
+          maximum: 1
+        cropY:
+          type: [number, "null"]
+          minimum: 0
+          maximum: 1
+        cropWidth:
+          type: [number, "null"]
+          exclusiveMinimum: 0
+          maximum: 1
+        cropHeight:
+          type: [number, "null"]
+          exclusiveMinimum: 0
+          maximum: 1
+    PresignProblemAssetUploadResponse:
+      type: object
+      required: [uploadId, problemSessionId, problemAssetId, assetStatus, uploadUrl, expiresAt, requiredHeaders]
+      properties:
+        uploadId:
+          type: string
+          format: uuid
+        problemSessionId:
+          type: string
+          format: uuid
+        problemAssetId:
+          type: string
+          format: uuid
+        assetStatus:
+          type: string
+          enum: [PENDING]
+        uploadUrl:
+          type: string
+          format: uri
+        expiresAt:
+          type: string
+          format: date-time
+        requiredHeaders:
+          type: object
+          additionalProperties:
+            type: string
+    CompleteProblemAssetUploadResponse:
+      type: object
+      required: [uploadId, problemSessionId, problemAssetId, problemSessionStatus, assetStatus, availableAt]
+      properties:
+        uploadId:
+          type: string
+          format: uuid
+        problemSessionId:
+          type: string
+          format: uuid
+        problemAssetId:
+          type: string
+          format: uuid
+        problemSessionStatus:
+          type: string
+          enum: [ASSET_UPLOADED]
+        assetStatus:
+          type: string
+          enum: [AVAILABLE]
+        availableAt:
+          type: string
+          format: date-time
     AppleBillingConfigurationResponse:
       type: object
       required: [appAccountToken, purchaseAvailable, environment, products]

@@ -104,8 +104,12 @@ Errors use a Problem Details-compatible shape with a stable product `code`:
 - `PATCH /api/v1/me/learning-profile` — authenticated; validates and upserts the current user's learning profile with optimistic `expectedVersion` conflict handling.
 
 ### Uploads
-- `POST /api/v1/uploads/presign`
-- `POST /api/v1/uploads/{id}/complete`
+- `POST /api/v1/uploads/presign` - authenticated; requires `Idempotency-Key`; creates a `ProblemSession` and PENDING `ProblemAsset`, validates source/kind/content type/size/SHA-256/crop metadata, and returns a short-lived presigned PUT URL plus required headers. Normal response is `201 Created`.
+- `POST /api/v1/uploads/{id}/complete` - authenticated; requires `Idempotency-Key`; derives owner from the bearer principal, verifies the private object with HEAD and streamed SHA-256, then transitions `ProblemAsset` to `AVAILABLE` and `ProblemSession` to `ASSET_UPLOADED`. Normal response is `200 OK`.
+
+`PresignProblemAssetUploadRequest` accepts `source`, `assetKind`, `contentType`, `sizeBytes`, `checksumSha256`, optional image dimensions, optional PDF page count, and optional normalized crop fields. The backend ignores any client attempt to choose object storage identity. `PresignProblemAssetUploadResponse` returns `uploadId`, `problemSessionId`, `problemAssetId`, `assetStatus`, `uploadUrl`, `expiresAt`, and `requiredHeaders`.
+
+Upload completion is idempotent after success. Reusing a reservation idempotency key for a different payload returns `IDEMPOTENCY_KEY_REUSED`; completing an already AVAILABLE upload returns the stable durable asset reference.
 
 ### Problem sessions
 - `POST /api/v1/problem-sessions`
@@ -158,6 +162,8 @@ Use cursor pagination for history, attempts and mistakes. Avoid large offset sca
 ## Idempotency
 
 Require `Idempotency-Key` for retry-prone commands such as create problem, solve, attempt submission and billing sync.
+
+Sprint 4.2 upload idempotency is scoped to authenticated user plus key. Reservation stores a request hash and rejects key reuse for different payloads. Completion is safe to retry: if the asset is already AVAILABLE, the backend returns the existing durable reference without double-registering object state.
 
 ## Concurrency
 

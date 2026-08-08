@@ -14,6 +14,13 @@ Owns canonical skill graph and curricula. Primarily read/query at runtime; chang
 ## problem
 Owns problem sessions, asset metadata, parse versions, selected parse and solve-request lifecycle.
 
+Sprint 4.2 scope within `problem`:
+- owns `ProblemSession` minimal lifecycle `CREATED -> ASSET_UPLOADED`;
+- owns `ProblemAsset` identity, user ownership, object key, upload status, metadata, checksum expectation, and retention class;
+- exposes thin upload controllers under `/api/v1/uploads`;
+- depends on object storage through `ProblemAssetStorage`, not directly from domain/application semantics;
+- depends on billing only through the public `CapabilityAccessPolicy` application interface and never on StoreKit/App Store internals.
+
 ## solving
 Receives canonical Problem, creates SolverRuns and Solution. Does not decide VERIFIED.
 

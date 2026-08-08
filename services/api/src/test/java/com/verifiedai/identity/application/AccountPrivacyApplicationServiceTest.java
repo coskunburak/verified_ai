@@ -8,11 +8,26 @@ import com.verifiedai.billing.application.EntitlementApplicationService;
 import com.verifiedai.identity.domain.model.AppleIdentityVerifier;
 import com.verifiedai.identity.domain.model.VerifiedAppleIdentity;
 import com.verifiedai.integration.PostgresIntegrationTestSupport;
+import com.verifiedai.problem.application.ProblemAssetUploadApplicationService;
+import com.verifiedai.problem.application.ProblemAssetUploadCommand;
+import com.verifiedai.problem.application.ProblemAssetUploadReservationResult;
+import com.verifiedai.problem.domain.port.PresignedProblemAssetUpload;
+import com.verifiedai.problem.domain.port.ProblemAssetObjectMetadata;
+import com.verifiedai.problem.domain.port.ProblemAssetObjectNotFoundException;
+import com.verifiedai.problem.domain.port.ProblemAssetStorage;
 import com.verifiedai.profile.application.LearningProfileApplicationService;
 import com.verifiedai.profile.application.UpdateLearningProfileCommand;
 import com.verifiedai.sharedkernel.error.ApiErrorCode;
 import com.verifiedai.sharedkernel.error.ApiProblemException;
+import java.net.URI;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,10 +57,18 @@ final class AccountPrivacyApplicationServiceTest extends PostgresIntegrationTest
     @Autowired
     JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    ProblemAssetUploadApplicationService problemAssetUploadApplicationService;
+
+    @Autowired
+    PrivacyTestProblemAssetStorage problemAssetStorage;
+
     @BeforeEach
     void cleanTables() {
         jdbcTemplate.execute("""
             truncate table
+                problem_assets,
+                problem_sessions,
                 privacy_events,
                 data_exports,
                 billing_events,
@@ -62,6 +85,7 @@ final class AccountPrivacyApplicationServiceTest extends PostgresIntegrationTest
                 users
             cascade
             """);
+        problemAssetStorage.reset();
     }
 
     @Test
@@ -77,6 +101,33 @@ final class AccountPrivacyApplicationServiceTest extends PostgresIntegrationTest
         assertThat(content.toString()).doesNotContain(session.refreshToken());
         assertThat(content.toString()).doesNotContain("token_hash");
         assertThat(countWhere("privacy_events", "event_type = 'DATA_EXPORT_DOWNLOADED'")).isEqualTo(1);
+    }
+
+    @Test
+    void exportAndConfirmedDeletionIncludeProblemAssetLifecycleAndDeleteRawObjects() {
+        AuthSessionResult session = signedInProfiledUser("problem-asset-privacy-user");
+        ProblemAssetUploadReservationResult reservation = problemAssetUploadApplicationService.reserve(
+            session.userId(),
+            "privacy-reserve",
+            imageUploadCommand()
+        );
+        String objectKey = objectKey(reservation.problemAssetId());
+        problemAssetStorage.put(objectKey, "image/jpeg", 11L, "b".repeat(64));
+        problemAssetUploadApplicationService.complete(session.userId(), reservation.uploadId(), "privacy-complete");
+
+        DataExportResult export = accountPrivacyApplicationService.requestExport(session.userId());
+        Map<String, Object> content = accountPrivacyApplicationService.downloadExport(session.userId(), export.exportId());
+
+        assertThat(content).containsKey("problemAssets");
+        assertThat(content.toString()).contains("rawBinaryIncluded=false");
+        assertThat(content.toString()).contains(reservation.problemAssetId().toString());
+        assertThat(content.toString()).contains("TEMPORARY_RAW");
+        accountPrivacyApplicationService.requestDeletion(session.userId());
+        accountPrivacyApplicationService.confirmDeletion(session.userId(), "DELETE");
+
+        assertThat(count("problem_assets")).isEqualTo(0);
+        assertThat(count("problem_sessions")).isEqualTo(0);
+        assertThat(problemAssetStorage.deletedKeys()).contains(objectKey);
     }
 
     @Test
@@ -160,6 +211,27 @@ final class AccountPrivacyApplicationServiceTest extends PostgresIntegrationTest
         );
     }
 
+    private ProblemAssetUploadCommand imageUploadCommand() {
+        return new ProblemAssetUploadCommand(
+            "camera",
+            "image",
+            "image/jpeg",
+            11L,
+            "b".repeat(64),
+            1200,
+            900,
+            null,
+            0.0,
+            0.0,
+            1.0,
+            1.0
+        );
+    }
+
+    private String objectKey(UUID assetId) {
+        return jdbcTemplate.queryForObject("select object_key from problem_assets where id = ?", String.class, assetId);
+    }
+
     private Integer count(String table) {
         return jdbcTemplate.queryForObject("select count(*) from " + table, Integer.class);
     }
@@ -174,6 +246,66 @@ final class AccountPrivacyApplicationServiceTest extends PostgresIntegrationTest
         @Primary
         AppleIdentityVerifier appleIdentityVerifier() {
             return (identityToken, rawNonce) -> new VerifiedAppleIdentity(identityToken);
+        }
+
+        @Bean
+        @Primary
+        PrivacyTestProblemAssetStorage problemAssetStorage() {
+            return new PrivacyTestProblemAssetStorage();
+        }
+    }
+
+    static final class PrivacyTestProblemAssetStorage implements ProblemAssetStorage {
+        private final Map<String, StoredObject> objects = new ConcurrentHashMap<>();
+        private final Set<String> deletedKeys = new LinkedHashSet<>();
+
+        @Override
+        public PresignedProblemAssetUpload presignPut(String objectKey, String contentType, long sizeBytes, Duration ttl) {
+            return new PresignedProblemAssetUpload(
+                URI.create("http://127.0.0.1:9000/verified-ai-problem-assets-local/" + objectKey),
+                Instant.now().plus(ttl),
+                Map.of("Content-Type", contentType)
+            );
+        }
+
+        @Override
+        public ProblemAssetObjectMetadata head(String objectKey) {
+            StoredObject object = objects.get(objectKey);
+            if (object == null) {
+                throw new ProblemAssetObjectNotFoundException("missing");
+            }
+            return new ProblemAssetObjectMetadata(object.sizeBytes(), object.contentType());
+        }
+
+        @Override
+        public String sha256Hex(String objectKey) {
+            StoredObject object = objects.get(objectKey);
+            if (object == null) {
+                throw new ProblemAssetObjectNotFoundException("missing");
+            }
+            return object.checksumSha256();
+        }
+
+        @Override
+        public void deleteIfExists(String objectKey) {
+            objects.remove(objectKey);
+            deletedKeys.add(objectKey);
+        }
+
+        void put(String objectKey, String contentType, long sizeBytes, String checksumSha256) {
+            objects.put(objectKey, new StoredObject(contentType, sizeBytes, checksumSha256));
+        }
+
+        List<String> deletedKeys() {
+            return List.copyOf(deletedKeys);
+        }
+
+        void reset() {
+            objects.clear();
+            deletedKeys.clear();
+        }
+
+        private record StoredObject(String contentType, long sizeBytes, String checksumSha256) {
         }
     }
 }

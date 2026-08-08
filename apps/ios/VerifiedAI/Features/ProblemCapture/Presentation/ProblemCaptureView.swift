@@ -6,6 +6,7 @@ import UIKit
 
 struct ProblemCaptureView: View {
     @Bindable var viewModel: ProblemCaptureViewModel
+    @Bindable var uploadViewModel: ProblemAssetUploadViewModel
     let cameraClient: ProblemCameraClient
     let onDismiss: () -> Void
 
@@ -23,6 +24,7 @@ struct ProblemCaptureView: View {
                     ToolbarItem(placement: .topBarLeading) {
                         Button {
                             Task {
+                                uploadViewModel.cancel()
                                 await viewModel.cancel()
                                 onDismiss()
                             }
@@ -361,28 +363,80 @@ struct ProblemCaptureView: View {
 
     private func acceptedView(_ acceptedAsset: AcceptedCapturedAsset) -> some View {
         VStack(alignment: .leading, spacing: SpacingTokens.lg) {
-            Label("Captured asset ready", systemImage: "checkmark.seal")
-                .font(TypographyTokens.title)
-                .foregroundStyle(ColorTokens.action)
-            Text("The local asset is ready for the next pipeline stage. Upload, OCR, solving, and verification are not part of this step.")
-                .font(TypographyTokens.body)
-                .foregroundStyle(ColorTokens.textSecondary)
             Text("\(sourceTitle(acceptedAsset.asset.source)) · \(acceptedAsset.asset.dimensionsDescription)")
                 .font(TypographyTokens.caption)
                 .foregroundStyle(ColorTokens.textSecondary)
 
-            Button {
-                onDismiss()
-            } label: {
-                Label("Done", systemImage: "checkmark")
-                    .frame(maxWidth: .infinity)
+            switch uploadViewModel.state {
+            case .idle, .reserving:
+                Label("Reserving secure upload", systemImage: "lock")
+                    .font(TypographyTokens.title)
+                    .foregroundStyle(ColorTokens.textPrimary)
+                ProgressView()
+                    .accessibilityIdentifier("problemCapture.upload.reserving")
+                Text("The backend is creating a private asset reservation.")
+                    .font(TypographyTokens.body)
+                    .foregroundStyle(ColorTokens.textSecondary)
+            case .uploading(let progress):
+                Label("Uploading problem asset", systemImage: "arrow.up.doc")
+                    .font(TypographyTokens.title)
+                    .foregroundStyle(ColorTokens.textPrimary)
+                ProgressView(value: progress)
+                    .accessibilityIdentifier("problemCapture.upload.progress")
+                Text("\(Int(progress * 100))%")
+                    .font(TypographyTokens.caption)
+                    .foregroundStyle(ColorTokens.textSecondary)
+            case .confirming:
+                Label("Verifying upload", systemImage: "checkmark.shield")
+                    .font(TypographyTokens.title)
+                    .foregroundStyle(ColorTokens.textPrimary)
+                ProgressView()
+                    .accessibilityIdentifier("problemCapture.upload.confirming")
+                Text("The backend is checking object size, content type, and SHA-256 integrity.")
+                    .font(TypographyTokens.body)
+                    .foregroundStyle(ColorTokens.textSecondary)
+            case .available(let reference):
+                Label("Problem asset uploaded", systemImage: "checkmark.seal")
+                    .font(TypographyTokens.title)
+                    .foregroundStyle(ColorTokens.action)
+                Text("Asset \(reference.problemAssetId.uuidString) is available for the next ingestion step.")
+                    .font(TypographyTokens.caption)
+                    .foregroundStyle(ColorTokens.textSecondary)
+
+                Button {
+                    onDismiss()
+                } label: {
+                    Label("Done", systemImage: "checkmark")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .accessibilityIdentifier("problemCapture.accepted.done")
+            case .recoverableFailure:
+                Label(uploadViewModel.message ?? "Upload could not continue.", systemImage: "exclamationmark.triangle")
+                    .font(TypographyTokens.body.weight(.semibold))
+                    .foregroundStyle(ColorTokens.warning)
+                    .accessibilityIdentifier("problemCapture.upload.failure")
+                Text("Your local capture is still available for retry.")
+                    .font(TypographyTokens.body)
+                    .foregroundStyle(ColorTokens.textSecondary)
+                Button {
+                    Task { await uploadViewModel.retry() }
+                } label: {
+                    Label("Retry Upload", systemImage: "arrow.clockwise")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .accessibilityIdentifier("problemCapture.upload.retry")
             }
-            .buttonStyle(.borderedProminent)
-            .accessibilityIdentifier("problemCapture.accepted.done")
         }
         .padding(SpacingTokens.lg)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(ColorTokens.background)
+        .task(id: acceptedAsset.localIdentifier) {
+            if uploadViewModel.state == .idle {
+                await uploadViewModel.start(acceptedAsset)
+            }
+        }
     }
 
     private func progressView(_ title: String) -> some View {

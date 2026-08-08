@@ -84,6 +84,12 @@
 		10000000000000000000004B /* CaptureQualityAnalyzerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000053 /* CaptureQualityAnalyzerTests.swift */; };
 		10000000000000000000004C /* CropSelectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000054 /* CropSelectionTests.swift */; };
 		10000000000000000000004D /* CapturedAssetStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000055 /* CapturedAssetStoreTests.swift */; };
+		10000000000000000000004E /* ProblemAssetUploadModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000056 /* ProblemAssetUploadModels.swift */; };
+		10000000000000000000004F /* ProblemAssetUploadPorts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000057 /* ProblemAssetUploadPorts.swift */; };
+		100000000000000000000050 /* ProblemAssetUploadAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000058 /* ProblemAssetUploadAPI.swift */; };
+		100000000000000000000051 /* PresignedObjectUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000059 /* PresignedObjectUploader.swift */; };
+		100000000000000000000052 /* ProblemAssetUploadViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000005A /* ProblemAssetUploadViewModel.swift */; };
+		100000000000000000000053 /* ProblemAssetUploadViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000005B /* ProblemAssetUploadViewModelTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -189,6 +195,12 @@
 		200000000000000000000053 /* CaptureQualityAnalyzerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/ProblemCapture/CaptureQualityAnalyzerTests.swift; sourceTree = "<group>"; };
 		200000000000000000000054 /* CropSelectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/ProblemCapture/CropSelectionTests.swift; sourceTree = "<group>"; };
 		200000000000000000000055 /* CapturedAssetStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/ProblemCapture/CapturedAssetStoreTests.swift; sourceTree = "<group>"; };
+		200000000000000000000056 /* ProblemAssetUploadModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/ProblemCapture/Domain/ProblemAssetUploadModels.swift; sourceTree = "<group>"; };
+		200000000000000000000057 /* ProblemAssetUploadPorts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/ProblemCapture/Domain/ProblemAssetUploadPorts.swift; sourceTree = "<group>"; };
+		200000000000000000000058 /* ProblemAssetUploadAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/ProblemCapture/Data/ProblemAssetUploadAPI.swift; sourceTree = "<group>"; };
+		200000000000000000000059 /* PresignedObjectUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/ProblemCapture/Data/PresignedObjectUploader.swift; sourceTree = "<group>"; };
+		20000000000000000000005A /* ProblemAssetUploadViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/ProblemCapture/Presentation/ProblemAssetUploadViewModel.swift; sourceTree = "<group>"; };
+		20000000000000000000005B /* ProblemAssetUploadViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/ProblemCapture/ProblemAssetUploadViewModelTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -287,11 +299,16 @@
 				200000000000000000000048 /* AccountSettingsViewModel.swift */,
 				200000000000000000000049 /* AccountSettingsView.swift */,
 				20000000000000000000004B /* ProblemCaptureModels.swift */,
+				200000000000000000000056 /* ProblemAssetUploadModels.swift */,
 				20000000000000000000004C /* ProblemCapturePorts.swift */,
+				200000000000000000000057 /* ProblemAssetUploadPorts.swift */,
 				20000000000000000000004D /* CapturedAssetStore.swift */,
 				20000000000000000000004E /* CaptureQualityAnalyzer.swift */,
 				20000000000000000000004F /* AVFoundationProblemCameraClient.swift */,
+				200000000000000000000058 /* ProblemAssetUploadAPI.swift */,
+				200000000000000000000059 /* PresignedObjectUploader.swift */,
 				200000000000000000000050 /* ProblemCaptureViewModel.swift */,
+				20000000000000000000005A /* ProblemAssetUploadViewModel.swift */,
 				200000000000000000000051 /* ProblemCaptureView.swift */,
 				20000000000000000000001E /* Localizable.xcstrings */,
 				20000000000000000000001F /* PrivacyInfo.xcprivacy */,
@@ -317,6 +334,7 @@
 				200000000000000000000053 /* CaptureQualityAnalyzerTests.swift */,
 				200000000000000000000054 /* CropSelectionTests.swift */,
 				200000000000000000000055 /* CapturedAssetStoreTests.swift */,
+				20000000000000000000005B /* ProblemAssetUploadViewModelTests.swift */,
 			);
 			name = VerifiedAITests;
 			sourceTree = "<group>";
@@ -498,11 +516,16 @@
 				100000000000000000000040 /* AccountSettingsViewModel.swift in Sources */,
 				100000000000000000000041 /* AccountSettingsView.swift in Sources */,
 				100000000000000000000043 /* ProblemCaptureModels.swift in Sources */,
+				10000000000000000000004E /* ProblemAssetUploadModels.swift in Sources */,
 				100000000000000000000044 /* ProblemCapturePorts.swift in Sources */,
+				10000000000000000000004F /* ProblemAssetUploadPorts.swift in Sources */,
 				100000000000000000000045 /* CapturedAssetStore.swift in Sources */,
 				100000000000000000000046 /* CaptureQualityAnalyzer.swift in Sources */,
 				100000000000000000000047 /* AVFoundationProblemCameraClient.swift in Sources */,
+				100000000000000000000050 /* ProblemAssetUploadAPI.swift in Sources */,
+				100000000000000000000051 /* PresignedObjectUploader.swift in Sources */,
 				100000000000000000000048 /* ProblemCaptureViewModel.swift in Sources */,
+				100000000000000000000052 /* ProblemAssetUploadViewModel.swift in Sources */,
 				100000000000000000000049 /* ProblemCaptureView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -524,6 +547,7 @@
 				10000000000000000000004B /* CaptureQualityAnalyzerTests.swift in Sources */,
 				10000000000000000000004C /* CropSelectionTests.swift in Sources */,
 				10000000000000000000004D /* CapturedAssetStoreTests.swift in Sources */,
+				100000000000000000000053 /* ProblemAssetUploadViewModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

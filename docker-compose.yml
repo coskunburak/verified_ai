@@ -88,6 +88,12 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-local_dev_password_change_me}
       REDIS_HOST: redis
       REDIS_PORT: 6379
+      PROBLEM_ASSETS_BUCKET: ${PROBLEM_ASSETS_BUCKET:-verified-ai-problem-assets-local}
+      PROBLEM_ASSETS_S3_ENDPOINT: http://minio:9000
+      PROBLEM_ASSETS_S3_REGION: us-east-1
+      PROBLEM_ASSETS_S3_ACCESS_KEY: ${MINIO_ROOT_USER:-minio_local}
+      PROBLEM_ASSETS_S3_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-minio_local_password_change_me}
+      PROBLEM_ASSETS_S3_PATH_STYLE: "true"
       MATH_VERIFIER_BASE_URL: http://math-verifier:8090
       MATH_VERIFIER_INTERNAL_TOKEN: ${MATH_VERIFIER_INTERNAL_TOKEN:-local_math_verifier_token_change_me}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}

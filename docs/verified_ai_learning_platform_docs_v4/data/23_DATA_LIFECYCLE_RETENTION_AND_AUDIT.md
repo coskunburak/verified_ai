@@ -30,6 +30,8 @@ Original uploaded image/PDF. Example configurable default: 30 days unless explic
 
 Sprint 4.1 introduces a stricter pre-upload iOS temporary class for local capture/import review. `CapturedAsset` files live under the app temporary directory, default to a 24-hour cleanup window, and are deleted on cancel/retake/replace when no longer referenced. They are not PostgreSQL rows, object-storage objects, backend `ProblemAsset` records, or `ProblemSession` history.
 
+Sprint 4.2 introduces durable `ProblemAsset` raw source objects with configurable pending-upload retention. The default reservation TTL is 15 minutes; abandoned pending uploads are eligible for cleanup after expiry and are swept by the backend cleanup job. Account export includes problem asset metadata and declares `rawBinaryIncluded=false`; confirmed account deletion deletes matching private object-storage keys and cascades the owning problem rows.
+
 ### USER_LIBRARY
 User-saved assets retained until explicit deletion/account lifecycle.
 
@@ -57,7 +59,8 @@ Sprint 3.7 implementation:
 | Learning profile | profile settings, onboarding status, timestamps, version | `learning_profiles` row is deleted | none in current Phase 3 schema |
 | Sessions | recent session IDs, status, timestamps, revocation reason | all active sessions revoked | minimized security history may remain |
 | Billing | entitlement summary, subscriptions, transaction identifiers/status/environment/product metadata | app account token deleted; entitlement revoked/free; billing event records retained | legal/refund/fraud audit retains minimized transaction references, never raw payment credentials |
-| Future assets/AI learning data | lifecycle-contributor contract reserved for Phase 4+ stores | contributor must delete/anonymize owned rows/assets before phase exit | follow retention class and backup expiry |
+| Problem assets | asset/session metadata, status, source/kind, content type, size, checksum, crop/dimension/page metadata, timestamps; raw binaries excluded | delete private object-storage keys, then delete `problem_sessions`/`problem_assets` through the lifecycle contributor | pending upload expiry and backup expiry apply; raw binaries are not export payloads |
+| Future AI/attempt/mastery/tutor data | lifecycle-contributor contract reserved for future stores | contributor must delete/anonymize owned rows/assets before phase exit | follow retention class and backup expiry |
 
 The implementation stores export JSON in `data_exports` with seven-day expiry and records privacy events in `privacy_events`. Export content excludes secrets, token hashes, raw Apple JWS/payment material, internal fraud signals, and unrestricted operational telemetry.
 

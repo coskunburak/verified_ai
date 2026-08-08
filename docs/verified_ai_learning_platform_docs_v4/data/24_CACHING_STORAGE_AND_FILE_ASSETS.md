@@ -9,20 +9,34 @@ SwiftData: client cache/offline projection.
 
 ## Presigned upload flow
 
-1. iOS requests upload intent.
-2. Backend validates auth, quota, type and expected size.
-3. Backend creates PENDING asset metadata.
-4. iOS uploads directly to object storage.
-5. Upload completion is confirmed.
-6. Backend validates checksum/metadata.
-7. Asset becomes AVAILABLE.
+1. iOS computes SHA-256 over the local accepted bytes and requests an upload reservation.
+2. Backend validates authentication, active account, entitlement capability, source, kind, content type, expected size, checksum, crop, dimensions/page count, and idempotency.
+3. Backend creates a `ProblemSession` and PENDING `ProblemAsset` with server-owned object key metadata.
+4. Backend returns a short-lived presigned PUT URL and required headers.
+5. iOS uploads bytes directly to object storage without object-storage credentials.
+6. iOS confirms completion through the backend.
+7. Backend performs HEAD plus streamed SHA-256 verification against the private object.
+8. The asset becomes AVAILABLE and the session becomes ASSET_UPLOADED.
 
 ## Object keys
 
 Never trust user filename as storage key.
 
 Example:
-`problems/{userId}/{sessionId}/{assetId}/original.jpg`
+`problem-assets/{problemSessionId}/{problemAssetId}/original`
+
+The object key is generated only by the backend. The client never supplies `object_key`, bucket, prefix, or authoritative asset identity. Ownership lives in PostgreSQL, not in path parsing.
+
+## Sprint 4.2 storage contract
+
+- Provider abstraction: `ProblemAssetStorage`.
+- Current adapter: S3-compatible storage with MinIO local/Testcontainers coverage.
+- Default local bucket: `verified-ai-problem-assets-local`.
+- Supported upload content types: `image/jpeg` and `application/pdf`.
+- Maximum original upload size: 20 MB.
+- Presign TTL: 15 minutes by default.
+- Private storage assumption: objects are not public; clients receive scoped presigned PUT URLs only.
+- Integrity: backend deletes mismatched objects on size/content-type/checksum mismatch and keeps the asset non-AVAILABLE.
 
 ## Derived assets
 

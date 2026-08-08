@@ -123,23 +123,43 @@ Account deletion deletes the profile row. Export includes profile fields before 
 - id
 - user_id
 - status
+- input_mode
 - current_parse_id nullable
 - problem_id nullable
 - solve_job_id nullable
 - created_at
+- updated_at
 - completed_at
+- version
 Index(user_id, created_at desc)
+
+Sprint 4.2 creates the minimal durable session foundation. Allowed initial upload statuses are `CREATED` and `ASSET_UPLOADED`; later Phase 4 sprints may advance through `PARSING`, `PARSED`, `SOLVING`, `VERIFYING`, `COMPLETED`, `REVIEW_REQUIRED`, `FAILED`, or `CANCELLED`. `input_mode` is one of `CAMERA`, `PHOTO_LIBRARY`, `FILE`, or `PDF`. The table includes a composite `(id, user_id)` uniqueness constraint so child assets can enforce same-owner relationships.
 
 ### problem_assets
 - id
 - problem_session_id
+- user_id
+- source_type
+- asset_kind
+- status
 - object_key
-- asset_type
-- mime_type
+- content_type
 - size_bytes
-- checksum
+- checksum_sha256
+- crop_x/crop_y/crop_width/crop_height
+- image_width/image_height nullable
+- page_count nullable
 - retention_class
+- upload_expires_at
+- uploaded_at nullable
+- available_at nullable
+- reservation_idempotency_key
+- reservation_request_hash
 - created_at
+- updated_at
+- version
+
+Sprint 4.2 persists raw asset metadata only. `ProblemAsset` is not canonical `Problem`, OCR evidence, parser output, solution, verification, or mastery evidence. Constraints enforce supported kinds/content types, 20 MB maximum size, lower-case SHA-256 format, normalized crop bounds, image/PDF metadata bounds, unique object keys, and per-user reservation idempotency keys. A composite FK `(problem_session_id, user_id)` to `problem_sessions(id, user_id)` prevents cross-owner asset/session attachment. Indexes cover session lookup, owner history, status, and pending upload expiry.
 
 ### problem_parses
 - id

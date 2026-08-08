@@ -29,6 +29,8 @@ class RateLimitFilter extends OncePerRequestFilter {
     private static final RateLimitPolicy DATA_EXPORT = new RateLimitPolicy("privacy_data_export", 3, Duration.ofHours(1), false);
     private static final RateLimitPolicy ACCOUNT_DELETION = new RateLimitPolicy("privacy_account_deletion", 5, Duration.ofHours(1), true);
     private static final RateLimitPolicy APPLE_WEBHOOK = new RateLimitPolicy("apple_webhook", 120, Duration.ofMinutes(1), false);
+    private static final RateLimitPolicy UPLOAD_PRESIGN = new RateLimitPolicy("problem_upload_presign", 30, Duration.ofMinutes(10), false);
+    private static final RateLimitPolicy UPLOAD_COMPLETE = new RateLimitPolicy("problem_upload_complete", 60, Duration.ofMinutes(10), false);
 
     private final RateLimiter rateLimiter;
     private final SecurityMetrics metrics;
@@ -85,6 +87,12 @@ class RateLimitFilter extends OncePerRequestFilter {
         }
         if ("POST".equals(method) && "/api/v1/webhooks/apple/app-store".equals(path)) {
             return Optional.of(APPLE_WEBHOOK);
+        }
+        if ("POST".equals(method) && "/api/v1/uploads/presign".equals(path)) {
+            return Optional.of(UPLOAD_PRESIGN);
+        }
+        if ("POST".equals(method) && path.startsWith("/api/v1/uploads/") && path.endsWith("/complete")) {
+            return Optional.of(UPLOAD_COMPLETE);
         }
         return Optional.empty();
     }

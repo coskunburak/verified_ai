@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class EntitlementApplicationService {
+public class EntitlementApplicationService implements CapabilityAccessPolicy {
     private final EntitlementJpaRepository entitlementRepository;
     private final Clock clock;
     private final JdbcTemplate jdbcTemplate;
@@ -64,6 +64,11 @@ public class EntitlementApplicationService {
             true,
             "UPGRADE"
         );
+    }
+
+    @Override
+    public void requireBasicSolve(UUID userId) {
+        requireCapability(userId, PremiumCapability.BASIC_SOLVE);
     }
 
     @Transactional

@@ -36,7 +36,7 @@ final class VerifiedAIUITests: XCTestCase {
         acceptButton.tap()
 
         XCTAssertTrue(app.buttons["problemCapture.accepted.done"].waitForExistence(timeout: 4))
-        XCTAssertTrue(app.staticTexts["Captured asset ready"].exists)
+        XCTAssertTrue(app.staticTexts["Problem asset uploaded"].exists)
     }
 
     private func launchAuthenticatedApp(extraArguments: [String] = []) -> XCUIApplication {

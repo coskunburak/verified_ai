@@ -29,10 +29,19 @@ Sprint 3.8 rate limiting uses Redis only for counters. If Redis is unavailable, 
 ## Account deletion failure
 
 1. Confirm whether the account is `DELETION_REQUESTED`, `DELETION_IN_PROGRESS`, or `DELETED`.
-2. Inspect `privacy_events`, session revocation rows, learning profile presence, entitlement status, and billing events.
+2. Inspect `privacy_events`, session revocation rows, learning profile presence, entitlement status, billing events, `problem_sessions`, `problem_assets`, and corresponding object-storage keys.
 3. Do not manually delete minimized billing/security audit rows unless legal/compliance approves.
 4. Re-run deletion only through the backend service path or a reviewed corrective script that invokes equivalent lifecycle contributors.
 5. Record any future module missing a lifecycle contributor as release-blocking for that module.
+
+## Problem asset upload failure
+
+1. Use the API trace/correlation ID to inspect reservation and completion responses.
+2. Confirm `problem_assets.status`, `upload_expires_at`, expected `content_type`, `size_bytes`, and `checksum_sha256`.
+3. Inspect object-storage availability and bucket policy without exposing object bytes.
+4. For checksum, size, or content-type mismatches, confirm the backend deleted the mismatched object and left the asset non-AVAILABLE.
+5. For expired reservations, ask the client to retry from the retained local accepted asset.
+6. Watch `problem.asset.*` metrics and `security.rate_limit.*` counters for abuse or storage degradation.
 
 ## Billing notification backlog
 

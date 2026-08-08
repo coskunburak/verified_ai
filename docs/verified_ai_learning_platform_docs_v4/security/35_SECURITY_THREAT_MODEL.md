@@ -59,6 +59,8 @@ No Python eval, parser allowlist, expression complexity limits, verifier timeout
 ### Malicious uploads
 Size/MIME/dimension/page limits, isolated storage and scanning policy.
 
+Sprint 4.2 validates JPEG/PDF upload metadata before issuing a presigned URL and again after direct object upload. The backend owns the key, bucket policy assumption, expected byte size, expected content type, SHA-256 checksum, reservation TTL, and user/session relationship. Wrong-owner completion attempts are denied by principal-derived lookup rather than UUID opacity. Mismatched objects are deleted and never marked AVAILABLE.
+
 ### Billing spoof
 Server-side App Store validation and idempotent external event handling.
 
@@ -81,9 +83,9 @@ Secret manager/environment only. Production secrets never enter git or iOS bundl
 |---|---|---|
 | Auth brute force / refresh abuse | Redis rate limits on Apple sign-in and refresh; refresh reuse revokes active family/session | production threshold tuning |
 | Revoked token replay | protected API session-state filter checks session/user status | broader Phase 4+ endpoint coverage as endpoints are added |
-| Oversized malicious JSON | header/body bounds filter with stable `REQUEST_TOO_LARGE` errors | upload-specific MIME/image bounds in Phase 4 |
+| Oversized malicious JSON | header/body bounds filter with stable `REQUEST_TOO_LARGE` errors | upload-specific MIME/image bounds added in Sprint 4.2; later parser/OCR payloads still need coverage |
 | Deleted account reattachment | deleted account tombstone blocks same Apple identity from creating a fresh account silently | external Apple sandbox validation remains `TD-AUTH-001` |
-| Privacy lifecycle failure | transactional deletion/export contributors for identity/profile/billing | future object/AI data contributors before those stores ship |
+| Privacy lifecycle failure | transactional deletion/export contributors for identity/profile/billing/problem assets | future parse/problem/AI/attempt/mastery/tutor contributors before those stores ship |
 
 <!-- HYBRID_AI_STRATEGY_V3:START -->
 ## Model-training and serving threats

@@ -38,6 +38,8 @@ Sprint 3.8 implementation adds Redis-backed fixed-window rate limiting for sensi
 | `POST /api/v1/auth/refresh` | 20/minute | fail closed |
 | `POST /api/v1/auth/logout` | 30/minute | fail open |
 | `POST /api/v1/me/billing/apple/transactions` | 20/5 minutes | fail open |
+| `POST /api/v1/uploads/presign` | 30/10 minutes | fail open |
+| `POST /api/v1/uploads/{uploadId}/complete` | 60/10 minutes | fail open |
 | `POST /api/v1/me/data-exports` | 3/hour | fail open |
 | `POST /api/v1/me/deletion-request*` | 5/hour | fail closed |
 | `POST /api/v1/webhooks/apple/app-store` | 120/minute | fail open |
@@ -56,6 +58,8 @@ Treat all content as untrusted data. Do not concatenate into system instructions
 
 ### Oversized/malicious upload
 MIME/type/size/dimension/page limits; document scanning/isolation policy.
+
+Sprint 4.2 enforces upload authorization in the backend application service. The bearer principal supplies `userId`; the client cannot supply owner, object key, bucket, or asset/session identity. Reservation requires active account plus the basic solve capability, content type allowlist, 20 MB maximum size, normalized crop constraints, image/PDF metadata bounds, SHA-256 shape validation, and a reservation idempotency key. Completion loads the asset by `(uploadId, userId)` under pessimistic lock, verifies private object metadata and checksum, and returns a not-found/forbidden problem detail for cross-user access attempts.
 
 ### Entitlement replay
 Server verifies and idempotently records external transaction/events.

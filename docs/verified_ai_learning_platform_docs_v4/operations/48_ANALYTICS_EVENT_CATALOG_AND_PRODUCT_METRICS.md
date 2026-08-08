@@ -22,6 +22,8 @@ Never send raw problem text/image to general analytics.
 
 Sprint 4.1 local capture instrumentation uses privacy-safe client log names for opened/source-selected/camera-ready/capture/import/quality-warning/accepted/failure states. These records must not include raw problem images, OCR text, PDF bytes, filenames, local paths, or user-authored content. Product analytics promotion remains a later analytics-client task; the same minimization rule applies when events are promoted.
 
+Sprint 4.2 backend upload telemetry may support `problem_asset_uploaded` after durable AVAILABLE completion. Allowed properties are low-cardinality operational fields such as asset kind, source type, status, retry class, and latency bucket. Disallowed properties include object key, presigned URL, checksum, byte size when overly precise, filename, local path, raw image/PDF bytes, OCR text, user-authored problem text, and user identifiers.
+
 ## Solving events
 
 - solve_requested

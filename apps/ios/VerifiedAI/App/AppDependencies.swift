@@ -16,6 +16,8 @@ struct AppDependencies {
     let problemCameraClient: AVFoundationProblemCameraClient
     let capturedAssetStore: CapturedAssetStoring
     let captureQualityAnalyzer: CaptureQualityAnalyzing
+    let problemAssetUploadAPI: ProblemAssetUploadServicing
+    let presignedObjectUploader: PresignedObjectUploading
     let logger: AppLogger
     let networkMonitor: NetworkMonitoring
     let router: AppRouter
@@ -49,6 +51,8 @@ struct AppDependencies {
         let problemCameraClient = AVFoundationProblemCameraClient(logger: logger)
         let capturedAssetStore = DefaultCapturedAssetStore()
         let captureQualityAnalyzer = DefaultCaptureQualityAnalyzer()
+        let problemAssetUploadAPI = ProblemAssetUploadAPI(apiClient: apiClient)
+        let presignedObjectUploader = URLSessionPresignedObjectUploader()
         Task {
             await authenticationSessionStore.setRefreshHandler { refreshToken in
                 try await authenticationAPI.refresh(refreshToken: refreshToken)
@@ -72,6 +76,8 @@ struct AppDependencies {
             problemCameraClient: problemCameraClient,
             capturedAssetStore: capturedAssetStore,
             captureQualityAnalyzer: captureQualityAnalyzer,
+            problemAssetUploadAPI: problemAssetUploadAPI,
+            presignedObjectUploader: presignedObjectUploader,
             logger: logger,
             networkMonitor: networkMonitor,
             router: router,
