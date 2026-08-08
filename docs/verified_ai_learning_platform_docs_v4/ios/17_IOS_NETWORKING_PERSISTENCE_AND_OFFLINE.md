@@ -43,6 +43,9 @@ Candidate cache models:
 - Mastery: display cache instantly; refresh background.
 - Today plan: cache current snapshot; server owns completion.
 - Entitlement: cache for UI responsiveness but expensive server operations re-check authority.
+- Learning profile: onboarding draft lives in view state until saved; durable resume state comes from `/api/v1/me/learning-profile`.
+- Current entitlement: `EntitlementDisplayCache` may render last known tier/capabilities while offline, but a server refresh overwrites it and privileged backend actions must still pass server-side capability policy.
+- Account privacy: export and deletion are online-only because the backend must derive current-user ownership, apply retention policy, revoke sessions, and record privacy audit events.
 
 ## Offline availability
 
@@ -57,12 +60,14 @@ Not available:
 - new AI solve,
 - new server verification,
 - authoritative billing changes.
+- account data export or account deletion confirmation.
 
 ## Conflict semantics
 
 - Profile edits use versioning/optimistic conflict.
 - Study completion is append/idempotent.
 - Mastery is server-only and never client-merged.
+- Entitlement conflicts are not client-resolved in Sprint 3.4 because normal clients cannot mutate entitlement.
 
 ## Local security
 

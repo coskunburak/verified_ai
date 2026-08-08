@@ -17,6 +17,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 class CorrelationIdFilter extends OncePerRequestFilter {
 
     static final String HEADER = "X-Request-Id";
+    private static final int MAX_CORRELATION_ID_LENGTH = 64;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -24,6 +25,8 @@ class CorrelationIdFilter extends OncePerRequestFilter {
         String correlationId = request.getHeader(HEADER);
         if (correlationId == null || correlationId.isBlank()) {
             correlationId = UUID.randomUUID().toString();
+        } else {
+            correlationId = sanitize(correlationId);
         }
 
         try {
@@ -36,5 +39,20 @@ class CorrelationIdFilter extends OncePerRequestFilter {
             MDC.remove("traceId");
         }
     }
-}
 
+    private static String sanitize(String value) {
+        StringBuilder sanitized = new StringBuilder();
+        for (int index = 0; index < value.length() && sanitized.length() < MAX_CORRELATION_ID_LENGTH; index++) {
+            char character = value.charAt(index);
+            if ((character >= 'a' && character <= 'z')
+                || (character >= 'A' && character <= 'Z')
+                || (character >= '0' && character <= '9')
+                || character == '-'
+                || character == '_'
+                || character == '.') {
+                sanitized.append(character);
+            }
+        }
+        return sanitized.isEmpty() ? UUID.randomUUID().toString() : sanitized.toString();
+    }
+}

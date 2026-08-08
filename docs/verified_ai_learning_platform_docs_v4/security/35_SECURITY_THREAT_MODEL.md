@@ -45,6 +45,8 @@
 ### Credential theft
 TLS, Keychain, short access token, refresh rotation/revocation.
 
+Sprint 3.8 strengthens this with backend session-state checks on protected API requests. Logout, refresh-token family revocation, and account deletion invalidate continued use of an otherwise unexpired bearer token.
+
 ### IDOR
 Principal-derived ownership checks on every resource.
 
@@ -60,6 +62,8 @@ Size/MIME/dimension/page limits, isolated storage and scanning policy.
 ### Billing spoof
 Server-side App Store validation and idempotent external event handling.
 
+Sprint 3.8 adds request bounds and rate limits on purchase-evidence submission and App Store notification ingestion. Billing evidence remains backend-interpreted; account-deleted users cannot request Apple billing configuration or submit purchase evidence.
+
 ### Admin abuse
 Least privilege, audited access, content redaction and strong admin authentication.
 
@@ -70,6 +74,16 @@ Threat-model new input types, PDF import, teacher/parent sharing, new admin oper
 ## Secrets
 
 Secret manager/environment only. Production secrets never enter git or iOS bundle.
+
+## Phase 3 hardening closure
+
+| Threat | Implemented control | Remaining release evidence |
+|---|---|---|
+| Auth brute force / refresh abuse | Redis rate limits on Apple sign-in and refresh; refresh reuse revokes active family/session | production threshold tuning |
+| Revoked token replay | protected API session-state filter checks session/user status | broader Phase 4+ endpoint coverage as endpoints are added |
+| Oversized malicious JSON | header/body bounds filter with stable `REQUEST_TOO_LARGE` errors | upload-specific MIME/image bounds in Phase 4 |
+| Deleted account reattachment | deleted account tombstone blocks same Apple identity from creating a fresh account silently | external Apple sandbox validation remains `TD-AUTH-001` |
+| Privacy lifecycle failure | transactional deletion/export contributors for identity/profile/billing | future object/AI data contributors before those stores ship |
 
 <!-- HYBRID_AI_STRATEGY_V3:START -->
 ## Model-training and serving threats

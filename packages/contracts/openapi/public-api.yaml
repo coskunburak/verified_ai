@@ -29,8 +29,755 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PlatformHealthResponse"
+  /api/v1/auth/apple:
+    post:
+      summary: Exchange a verified Apple identity credential for a platform session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AppleSignInRequest"
+      responses:
+        "200":
+          description: Platform session issued
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthSessionResponse"
+        "401":
+          description: Apple identity token is invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /api/v1/auth/refresh:
+    post:
+      summary: Rotate refresh token and issue a new access token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshSessionRequest"
+      responses:
+        "200":
+          description: New token pair issued
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthSessionResponse"
+        "401":
+          description: Refresh token is revoked, expired, invalid, or reused
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /api/v1/auth/session:
+    get:
+      summary: Return the current authenticated user/session identifiers
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Current session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CurrentSessionResponse"
+        "401":
+          description: Access token is invalid or expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /api/v1/auth/logout:
+    post:
+      summary: Revoke the current backend session
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Session revoked
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LogoutResponse"
+        "401":
+          description: Access token is invalid or expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /api/v1/me/account:
+    get:
+      summary: Return the current authenticated account state
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Current account state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountStateResponse"
+        "401":
+          description: Access token is invalid, expired, or revoked
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Account is not active
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /api/v1/me/data-exports:
+    post:
+      summary: Request a retention-aware account data export for the current user
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: false
+          schema:
+            type: string
+            maxLength: 128
+      responses:
+        "202":
+          description: Export prepared for download
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataExportResponse"
+        "403":
+          description: Account is not active
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "429":
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /api/v1/me/data-exports/{exportId}:
+    get:
+      summary: Return status for a current user's data export
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: exportId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Export status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataExportResponse"
+        "404":
+          description: Export was not found for the authenticated user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /api/v1/me/data-exports/{exportId}/content:
+    get:
+      summary: Download a ready current-user data export JSON document
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: exportId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Export JSON content
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataExportContent"
+        "404":
+          description: Export was not found for the authenticated user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "410":
+          description: Export expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /api/v1/me/deletion-request:
+    get:
+      summary: Return the current authenticated account deletion state
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Current deletion request state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeletionRequestResponse"
+    post:
+      summary: Request account deletion for the current user
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: false
+          schema:
+            type: string
+            maxLength: 128
+      responses:
+        "202":
+          description: Account placed in deletion-requested state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeletionRequestResponse"
+        "429":
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /api/v1/me/deletion-request/confirm:
+    post:
+      summary: Confirm and execute current-user account deletion
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: false
+          schema:
+            type: string
+            maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeletionConfirmationRequest"
+      responses:
+        "200":
+          description: Account deleted, sessions revoked, and local client must discard credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeletionRequestResponse"
+        "422":
+          description: Confirmation text is invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "429":
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /api/v1/me/learning-profile:
+    get:
+      summary: Return the current authenticated learner profile
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Current learner profile or NOT_STARTED profile state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LearningProfileResponse"
+        "401":
+          description: Access token is invalid or expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+    patch:
+      summary: Update the current authenticated learner profile
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateLearningProfileRequest"
+      responses:
+        "200":
+          description: Updated learner profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LearningProfileResponse"
+        "401":
+          description: Access token is invalid or expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "409":
+          description: Expected profile version is stale
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "422":
+          description: Profile validation failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /api/v1/me/entitlements:
+    get:
+      summary: Return the backend-authoritative current entitlement
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Current entitlement and currently granted capabilities
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EntitlementResponse"
+        "401":
+          description: Access token is invalid or expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /api/v1/me/billing/apple/configuration:
+    get:
+      summary: Return backend-owned App Store purchase configuration for the authenticated user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Apple billing configuration, including the stable App Account Token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppleBillingConfigurationResponse"
+        "401":
+          description: Access token is invalid or expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /api/v1/me/billing/apple/transactions:
+    post:
+      summary: Submit StoreKit 2 signed transaction evidence for backend verification
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            maxLength: 96
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApplePurchaseEvidenceRequest"
+      responses:
+        "200":
+          description: Verified purchase evidence persisted and entitlement recalculated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApplePurchaseEvidenceResponse"
+        "400":
+          description: Purchase evidence is missing, invalid, or not configured
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "401":
+          description: Access token is invalid or expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "409":
+          description: Idempotency key or Apple transaction ownership conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /api/v1/webhooks/apple/app-store:
+    post:
+      summary: Receive App Store Server Notifications V2 signedPayload events
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AppleAppStoreNotificationRequest"
+      responses:
+        "200":
+          description: Notification verified, persisted, and processed or safely deduplicated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppleNotificationIngestionResponse"
+        "400":
+          description: Notification signedPayload is missing or fails Apple signed-data verification
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
+    AppleSignInRequest:
+      type: object
+      required: [identityToken, nonce]
+      properties:
+        identityToken:
+          type: string
+        authorizationCode:
+          type: string
+        nonce:
+          type: string
+    RefreshSessionRequest:
+      type: object
+      required: [refreshToken]
+      properties:
+        refreshToken:
+          type: string
+    AuthSessionResponse:
+      type: object
+      required: [userId, sessionId, tokenType, accessToken, accessTokenExpiresAt, refreshToken, refreshTokenExpiresAt]
+      properties:
+        userId:
+          type: string
+          format: uuid
+        sessionId:
+          type: string
+          format: uuid
+        tokenType:
+          type: string
+          enum: [Bearer]
+        accessToken:
+          type: string
+        accessTokenExpiresAt:
+          type: string
+          format: date-time
+        refreshToken:
+          type: string
+        refreshTokenExpiresAt:
+          type: string
+          format: date-time
+    CurrentSessionResponse:
+      type: object
+      required: [userId, sessionId]
+      properties:
+        userId:
+          type: string
+          format: uuid
+        sessionId:
+          type: string
+          format: uuid
+    LogoutResponse:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [loggedOut]
+    AccountStatus:
+      type: string
+      enum: [ACTIVE, DISABLED, LOCKED, DELETION_REQUESTED, DELETION_IN_PROGRESS, DELETED]
+    AccountStateResponse:
+      type: object
+      required: [userId, status, createdAt]
+      properties:
+        userId:
+          type: string
+          format: uuid
+        status:
+          $ref: "#/components/schemas/AccountStatus"
+        createdAt:
+          type: string
+          format: date-time
+        deletionRequestedAt:
+          type: [string, "null"]
+          format: date-time
+        deletedAt:
+          type: [string, "null"]
+          format: date-time
+    DataExportResponse:
+      type: object
+      required: [exportId, status, schemaVersion, requestedAt, expiresAt]
+      properties:
+        exportId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [READY, EXPIRED, FAILED]
+        schemaVersion:
+          type: string
+        requestedAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: [string, "null"]
+          format: date-time
+        downloadedAt:
+          type: [string, "null"]
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+    DataExportContent:
+      type: object
+      required: [schemaVersion, generatedAt, account]
+      additionalProperties: true
+      properties:
+        schemaVersion:
+          type: string
+        generatedAt:
+          type: string
+          format: date-time
+        account:
+          type: object
+          additionalProperties: true
+        sessions:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        learningProfile:
+          type: object
+          additionalProperties: true
+        billing:
+          type: object
+          additionalProperties: true
+    DeletionRequestResponse:
+      type: object
+      required: [userId, status]
+      properties:
+        userId:
+          type: string
+          format: uuid
+        status:
+          $ref: "#/components/schemas/AccountStatus"
+        deletionRequestedAt:
+          type: [string, "null"]
+          format: date-time
+        deletedAt:
+          type: [string, "null"]
+          format: date-time
+    DeletionConfirmationRequest:
+      type: object
+      required: [confirmationText]
+      properties:
+        confirmationText:
+          type: string
+          enum: [DELETE]
+    UpdateLearningProfileRequest:
+      type: object
+      properties:
+        educationLevel:
+          type: [string, "null"]
+          enum: [MIDDLE_SCHOOL, HIGH_SCHOOL, UNIVERSITY, OTHER, null]
+        preferredLanguage:
+          type: [string, "null"]
+          enum: [en, tr, null]
+        explanationDepth:
+          type: [string, "null"]
+          enum: [BEGINNER, QUICK, STANDARD, DEEP, null]
+        dailyStudyMinutes:
+          type: [integer, "null"]
+          minimum: 5
+          maximum: 240
+        timezone:
+          type: [string, "null"]
+          maxLength: 64
+        goalContext:
+          type: [string, "null"]
+          maxLength: 160
+        completeOnboarding:
+          type: boolean
+        expectedVersion:
+          type: [integer, "null"]
+          format: int64
+    LearningProfileResponse:
+      type: object
+      required: [exists, userId, onboardingStatus]
+      properties:
+        exists:
+          type: boolean
+        id:
+          type: [string, "null"]
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        educationLevel:
+          type: [string, "null"]
+          enum: [MIDDLE_SCHOOL, HIGH_SCHOOL, UNIVERSITY, OTHER, null]
+        preferredLanguage:
+          type: [string, "null"]
+          enum: [en, tr, null]
+        explanationDepth:
+          type: [string, "null"]
+          enum: [BEGINNER, QUICK, STANDARD, DEEP, null]
+        dailyStudyMinutes:
+          type: [integer, "null"]
+          minimum: 5
+          maximum: 240
+        timezone:
+          type: [string, "null"]
+        goalContext:
+          type: [string, "null"]
+        onboardingStatus:
+          type: string
+          enum: [NOT_STARTED, IN_PROGRESS, COMPLETED]
+        version:
+          type: [integer, "null"]
+          format: int64
+        createdAt:
+          type: [string, "null"]
+          format: date-time
+        updatedAt:
+          type: [string, "null"]
+          format: date-time
+    EntitlementResponse:
+      type: object
+      required: [id, userId, tier, source, status, effectiveAt, capabilities]
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        tier:
+          type: string
+          enum: [FREE, PRO, PRO_PLUS]
+        source:
+          type: string
+          enum: [DEFAULT_FREE, APP_STORE_SUBSCRIPTION, PROMOTIONAL, ADMIN_SUPPORT]
+        status:
+          type: string
+          enum: [ACTIVE, GRACE_PERIOD, BILLING_RETRY, EXPIRED, REVOKED]
+        effectiveAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: [string, "null"]
+          format: date-time
+        capabilities:
+          type: array
+          items:
+            type: string
+            enum: [BASIC_SOLVE, VERIFIED_SOLVE, ADVANCED_TUTOR, MISTAKE_HISTORY, ADAPTIVE_PLAN, MOCK_EXAM, PREMIUM_MODEL_FALLBACK]
+        version:
+          type: [integer, "null"]
+          format: int64
+    AppleBillingConfigurationResponse:
+      type: object
+      required: [appAccountToken, purchaseAvailable, environment, products]
+      properties:
+        appAccountToken:
+          type: string
+          format: uuid
+        purchaseAvailable:
+          type: boolean
+        environment:
+          type: string
+          enum: [XCODE, LOCAL_TESTING, SANDBOX, PRODUCTION]
+        products:
+          type: array
+          items:
+            $ref: "#/components/schemas/AppleBillingProductResponse"
+    AppleBillingProductResponse:
+      type: object
+      required: [internalPlanId, appStoreProductId, entitlementTier]
+      properties:
+        internalPlanId:
+          type: string
+        appStoreProductId:
+          type: string
+        entitlementTier:
+          type: string
+          enum: [FREE, PRO, PRO_PLUS]
+        subscriptionGroupId:
+          type: [string, "null"]
+        billingPeriod:
+          type: [string, "null"]
+    ApplePurchaseEvidenceRequest:
+      type: object
+      required: [signedTransactionInfo]
+      properties:
+        signedTransactionInfo:
+          type: string
+        source:
+          type: [string, "null"]
+    ApplePurchaseEvidenceResponse:
+      type: object
+      required: [transactionId, originalTransactionId, subscriptionStatus, entitlement, duplicate]
+      properties:
+        transactionId:
+          type: string
+        originalTransactionId:
+          type: string
+        subscriptionStatus:
+          type: string
+          enum: [ACTIVE, GRACE_PERIOD, BILLING_RETRY, EXPIRED, REVOKED]
+        entitlement:
+          $ref: "#/components/schemas/EntitlementResponse"
+        duplicate:
+          type: boolean
+    AppleAppStoreNotificationRequest:
+      type: object
+      required: [signedPayload]
+      properties:
+        signedPayload:
+          type: string
+    AppleNotificationIngestionResponse:
+      type: object
+      required: [processingStatus]
+      properties:
+        notificationUuid:
+          type: [string, "null"]
+        processingStatus:
+          type: string
+          enum: [RECEIVED, PROCESSING, PROCESSED, FAILED_RETRYABLE, FAILED_TERMINAL]
+        subscriptionStatus:
+          type: [string, "null"]
+          enum: [ACTIVE, GRACE_PERIOD, BILLING_RETRY, EXPIRED, REVOKED, null]
+        entitlement:
+          anyOf:
+            - $ref: "#/components/schemas/EntitlementResponse"
+            - type: "null"
     PlatformHealthResponse:
       type: object
       required: [status, service, environment, correlationId, timestamp]
@@ -65,4 +812,3 @@ components:
         details:
           type: object
           additionalProperties: true
-

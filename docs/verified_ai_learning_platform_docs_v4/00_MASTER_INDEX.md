@@ -210,6 +210,18 @@ Documentation is part of the product and part of the implementation contract.
 - `sprints/phase02_repository_and_platform_foundation/PHASE_02_IMPLEMENTATION_MAP.md` — mapping from Phase 2 sprint requirements to implemented repository artifacts.
 - `sprints/phase02_repository_and_platform_foundation/PHASE_02_FINAL_REPOSITORY_TREE.md` — final Phase 2 repository tree excluding generated artifacts.
 - `sprints/phase02_repository_and_platform_foundation/PHASE_02_EXECUTION_REPORT.md` — Phase 2 validation evidence, decisions, known notes and Phase 3 readiness.
+- `sprints/phase03_identity_account_and_commerce_foundation/SPRINT_3.1_EXECUTION_REPORT.md` — Sprint 3.1 Sign in with Apple implementation evidence, decisions, validation status and external Apple sandbox note.
+- `sprints/phase03_identity_account_and_commerce_foundation/SPRINT_3.2_EXECUTION_REPORT.md` — Sprint 3.2 session, access token, refresh rotation and revocation implementation evidence.
+- `sprints/phase03_identity_account_and_commerce_foundation/SPRINT_3.3_3.4_IMPLEMENTATION_MAP.md` — Sprint 3.3 and Sprint 3.4 implementation mapping from source requirements to repository artifacts.
+- `sprints/phase03_identity_account_and_commerce_foundation/SPRINT_3.3_EXECUTION_REPORT.md` — Sprint 3.3 learner profile and production onboarding implementation evidence.
+- `sprints/phase03_identity_account_and_commerce_foundation/SPRINT_3.4_EXECUTION_REPORT.md` — Sprint 3.4 entitlement domain and server-authoritative access-policy implementation evidence.
+- `sprints/phase03_identity_account_and_commerce_foundation/APP_STORE_CONNECT_SETUP_CHECKLIST.md` — App Store Connect, product catalog, credential, certificate and webhook setup checklist for commerce validation.
+- `sprints/phase03_identity_account_and_commerce_foundation/SPRINT_3.5_EXECUTION_REPORT.md` — Sprint 3.5 StoreKit 2 product loading, purchase, restore, transaction listener and backend purchase-evidence implementation evidence.
+- `sprints/phase03_identity_account_and_commerce_foundation/SPRINT_3.6_EXECUTION_REPORT.md` — Sprint 3.6 App Store Server API, Server Notifications V2, subscription lifecycle and entitlement reconciliation implementation evidence.
+- `sprints/phase03_identity_account_and_commerce_foundation/SPRINT_3.7_3.8_IMPLEMENTATION_MAP.md` — Sprint 3.7/3.8 mapping from capability, requirement and debt IDs to implemented artifacts.
+- `sprints/phase03_identity_account_and_commerce_foundation/SPRINT_3.7_EXECUTION_REPORT.md` — Sprint 3.7 account privacy, data export and deletion implementation evidence.
+- `sprints/phase03_identity_account_and_commerce_foundation/SPRINT_3.8_EXECUTION_REPORT.md` — Sprint 3.8 authentication abuse, rate limit, audit and security-hardening implementation evidence.
+- `sprints/phase03_identity_account_and_commerce_foundation/PHASE_03_EXECUTION_REPORT.md` — Phase 3 completion evidence, local validation, open Apple validation debt and Phase 4 handoff.
 
 For implementation agents, sprint documents are execution plans. They never override domain invariants, accepted ADRs, security rules, or canonical API/data contracts.
 

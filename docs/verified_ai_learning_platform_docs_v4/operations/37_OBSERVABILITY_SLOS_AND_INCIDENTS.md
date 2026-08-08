@@ -37,6 +37,37 @@ Product:
 - tutor completion,
 - mastery/study session events.
 
+Sprint 3.3/3.4 foundation metrics:
+- `profile.load.success.total`
+- `profile.save.success.total`
+- `profile.save.failure.total`
+- `onboarding.completed.total`
+- `entitlement.resolution.total`
+- `entitlement.access.allowed.total`
+- `entitlement.access.denied.total`
+
+Sprint 3.5/3.6 billing metrics:
+- `billing.apple.configuration.requests.total`
+- `billing.apple.purchase.submissions.total`
+- `billing.apple.purchase.failures.total`
+- `billing.apple.notifications.received.total`
+- `billing.apple.notifications.duplicates.total`
+- `billing.apple.notifications.processed.total`
+- `billing.apple.notifications.failed.total`
+- `billing.apple.reconciliation.requests.total`
+- `billing.apple.reconciliation.failures.total`
+
+Sprint 3.7/3.8 privacy and abuse metrics:
+- `privacy.export.request.total`
+- `privacy.export.download.total`
+- `privacy.deletion.request.total`
+- `privacy.deletion.success.total`
+- `security.rate_limit.denied.total`
+- `security.rate_limit.degraded_open.total`
+- `security.request.rejected.total`
+
+Metric labels must remain low-cardinality and must not contain raw profile answers, user IDs, access tokens, or provider secrets.
+
 ## SLOs
 
 Define numeric SLOs from measured baseline for API availability, problem submission, solve completion and billing sync. AI correctness uses quality gates rather than availability SLO alone.
@@ -47,6 +78,12 @@ Actionable alerts:
 - elevated solve failures,
 - DB saturation,
 - billing backlog,
+- App Store notification verification failures,
+- App Store notification processing failures,
+- elevated purchase verification failures,
+- App Store Server API reconciliation failures,
+- elevated account deletion/export failures,
+- rate-limit denied spikes or Redis limiter degraded-open spikes,
 - provider outage without fallback,
 - verification quality anomaly,
 - unexpected AI cost spike.

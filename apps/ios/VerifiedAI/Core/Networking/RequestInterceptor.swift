@@ -13,5 +13,8 @@ struct RequestInterceptor {
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
     }
-}
 
+    func refreshAccessToken() async throws -> String? {
+        try await tokenProvider.refreshAccessToken()
+    }
+}

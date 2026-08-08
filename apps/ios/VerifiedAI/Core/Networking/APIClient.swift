@@ -26,6 +26,18 @@ final class APIClient {
     }
 
     func send<Response: Decodable>(_ request: HTTPRequest<Response>) async throws -> HTTPResponse<Response> {
+        do {
+            return try await sendOnce(request)
+        } catch NetworkError.server(let problem)
+            where problem.code == "AUTH_TOKEN_EXPIRED" && request.allowsAuthRefreshRetry {
+            guard try await interceptor.refreshAccessToken() != nil else {
+                throw NetworkError.server(problem: problem)
+            }
+            return try await sendOnce(request)
+        }
+    }
+
+    private func sendOnce<Response: Decodable>(_ request: HTTPRequest<Response>) async throws -> HTTPResponse<Response> {
         let urlRequest = try await makeURLRequest(from: request)
 
         do {
@@ -77,4 +89,3 @@ final class APIClient {
         return urlRequest
     }
 }
-

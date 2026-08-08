@@ -1,7 +1,7 @@
 import Foundation
 import Security
 
-final class KeychainStore: SecureStorage {
+final class KeychainStore: SecureStorage, @unchecked Sendable {
     private let service: String
 
     init(service: String) {
@@ -59,7 +59,7 @@ final class KeychainStore: SecureStorage {
     }
 }
 
-final class InMemorySecureStorage: SecureStorage {
+final class InMemorySecureStorage: SecureStorage, @unchecked Sendable {
     private var values: [String: String] = [:]
 
     func string(forKey key: String) throws -> String? {
@@ -74,4 +74,3 @@ final class InMemorySecureStorage: SecureStorage {
         values.removeValue(forKey: key)
     }
 }
-

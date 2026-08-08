@@ -85,13 +85,23 @@ Errors use a Problem Details-compatible shape with a stable product `code`:
 ## Endpoint map
 
 ### Auth
-- `POST /api/v1/auth/apple`
-- `POST /api/v1/auth/refresh`
-- `POST /api/v1/auth/logout`
+- `POST /api/v1/auth/apple` — permit all; exchanges a backend-verified Apple identity token plus raw nonce for a platform session.
+- `POST /api/v1/auth/refresh` — permit all; rotates a refresh token or revokes the session on reuse detection.
+- `GET /api/v1/auth/session` — authenticated; returns the current backend user/session identifiers from the access token.
+- `POST /api/v1/auth/logout` — authenticated; revokes the current backend session and active refresh tokens.
+
+### Account and privacy
+- `GET /api/v1/me/account` — authenticated; returns the current account state derived from the principal.
+- `POST /api/v1/me/data-exports` — authenticated; prepares a current-user export without token secrets or raw payment material.
+- `GET /api/v1/me/data-exports/{exportId}` — authenticated; returns export status scoped to current user.
+- `GET /api/v1/me/data-exports/{exportId}/content` — authenticated; downloads a ready, unexpired export document.
+- `POST /api/v1/me/deletion-request` — authenticated; marks the current account deletion-requested.
+- `GET /api/v1/me/deletion-request` — authenticated; returns deletion lifecycle state.
+- `POST /api/v1/me/deletion-request/confirm` — authenticated; requires confirmation text and executes deletion/revocation.
 
 ### Profile
-- `GET /api/v1/me`
-- `PATCH /api/v1/me/learning-profile`
+- `GET /api/v1/me/learning-profile` — authenticated; returns the current user's learning profile or `NOT_STARTED` when no durable profile row exists.
+- `PATCH /api/v1/me/learning-profile` — authenticated; validates and upserts the current user's learning profile with optimistic `expectedVersion` conflict handling.
 
 ### Uploads
 - `POST /api/v1/uploads/presign`
@@ -121,8 +131,10 @@ Errors use a Problem Details-compatible shape with a stable product `code`:
 - `POST /api/v1/study-sessions/{id}/complete`
 
 ### Billing
-- `GET /api/v1/me/entitlements`
-- `POST /api/v1/billing/apple/sync`
+- `GET /api/v1/me/entitlements` — authenticated; returns the backend-authoritative current entitlement tier/status/source and currently granted capability list.
+- `GET /api/v1/me/billing/apple/configuration` — authenticated; returns backend-owned StoreKit configuration and app account token.
+- `POST /api/v1/me/billing/apple/transactions` — authenticated; submits signed StoreKit transaction evidence for backend verification.
+- `POST /api/v1/webhooks/apple/app-store` — public Apple webhook endpoint for signed Server Notifications V2 payloads.
 
 ## Error contract
 
@@ -149,7 +161,15 @@ Require `Idempotency-Key` for retry-prone commands such as create problem, solve
 
 ## Concurrency
 
-User-editable parse revisions use explicit version/revision and optimistic conflict response.
+User-editable parse revisions and learning profile updates use explicit version/revision and optimistic conflict response.
+
+## Current Phase 3 DTOs
+
+`LearningProfileResponse` returns `exists`, `id`, `userId`, V1 profile fields, `onboardingStatus`, `version`, `createdAt`, and `updatedAt`. `NOT_STARTED` is represented by no durable row plus `exists=false`.
+
+`EntitlementResponse` returns `id`, `userId`, `tier`, `source`, `status`, `effectiveAt`, nullable `expiresAt`, `capabilities`, and `version`. Normal clients have no public entitlement mutation endpoint; unsupported public write attempts return a stable Problem Details 405.
+
+`AccountStateResponse`, `DataExportResponse`, and `DeletionRequestResponse` are current-user DTOs. They never accept `userId` as an input path/query/body parameter from mobile clients.
 
 ## DTO safety
 

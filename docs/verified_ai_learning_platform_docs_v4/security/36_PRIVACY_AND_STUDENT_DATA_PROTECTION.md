@@ -27,6 +27,8 @@
 
 - Raw student content must not enter generic analytics by default.
 - Logs must prefer stable IDs, skill codes, statuses, and trace IDs over raw problem text or images.
+- Learning profile fields such as education level, study minutes, timezone, and goal context are student personal data; do not log raw profile answers or use them as analytics/metric labels.
+- Entitlement tier/status/source are server-authoritative payment/access metadata; clients may cache them only as presentation state and cannot grant paid access.
 - Account deletion must reach identity, object assets, problem history, attempts, mastery, study plans, billing records, and AI operational metadata according to their retention class.
 - Provider contracts/settings must be checked for retention and training use before external AI processing is enabled.
 - User corrections may improve product quality but are not ground truth or training eligible without validation and eligibility governance.
@@ -51,6 +53,17 @@ Avoid raw question text, images and unrestricted tutor transcripts in third-part
 ## User rights
 
 Provide account deletion and appropriate history deletion. Data export can be phased but should be designed into ownership model.
+
+Sprint 3.7 implements authenticated account settings, data export, deletion request, and deletion confirmation for current Phase 3 data stores. The backend derives the user from the bearer principal and never accepts a client-supplied `userId` for privacy actions.
+
+Implemented guarantees:
+- data export includes current account, session summary, learner profile, entitlement, subscription, and transaction metadata;
+- data export excludes raw access/refresh tokens, token hashes, raw Apple signed transaction payloads, raw payment credentials, internal fraud signals, and unrestricted telemetry;
+- deletion-requested accounts cannot continue profile or billing actions;
+- confirmed deletion revokes sessions/refresh tokens, deletes profile data, removes the commerce account token, revokes entitlement, and keeps only minimized billing/security evidence;
+- iOS clears local keychain session material after confirmed deletion.
+
+Phase 4+ data-owning modules must implement the account lifecycle contributor before storing user assets, problem history, attempts, mastery, study plans, tutor transcripts, or AI operational metadata.
 
 ## Minors
 

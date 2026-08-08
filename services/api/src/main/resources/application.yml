@@ -12,6 +12,11 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration/platform
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: ${REDIS_TIMEOUT:500ms}
   jpa:
     open-in-view: false
     hibernate:
@@ -41,7 +46,30 @@ app:
   verifier:
     base-url: ${MATH_VERIFIER_BASE_URL:http://localhost:8090}
     internal-token: ${MATH_VERIFIER_INTERNAL_TOKEN:local_math_verifier_token_change_me}
+  billing:
+    apple:
+      enabled: ${APPLE_BILLING_ENABLED:false}
+      purchase-available: ${APPLE_PURCHASE_AVAILABLE:false}
+      environment: ${APPLE_BILLING_ENVIRONMENT:XCODE}
+      bundle-id: ${APPLE_BILLING_BUNDLE_ID:com.verifiedai.learning}
+      app-apple-id: ${APPLE_APP_APPLE_ID:0}
+      issuer-id: ${APP_STORE_CONNECT_ISSUER_ID:}
+      key-id: ${APP_STORE_CONNECT_KEY_ID:}
+      private-key-pem: ${APP_STORE_CONNECT_PRIVATE_KEY_PEM:}
+      root-certificate-pem: []
+      products: []
+  auth:
+    apple:
+      issuer: ${APPLE_IDENTITY_ISSUER:https://appleid.apple.com}
+      audience: ${APPLE_CLIENT_ID:com.verifiedai.learning}
+      jwk-set-uri: ${APPLE_JWK_SET_URI:https://appleid.apple.com/auth/keys}
+    access-token:
+      issuer: ${ACCESS_TOKEN_ISSUER:verified-ai-api}
+      ttl: ${ACCESS_TOKEN_TTL:PT15M}
+      private-key-pem: ${ACCESS_TOKEN_PRIVATE_KEY_PEM:}
+      public-key-pem: ${ACCESS_TOKEN_PUBLIC_KEY_PEM:}
+    refresh-token:
+      ttl: ${REFRESH_TOKEN_TTL:P30D}
 logging:
   level:
     root: ${LOG_LEVEL:INFO}
-

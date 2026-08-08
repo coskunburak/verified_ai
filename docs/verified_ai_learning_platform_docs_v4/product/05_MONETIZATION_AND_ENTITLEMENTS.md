@@ -60,6 +60,15 @@ Flow:
 4. Entitlement updates.
 5. `/me/entitlements` becomes authoritative client state.
 
+Sprint 3.5/3.6 implementation note:
+- iOS loads the product catalog from the backend before requesting StoreKit product metadata.
+- The backend supplies a stable `appAccountToken`; iOS passes it into StoreKit purchases.
+- iOS submits only StoreKit verified transaction JWS evidence to the backend.
+- The backend verifies Apple-signed JWS, maps only backend-configured App Store product IDs to internal tiers, enforces `appAccountToken` and transaction ownership, and then updates the entitlement row.
+- Server Notifications V2 and App Store Server API reconciliation may grant, preserve, downgrade, expire, or revoke App Store-sourced access through the same entitlement policy.
+
+Client-provided product IDs, local purchase button state, and cached paywall state are never entitlement authority.
+
 ## Usage limits
 
 Limits are server policy:
@@ -79,9 +88,17 @@ Internal resource units may reflect AI cost while UI remains simple. Avoid expos
 
 Restore must query StoreKit, sync server state and remain idempotent.
 
+Sprint 3.5 restore behavior calls `AppStore.sync()`, reads current and unfinished StoreKit transactions, submits verified transaction JWS evidence to the backend with deterministic idempotency keys, and finishes transactions only after backend acknowledgement.
+
 ## Analytics
 
 Track paywall view, purchase start/completion/failure, restore, trial, renewal, grace period and expiration without leaking unnecessary billing PII.
+
+## Billing evidence retention
+
+Billing persistence stores decoded commercial fields, ownership keys, lifecycle state, JWS SHA-256 digests, notification IDs and processing results. It must not store raw signed transaction payloads, App Store private keys, full provider secrets, or high-cardinality user/payment identifiers in logs or metric labels.
+
+Account deletion removes the commerce account token and revokes the local entitlement, but retains minimized billing event, subscription, and transaction references needed for refund, fraud, legal, and audit obligations. Retained billing records must not contain raw payment credentials or raw signed transaction payloads.
 
 <!-- HYBRID_AI_STRATEGY_V3:START -->
 ## AI COGS and entitlement policy

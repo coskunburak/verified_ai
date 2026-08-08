@@ -74,6 +74,7 @@ apps/ios/
 │   │   ├── Learning/
 │   │   └── Billing/
 │   ├── Features/
+│   │   ├── Account/
 │   │   ├── Authentication/
 │   │   ├── Onboarding/
 │   │   ├── Home/
@@ -88,8 +89,7 @@ apps/ios/
 │   │   ├── StudyPlan/
 │   │   ├── Exam/
 │   │   ├── Library/
-│   │   ├── Subscription/
-│   │   └── Settings/
+│   │   └── Subscription/
 │   └── Resources/
 │       ├── Assets.xcassets
 │       ├── Localizable.xcstrings
@@ -125,6 +125,8 @@ ProblemCapture/
 
 `AppDependencies` composes APIClient, repositories, secure storage, analytics, purchases and feature services. Views never reach into a global service locator.
 
+Current Phase 3 composition includes `AuthenticationAPI`, `AccountPrivacyAPI`, `LearningProfileAPI`, `EntitlementAPI`, `AuthenticationSessionStore`, and `EntitlementDisplayCache`. `RootView` owns the authenticated bootstrap order: restore session, load learning profile, route incomplete users through onboarding, then load entitlement before rendering the authenticated home shell. Account settings are presented from authenticated home and clear local session state after confirmed backend deletion.
+
 ## Navigation
 
 Use typed app-level routes for major flows. Feature-local navigation remains inside the feature. Deep links pass through auth/authorization checks.
@@ -132,6 +134,12 @@ Use typed app-level routes for major flows. Feature-local navigation remains ins
 ## State design
 
 Prefer explicit state enums over unrelated booleans.
+
+Sprint 3.3/3.4 implemented examples:
+- `OnboardingState` separates idle/loading/needs-onboarding/saving/ready/offline/failed.
+- `EntitlementState` separates idle/loading/ready/offline-cached/failed.
+- `AccountSettingsState` separates idle/loading/exporting/deletion-requested/confirming-deletion/deleted/offline/failed.
+- `CapabilityGate` consumes an `Entitlement` projection for presentation only; backend capability checks remain authoritative.
 
 Example:
 ```swift

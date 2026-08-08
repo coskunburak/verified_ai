@@ -1,6 +1,6 @@
 import Foundation
 
-protocol SecureStorage: AuthTokenProvider {
+protocol SecureStorage: AuthTokenProvider, Sendable {
     func string(forKey key: String) throws -> String?
     func setString(_ value: String, forKey key: String) throws
     func removeValue(forKey key: String) throws
@@ -16,4 +16,3 @@ enum SecureStorageError: Error, Equatable {
     case invalidData
     case operationFailed(String)
 }
-

@@ -33,24 +33,78 @@ Unique(provider, provider_subject)
 ### refresh_tokens
 - id
 - user_id
+- session_id
 - token_hash
 - family_id
+- created_at
+- expires_at
+- used_at
+- revoked_at
+- replaced_by_id
+
+### sessions
+- id
+- user_id
+- status
+- created_at
+- last_seen_at
 - expires_at
 - revoked_at
-- replaced_by
+- revocation_reason
+
+### auth_security_events
+- id
+- event_type
+- user_id nullable
+- session_id nullable
+- reason
 - created_at
+
+Refresh tokens store only a hash of the opaque high-entropy token. A presented used token revokes the current session and active refresh-token family members as possible theft evidence.
+
+Sprint 3.7 extends `users.status` with `DELETION_REQUESTED`, `DELETION_IN_PROGRESS`, and `DELETED`. Runtime authorization permits a deletion-requested account to complete only account/deletion/logout flows; learning, profile, and billing actions require `ACTIVE`.
+
+### data_exports
+- id PK
+- user_id FK nullable on account tombstone cleanup
+- status `READY` / `EXPIRED` / `FAILED`
+- schema_version
+- content_json JSONB
+- requested_at
+- completed_at
+- downloaded_at nullable
+- expires_at
+
+`data_exports` contains the generated user export document for a short download window. It excludes raw auth tokens, token hashes, internal fraud signals, and raw payment credentials/JWS payloads.
+
+### privacy_events
+- id PK
+- user_id FK nullable on account tombstone cleanup
+- event_type
+- reason
+- created_at
+
+`privacy_events` records export requested/downloaded and account deletion lifecycle events. It is audit evidence, not a debug log.
 
 ## Profile
 
 ### learning_profiles
-- user_id PK/FK
+- id PK
+- user_id FK, unique
 - education_level
 - preferred_language
 - explanation_depth
 - daily_study_minutes
 - timezone
+- goal_context
+- onboarding_status
 - created_at
 - updated_at
+- version
+
+`learning_profiles` is one row per authenticated `users` row. `NOT_STARTED` is represented by absence of a row; persisted rows are `IN_PROGRESS` or `COMPLETED`.
+
+Account deletion deletes the profile row. Export includes profile fields before deletion through the account lifecycle contributor.
 
 ## Curriculum
 
@@ -268,14 +322,85 @@ PK(user_id, skill_id)
 
 ### entitlements
 - id
-- user_id
+- user_id FK, unique
 - tier
 - status
 - source
 - effective_at
 - expires_at
 - original_transaction_id
+- environment
 - last_verified_at
+- created_at
+- updated_at
+- version
+
+Default users receive `FREE` / `DEFAULT_FREE` / `ACTIVE`. Sprint 3.5/3.6 App Store-sourced entitlements carry the Apple original transaction ID, App Store environment and last backend verification timestamp. Entitlement transitions remain server-authoritative.
+
+### commerce_account_tokens
+- id
+- user_id FK, unique
+- app_account_token unique
+- created_at
+
+Stable per-user UUID tokens are supplied to StoreKit as `appAccountToken` and later used to bind Apple commercial evidence back to the owning account.
+
+### app_store_transactions
+- id
+- user_id FK
+- transaction_id unique
+- original_transaction_id
+- web_order_line_item_id nullable
+- product_id
+- app_account_token
+- environment
+- transaction_jws_sha256
+- purchase_date
+- expires_date nullable
+- revocation_date nullable
+- ownership_type nullable
+- signed_date nullable
+- status
+- created_at
+- updated_at
+
+The table stores decoded Apple transaction evidence and a payload digest, not raw signed transaction JWS.
+
+### app_store_subscriptions
+- id
+- user_id FK
+- original_transaction_id unique
+- product_id
+- environment
+- status
+- app_store_status nullable
+- auto_renew_product_id nullable
+- current_transaction_id nullable
+- expires_date nullable
+- grace_period_expires_date nullable
+- revocation_date nullable
+- renewal_info_jws_sha256 nullable
+- last_notification_id nullable
+- last_verified_at
+- created_at
+- updated_at
+
+This table is the billing lifecycle projection consumed by entitlement recalculation.
+
+### app_store_notifications
+- id
+- notification_uuid unique
+- notification_type
+- subtype nullable
+- environment
+- original_transaction_id nullable
+- signed_payload_sha256
+- processing_status
+- received_at
+- processed_at nullable
+- failure_reason nullable
+
+Notifications are an inbox for App Store Server Notifications V2 delivery, dedupe and terminal processing state.
 
 ### billing_events
 - id
@@ -327,18 +452,15 @@ Indexes on time, user+time, operation+time.
 
 ## Migration order
 
-V001 identity
-V002 profile
-V003 curriculum
-V004 problem
-V005 solving
-V006 verification
-V007 attempts_mistakes
-V008 mastery
-V009 studyplan
-V010 exam
-V011 billing
-V012 ai_usage_audit
+Current implemented platform migrations:
+
+- V001 platform foundation marker
+- V002 identity/auth/session tables
+- V003 learning profiles
+- V004 entitlements
+- V005 App Store billing tables and entitlement App Store fields
+
+Planned later-domain migrations continue with curriculum, problem, solving, verification, attempts/mistakes, mastery, study plan, exam, billing event ingestion, and AI usage/audit tables in their owning sprint order.
 
 <!-- HYBRID_AI_STRATEGY_V3:START -->
 ## AI economics and future ML-governance records

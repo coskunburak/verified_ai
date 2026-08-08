@@ -5,5 +5,8 @@ enum HTTPMethod: String, Equatable {
     case post = "POST"
     case patch = "PATCH"
     case delete = "DELETE"
-}
 
+    var allowsAutomaticAuthRefreshRetry: Bool {
+        self == .get
+    }
+}
