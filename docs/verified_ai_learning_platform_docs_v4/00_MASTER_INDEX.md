@@ -222,6 +222,8 @@ Documentation is part of the product and part of the implementation contract.
 - `sprints/phase03_identity_account_and_commerce_foundation/SPRINT_3.7_EXECUTION_REPORT.md` — Sprint 3.7 account privacy, data export and deletion implementation evidence.
 - `sprints/phase03_identity_account_and_commerce_foundation/SPRINT_3.8_EXECUTION_REPORT.md` — Sprint 3.8 authentication abuse, rate limit, audit and security-hardening implementation evidence.
 - `sprints/phase03_identity_account_and_commerce_foundation/PHASE_03_EXECUTION_REPORT.md` — Phase 3 completion evidence, local validation, open Apple validation debt and Phase 4 handoff.
+- `sprints/phase04_problem_capture_and_canonicalization/SPRINT_4.1_IMPLEMENTATION_MAP.md` — Sprint 4.1 local capture/import source mapping, scope boundaries and implementation plan.
+- `sprints/phase04_problem_capture_and_canonicalization/SPRINT_4.1_EXECUTION_REPORT.md` — Sprint 4.1 premium camera capture/import implementation evidence, validation status and real-device debt.
 
 For implementation agents, sprint documents are execution plans. They never override domain invariants, accepted ADRs, security rules, or canonical API/data contracts.
 

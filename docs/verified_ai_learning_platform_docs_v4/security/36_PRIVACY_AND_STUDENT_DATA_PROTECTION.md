@@ -37,6 +37,13 @@
 
 Images can contain handwriting, names, school identifiers and unrelated background. Crop/preprocess to minimize irrelevant capture.
 
+Sprint 4.1 local capture privacy:
+- camera/photo/file/PDF inputs remain local iOS temporary `CapturedAsset` files until a future upload step explicitly registers backend asset metadata;
+- imported images are decoded, orientation-normalized, and re-encoded as sanitized JPEG previews/assets to avoid preserving unnecessary source metadata;
+- PDFs are copied locally and represented by a first-page preview for review;
+- capture logs use event names and outcome states only, with no raw image/PDF bytes, OCR text, filenames, local paths, or problem text;
+- cancelling, retaking, replacing, or background cleanup deletes temporary local assets when they are no longer needed.
+
 ## External AI processing
 
 Provider settings/contracts must be reviewed for retention, training use and regional processing. Never promise a privacy property that is not technically/contractually enforced.

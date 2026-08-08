@@ -10,8 +10,10 @@ struct RootView: View {
     @State private var accountSettingsViewModel: AccountSettingsViewModel
     @State private var entitlementViewModel: EntitlementViewModel
     @State private var paywallViewModel: PaywallViewModel
+    @State private var problemCaptureViewModel: ProblemCaptureViewModel
     @State private var isPaywallPresented = false
     @State private var isAccountSettingsPresented = false
+    @State private var isProblemCapturePresented = false
 
     init(environment: AppEnvironment, dependencies: AppDependencies) {
         self.environment = environment
@@ -44,6 +46,12 @@ struct RootView: View {
             storeRepository: dependencies.storeProductRepository,
             entitlementAPI: dependencies.entitlementAPI,
             networkMonitor: dependencies.networkMonitor,
+            logger: dependencies.logger
+        ))
+        _problemCaptureViewModel = State(initialValue: ProblemCaptureViewModel(
+            cameraClient: dependencies.problemCameraClient,
+            assetStore: dependencies.capturedAssetStore,
+            qualityAnalyzer: dependencies.captureQualityAnalyzer,
             logger: dependencies.logger
         ))
     }
@@ -133,6 +141,13 @@ struct RootView: View {
                 entitlement: entitlementViewModel.entitlement,
                 entitlementMessage: entitlementViewModel.message,
                 retry: { launchState = .ready },
+                startProblemCapture: {
+                    Task {
+                        await problemCaptureViewModel.cancel()
+                        problemCaptureViewModel.open()
+                        isProblemCapturePresented = true
+                    }
+                },
                 manageSubscription: { isPaywallPresented = true },
                 manageAccount: { isAccountSettingsPresented = true }
             )
@@ -141,6 +156,20 @@ struct RootView: View {
                 Task { await entitlementViewModel.bootstrap(force: true) }
             }) {
                 PaywallView(viewModel: paywallViewModel)
+            }
+            .fullScreenCover(isPresented: $isProblemCapturePresented, onDismiss: {
+                Task {
+                    if case .readyForHandoff = problemCaptureViewModel.state {
+                        return
+                    }
+                    await problemCaptureViewModel.cancel()
+                }
+            }) {
+                ProblemCaptureView(
+                    viewModel: problemCaptureViewModel,
+                    cameraClient: dependencies.problemCameraClient,
+                    onDismiss: { isProblemCapturePresented = false }
+                )
             }
         case .loading, .idle:
             ProgressView()
@@ -171,6 +200,7 @@ struct RootView: View {
         accountSettingsViewModel.reset()
         entitlementViewModel.reset()
         paywallViewModel.reset()
+        Task { await problemCaptureViewModel.cancel() }
     }
 
     private func handleAccountDeleted() {

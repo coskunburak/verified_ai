@@ -64,6 +64,14 @@ Math rendering choice must be benchmarked for performance, accessibility and not
 - multi-question selection,
 - crop before upload.
 
+Sprint 4.1 implementation status:
+- implemented source selection for camera, Photos picker, and Files/PDF import;
+- implemented camera permission/recovery states, AVFoundation preview, framing guide, shutter, retake, replace, and local accept handoff;
+- implemented client-side blur/glare/framing warnings and manual crop metadata before upload;
+- implemented PDF first-page preview for local review;
+- deferred automatic edge detection, perspective correction, multi-question splitting, and backend upload to later Phase 4 sprints;
+- real-device camera/focus/picker validation is tracked as `TD-CAPTURE-001`.
+
 ## Tutor UX
 
 Tutor is goal-directed, not merely a chat transcript. One useful question at a time, visible hint ladder and progress.

@@ -33,6 +33,26 @@ final class EntitlementViewModel {
             return
         }
 
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("--ui-testing-authenticated") {
+            let current = Entitlement(
+                id: UUID(uuidString: "00000000-0000-0000-0000-0000000000C1")!,
+                userId: UUID(uuidString: "00000000-0000-0000-0000-0000000000A1")!,
+                tier: .pro,
+                source: .promotional,
+                status: .active,
+                effectiveAt: Date(),
+                expiresAt: nil,
+                capabilities: [.basicSolve, .verifiedSolve, .advancedTutor, .mistakeHistory, .adaptivePlan],
+                version: 1
+            )
+            entitlement = current
+            state = .ready(current)
+            message = nil
+            return
+        }
+        #endif
+
         guard networkMonitor.isReachable else {
             await loadCachedOfflineState()
             return

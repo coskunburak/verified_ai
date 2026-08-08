@@ -28,6 +28,20 @@ final class SignInViewModel {
     }
 
     func restore() async {
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("--ui-testing-authenticated") {
+            state = .authenticated(AuthSession(
+                userId: UUID(uuidString: "00000000-0000-0000-0000-0000000000A1")!,
+                sessionId: UUID(uuidString: "00000000-0000-0000-0000-0000000000A2")!,
+                accessToken: "ui-testing-access-token",
+                accessTokenExpiresAt: Date().addingTimeInterval(3_600),
+                refreshToken: "ui-testing-refresh-token",
+                refreshTokenExpiresAt: Date().addingTimeInterval(86_400)
+            ))
+            return
+        }
+        #endif
+
         do {
             if let session = try await sessionStore.loadSession() {
                 state = session.refreshTokenExpiresAt > Date() ? .authenticated(session) : .expired

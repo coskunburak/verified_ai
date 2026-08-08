@@ -13,6 +13,9 @@ struct AppDependencies {
     let storeProductRepository: StoreProductRepository
     let storeKitTransactionObserver: StoreKitTransactionObserver
     let entitlementDisplayCache: EntitlementDisplayCache
+    let problemCameraClient: AVFoundationProblemCameraClient
+    let capturedAssetStore: CapturedAssetStoring
+    let captureQualityAnalyzer: CaptureQualityAnalyzing
     let logger: AppLogger
     let networkMonitor: NetworkMonitoring
     let router: AppRouter
@@ -43,6 +46,9 @@ struct AppDependencies {
             logger: logger
         )
         let entitlementDisplayCache = EntitlementDisplayCache(secureStorage: secureStorage)
+        let problemCameraClient = AVFoundationProblemCameraClient(logger: logger)
+        let capturedAssetStore = DefaultCapturedAssetStore()
+        let captureQualityAnalyzer = DefaultCaptureQualityAnalyzer()
         Task {
             await authenticationSessionStore.setRefreshHandler { refreshToken in
                 try await authenticationAPI.refresh(refreshToken: refreshToken)
@@ -63,6 +69,9 @@ struct AppDependencies {
             storeProductRepository: storeProductRepository,
             storeKitTransactionObserver: storeKitTransactionObserver,
             entitlementDisplayCache: entitlementDisplayCache,
+            problemCameraClient: problemCameraClient,
+            capturedAssetStore: capturedAssetStore,
+            captureQualityAnalyzer: captureQualityAnalyzer,
             logger: logger,
             networkMonitor: networkMonitor,
             router: router,

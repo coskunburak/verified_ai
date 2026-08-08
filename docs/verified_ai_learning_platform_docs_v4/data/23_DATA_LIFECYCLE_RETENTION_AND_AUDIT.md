@@ -28,6 +28,8 @@ Keep only as long as product value, user expectation, security or legal need req
 ### TEMPORARY_RAW
 Original uploaded image/PDF. Example configurable default: 30 days unless explicitly saved.
 
+Sprint 4.1 introduces a stricter pre-upload iOS temporary class for local capture/import review. `CapturedAsset` files live under the app temporary directory, default to a 24-hour cleanup window, and are deleted on cancel/retake/replace when no longer referenced. They are not PostgreSQL rows, object-storage objects, backend `ProblemAsset` records, or `ProblemSession` history.
+
 ### USER_LIBRARY
 User-saved assets retained until explicit deletion/account lifecycle.
 

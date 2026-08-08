@@ -24,6 +24,28 @@ final class OnboardingViewModel {
     }
 
     func bootstrap() async {
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("--ui-testing-authenticated") {
+            state = .ready(LearningProfile(
+                exists: true,
+                id: UUID(uuidString: "00000000-0000-0000-0000-0000000000B1")!,
+                userId: UUID(uuidString: "00000000-0000-0000-0000-0000000000A1")!,
+                educationLevel: .highSchool,
+                preferredLanguage: "en",
+                explanationDepth: .standard,
+                dailyStudyMinutes: 25,
+                timezone: TimeZone.current.identifier,
+                goalContext: "UI testing",
+                onboardingStatus: .completed,
+                version: 1,
+                createdAt: Date(),
+                updatedAt: Date()
+            ))
+            message = nil
+            return
+        }
+        #endif
+
         guard networkMonitor.isReachable else {
             logger.warning("onboarding.bootstrap.offline")
             state = .offline

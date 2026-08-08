@@ -105,27 +105,24 @@ Example `ProblemCapture`:
 ```text
 ProblemCapture/
 ├── Domain/
-│   ├── CaptureSource.swift
-│   ├── CapturedProblem.swift
-│   ├── ProblemCaptureRepository.swift
-│   └── SubmitProblemUseCase.swift
+│   ├── ProblemCaptureModels.swift
+│   └── ProblemCapturePorts.swift
 ├── Data/
-│   ├── DTO/
-│   ├── Mapper/
-│   └── DefaultProblemCaptureRepository.swift
+│   ├── AVFoundationProblemCameraClient.swift
+│   ├── CapturedAssetStore.swift
+│   └── CaptureQualityAnalyzer.swift
 ├── Presentation/
 │   ├── ProblemCaptureView.swift
-│   ├── ProblemCaptureViewModel.swift
-│   ├── CameraPreview.swift
-│   └── Components/
-└── PreviewSupport/
+│   └── ProblemCaptureViewModel.swift
 ```
+
+Sprint 4.1 implements the local pre-upload subset of `ProblemCapture`. `CapturedAsset` is an iOS temporary artifact with source, file URL, preview bytes, dimensions, crop metadata, and local quality assessment. It is not a backend `ProblemAsset`, not a canonical `Problem`, and not a `ProblemSession`.
 
 ## Dependency injection
 
 `AppDependencies` composes APIClient, repositories, secure storage, analytics, purchases and feature services. Views never reach into a global service locator.
 
-Current Phase 3 composition includes `AuthenticationAPI`, `AccountPrivacyAPI`, `LearningProfileAPI`, `EntitlementAPI`, `AuthenticationSessionStore`, and `EntitlementDisplayCache`. `RootView` owns the authenticated bootstrap order: restore session, load learning profile, route incomplete users through onboarding, then load entitlement before rendering the authenticated home shell. Account settings are presented from authenticated home and clear local session state after confirmed backend deletion.
+Current Phase 4.1 composition includes `AuthenticationAPI`, `AccountPrivacyAPI`, `LearningProfileAPI`, `EntitlementAPI`, `AuthenticationSessionStore`, `EntitlementDisplayCache`, `AVFoundationProblemCameraClient`, `DefaultCapturedAssetStore`, and `DefaultCaptureQualityAnalyzer`. `RootView` owns the authenticated bootstrap order: restore session, load learning profile, route incomplete users through onboarding, then load entitlement before rendering the authenticated home shell. Account settings and problem capture are presented from authenticated home. Account settings clear local session state after confirmed backend deletion; problem capture stops at a local accepted-asset handoff until Sprint 4.2 upload work exists.
 
 ## Navigation
 
@@ -138,6 +135,8 @@ Prefer explicit state enums over unrelated booleans.
 Sprint 3.3/3.4 implemented examples:
 - `OnboardingState` separates idle/loading/needs-onboarding/saving/ready/offline/failed.
 - `EntitlementState` separates idle/loading/ready/offline-cached/failed.
+
+Sprint 4.1 implemented `ProblemCaptureState` for idle/source selection/camera permission/camera ready/capturing/importing/processing/reviewing/editing crop/accepted/recoverable failure/terminal failure.
 - `AccountSettingsState` separates idle/loading/exporting/deletion-requested/confirming-deletion/deleted/offline/failed.
 - `CapabilityGate` consumes an `Entitlement` projection for presentation only; backend capability checks remain authoritative.
 

@@ -6,6 +6,7 @@ struct HomePlaceholderView: View {
     let entitlement: Entitlement?
     let entitlementMessage: String?
     let retry: () -> Void
+    let startProblemCapture: () -> Void
     let manageSubscription: () -> Void
     let manageAccount: () -> Void
 
@@ -37,6 +38,15 @@ struct HomePlaceholderView: View {
                     }
                 }
             }
+
+            Button {
+                startProblemCapture()
+            } label: {
+                Label("Scan a Problem", systemImage: "camera.viewfinder")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+            .accessibilityIdentifier("home.scanProblem")
 
             if let entitlement {
                 VStack(alignment: .leading, spacing: SpacingTokens.sm) {
@@ -88,6 +98,7 @@ struct HomePlaceholderView: View {
         entitlement: nil,
         entitlementMessage: nil,
         retry: {},
+        startProblemCapture: {},
         manageSubscription: {},
         manageAccount: {}
     )

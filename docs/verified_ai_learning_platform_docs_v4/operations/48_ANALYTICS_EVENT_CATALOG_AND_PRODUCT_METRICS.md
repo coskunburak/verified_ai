@@ -12,10 +12,15 @@ Never send raw problem text/image to general analytics.
 - onboarding_completed
 - sign_in_completed
 - problem_capture_started
+- problem_capture_source_selected
+- problem_capture_quality_warning
+- problem_capture_accepted
 - problem_asset_uploaded
 - problem_parse_completed
 - first_solution_completed
 - first_verified_solution_viewed
+
+Sprint 4.1 local capture instrumentation uses privacy-safe client log names for opened/source-selected/camera-ready/capture/import/quality-warning/accepted/failure states. These records must not include raw problem images, OCR text, PDF bytes, filenames, local paths, or user-authored content. Product analytics promotion remains a later analytics-client task; the same minimization rule applies when events are promoted.
 
 ## Solving events
 

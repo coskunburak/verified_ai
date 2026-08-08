@@ -73,6 +73,17 @@
 		100000000000000000000040 /* AccountSettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000048 /* AccountSettingsViewModel.swift */; };
 		100000000000000000000041 /* AccountSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000049 /* AccountSettingsView.swift */; };
 		100000000000000000000042 /* AccountSettingsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000004A /* AccountSettingsViewModelTests.swift */; };
+		100000000000000000000043 /* ProblemCaptureModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000004B /* ProblemCaptureModels.swift */; };
+		100000000000000000000044 /* ProblemCapturePorts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000004C /* ProblemCapturePorts.swift */; };
+		100000000000000000000045 /* CapturedAssetStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000004D /* CapturedAssetStore.swift */; };
+		100000000000000000000046 /* CaptureQualityAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000004E /* CaptureQualityAnalyzer.swift */; };
+		100000000000000000000047 /* AVFoundationProblemCameraClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000004F /* AVFoundationProblemCameraClient.swift */; };
+		100000000000000000000048 /* ProblemCaptureViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000050 /* ProblemCaptureViewModel.swift */; };
+		100000000000000000000049 /* ProblemCaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000051 /* ProblemCaptureView.swift */; };
+		10000000000000000000004A /* ProblemCaptureViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000052 /* ProblemCaptureViewModelTests.swift */; };
+		10000000000000000000004B /* CaptureQualityAnalyzerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000053 /* CaptureQualityAnalyzerTests.swift */; };
+		10000000000000000000004C /* CropSelectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000054 /* CropSelectionTests.swift */; };
+		10000000000000000000004D /* CapturedAssetStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000055 /* CapturedAssetStoreTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -167,6 +178,17 @@
 		200000000000000000000048 /* AccountSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Account/Presentation/AccountSettingsViewModel.swift; sourceTree = "<group>"; };
 		200000000000000000000049 /* AccountSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Account/Presentation/AccountSettingsView.swift; sourceTree = "<group>"; };
 		20000000000000000000004A /* AccountSettingsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Account/AccountSettingsViewModelTests.swift; sourceTree = "<group>"; };
+		20000000000000000000004B /* ProblemCaptureModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/ProblemCapture/Domain/ProblemCaptureModels.swift; sourceTree = "<group>"; };
+		20000000000000000000004C /* ProblemCapturePorts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/ProblemCapture/Domain/ProblemCapturePorts.swift; sourceTree = "<group>"; };
+		20000000000000000000004D /* CapturedAssetStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/ProblemCapture/Data/CapturedAssetStore.swift; sourceTree = "<group>"; };
+		20000000000000000000004E /* CaptureQualityAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/ProblemCapture/Data/CaptureQualityAnalyzer.swift; sourceTree = "<group>"; };
+		20000000000000000000004F /* AVFoundationProblemCameraClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/ProblemCapture/Data/AVFoundationProblemCameraClient.swift; sourceTree = "<group>"; };
+		200000000000000000000050 /* ProblemCaptureViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/ProblemCapture/Presentation/ProblemCaptureViewModel.swift; sourceTree = "<group>"; };
+		200000000000000000000051 /* ProblemCaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/ProblemCapture/Presentation/ProblemCaptureView.swift; sourceTree = "<group>"; };
+		200000000000000000000052 /* ProblemCaptureViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/ProblemCapture/ProblemCaptureViewModelTests.swift; sourceTree = "<group>"; };
+		200000000000000000000053 /* CaptureQualityAnalyzerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/ProblemCapture/CaptureQualityAnalyzerTests.swift; sourceTree = "<group>"; };
+		200000000000000000000054 /* CropSelectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/ProblemCapture/CropSelectionTests.swift; sourceTree = "<group>"; };
+		200000000000000000000055 /* CapturedAssetStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/ProblemCapture/CapturedAssetStoreTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -264,6 +286,13 @@
 				200000000000000000000047 /* AccountPrivacyAPI.swift */,
 				200000000000000000000048 /* AccountSettingsViewModel.swift */,
 				200000000000000000000049 /* AccountSettingsView.swift */,
+				20000000000000000000004B /* ProblemCaptureModels.swift */,
+				20000000000000000000004C /* ProblemCapturePorts.swift */,
+				20000000000000000000004D /* CapturedAssetStore.swift */,
+				20000000000000000000004E /* CaptureQualityAnalyzer.swift */,
+				20000000000000000000004F /* AVFoundationProblemCameraClient.swift */,
+				200000000000000000000050 /* ProblemCaptureViewModel.swift */,
+				200000000000000000000051 /* ProblemCaptureView.swift */,
 				20000000000000000000001E /* Localizable.xcstrings */,
 				20000000000000000000001F /* PrivacyInfo.xcprivacy */,
 				200000000000000000000020 /* Assets.xcassets */,
@@ -284,6 +313,10 @@
 				20000000000000000000003E /* EntitlementViewModelTests.swift */,
 				200000000000000000000045 /* PaywallViewModelTests.swift */,
 				20000000000000000000004A /* AccountSettingsViewModelTests.swift */,
+				200000000000000000000052 /* ProblemCaptureViewModelTests.swift */,
+				200000000000000000000053 /* CaptureQualityAnalyzerTests.swift */,
+				200000000000000000000054 /* CropSelectionTests.swift */,
+				200000000000000000000055 /* CapturedAssetStoreTests.swift */,
 			);
 			name = VerifiedAITests;
 			sourceTree = "<group>";
@@ -464,6 +497,13 @@
 				10000000000000000000003F /* AccountPrivacyAPI.swift in Sources */,
 				100000000000000000000040 /* AccountSettingsViewModel.swift in Sources */,
 				100000000000000000000041 /* AccountSettingsView.swift in Sources */,
+				100000000000000000000043 /* ProblemCaptureModels.swift in Sources */,
+				100000000000000000000044 /* ProblemCapturePorts.swift in Sources */,
+				100000000000000000000045 /* CapturedAssetStore.swift in Sources */,
+				100000000000000000000046 /* CaptureQualityAnalyzer.swift in Sources */,
+				100000000000000000000047 /* AVFoundationProblemCameraClient.swift in Sources */,
+				100000000000000000000048 /* ProblemCaptureViewModel.swift in Sources */,
+				100000000000000000000049 /* ProblemCaptureView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -480,6 +520,10 @@
 				100000000000000000000036 /* EntitlementViewModelTests.swift in Sources */,
 				10000000000000000000003D /* PaywallViewModelTests.swift in Sources */,
 				100000000000000000000042 /* AccountSettingsViewModelTests.swift in Sources */,
+				10000000000000000000004A /* ProblemCaptureViewModelTests.swift in Sources */,
+				10000000000000000000004B /* CaptureQualityAnalyzerTests.swift in Sources */,
+				10000000000000000000004C /* CropSelectionTests.swift in Sources */,
+				10000000000000000000004D /* CapturedAssetStoreTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -622,6 +666,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Verified AI";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Verified AI uses the camera to capture a math problem you choose so you can review it before the next step.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -645,6 +690,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Verified AI";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Verified AI uses the camera to capture a math problem you choose so you can review it before the next step.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
