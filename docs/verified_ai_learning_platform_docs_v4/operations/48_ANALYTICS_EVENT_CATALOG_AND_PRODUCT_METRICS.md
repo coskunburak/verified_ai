@@ -16,6 +16,7 @@ Never send raw problem text/image to general analytics.
 - problem_capture_quality_warning
 - problem_capture_accepted
 - problem_asset_uploaded
+- problem_recognition_completed
 - problem_parse_completed
 - first_solution_completed
 - first_verified_solution_viewed
@@ -23,6 +24,8 @@ Never send raw problem text/image to general analytics.
 Sprint 4.1 local capture instrumentation uses privacy-safe client log names for opened/source-selected/camera-ready/capture/import/quality-warning/accepted/failure states. These records must not include raw problem images, OCR text, PDF bytes, filenames, local paths, or user-authored content. Product analytics promotion remains a later analytics-client task; the same minimization rule applies when events are promoted.
 
 Sprint 4.2 backend upload telemetry may support `problem_asset_uploaded` after durable AVAILABLE completion. Allowed properties are low-cardinality operational fields such as asset kind, source type, status, retry class, and latency bucket. Disallowed properties include object key, presigned URL, checksum, byte size when overly precise, filename, local path, raw image/PDF bytes, OCR text, user-authored problem text, and user identifiers.
+
+Sprint 4.4 recognition telemetry may support `problem_recognition_completed` after durable RecognitionEvidence is accepted. Allowed properties are low-cardinality status, review-required flag, route family, provider family, schema version, retry class, and latency/cost buckets. Disallowed properties include recognized text, bounding box coordinates, raw provider output, object keys, signed URLs, user/session/asset IDs, prompt text, provider request payloads, or canonical problem claims.
 
 ## Solving events
 

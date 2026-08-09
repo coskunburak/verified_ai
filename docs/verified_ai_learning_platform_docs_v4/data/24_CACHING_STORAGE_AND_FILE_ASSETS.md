@@ -51,6 +51,10 @@ Sprint 4.3 creates:
 
 Each derivative links to its immutable source `ProblemAsset`, stores checksum/dimensions/processor provenance, and has associated quality evidence. The original source object is never overwritten. PDF originals remain durable upload assets; Sprint 4.3 records a recoverable `PDF_UNSUPPORTED` preprocessing failure rather than rasterizing PDF pages.
 
+## Recognition input assets
+
+Sprint 4.4 sends only the selected READY `OCR_OPTIMIZED` derivative to the provider-neutral `VISION_PARSE` route. The original upload is not sent when the derivative exists. The selected derivative's bytes are read through backend storage ports, never through a client-supplied URL or object key. Stored recognition coordinates are normalized to the selected derivative coordinate space and linked back to source/preprocessing provenance through relational IDs.
+
 ## Redis
 
 Example namespaced TTL keys:

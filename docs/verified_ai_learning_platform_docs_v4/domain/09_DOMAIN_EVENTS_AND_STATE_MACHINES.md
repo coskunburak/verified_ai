@@ -17,6 +17,10 @@ Identity:
 Problem:
 - ProblemSessionCreated
 - ProblemAssetRegistered
+- ProblemRecognitionRequested
+- ProblemRecognitionStarted
+- RecognitionEvidenceRecorded
+- ProblemRecognitionFailed
 - ProblemParsingStarted
 - ProblemParsed
 - ProblemParseFailed
@@ -75,6 +79,16 @@ FAILED
 CANCELLED
 
 Retries are operational and must remain idempotent at business-result level.
+
+## Recognition job state machine
+
+QUEUED
+RUNNING
+SUCCEEDED
+FAILED_RETRYABLE
+FAILED_TERMINAL
+
+Sprint 4.4 recognition jobs are idempotent by user, ProblemSession, selected recognition input derivative, capability, prompt version, and schema version. Successful evidence is immutable for that input/provenance tuple. Retryable failures use bounded attempts and stale RUNNING jobs are recoverable by worker policy.
 
 ## Entitlement state machine
 

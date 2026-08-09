@@ -21,6 +21,14 @@ Sprint 4.2 scope within `problem`:
 - depends on object storage through `ProblemAssetStorage`, not directly from domain/application semantics;
 - depends on billing only through the public `CapabilityAccessPolicy` application interface and never on StoreKit/App Store internals.
 
+Sprint 4.4 scope within `problem`:
+- owns `RecognitionJob` and `RecognitionEvidence` persistence because evidence belongs to a user-owned `ProblemSession`;
+- consumes only the selected READY `OCR_OPTIMIZED` derivative from Sprint 4.3;
+- calls the provider-neutral `AiModelGateway` application interface for `VISION_PARSE`;
+- validates untrusted provider JSON, coordinates, confidence, reading order, size limits, and uncertainty before normalized evidence is stored;
+- must not import OpenAI, Gemini, Apple Vision, or other provider SDK classes;
+- does not create `ProblemParse`, canonical math, classification, solving, verification, or mastery evidence.
+
 ## solving
 Receives canonical Problem, creates SolverRuns and Solution. Does not decide VERIFIED.
 
@@ -56,6 +64,8 @@ Other modules query capabilities and entitlement state. They do not depend on St
 
 ## ai
 Owns model routing, provider adapters, prompt registry access and AI usage accounting. It does not own learning/business meaning.
+
+Sprint 4.4 pulls forward only the minimum `VISION_PARSE` capability boundary, local fixture provider, route/provenance/usage records, and provider-adapter contract required by recognition. Full solver/tutor/mistake-classifier routing remains Sprint 5.1+.
 
 ## admin
 Read-heavy operational tooling. Any mutation goes through normal domain commands; no direct DB edit endpoint.

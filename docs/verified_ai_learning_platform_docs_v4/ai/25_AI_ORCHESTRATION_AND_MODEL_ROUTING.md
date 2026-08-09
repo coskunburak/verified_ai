@@ -28,6 +28,8 @@ Product modules request stable capabilities such as:
 
 A capability request includes typed policy context, not arbitrary provider parameters.
 
+Sprint 4.4 implementation note: `VISION_PARSE` is the only provider-neutral capability subset pulled forward before Sprint 5.1. It exists so the problem module can request raw recognition evidence without importing provider SDKs. This early subset does not complete the full model router, solver routing, tutor routing, route optimizer, or secondary-solver policy.
+
 ## 3. Primary port
 
 `AiModelGateway` or equivalent capability port is implemented by adapters. Product/domain code must not import vendor SDK classes.
@@ -191,6 +193,8 @@ Every material call records:
 - result status;
 - escalation/fallback reason;
 - trace ID.
+
+Sprint 4.4 stores recognition-stage usage/cost/latency and provider/model/prompt/schema provenance on `recognition_evidence`. The future consolidated `ai_usage` ledger can ingest or reference that evidence without changing problem-domain meaning.
 
 ## 15. Cost-aware routing rule
 

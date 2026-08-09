@@ -12,6 +12,12 @@ Returns `202 Accepted` with a `solveJobId` and semantic status.
 
 Client polls initially; SSE can be added later.
 
+Sprint 4.4 adds the same durable async pattern for recognition:
+
+`POST /api/v1/problem-sessions/{id}/recognition`
+
+Returns `202 Accepted` with recognition job status. The worker reads the selected OCR-optimized derivative, invokes provider-neutral `VISION_PARSE`, validates untrusted provider JSON, persists RecognitionEvidence, and exposes status through `GET /api/v1/problem-sessions/{id}/recognition`.
+
 ## Durable job schema
 
 Suggested fields:
@@ -44,6 +50,8 @@ Suggested fields:
 
 Each stage persists its result before moving forward so retries do not recreate prior expensive work unnecessarily.
 
+Recognition is a pre-parse ingestion stage. It records raw visual evidence only and must not advance directly to `PARSED`, `SOLVING`, `VERIFYING`, or `COMPLETED`.
+
 ## Idempotency
 
 Repeated command with the same idempotency key returns/reuses the same logical operation. AI provider calls themselves may not be idempotent; our orchestration layer must make business output idempotent.
@@ -55,12 +63,14 @@ Retry transient failures:
 - 429,
 - selected provider 5xx,
 - temporary verifier unavailability.
+- temporary object-storage or recognition-provider unavailability.
 
 Do not blindly retry:
 - invalid user input,
 - unsupported problem,
 - schema-invalid after bounded regeneration attempts,
 - auth/entitlement failures.
+- malformed recognition geometry or schema-invalid recognition output after bounded attempts.
 
 Use exponential backoff + jitter.
 

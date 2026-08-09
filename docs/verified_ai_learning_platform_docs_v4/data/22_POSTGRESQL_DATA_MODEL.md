@@ -205,6 +205,52 @@ Sprint 4.3 stores backend-generated preprocessing derivatives separately from im
 
 Sprint 4.3 stores deterministic capture quality evidence for `BLUR`, `GLARE`, `CROP_FRAMING`, `CONTRAST_READABILITY`, and `RESOLUTION`. Evidence is linked to the selected derivative/source asset and is metadata only; it does not contain OCR text, recognized math, solver output, or raw image bytes.
 
+### recognition_jobs
+- id
+- problem_session_id
+- source_asset_id
+- input_derivative_id
+- user_id
+- capability
+- status
+- attempt_count/max_attempts
+- prompt_id/prompt_version/schema_version
+- route_policy_version
+- next_attempt_at
+- locked_until
+- last_error_code nullable
+- last_error_message nullable
+- created_at
+- started_at nullable
+- completed_at nullable
+- updated_at
+- version
+
+Sprint 4.4 jobs are durable async work records for provider-neutral `VISION_PARSE`. Uniqueness by user/session/input derivative/capability/prompt/schema prevents unlimited duplicate jobs for mobile retries. Composite owner FKs ensure the selected derivative, source asset, and session all belong to the same user.
+
+### recognition_evidence
+- id
+- recognition_job_id
+- problem_session_id
+- source_asset_id
+- input_derivative_id
+- user_id
+- revision
+- schema_version
+- raw_provider_output JSONB
+- normalized_evidence JSONB
+- provider/model
+- provider_request_id nullable
+- provider_response_id nullable
+- prompt_id/prompt_version
+- route_policy_version
+- input_tokens/output_tokens/image_units/request_units
+- provider_latency_ms/total_latency_ms
+- estimated_cost_micros/currency/pricing_version
+- created_at
+
+Sprint 4.4 evidence is raw recognition evidence only. Raw provider output is stored separately from normalized recognition blocks. Normalized coordinates are relative to the exact `input_derivative_id` and are not canonical problem geometry over the original upload unless later transform lineage maps them.
+
 ### problem_parses
 - id
 - problem_session_id
@@ -523,6 +569,10 @@ Current implemented platform migrations:
 - V003 learning profiles
 - V004 entitlements
 - V005 App Store billing tables and entitlement App Store fields
+- V006 account privacy lifecycle tables
+- V007 problem asset upload lifecycle
+- V008 problem asset preprocessing lifecycle
+- V009 problem recognition lifecycle
 
 Planned later-domain migrations continue with curriculum, problem, solving, verification, attempts/mistakes, mastery, study plan, exam, billing event ingestion, and AI usage/audit tables in their owning sprint order.
 

@@ -16,4 +16,10 @@ public interface ProblemAssetDerivativeJpaRepository extends JpaRepository<Probl
         String processorVersion,
         String configurationVersion
     );
+
+    Optional<ProblemAssetDerivativeJpaEntity> findFirstByProblemSessionIdAndUserIdAndSelectedForRecognitionTrueAndStatusOrderByCreatedAtDesc(
+        UUID problemSessionId,
+        UUID userId,
+        String status
+    );
 }

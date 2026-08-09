@@ -29,6 +29,7 @@
 |---|---|---|---|
 | Create problem session | Yes | User + command + key | Return existing logical session or compatible result. |
 | Complete upload | Yes | User + upload intent + key | Do not double-register object state. |
+| Request recognition | Yes | User + ProblemSession + selected recognition input + prompt/schema | Reuse the existing recognition job for the same input/provenance tuple. |
 | Patch/select parse revision | Conditional | Problem session + revision | Version conflict returns stable conflict error. |
 | Request solve | Yes | Problem session + selected parse + key | Reuse existing solve job if logical command matches. |
 | Submit attempt | Yes | User + problem + key | Avoid duplicate mastery/mistake evidence. |
@@ -118,6 +119,8 @@ Sprint 4.3 preprocessing responses include `preprocessingStatus`, `qualityOutcom
 ### Problem sessions
 - `POST /api/v1/problem-sessions`
 - `GET /api/v1/problem-sessions/{id}`
+- `POST /api/v1/problem-sessions/{id}/recognition` - authenticated; creates or reuses a durable recognition job for the selected READY `OCR_OPTIMIZED` derivative and returns `202 Accepted`. The request does not hold the HTTP connection open for provider execution.
+- `GET /api/v1/problem-sessions/{id}/recognition` - authenticated; returns the current recognition job/evidence status, selected input derivative/source asset IDs, review-required flag, safe normalized recognition blocks, and no raw provider output or object-storage keys.
 - `PATCH /api/v1/problem-sessions/{id}/parse`
 - `POST /api/v1/problem-sessions/{id}/solve`
 
@@ -169,6 +172,8 @@ Require `Idempotency-Key` for retry-prone commands such as create problem, solve
 
 Sprint 4.2 upload idempotency is scoped to authenticated user plus key. Reservation stores a request hash and rejects key reuse for different payloads. Completion is safe to retry: if the asset is already AVAILABLE, the backend returns the existing durable reference without double-registering object state.
 
+Sprint 4.4 recognition idempotency is scoped to authenticated user, ProblemSession, selected recognition input derivative, `VISION_PARSE`, prompt ID/version, and schema version. Retrying the command returns the existing logical job rather than creating unlimited provider calls.
+
 ## Concurrency
 
 User-editable parse revisions and learning profile updates use explicit version/revision and optimistic conflict response.
@@ -190,6 +195,8 @@ Never expose:
 - internal security/audit details.
 
 Verification API exposes only high-level evidence.
+
+Recognition APIs expose only normalized raw evidence needed for the next product step. They never expose raw provider payloads, provider secrets, signed URLs, object keys, system prompts, canonical parse claims, solutions, or verification status.
 
 ## Contract lifecycle
 

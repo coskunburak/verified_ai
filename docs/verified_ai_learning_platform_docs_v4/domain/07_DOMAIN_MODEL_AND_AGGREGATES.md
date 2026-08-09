@@ -60,6 +60,10 @@ Problem assets are metadata references to object storage.
 States:
 CREATED, ASSET_UPLOADED, PARSING, PARSED, SOLVING, VERIFYING, COMPLETED, REVIEW_REQUIRED, FAILED, CANCELLED.
 
+RecognitionJob is a durable operational child of a user-owned ProblemSession. It coordinates Sprint 4.4 `VISION_PARSE` work over the selected OCR-optimized derivative and stores status, attempts, prompt/schema/route identity, failure code, timing, and exact input derivative reference. It is not a parse revision and does not create a canonical Problem.
+
+RecognitionEvidence is the durable raw-evidence artifact produced by visual recognition. It stores untrusted raw provider JSON separately from normalized recognition blocks, source coordinates, reading order, recognition confidence/uncertainty, upstream quality warnings, provider/model/prompt/schema provenance, usage, cost, and latency. It must not include subject/topic/skill/difficulty, canonical expressions, answer, solution, or verification status.
+
 ## Problem
 
 Canonical semantic fields:

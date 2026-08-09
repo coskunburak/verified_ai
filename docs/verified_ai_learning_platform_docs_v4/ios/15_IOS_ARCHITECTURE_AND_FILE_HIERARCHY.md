@@ -122,7 +122,7 @@ Sprint 4.1 implements the local pre-upload subset of `ProblemCapture`. `Captured
 
 `AppDependencies` composes APIClient, repositories, secure storage, analytics, purchases and feature services. Views never reach into a global service locator.
 
-Current Phase 4.1 composition includes `AuthenticationAPI`, `AccountPrivacyAPI`, `LearningProfileAPI`, `EntitlementAPI`, `AuthenticationSessionStore`, `EntitlementDisplayCache`, `AVFoundationProblemCameraClient`, `DefaultCapturedAssetStore`, and `DefaultCaptureQualityAnalyzer`. `RootView` owns the authenticated bootstrap order: restore session, load learning profile, route incomplete users through onboarding, then load entitlement before rendering the authenticated home shell. Account settings and problem capture are presented from authenticated home. Account settings clear local session state after confirmed backend deletion; problem capture stops at a local accepted-asset handoff until Sprint 4.2 upload work exists.
+Current composition includes `AuthenticationAPI`, `AccountPrivacyAPI`, `LearningProfileAPI`, `EntitlementAPI`, `AuthenticationSessionStore`, `EntitlementDisplayCache`, `AVFoundationProblemCameraClient`, `DefaultCapturedAssetStore`, and `DefaultCaptureQualityAnalyzer`. `RootView` owns the authenticated bootstrap order: restore session, load learning profile, route incomplete users through onboarding, then load entitlement before rendering the authenticated home shell. Account settings and problem capture are presented from authenticated home. Account settings clear local session state after confirmed backend deletion; problem capture now progresses from local capture/import through upload, preprocessing, and Sprint 4.4 recognition status without creating parse, solve, or verification UI.
 
 ## Navigation
 
@@ -137,6 +137,7 @@ Sprint 3.3/3.4 implemented examples:
 - `EntitlementState` separates idle/loading/ready/offline-cached/failed.
 
 Sprint 4.1 implemented `ProblemCaptureState` for idle/source selection/camera permission/camera ready/capturing/importing/processing/reviewing/editing crop/accepted/recoverable failure/terminal failure.
+Sprint 4.4 extends `ProblemAssetUploadState` with starting recognition, recognizing, recognized, recognition review required, and recognition failure states. Polling is bounded and user-facing copy says "Reading the problem", not "Solving".
 - `AccountSettingsState` separates idle/loading/exporting/deletion-requested/confirming-deletion/deleted/offline/failed.
 - `CapabilityGate` consumes an `Entitlement` projection for presentation only; backend capability checks remain authoritative.
 

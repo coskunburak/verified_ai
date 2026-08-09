@@ -615,6 +615,93 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+  /api/v1/problem-sessions/{sessionId}/recognition:
+    post:
+      summary: Request raw vision/OCR recognition evidence for a preprocessed problem session
+      description: Creates or reuses a durable VISION_PARSE recognition job for the selected OCR-optimized derivative. The endpoint does not parse, solve, classify, verify, or produce canonical mathematics.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "202":
+          description: Recognition job accepted or existing job reused
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemRecognitionResponse"
+        "401":
+          description: Access token is invalid or expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Account or entitlement does not allow recognition
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Problem session was not found for the authenticated owner
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "409":
+          description: No selected READY OCR-optimized recognition derivative is available
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "429":
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+    get:
+      summary: Poll raw recognition job status and normalized recognition evidence
+      description: Returns safe job status and normalized recognition blocks for the authenticated owner. Raw provider output and provider request details are not exposed.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Current recognition status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemRecognitionResponse"
+        "401":
+          description: Access token is invalid or expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Account is not active
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Problem session was not found for the authenticated owner
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
   /api/v1/me/billing/apple/configuration:
     get:
       summary: Return backend-owned App Store purchase configuration for the authenticated user
@@ -1191,6 +1278,128 @@ components:
           type: string
         messageCode:
           type: string
+    ProblemRecognitionResponse:
+      type: object
+      required: [problemSessionId, status, capability, attemptCount, maxAttempts, reviewRequired, blockCount, blocks]
+      properties:
+        recognitionJobId:
+          type: [string, "null"]
+          format: uuid
+        problemSessionId:
+          type: string
+          format: uuid
+        sourceAssetId:
+          type: [string, "null"]
+          format: uuid
+        inputDerivativeId:
+          type: [string, "null"]
+          format: uuid
+        status:
+          type: string
+          enum: [NOT_STARTED, QUEUED, RUNNING, SUCCEEDED, FAILED_RETRYABLE, FAILED_TERMINAL]
+        capability:
+          type: string
+          enum: [VISION_PARSE]
+        attemptCount:
+          type: integer
+          minimum: 0
+        maxAttempts:
+          type: integer
+          minimum: 0
+        lastErrorCode:
+          type: [string, "null"]
+          examples: [RECOGNITION_TIMEOUT, RECOGNITION_SCHEMA_INVALID]
+        lastFailureClass:
+          type: [string, "null"]
+          examples: [TIMEOUT, SCHEMA_INVALID]
+        reviewRequired:
+          type: boolean
+        schemaVersion:
+          type: [string, "null"]
+          examples: [recognition-evidence-v1]
+        promptId:
+          type: [string, "null"]
+          examples: [vision-recognition]
+        promptVersion:
+          type: [string, "null"]
+          examples: [v001]
+        routePolicyVersion:
+          type: [string, "null"]
+          examples: [vision-route-v1]
+        provider:
+          type: [string, "null"]
+          description: Provider identifier for safe provenance, not a client routing input.
+        model:
+          type: [string, "null"]
+          description: Model identifier for safe provenance, not product semantics.
+        blockCount:
+          type: integer
+          minimum: 0
+        blocks:
+          type: array
+          items:
+            $ref: "#/components/schemas/RecognitionBlockResponse"
+        createdAt:
+          type: [string, "null"]
+          format: date-time
+        updatedAt:
+          type: [string, "null"]
+          format: date-time
+        completedAt:
+          type: [string, "null"]
+          format: date-time
+    RecognitionBlockResponse:
+      type: object
+      required: [id, kind, text, boundingBox, readingOrder, confidenceStatus, uncertainty, layoutHints]
+      properties:
+        id:
+          type: string
+        kind:
+          type: string
+          enum: [TEXT, MATH, DIAGRAM, TABLE, UNKNOWN, UNREADABLE]
+        text:
+          type: string
+          description: Visible recognized text/math evidence. This is not canonical math or a solved answer.
+        boundingBox:
+          $ref: "#/components/schemas/RecognitionBoundingBoxResponse"
+        readingOrder:
+          type: integer
+          minimum: 0
+        confidenceStatus:
+          type: string
+          enum: [KNOWN, LOW, UNKNOWN]
+        normalizedConfidence:
+          type: [number, "null"]
+          minimum: 0
+          maximum: 1
+        uncertainty:
+          type: array
+          items:
+            type: string
+        layoutHints:
+          type: array
+          items:
+            type: string
+    RecognitionBoundingBoxResponse:
+      type: object
+      required: [x, y, width, height]
+      properties:
+        x:
+          type: number
+          minimum: 0
+          maximum: 1
+        y:
+          type: number
+          minimum: 0
+          maximum: 1
+        width:
+          type: number
+          minimum: 0
+          maximum: 1
+        height:
+          type: number
+          minimum: 0
+          maximum: 1
     AppleBillingConfigurationResponse:
       type: object
       required: [appAccountToken, purchaseAvailable, environment, products]

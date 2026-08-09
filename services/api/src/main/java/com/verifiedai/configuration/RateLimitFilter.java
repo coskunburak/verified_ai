@@ -32,6 +32,7 @@ class RateLimitFilter extends OncePerRequestFilter {
     private static final RateLimitPolicy UPLOAD_PRESIGN = new RateLimitPolicy("problem_upload_presign", 30, Duration.ofMinutes(10), false);
     private static final RateLimitPolicy UPLOAD_COMPLETE = new RateLimitPolicy("problem_upload_complete", 60, Duration.ofMinutes(10), false);
     private static final RateLimitPolicy ASSET_PREPROCESS = new RateLimitPolicy("problem_asset_preprocess", 30, Duration.ofMinutes(10), false);
+    private static final RateLimitPolicy PROBLEM_RECOGNITION = new RateLimitPolicy("problem_recognition", 20, Duration.ofMinutes(10), false);
 
     private final RateLimiter rateLimiter;
     private final SecurityMetrics metrics;
@@ -97,6 +98,9 @@ class RateLimitFilter extends OncePerRequestFilter {
         }
         if ("POST".equals(method) && path.startsWith("/api/v1/problem-assets/") && path.endsWith("/preprocess")) {
             return Optional.of(ASSET_PREPROCESS);
+        }
+        if ("POST".equals(method) && path.startsWith("/api/v1/problem-sessions/") && path.endsWith("/recognition")) {
+            return Optional.of(PROBLEM_RECOGNITION);
         }
         return Optional.empty();
     }

@@ -8,6 +8,15 @@
 4. Communicate degraded behavior if user impact is visible.
 5. Monitor fallback latency/cost.
 
+## Recognition pipeline failure
+
+1. Use the API trace/correlation ID to inspect `recognition_jobs.status`, `attempt_count`, `last_error_code`, `next_attempt_at`, and `locked_until`.
+2. Confirm the selected `OCR_OPTIMIZED` derivative is READY and belongs to the same user/session/source asset.
+3. For schema-invalid or oversized output, inspect only safe metadata and reproduce with a synthetic/non-sensitive fixture; do not paste raw recognized student text into logs or tickets.
+4. For timeout/429/5xx, verify provider health, route configuration, fallback settings, and recognition rate-limit counters.
+5. For stuck RUNNING jobs, allow the stale-job recovery policy to requeue or terminally fail according to attempts.
+6. Do not manually mark recognition as parsed, solved, or verified.
+
 ## Math verifier outage
 
 Solver may continue, but affected answers become UNVERIFIED or verification is deferred. Never silently mark VERIFIED.
@@ -60,6 +69,8 @@ If false VERIFIED is suspected:
 ## Cost spike
 
 Inspect traffic, abusive accounts, route changes, retries and prompt/context growth. Emergency downgrade of noncritical route is allowed if trust invariants remain intact.
+
+Recognition cost spikes are investigated through `ai.vision.recognition.*` metrics, route configuration, retry/fallback counts, and request volume. Do not reduce validation or fabricate confidence to lower cost.
 
 <!-- HYBRID_AI_STRATEGY_V3:START -->
 ## Additional runbooks required

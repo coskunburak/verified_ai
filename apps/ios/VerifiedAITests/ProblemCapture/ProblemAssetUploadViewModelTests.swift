@@ -202,6 +202,48 @@ final class ProblemAssetUploadViewModelTests: XCTestCase {
         XCTAssertEqual(preprocessCount, 2)
     }
 
+    func testRecognitionSuccessTransitionsFromAvailableToRecognized() async throws {
+        let viewModel = makeViewModel()
+
+        await viewModel.startRecognition(FakeProblemAssetUploadAPI.preprocessedReference)
+
+        XCTAssertEqual(
+            viewModel.state,
+            .recognized(RecognizedProblemReference(
+                preprocessedAsset: FakeProblemAssetUploadAPI.preprocessedReference,
+                recognition: FakeProblemAssetUploadAPI.recognitionSucceeded
+            ))
+        )
+    }
+
+    func testRecognitionRetryableFailureCanRetryToSuccess() async throws {
+        let api = FakeProblemAssetUploadAPI(recognitionResults: [
+            FakeProblemAssetUploadAPI.recognitionRetryableFailure,
+            FakeProblemAssetUploadAPI.recognitionSucceeded
+        ])
+        let viewModel = makeViewModel(api: api)
+
+        await viewModel.startRecognition(FakeProblemAssetUploadAPI.preprocessedReference)
+
+        XCTAssertEqual(
+            viewModel.state,
+            .recognitionFailed(
+                FakeProblemAssetUploadAPI.preprocessedReference,
+                FakeProblemAssetUploadAPI.recognitionRetryableFailure
+            )
+        )
+
+        await viewModel.retryRecognition()
+
+        XCTAssertEqual(
+            viewModel.state,
+            .recognized(RecognizedProblemReference(
+                preprocessedAsset: FakeProblemAssetUploadAPI.preprocessedReference,
+                recognition: FakeProblemAssetUploadAPI.recognitionSucceeded
+            ))
+        )
+    }
+
     private func makeViewModel(
         api: FakeProblemAssetUploadAPI = FakeProblemAssetUploadAPI(),
         uploader: FakePresignedObjectUploader = FakePresignedObjectUploader(),
@@ -364,26 +406,86 @@ private actor FakeProblemAssetUploadAPI: ProblemAssetUploadServicing {
         durableAsset: reference,
         preprocessing: preprocessingWarning
     )
+    static let recognitionSucceeded = ProblemRecognitionResult(
+        recognitionJobId: UUID(uuidString: "00000000-0000-0000-0000-000000000801")!,
+        problemSessionId: problemSessionId,
+        sourceAssetId: problemAssetId,
+        inputDerivativeId: UUID(uuidString: "00000000-0000-0000-0000-000000000704")!,
+        status: "SUCCEEDED",
+        capability: "VISION_PARSE",
+        attemptCount: 1,
+        maxAttempts: 2,
+        lastErrorCode: nil,
+        lastFailureClass: nil,
+        reviewRequired: false,
+        schemaVersion: "recognition-evidence-v1",
+        promptId: "vision-recognition",
+        promptVersion: "v001",
+        routePolicyVersion: "vision-route-v1",
+        provider: "LOCAL_FIXTURE",
+        model: "local-fixture-vision-v1",
+        blockCount: 1,
+        blocks: [
+            ProblemRecognitionBlock(
+                id: "block-1",
+                kind: "MATH",
+                text: "x^2 + 3x = 10",
+                boundingBox: ProblemRecognitionBoundingBox(x: 0.12, y: 0.30, width: 0.72, height: 0.18),
+                readingOrder: 0,
+                confidenceStatus: "KNOWN",
+                normalizedConfidence: 0.98,
+                uncertainty: [],
+                layoutHints: ["INLINE_MATH"]
+            )
+        ],
+        completedAt: Date(timeIntervalSince1970: 1_800_002_000)
+    )
+    static let recognitionRetryableFailure = ProblemRecognitionResult(
+        recognitionJobId: UUID(uuidString: "00000000-0000-0000-0000-000000000802")!,
+        problemSessionId: problemSessionId,
+        sourceAssetId: problemAssetId,
+        inputDerivativeId: UUID(uuidString: "00000000-0000-0000-0000-000000000704")!,
+        status: "FAILED_RETRYABLE",
+        capability: "VISION_PARSE",
+        attemptCount: 1,
+        maxAttempts: 2,
+        lastErrorCode: "RECOGNITION_TIMEOUT",
+        lastFailureClass: "TIMEOUT",
+        reviewRequired: false,
+        schemaVersion: "recognition-evidence-v1",
+        promptId: "vision-recognition",
+        promptVersion: "v001",
+        routePolicyVersion: "vision-route-v1",
+        provider: nil,
+        model: nil,
+        blockCount: 0,
+        blocks: [],
+        completedAt: nil
+    )
 
     private var reserveErrors: [Error]
     private var completeErrors: [Error]
     private var preprocessingResults: [ProblemAssetPreprocessingResult]
     private var preprocessingErrors: [Error]
+    private var recognitionResults: [ProblemRecognitionResult]
     private var reservations: [ReceivedReservation] = []
     private var completionKeys: [String] = []
     private var completionUploadIds: [UUID] = []
     private var preprocessingAssetIds: [UUID] = []
+    private var recognitionSessionIds: [UUID] = []
 
     init(
         reserveErrors: [Error] = [],
         completeErrors: [Error] = [],
         preprocessingResults: [ProblemAssetPreprocessingResult] = [FakeProblemAssetUploadAPI.preprocessingPass],
-        preprocessingErrors: [Error] = []
+        preprocessingErrors: [Error] = [],
+        recognitionResults: [ProblemRecognitionResult] = [FakeProblemAssetUploadAPI.recognitionSucceeded]
     ) {
         self.reserveErrors = reserveErrors
         self.completeErrors = completeErrors
         self.preprocessingResults = preprocessingResults
         self.preprocessingErrors = preprocessingErrors
+        self.recognitionResults = recognitionResults
     }
 
     func reserveUpload(
@@ -420,6 +522,22 @@ private actor FakeProblemAssetUploadAPI: ProblemAssetUploadServicing {
     func getPreprocessing(problemAssetId: UUID) async throws -> ProblemAssetPreprocessingResult {
         preprocessingAssetIds.append(problemAssetId)
         return preprocessingResults.first ?? Self.preprocessingPass
+    }
+
+    func requestRecognition(problemSessionId: UUID) async throws -> ProblemRecognitionResult {
+        recognitionSessionIds.append(problemSessionId)
+        if !recognitionResults.isEmpty {
+            return recognitionResults.removeFirst()
+        }
+        return Self.recognitionSucceeded
+    }
+
+    func getRecognition(problemSessionId: UUID) async throws -> ProblemRecognitionResult {
+        recognitionSessionIds.append(problemSessionId)
+        if !recognitionResults.isEmpty {
+            return recognitionResults.removeFirst()
+        }
+        return Self.recognitionSucceeded
     }
 
     func receivedReservation() -> ReceivedReservation? {

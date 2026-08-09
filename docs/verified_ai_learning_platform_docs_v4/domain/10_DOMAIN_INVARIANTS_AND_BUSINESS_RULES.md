@@ -15,10 +15,12 @@ This is a highest-precedence document.
 ## Problem invariants
 
 1. ProblemAsset is not the canonical Problem.
-2. Every parse has parser/prompt/schema provenance.
-3. User correction creates an explicit parse revision; historical parse is not silently overwritten.
-4. Solving uses the selected canonical parse.
-5. Unsupported problem types fail explicitly rather than being coerced into an incorrect schema.
+2. RecognitionEvidence is not a ProblemParse, canonical Problem, classification, solution, or verification result.
+3. Recognition output is untrusted input and must pass recognition schema and recognition-level semantic validation before becoming normalized evidence.
+4. Every parse has parser/prompt/schema provenance.
+5. User correction creates an explicit parse revision; historical parse is not silently overwritten.
+6. Solving uses the selected canonical parse.
+7. Unsupported problem types fail explicitly rather than being coerced into an incorrect schema.
 
 ## Attempt invariants
 

@@ -128,6 +128,45 @@ final class ProblemAssetUploadViewModel {
         message = "Problem asset is ready for recognition with capture warnings."
     }
 
+    func startRecognition(_ reference: PreprocessedProblemAssetReference) async {
+        let requestID = UUID()
+        activeRequestID = requestID
+
+        guard networkMonitor.isReachable else {
+            logger.warning("problem_recognition.offline")
+            state = .recognitionFailed(reference, nil)
+            message = "Reading the problem needs a network connection."
+            return
+        }
+
+        do {
+            state = .startingRecognition(reference)
+            message = "Reading the problem."
+            let requested = try await uploadAPI.requestRecognition(problemSessionId: reference.durableAsset.problemSessionId)
+            guard activeRequestID == requestID else { return }
+            await observeRecognition(requested, reference: reference, requestID: requestID)
+        } catch let error as NetworkError {
+            logger.warning("problem_recognition.failed")
+            state = .recognitionFailed(reference, nil)
+            if case .server(let problem) = error {
+                message = "Reading failed: \(problem.code)"
+            } else {
+                message = "Reading could not continue."
+            }
+        } catch {
+            logger.warning("problem_recognition.failed")
+            state = .recognitionFailed(reference, nil)
+            message = "Reading could not continue."
+        }
+    }
+
+    func retryRecognition() async {
+        guard case .recognitionFailed(let reference, _) = state else {
+            return
+        }
+        await startRecognition(reference)
+    }
+
     func cancel() {
         activeRequestID = nil
         state = .idle
@@ -191,6 +230,68 @@ final class ProblemAssetUploadViewModel {
             state = .preprocessingFailed(reference.durableAsset, reference.preprocessing, acceptedAsset)
             message = "Preprocessing could not prepare this capture."
         }
+    }
+
+    private func observeRecognition(
+        _ initial: ProblemRecognitionResult,
+        reference: PreprocessedProblemAssetReference,
+        requestID: UUID
+    ) async {
+        var current = initial
+        for attempt in 0...5 {
+            guard activeRequestID == requestID else { return }
+            if applyRecognitionResult(current, reference: reference) {
+                return
+            }
+            state = .recognizing(reference, current)
+            message = "Reading the problem."
+            let delayNanos = UInt64(min(2.0, 0.4 * Double(attempt + 1)) * 1_000_000_000)
+            try? await Task.sleep(nanoseconds: delayNanos)
+            guard activeRequestID == requestID else { return }
+            do {
+                current = try await uploadAPI.getRecognition(problemSessionId: reference.durableAsset.problemSessionId)
+            } catch {
+                logger.warning("problem_recognition.poll_failed")
+                state = .recognitionFailed(reference, current)
+                message = "Reading status could not be refreshed."
+                return
+            }
+        }
+        state = .recognizing(reference, current)
+        message = "Reading is still in progress."
+    }
+
+    @discardableResult
+    private func applyRecognitionResult(
+        _ recognition: ProblemRecognitionResult,
+        reference: PreprocessedProblemAssetReference
+    ) -> Bool {
+        if recognition.isTerminalSuccess {
+            let recognized = RecognizedProblemReference(preprocessedAsset: reference, recognition: recognition)
+            if recognition.reviewRequired {
+                logger.warning("problem_recognition.review_required")
+                state = .recognitionReviewRequired(recognized)
+                message = "Reading finished with uncertainty."
+            } else {
+                logger.info("problem_recognition.succeeded")
+                state = .recognized(recognized)
+                message = "Reading finished."
+            }
+            return true
+        }
+        if recognition.isTerminalFailure {
+            logger.warning("problem_recognition.terminal_failure")
+            state = .recognitionFailed(reference, recognition)
+            message = "Reading could not finish."
+            return true
+        }
+        if recognition.isRetryableFailure {
+            logger.warning("problem_recognition.retryable_failure")
+            state = .recognitionFailed(reference, recognition)
+            message = "Reading can be retried."
+            return true
+        }
+        return false
     }
 
     private func makeUploadRequest(from asset: CapturedAsset) throws -> ProblemAssetUploadRequest {

@@ -30,6 +30,7 @@
 | Uploaded malicious file | iOS -> API/object storage | MIME/size/dimension/page limits and scanning/isolation policy | upload abuse tests |
 | Oversized upload or image flood | iOS -> API/object storage | quota, rate limit, max size, backpressure | rate-limit/load tests |
 | Prompt injection in problem text | API -> AI provider | untrusted-content separation, schema validation, tool allowlist | adversarial prompt fixtures |
+| Prompt injection in captured image/OCR text | API -> AI provider | treat visual text as data, strict recognition prompt, schema/semantic validation, no model-driven tool or URL execution | Sprint 4.4 prompt-injection recognition fixtures |
 | AI provider secret leakage | API -> AI provider | server-side secret manager, redacted logs, no client exposure | secret scan and config tests |
 | Object storage URL abuse | iOS -> object storage | short TTL, narrow key scope, completion verification | presigned URL contract tests |
 | Math verifier exposure | API -> verifier | private network/internal auth, no public/iOS ingress | network/config tests |
@@ -53,6 +54,8 @@ Principal-derived ownership checks on every resource.
 ### Prompt injection
 User content is data, not instructions; strict prompt separation; no arbitrary tool execution.
 
+Sprint 4.4 applies this to image text during recognition. A captured problem can visibly contain strings such as "ignore previous instructions" or "return secrets"; recognition stores those strings only as visible evidence and never executes them, changes schema because of them, fetches URLs from them, or treats them as trusted prompt instructions.
+
 ### Symbolic-expression abuse
 No Python eval, parser allowlist, expression complexity limits, verifier timeout.
 
@@ -60,6 +63,8 @@ No Python eval, parser allowlist, expression complexity limits, verifier timeout
 Size/MIME/dimension/page limits, isolated storage and scanning policy.
 
 Sprint 4.2 validates JPEG/PDF upload metadata before issuing a presigned URL and again after direct object upload. The backend owns the key, bucket policy assumption, expected byte size, expected content type, SHA-256 checksum, reservation TTL, and user/session relationship. Wrong-owner completion attempts are denied by principal-derived lookup rather than UUID opacity. Mismatched objects are deleted and never marked AVAILABLE.
+
+Sprint 4.4 bounds recognition response bytes, block count, text length, confidence ranges, reading order, and normalized coordinates. Provider output is model data only and cannot choose storage keys, mutate entitlement, execute SQL/code, invoke tools, or call URLs.
 
 ### Billing spoof
 Server-side App Store validation and idempotent external event handling.

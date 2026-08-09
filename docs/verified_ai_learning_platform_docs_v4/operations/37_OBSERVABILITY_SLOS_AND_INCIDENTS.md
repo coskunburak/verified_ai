@@ -77,6 +77,17 @@ Sprint 4.2 problem asset upload metrics:
 - `problem.asset.presign.latency`
 - `problem.asset.completion.verification.latency`
 
+Sprint 4.4 recognition metrics:
+- `ai.vision.recognition.started.total`
+- `ai.vision.recognition.success.total`
+- `ai.vision.recognition.failure.total`
+- `ai.vision.recognition.timeout.total`
+- `ai.vision.recognition.schema_invalid.total`
+- `ai.vision.recognition.fallback.total`
+- `ai.vision.recognition.provider.latency`
+- `ai.vision.recognition.total.latency`
+- `ai.vision.recognition.estimated_cost_micros`
+
 Metric labels must remain low-cardinality and must not contain raw profile answers, user IDs, access tokens, provider secrets, filenames, local paths, object keys, OCR text, or raw problem content.
 
 ## SLOs
@@ -96,6 +107,7 @@ Actionable alerts:
 - elevated account deletion/export failures,
 - rate-limit denied spikes or Redis limiter degraded-open spikes,
 - upload storage unavailable, checksum/size mismatch spikes, or pending-upload expiry spikes,
+- recognition timeout/schema-invalid/fallback spikes or estimated recognition cost spikes,
 - provider outage without fallback,
 - verification quality anomaly,
 - unexpected AI cost spike.

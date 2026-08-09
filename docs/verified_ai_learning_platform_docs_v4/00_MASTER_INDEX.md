@@ -226,6 +226,10 @@ Documentation is part of the product and part of the implementation contract.
 - `sprints/phase04_problem_capture_and_canonicalization/SPRINT_4.1_EXECUTION_REPORT.md` — Sprint 4.1 premium camera capture/import implementation evidence, validation status and real-device debt.
 - `sprints/phase04_problem_capture_and_canonicalization/SPRINT_4.2_IMPLEMENTATION_MAP.md` — Sprint 4.2 presigned upload, ProblemSession/ProblemAsset ownership, storage, privacy and validation mapping.
 - `sprints/phase04_problem_capture_and_canonicalization/SPRINT_4.2_EXECUTION_REPORT.md` — Sprint 4.2 durable asset upload implementation evidence, tests, storage validation and Sprint 4.3 readiness.
+- `sprints/phase04_problem_capture_and_canonicalization/SPRINT_4.3_IMPLEMENTATION_MAP.md` — Sprint 4.3 backend preprocessing, derivative asset, quality evidence, privacy, and no-OCR boundary mapping.
+- `sprints/phase04_problem_capture_and_canonicalization/SPRINT_4.3_EXECUTION_REPORT.md` — Sprint 4.3 image preprocessing and capture-quality implementation evidence.
+- `sprints/phase04_problem_capture_and_canonicalization/SPRINT_4.4_IMPLEMENTATION_MAP.md` — Sprint 4.4 recognition job/evidence, `VISION_PARSE` boundary, prompt/schema, privacy, and validation mapping.
+- `sprints/phase04_problem_capture_and_canonicalization/SPRINT_4.4_EXECUTION_REPORT.md` — Sprint 4.4 vision/OCR ingestion and raw recognition evidence implementation evidence.
 
 For implementation agents, sprint documents are execution plans. They never override domain invariants, accepted ADRs, security rules, or canonical API/data contracts.
 

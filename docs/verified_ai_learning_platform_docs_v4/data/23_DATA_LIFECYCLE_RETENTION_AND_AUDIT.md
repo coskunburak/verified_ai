@@ -34,6 +34,8 @@ Sprint 4.2 introduces durable `ProblemAsset` raw source objects with configurabl
 
 Sprint 4.3 introduces derived preprocessing objects and quality evidence. Account export includes derivative/evidence metadata, declares `derivedBinaryIncluded=false`, and confirmed account deletion deletes both raw source object keys and derived object keys before cascading the owning problem rows.
 
+Sprint 4.4 introduces RecognitionJob and RecognitionEvidence metadata. Raw provider JSON and normalized recognition evidence may contain student problem text and are retained only as account-owned problem evidence for support/reproducibility and Sprint 4.5 handoff. Account export includes job/evidence metadata and normalized recognition evidence; raw provider output is not included in normal export payloads. Confirmed account deletion removes recognition rows through `problem_sessions` cascade after object keys are handled by the problem-asset lifecycle contributor. Provider-side deletion guarantees are not claimed until a real provider route and contract are configured.
+
 ### USER_LIBRARY
 User-saved assets retained until explicit deletion/account lifecycle.
 
@@ -61,7 +63,7 @@ Sprint 3.7 implementation:
 | Learning profile | profile settings, onboarding status, timestamps, version | `learning_profiles` row is deleted | none in current Phase 3 schema |
 | Sessions | recent session IDs, status, timestamps, revocation reason | all active sessions revoked | minimized security history may remain |
 | Billing | entitlement summary, subscriptions, transaction identifiers/status/environment/product metadata | app account token deleted; entitlement revoked/free; billing event records retained | legal/refund/fraud audit retains minimized transaction references, never raw payment credentials |
-| Problem assets | asset/session metadata, status, source/kind, content type, size, checksum, crop/dimension/page metadata, timestamps; raw binaries excluded | delete private object-storage keys, then delete `problem_sessions`/`problem_assets` through the lifecycle contributor | pending upload expiry and backup expiry apply; raw binaries are not export payloads |
+| Problem assets and recognition evidence | asset/session metadata, preprocessing derivative metadata, quality evidence, recognition job metadata, normalized recognition evidence, provider/model/prompt/schema provenance, usage/cost/latency metadata; raw and derived binaries plus raw provider output excluded | delete private object-storage keys, then delete `problem_sessions`/`problem_assets`; recognition rows cascade with the owning problem session | pending upload expiry and backup expiry apply; raw binaries and raw provider payloads are not normal export payloads |
 | Future AI/attempt/mastery/tutor data | lifecycle-contributor contract reserved for future stores | contributor must delete/anonymize owned rows/assets before phase exit | follow retention class and backup expiry |
 
 The implementation stores export JSON in `data_exports` with seven-day expiry and records privacy events in `privacy_events`. Export content excludes secrets, token hashes, raw Apple JWS/payment material, internal fraud signals, and unrestricted operational telemetry.

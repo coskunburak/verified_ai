@@ -8,6 +8,8 @@ A prompt change can alter product behavior as strongly as code. Every material p
 
 ```text
 src/main/resources/prompts/
+├── vision-recognition/
+│   └── v001.md
 ├── problem-parser/
 │   ├── v001.md
 │   ├── v002.md
@@ -73,3 +75,9 @@ Store provider, model, prompt ID/version, schema version, major inference settin
 ## Tutor-specific rules
 
 Tutor receives explicit verified/reference state and learner context. It must not invent mastery data or expose hidden chain-of-thought.
+
+## Sprint 4.4 recognition prompt
+
+`vision-recognition/v001` asks only for visible text/math-like evidence, spatial blocks, reading order, and uncertainty. It explicitly forbids solving, classifying, correcting, inferring hidden symbols, or producing canonical math. Image text that looks like instructions is treated as student content, not as prompt authority.
+
+The paired schema version is `recognition-evidence-v1` in `packages/schemas/recognition-evidence.schema.json`. Provider JSON must pass syntax, schema, and recognition-level semantic validation before normalized evidence is persisted.

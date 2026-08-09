@@ -41,6 +41,7 @@ Sprint 3.8 implementation adds Redis-backed fixed-window rate limiting for sensi
 | `POST /api/v1/uploads/presign` | 30/10 minutes | fail open |
 | `POST /api/v1/uploads/{uploadId}/complete` | 60/10 minutes | fail open |
 | `POST /api/v1/problem-assets/{assetId}/preprocess` | 30/10 minutes | fail open |
+| `POST /api/v1/problem-sessions/{sessionId}/recognition` | 20/10 minutes | fail open |
 | `POST /api/v1/me/data-exports` | 3/hour | fail open |
 | `POST /api/v1/me/deletion-request*` | 5/hour | fail closed |
 | `POST /api/v1/webhooks/apple/app-store` | 120/minute | fail open |
@@ -61,6 +62,8 @@ Treat all content as untrusted data. Do not concatenate into system instructions
 MIME/type/size/dimension/page limits; document scanning/isolation policy.
 
 Sprint 4.2 enforces upload authorization in the backend application service. The bearer principal supplies `userId`; the client cannot supply owner, object key, bucket, or asset/session identity. Reservation requires active account plus the basic solve capability, content type allowlist, 20 MB maximum size, normalized crop constraints, image/PDF metadata bounds, SHA-256 shape validation, and a reservation idempotency key. Completion loads the asset by `(uploadId, userId)` under pessimistic lock, verifies private object metadata and checksum, and returns a not-found/forbidden problem detail for cross-user access attempts.
+
+Sprint 4.4 recognition authorization derives the user from the bearer principal, requires an active account and basic solve capability, and loads the ProblemSession plus selected derivative by `(id, user_id)`. The client cannot choose an arbitrary object key, provider, model, signed URL, or original asset bypass. Recognition metrics and logs must not include recognized text, raw provider payloads, object keys, user IDs, or asset IDs as labels.
 
 ### Entitlement replay
 Server verifies and idempotently records external transaction/events.

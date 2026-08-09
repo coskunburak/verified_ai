@@ -8,8 +8,10 @@ spring:
     password: ${POSTGRES_PASSWORD}
 app:
   environment: production
+  ai:
+    vision-recognition:
+      enabled: ${AI_VISION_RECOGNITION_ENABLED:false}
 management:
   endpoint:
     health:
       show-details: never
-

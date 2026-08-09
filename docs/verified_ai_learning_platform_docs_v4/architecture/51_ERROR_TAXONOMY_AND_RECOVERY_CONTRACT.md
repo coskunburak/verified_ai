@@ -32,6 +32,14 @@ Errors should be semantically stable across backend and iOS. User recovery depen
 - UPLOAD_INVALID_STATE
 - UPLOAD_STORAGE_UNAVAILABLE
 - IMAGE_UNREADABLE
+- RECOGNITION_INPUT_UNAVAILABLE
+- RECOGNITION_PROVIDER_UNAVAILABLE
+- RECOGNITION_TIMEOUT
+- RECOGNITION_RATE_LIMITED
+- RECOGNITION_SCHEMA_INVALID
+- RECOGNITION_OUTPUT_TOO_LARGE
+- RECOGNITION_UNSUPPORTED
+- RECOGNITION_FAILED
 - PROBLEM_PARSE_FAILED
 - PROBLEM_UNSUPPORTED
 - PROBLEM_CLASS_NOT_SUPPORTED
@@ -74,6 +82,10 @@ Upload reservation and completion failures are stable client contracts:
 - `UPLOAD_INVALID_STATE` means the reservation is not in a state that accepts completion.
 - `UPLOAD_STORAGE_UNAVAILABLE` is transient infrastructure failure; client retry is bounded and must use idempotency.
 - `RESOURCE_FORBIDDEN` is used for wrong-owner or unknown upload IDs without confirming resource existence.
+
+### Sprint 4.4 recognition recovery
+
+Recognition failures are pre-parse failures. `RECOGNITION_INPUT_UNAVAILABLE` means no selected READY recognition derivative exists; the client should return to preprocessing/capture recovery. `RECOGNITION_TIMEOUT`, `RECOGNITION_RATE_LIMITED`, and `RECOGNITION_PROVIDER_UNAVAILABLE` are retryable until job attempts are exhausted. `RECOGNITION_SCHEMA_INVALID` rejects malformed provider output and may retry within the bounded job policy. `RECOGNITION_OUTPUT_TOO_LARGE` and `RECOGNITION_UNSUPPORTED` are terminal for the current input/configuration. None of these codes imply `PROBLEM_UNSUPPORTED` or a verified solution.
 
 ## Recovery semantics
 

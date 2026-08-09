@@ -7,6 +7,11 @@ enum ProblemAssetUploadPhase: Equatable, Sendable {
     case confirming
     case preprocessing(DurableProblemAssetReference)
     case available(PreprocessedProblemAssetReference)
+    case startingRecognition(PreprocessedProblemAssetReference)
+    case recognizing(PreprocessedProblemAssetReference, ProblemRecognitionResult)
+    case recognized(RecognizedProblemReference)
+    case recognitionReviewRequired(RecognizedProblemReference)
+    case recognitionFailed(PreprocessedProblemAssetReference, ProblemRecognitionResult?)
     case preprocessingWarning(PreprocessedProblemAssetReference, AcceptedCapturedAsset)
     case preprocessingFailed(DurableProblemAssetReference?, ProblemAssetPreprocessingResult?, AcceptedCapturedAsset)
     case recoverableFailure(ProblemAssetUploadFailure, AcceptedCapturedAsset)
@@ -43,6 +48,11 @@ struct DurableProblemAssetReference: Equatable, Sendable {
 struct PreprocessedProblemAssetReference: Equatable, Sendable {
     let durableAsset: DurableProblemAssetReference
     let preprocessing: ProblemAssetPreprocessingResult
+}
+
+struct RecognizedProblemReference: Equatable, Sendable {
+    let preprocessedAsset: PreprocessedProblemAssetReference
+    let recognition: ProblemRecognitionResult
 }
 
 struct ProblemAssetPreprocessingResult: Equatable, Sendable {
@@ -95,6 +105,60 @@ struct ProblemAssetQualitySignal: Equatable, Identifiable, Sendable {
     var id: String {
         signalType
     }
+}
+
+struct ProblemRecognitionResult: Equatable, Sendable {
+    let recognitionJobId: UUID?
+    let problemSessionId: UUID
+    let sourceAssetId: UUID?
+    let inputDerivativeId: UUID?
+    let status: String
+    let capability: String
+    let attemptCount: Int
+    let maxAttempts: Int
+    let lastErrorCode: String?
+    let lastFailureClass: String?
+    let reviewRequired: Bool
+    let schemaVersion: String?
+    let promptId: String?
+    let promptVersion: String?
+    let routePolicyVersion: String?
+    let provider: String?
+    let model: String?
+    let blockCount: Int
+    let blocks: [ProblemRecognitionBlock]
+    let completedAt: Date?
+
+    var isTerminalSuccess: Bool {
+        status == "SUCCEEDED"
+    }
+
+    var isRetryableFailure: Bool {
+        status == "FAILED_RETRYABLE"
+    }
+
+    var isTerminalFailure: Bool {
+        status == "FAILED_TERMINAL"
+    }
+}
+
+struct ProblemRecognitionBlock: Equatable, Identifiable, Sendable {
+    let id: String
+    let kind: String
+    let text: String
+    let boundingBox: ProblemRecognitionBoundingBox
+    let readingOrder: Int
+    let confidenceStatus: String
+    let normalizedConfidence: Double?
+    let uncertainty: [String]
+    let layoutHints: [String]
+}
+
+struct ProblemRecognitionBoundingBox: Equatable, Sendable {
+    let x: Double
+    let y: Double
+    let width: Double
+    let height: Double
 }
 
 struct ProblemAssetUploadRequest: Equatable, Sendable {

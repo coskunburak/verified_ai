@@ -418,13 +418,85 @@ struct ProblemCaptureView: View {
                 }
 
                 Button {
+                    Task { await uploadViewModel.startRecognition(reference) }
+                } label: {
+                    Label("Read Problem", systemImage: "text.viewfinder")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .accessibilityIdentifier("problemCapture.recognition.start")
+
+                Button {
+                    onDismiss()
+                } label: {
+                    Label("Done", systemImage: "checkmark")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .accessibilityIdentifier("problemCapture.accepted.done")
+            case .startingRecognition:
+                Label("Reading the problem", systemImage: "text.viewfinder")
+                    .font(TypographyTokens.title)
+                    .foregroundStyle(ColorTokens.textPrimary)
+                ProgressView()
+                    .accessibilityIdentifier("problemCapture.recognition.starting")
+                Text("The backend is starting a durable recognition job.")
+                    .font(TypographyTokens.body)
+                    .foregroundStyle(ColorTokens.textSecondary)
+            case .recognizing(_, let recognition):
+                Label("Reading the problem", systemImage: "text.viewfinder")
+                    .font(TypographyTokens.title)
+                    .foregroundStyle(ColorTokens.textPrimary)
+                ProgressView()
+                    .accessibilityIdentifier("problemCapture.recognition.progress")
+                Text("Status \(recognition.status)")
+                    .font(TypographyTokens.caption)
+                    .foregroundStyle(ColorTokens.textSecondary)
+            case .recognized(let reference):
+                Label("Reading finished", systemImage: "checkmark.seal")
+                    .font(TypographyTokens.title)
+                    .foregroundStyle(ColorTokens.action)
+                Text("\(reference.recognition.blockCount) evidence block(s) captured for the next parser step.")
+                    .font(TypographyTokens.body)
+                    .foregroundStyle(ColorTokens.textSecondary)
+                Button {
                     onDismiss()
                 } label: {
                     Label("Done", systemImage: "checkmark")
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
-                .accessibilityIdentifier("problemCapture.accepted.done")
+            case .recognitionReviewRequired(let reference):
+                Label("Reading finished with uncertainty", systemImage: "exclamationmark.triangle")
+                    .font(TypographyTokens.title)
+                    .foregroundStyle(ColorTokens.warning)
+                Text("\(reference.recognition.blockCount) evidence block(s) were captured. Some evidence needs review later.")
+                    .font(TypographyTokens.body)
+                    .foregroundStyle(ColorTokens.textSecondary)
+                Button {
+                    onDismiss()
+                } label: {
+                    Label("Done", systemImage: "checkmark")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+            case .recognitionFailed(_, let recognition):
+                Label(uploadViewModel.message ?? "Reading could not finish.", systemImage: "exclamationmark.triangle")
+                    .font(TypographyTokens.body.weight(.semibold))
+                    .foregroundStyle(ColorTokens.warning)
+                    .accessibilityIdentifier("problemCapture.recognition.failure")
+                if let recognition {
+                    Text(recognition.lastErrorCode ?? recognition.status)
+                        .font(TypographyTokens.body)
+                        .foregroundStyle(ColorTokens.textSecondary)
+                }
+                Button {
+                    Task { await uploadViewModel.retryRecognition() }
+                } label: {
+                    Label("Try Reading Again", systemImage: "arrow.clockwise")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
             case .preprocessingWarning(let reference, let acceptedAsset):
                 Label(uploadViewModel.message ?? "Capture quality needs review.", systemImage: "exclamationmark.triangle")
                     .font(TypographyTokens.body.weight(.semibold))

@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.verified-ai-learning.example/recognition-evidence.schema.json",
+  "title": "RecognitionEvidence",
+  "description": "Raw recognition-level evidence. This is not a structured ProblemParse and not canonical mathematics.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "blocks", "documentUncertainty", "reviewRequired"],
+  "properties": {
+    "schemaVersion": {
+      "const": "recognition-evidence-v1"
+    },
+    "blocks": {
+      "type": "array",
+      "maxItems": 128,
+      "items": {
+        "$ref": "#/$defs/block"
+      }
+    },
+    "documentUncertainty": {
+      "type": "array",
+      "maxItems": 32,
+      "items": {
+        "type": "string",
+        "maxLength": 96
+      }
+    },
+    "reviewRequired": {
+      "type": "boolean"
+    }
+  },
+  "$defs": {
+    "block": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "text", "boundingBox", "readingOrder", "uncertainty", "layoutHints"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "kind": {
+          "type": "string",
+          "enum": ["TEXT", "MATH", "DIAGRAM", "TABLE", "UNKNOWN", "UNREADABLE"]
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "boundingBox": {
+          "$ref": "#/$defs/boundingBox"
+        },
+        "readingOrder": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "confidence": {
+          "type": ["object", "null"],
+          "additionalProperties": false,
+          "properties": {
+            "raw": {
+              "description": "Provider-native confidence value, when supplied."
+            },
+            "normalized": {
+              "type": ["number", "null"],
+              "minimum": 0,
+              "maximum": 1
+            },
+            "scale": {
+              "type": ["string", "null"],
+              "maxLength": 32
+            }
+          }
+        },
+        "uncertainty": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "type": "string",
+            "maxLength": 96
+          }
+        },
+        "layoutHints": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "type": "string",
+            "maxLength": 64
+          }
+        }
+      }
+    },
+    "boundingBox": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y", "width", "height"],
+      "properties": {
+        "x": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "y": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "width": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "height": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    }
+  }
+}

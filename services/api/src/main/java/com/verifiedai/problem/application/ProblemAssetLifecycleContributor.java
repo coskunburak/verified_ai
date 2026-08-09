@@ -127,13 +127,123 @@ class ProblemAssetLifecycleContributor implements AccountDataLifecycleContributo
             },
             userId
         );
+        List<Map<String, Object>> recognitionJobs = jdbcTemplate.query(
+            """
+            select id,
+                   problem_session_id,
+                   source_asset_id,
+                   input_derivative_id,
+                   status,
+                   capability,
+                   prompt_id,
+                   prompt_version,
+                   schema_version,
+                   route_policy_version,
+                   attempt_count,
+                   max_attempts,
+                   last_error_code,
+                   last_failure_class,
+                   review_required,
+                   created_at,
+                   completed_at
+            from recognition_jobs
+            where user_id = ?
+            order by created_at desc
+            """,
+            (resultSet, rowNum) -> {
+                Map<String, Object> row = new LinkedHashMap<>();
+                row.put("recognitionJobId", resultSet.getObject("id").toString());
+                row.put("problemSessionId", resultSet.getObject("problem_session_id").toString());
+                row.put("sourceAssetId", resultSet.getObject("source_asset_id").toString());
+                row.put("inputDerivativeId", resultSet.getObject("input_derivative_id").toString());
+                row.put("status", resultSet.getString("status"));
+                row.put("capability", resultSet.getString("capability"));
+                row.put("promptId", resultSet.getString("prompt_id"));
+                row.put("promptVersion", resultSet.getString("prompt_version"));
+                row.put("schemaVersion", resultSet.getString("schema_version"));
+                row.put("routePolicyVersion", resultSet.getString("route_policy_version"));
+                row.put("attemptCount", resultSet.getInt("attempt_count"));
+                row.put("maxAttempts", resultSet.getInt("max_attempts"));
+                row.put("lastErrorCode", resultSet.getString("last_error_code"));
+                row.put("lastFailureClass", resultSet.getString("last_failure_class"));
+                row.put("reviewRequired", resultSet.getBoolean("review_required"));
+                row.put("createdAt", resultSet.getTimestamp("created_at").toInstant().toString());
+                row.put("completedAt", resultSet.getTimestamp("completed_at") == null ? null : resultSet.getTimestamp("completed_at").toInstant().toString());
+                return row;
+            },
+            userId
+        );
+        List<Map<String, Object>> recognitionEvidence = jdbcTemplate.query(
+            """
+            select id,
+                   recognition_job_id,
+                   problem_session_id,
+                   source_asset_id,
+                   input_derivative_id,
+                   revision,
+                   schema_version,
+                   normalized_evidence_jsonb::text as normalized_evidence_json,
+                   upstream_quality_evidence_jsonb::text as upstream_quality_evidence_json,
+                   provider,
+                   model,
+                   route_policy_version,
+                   prompt_id,
+                   prompt_version,
+                   input_tokens,
+                   output_tokens,
+                   image_units,
+                   request_units,
+                   provider_latency_ms,
+                   total_latency_ms,
+                   estimated_cost_micros,
+                   currency,
+                   pricing_version,
+                   created_at
+            from recognition_evidence
+            where user_id = ?
+            order by created_at desc
+            """,
+            (resultSet, rowNum) -> {
+                Map<String, Object> row = new LinkedHashMap<>();
+                row.put("recognitionEvidenceId", resultSet.getObject("id").toString());
+                row.put("recognitionJobId", resultSet.getObject("recognition_job_id").toString());
+                row.put("problemSessionId", resultSet.getObject("problem_session_id").toString());
+                row.put("sourceAssetId", resultSet.getObject("source_asset_id").toString());
+                row.put("inputDerivativeId", resultSet.getObject("input_derivative_id").toString());
+                row.put("revision", resultSet.getInt("revision"));
+                row.put("schemaVersion", resultSet.getString("schema_version"));
+                row.put("normalizedEvidenceJson", resultSet.getString("normalized_evidence_json"));
+                row.put("upstreamQualityEvidenceJson", resultSet.getString("upstream_quality_evidence_json"));
+                row.put("provider", resultSet.getString("provider"));
+                row.put("model", resultSet.getString("model"));
+                row.put("routePolicyVersion", resultSet.getString("route_policy_version"));
+                row.put("promptId", resultSet.getString("prompt_id"));
+                row.put("promptVersion", resultSet.getString("prompt_version"));
+                row.put("inputTokens", resultSet.getObject("input_tokens"));
+                row.put("outputTokens", resultSet.getObject("output_tokens"));
+                row.put("imageUnits", resultSet.getObject("image_units"));
+                row.put("requestUnits", resultSet.getInt("request_units"));
+                row.put("providerLatencyMs", resultSet.getLong("provider_latency_ms"));
+                row.put("totalLatencyMs", resultSet.getLong("total_latency_ms"));
+                row.put("estimatedCostMicros", resultSet.getLong("estimated_cost_micros"));
+                row.put("currency", resultSet.getString("currency"));
+                row.put("pricingVersion", resultSet.getString("pricing_version"));
+                row.put("createdAt", resultSet.getTimestamp("created_at").toInstant().toString());
+                row.put("rawProviderOutputIncluded", false);
+                return row;
+            },
+            userId
+        );
         return Map.of(
             "assets", assets,
             "derivatives", derivatives,
             "qualityEvidence", qualityEvidence,
+            "recognitionJobs", recognitionJobs,
+            "recognitionEvidence", recognitionEvidence,
             "rawBinaryIncluded", false,
             "derivedBinaryIncluded", false,
-            "retentionNote", "Raw source image/PDF objects and derived preprocessing objects are private object-storage assets and are removed during account deletion."
+            "rawRecognitionProviderOutputIncluded", false,
+            "retentionNote", "Raw source image/PDF objects and derived preprocessing objects are private object-storage assets and are removed during account deletion. Recognition rows cascade with problem sessions; raw provider output is stored separately and excluded from export payloads."
         );
     }
 

@@ -51,6 +51,26 @@ final class ProblemAssetUploadAPI: ProblemAssetUploadServicing, @unchecked Senda
         )
         return try response.body.result()
     }
+
+    func requestRecognition(problemSessionId: UUID) async throws -> ProblemRecognitionResult {
+        let response: HTTPResponse<ProblemRecognitionWireResponse> = try await apiClient.send(
+            HTTPRequest(
+                endpoint: Endpoint(path: "/api/v1/problem-sessions/\(problemSessionId.uuidString)/recognition", method: .post),
+                allowsAuthRefreshRetry: false
+            )
+        )
+        return try response.body.result()
+    }
+
+    func getRecognition(problemSessionId: UUID) async throws -> ProblemRecognitionResult {
+        let response: HTTPResponse<ProblemRecognitionWireResponse> = try await apiClient.send(
+            HTTPRequest(
+                endpoint: Endpoint(path: "/api/v1/problem-sessions/\(problemSessionId.uuidString)/recognition", method: .get),
+                allowsAuthRefreshRetry: false
+            )
+        )
+        return try response.body.result()
+    }
 }
 
 private struct ProblemAssetUploadWireRequest: Encodable {
@@ -227,6 +247,95 @@ private struct ProblemAssetQualitySignalWireResponse: Decodable {
             policyVersion: policyVersion,
             messageCode: messageCode
         )
+    }
+}
+
+private struct ProblemRecognitionWireResponse: Decodable {
+    let recognitionJobId: UUID?
+    let problemSessionId: UUID
+    let sourceAssetId: UUID?
+    let inputDerivativeId: UUID?
+    let status: String
+    let capability: String
+    let attemptCount: Int
+    let maxAttempts: Int
+    let lastErrorCode: String?
+    let lastFailureClass: String?
+    let reviewRequired: Bool
+    let schemaVersion: String?
+    let promptId: String?
+    let promptVersion: String?
+    let routePolicyVersion: String?
+    let provider: String?
+    let model: String?
+    let blockCount: Int
+    let blocks: [ProblemRecognitionBlockWireResponse]
+    let completedAt: String?
+
+    func result() throws -> ProblemRecognitionResult {
+        let completedAtDate = ISO8601WireDate.parse(completedAt)
+        if completedAt != nil, completedAtDate == nil {
+            throw NetworkError.decoding("unsupported_recognition_completion_date")
+        }
+        return ProblemRecognitionResult(
+            recognitionJobId: recognitionJobId,
+            problemSessionId: problemSessionId,
+            sourceAssetId: sourceAssetId,
+            inputDerivativeId: inputDerivativeId,
+            status: status,
+            capability: capability,
+            attemptCount: attemptCount,
+            maxAttempts: maxAttempts,
+            lastErrorCode: lastErrorCode,
+            lastFailureClass: lastFailureClass,
+            reviewRequired: reviewRequired,
+            schemaVersion: schemaVersion,
+            promptId: promptId,
+            promptVersion: promptVersion,
+            routePolicyVersion: routePolicyVersion,
+            provider: provider,
+            model: model,
+            blockCount: blockCount,
+            blocks: blocks.map(\.block),
+            completedAt: completedAtDate
+        )
+    }
+}
+
+private struct ProblemRecognitionBlockWireResponse: Decodable {
+    let id: String
+    let kind: String
+    let text: String
+    let boundingBox: ProblemRecognitionBoundingBoxWireResponse
+    let readingOrder: Int
+    let confidenceStatus: String
+    let normalizedConfidence: Double?
+    let uncertainty: [String]
+    let layoutHints: [String]
+
+    var block: ProblemRecognitionBlock {
+        ProblemRecognitionBlock(
+            id: id,
+            kind: kind,
+            text: text,
+            boundingBox: boundingBox.box,
+            readingOrder: readingOrder,
+            confidenceStatus: confidenceStatus,
+            normalizedConfidence: normalizedConfidence,
+            uncertainty: uncertainty,
+            layoutHints: layoutHints
+        )
+    }
+}
+
+private struct ProblemRecognitionBoundingBoxWireResponse: Decodable {
+    let x: Double
+    let y: Double
+    let width: Double
+    let height: Double
+
+    var box: ProblemRecognitionBoundingBox {
+        ProblemRecognitionBoundingBox(x: x, y: y, width: width, height: height)
     }
 }
 
