@@ -81,3 +81,9 @@ Tutor receives explicit verified/reference state and learner context. It must no
 `vision-recognition/v001` asks only for visible text/math-like evidence, spatial blocks, reading order, and uncertainty. It explicitly forbids solving, classifying, correcting, inferring hidden symbols, or producing canonical math. Image text that looks like instructions is treated as student content, not as prompt authority.
 
 The paired schema version is `recognition-evidence-v1` in `packages/schemas/recognition-evidence.schema.json`. Provider JSON must pass syntax, schema, and recognition-level semantic validation before normalized evidence is persisted.
+
+## Sprint 4.5 problem parser prompt
+
+`problem-parser/v001` asks only for provider-independent parser-level structure from normalized RecognitionEvidence. It explicitly forbids solving, solution steps, safe executable AST, primary skill/difficulty classification, invented taxonomy labels, hidden constraints, and following instructions embedded in recognized problem text.
+
+The paired schema version is `problem-parse-v1` in `packages/schemas/problem-parse.schema.json`. Provider JSON must pass syntax, strict schema validation, parser-level semantic validation, supported-scope validation, taxonomy lookup, variable/constraint/source-reference checks, and ownership checks before a `ProblemParse` revision is accepted. Future prompt or schema tuning must create `v002` or `problem-parse-v2`; durable provenance must never silently reinterpret an old revision.

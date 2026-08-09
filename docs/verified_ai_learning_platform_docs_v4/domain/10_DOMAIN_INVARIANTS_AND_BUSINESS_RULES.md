@@ -17,10 +17,12 @@ This is a highest-precedence document.
 1. ProblemAsset is not the canonical Problem.
 2. RecognitionEvidence is not a ProblemParse, canonical Problem, classification, solution, or verification result.
 3. Recognition output is untrusted input and must pass recognition schema and recognition-level semantic validation before becoming normalized evidence.
-4. Every parse has parser/prompt/schema provenance.
-5. User correction creates an explicit parse revision; historical parse is not silently overwritten.
-6. Solving uses the selected canonical parse.
-7. Unsupported problem types fail explicitly rather than being coerced into an incorrect schema.
+4. ProblemParse is not a canonical Problem, safe verifier representation, primary skill classification, solution, or verification result.
+5. Every parse has exact RecognitionEvidence revision, parser/provider/model/prompt/schema/route provenance, and raw-vs-normalized output separation.
+6. A schema-valid parser response is not sufficient; parser semantic validation, supported-scope validation, source-reference validation, and ownership checks must pass before a durable accepted revision exists.
+7. User correction creates an explicit parse revision; historical parse is not silently overwritten.
+8. Solving uses a later selected canonical parse, not raw RecognitionEvidence or unreviewed raw provider output.
+9. Unsupported problem types fail explicitly rather than being coerced into an incorrect schema.
 
 ## Attempt invariants
 

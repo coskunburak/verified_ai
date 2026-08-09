@@ -167,6 +167,47 @@ final class ProblemAssetUploadViewModel {
         await startRecognition(reference)
     }
 
+    func startParse(_ reference: RecognizedProblemReference) async {
+        let requestID = UUID()
+        activeRequestID = requestID
+
+        guard networkMonitor.isReachable else {
+            logger.warning("problem_parse.offline")
+            state = .parseFailed(reference, nil)
+            message = "Understanding the problem needs a network connection."
+            return
+        }
+
+        do {
+            state = .startingParse(reference)
+            message = "Understanding the problem."
+            let requested = try await uploadAPI.requestParse(problemSessionId: reference.preprocessedAsset.durableAsset.problemSessionId)
+            guard activeRequestID == requestID else { return }
+            await observeParse(requested, reference: reference, requestID: requestID)
+        } catch let error as NetworkError {
+            logger.warning("problem_parse.failed")
+            state = .parseFailed(reference, nil)
+            if case .server(let problem) = error, problem.code == "PROBLEM_UNSUPPORTED" {
+                message = "This problem type is not supported yet."
+            } else if case .server(let problem) = error {
+                message = "Understanding failed: \(problem.code)"
+            } else {
+                message = "Understanding could not continue."
+            }
+        } catch {
+            logger.warning("problem_parse.failed")
+            state = .parseFailed(reference, nil)
+            message = "Understanding could not continue."
+        }
+    }
+
+    func retryParse() async {
+        guard case .parseFailed(let reference, _) = state else {
+            return
+        }
+        await startParse(reference)
+    }
+
     func cancel() {
         activeRequestID = nil
         state = .idle
@@ -289,6 +330,74 @@ final class ProblemAssetUploadViewModel {
             logger.warning("problem_recognition.retryable_failure")
             state = .recognitionFailed(reference, recognition)
             message = "Reading can be retried."
+            return true
+        }
+        return false
+    }
+
+    private func observeParse(
+        _ initial: ProblemParseResult,
+        reference: RecognizedProblemReference,
+        requestID: UUID
+    ) async {
+        var current = initial
+        for attempt in 0...5 {
+            guard activeRequestID == requestID else { return }
+            if applyParseResult(current, reference: reference) {
+                return
+            }
+            state = .parsing(reference, current)
+            message = "Understanding the problem."
+            let delayNanos = UInt64(min(2.0, 0.4 * Double(attempt + 1)) * 1_000_000_000)
+            try? await Task.sleep(nanoseconds: delayNanos)
+            guard activeRequestID == requestID else { return }
+            do {
+                current = try await uploadAPI.getParse(problemSessionId: reference.preprocessedAsset.durableAsset.problemSessionId)
+            } catch {
+                logger.warning("problem_parse.poll_failed")
+                state = .parseFailed(reference, current)
+                message = "Understanding status could not be refreshed."
+                return
+            }
+        }
+        state = .parsing(reference, current)
+        message = "Understanding is still in progress."
+    }
+
+    @discardableResult
+    private func applyParseResult(
+        _ parse: ProblemParseResult,
+        reference: RecognizedProblemReference
+    ) -> Bool {
+        if parse.isUnsupported {
+            logger.warning("problem_parse.unsupported")
+            state = .parseUnsupported(reference, parse)
+            message = "This problem type is not supported yet."
+            return true
+        }
+        if parse.isTerminalSuccess {
+            let parsed = ParsedProblemReference(recognizedProblem: reference, parse: parse)
+            if parse.reviewRequired || parse.supportStatus == "REVIEW_REQUIRED" {
+                logger.warning("problem_parse.review_required")
+                state = .parseReviewRequired(parsed)
+                message = "Understanding finished with uncertainty."
+            } else {
+                logger.info("problem_parse.succeeded")
+                state = .parsed(parsed)
+                message = "Understanding finished."
+            }
+            return true
+        }
+        if parse.isTerminalFailure {
+            logger.warning("problem_parse.terminal_failure")
+            state = .parseFailed(reference, parse)
+            message = "Understanding could not finish."
+            return true
+        }
+        if parse.isRetryableFailure {
+            logger.warning("problem_parse.retryable_failure")
+            state = .parseFailed(reference, parse)
+            message = "Understanding can be retried."
             return true
         }
         return false

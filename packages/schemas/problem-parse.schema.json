@@ -1,0 +1,323 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.verified-ai-learning.example/problem-parse.schema.json",
+  "title": "ProblemParse",
+  "description": "Provider-independent Sprint 4.5 parser-level interpretation. This is not canonical safe mathematics, a verifier AST, a solution, or skill classification.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "supportStatus",
+    "subjectId",
+    "topicId",
+    "taskType",
+    "problemType",
+    "expressions",
+    "variables",
+    "constraints",
+    "assumptions",
+    "uncertainty",
+    "sourceEvidenceRefs",
+    "visualQualityRisks",
+    "reviewRequired"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "problem-parse-v1"
+    },
+    "supportStatus": {
+      "type": "string",
+      "enum": ["SUPPORTED", "REVIEW_REQUIRED", "UNSUPPORTED"]
+    },
+    "unsupportedReason": {
+      "type": ["string", "null"],
+      "enum": [
+        "UNSUPPORTED_SUBJECT",
+        "UNSUPPORTED_TOPIC",
+        "UNSUPPORTED_TASK",
+        "UNSUPPORTED_STRUCTURE",
+        "MULTI_PART_UNSUPPORTED",
+        "DIAGRAM_REQUIRED",
+        "TEXT_HEAVY_WORD_PROBLEM",
+        "INSUFFICIENT_RECOGNITION_EVIDENCE",
+        "SCHEMA_CANNOT_REPRESENT",
+        null
+      ]
+    },
+    "subjectId": {
+      "type": ["string", "null"],
+      "enum": ["MATH", null]
+    },
+    "topicId": {
+      "type": ["string", "null"],
+      "enum": [
+        "MATH.ARITHMETIC",
+        "MATH.ALGEBRA",
+        "MATH.EQUATIONS",
+        "MATH.FUNCTIONS",
+        "MATH.CALCULUS.LIMITS",
+        "MATH.CALCULUS.DIFFERENTIATION",
+        "MATH.CALCULUS.INTEGRATION",
+        null
+      ]
+    },
+    "taskType": {
+      "type": ["string", "null"],
+      "enum": [
+        "EVALUATE",
+        "SIMPLIFY",
+        "SOLVE_EQUATION",
+        "SOLVE_INEQUALITY",
+        "FIND_FUNCTION_VALUE",
+        "FIND_LIMIT",
+        "DIFFERENTIATE",
+        "INTEGRATE",
+        null
+      ]
+    },
+    "problemType": {
+      "type": ["string", "null"],
+      "enum": [
+        "ARITHMETIC_EXPRESSION",
+        "ALGEBRAIC_EXPRESSION",
+        "EQUATION",
+        "INEQUALITY",
+        "FUNCTION",
+        "LIMIT",
+        "DERIVATIVE",
+        "INTEGRAL",
+        null
+      ]
+    },
+    "expressions": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "$ref": "#/$defs/expression"
+      }
+    },
+    "variables": {
+      "type": "array",
+      "maxItems": 16,
+      "items": {
+        "$ref": "#/$defs/variable"
+      }
+    },
+    "constraints": {
+      "type": "array",
+      "maxItems": 16,
+      "items": {
+        "$ref": "#/$defs/constraint"
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "maxItems": 16,
+      "items": {
+        "$ref": "#/$defs/assumption"
+      }
+    },
+    "uncertainty": {
+      "$ref": "#/$defs/uncertainty"
+    },
+    "sourceEvidenceRefs": {
+      "type": "array",
+      "maxItems": 32,
+      "items": {
+        "$ref": "#/$defs/sourceEvidenceRef"
+      }
+    },
+    "visualQualityRisks": {
+      "type": "array",
+      "maxItems": 32,
+      "items": {
+        "$ref": "#/$defs/visualQualityRisk"
+      }
+    },
+    "reviewRequired": {
+      "type": "boolean"
+    }
+  },
+  "$defs": {
+    "expression": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "role", "sourceText", "normalizedText", "displayLatex", "sourceBlockIds"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "role": {
+          "type": "string",
+          "enum": ["PRIMARY", "GIVEN", "TARGET", "CONSTRAINT"]
+        },
+        "sourceText": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "normalizedText": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "displayLatex": {
+          "type": ["string", "null"],
+          "maxLength": 2000
+        },
+        "relation": {
+          "type": ["string", "null"],
+          "enum": ["EQUALS", "LESS_THAN", "LESS_THAN_OR_EQUAL", "GREATER_THAN", "GREATER_THAN_OR_EQUAL", null]
+        },
+        "sourceBlockIds": {
+          "$ref": "#/$defs/sourceBlockIds"
+        }
+      }
+    },
+    "variable": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["symbol", "role", "sourceBlockIds"],
+      "properties": {
+        "symbol": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_]{0,15}$"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["VARIABLE", "PARAMETER", "UNKNOWN"]
+        },
+        "sourceBlockIds": {
+          "$ref": "#/$defs/sourceBlockIds"
+        }
+      }
+    },
+    "constraint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "sourceText", "normalizedText", "variables", "explicit", "sourceBlockIds"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "sourceText": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "normalizedText": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "variables": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_]{0,15}$"
+          }
+        },
+        "explicit": {
+          "const": true
+        },
+        "sourceBlockIds": {
+          "$ref": "#/$defs/sourceBlockIds"
+        }
+      }
+    },
+    "assumption": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "text", "explicit", "sourceBlockIds"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "explicit": {
+          "type": "boolean"
+        },
+        "sourceBlockIds": {
+          "$ref": "#/$defs/sourceBlockIds"
+        }
+      }
+    },
+    "uncertainty": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recognition", "parse", "reviewRequired"],
+      "properties": {
+        "recognition": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {
+            "type": "string",
+            "maxLength": 128
+          }
+        },
+        "parse": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {
+            "type": "string",
+            "maxLength": 128
+          }
+        },
+        "reviewRequired": {
+          "type": "boolean"
+        }
+      }
+    },
+    "sourceEvidenceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["blockId", "fieldPath"],
+      "properties": {
+        "blockId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "fieldPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        }
+      }
+    },
+    "visualQualityRisk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["signalType", "severity"],
+      "properties": {
+        "signalType": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["PASS", "WARNING", "BLOCKING"]
+        },
+        "messageCode": {
+          "type": ["string", "null"],
+          "maxLength": 96
+        }
+      }
+    },
+    "sourceBlockIds": {
+      "type": "array",
+      "maxItems": 16,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 64
+      }
+    }
+  }
+}

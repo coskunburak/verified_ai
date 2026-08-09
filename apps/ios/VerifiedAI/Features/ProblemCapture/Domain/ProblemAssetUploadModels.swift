@@ -12,6 +12,12 @@ enum ProblemAssetUploadPhase: Equatable, Sendable {
     case recognized(RecognizedProblemReference)
     case recognitionReviewRequired(RecognizedProblemReference)
     case recognitionFailed(PreprocessedProblemAssetReference, ProblemRecognitionResult?)
+    case startingParse(RecognizedProblemReference)
+    case parsing(RecognizedProblemReference, ProblemParseResult)
+    case parsed(ParsedProblemReference)
+    case parseReviewRequired(ParsedProblemReference)
+    case parseUnsupported(RecognizedProblemReference, ProblemParseResult)
+    case parseFailed(RecognizedProblemReference, ProblemParseResult?)
     case preprocessingWarning(PreprocessedProblemAssetReference, AcceptedCapturedAsset)
     case preprocessingFailed(DurableProblemAssetReference?, ProblemAssetPreprocessingResult?, AcceptedCapturedAsset)
     case recoverableFailure(ProblemAssetUploadFailure, AcceptedCapturedAsset)
@@ -53,6 +59,11 @@ struct PreprocessedProblemAssetReference: Equatable, Sendable {
 struct RecognizedProblemReference: Equatable, Sendable {
     let preprocessedAsset: PreprocessedProblemAssetReference
     let recognition: ProblemRecognitionResult
+}
+
+struct ParsedProblemReference: Equatable, Sendable {
+    let recognizedProblem: RecognizedProblemReference
+    let parse: ProblemParseResult
 }
 
 struct ProblemAssetPreprocessingResult: Equatable, Sendable {
@@ -159,6 +170,121 @@ struct ProblemRecognitionBoundingBox: Equatable, Sendable {
     let y: Double
     let width: Double
     let height: Double
+}
+
+struct ProblemParseResult: Equatable, Sendable {
+    let parseJobId: UUID?
+    let problemSessionId: UUID
+    let recognitionEvidenceId: UUID?
+    let recognitionEvidenceRevision: Int?
+    let jobStatus: String
+    let capability: String
+    let attemptCount: Int
+    let maxAttempts: Int
+    let lastErrorCode: String?
+    let lastFailureClass: String?
+    let problemParseId: UUID?
+    let parseRevision: Int?
+    let supportStatus: String?
+    let unsupportedReason: String?
+    let reviewRequired: Bool
+    let schemaVersion: String?
+    let promptId: String?
+    let promptVersion: String?
+    let routePolicyVersion: String?
+    let provider: String?
+    let model: String?
+    let normalizedProblem: NormalizedProblemParse?
+    let createdAt: Date?
+    let updatedAt: Date?
+    let completedAt: Date?
+
+    var isTerminalSuccess: Bool {
+        jobStatus == "SUCCEEDED"
+    }
+
+    var isUnsupported: Bool {
+        jobStatus == "UNSUPPORTED" || supportStatus == "UNSUPPORTED"
+    }
+
+    var isRetryableFailure: Bool {
+        jobStatus == "FAILED_RETRYABLE"
+    }
+
+    var isTerminalFailure: Bool {
+        jobStatus == "FAILED_TERMINAL"
+    }
+}
+
+struct NormalizedProblemParse: Equatable, Sendable {
+    let schemaVersion: String
+    let supportStatus: String
+    let unsupportedReason: String?
+    let subjectId: String?
+    let topicId: String?
+    let taskType: String?
+    let problemType: String?
+    let expressions: [ProblemParseExpression]
+    let variables: [ProblemParseVariable]
+    let constraints: [ProblemParseConstraint]
+    let assumptions: [ProblemParseAssumption]
+    let uncertainty: ProblemParseUncertainty
+    let sourceEvidenceRefs: [ProblemParseSourceEvidenceRef]
+    let visualQualityRisks: [ProblemParseVisualQualityRisk]
+    let reviewRequired: Bool
+}
+
+struct ProblemParseExpression: Equatable, Identifiable, Sendable {
+    let id: String
+    let role: String
+    let sourceText: String
+    let normalizedText: String
+    let displayLatex: String?
+    let relation: String?
+    let sourceBlockIds: [String]
+}
+
+struct ProblemParseVariable: Equatable, Identifiable, Sendable {
+    let symbol: String
+    let role: String
+    let sourceBlockIds: [String]
+
+    var id: String {
+        symbol
+    }
+}
+
+struct ProblemParseConstraint: Equatable, Identifiable, Sendable {
+    let id: String
+    let sourceText: String
+    let normalizedText: String
+    let variables: [String]
+    let explicit: Bool
+    let sourceBlockIds: [String]
+}
+
+struct ProblemParseAssumption: Equatable, Identifiable, Sendable {
+    let id: String
+    let text: String
+    let explicit: Bool
+    let sourceBlockIds: [String]
+}
+
+struct ProblemParseUncertainty: Equatable, Sendable {
+    let recognition: [String]
+    let parse: [String]
+    let reviewRequired: Bool
+}
+
+struct ProblemParseSourceEvidenceRef: Equatable, Sendable {
+    let blockId: String
+    let fieldPath: String
+}
+
+struct ProblemParseVisualQualityRisk: Equatable, Sendable {
+    let signalType: String
+    let severity: String
+    let messageCode: String?
 }
 
 struct ProblemAssetUploadRequest: Equatable, Sendable {

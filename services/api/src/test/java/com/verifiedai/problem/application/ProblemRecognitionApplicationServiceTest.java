@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.verifiedai.ai.application.AiCapability;
 import com.verifiedai.ai.application.AiModelGateway;
+import com.verifiedai.ai.application.AiProblemNormalizeRequest;
+import com.verifiedai.ai.application.AiProblemNormalizeResult;
 import com.verifiedai.ai.application.AiProvenance;
 import com.verifiedai.ai.application.AiRoutePlan;
 import com.verifiedai.ai.application.AiUsage;
@@ -413,6 +415,22 @@ final class ProblemRecognitionApplicationServiceTest extends PostgresIntegration
 
         @Override
         public AiRoutePlan routePlan(AiCapability capability) {
+            if (capability == AiCapability.PROBLEM_NORMALIZE) {
+                return new AiRoutePlan(
+                    capability,
+                    "problem-parser-route-v1",
+                    "TEST_PROVIDER",
+                    "",
+                    "problem-parser",
+                    "v001",
+                    "problem-parse-v1",
+                    Duration.ofSeconds(20),
+                    2,
+                    65_536,
+                    20_000,
+                    "test-pricing-v1"
+                );
+            }
             return new AiRoutePlan(
                 capability,
                 "vision-route-v1",
@@ -448,6 +466,11 @@ final class ProblemRecognitionApplicationServiceTest extends PostgresIntegration
                 new AiUsage(12, 24, 1, 1, 42, "USD", "test-pricing-v1"),
                 7
             );
+        }
+
+        @Override
+        public AiProblemNormalizeResult executeProblemNormalize(AiProblemNormalizeRequest request) {
+            throw new UnsupportedOperationException("Problem normalization is outside recognition tests");
         }
 
         void enqueue(String rawOutputJson) {

@@ -702,6 +702,93 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+  /api/v1/problem-sessions/{sessionId}/parse:
+    post:
+      summary: Request structured problem parsing for durable recognition evidence
+      description: Creates or reuses a durable PROBLEM_NORMALIZE parse job for the current recognized evidence revision. The endpoint does not solve, verify, create a safe AST, assign primary skill, assign difficulty, or expose raw provider output.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "202":
+          description: Parse job accepted or existing job reused
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemParseResponse"
+        "401":
+          description: Access token is invalid or expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Account or entitlement does not allow parsing
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Problem session was not found for the authenticated owner
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "409":
+          description: No durable recognition evidence is available for parsing
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "429":
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+    get:
+      summary: Poll structured problem parse job status and normalized parse output
+      description: Returns safe parser lifecycle state and normalized ProblemParse for the authenticated owner. Raw parser output and provider request details are not exposed.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Current parse status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemParseResponse"
+        "401":
+          description: Access token is invalid or expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Account is not active
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Problem session was not found for the authenticated owner
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
   /api/v1/me/billing/apple/configuration:
     get:
       summary: Return backend-owned App Store purchase configuration for the authenticated user
@@ -1400,6 +1487,267 @@ components:
           type: number
           minimum: 0
           maximum: 1
+    ProblemParseResponse:
+      type: object
+      required: [problemSessionId, jobStatus, capability, attemptCount, maxAttempts, reviewRequired]
+      properties:
+        parseJobId:
+          type: [string, "null"]
+          format: uuid
+        problemSessionId:
+          type: string
+          format: uuid
+        recognitionEvidenceId:
+          type: [string, "null"]
+          format: uuid
+        recognitionEvidenceRevision:
+          type: [integer, "null"]
+          minimum: 1
+        jobStatus:
+          type: string
+          enum: [NOT_STARTED, QUEUED, RUNNING, SUCCEEDED, FAILED_RETRYABLE, FAILED_TERMINAL, UNSUPPORTED]
+        capability:
+          type: string
+          enum: [PROBLEM_NORMALIZE]
+        attemptCount:
+          type: integer
+          minimum: 0
+        maxAttempts:
+          type: integer
+          minimum: 0
+        lastErrorCode:
+          type: [string, "null"]
+          examples: [PROBLEM_PARSE_FAILED, PROBLEM_UNSUPPORTED]
+        lastFailureClass:
+          type: [string, "null"]
+          examples: [SCHEMA_INVALID, SEMANTIC_INVALID, TIMEOUT]
+        problemParseId:
+          type: [string, "null"]
+          format: uuid
+        parseRevision:
+          type: [integer, "null"]
+          minimum: 1
+        supportStatus:
+          type: [string, "null"]
+          enum: [SUPPORTED, REVIEW_REQUIRED, UNSUPPORTED, null]
+        unsupportedReason:
+          type: [string, "null"]
+          enum:
+            - UNSUPPORTED_SUBJECT
+            - UNSUPPORTED_TOPIC
+            - UNSUPPORTED_TASK
+            - UNSUPPORTED_STRUCTURE
+            - MULTI_PART_UNSUPPORTED
+            - DIAGRAM_REQUIRED
+            - TEXT_HEAVY_WORD_PROBLEM
+            - INSUFFICIENT_RECOGNITION_EVIDENCE
+            - SCHEMA_CANNOT_REPRESENT
+            - null
+        reviewRequired:
+          type: boolean
+        schemaVersion:
+          type: [string, "null"]
+          examples: [problem-parse-v1]
+        promptId:
+          type: [string, "null"]
+          examples: [problem-parser]
+        promptVersion:
+          type: [string, "null"]
+          examples: [v001]
+        routePolicyVersion:
+          type: [string, "null"]
+          examples: [problem-parser-route-v1]
+        provider:
+          type: [string, "null"]
+          description: Provider identifier for safe provenance, not a client routing input.
+        model:
+          type: [string, "null"]
+          description: Model identifier for safe provenance, not product semantics.
+        normalizedProblem:
+          anyOf:
+            - $ref: "#/components/schemas/NormalizedProblemParse"
+            - type: "null"
+        createdAt:
+          type: [string, "null"]
+          format: date-time
+        updatedAt:
+          type: [string, "null"]
+          format: date-time
+        completedAt:
+          type: [string, "null"]
+          format: date-time
+    NormalizedProblemParse:
+      type: object
+      additionalProperties: false
+      required: [schemaVersion, supportStatus, subjectId, topicId, taskType, problemType, expressions, variables, constraints, assumptions, uncertainty, sourceEvidenceRefs, visualQualityRisks, reviewRequired]
+      properties:
+        schemaVersion:
+          type: string
+          enum: [problem-parse-v1]
+        supportStatus:
+          type: string
+          enum: [SUPPORTED, REVIEW_REQUIRED, UNSUPPORTED]
+        unsupportedReason:
+          type: [string, "null"]
+        subjectId:
+          type: [string, "null"]
+          enum: [MATH, null]
+        topicId:
+          type: [string, "null"]
+          enum: [MATH.ARITHMETIC, MATH.ALGEBRA, MATH.EQUATIONS, MATH.FUNCTIONS, MATH.CALCULUS.LIMITS, MATH.CALCULUS.DIFFERENTIATION, MATH.CALCULUS.INTEGRATION, null]
+        taskType:
+          type: [string, "null"]
+          enum: [EVALUATE, SIMPLIFY, SOLVE_EQUATION, SOLVE_INEQUALITY, FIND_FUNCTION_VALUE, FIND_LIMIT, DIFFERENTIATE, INTEGRATE, null]
+        problemType:
+          type: [string, "null"]
+          enum: [ARITHMETIC_EXPRESSION, ALGEBRAIC_EXPRESSION, EQUATION, INEQUALITY, FUNCTION, LIMIT, DERIVATIVE, INTEGRAL, null]
+        expressions:
+          type: array
+          maxItems: 8
+          items:
+            $ref: "#/components/schemas/ProblemParseExpression"
+        variables:
+          type: array
+          maxItems: 16
+          items:
+            $ref: "#/components/schemas/ProblemParseVariable"
+        constraints:
+          type: array
+          maxItems: 16
+          items:
+            $ref: "#/components/schemas/ProblemParseConstraint"
+        assumptions:
+          type: array
+          maxItems: 16
+          items:
+            $ref: "#/components/schemas/ProblemParseAssumption"
+        uncertainty:
+          $ref: "#/components/schemas/ProblemParseUncertainty"
+        sourceEvidenceRefs:
+          type: array
+          maxItems: 32
+          items:
+            $ref: "#/components/schemas/ProblemParseSourceEvidenceRef"
+        visualQualityRisks:
+          type: array
+          maxItems: 32
+          items:
+            $ref: "#/components/schemas/ProblemParseVisualQualityRisk"
+        reviewRequired:
+          type: boolean
+    ProblemParseExpression:
+      type: object
+      additionalProperties: false
+      required: [id, role, sourceText, normalizedText, displayLatex, sourceBlockIds]
+      properties:
+        id:
+          type: string
+        role:
+          type: string
+          enum: [PRIMARY, GIVEN, TARGET, CONSTRAINT]
+        sourceText:
+          type: string
+          description: Parser-level source text, not trusted executable math.
+        normalizedText:
+          type: string
+          description: Parser-level normalized text, not a safe verifier AST.
+        displayLatex:
+          type: [string, "null"]
+          description: Presentation notation only.
+        relation:
+          type: [string, "null"]
+          enum: [EQUALS, LESS_THAN, LESS_THAN_OR_EQUAL, GREATER_THAN, GREATER_THAN_OR_EQUAL, null]
+        sourceBlockIds:
+          type: array
+          items:
+            type: string
+    ProblemParseVariable:
+      type: object
+      additionalProperties: false
+      required: [symbol, role, sourceBlockIds]
+      properties:
+        symbol:
+          type: string
+        role:
+          type: string
+          enum: [VARIABLE, PARAMETER, UNKNOWN]
+        sourceBlockIds:
+          type: array
+          items:
+            type: string
+    ProblemParseConstraint:
+      type: object
+      additionalProperties: false
+      required: [id, sourceText, normalizedText, variables, explicit, sourceBlockIds]
+      properties:
+        id:
+          type: string
+        sourceText:
+          type: string
+        normalizedText:
+          type: string
+        variables:
+          type: array
+          items:
+            type: string
+        explicit:
+          type: boolean
+          enum: [true]
+        sourceBlockIds:
+          type: array
+          items:
+            type: string
+    ProblemParseAssumption:
+      type: object
+      additionalProperties: false
+      required: [id, text, explicit, sourceBlockIds]
+      properties:
+        id:
+          type: string
+        text:
+          type: string
+        explicit:
+          type: boolean
+        sourceBlockIds:
+          type: array
+          items:
+            type: string
+    ProblemParseUncertainty:
+      type: object
+      additionalProperties: false
+      required: [recognition, parse, reviewRequired]
+      properties:
+        recognition:
+          type: array
+          items:
+            type: string
+        parse:
+          type: array
+          items:
+            type: string
+        reviewRequired:
+          type: boolean
+    ProblemParseSourceEvidenceRef:
+      type: object
+      additionalProperties: false
+      required: [blockId, fieldPath]
+      properties:
+        blockId:
+          type: string
+        fieldPath:
+          type: string
+    ProblemParseVisualQualityRisk:
+      type: object
+      additionalProperties: false
+      required: [signalType, severity]
+      properties:
+        signalType:
+          type: string
+        severity:
+          type: string
+          enum: [PASS, WARNING, BLOCKING]
+        messageCode:
+          type: [string, "null"]
     AppleBillingConfigurationResponse:
       type: object
       required: [appAccountToken, purchaseAvailable, environment, products]

@@ -9,6 +9,10 @@ import org.springframework.data.repository.query.Param;
 public interface RecognitionEvidenceJpaRepository extends JpaRepository<RecognitionEvidenceJpaEntity, UUID> {
     Optional<RecognitionEvidenceJpaEntity> findByRecognitionJobId(UUID recognitionJobId);
 
+    Optional<RecognitionEvidenceJpaEntity> findByIdAndUserId(UUID id, UUID userId);
+
+    Optional<RecognitionEvidenceJpaEntity> findFirstByProblemSessionIdAndUserIdOrderByCreatedAtDesc(UUID problemSessionId, UUID userId);
+
     @Query("""
         select coalesce(max(evidence.revision), 0)
         from RecognitionEvidenceJpaEntity evidence

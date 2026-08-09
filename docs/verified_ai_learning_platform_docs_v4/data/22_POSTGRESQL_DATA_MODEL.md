@@ -253,15 +253,25 @@ Sprint 4.4 evidence is raw recognition evidence only. Raw provider output is sto
 
 ### problem_parses
 - id
+- problem_parse_job_id
 - problem_session_id
+- recognition_evidence_id
+- recognition_evidence_revision
 - revision
-- parser_version
-- prompt_version
+- source
+- support_status
+- unsupported_reason nullable
+- review_required
+- schema_version
 - raw_output_jsonb
 - normalized_problem_jsonb
-- parse_confidence
-- selected
+- provider/model
+- prompt_id/prompt_version
+- route_policy_version
+- usage/cost/latency fields
 - created_at
+
+Sprint 4.5 also adds `problem_parse_jobs` with user/session/evidence ownership, `PROBLEM_NORMALIZE` capability, status, attempt/lock/retry timing, prompt/schema/route identity, last failure class, usage/cost/latency, and provider/model provenance. `problem_parses` is append-only: revision is unique within `problem_session_id`, raw parser output is separate from normalized parser output, and every row references the exact RecognitionEvidence id/revision used to produce it. Successful, review-required, and unsupported parser outcomes may create revisions; schema/semantic failures do not create accepted revisions. Sprint 4.5 does not create canonical `problems`, safe verifier representations, skill classifications, or selected user-corrected parses.
 
 ### problems
 - id

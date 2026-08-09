@@ -244,6 +244,37 @@ final class ProblemAssetUploadViewModelTests: XCTestCase {
         )
     }
 
+    func testParseSuccessTransitionsFromRecognizedToParsed() async throws {
+        let viewModel = makeViewModel()
+        let recognized = RecognizedProblemReference(
+            preprocessedAsset: FakeProblemAssetUploadAPI.preprocessedReference,
+            recognition: FakeProblemAssetUploadAPI.recognitionSucceeded
+        )
+
+        await viewModel.startParse(recognized)
+
+        XCTAssertEqual(
+            viewModel.state,
+            .parsed(ParsedProblemReference(
+                recognizedProblem: recognized,
+                parse: FakeProblemAssetUploadAPI.parseSucceeded
+            ))
+        )
+    }
+
+    func testUnsupportedParseTransitionsToUnsupportedState() async throws {
+        let api = FakeProblemAssetUploadAPI(parseResults: [FakeProblemAssetUploadAPI.parseUnsupported])
+        let viewModel = makeViewModel(api: api)
+        let recognized = RecognizedProblemReference(
+            preprocessedAsset: FakeProblemAssetUploadAPI.preprocessedReference,
+            recognition: FakeProblemAssetUploadAPI.recognitionSucceeded
+        )
+
+        await viewModel.startParse(recognized)
+
+        XCTAssertEqual(viewModel.state, .parseUnsupported(recognized, FakeProblemAssetUploadAPI.parseUnsupported))
+    }
+
     private func makeViewModel(
         api: FakeProblemAssetUploadAPI = FakeProblemAssetUploadAPI(),
         uploader: FakePresignedObjectUploader = FakePresignedObjectUploader(),
@@ -462,30 +493,137 @@ private actor FakeProblemAssetUploadAPI: ProblemAssetUploadServicing {
         blocks: [],
         completedAt: nil
     )
+    static let normalizedProblem = NormalizedProblemParse(
+        schemaVersion: "problem-parse-v1",
+        supportStatus: "SUPPORTED",
+        unsupportedReason: nil,
+        subjectId: "MATH",
+        topicId: "MATH.EQUATIONS",
+        taskType: "SOLVE_EQUATION",
+        problemType: "EQUATION",
+        expressions: [
+            ProblemParseExpression(
+                id: "expr-1",
+                role: "PRIMARY",
+                sourceText: "x + 2 = 5",
+                normalizedText: "x + 2 = 5",
+                displayLatex: "x + 2 = 5",
+                relation: "EQUALS",
+                sourceBlockIds: ["block-1"]
+            )
+        ],
+        variables: [
+            ProblemParseVariable(symbol: "x", role: "VARIABLE", sourceBlockIds: ["block-1"])
+        ],
+        constraints: [],
+        assumptions: [],
+        uncertainty: ProblemParseUncertainty(recognition: [], parse: [], reviewRequired: false),
+        sourceEvidenceRefs: [
+            ProblemParseSourceEvidenceRef(blockId: "block-1", fieldPath: "expressions[0]")
+        ],
+        visualQualityRisks: [
+            ProblemParseVisualQualityRisk(signalType: "RESOLUTION", severity: "PASS", messageCode: "CAPTURE_RESOLUTION_PASS")
+        ],
+        reviewRequired: false
+    )
+    static let parseSucceeded = ProblemParseResult(
+        parseJobId: UUID(uuidString: "00000000-0000-0000-0000-000000000901")!,
+        problemSessionId: problemSessionId,
+        recognitionEvidenceId: UUID(uuidString: "00000000-0000-0000-0000-000000000902")!,
+        recognitionEvidenceRevision: 1,
+        jobStatus: "SUCCEEDED",
+        capability: "PROBLEM_NORMALIZE",
+        attemptCount: 1,
+        maxAttempts: 2,
+        lastErrorCode: nil,
+        lastFailureClass: nil,
+        problemParseId: UUID(uuidString: "00000000-0000-0000-0000-000000000903")!,
+        parseRevision: 1,
+        supportStatus: "SUPPORTED",
+        unsupportedReason: nil,
+        reviewRequired: false,
+        schemaVersion: "problem-parse-v1",
+        promptId: "problem-parser",
+        promptVersion: "v001",
+        routePolicyVersion: "problem-parser-route-v1",
+        provider: "LOCAL_FIXTURE",
+        model: "local-fixture-problem-parser-v1",
+        normalizedProblem: normalizedProblem,
+        createdAt: Date(timeIntervalSince1970: 1_800_002_900),
+        updatedAt: Date(timeIntervalSince1970: 1_800_003_000),
+        completedAt: Date(timeIntervalSince1970: 1_800_003_000)
+    )
+    static let parseUnsupported = ProblemParseResult(
+        parseJobId: UUID(uuidString: "00000000-0000-0000-0000-000000000904")!,
+        problemSessionId: problemSessionId,
+        recognitionEvidenceId: UUID(uuidString: "00000000-0000-0000-0000-000000000902")!,
+        recognitionEvidenceRevision: 1,
+        jobStatus: "UNSUPPORTED",
+        capability: "PROBLEM_NORMALIZE",
+        attemptCount: 1,
+        maxAttempts: 2,
+        lastErrorCode: nil,
+        lastFailureClass: nil,
+        problemParseId: UUID(uuidString: "00000000-0000-0000-0000-000000000905")!,
+        parseRevision: 1,
+        supportStatus: "UNSUPPORTED",
+        unsupportedReason: "UNSUPPORTED_STRUCTURE",
+        reviewRequired: false,
+        schemaVersion: "problem-parse-v1",
+        promptId: "problem-parser",
+        promptVersion: "v001",
+        routePolicyVersion: "problem-parser-route-v1",
+        provider: "LOCAL_FIXTURE",
+        model: "local-fixture-problem-parser-v1",
+        normalizedProblem: NormalizedProblemParse(
+            schemaVersion: "problem-parse-v1",
+            supportStatus: "UNSUPPORTED",
+            unsupportedReason: "UNSUPPORTED_STRUCTURE",
+            subjectId: "MATH",
+            topicId: nil,
+            taskType: nil,
+            problemType: nil,
+            expressions: [],
+            variables: [],
+            constraints: [],
+            assumptions: [],
+            uncertainty: ProblemParseUncertainty(recognition: [], parse: ["current schema cannot represent this structure"], reviewRequired: false),
+            sourceEvidenceRefs: [ProblemParseSourceEvidenceRef(blockId: "block-1", fieldPath: "supportStatus")],
+            visualQualityRisks: [],
+            reviewRequired: false
+        ),
+        createdAt: Date(timeIntervalSince1970: 1_800_003_050),
+        updatedAt: Date(timeIntervalSince1970: 1_800_003_100),
+        completedAt: Date(timeIntervalSince1970: 1_800_003_100)
+    )
 
     private var reserveErrors: [Error]
     private var completeErrors: [Error]
     private var preprocessingResults: [ProblemAssetPreprocessingResult]
     private var preprocessingErrors: [Error]
     private var recognitionResults: [ProblemRecognitionResult]
+    private var parseResults: [ProblemParseResult]
     private var reservations: [ReceivedReservation] = []
     private var completionKeys: [String] = []
     private var completionUploadIds: [UUID] = []
     private var preprocessingAssetIds: [UUID] = []
     private var recognitionSessionIds: [UUID] = []
+    private var parseSessionIds: [UUID] = []
 
     init(
         reserveErrors: [Error] = [],
         completeErrors: [Error] = [],
         preprocessingResults: [ProblemAssetPreprocessingResult] = [FakeProblemAssetUploadAPI.preprocessingPass],
         preprocessingErrors: [Error] = [],
-        recognitionResults: [ProblemRecognitionResult] = [FakeProblemAssetUploadAPI.recognitionSucceeded]
+        recognitionResults: [ProblemRecognitionResult] = [FakeProblemAssetUploadAPI.recognitionSucceeded],
+        parseResults: [ProblemParseResult] = [FakeProblemAssetUploadAPI.parseSucceeded]
     ) {
         self.reserveErrors = reserveErrors
         self.completeErrors = completeErrors
         self.preprocessingResults = preprocessingResults
         self.preprocessingErrors = preprocessingErrors
         self.recognitionResults = recognitionResults
+        self.parseResults = parseResults
     }
 
     func reserveUpload(
@@ -538,6 +676,22 @@ private actor FakeProblemAssetUploadAPI: ProblemAssetUploadServicing {
             return recognitionResults.removeFirst()
         }
         return Self.recognitionSucceeded
+    }
+
+    func requestParse(problemSessionId: UUID) async throws -> ProblemParseResult {
+        parseSessionIds.append(problemSessionId)
+        if !parseResults.isEmpty {
+            return parseResults.removeFirst()
+        }
+        return Self.parseSucceeded
+    }
+
+    func getParse(problemSessionId: UUID) async throws -> ProblemParseResult {
+        parseSessionIds.append(problemSessionId)
+        if !parseResults.isEmpty {
+            return parseResults.removeFirst()
+        }
+        return Self.parseSucceeded
     }
 
     func receivedReservation() -> ReceivedReservation? {

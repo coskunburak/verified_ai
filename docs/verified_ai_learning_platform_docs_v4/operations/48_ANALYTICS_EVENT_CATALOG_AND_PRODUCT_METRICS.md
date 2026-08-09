@@ -27,6 +27,8 @@ Sprint 4.2 backend upload telemetry may support `problem_asset_uploaded` after d
 
 Sprint 4.4 recognition telemetry may support `problem_recognition_completed` after durable RecognitionEvidence is accepted. Allowed properties are low-cardinality status, review-required flag, route family, provider family, schema version, retry class, and latency/cost buckets. Disallowed properties include recognized text, bounding box coordinates, raw provider output, object keys, signed URLs, user/session/asset IDs, prompt text, provider request payloads, or canonical problem claims.
 
+Sprint 4.5 parser telemetry may support `problem_parse_completed`, `problem_parse_review_required`, and `problem_parse_unsupported` after durable parser state is accepted. Allowed properties are low-cardinality support status, unsupported reason, review-required flag, route family, provider family, schema version, retry/failure class, and latency/cost buckets. Disallowed properties include parser expressions, constraints, assumptions, raw parser output, recognized text, source block coordinates, user/session/asset/evidence IDs, prompt text, provider request payloads, skill/difficulty claims, answers, or verification claims.
+
 ## Solving events
 
 - solve_requested

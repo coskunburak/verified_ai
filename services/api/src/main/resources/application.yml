@@ -57,6 +57,19 @@ app:
       max-response-bytes: ${AI_VISION_RECOGNITION_MAX_RESPONSE_BYTES:65536}
       max-cost-micros: ${AI_VISION_RECOGNITION_MAX_COST_MICROS:20000}
       pricing-version: ${AI_VISION_RECOGNITION_PRICING_VERSION:vision-recognition-local-v1}
+    problem-parser:
+      enabled: ${AI_PROBLEM_PARSER_ENABLED:true}
+      primary-provider: ${AI_PROBLEM_PARSER_PRIMARY_PROVIDER:LOCAL_FIXTURE}
+      fallback-provider: ${AI_PROBLEM_PARSER_FALLBACK_PROVIDER:}
+      route-policy-version: ${AI_PROBLEM_PARSER_ROUTE_POLICY_VERSION:problem-parser-route-v1}
+      prompt-id: ${AI_PROBLEM_PARSER_PROMPT_ID:problem-parser}
+      prompt-version: ${AI_PROBLEM_PARSER_PROMPT_VERSION:v001}
+      schema-version: ${AI_PROBLEM_PARSER_SCHEMA_VERSION:problem-parse-v1}
+      timeout: ${AI_PROBLEM_PARSER_TIMEOUT:PT20S}
+      max-attempts: ${AI_PROBLEM_PARSER_MAX_ATTEMPTS:2}
+      max-response-bytes: ${AI_PROBLEM_PARSER_MAX_RESPONSE_BYTES:65536}
+      max-cost-micros: ${AI_PROBLEM_PARSER_MAX_COST_MICROS:20000}
+      pricing-version: ${AI_PROBLEM_PARSER_PRICING_VERSION:problem-parser-local-v1}
   problem-recognition:
     max-input-bytes: ${PROBLEM_RECOGNITION_MAX_INPUT_BYTES:10485760}
     max-blocks: ${PROBLEM_RECOGNITION_MAX_BLOCKS:128}
@@ -65,6 +78,9 @@ app:
     coordinate-tolerance: ${PROBLEM_RECOGNITION_COORDINATE_TOLERANCE:0.000001}
     stuck-running-timeout: ${PROBLEM_RECOGNITION_STUCK_RUNNING_TIMEOUT:PT2M}
     worker-interval: ${PROBLEM_RECOGNITION_WORKER_INTERVAL:PT5S}
+  problem-parser:
+    stuck-running-timeout: ${PROBLEM_PARSER_STUCK_RUNNING_TIMEOUT:PT2M}
+    worker-interval: ${PROBLEM_PARSER_WORKER_INTERVAL:PT5S}
   verifier:
     base-url: ${MATH_VERIFIER_BASE_URL:http://localhost:8090}
     internal-token: ${MATH_VERIFIER_INTERNAL_TOKEN:local_math_verifier_token_change_me}

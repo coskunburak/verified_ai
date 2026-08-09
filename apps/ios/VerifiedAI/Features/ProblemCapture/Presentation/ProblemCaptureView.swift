@@ -460,6 +460,14 @@ struct ProblemCaptureView: View {
                     .font(TypographyTokens.body)
                     .foregroundStyle(ColorTokens.textSecondary)
                 Button {
+                    Task { await uploadViewModel.startParse(reference) }
+                } label: {
+                    Label("Understand Problem", systemImage: "function")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .accessibilityIdentifier("problemCapture.parse.start")
+                Button {
                     onDismiss()
                 } label: {
                     Label("Done", systemImage: "checkmark")
@@ -473,6 +481,14 @@ struct ProblemCaptureView: View {
                 Text("\(reference.recognition.blockCount) evidence block(s) were captured. Some evidence needs review later.")
                     .font(TypographyTokens.body)
                     .foregroundStyle(ColorTokens.textSecondary)
+                Button {
+                    Task { await uploadViewModel.startParse(reference) }
+                } label: {
+                    Label("Understand Problem", systemImage: "function")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .accessibilityIdentifier("problemCapture.parse.start")
                 Button {
                     onDismiss()
                 } label: {
@@ -494,6 +510,79 @@ struct ProblemCaptureView: View {
                     Task { await uploadViewModel.retryRecognition() }
                 } label: {
                     Label("Try Reading Again", systemImage: "arrow.clockwise")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+            case .startingParse:
+                Label("Understanding the problem", systemImage: "function")
+                    .font(TypographyTokens.title)
+                    .foregroundStyle(ColorTokens.textPrimary)
+                ProgressView()
+                    .accessibilityIdentifier("problemCapture.parse.starting")
+                Text("The backend is starting a durable parser job.")
+                    .font(TypographyTokens.body)
+                    .foregroundStyle(ColorTokens.textSecondary)
+            case .parsing(_, let parse):
+                Label("Understanding the problem", systemImage: "function")
+                    .font(TypographyTokens.title)
+                    .foregroundStyle(ColorTokens.textPrimary)
+                ProgressView()
+                    .accessibilityIdentifier("problemCapture.parse.progress")
+                Text("Status \(parse.jobStatus)")
+                    .font(TypographyTokens.caption)
+                    .foregroundStyle(ColorTokens.textSecondary)
+            case .parsed(let reference):
+                Label("Understanding finished", systemImage: "checkmark.seal")
+                    .font(TypographyTokens.title)
+                    .foregroundStyle(ColorTokens.action)
+                parseSummary(reference.parse)
+                Button {
+                    onDismiss()
+                } label: {
+                    Label("Done", systemImage: "checkmark")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+            case .parseReviewRequired(let reference):
+                Label("Understanding finished with uncertainty", systemImage: "exclamationmark.triangle")
+                    .font(TypographyTokens.title)
+                    .foregroundStyle(ColorTokens.warning)
+                parseSummary(reference.parse)
+                Button {
+                    onDismiss()
+                } label: {
+                    Label("Done", systemImage: "checkmark")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+            case .parseUnsupported(_, let parse):
+                Label("This problem type is not supported yet.", systemImage: "exclamationmark.triangle")
+                    .font(TypographyTokens.title)
+                    .foregroundStyle(ColorTokens.warning)
+                Text(parse.unsupportedReason ?? "Try another problem or retake the capture if the problem was cut off.")
+                    .font(TypographyTokens.body)
+                    .foregroundStyle(ColorTokens.textSecondary)
+                Button {
+                    onDismiss()
+                } label: {
+                    Label("Done", systemImage: "checkmark")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+            case .parseFailed(_, let parse):
+                Label(uploadViewModel.message ?? "Understanding could not finish.", systemImage: "exclamationmark.triangle")
+                    .font(TypographyTokens.body.weight(.semibold))
+                    .foregroundStyle(ColorTokens.warning)
+                    .accessibilityIdentifier("problemCapture.parse.failure")
+                if let parse {
+                    Text(parse.lastErrorCode ?? parse.jobStatus)
+                        .font(TypographyTokens.body)
+                        .foregroundStyle(ColorTokens.textSecondary)
+                }
+                Button {
+                    Task { await uploadViewModel.retryParse() }
+                } label: {
+                    Label("Try Understanding Again", systemImage: "arrow.clockwise")
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
@@ -675,6 +764,24 @@ struct ProblemCaptureView: View {
             "Resolution warning"
         default:
             "Capture quality warning"
+        }
+    }
+
+    private func parseSummary(_ parse: ProblemParseResult) -> some View {
+        VStack(alignment: .leading, spacing: SpacingTokens.sm) {
+            Text(parse.normalizedProblem?.taskType ?? parse.supportStatus ?? "Structured")
+                .font(TypographyTokens.body.weight(.semibold))
+                .foregroundStyle(ColorTokens.textPrimary)
+            if let expression = parse.normalizedProblem?.expressions.first {
+                Text(expression.normalizedText)
+                    .font(TypographyTokens.body)
+                    .foregroundStyle(ColorTokens.textSecondary)
+            }
+            if let topic = parse.normalizedProblem?.topicId {
+                Text(topic)
+                    .font(TypographyTokens.caption)
+                    .foregroundStyle(ColorTokens.textSecondary)
+            }
         }
     }
 

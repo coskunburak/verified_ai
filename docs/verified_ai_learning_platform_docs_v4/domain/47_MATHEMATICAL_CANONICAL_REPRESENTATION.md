@@ -13,7 +13,7 @@ Image, handwritten text, typed text, PDF crop.
 OCR/vision representation retaining source spans and uncertainty.
 
 ### Layer 3 — Semantic ProblemParse
-Structured task, variables, expressions, constraints and canonical skill.
+Sprint 4.5 parser-level structure: subject/topic/task/problem type, parser-level expressions, variables, explicit constraints, explicit assumptions, source evidence references, visual-quality risk, and uncertainty. It is provider-independent and versioned, but it is not a canonical safe AST, not a verifier input, not a verified answer, and not authoritative skill/difficulty classification.
 
 ### Layer 4 — Verifier representation
 Safe parser-compatible symbolic representation for deterministic math service.
@@ -26,12 +26,25 @@ Visual problem:
 Semantic parse:
 ```json
 {
+  "schemaVersion": "problem-parse-v1",
+  "supportStatus": "SUPPORTED",
+  "subjectId": "MATH",
+  "topicId": "MATH.CALCULUS.DIFFERENTIATION",
+  "taskType": "DIFFERENTIATE",
   "problemType": "DERIVATIVE",
-  "dependentVariable": "y",
-  "independentVariables": ["x"],
-  "expression": {"format": "SYMPY_SAFE", "value": "sin(x**2)"},
-  "task": "DIFFERENTIATE",
-  "constraints": []
+  "expressions": [
+    {
+      "role": "PRIMARY",
+      "sourceText": "sin(x^2)",
+      "normalizedText": "sin(x^2)",
+      "displayLatex": "\\sin(x^2)",
+      "sourceBlockIds": ["block-1"]
+    }
+  ],
+  "variables": [{"symbol": "x", "role": "VARIABLE"}],
+  "constraints": [],
+  "assumptions": [],
+  "sourceEvidenceRefs": [{"blockId": "block-1", "fieldPath": "expressions[0]"}]
 }
 ```
 
@@ -42,6 +55,8 @@ Possible fields:
 - normalized_text
 - safe_symbolic_expression
 - AST/json structure.
+
+In Sprint 4.5, `display_latex` and `normalized_text` are parser-level notation only. `safe_symbolic_expression` and AST/json verifier structures belong to Sprint 4.6 and later.
 
 Never pass arbitrary user strings into Python eval.
 

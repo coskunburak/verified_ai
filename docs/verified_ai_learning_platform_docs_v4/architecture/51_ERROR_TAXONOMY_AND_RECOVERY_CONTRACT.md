@@ -87,6 +87,10 @@ Upload reservation and completion failures are stable client contracts:
 
 Recognition failures are pre-parse failures. `RECOGNITION_INPUT_UNAVAILABLE` means no selected READY recognition derivative exists; the client should return to preprocessing/capture recovery. `RECOGNITION_TIMEOUT`, `RECOGNITION_RATE_LIMITED`, and `RECOGNITION_PROVIDER_UNAVAILABLE` are retryable until job attempts are exhausted. `RECOGNITION_SCHEMA_INVALID` rejects malformed provider output and may retry within the bounded job policy. `RECOGNITION_OUTPUT_TOO_LARGE` and `RECOGNITION_UNSUPPORTED` are terminal for the current input/configuration. None of these codes imply `PROBLEM_UNSUPPORTED` or a verified solution.
 
+### Sprint 4.5 problem parse recovery
+
+Problem parse failures are post-recognition, pre-canonicalization failures. `PROBLEM_PARSE_FAILED` covers provider execution that produced no usable parser result, parser output that remains schema-invalid after bounded attempts, or semantic-invalid output that cannot be accepted. Unsupported problems are not infrastructure failures: the normal client contract is `jobStatus=UNSUPPORTED` / `supportStatus=UNSUPPORTED` with a stable unsupported reason; `PROBLEM_UNSUPPORTED` is the equivalent recovery category if an error surface is needed. Neither state implies a safe verifier representation, solution, classification, or answer.
+
 ## Recovery semantics
 
 Every API error may include:

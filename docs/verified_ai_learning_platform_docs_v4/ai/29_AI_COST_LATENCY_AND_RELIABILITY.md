@@ -22,7 +22,9 @@ Separate at minimum:
 
 Aggregate by model/provider, capability, skill/difficulty, entitlement tier and cohort.
 
-Sprint 4.4 records recognition-stage usage, estimated micro-USD cost, pricing version, provider latency, and total job latency with the raw RecognitionEvidence record. It does not calculate cost per verified solution because parsing, solving, and verification have not run yet.
+Sprint 4.4 records recognition-stage usage, estimated micro-USD cost, pricing version, provider latency, and total job latency with the raw RecognitionEvidence record.
+
+Sprint 4.5 records parser-stage `PROBLEM_NORMALIZE` usage, estimated micro-USD cost, pricing version, provider latency, and total job latency with parse jobs/revisions. It still does not calculate cost per verified solution because canonical parsing, solving, and verification have not run yet.
 
 ## 3. Primary cost controls
 
@@ -44,7 +46,7 @@ Define stage and end-to-end budgets. Track p50/p95/p99. UI may show semantic pro
 
 Each provider route defines connection/response/total timeouts and retryable error classes. Retry budgets are included in end-to-end deadline and cost budget.
 
-The initial `VISION_PARSE` route has explicit provider timeout, max-attempt, max-response-size, and max-cost configuration. Local/test may use a deterministic fixture route; production must not route to that fake provider when recognition is enabled.
+The initial `VISION_PARSE` and `PROBLEM_NORMALIZE` routes have explicit provider timeout, max-attempt, max-response-size, and max-cost configuration. Local/test may use deterministic fixture routes; production must not route either capability to a fake provider when enabled.
 
 ## 6. Reliability fallback
 

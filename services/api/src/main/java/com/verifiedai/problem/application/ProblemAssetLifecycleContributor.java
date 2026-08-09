@@ -234,17 +234,138 @@ class ProblemAssetLifecycleContributor implements AccountDataLifecycleContributo
             },
             userId
         );
-        return Map.of(
-            "assets", assets,
-            "derivatives", derivatives,
-            "qualityEvidence", qualityEvidence,
-            "recognitionJobs", recognitionJobs,
-            "recognitionEvidence", recognitionEvidence,
-            "rawBinaryIncluded", false,
-            "derivedBinaryIncluded", false,
-            "rawRecognitionProviderOutputIncluded", false,
-            "retentionNote", "Raw source image/PDF objects and derived preprocessing objects are private object-storage assets and are removed during account deletion. Recognition rows cascade with problem sessions; raw provider output is stored separately and excluded from export payloads."
+        List<Map<String, Object>> problemParseJobs = jdbcTemplate.query(
+            """
+            select id,
+                   problem_session_id,
+                   recognition_evidence_id,
+                   recognition_evidence_revision,
+                   status,
+                   capability,
+                   prompt_id,
+                   prompt_version,
+                   schema_version,
+                   route_policy_version,
+                   attempt_count,
+                   max_attempts,
+                   last_error_code,
+                   last_failure_class,
+                   review_required,
+                   created_at,
+                   completed_at
+            from problem_parse_jobs
+            where user_id = ?
+            order by created_at desc
+            """,
+            (resultSet, rowNum) -> {
+                Map<String, Object> row = new LinkedHashMap<>();
+                row.put("parseJobId", resultSet.getObject("id").toString());
+                row.put("problemSessionId", resultSet.getObject("problem_session_id").toString());
+                row.put("recognitionEvidenceId", resultSet.getObject("recognition_evidence_id").toString());
+                row.put("recognitionEvidenceRevision", resultSet.getInt("recognition_evidence_revision"));
+                row.put("status", resultSet.getString("status"));
+                row.put("capability", resultSet.getString("capability"));
+                row.put("promptId", resultSet.getString("prompt_id"));
+                row.put("promptVersion", resultSet.getString("prompt_version"));
+                row.put("schemaVersion", resultSet.getString("schema_version"));
+                row.put("routePolicyVersion", resultSet.getString("route_policy_version"));
+                row.put("attemptCount", resultSet.getInt("attempt_count"));
+                row.put("maxAttempts", resultSet.getInt("max_attempts"));
+                row.put("lastErrorCode", resultSet.getString("last_error_code"));
+                row.put("lastFailureClass", resultSet.getString("last_failure_class"));
+                row.put("reviewRequired", resultSet.getBoolean("review_required"));
+                row.put("createdAt", resultSet.getTimestamp("created_at").toInstant().toString());
+                row.put("completedAt", resultSet.getTimestamp("completed_at") == null ? null : resultSet.getTimestamp("completed_at").toInstant().toString());
+                return row;
+            },
+            userId
         );
+        List<Map<String, Object>> problemParses = jdbcTemplate.query(
+            """
+            select id,
+                   parse_job_id,
+                   problem_session_id,
+                   recognition_evidence_id,
+                   recognition_evidence_revision,
+                   revision,
+                   source,
+                   support_status,
+                   unsupported_reason,
+                   review_required,
+                   schema_version,
+                   normalized_problem_jsonb::text as normalized_problem_json,
+                   provider,
+                   model,
+                   route_policy_version,
+                   prompt_id,
+                   prompt_version,
+                   fallback_used,
+                   input_tokens,
+                   output_tokens,
+                   image_units,
+                   request_units,
+                   provider_latency_ms,
+                   total_latency_ms,
+                   estimated_cost_micros,
+                   currency,
+                   pricing_version,
+                   created_at
+            from problem_parses
+            where user_id = ?
+            order by created_at desc
+            """,
+            (resultSet, rowNum) -> {
+                Map<String, Object> row = new LinkedHashMap<>();
+                row.put("problemParseId", resultSet.getObject("id").toString());
+                row.put("parseJobId", resultSet.getObject("parse_job_id").toString());
+                row.put("problemSessionId", resultSet.getObject("problem_session_id").toString());
+                row.put("recognitionEvidenceId", resultSet.getObject("recognition_evidence_id").toString());
+                row.put("recognitionEvidenceRevision", resultSet.getInt("recognition_evidence_revision"));
+                row.put("revision", resultSet.getInt("revision"));
+                row.put("source", resultSet.getString("source"));
+                row.put("supportStatus", resultSet.getString("support_status"));
+                row.put("unsupportedReason", resultSet.getString("unsupported_reason"));
+                row.put("reviewRequired", resultSet.getBoolean("review_required"));
+                row.put("schemaVersion", resultSet.getString("schema_version"));
+                row.put("normalizedProblemJson", resultSet.getString("normalized_problem_json"));
+                row.put("provider", resultSet.getString("provider"));
+                row.put("model", resultSet.getString("model"));
+                row.put("routePolicyVersion", resultSet.getString("route_policy_version"));
+                row.put("promptId", resultSet.getString("prompt_id"));
+                row.put("promptVersion", resultSet.getString("prompt_version"));
+                row.put("fallbackUsed", resultSet.getBoolean("fallback_used"));
+                row.put("inputTokens", resultSet.getObject("input_tokens"));
+                row.put("outputTokens", resultSet.getObject("output_tokens"));
+                row.put("imageUnits", resultSet.getObject("image_units"));
+                row.put("requestUnits", resultSet.getInt("request_units"));
+                row.put("providerLatencyMs", resultSet.getLong("provider_latency_ms"));
+                row.put("totalLatencyMs", resultSet.getLong("total_latency_ms"));
+                row.put("estimatedCostMicros", resultSet.getLong("estimated_cost_micros"));
+                row.put("currency", resultSet.getString("currency"));
+                row.put("pricingVersion", resultSet.getString("pricing_version"));
+                row.put("createdAt", resultSet.getTimestamp("created_at").toInstant().toString());
+                row.put("rawParserOutputIncluded", false);
+                return row;
+            },
+            userId
+        );
+        Map<String, Object> export = new LinkedHashMap<>();
+        export.put("assets", assets);
+        export.put("derivatives", derivatives);
+        export.put("qualityEvidence", qualityEvidence);
+        export.put("recognitionJobs", recognitionJobs);
+        export.put("recognitionEvidence", recognitionEvidence);
+        export.put("problemParseJobs", problemParseJobs);
+        export.put("problemParses", problemParses);
+        export.put("rawBinaryIncluded", false);
+        export.put("derivedBinaryIncluded", false);
+        export.put("rawRecognitionProviderOutputIncluded", false);
+        export.put("rawProblemParserOutputIncluded", false);
+        export.put(
+            "retentionNote",
+            "Raw source image/PDF objects and derived preprocessing objects are private object-storage assets and are removed during account deletion. Recognition and parser rows cascade with problem sessions; raw AI provider output is stored separately and excluded from export payloads."
+        );
+        return export;
     }
 
     @Override

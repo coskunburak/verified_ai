@@ -17,6 +17,15 @@
 5. For stuck RUNNING jobs, allow the stale-job recovery policy to requeue or terminally fail according to attempts.
 6. Do not manually mark recognition as parsed, solved, or verified.
 
+## Problem parser pipeline failure
+
+1. Use the API trace/correlation ID to inspect `problem_parse_jobs.status`, `attempt_count`, `last_error_code`, `last_failure_class`, `next_attempt_at`, and `locked_until`.
+2. Confirm the parser input is the exact accepted `recognition_evidence.id` and `revision` for the authenticated user's ProblemSession.
+3. For schema-invalid or semantic-invalid parser output, reproduce with synthetic fixtures or redacted non-content metadata; do not paste raw expressions, recognized text, or raw parser JSON into logs or tickets.
+4. For timeout/429/5xx, verify provider health, route configuration, fallback settings, parser rate-limit counters, and cost budget.
+5. For unsupported outcomes, confirm the unsupported reason and client recovery state; do not coerce the problem into a supported equation schema.
+6. Do not manually mark a parse as canonical, solved, classified, user-confirmed, or verified.
+
 ## Math verifier outage
 
 Solver may continue, but affected answers become UNVERIFIED or verification is deferred. Never silently mark VERIFIED.
@@ -71,6 +80,8 @@ If false VERIFIED is suspected:
 Inspect traffic, abusive accounts, route changes, retries and prompt/context growth. Emergency downgrade of noncritical route is allowed if trust invariants remain intact.
 
 Recognition cost spikes are investigated through `ai.vision.recognition.*` metrics, route configuration, retry/fallback counts, and request volume. Do not reduce validation or fabricate confidence to lower cost.
+
+Parser cost spikes are investigated through `ai.problem.parse.*` metrics, route configuration, retry/fallback counts, schema-invalid rate, semantic-invalid rate, unsupported rate, and request volume. Do not skip schema/semantic validation, fabricate certainty, or force unsupported problems into supported structures to lower cost.
 
 <!-- HYBRID_AI_STRATEGY_V3:START -->
 ## Additional runbooks required

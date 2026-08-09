@@ -64,6 +64,10 @@ RecognitionJob is a durable operational child of a user-owned ProblemSession. It
 
 RecognitionEvidence is the durable raw-evidence artifact produced by visual recognition. It stores untrusted raw provider JSON separately from normalized recognition blocks, source coordinates, reading order, recognition confidence/uncertainty, upstream quality warnings, provider/model/prompt/schema provenance, usage, cost, and latency. It must not include subject/topic/skill/difficulty, canonical expressions, answer, solution, or verification status.
 
+ProblemParseJob is a durable operational child of a user-owned ProblemSession. It coordinates Sprint 4.5 `PROBLEM_NORMALIZE` work over an exact `RecognitionEvidence` id/revision and stores status, attempts, prompt/schema/route identity, failure code, timing, and usage/cost/provenance. It is separate from RecognitionJob and does not solve, classify skill, or create a canonical Problem.
+
+ProblemParse is an immutable parser-level revision. It stores raw parser output separately from normalized parser output, exact RecognitionEvidence provenance, provider/model/prompt/schema/route metadata, source `block.id` references, support status (`SUPPORTED`, `REVIEW_REQUIRED`, or `UNSUPPORTED`), and explicit parser uncertainty. Sprint 4.5 creates only AI-source revisions; user correction, selected-parse semantics, and canonical safe mathematical representation remain later sprints.
+
 ## Problem
 
 Canonical semantic fields:

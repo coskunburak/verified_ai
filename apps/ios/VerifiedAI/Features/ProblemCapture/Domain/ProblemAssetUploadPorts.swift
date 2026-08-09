@@ -7,6 +7,8 @@ protocol ProblemAssetUploadServicing: Sendable {
     func getPreprocessing(problemAssetId: UUID) async throws -> ProblemAssetPreprocessingResult
     func requestRecognition(problemSessionId: UUID) async throws -> ProblemRecognitionResult
     func getRecognition(problemSessionId: UUID) async throws -> ProblemRecognitionResult
+    func requestParse(problemSessionId: UUID) async throws -> ProblemParseResult
+    func getParse(problemSessionId: UUID) async throws -> ProblemParseResult
 }
 
 protocol PresignedObjectUploading: Sendable {

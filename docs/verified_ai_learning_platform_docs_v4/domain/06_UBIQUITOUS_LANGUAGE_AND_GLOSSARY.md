@@ -33,7 +33,7 @@ Versioned mapping of supported skills to a program/exam.
 Raw file/input artifact such as image or PDF page.
 
 ### ProblemParse
-Structured interpretation of raw input.
+Provider-independent structured interpretation of accepted RecognitionEvidence. In Sprint 4.5 it is an immutable AI parse revision containing subject/topic/task/problem-type hints, parser-level expression text, variables, explicit constraints/assumptions, uncertainty, visual-quality risk, and source evidence references. It is not a canonical safe AST, solution, verified answer, primary skill classification, difficulty label, or user-confirmed correction.
 
 ### Problem
 Canonical semantic learning problem consumed by solving/learning systems.
@@ -178,7 +178,7 @@ This matrix is the implementation-ready companion to the glossary. "Durable" mea
 | Skill | curriculum | versioned active/deprecated/split/merged | Yes | Yes | Curriculum module | Not a model-generated tag or broad topic. |
 | Curriculum | curriculum | drafted -> active -> superseded | Yes | Sometimes | Curriculum module | Not a user's personal plan. |
 | ProblemAsset | problem | registered -> uploaded -> processed -> retained/deleted | Yes | Sometimes | Backend metadata plus object storage | Not the canonical Problem. |
-| ProblemParse | problem | proposed -> selected/superseded/review-required | Yes | Yes in review UX | Problem module | Not trusted merely because schema-valid. |
+| ProblemParse | problem | AI proposed -> accepted/review-required/unsupported -> later corrected/selected in Sprint 4.8 | Yes | Yes in review UX | Problem module | Not trusted merely because schema-valid; not a safe verifier representation or user-confirmed parse in Sprint 4.5. |
 | Problem | problem | created from selected parse -> solved/reused/deleted per policy | Yes | Yes | Problem module/PostgreSQL | Not raw OCR, image, or prompt text. |
 | Solution | solving | generated -> referenced -> superseded by new solution version | Yes | Yes | Solving module | Not Verification or student Attempt. |
 | SolutionStep | solving | ordered immutable part of a Solution | Yes | Yes | Solving module | Not private model chain-of-thought. |

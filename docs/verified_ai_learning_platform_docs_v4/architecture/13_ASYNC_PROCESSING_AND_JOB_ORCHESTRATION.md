@@ -18,6 +18,12 @@ Sprint 4.4 adds the same durable async pattern for recognition:
 
 Returns `202 Accepted` with recognition job status. The worker reads the selected OCR-optimized derivative, invokes provider-neutral `VISION_PARSE`, validates untrusted provider JSON, persists RecognitionEvidence, and exposes status through `GET /api/v1/problem-sessions/{id}/recognition`.
 
+Sprint 4.5 adds the same durable async pattern for parser normalization:
+
+`POST /api/v1/problem-sessions/{id}/parse`
+
+Returns `202 Accepted` with parse job status. The worker consumes the exact accepted RecognitionEvidence id/revision for the session, invokes provider-neutral `PROBLEM_NORMALIZE`, validates untrusted provider JSON against `problem-parse-v1`, applies parser-level semantic validation, persists immutable `ProblemParse` revisions, and exposes status through `GET /api/v1/problem-sessions/{id}/parse`.
+
 ## Durable job schema
 
 Suggested fields:
@@ -52,6 +58,8 @@ Each stage persists its result before moving forward so retries do not recreate 
 
 Recognition is a pre-parse ingestion stage. It records raw visual evidence only and must not advance directly to `PARSED`, `SOLVING`, `VERIFYING`, or `COMPLETED`.
 
+Problem parsing is a post-recognition, pre-canonicalization stage. It records parser-level structure only and must not create a Sprint 4.6 safe AST, Sprint 4.7 classification, Sprint 4.8 user correction, solve request, verifier input, or verified answer.
+
 ## Idempotency
 
 Repeated command with the same idempotency key returns/reuses the same logical operation. AI provider calls themselves may not be idempotent; our orchestration layer must make business output idempotent.
@@ -71,6 +79,7 @@ Do not blindly retry:
 - schema-invalid after bounded regeneration attempts,
 - auth/entitlement failures.
 - malformed recognition geometry or schema-invalid recognition output after bounded attempts.
+- parser semantic-invalid output, unsupported current-scope problem structure, or unsupported parser schema after bounded attempts.
 
 Use exponential backoff + jitter.
 
@@ -85,6 +94,7 @@ Kafka is intentionally not required in V1.
 After retry exhaustion:
 - FAILED for operational failure,
 - REVIEW_REQUIRED for ambiguous/quality condition where user intervention may help.
+- UNSUPPORTED for a recognized problem that current parser schema/product scope cannot faithfully represent.
 
 Preserve trace, partial artifacts and safe error code.
 

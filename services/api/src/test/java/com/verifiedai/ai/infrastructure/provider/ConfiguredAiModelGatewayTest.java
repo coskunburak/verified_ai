@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.verifiedai.ai.application.AiCapability;
+import com.verifiedai.ai.application.AiProblemNormalizeRequest;
+import com.verifiedai.ai.application.AiProblemNormalizeResult;
 import com.verifiedai.ai.application.AiProviderException;
 import com.verifiedai.ai.application.AiProviderFailureClass;
 import com.verifiedai.ai.application.AiProvenance;
@@ -11,6 +13,7 @@ import com.verifiedai.ai.application.AiRoutePlan;
 import com.verifiedai.ai.application.AiUsage;
 import com.verifiedai.ai.application.AiVisionParseRequest;
 import com.verifiedai.ai.application.AiVisionParseResult;
+import com.verifiedai.ai.infrastructure.configuration.AiProblemParserProperties;
 import com.verifiedai.ai.infrastructure.configuration.AiVisionRecognitionProperties;
 import java.time.Duration;
 import java.util.List;
@@ -22,10 +25,12 @@ final class ConfiguredAiModelGatewayTest {
     void retryablePrimaryFailureUsesFallbackAndMarksProvenance() {
         ConfiguredAiModelGateway gateway = new ConfiguredAiModelGateway(
             properties("PRIMARY", "FALLBACK"),
+            parserProperties("UNAVAILABLE", ""),
             List.of(
                 failingProvider("PRIMARY", AiProviderFailureClass.TIMEOUT, true),
                 successfulProvider("FALLBACK", "fallback-model")
             ),
+            List.of(unavailableProblemProvider()),
             "local"
         );
 
@@ -41,10 +46,12 @@ final class ConfiguredAiModelGatewayTest {
     void terminalPrimaryFailureDoesNotUseFallback() {
         ConfiguredAiModelGateway gateway = new ConfiguredAiModelGateway(
             properties("PRIMARY", "FALLBACK"),
+            parserProperties("UNAVAILABLE", ""),
             List.of(
                 failingProvider("PRIMARY", AiProviderFailureClass.INVALID_AUTH, false),
                 successfulProvider("FALLBACK", "fallback-model")
             ),
+            List.of(unavailableProblemProvider()),
             "local"
         );
 
@@ -61,7 +68,45 @@ final class ConfiguredAiModelGatewayTest {
     void productionConfigurationRejectsLocalFixtureProviderWhenEnabled() {
         ConfiguredAiModelGateway gateway = new ConfiguredAiModelGateway(
             properties("LOCAL_FIXTURE", ""),
+            parserProperties("UNAVAILABLE", ""),
             List.of(successfulProvider("LOCAL_FIXTURE", "local-fixture-vision-v1")),
+            List.of(unavailableProblemProvider()),
+            "production"
+        );
+
+        assertThatThrownBy(gateway::validateProductionConfiguration)
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessageContaining("LOCAL_FIXTURE");
+    }
+
+    @Test
+    void retryableProblemParserFailureUsesFallbackAndMarksProvenance() {
+        ConfiguredAiModelGateway gateway = new ConfiguredAiModelGateway(
+            properties("UNAVAILABLE", ""),
+            parserProperties("PRIMARY", "FALLBACK"),
+            List.of(successfulProvider("UNAVAILABLE", "unused")),
+            List.of(
+                failingProblemProvider("PRIMARY", AiProviderFailureClass.TIMEOUT, true),
+                successfulProblemProvider("FALLBACK", "fallback-parser-model")
+            ),
+            "local"
+        );
+
+        AiProblemNormalizeResult result = gateway.executeProblemNormalize(problemRequest());
+
+        assertThat(result.provenance().provider()).isEqualTo("FALLBACK");
+        assertThat(result.provenance().model()).isEqualTo("fallback-parser-model");
+        assertThat(result.provenance().fallbackUsed()).isTrue();
+        assertThat(result.rawOutputJson()).contains("problem-parse-v1");
+    }
+
+    @Test
+    void productionConfigurationRejectsLocalFixtureProblemParserWhenEnabled() {
+        ConfiguredAiModelGateway gateway = new ConfiguredAiModelGateway(
+            properties("UNAVAILABLE", ""),
+            parserProperties("LOCAL_FIXTURE", ""),
+            List.of(successfulProvider("UNAVAILABLE", "unused")),
+            List.of(successfulProblemProvider("LOCAL_FIXTURE", "local-fixture-problem-parser-v1")),
             "production"
         );
 
@@ -87,6 +132,23 @@ final class ConfiguredAiModelGatewayTest {
         );
     }
 
+    private static AiProblemParserProperties parserProperties(String primaryProvider, String fallbackProvider) {
+        return new AiProblemParserProperties(
+            true,
+            primaryProvider,
+            fallbackProvider,
+            "problem-parser-route-v1",
+            "problem-parser",
+            "v001",
+            "problem-parse-v1",
+            Duration.ofSeconds(20),
+            2,
+            65_536,
+            20_000,
+            "test-pricing-v1"
+        );
+    }
+
     private static AiVisionParseRequest request() {
         return new AiVisionParseRequest(
             UUID.randomUUID(),
@@ -101,6 +163,24 @@ final class ConfiguredAiModelGatewayTest {
             "recognition-evidence-v1",
             Duration.ofSeconds(20),
             List.of("RESOLUTION:WARNING")
+        );
+    }
+
+    private static AiProblemNormalizeRequest problemRequest() {
+        return new AiProblemNormalizeRequest(
+            UUID.randomUUID(),
+            UUID.randomUUID(),
+            1,
+            """
+            {"schemaVersion":"recognition-evidence-v1","blocks":[{"id":"block-1","text":"x + 1 = 2"}],"documentUncertainty":[],"reviewRequired":false}
+            """,
+            """
+            {"qualitySignals":[]}
+            """,
+            "problem-parser",
+            "v001",
+            "problem-parse-v1",
+            Duration.ofSeconds(20)
         );
     }
 
@@ -151,5 +231,58 @@ final class ConfiguredAiModelGatewayTest {
                 throw new AiProviderException(failureClass, retryable, "provider failed");
             }
         };
+    }
+
+    private static ProblemNormalizeProviderAdapter successfulProblemProvider(String providerId, String model) {
+        return new ProblemNormalizeProviderAdapter() {
+            @Override
+            public String providerId() {
+                return providerId;
+            }
+
+            @Override
+            public AiProblemNormalizeResult execute(AiProblemNormalizeRequest request, AiRoutePlan routePlan) {
+                return new AiProblemNormalizeResult(
+                    """
+                    {"schemaVersion":"problem-parse-v1","supportStatus":"UNSUPPORTED","unsupportedReason":"UNSUPPORTED_STRUCTURE","subjectId":"MATH","topicId":null,"taskType":null,"problemType":null,"expressions":[],"variables":[],"constraints":[],"assumptions":[],"uncertainty":{"recognition":[],"parse":[],"reviewRequired":false},"sourceEvidenceRefs":[],"visualQualityRisks":[],"reviewRequired":false}
+                    """,
+                    new AiProvenance(
+                        providerId,
+                        model,
+                        routePlan.routePolicyVersion(),
+                        request.promptId(),
+                        request.promptVersion(),
+                        request.schemaVersion(),
+                        "request-id",
+                        "response-id",
+                        false
+                    ),
+                    new AiUsage(1, 2, null, 1, 3, "USD", "test-pricing-v1"),
+                    5
+                );
+            }
+        };
+    }
+
+    private static ProblemNormalizeProviderAdapter failingProblemProvider(
+        String providerId,
+        AiProviderFailureClass failureClass,
+        boolean retryable
+    ) {
+        return new ProblemNormalizeProviderAdapter() {
+            @Override
+            public String providerId() {
+                return providerId;
+            }
+
+            @Override
+            public AiProblemNormalizeResult execute(AiProblemNormalizeRequest request, AiRoutePlan routePlan) {
+                throw new AiProviderException(failureClass, retryable, "provider failed");
+            }
+        };
+    }
+
+    private static ProblemNormalizeProviderAdapter unavailableProblemProvider() {
+        return failingProblemProvider("UNAVAILABLE", AiProviderFailureClass.CONFIGURATION_DISABLED, false);
     }
 }

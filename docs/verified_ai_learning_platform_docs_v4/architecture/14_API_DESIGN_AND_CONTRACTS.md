@@ -30,6 +30,7 @@
 | Create problem session | Yes | User + command + key | Return existing logical session or compatible result. |
 | Complete upload | Yes | User + upload intent + key | Do not double-register object state. |
 | Request recognition | Yes | User + ProblemSession + selected recognition input + prompt/schema | Reuse the existing recognition job for the same input/provenance tuple. |
+| Request problem parse | Yes | User + ProblemSession + RecognitionEvidence revision + `PROBLEM_NORMALIZE` prompt/schema/route | Reuse the existing parse job for the same input/provenance tuple. |
 | Patch/select parse revision | Conditional | Problem session + revision | Version conflict returns stable conflict error. |
 | Request solve | Yes | Problem session + selected parse + key | Reuse existing solve job if logical command matches. |
 | Submit attempt | Yes | User + problem + key | Avoid duplicate mastery/mistake evidence. |
@@ -121,7 +122,8 @@ Sprint 4.3 preprocessing responses include `preprocessingStatus`, `qualityOutcom
 - `GET /api/v1/problem-sessions/{id}`
 - `POST /api/v1/problem-sessions/{id}/recognition` - authenticated; creates or reuses a durable recognition job for the selected READY `OCR_OPTIMIZED` derivative and returns `202 Accepted`. The request does not hold the HTTP connection open for provider execution.
 - `GET /api/v1/problem-sessions/{id}/recognition` - authenticated; returns the current recognition job/evidence status, selected input derivative/source asset IDs, review-required flag, safe normalized recognition blocks, and no raw provider output or object-storage keys.
-- `PATCH /api/v1/problem-sessions/{id}/parse`
+- `POST /api/v1/problem-sessions/{id}/parse` - authenticated; creates or reuses a durable parser job for the exact accepted RecognitionEvidence revision and returns `202 Accepted`. The worker invokes `PROBLEM_NORMALIZE`, validates `problem-parse-v1`, and may return supported, review-required, unsupported, or failed lifecycle state without solving.
+- `GET /api/v1/problem-sessions/{id}/parse` - authenticated; returns current parse job/revision status, support status, normalized parser-level structure, source evidence references, review-required flag, prompt/schema/model provenance, and no raw parser output.
 - `POST /api/v1/problem-sessions/{id}/solve`
 
 ### Jobs
@@ -174,6 +176,8 @@ Sprint 4.2 upload idempotency is scoped to authenticated user plus key. Reservat
 
 Sprint 4.4 recognition idempotency is scoped to authenticated user, ProblemSession, selected recognition input derivative, `VISION_PARSE`, prompt ID/version, and schema version. Retrying the command returns the existing logical job rather than creating unlimited provider calls.
 
+Sprint 4.5 parse idempotency is scoped to authenticated user, ProblemSession, exact RecognitionEvidence id/revision, `PROBLEM_NORMALIZE`, prompt ID/version, schema version, and route policy version. Retrying the command returns the existing logical parse job rather than creating unlimited parser calls or duplicate revisions.
+
 ## Concurrency
 
 User-editable parse revisions and learning profile updates use explicit version/revision and optimistic conflict response.
@@ -197,6 +201,8 @@ Never expose:
 Verification API exposes only high-level evidence.
 
 Recognition APIs expose only normalized raw evidence needed for the next product step. They never expose raw provider payloads, provider secrets, signed URLs, object keys, system prompts, canonical parse claims, solutions, or verification status.
+
+Problem parse APIs expose only normalized parser-level structure needed for review and later canonicalization. They never expose raw parser payloads, provider secrets, system prompts, safe verifier AST, primary skill/difficulty classification, solutions, answers, or verification status.
 
 ## Contract lifecycle
 

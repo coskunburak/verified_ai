@@ -59,6 +59,13 @@ Sprint 4.4 recognition privacy:
 - account export includes recognition metadata and normalized evidence, but excludes raw provider output by default;
 - account deletion removes recognition rows through the problem-session lifecycle and does not claim provider-side deletion until a real provider contract supplies that guarantee.
 
+Sprint 4.5 parser privacy:
+- parser consumes normalized RecognitionEvidence rather than object storage and treats recognized text as untrusted content, including prompt-injection-looking strings;
+- raw parser output and normalized parser output are sensitive student content and are never used as log messages, metric labels, or general analytics payloads;
+- public APIs return only normalized parser-level structure and recovery status, not raw parser payloads, system prompts, safe verifier AST, solution steps, answers, or primary skill/difficulty classification;
+- account export includes parse metadata and normalized parser output, but excludes raw parser output by default;
+- account deletion removes parse rows through the problem-session lifecycle and does not claim provider-side deletion until a real provider contract supplies that guarantee.
+
 ## External AI processing
 
 Provider settings/contracts must be reviewed for retention, training use and regional processing. Never promise a privacy property that is not technically/contractually enforced.
@@ -87,9 +94,7 @@ Implemented guarantees:
 
 Phase 4+ data-owning modules must implement the account lifecycle contributor before storing user assets, problem history, attempts, mastery, study plans, tutor transcripts, or AI operational metadata.
 
-Sprint 4.2 implements that contributor for `problem_sessions` and `problem_assets`. The rule remains open for future parse, canonical problem, attempt, mastery, tutor, and AI operational stores.
-
-Sprint 4.4 extends that contributor for recognition jobs/evidence metadata. Raw provider output remains account-owned sensitive content and is excluded from normal export payloads while still deleted with the owning problem session.
+Sprint 4.2 implements that contributor for `problem_sessions` and `problem_assets`. Sprint 4.4 extends it for recognition jobs/evidence metadata. Sprint 4.5 extends it for parse jobs/revisions while excluding raw parser output from normal exports. The rule remains open for future canonical problem, attempt, mastery, tutor, and AI operational stores.
 
 ## Minors
 

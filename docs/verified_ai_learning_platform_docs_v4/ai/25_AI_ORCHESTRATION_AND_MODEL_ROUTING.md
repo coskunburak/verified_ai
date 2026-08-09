@@ -28,7 +28,9 @@ Product modules request stable capabilities such as:
 
 A capability request includes typed policy context, not arbitrary provider parameters.
 
-Sprint 4.4 implementation note: `VISION_PARSE` is the only provider-neutral capability subset pulled forward before Sprint 5.1. It exists so the problem module can request raw recognition evidence without importing provider SDKs. This early subset does not complete the full model router, solver routing, tutor routing, route optimizer, or secondary-solver policy.
+Sprint 4.4 implementation note: `VISION_PARSE` is the first provider-neutral capability subset pulled forward before Sprint 5.1. It exists so the problem module can request raw recognition evidence without importing provider SDKs.
+
+Sprint 4.5 implementation note: `PROBLEM_NORMALIZE` extends the same early subset for parser-level normalization of accepted RecognitionEvidence into `ProblemParse` revisions. It reuses `AiModelGateway`, provider adapters, route provenance, usage/cost/latency accounting, bounded retries, and production fixture-provider guards. This early subset still does not complete the full model router, solver routing, tutor routing, route optimizer, secondary-solver policy, or any future solve/tutor capabilities.
 
 ## 3. Primary port
 

@@ -29,6 +29,15 @@ Sprint 4.4 scope within `problem`:
 - must not import OpenAI, Gemini, Apple Vision, or other provider SDK classes;
 - does not create `ProblemParse`, canonical math, classification, solving, verification, or mastery evidence.
 
+Sprint 4.5 scope within `problem`:
+- owns `ProblemParseJob` and `ProblemParse` persistence because parser revisions belong to a user-owned `ProblemSession`;
+- consumes only exact accepted `RecognitionEvidence` id/revision, not object storage or arbitrary latest provider output;
+- calls the provider-neutral `AiModelGateway` application interface for `PROBLEM_NORMALIZE`;
+- validates untrusted parser JSON, strict `problem-parse-v1` schema, subject/topic taxonomy, task/problem support, variables, constraints, source block references, uncertainty, and quality-risk propagation before normalized parse data is stored;
+- persists raw parser output separately from normalized parser output and excludes raw parser output from normal product API/export payloads;
+- must not import OpenAI, Gemini, Apple Vision, or other provider SDK classes;
+- does not create canonical safe math, primary skill/difficulty classification, solve jobs, verification evidence, mastery evidence, or Sprint 4.8 user-correction behavior.
+
 ## solving
 Receives canonical Problem, creates SolverRuns and Solution. Does not decide VERIFIED.
 
@@ -65,7 +74,7 @@ Other modules query capabilities and entitlement state. They do not depend on St
 ## ai
 Owns model routing, provider adapters, prompt registry access and AI usage accounting. It does not own learning/business meaning.
 
-Sprint 4.4 pulls forward only the minimum `VISION_PARSE` capability boundary, local fixture provider, route/provenance/usage records, and provider-adapter contract required by recognition. Full solver/tutor/mistake-classifier routing remains Sprint 5.1+.
+Sprint 4.4 pulls forward the minimum `VISION_PARSE` capability boundary, local fixture provider, route/provenance/usage records, and provider-adapter contract required by recognition. Sprint 4.5 extends that subset to `PROBLEM_NORMALIZE` for parser normalization. Full solver/tutor/mistake-classifier routing remains Sprint 5.1+.
 
 ## admin
 Read-heavy operational tooling. Any mutation goes through normal domain commands; no direct DB edit endpoint.

@@ -8,9 +8,14 @@ No prompt/model/router/proprietary-model change is production-ready until measur
 
 ### Parser evaluation
 - OCR/recognition correctness;
-- canonical expression accuracy;
-- skill/topic classification;
-- structural schema validity.
+- Sprint 4.5 `ProblemParse` schema validity;
+- parser-level semantic validity;
+- unsupported/review-required handling;
+- source evidence and uncertainty preservation;
+- future canonical expression accuracy after Sprint 4.6;
+- skill/topic classification after Sprint 4.7.
+
+Sprint 4.5 creates `evaluations/parser/golden/problem-parse-v1-seed.json` as a synthetic governance seed only. It covers supported parser-scope examples, unsupported examples, ambiguity, schema-invalid output, semantic-invalid output, and prompt-injection-as-content behavior. It is not a protected holdout, full accuracy benchmark, or training dataset. Sprint 4.10 owns representative ingestion accuracy calibration.
 
 ### Solver evaluation
 - final answer accuracy;
