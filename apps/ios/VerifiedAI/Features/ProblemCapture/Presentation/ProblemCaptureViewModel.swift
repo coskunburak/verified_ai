@@ -195,6 +195,22 @@ final class ProblemCaptureViewModel {
         state = .reviewing(asset)
     }
 
+    func returnToReview(_ asset: CapturedAsset) {
+        activeRequestID = nil
+        cameraClient.stop()
+        logger.info("problem_capture.return_to_review")
+        state = .reviewing(asset)
+        message = nil
+    }
+
+    func returnToCrop(_ asset: CapturedAsset) {
+        activeRequestID = nil
+        cameraClient.stop()
+        logger.info("problem_capture.return_to_crop")
+        state = .editingCrop(asset)
+        message = nil
+    }
+
     func useFullImageCrop() {
         updateCrop(.fullImage)
     }

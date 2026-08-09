@@ -516,6 +516,105 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+  /api/v1/problem-assets/{assetId}/preprocess:
+    post:
+      summary: Generate backend-owned preprocessing derivatives and capture quality evidence
+      description: Synchronously preprocesses an AVAILABLE image asset for Sprint 4.4 recognition input. PDF sources return a recoverable FAILED preprocessing lifecycle response in Sprint 4.3; OCR, parsing, solving, and verification are out of scope.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: assetId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Current preprocessing lifecycle result, including recoverable FAILED outcomes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemAssetPreprocessingResponse"
+        "401":
+          description: Access token is invalid or expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Account or entitlement does not allow preprocessing
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Problem asset was not found for the authenticated owner
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "409":
+          description: Source asset is not AVAILABLE
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "422":
+          description: Source object is missing or preprocessing metadata is invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "429":
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "503":
+          description: Object storage is unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /api/v1/problem-assets/{assetId}/preprocessing:
+    get:
+      summary: Read backend-owned preprocessing derivatives and quality evidence for an asset
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: assetId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Current preprocessing lifecycle state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemAssetPreprocessingResponse"
+        "401":
+          description: Access token is invalid or expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Account is not active
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Problem asset was not found for the authenticated owner
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
   /api/v1/me/billing/apple/configuration:
     get:
       summary: Return backend-owned App Store purchase configuration for the authenticated user
@@ -951,6 +1050,147 @@ components:
         availableAt:
           type: string
           format: date-time
+    ProblemAssetPreprocessingResponse:
+      type: object
+      required: [sourceAssetId, problemSessionId, sourceAssetStatus, preprocessingStatus, derivatives, qualitySignals, userRecoveryActions]
+      properties:
+        sourceAssetId:
+          type: string
+          format: uuid
+        problemSessionId:
+          type: string
+          format: uuid
+        sourceAssetStatus:
+          type: string
+          enum: [PENDING, AVAILABLE, EXPIRED, DELETED]
+        preprocessingStatus:
+          type: string
+          enum: [NOT_STARTED, READY, FAILED]
+        qualityOutcome:
+          type: [string, "null"]
+          enum: [PASS, WARNING, FAILED, null]
+        failureCode:
+          type: [string, "null"]
+          examples: [PDF_UNSUPPORTED, IMAGE_DECODE_FAILED, CROP_TOO_SMALL]
+        preferredRecognitionDerivativeId:
+          type: [string, "null"]
+          format: uuid
+        derivatives:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProblemAssetDerivativeResponse"
+        qualitySignals:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProblemAssetQualitySignalResponse"
+        userRecoveryActions:
+          type: array
+          items:
+            type: string
+            enum: [PREPROCESS, RETAKE, EDIT_CROP, CONTINUE]
+        completedAt:
+          type: [string, "null"]
+          format: date-time
+    ProblemAssetDerivativeResponse:
+      type: object
+      required: [derivativeId, derivativeKind, status, selectedForRecognition, sourceWidth, sourceHeight, cropX, cropY, cropWidth, cropHeight, processorName, processorVersion, configurationVersion, orientationNormalized, perspectiveApplied, contrastNormalized, resized, qualityOutcome]
+      properties:
+        derivativeId:
+          type: string
+          format: uuid
+        derivativeKind:
+          type: string
+          enum: [OCR_OPTIMIZED, THUMBNAIL]
+        status:
+          type: string
+          enum: [READY, FAILED]
+        selectedForRecognition:
+          type: boolean
+        contentType:
+          type: [string, "null"]
+          enum: [image/jpeg, null]
+        sizeBytes:
+          type: [integer, "null"]
+          format: int64
+          minimum: 1
+        checksumAlgorithm:
+          type: [string, "null"]
+          enum: [SHA-256, null]
+        checksumSha256:
+          type: [string, "null"]
+          pattern: "^[a-f0-9]{64}$"
+        width:
+          type: [integer, "null"]
+          minimum: 1
+        height:
+          type: [integer, "null"]
+          minimum: 1
+        sourceWidth:
+          type: integer
+          minimum: 1
+        sourceHeight:
+          type: integer
+          minimum: 1
+        cropX:
+          type: number
+          minimum: 0
+          maximum: 1
+        cropY:
+          type: number
+          minimum: 0
+          maximum: 1
+        cropWidth:
+          type: number
+          exclusiveMinimum: 0
+          maximum: 1
+        cropHeight:
+          type: number
+          exclusiveMinimum: 0
+          maximum: 1
+        processorName:
+          type: string
+        processorVersion:
+          type: string
+        configurationVersion:
+          type: string
+        orientationNormalized:
+          type: boolean
+        perspectiveApplied:
+          type: boolean
+          description: Always false in Sprint 4.3 because no semantic-changing perspective warp is applied.
+        contrastNormalized:
+          type: boolean
+        resized:
+          type: boolean
+        qualityOutcome:
+          type: string
+          enum: [PASS, WARNING, FAILED]
+        failureCode:
+          type: [string, "null"]
+        createdAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: [string, "null"]
+          format: date-time
+    ProblemAssetQualitySignalResponse:
+      type: object
+      required: [signalType, severity, score, threshold, policyVersion, messageCode]
+      properties:
+        signalType:
+          type: string
+          enum: [BLUR, GLARE, CROP_FRAMING, CONTRAST_READABILITY, RESOLUTION]
+        severity:
+          type: string
+          enum: [PASS, WARNING, BLOCKING]
+        score:
+          type: number
+        threshold:
+          type: number
+        policyVersion:
+          type: string
+        messageCode:
+          type: string
     AppleBillingConfigurationResponse:
       type: object
       required: [appAccountToken, purchaseAvailable, environment, products]

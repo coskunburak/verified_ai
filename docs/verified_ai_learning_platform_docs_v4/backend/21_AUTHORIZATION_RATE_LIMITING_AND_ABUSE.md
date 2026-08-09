@@ -40,6 +40,7 @@ Sprint 3.8 implementation adds Redis-backed fixed-window rate limiting for sensi
 | `POST /api/v1/me/billing/apple/transactions` | 20/5 minutes | fail open |
 | `POST /api/v1/uploads/presign` | 30/10 minutes | fail open |
 | `POST /api/v1/uploads/{uploadId}/complete` | 60/10 minutes | fail open |
+| `POST /api/v1/problem-assets/{assetId}/preprocess` | 30/10 minutes | fail open |
 | `POST /api/v1/me/data-exports` | 3/hour | fail open |
 | `POST /api/v1/me/deletion-request*` | 5/hour | fail closed |
 | `POST /api/v1/webhooks/apple/app-store` | 120/minute | fail open |

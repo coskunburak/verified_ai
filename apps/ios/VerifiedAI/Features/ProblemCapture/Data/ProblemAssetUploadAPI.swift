@@ -31,6 +31,26 @@ final class ProblemAssetUploadAPI: ProblemAssetUploadServicing, @unchecked Senda
         )
         return try response.body.reference()
     }
+
+    func preprocessAsset(problemAssetId: UUID) async throws -> ProblemAssetPreprocessingResult {
+        let response: HTTPResponse<ProblemAssetPreprocessingWireResponse> = try await apiClient.send(
+            HTTPRequest(
+                endpoint: Endpoint(path: "/api/v1/problem-assets/\(problemAssetId.uuidString)/preprocess", method: .post),
+                allowsAuthRefreshRetry: false
+            )
+        )
+        return try response.body.result()
+    }
+
+    func getPreprocessing(problemAssetId: UUID) async throws -> ProblemAssetPreprocessingResult {
+        let response: HTTPResponse<ProblemAssetPreprocessingWireResponse> = try await apiClient.send(
+            HTTPRequest(
+                endpoint: Endpoint(path: "/api/v1/problem-assets/\(problemAssetId.uuidString)/preprocessing", method: .get),
+                allowsAuthRefreshRetry: false
+            )
+        )
+        return try response.body.result()
+    }
 }
 
 private struct ProblemAssetUploadWireRequest: Encodable {
@@ -108,6 +128,104 @@ private struct ProblemAssetUploadCompletionWireResponse: Decodable {
             problemSessionStatus: problemSessionStatus,
             assetStatus: assetStatus,
             availableAt: availableAtDate
+        )
+    }
+}
+
+private struct ProblemAssetPreprocessingWireResponse: Decodable {
+    let sourceAssetId: UUID
+    let problemSessionId: UUID
+    let sourceAssetStatus: String
+    let preprocessingStatus: String
+    let qualityOutcome: String?
+    let failureCode: String?
+    let preferredRecognitionDerivativeId: UUID?
+    let derivatives: [ProblemAssetDerivativeWireResponse]
+    let qualitySignals: [ProblemAssetQualitySignalWireResponse]
+    let userRecoveryActions: [String]
+    let completedAt: String?
+
+    func result() throws -> ProblemAssetPreprocessingResult {
+        let completedAtDate = ISO8601WireDate.parse(completedAt)
+        if completedAt != nil, completedAtDate == nil {
+            throw NetworkError.decoding("unsupported_preprocessing_completion_date")
+        }
+        return ProblemAssetPreprocessingResult(
+            sourceAssetId: sourceAssetId,
+            problemSessionId: problemSessionId,
+            sourceAssetStatus: sourceAssetStatus,
+            preprocessingStatus: preprocessingStatus,
+            qualityOutcome: qualityOutcome,
+            failureCode: failureCode,
+            preferredRecognitionDerivativeId: preferredRecognitionDerivativeId,
+            derivatives: derivatives.map(\.derivative),
+            qualitySignals: qualitySignals.map(\.signal),
+            userRecoveryActions: userRecoveryActions,
+            completedAt: completedAtDate
+        )
+    }
+}
+
+private struct ProblemAssetDerivativeWireResponse: Decodable {
+    let derivativeId: UUID
+    let derivativeKind: String
+    let status: String
+    let selectedForRecognition: Bool
+    let contentType: String?
+    let sizeBytes: Int64?
+    let checksumSha256: String?
+    let width: Int?
+    let height: Int?
+    let processorName: String
+    let processorVersion: String
+    let configurationVersion: String
+    let orientationNormalized: Bool
+    let perspectiveApplied: Bool
+    let contrastNormalized: Bool
+    let resized: Bool
+    let qualityOutcome: String
+    let failureCode: String?
+
+    var derivative: ProblemAssetDerivative {
+        ProblemAssetDerivative(
+            derivativeId: derivativeId,
+            derivativeKind: derivativeKind,
+            status: status,
+            selectedForRecognition: selectedForRecognition,
+            contentType: contentType,
+            sizeBytes: sizeBytes,
+            checksumSha256: checksumSha256,
+            width: width,
+            height: height,
+            processorName: processorName,
+            processorVersion: processorVersion,
+            configurationVersion: configurationVersion,
+            orientationNormalized: orientationNormalized,
+            perspectiveApplied: perspectiveApplied,
+            contrastNormalized: contrastNormalized,
+            resized: resized,
+            qualityOutcome: qualityOutcome,
+            failureCode: failureCode
+        )
+    }
+}
+
+private struct ProblemAssetQualitySignalWireResponse: Decodable {
+    let signalType: String
+    let severity: String
+    let score: Double
+    let threshold: Double
+    let policyVersion: String
+    let messageCode: String
+
+    var signal: ProblemAssetQualitySignal {
+        ProblemAssetQualitySignal(
+            signalType: signalType,
+            severity: severity,
+            score: score,
+            threshold: threshold,
+            policyVersion: policyVersion,
+            messageCode: messageCode
         )
     }
 }

@@ -43,9 +43,13 @@ final class ProblemAssetUploadViewModel {
                 assetStatus: "AVAILABLE",
                 availableAt: Date()
             )
+            let preprocessing = ProblemAssetPreprocessingResult.passFixture(
+                sourceAssetId: reference.problemAssetId,
+                problemSessionId: reference.problemSessionId
+            )
             await assetStore.delete(acceptedAsset.asset)
-            state = .available(reference)
-            message = "Problem asset uploaded successfully."
+            state = .available(PreprocessedProblemAssetReference(durableAsset: reference, preprocessing: preprocessing))
+            message = "Problem asset is ready for recognition."
             return
         }
         #endif
@@ -87,10 +91,15 @@ final class ProblemAssetUploadViewModel {
             )
             guard activeRequestID == requestID else { return }
 
-            await assetStore.delete(acceptedAsset.asset)
-            logger.info("problem_asset_upload.available")
-            state = .available(reference)
-            message = "Problem asset uploaded successfully."
+            state = .preprocessing(reference)
+            let preprocessing = try await uploadAPI.preprocessAsset(problemAssetId: reference.problemAssetId)
+            guard activeRequestID == requestID else { return }
+
+            let preprocessedReference = PreprocessedProblemAssetReference(
+                durableAsset: reference,
+                preprocessing: preprocessing
+            )
+            await applyPreprocessingResult(preprocessedReference, acceptedAsset: acceptedAsset)
         } catch let error as NetworkError {
             applyFailure(error, acceptedAsset: acceptedAsset)
         } catch {
@@ -99,10 +108,24 @@ final class ProblemAssetUploadViewModel {
     }
 
     func retry() async {
-        guard case .recoverableFailure(_, let acceptedAsset) = state else {
+        let acceptedAsset: AcceptedCapturedAsset
+        switch state {
+        case .recoverableFailure(_, let asset), .preprocessingFailed(_, _, let asset):
+            acceptedAsset = asset
+        default:
             return
         }
         await start(acceptedAsset)
+    }
+
+    func continueWithWarning() async {
+        guard case .preprocessingWarning(let reference, let acceptedAsset) = state else {
+            return
+        }
+        await assetStore.delete(acceptedAsset.asset)
+        logger.info("problem_asset_preprocessing.warning_continued")
+        state = .available(reference)
+        message = "Problem asset is ready for recognition with capture warnings."
     }
 
     func cancel() {
@@ -119,6 +142,12 @@ final class ProblemAssetUploadViewModel {
 
     private func applyFailure(_ error: NetworkError?, acceptedAsset: AcceptedCapturedAsset) {
         let failure: ProblemAssetUploadFailure
+        let wasPreprocessing: Bool
+        if case .preprocessing = state {
+            wasPreprocessing = true
+        } else {
+            wasPreprocessing = false
+        }
         switch error {
         case .server(let problem) where problem.code == "UPLOAD_RESERVATION_EXPIRED":
             failure = .reservationFailed(problem.code)
@@ -130,17 +159,38 @@ final class ProblemAssetUploadViewModel {
             failure = .completionFailed(problem.code)
             message = "Upload integrity check failed. Retry will upload the local file again."
         case .server(let problem):
-            failure = .completionFailed(problem.code)
-            message = "Upload could not be confirmed. Retry is available."
+            failure = wasPreprocessing ? .preprocessingFailed(problem.code) : .completionFailed(problem.code)
+            message = wasPreprocessing ? "Preprocessing could not finish. Your local capture is still available." : "Upload could not be confirmed. Retry is available."
         case .transport, .httpStatus:
-            failure = .uploadFailed
-            message = "Upload failed. Your local capture is still available."
+            failure = wasPreprocessing ? .preprocessingFailed(nil) : .uploadFailed
+            message = wasPreprocessing ? "Preprocessing needs a network connection. Your local capture is still available." : "Upload failed. Your local capture is still available."
         case .invalidURL, .invalidResponse, .decoding, nil:
-            failure = .uploadFailed
-            message = "Upload could not continue. Your local capture is still available."
+            failure = wasPreprocessing ? .preprocessingFailed(nil) : .uploadFailed
+            message = wasPreprocessing ? "Preprocessing could not continue. Your local capture is still available." : "Upload could not continue. Your local capture is still available."
         }
         logger.warning("problem_asset_upload.failed")
         state = .recoverableFailure(failure, acceptedAsset)
+    }
+
+    private func applyPreprocessingResult(
+        _ reference: PreprocessedProblemAssetReference,
+        acceptedAsset: AcceptedCapturedAsset
+    ) async {
+        switch reference.preprocessing.qualityOutcome {
+        case "PASS":
+            await assetStore.delete(acceptedAsset.asset)
+            logger.info("problem_asset_preprocessing.pass")
+            state = .available(reference)
+            message = "Problem asset is ready for recognition."
+        case "WARNING":
+            logger.warning("problem_asset_preprocessing.warning")
+            state = .preprocessingWarning(reference, acceptedAsset)
+            message = "Capture quality warnings need review."
+        default:
+            logger.warning("problem_asset_preprocessing.failed")
+            state = .preprocessingFailed(reference.durableAsset, reference.preprocessing, acceptedAsset)
+            message = "Preprocessing could not prepare this capture."
+        }
     }
 
     private func makeUploadRequest(from asset: CapturedAsset) throws -> ProblemAssetUploadRequest {
@@ -184,3 +234,23 @@ final class ProblemAssetUploadViewModel {
         "problem-asset-complete-\(acceptedAsset.localIdentifier.uuidString)"
     }
 }
+
+#if DEBUG
+private extension ProblemAssetPreprocessingResult {
+    static func passFixture(sourceAssetId: UUID, problemSessionId: UUID) -> ProblemAssetPreprocessingResult {
+        ProblemAssetPreprocessingResult(
+            sourceAssetId: sourceAssetId,
+            problemSessionId: problemSessionId,
+            sourceAssetStatus: "AVAILABLE",
+            preprocessingStatus: "READY",
+            qualityOutcome: "PASS",
+            failureCode: nil,
+            preferredRecognitionDerivativeId: UUID(uuidString: "00000000-0000-0000-0000-000000000043"),
+            derivatives: [],
+            qualitySignals: [],
+            userRecoveryActions: ["CONTINUE"],
+            completedAt: Date()
+        )
+    }
+}
+#endif

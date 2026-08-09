@@ -27,6 +27,11 @@ Example:
 
 The object key is generated only by the backend. The client never supplies `object_key`, bucket, prefix, or authoritative asset identity. Ownership lives in PostgreSQL, not in path parsing.
 
+Sprint 4.3 derived objects use:
+`problem-assets/{problemSessionId}/{sourceAssetId}/derivatives/{derivativeId}/{kind}.jpg`
+
+Derivative keys are also generated only by the backend. They are not returned to clients in public API responses.
+
 ## Sprint 4.2 storage contract
 
 - Provider abstraction: `ProblemAssetStorage`.
@@ -40,12 +45,11 @@ The object key is generated only by the backend. The client never supplies `obje
 
 ## Derived assets
 
-May include:
-- normalized/cropped image,
-- thumbnail,
-- OCR-optimized derivative.
+Sprint 4.3 creates:
+- `OCR_OPTIMIZED` JPEG derivative, selected as the preferred Sprint 4.4 recognition input when preprocessing succeeds.
+- `THUMBNAIL` JPEG derivative for compact UI/history preview metadata.
 
-Each derivative links to source and has retention policy.
+Each derivative links to its immutable source `ProblemAsset`, stores checksum/dimensions/processor provenance, and has associated quality evidence. The original source object is never overwritten. PDF originals remain durable upload assets; Sprint 4.3 records a recoverable `PDF_UNSUPPORTED` preprocessing failure rather than rasterizing PDF pages.
 
 ## Redis
 

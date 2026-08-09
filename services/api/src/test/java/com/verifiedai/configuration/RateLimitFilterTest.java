@@ -61,7 +61,14 @@ final class RateLimitFilterTest {
         complete.setRemoteAddr("203.0.113.11");
         filter.doFilter(complete, new MockHttpServletResponse(), new MockFilterChain());
 
-        assertThat(limiter.policyNames()).containsExactly("problem_upload_presign", "problem_upload_complete");
+        MockHttpServletRequest preprocess = new MockHttpServletRequest(
+            "POST",
+            "/api/v1/problem-assets/00000000-0000-0000-0000-000000000002/preprocess"
+        );
+        preprocess.setRemoteAddr("203.0.113.12");
+        filter.doFilter(preprocess, new MockHttpServletResponse(), new MockFilterChain());
+
+        assertThat(limiter.policyNames()).containsExactly("problem_upload_presign", "problem_upload_complete", "problem_asset_preprocess");
     }
 
     private static final class DegradedOpenLimiter implements RateLimiter {

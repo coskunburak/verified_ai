@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -83,6 +84,52 @@ public class S3CompatibleProblemAssetStorage implements ProblemAssetStorage {
             throw new ProblemAssetStorageUnavailableException("Problem asset object metadata could not be read", exception);
         } catch (RuntimeException exception) {
             throw new ProblemAssetStorageUnavailableException("Problem asset object metadata could not be read", exception);
+        }
+    }
+
+    @Override
+    public byte[] readBytes(String objectKey, long maxSizeBytes) {
+        try {
+            ProblemAssetObjectMetadata metadata = head(objectKey);
+            if (metadata.sizeBytes() > maxSizeBytes) {
+                throw new ProblemAssetStorageUnavailableException("Problem asset object exceeded preprocessing read limit");
+            }
+            try (
+                ResponseInputStream<GetObjectResponse> object = s3Client.getObject(GetObjectRequest.builder()
+                    .bucket(properties.bucket())
+                    .key(objectKey)
+                    .build())
+            ) {
+                return object.readAllBytes();
+            }
+        } catch (ProblemAssetObjectNotFoundException | ProblemAssetStorageUnavailableException exception) {
+            throw exception;
+        } catch (NoSuchKeyException exception) {
+            throw new ProblemAssetObjectNotFoundException("Problem asset object was not found");
+        } catch (S3Exception exception) {
+            if (exception.statusCode() == 404) {
+                throw new ProblemAssetObjectNotFoundException("Problem asset object was not found");
+            }
+            throw new ProblemAssetStorageUnavailableException("Problem asset object bytes could not be read", exception);
+        } catch (Exception exception) {
+            throw new ProblemAssetStorageUnavailableException("Problem asset object bytes could not be read", exception);
+        }
+    }
+
+    @Override
+    public void putObject(String objectKey, String contentType, byte[] bytes) {
+        try {
+            s3Client.putObject(PutObjectRequest.builder()
+                    .bucket(properties.bucket())
+                    .key(objectKey)
+                    .contentType(contentType)
+                    .contentLength((long) bytes.length)
+                    .build(),
+                RequestBody.fromBytes(bytes));
+        } catch (S3Exception exception) {
+            throw new ProblemAssetStorageUnavailableException("Problem asset derivative could not be written", exception);
+        } catch (RuntimeException exception) {
+            throw new ProblemAssetStorageUnavailableException("Problem asset derivative could not be written", exception);
         }
     }
 

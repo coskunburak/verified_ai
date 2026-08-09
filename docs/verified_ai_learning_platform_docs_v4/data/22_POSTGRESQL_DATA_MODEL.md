@@ -161,6 +161,50 @@ Sprint 4.2 creates the minimal durable session foundation. Allowed initial uploa
 
 Sprint 4.2 persists raw asset metadata only. `ProblemAsset` is not canonical `Problem`, OCR evidence, parser output, solution, verification, or mastery evidence. Constraints enforce supported kinds/content types, 20 MB maximum size, lower-case SHA-256 format, normalized crop bounds, image/PDF metadata bounds, unique object keys, and per-user reservation idempotency keys. A composite FK `(problem_session_id, user_id)` to `problem_sessions(id, user_id)` prevents cross-owner asset/session attachment. Indexes cover session lookup, owner history, status, and pending upload expiry.
 
+### problem_asset_derivatives
+- id
+- source_asset_id
+- problem_session_id
+- user_id
+- derivative_kind
+- status
+- selected_for_recognition
+- object_key nullable
+- content_type nullable
+- size_bytes nullable
+- checksum_algorithm/checksum_value nullable
+- width/height nullable
+- source_width/source_height
+- crop_x/crop_y/crop_width/crop_height
+- processor_name/processor_version/configuration_version
+- orientation_normalized
+- perspective_applied
+- contrast_normalized
+- resized
+- quality_outcome
+- failure_code nullable
+- created_at
+- updated_at
+- completed_at
+- version
+
+Sprint 4.3 stores backend-generated preprocessing derivatives separately from immutable source `problem_assets`. `OCR_OPTIMIZED` and `THUMBNAIL` are the only Sprint 4.3 derivative kinds. `selected_for_recognition=true` is unique per source asset and identifies the preferred Sprint 4.4 recognition input. READY derivatives require private JPEG object metadata and SHA-256 checksums; FAILED derivatives store a failure code and no object key. Composite FKs enforce same-owner source/session relationships.
+
+### problem_asset_quality_evidence
+- id
+- derivative_id
+- source_asset_id
+- user_id
+- signal_type
+- severity
+- score
+- threshold
+- policy_version
+- message_code
+- created_at
+
+Sprint 4.3 stores deterministic capture quality evidence for `BLUR`, `GLARE`, `CROP_FRAMING`, `CONTRAST_READABILITY`, and `RESOLUTION`. Evidence is linked to the selected derivative/source asset and is metadata only; it does not contain OCR text, recognized math, solver output, or raw image bytes.
+
 ### problem_parses
 - id
 - problem_session_id

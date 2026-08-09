@@ -58,9 +58,18 @@ final class S3CompatibleProblemAssetStorageTest {
         assertThat(uploadResponse.statusCode()).as(uploadResponse.body()).isEqualTo(200);
         assertThat(storage.head(objectKey).sizeBytes()).isEqualTo(body.length);
         assertThat(storage.head(objectKey).contentType()).isEqualTo("image/jpeg");
+        assertThat(storage.readBytes(objectKey, 1024)).isEqualTo(body);
         assertThat(storage.sha256Hex(objectKey)).isEqualTo(sha256Hex(body));
 
+        byte[] derivativeBody = "sprint-4.3-derived-jpeg".getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        String derivativeKey = "problem-assets/00000000-0000-0000-0000-000000000421/00000000-0000-0000-0000-000000000422/derivatives/00000000-0000-0000-0000-000000000423/ocr-optimized.jpg";
+        storage.putObject(derivativeKey, "image/jpeg", derivativeBody);
+        assertThat(storage.head(derivativeKey).contentType()).isEqualTo("image/jpeg");
+        assertThat(storage.readBytes(derivativeKey, 1024)).isEqualTo(derivativeBody);
+        assertThat(storage.sha256Hex(derivativeKey)).isEqualTo(sha256Hex(derivativeBody));
+
         storage.deleteIfExists(objectKey);
+        storage.deleteIfExists(derivativeKey);
 
         assertThatThrownBy(() -> storage.head(objectKey))
             .isInstanceOf(ProblemAssetObjectNotFoundException.class);

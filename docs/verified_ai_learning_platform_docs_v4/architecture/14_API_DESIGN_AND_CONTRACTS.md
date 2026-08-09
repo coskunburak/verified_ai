@@ -106,10 +106,14 @@ Errors use a Problem Details-compatible shape with a stable product `code`:
 ### Uploads
 - `POST /api/v1/uploads/presign` - authenticated; requires `Idempotency-Key`; creates a `ProblemSession` and PENDING `ProblemAsset`, validates source/kind/content type/size/SHA-256/crop metadata, and returns a short-lived presigned PUT URL plus required headers. Normal response is `201 Created`.
 - `POST /api/v1/uploads/{id}/complete` - authenticated; requires `Idempotency-Key`; derives owner from the bearer principal, verifies the private object with HEAD and streamed SHA-256, then transitions `ProblemAsset` to `AVAILABLE` and `ProblemSession` to `ASSET_UPLOADED`. Normal response is `200 OK`.
+- `POST /api/v1/problem-assets/{id}/preprocess` - authenticated; derives owner from the bearer principal, reads the private AVAILABLE source object through the backend, creates deterministic preprocessing derivatives and quality evidence, and returns the durable preprocessing lifecycle result. Normal response is `200 OK`; unsupported PDF preprocessing is returned as recoverable `FAILED` lifecycle state in Sprint 4.3.
+- `GET /api/v1/problem-assets/{id}/preprocessing` - authenticated; returns the current preprocessing lifecycle state, derivative metadata, quality evidence, selected recognition derivative id, and user recovery actions without exposing storage object keys or signed download URLs.
 
 `PresignProblemAssetUploadRequest` accepts `source`, `assetKind`, `contentType`, `sizeBytes`, `checksumSha256`, optional image dimensions, optional PDF page count, and optional normalized crop fields. The backend ignores any client attempt to choose object storage identity. `PresignProblemAssetUploadResponse` returns `uploadId`, `problemSessionId`, `problemAssetId`, `assetStatus`, `uploadUrl`, `expiresAt`, and `requiredHeaders`.
 
 Upload completion is idempotent after success. Reusing a reservation idempotency key for a different payload returns `IDEMPOTENCY_KEY_REUSED`; completing an already AVAILABLE upload returns the stable durable asset reference.
+
+Sprint 4.3 preprocessing responses include `preprocessingStatus`, `qualityOutcome`, optional `failureCode`, `preferredRecognitionDerivativeId`, `derivatives`, `qualitySignals`, and `userRecoveryActions`. The selected `OCR_OPTIMIZED` derivative is a future Sprint 4.4 recognition input only; Sprint 4.3 does not perform OCR, vision recognition, parsing, solving, or verification.
 
 ### Problem sessions
 - `POST /api/v1/problem-sessions`

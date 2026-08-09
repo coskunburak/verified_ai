@@ -18,6 +18,8 @@ public interface ProblemAssetJpaRepository extends JpaRepository<ProblemAssetJpa
     @Query("select asset from ProblemAssetJpaEntity asset where asset.id = :id and asset.userId = :userId")
     Optional<ProblemAssetJpaEntity> findByIdAndUserIdForUpdate(@Param("id") UUID id, @Param("userId") UUID userId);
 
+    Optional<ProblemAssetJpaEntity> findByIdAndUserId(UUID id, UUID userId);
+
     List<ProblemAssetJpaEntity> findByUserIdOrderByCreatedAtDesc(UUID userId);
 
     List<ProblemAssetJpaEntity> findByStatusAndUploadExpiresAtBeforeOrderByUploadExpiresAtAsc(

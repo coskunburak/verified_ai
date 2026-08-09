@@ -19,7 +19,7 @@ final class ProblemAssetUploadViewModelTests: XCTestCase {
         }
     }
 
-    func testSuccessfulUploadTransitionsToAvailableAndDeletesLocalAsset() async throws {
+    func testSuccessfulUploadPreprocessesThenTransitionsToAvailableAndDeletesLocalAsset() async throws {
         let fixture = try makeAcceptedAsset(bytes: Data([1, 2, 3, 4]))
         let api = FakeProblemAssetUploadAPI()
         let uploader = FakePresignedObjectUploader()
@@ -28,14 +28,16 @@ final class ProblemAssetUploadViewModelTests: XCTestCase {
 
         await viewModel.start(fixture.acceptedAsset)
 
-        XCTAssertEqual(viewModel.state, .available(FakeProblemAssetUploadAPI.reference))
+        XCTAssertEqual(viewModel.state, .available(FakeProblemAssetUploadAPI.preprocessedReference))
         let deletedAssetIDs = await store.deletedAssetIDs()
         let uploadedFileURL = await uploader.uploadedFileURL()
         let requiredHeaders = await uploader.requiredHeaders()
+        let preprocessCount = await api.preprocessCount()
         XCTAssertEqual(deletedAssetIDs, [fixture.acceptedAsset.localIdentifier])
         XCTAssertFalse(FileManager.default.fileExists(atPath: fixture.fileURL.path))
         XCTAssertEqual(uploadedFileURL, fixture.fileURL)
         XCTAssertEqual(requiredHeaders, ["Content-Type": "image/jpeg"])
+        XCTAssertEqual(preprocessCount, 1)
     }
 
     func testReservationUsesExactLocalBytesMetadataAndStableIdempotencyKey() async throws {
@@ -135,7 +137,7 @@ final class ProblemAssetUploadViewModelTests: XCTestCase {
 
         await viewModel.retry()
 
-        XCTAssertEqual(viewModel.state, .available(FakeProblemAssetUploadAPI.reference))
+        XCTAssertEqual(viewModel.state, .available(FakeProblemAssetUploadAPI.preprocessedReference))
         let reserveCount = await api.reserveCount()
         let completeCount = await api.completeCount()
         let deletedAssetIDs = await store.deletedAssetIDs()
@@ -143,6 +145,61 @@ final class ProblemAssetUploadViewModelTests: XCTestCase {
         XCTAssertEqual(completeCount, 2)
         XCTAssertFalse(FileManager.default.fileExists(atPath: fixture.fileURL.path))
         XCTAssertEqual(deletedAssetIDs, [fixture.acceptedAsset.localIdentifier])
+    }
+
+    func testPreprocessingWarningPreservesLocalAssetUntilUserContinues() async throws {
+        let fixture = try makeAcceptedAsset(bytes: Data([10, 11]))
+        let api = FakeProblemAssetUploadAPI(preprocessingResults: [FakeProblemAssetUploadAPI.preprocessingWarning])
+        let store = FakeUploadAssetStore()
+        let viewModel = makeViewModel(api: api, store: store)
+
+        await viewModel.start(fixture.acceptedAsset)
+
+        XCTAssertEqual(
+            viewModel.state,
+            .preprocessingWarning(FakeProblemAssetUploadAPI.preprocessedWarningReference, fixture.acceptedAsset)
+        )
+        XCTAssertTrue(FileManager.default.fileExists(atPath: fixture.fileURL.path))
+        let deletedBeforeContinue = await store.deletedAssetIDs()
+        XCTAssertEqual(deletedBeforeContinue, [])
+
+        await viewModel.continueWithWarning()
+
+        XCTAssertEqual(viewModel.state, .available(FakeProblemAssetUploadAPI.preprocessedWarningReference))
+        XCTAssertFalse(FileManager.default.fileExists(atPath: fixture.fileURL.path))
+        let deletedAfterContinue = await store.deletedAssetIDs()
+        XCTAssertEqual(deletedAfterContinue, [fixture.acceptedAsset.localIdentifier])
+    }
+
+    func testPreprocessingFailurePreservesLocalAssetAndRetryUploadsAgain() async throws {
+        let fixture = try makeAcceptedAsset(bytes: Data([12, 13]))
+        let api = FakeProblemAssetUploadAPI(preprocessingResults: [
+            FakeProblemAssetUploadAPI.preprocessingFailed,
+            FakeProblemAssetUploadAPI.preprocessingPass
+        ])
+        let store = FakeUploadAssetStore()
+        let viewModel = makeViewModel(api: api, store: store)
+
+        await viewModel.start(fixture.acceptedAsset)
+
+        XCTAssertEqual(
+            viewModel.state,
+            .preprocessingFailed(FakeProblemAssetUploadAPI.reference, FakeProblemAssetUploadAPI.preprocessingFailed, fixture.acceptedAsset)
+        )
+        XCTAssertTrue(FileManager.default.fileExists(atPath: fixture.fileURL.path))
+        let deletedBeforeRetry = await store.deletedAssetIDs()
+        XCTAssertEqual(deletedBeforeRetry, [])
+
+        await viewModel.retry()
+
+        XCTAssertEqual(viewModel.state, .available(FakeProblemAssetUploadAPI.preprocessedReference))
+        XCTAssertFalse(FileManager.default.fileExists(atPath: fixture.fileURL.path))
+        let reserveCount = await api.reserveCount()
+        let completeCount = await api.completeCount()
+        let preprocessCount = await api.preprocessCount()
+        XCTAssertEqual(reserveCount, 2)
+        XCTAssertEqual(completeCount, 2)
+        XCTAssertEqual(preprocessCount, 2)
     }
 
     private func makeViewModel(
@@ -214,16 +271,119 @@ private actor FakeProblemAssetUploadAPI: ProblemAssetUploadServicing {
         assetStatus: "AVAILABLE",
         availableAt: Date(timeIntervalSince1970: 1_800_001_000)
     )
+    static let preprocessingPass = ProblemAssetPreprocessingResult(
+        sourceAssetId: problemAssetId,
+        problemSessionId: problemSessionId,
+        sourceAssetStatus: "AVAILABLE",
+        preprocessingStatus: "READY",
+        qualityOutcome: "PASS",
+        failureCode: nil,
+        preferredRecognitionDerivativeId: UUID(uuidString: "00000000-0000-0000-0000-000000000704")!,
+        derivatives: [
+            ProblemAssetDerivative(
+                derivativeId: UUID(uuidString: "00000000-0000-0000-0000-000000000704")!,
+                derivativeKind: "OCR_OPTIMIZED",
+                status: "READY",
+                selectedForRecognition: true,
+                contentType: "image/jpeg",
+                sizeBytes: 2048,
+                checksumSha256: String(repeating: "a", count: 64),
+                width: 1200,
+                height: 900,
+                processorName: "DOCUMENT_PREPROCESSOR",
+                processorVersion: "1.0",
+                configurationVersion: "capture-quality-v1",
+                orientationNormalized: false,
+                perspectiveApplied: false,
+                contrastNormalized: false,
+                resized: false,
+                qualityOutcome: "PASS",
+                failureCode: nil
+            )
+        ],
+        qualitySignals: [
+            ProblemAssetQualitySignal(signalType: "BLUR", severity: "PASS", score: 200, threshold: 90, policyVersion: "capture-quality-v1", messageCode: "CAPTURE_BLUR_PASS")
+        ],
+        userRecoveryActions: ["CONTINUE"],
+        completedAt: Date(timeIntervalSince1970: 1_800_001_100)
+    )
+    static let preprocessingWarning = ProblemAssetPreprocessingResult(
+        sourceAssetId: problemAssetId,
+        problemSessionId: problemSessionId,
+        sourceAssetStatus: "AVAILABLE",
+        preprocessingStatus: "READY",
+        qualityOutcome: "WARNING",
+        failureCode: nil,
+        preferredRecognitionDerivativeId: UUID(uuidString: "00000000-0000-0000-0000-000000000705")!,
+        derivatives: [
+            ProblemAssetDerivative(
+                derivativeId: UUID(uuidString: "00000000-0000-0000-0000-000000000705")!,
+                derivativeKind: "OCR_OPTIMIZED",
+                status: "READY",
+                selectedForRecognition: true,
+                contentType: "image/jpeg",
+                sizeBytes: 2048,
+                checksumSha256: String(repeating: "b", count: 64),
+                width: 480,
+                height: 360,
+                processorName: "DOCUMENT_PREPROCESSOR",
+                processorVersion: "1.0",
+                configurationVersion: "capture-quality-v1",
+                orientationNormalized: false,
+                perspectiveApplied: false,
+                contrastNormalized: true,
+                resized: false,
+                qualityOutcome: "WARNING",
+                failureCode: nil
+            )
+        ],
+        qualitySignals: [
+            ProblemAssetQualitySignal(signalType: "RESOLUTION", severity: "WARNING", score: 480, threshold: 900, policyVersion: "capture-quality-v1", messageCode: "CAPTURE_RESOLUTION_WARNING")
+        ],
+        userRecoveryActions: ["RETAKE", "EDIT_CROP", "CONTINUE"],
+        completedAt: Date(timeIntervalSince1970: 1_800_001_200)
+    )
+    static let preprocessingFailed = ProblemAssetPreprocessingResult(
+        sourceAssetId: problemAssetId,
+        problemSessionId: problemSessionId,
+        sourceAssetStatus: "AVAILABLE",
+        preprocessingStatus: "FAILED",
+        qualityOutcome: "FAILED",
+        failureCode: "IMAGE_DECODE_FAILED",
+        preferredRecognitionDerivativeId: nil,
+        derivatives: [],
+        qualitySignals: [],
+        userRecoveryActions: ["RETAKE", "EDIT_CROP"],
+        completedAt: Date(timeIntervalSince1970: 1_800_001_300)
+    )
+    static let preprocessedReference = PreprocessedProblemAssetReference(
+        durableAsset: reference,
+        preprocessing: preprocessingPass
+    )
+    static let preprocessedWarningReference = PreprocessedProblemAssetReference(
+        durableAsset: reference,
+        preprocessing: preprocessingWarning
+    )
 
     private var reserveErrors: [Error]
     private var completeErrors: [Error]
+    private var preprocessingResults: [ProblemAssetPreprocessingResult]
+    private var preprocessingErrors: [Error]
     private var reservations: [ReceivedReservation] = []
     private var completionKeys: [String] = []
     private var completionUploadIds: [UUID] = []
+    private var preprocessingAssetIds: [UUID] = []
 
-    init(reserveErrors: [Error] = [], completeErrors: [Error] = []) {
+    init(
+        reserveErrors: [Error] = [],
+        completeErrors: [Error] = [],
+        preprocessingResults: [ProblemAssetPreprocessingResult] = [FakeProblemAssetUploadAPI.preprocessingPass],
+        preprocessingErrors: [Error] = []
+    ) {
         self.reserveErrors = reserveErrors
         self.completeErrors = completeErrors
+        self.preprocessingResults = preprocessingResults
+        self.preprocessingErrors = preprocessingErrors
     }
 
     func reserveUpload(
@@ -246,6 +406,22 @@ private actor FakeProblemAssetUploadAPI: ProblemAssetUploadServicing {
         return Self.reference
     }
 
+    func preprocessAsset(problemAssetId: UUID) async throws -> ProblemAssetPreprocessingResult {
+        preprocessingAssetIds.append(problemAssetId)
+        if !preprocessingErrors.isEmpty {
+            throw preprocessingErrors.removeFirst()
+        }
+        if !preprocessingResults.isEmpty {
+            return preprocessingResults.removeFirst()
+        }
+        return Self.preprocessingPass
+    }
+
+    func getPreprocessing(problemAssetId: UUID) async throws -> ProblemAssetPreprocessingResult {
+        preprocessingAssetIds.append(problemAssetId)
+        return preprocessingResults.first ?? Self.preprocessingPass
+    }
+
     func receivedReservation() -> ReceivedReservation? {
         reservations.last
     }
@@ -260,6 +436,10 @@ private actor FakeProblemAssetUploadAPI: ProblemAssetUploadServicing {
 
     func completeCount() -> Int {
         completionKeys.count
+    }
+
+    func preprocessCount() -> Int {
+        preprocessingAssetIds.count
     }
 }
 

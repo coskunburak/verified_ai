@@ -7,6 +7,10 @@ public interface ProblemAssetStorage {
 
     ProblemAssetObjectMetadata head(String objectKey);
 
+    byte[] readBytes(String objectKey, long maxSizeBytes);
+
+    void putObject(String objectKey, String contentType, byte[] bytes);
+
     String sha256Hex(String objectKey);
 
     void deleteIfExists(String objectKey);

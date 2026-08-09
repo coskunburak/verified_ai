@@ -20,8 +20,10 @@ import com.verifiedai.profile.application.UpdateLearningProfileCommand;
 import com.verifiedai.sharedkernel.error.ApiErrorCode;
 import com.verifiedai.sharedkernel.error.ApiProblemException;
 import java.net.URI;
+import java.security.MessageDigest;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.HexFormat;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -114,20 +116,25 @@ final class AccountPrivacyApplicationServiceTest extends PostgresIntegrationTest
         String objectKey = objectKey(reservation.problemAssetId());
         problemAssetStorage.put(objectKey, "image/jpeg", 11L, "b".repeat(64));
         problemAssetUploadApplicationService.complete(session.userId(), reservation.uploadId(), "privacy-complete");
+        String derivativeKey = insertReadyDerivative(session.userId(), reservation.problemSessionId(), reservation.problemAssetId());
 
         DataExportResult export = accountPrivacyApplicationService.requestExport(session.userId());
         Map<String, Object> content = accountPrivacyApplicationService.downloadExport(session.userId(), export.exportId());
 
         assertThat(content).containsKey("problemAssets");
         assertThat(content.toString()).contains("rawBinaryIncluded=false");
+        assertThat(content.toString()).contains("derivedBinaryIncluded=false");
         assertThat(content.toString()).contains(reservation.problemAssetId().toString());
         assertThat(content.toString()).contains("TEMPORARY_RAW");
+        assertThat(content.toString()).contains("OCR_OPTIMIZED");
+        assertThat(content.toString()).contains("CAPTURE_BLUR_PASS");
         accountPrivacyApplicationService.requestDeletion(session.userId());
         accountPrivacyApplicationService.confirmDeletion(session.userId(), "DELETE");
 
         assertThat(count("problem_assets")).isEqualTo(0);
+        assertThat(count("problem_asset_derivatives")).isEqualTo(0);
         assertThat(count("problem_sessions")).isEqualTo(0);
-        assertThat(problemAssetStorage.deletedKeys()).contains(objectKey);
+        assertThat(problemAssetStorage.deletedKeys()).contains(objectKey, derivativeKey);
     }
 
     @Test
@@ -232,6 +239,49 @@ final class AccountPrivacyApplicationServiceTest extends PostgresIntegrationTest
         return jdbcTemplate.queryForObject("select object_key from problem_assets where id = ?", String.class, assetId);
     }
 
+    private String insertReadyDerivative(UUID userId, UUID problemSessionId, UUID sourceAssetId) {
+        UUID derivativeId = UUID.randomUUID();
+        UUID evidenceId = UUID.randomUUID();
+        String derivativeKey = "problem-assets/" + problemSessionId + "/" + sourceAssetId + "/derivatives/" + derivativeId + "/ocr-optimized.jpg";
+        byte[] bytes = "derived-jpeg-placeholder".getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        problemAssetStorage.putObject(derivativeKey, "image/jpeg", bytes);
+        jdbcTemplate.update(
+            """
+            insert into problem_asset_derivatives (
+                id, source_asset_id, problem_session_id, user_id, derivative_kind, status, selected_for_recognition,
+                object_key, content_type, size_bytes, checksum_algorithm, checksum_value, width, height,
+                source_width, source_height, crop_x, crop_y, crop_width, crop_height, processor_name,
+                processor_version, configuration_version, orientation_normalized, perspective_applied,
+                contrast_normalized, resized, quality_outcome, created_at, updated_at, completed_at
+            )
+            values (?, ?, ?, ?, 'OCR_OPTIMIZED', 'READY', true, ?, 'image/jpeg', ?, 'SHA-256', ?, 1200, 900,
+                1200, 900, 0, 0, 1, 1, 'DOCUMENT_PREPROCESSOR', '1.0', 'capture-quality-v1',
+                false, false, false, false, 'PASS', now(), now(), now())
+            """,
+            derivativeId,
+            sourceAssetId,
+            problemSessionId,
+            userId,
+            derivativeKey,
+            (long) bytes.length,
+            problemAssetStorage.sha256Hex(derivativeKey)
+        );
+        jdbcTemplate.update(
+            """
+            insert into problem_asset_quality_evidence (
+                id, derivative_id, source_asset_id, user_id, signal_type, severity, score,
+                threshold, policy_version, message_code, created_at
+            )
+            values (?, ?, ?, ?, 'BLUR', 'PASS', 200, 90, 'capture-quality-v1', 'CAPTURE_BLUR_PASS', now())
+            """,
+            evidenceId,
+            derivativeId,
+            sourceAssetId,
+            userId
+        );
+        return derivativeKey;
+    }
+
     private Integer count(String table) {
         return jdbcTemplate.queryForObject("select count(*) from " + table, Integer.class);
     }
@@ -287,13 +337,30 @@ final class AccountPrivacyApplicationServiceTest extends PostgresIntegrationTest
         }
 
         @Override
+        public byte[] readBytes(String objectKey, long maxSizeBytes) {
+            StoredObject object = objects.get(objectKey);
+            if (object == null) {
+                throw new ProblemAssetObjectNotFoundException("missing");
+            }
+            if (object.sizeBytes() > maxSizeBytes) {
+                throw new IllegalStateException("too large");
+            }
+            return object.bytes().clone();
+        }
+
+        @Override
+        public void putObject(String objectKey, String contentType, byte[] bytes) {
+            objects.put(objectKey, new StoredObject(contentType, bytes.clone(), bytes.length, sha256HexBytes(bytes)));
+        }
+
+        @Override
         public void deleteIfExists(String objectKey) {
             objects.remove(objectKey);
             deletedKeys.add(objectKey);
         }
 
         void put(String objectKey, String contentType, long sizeBytes, String checksumSha256) {
-            objects.put(objectKey, new StoredObject(contentType, sizeBytes, checksumSha256));
+            objects.put(objectKey, new StoredObject(contentType, new byte[(int) sizeBytes], sizeBytes, checksumSha256));
         }
 
         List<String> deletedKeys() {
@@ -305,7 +372,15 @@ final class AccountPrivacyApplicationServiceTest extends PostgresIntegrationTest
             deletedKeys.clear();
         }
 
-        private record StoredObject(String contentType, long sizeBytes, String checksumSha256) {
+        private static String sha256HexBytes(byte[] bytes) {
+            try {
+                return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(bytes));
+            } catch (Exception exception) {
+                throw new IllegalStateException(exception);
+            }
+        }
+
+        private record StoredObject(String contentType, byte[] bytes, long sizeBytes, String checksumSha256) {
         }
     }
 }

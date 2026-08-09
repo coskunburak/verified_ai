@@ -72,6 +72,21 @@ app:
       - application/pdf
     pending-retention: ${PROBLEM_ASSETS_PENDING_RETENTION:P30D}
     cleanup-interval: ${PROBLEM_ASSETS_CLEANUP_INTERVAL:PT1H}
+    preprocessing:
+      processor-name: ${PROBLEM_ASSETS_PREPROCESSOR_NAME:DOCUMENT_PREPROCESSOR}
+      processor-version: ${PROBLEM_ASSETS_PREPROCESSOR_VERSION:1.0}
+      configuration-version: ${PROBLEM_ASSETS_PREPROCESSING_CONFIGURATION_VERSION:capture-quality-v1}
+      max-source-bytes: ${PROBLEM_ASSETS_PREPROCESSING_MAX_SOURCE_BYTES:20971520}
+      max-decode-pixels: ${PROBLEM_ASSETS_PREPROCESSING_MAX_DECODE_PIXELS:36000000}
+      ocr-optimized-max-long-edge: ${PROBLEM_ASSETS_PREPROCESSING_OCR_MAX_LONG_EDGE:2400}
+      thumbnail-max-long-edge: ${PROBLEM_ASSETS_PREPROCESSING_THUMBNAIL_MAX_LONG_EDGE:360}
+      jpeg-quality: ${PROBLEM_ASSETS_PREPROCESSING_JPEG_QUALITY:0.92}
+      min-crop-pixels: ${PROBLEM_ASSETS_PREPROCESSING_MIN_CROP_PIXELS:32}
+      blur-variance-warning: ${PROBLEM_ASSETS_PREPROCESSING_BLUR_VARIANCE_WARNING:90}
+      glare-cell-saturation-ratio: ${PROBLEM_ASSETS_PREPROCESSING_GLARE_CELL_SATURATION_RATIO:0.30}
+      glare-overall-saturation-max: ${PROBLEM_ASSETS_PREPROCESSING_GLARE_OVERALL_SATURATION_MAX:0.60}
+      contrast-std-dev-warning: ${PROBLEM_ASSETS_PREPROCESSING_CONTRAST_STD_DEV_WARNING:28}
+      resolution-min-long-edge: ${PROBLEM_ASSETS_PREPROCESSING_RESOLUTION_MIN_LONG_EDGE:900}
   auth:
     apple:
       issuer: ${APPLE_IDENTITY_ISSUER:https://appleid.apple.com}

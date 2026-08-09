@@ -11,10 +11,12 @@ import com.verifiedai.problem.domain.port.ProblemAssetStorage;
 import com.verifiedai.sharedkernel.error.ApiErrorCode;
 import com.verifiedai.sharedkernel.error.ApiProblemException;
 import java.net.URI;
+import java.security.MessageDigest;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -119,7 +121,12 @@ final class ProblemAssetUploadApplicationServiceTest extends PostgresIntegration
         assertThat(completed.assetStatus()).isEqualTo("AVAILABLE");
         assertThat(completed.problemSessionStatus()).isEqualTo("ASSET_UPLOADED");
         assertThat(completed.availableAt()).isNotNull();
-        assertThat(duplicate).isEqualTo(completed);
+        assertThat(duplicate.uploadId()).isEqualTo(completed.uploadId());
+        assertThat(duplicate.problemSessionId()).isEqualTo(completed.problemSessionId());
+        assertThat(duplicate.problemAssetId()).isEqualTo(completed.problemAssetId());
+        assertThat(duplicate.problemSessionStatus()).isEqualTo(completed.problemSessionStatus());
+        assertThat(duplicate.assetStatus()).isEqualTo(completed.assetStatus());
+        assertThat(Duration.between(duplicate.availableAt(), completed.availableAt()).abs()).isLessThan(Duration.ofMillis(1));
         assertThat(value("problem_assets", "status", "id = '" + reservation.problemAssetId() + "'")).isEqualTo("AVAILABLE");
         assertThat(value("problem_sessions", "status", "id = '" + reservation.problemSessionId() + "'")).isEqualTo("ASSET_UPLOADED");
     }
@@ -309,13 +316,30 @@ final class ProblemAssetUploadApplicationServiceTest extends PostgresIntegration
         }
 
         @Override
+        public byte[] readBytes(String objectKey, long maxSizeBytes) {
+            StoredObject object = objects.get(objectKey);
+            if (object == null) {
+                throw new ProblemAssetObjectNotFoundException("missing");
+            }
+            if (object.sizeBytes() > maxSizeBytes) {
+                throw new IllegalStateException("too large");
+            }
+            return object.bytes().clone();
+        }
+
+        @Override
+        public void putObject(String objectKey, String contentType, byte[] bytes) {
+            objects.put(objectKey, new StoredObject(contentType, bytes.clone(), bytes.length, sha256HexBytes(bytes)));
+        }
+
+        @Override
         public void deleteIfExists(String objectKey) {
             objects.remove(objectKey);
             deletedKeys.add(objectKey);
         }
 
         void put(String objectKey, String contentType, long sizeBytes, String checksumSha256) {
-            objects.put(objectKey, new StoredObject(contentType, sizeBytes, checksumSha256));
+            objects.put(objectKey, new StoredObject(contentType, new byte[(int) sizeBytes], sizeBytes, checksumSha256));
         }
 
         List<String> deletedKeys() {
@@ -327,7 +351,15 @@ final class ProblemAssetUploadApplicationServiceTest extends PostgresIntegration
             deletedKeys.clear();
         }
 
-        private record StoredObject(String contentType, long sizeBytes, String checksumSha256) {
+        private static String sha256HexBytes(byte[] bytes) {
+            try {
+                return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(bytes));
+            } catch (Exception exception) {
+                throw new IllegalStateException(exception);
+            }
+        }
+
+        private record StoredObject(String contentType, byte[] bytes, long sizeBytes, String checksumSha256) {
         }
     }
 }

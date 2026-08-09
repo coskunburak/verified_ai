@@ -395,13 +395,27 @@ struct ProblemCaptureView: View {
                 Text("The backend is checking object size, content type, and SHA-256 integrity.")
                     .font(TypographyTokens.body)
                     .foregroundStyle(ColorTokens.textSecondary)
+            case .preprocessing:
+                Label("Preparing capture", systemImage: "wand.and.stars")
+                    .font(TypographyTokens.title)
+                    .foregroundStyle(ColorTokens.textPrimary)
+                ProgressView()
+                    .accessibilityIdentifier("problemCapture.preprocessing.progress")
+                Text("The backend is creating a recognition-ready derivative and checking capture quality.")
+                    .font(TypographyTokens.body)
+                    .foregroundStyle(ColorTokens.textSecondary)
             case .available(let reference):
-                Label("Problem asset uploaded", systemImage: "checkmark.seal")
+                Label("Problem asset ready", systemImage: "checkmark.seal")
                     .font(TypographyTokens.title)
                     .foregroundStyle(ColorTokens.action)
-                Text("Asset \(reference.problemAssetId.uuidString) is available for the next ingestion step.")
+                Text("Asset \(reference.durableAsset.problemAssetId.uuidString) is available for the next ingestion step.")
                     .font(TypographyTokens.caption)
                     .foregroundStyle(ColorTokens.textSecondary)
+                if let derivativeId = reference.preprocessing.preferredRecognitionDerivativeId {
+                    Text("Recognition input \(derivativeId.uuidString)")
+                        .font(TypographyTokens.caption)
+                        .foregroundStyle(ColorTokens.textSecondary)
+                }
 
                 Button {
                     onDismiss()
@@ -411,7 +425,84 @@ struct ProblemCaptureView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .accessibilityIdentifier("problemCapture.accepted.done")
-            case .recoverableFailure:
+            case .preprocessingWarning(let reference, let acceptedAsset):
+                Label(uploadViewModel.message ?? "Capture quality needs review.", systemImage: "exclamationmark.triangle")
+                    .font(TypographyTokens.body.weight(.semibold))
+                    .foregroundStyle(ColorTokens.warning)
+                    .accessibilityIdentifier("problemCapture.preprocessing.warning")
+                ForEach(reference.preprocessing.warningSignals) { signal in
+                    Label(qualitySignalTitle(signal), systemImage: "exclamationmark.circle")
+                        .font(TypographyTokens.caption)
+                        .foregroundStyle(ColorTokens.textSecondary)
+                }
+                VStack(spacing: SpacingTokens.md) {
+                    Button {
+                        uploadViewModel.cancel()
+                        viewModel.returnToCrop(acceptedAsset.asset)
+                    } label: {
+                        Label("Edit Crop", systemImage: "crop")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+
+                    Button {
+                        Task {
+                            uploadViewModel.cancel()
+                            await viewModel.retake()
+                        }
+                    } label: {
+                        Label("Retake", systemImage: "arrow.counterclockwise")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+
+                    Button {
+                        Task { await uploadViewModel.continueWithWarning() }
+                    } label: {
+                        Label("Continue", systemImage: "checkmark")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .accessibilityIdentifier("problemCapture.preprocessing.continueWarning")
+                }
+            case .preprocessingFailed(_, let preprocessing, let acceptedAsset):
+                Label(uploadViewModel.message ?? "Preprocessing could not continue.", systemImage: "exclamationmark.triangle")
+                    .font(TypographyTokens.body.weight(.semibold))
+                    .foregroundStyle(ColorTokens.warning)
+                    .accessibilityIdentifier("problemCapture.preprocessing.failure")
+                Text(preprocessing?.failureCode ?? "Your local capture is still available.")
+                    .font(TypographyTokens.body)
+                    .foregroundStyle(ColorTokens.textSecondary)
+                VStack(spacing: SpacingTokens.md) {
+                    Button {
+                        Task { await uploadViewModel.retry() }
+                    } label: {
+                        Label("Retry", systemImage: "arrow.clockwise")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent)
+
+                    Button {
+                        uploadViewModel.cancel()
+                        viewModel.returnToCrop(acceptedAsset.asset)
+                    } label: {
+                        Label("Edit Crop", systemImage: "crop")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+
+                    Button {
+                        Task {
+                            uploadViewModel.cancel()
+                            await viewModel.retake()
+                        }
+                    } label: {
+                        Label("Retake", systemImage: "arrow.counterclockwise")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+                }
+            case .recoverableFailure(let failure, _):
                 Label(uploadViewModel.message ?? "Upload could not continue.", systemImage: "exclamationmark.triangle")
                     .font(TypographyTokens.body.weight(.semibold))
                     .foregroundStyle(ColorTokens.warning)
@@ -422,7 +513,7 @@ struct ProblemCaptureView: View {
                 Button {
                     Task { await uploadViewModel.retry() }
                 } label: {
-                    Label("Retry Upload", systemImage: "arrow.clockwise")
+                    Label(retryLabel(for: failure), systemImage: "arrow.clockwise")
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
@@ -496,6 +587,30 @@ struct ProblemCaptureView: View {
         case .pdf:
             "PDF"
         }
+    }
+
+    private func qualitySignalTitle(_ signal: ProblemAssetQualitySignal) -> String {
+        switch signal.signalType {
+        case "BLUR":
+            "Blur warning"
+        case "GLARE":
+            "Glare warning"
+        case "CROP_FRAMING":
+            "Crop or framing warning"
+        case "CONTRAST_READABILITY":
+            "Contrast warning"
+        case "RESOLUTION":
+            "Resolution warning"
+        default:
+            "Capture quality warning"
+        }
+    }
+
+    private func retryLabel(for failure: ProblemAssetUploadFailure) -> String {
+        if case .preprocessingFailed = failure {
+            return "Retry Preprocessing"
+        }
+        return "Retry Upload"
     }
 }
 

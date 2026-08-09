@@ -32,6 +32,8 @@ Sprint 4.1 introduces a stricter pre-upload iOS temporary class for local captur
 
 Sprint 4.2 introduces durable `ProblemAsset` raw source objects with configurable pending-upload retention. The default reservation TTL is 15 minutes; abandoned pending uploads are eligible for cleanup after expiry and are swept by the backend cleanup job. Account export includes problem asset metadata and declares `rawBinaryIncluded=false`; confirmed account deletion deletes matching private object-storage keys and cascades the owning problem rows.
 
+Sprint 4.3 introduces derived preprocessing objects and quality evidence. Account export includes derivative/evidence metadata, declares `derivedBinaryIncluded=false`, and confirmed account deletion deletes both raw source object keys and derived object keys before cascading the owning problem rows.
+
 ### USER_LIBRARY
 User-saved assets retained until explicit deletion/account lifecycle.
 
