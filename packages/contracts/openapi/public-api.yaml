@@ -2,7 +2,105 @@ openapi: 3.1.0
 info:
   title: Verified AI Public API
   version: 0.1.0
+
 paths:
+  /api/v1/problem-sessions/{sessionId}/classification:
+    post:
+      summary: Request canonical problem classification
+      description: >
+        Creates or reuses a durable PROBLEM_CLASSIFY job for the current
+        CanonicalProblem revision. Classification consumes only the current
+        canonical problem. It does not consume raw OCR/image/provider output,
+        solve the problem, verify a solution, update mastery, mutate curriculum,
+        or create taxonomy identifiers.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "202":
+          description: Classification job accepted or existing equivalent job reused
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemClassificationResponse"
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Required entitlement is unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Problem session was not found for the authenticated owner
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "409":
+          description: Current canonical problem is not available
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "503":
+          description: Classification route is unavailable or invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+    get:
+      summary: Get classification state for current canonical problem
+      description: >
+        Returns NOT_STARTED when the current CanonicalProblem has no
+        classification job. Historical classifications belonging to older
+        canonical revisions are never returned as authoritative state.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Current canonical classification state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemClassificationResponse"
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Problem session was not found for the authenticated owner
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "409":
+          description: Current canonical problem is not available
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
   /api/v1/platform/health:
     get:
       summary: Public platform liveness check
@@ -13,6 +111,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PlatformHealthResponse"
+
   /api/v1/platform/readiness:
     get:
       summary: Public platform readiness check
@@ -29,6 +128,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PlatformHealthResponse"
+
   /api/v1/auth/apple:
     post:
       summary: Exchange a verified Apple identity credential for a platform session
@@ -51,6 +151,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+
   /api/v1/auth/email/sign-up:
     post:
       summary: Create an email/password account and issue a platform session
@@ -91,6 +192,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+
   /api/v1/auth/email/sign-in:
     post:
       summary: Authenticate an email/password account and issue a platform session
@@ -125,6 +227,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+
   /api/v1/auth/guest:
     post:
       summary: Continue without registration by issuing an anonymous platform session
@@ -141,6 +244,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+
   /api/v1/auth/refresh:
     post:
       summary: Rotate refresh token and issue a new access token
@@ -163,6 +267,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+
   /api/v1/auth/session:
     get:
       summary: Return the current authenticated user/session identifiers
@@ -181,6 +286,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+
   /api/v1/auth/logout:
     post:
       summary: Revoke the current backend session
@@ -199,6 +305,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+
   /api/v1/me/account:
     get:
       summary: Return the current authenticated account state
@@ -223,6 +330,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+
   /api/v1/me/data-exports:
     post:
       summary: Request a retention-aware account data export for the current user
@@ -254,6 +362,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+
   /api/v1/me/data-exports/{exportId}:
     get:
       summary: Return status for a current user's data export
@@ -279,6 +388,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+
   /api/v1/me/data-exports/{exportId}/content:
     get:
       summary: Download a ready current-user data export JSON document
@@ -310,6 +420,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+
   /api/v1/me/deletion-request:
     get:
       summary: Return the current authenticated account deletion state
@@ -322,6 +433,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/DeletionRequestResponse"
+
     post:
       summary: Request account deletion for the current user
       security:
@@ -346,6 +458,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+
   /api/v1/me/deletion-request/confirm:
     post:
       summary: Confirm and execute current-user account deletion
@@ -383,6 +496,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+
   /api/v1/me/learning-profile:
     get:
       summary: Return the current authenticated learner profile
@@ -401,6 +515,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+
     patch:
       summary: Update the current authenticated learner profile
       security:
@@ -436,6 +551,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+
   /api/v1/me/entitlements:
     get:
       summary: Return the backend-authoritative current entitlement
@@ -454,6 +570,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+
   /api/v1/uploads/presign:
     post:
       summary: Reserve a private user-owned problem asset upload and return a presigned PUT URL
@@ -527,6 +644,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+
   /api/v1/uploads/{uploadId}/complete:
     post:
       summary: Complete a reserved problem asset upload after backend object verification
@@ -606,6 +724,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+
   /api/v1/problem-assets/{assetId}/preprocess:
     post:
       summary: Generate backend-owned preprocessing derivatives and capture quality evidence
@@ -668,6 +787,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+
   /api/v1/problem-assets/{assetId}/preprocessing:
     get:
       summary: Read backend-owned preprocessing derivatives and quality evidence for an asset
@@ -705,6 +825,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+
   /api/v1/problem-sessions/{sessionId}/recognition:
     post:
       summary: Request raw vision/OCR recognition evidence for a preprocessed problem session
@@ -755,6 +876,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+
     get:
       summary: Poll raw recognition job status and normalized recognition evidence
       description: Returns safe job status and normalized recognition blocks for the authenticated owner. Raw provider output and provider request details are not exposed.
@@ -792,6 +914,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+
   /api/v1/problem-sessions/{sessionId}/parse:
     post:
       summary: Request structured problem parsing for durable recognition evidence
@@ -842,6 +965,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+
     get:
       summary: Poll structured problem parse job status and normalized parse output
       description: Returns safe parser lifecycle state and normalized ProblemParse for the authenticated owner. Raw parser output and provider request details are not exposed.
@@ -879,6 +1003,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+
   /api/v1/problem-sessions/{sessionId}/canonicalize:
     post:
       summary: Create the safe canonical mathematical representation for an accepted parse
@@ -929,6 +1054,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+
   /api/v1/problem-sessions/{sessionId}/canonical-problem:
     get:
       summary: Return canonical problem display metadata for the authenticated owner
@@ -967,6 +1093,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+
   /api/v1/me/billing/apple/configuration:
     get:
       summary: Return backend-owned App Store purchase configuration for the authenticated user
@@ -985,6 +1112,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+
   /api/v1/me/billing/apple/transactions:
     post:
       summary: Submit StoreKit 2 signed transaction evidence for backend verification
@@ -1028,6 +1156,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+
   /api/v1/webhooks/apple/app-store:
     post:
       summary: Receive App Store Server Notifications V2 signedPayload events
@@ -1050,13 +1179,191 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+
   schemas:
+    ProblemClassificationResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - problemSessionId
+        - canonicalProblemId
+        - canonicalProblemRevision
+        - jobStatus
+        - capability
+        - attemptCount
+        - maxAttempts
+        - ontologyVersion
+        - projectionVersion
+        - schemaVersion
+        - secondarySkillIds
+        - difficultyPolicyVersion
+        - confidencePolicyVersion
+      properties:
+        classificationJobId:
+          type: [string, "null"]
+          format: uuid
+
+        problemSessionId:
+          type: string
+          format: uuid
+
+        canonicalProblemId:
+          type: string
+          format: uuid
+
+        canonicalProblemRevision:
+          type: integer
+          minimum: 1
+
+        jobStatus:
+          type: string
+          enum:
+            - NOT_STARTED
+            - QUEUED
+            - RUNNING
+            - SUCCEEDED
+            - FAILED_RETRYABLE
+            - FAILED_TERMINAL
+
+        capability:
+          type: string
+          const: PROBLEM_CLASSIFY
+
+        attemptCount:
+          type: integer
+          minimum: 0
+
+        maxAttempts:
+          type: integer
+          minimum: 0
+
+        lastErrorCode:
+          type: [string, "null"]
+
+        lastFailureClass:
+          type: [string, "null"]
+
+        classificationId:
+          type: [string, "null"]
+          format: uuid
+
+        classificationRevision:
+          type: [integer, "null"]
+          minimum: 1
+
+        classificationSource:
+          type: [string, "null"]
+          enum:
+            - AI
+            - SYSTEM
+            - null
+
+        classificationStatus:
+          type: [string, "null"]
+          enum:
+            - CLASSIFIED
+            - REVIEW_REQUIRED
+            - UNKNOWN
+            - UNSUPPORTED
+            - null
+
+        reviewReason:
+          type: [string, "null"]
+          enum:
+            - AMBIGUOUS_PRIMARY_SKILL
+            - LOW_CLASSIFICATION_CONFIDENCE
+            - UPSTREAM_RISK
+            - ONTOLOGY_COVERAGE_GAP
+            - INSUFFICIENT_SEMANTIC_EVIDENCE
+            - null
+
+        ontologyVersion:
+          type: string
+
+        projectionVersion:
+          type: string
+
+        schemaVersion:
+          type: string
+
+        subjectId:
+          type: [string, "null"]
+
+        topicId:
+          type: [string, "null"]
+
+        primarySkillId:
+          type: [string, "null"]
+
+        secondarySkillIds:
+          type: array
+          maxItems: 5
+          items:
+            type: string
+
+        difficulty:
+          type: [string, "null"]
+          enum:
+            - EASY
+            - MEDIUM
+            - HARD
+            - null
+
+        difficultyPolicyVersion:
+          type: string
+
+        confidenceBand:
+          type: [string, "null"]
+          enum:
+            - MEDIUM
+            - LOW
+            - UNKNOWN
+            - null
+          description: >
+            Backend-derived confidence. Sprint 4.7 V1 deliberately
+            never emits HIGH.
+
+        confidencePolicyVersion:
+          type: string
+
+        confidenceCalibration:
+          type: [string, "null"]
+          enum:
+            - UNCALIBRATED
+            - null
+
+        provider:
+          type: [string, "null"]
+
+        model:
+          type: [string, "null"]
+
+        fallbackUsed:
+          type: [boolean, "null"]
+
+        createdAt:
+          type: [string, "null"]
+          format: date-time
+
+        updatedAt:
+          type: [string, "null"]
+          format: date-time
+
+        completedAt:
+          type: [string, "null"]
+          format: date-time
+
+        classificationCreatedAt:
+          type: [string, "null"]
+          format: date-time
+
     AppleSignInRequest:
       type: object
       required: [identityToken, nonce]
@@ -1067,6 +1374,7 @@ components:
           type: string
         nonce:
           type: string
+
     EmailAuthRequest:
       type: object
       required: [email, password]
@@ -1079,12 +1387,14 @@ components:
           type: string
           minLength: 8
           maxLength: 128
+
     RefreshSessionRequest:
       type: object
       required: [refreshToken]
       properties:
         refreshToken:
           type: string
+
     AuthSessionResponse:
       type: object
       required: [userId, sessionId, tokenType, accessToken, accessTokenExpiresAt, refreshToken, refreshTokenExpiresAt]
@@ -1108,6 +1418,7 @@ components:
         refreshTokenExpiresAt:
           type: string
           format: date-time
+
     CurrentSessionResponse:
       type: object
       required: [userId, sessionId]
@@ -1118,6 +1429,7 @@ components:
         sessionId:
           type: string
           format: uuid
+
     LogoutResponse:
       type: object
       required: [status]
@@ -1125,9 +1437,11 @@ components:
         status:
           type: string
           enum: [loggedOut]
+
     AccountStatus:
       type: string
       enum: [ACTIVE, DISABLED, LOCKED, DELETION_REQUESTED, DELETION_IN_PROGRESS, DELETED]
+
     AccountStateResponse:
       type: object
       required: [userId, status, createdAt]
@@ -1146,6 +1460,7 @@ components:
         deletedAt:
           type: [string, "null"]
           format: date-time
+
     DataExportResponse:
       type: object
       required: [exportId, status, schemaVersion, requestedAt, expiresAt]
@@ -1170,6 +1485,7 @@ components:
         expiresAt:
           type: string
           format: date-time
+
     DataExportContent:
       type: object
       required: [schemaVersion, generatedAt, account]
@@ -1194,6 +1510,7 @@ components:
         billing:
           type: object
           additionalProperties: true
+
     DeletionRequestResponse:
       type: object
       required: [userId, status]
@@ -1209,6 +1526,7 @@ components:
         deletedAt:
           type: [string, "null"]
           format: date-time
+
     DeletionConfirmationRequest:
       type: object
       required: [confirmationText]
@@ -1216,6 +1534,7 @@ components:
         confirmationText:
           type: string
           enum: [DELETE]
+
     UpdateLearningProfileRequest:
       type: object
       properties:
@@ -1243,6 +1562,7 @@ components:
         expectedVersion:
           type: [integer, "null"]
           format: int64
+
     LearningProfileResponse:
       type: object
       required: [exists, userId, onboardingStatus]
@@ -1284,6 +1604,7 @@ components:
         updatedAt:
           type: [string, "null"]
           format: date-time
+
     EntitlementResponse:
       type: object
       required: [id, userId, tier, source, status, effectiveAt, capabilities]
@@ -1317,6 +1638,7 @@ components:
         version:
           type: [integer, "null"]
           format: int64
+
     PresignProblemAssetUploadRequest:
       type: object
       required: [source, assetKind, contentType, sizeBytes, checksumSha256]
@@ -1366,6 +1688,7 @@ components:
           type: [number, "null"]
           exclusiveMinimum: 0
           maximum: 1
+
     PresignProblemAssetUploadResponse:
       type: object
       required: [uploadId, problemSessionId, problemAssetId, assetStatus, uploadUrl, expiresAt, requiredHeaders]
@@ -1392,6 +1715,7 @@ components:
           type: object
           additionalProperties:
             type: string
+
     CompleteProblemAssetUploadResponse:
       type: object
       required: [uploadId, problemSessionId, problemAssetId, problemSessionStatus, assetStatus, availableAt]
@@ -1414,6 +1738,7 @@ components:
         availableAt:
           type: string
           format: date-time
+
     ProblemAssetPreprocessingResponse:
       type: object
       required: [sourceAssetId, problemSessionId, sourceAssetStatus, preprocessingStatus, derivatives, qualitySignals, userRecoveryActions]
@@ -1455,6 +1780,7 @@ components:
         completedAt:
           type: [string, "null"]
           format: date-time
+
     ProblemAssetDerivativeResponse:
       type: object
       required: [derivativeId, derivativeKind, status, selectedForRecognition, sourceWidth, sourceHeight, cropX, cropY, cropWidth, cropHeight, processorName, processorVersion, configurationVersion, orientationNormalized, perspectiveApplied, contrastNormalized, resized, qualityOutcome]
@@ -1537,6 +1863,7 @@ components:
         completedAt:
           type: [string, "null"]
           format: date-time
+
     ProblemAssetQualitySignalResponse:
       type: object
       required: [signalType, severity, score, threshold, policyVersion, messageCode]
@@ -1555,6 +1882,7 @@ components:
           type: string
         messageCode:
           type: string
+
     ProblemRecognitionResponse:
       type: object
       required: [problemSessionId, status, capability, attemptCount, maxAttempts, reviewRequired, blockCount, blocks]
@@ -1625,6 +1953,7 @@ components:
         completedAt:
           type: [string, "null"]
           format: date-time
+
     RecognitionBlockResponse:
       type: object
       required: [id, kind, text, boundingBox, readingOrder, confidenceStatus, uncertainty, layoutHints]
@@ -1657,6 +1986,7 @@ components:
           type: array
           items:
             type: string
+
     RecognitionBoundingBoxResponse:
       type: object
       required: [x, y, width, height]
@@ -1677,6 +2007,7 @@ components:
           type: number
           minimum: 0
           maximum: 1
+
     ProblemParseResponse:
       type: object
       required: [problemSessionId, jobStatus, capability, attemptCount, maxAttempts, reviewRequired]
@@ -1766,6 +2097,7 @@ components:
         completedAt:
           type: [string, "null"]
           format: date-time
+
     CanonicalProblemResponse:
       type: object
       additionalProperties: false
@@ -1834,6 +2166,7 @@ components:
         createdAt:
           type: string
           format: date-time
+
     NormalizedProblemParse:
       type: object
       additionalProperties: false
@@ -1893,6 +2226,7 @@ components:
             $ref: "#/components/schemas/ProblemParseVisualQualityRisk"
         reviewRequired:
           type: boolean
+
     ProblemParseExpression:
       type: object
       additionalProperties: false
@@ -1919,6 +2253,7 @@ components:
           type: array
           items:
             type: string
+
     ProblemParseVariable:
       type: object
       additionalProperties: false
@@ -1933,6 +2268,7 @@ components:
           type: array
           items:
             type: string
+
     ProblemParseConstraint:
       type: object
       additionalProperties: false
@@ -1955,6 +2291,7 @@ components:
           type: array
           items:
             type: string
+
     ProblemParseAssumption:
       type: object
       additionalProperties: false
@@ -1971,6 +2308,7 @@ components:
           type: array
           items:
             type: string
+
     ProblemParseUncertainty:
       type: object
       additionalProperties: false
@@ -1986,6 +2324,7 @@ components:
             type: string
         reviewRequired:
           type: boolean
+
     ProblemParseSourceEvidenceRef:
       type: object
       additionalProperties: false
@@ -1995,6 +2334,7 @@ components:
           type: string
         fieldPath:
           type: string
+
     ProblemParseVisualQualityRisk:
       type: object
       additionalProperties: false
@@ -2007,6 +2347,7 @@ components:
           enum: [PASS, WARNING, BLOCKING]
         messageCode:
           type: [string, "null"]
+
     AppleBillingConfigurationResponse:
       type: object
       required: [appAccountToken, purchaseAvailable, environment, products]
@@ -2023,6 +2364,7 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/AppleBillingProductResponse"
+
     AppleBillingProductResponse:
       type: object
       required: [internalPlanId, appStoreProductId, entitlementTier]
@@ -2038,6 +2380,7 @@ components:
           type: [string, "null"]
         billingPeriod:
           type: [string, "null"]
+
     ApplePurchaseEvidenceRequest:
       type: object
       required: [signedTransactionInfo]
@@ -2046,6 +2389,7 @@ components:
           type: string
         source:
           type: [string, "null"]
+
     ApplePurchaseEvidenceResponse:
       type: object
       required: [transactionId, originalTransactionId, subscriptionStatus, entitlement, duplicate]
@@ -2061,12 +2405,14 @@ components:
           $ref: "#/components/schemas/EntitlementResponse"
         duplicate:
           type: boolean
+
     AppleAppStoreNotificationRequest:
       type: object
       required: [signedPayload]
       properties:
         signedPayload:
           type: string
+
     AppleNotificationIngestionResponse:
       type: object
       required: [processingStatus]
@@ -2083,6 +2429,7 @@ components:
           anyOf:
             - $ref: "#/components/schemas/EntitlementResponse"
             - type: "null"
+
     PlatformHealthResponse:
       type: object
       required: [status, service, environment, correlationId, timestamp]
@@ -2099,6 +2446,7 @@ components:
         timestamp:
           type: string
           format: date-time
+
     ProblemDetails:
       type: object
       required: [type, title, status, code, traceId, details]
