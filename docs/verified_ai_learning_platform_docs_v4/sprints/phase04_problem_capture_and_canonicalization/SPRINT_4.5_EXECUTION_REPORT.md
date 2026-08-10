@@ -4,14 +4,15 @@
 
 `NOTEBOOKLM_MCP_STATUS = CONNECTED`
 
-NotebookLM query `b55c51fdc9d5` completed and confirmed the core boundary: `ProblemParse` is an intermediate structured interpretation, not canonical safe mathematics, a verifier AST, a solution, a skill classification, or a correction experience. No NotebookLM outage fallback was required; local canonical docs were still used for exact repository paths, domain invariants, and implementation details.
+NotebookLM query `b55c51fdc9d5` completed during the original Sprint 4.5 implementation and confirmed the core boundary: `ProblemParse` is an intermediate structured interpretation, not canonical safe mathematics, a verifier AST, a solution, a skill classification, or a correction experience. Final closure query `9b05850af364` confirmed the same ownership: Sprint 4.5 owns schema-validated parser-level representation and immutable parse revision persistence; Sprint 4.6 owns canonical safe math; Sprint 4.10 owns formal ingestion/parser accuracy gates. No NotebookLM outage fallback was required; local canonical docs were still used for exact repository paths, domain invariants, and implementation details.
 
-Sprint 4.5 is complete locally. Sprint 4.6 readiness is ready, with real provider validation still blocked by external provider credentials, retention settings, region settings, and staging route configuration.
+Sprint 4.5 is complete locally. Sprint 4.6 readiness is ready because the documented Sprint 4.5 local exit gates now pass and the remaining real-provider/calibration risks are explicitly tracked as non-blocking deferred validation debt for launch readiness and Sprint 4.10.
 
 ## Repository Baseline
 
-- Starting commit: `8570441 feat: complete sprint 4.4 vision recognition evidence`
-- Starting working tree: clean.
+- Original Sprint 4.5 implementation baseline: `8570441 feat: complete sprint 4.4 vision recognition evidence`
+- Committed Sprint 4.5 implementation: `b04d678 feat: complete sprint 4.5 structured problem parsing`
+- Final closure working tree: mixed. Sprint 4.5 semantic hardening is present alongside unrelated auth/iOS work and must be staged by exact files/hunks only.
 - Sprint 4.4 handoff: durable `recognition_evidence` rows with normalized blocks, evidence revision, upstream quality evidence, provider/model/prompt/schema provenance, usage, cost, latency, uncertainty, and privacy lifecycle participation.
 
 Sprint 4.5 consumes `RecognitionEvidence` by `(recognition_evidence_id, recognition_evidence_revision)` and never re-reads source object storage or treats OCR text as a canonical problem.
@@ -47,7 +48,7 @@ Major sources used:
 
 ## Capability Coverage
 
-- `CAP-PROBLEM-002`: Partial overall. Sprint 4.5 completes parser-level `ProblemParse`; Sprint 4.6 still owns canonical safe math.
+- `CAP-PROBLEM-002`: Partial overall because Sprint 4.6 still owns canonical safe math and verifier representation. Sprint 4.5's parser-level sub-scope is complete locally, including relation semantic hardening and explicit source-backed assumptions.
 - `CAP-AI-001`: Partial. `AiModelGateway` now supports `VISION_PARSE` and `PROBLEM_NORMALIZE`; full model gateway governance remains Sprint 5.1.
 - `CAP-AI-002`: Partial. `problem-parser/v001` and `problem-parse-v1` are added; full prompt registry/release workflow remains Sprint 5.2.
 - `CAP-AI-003`: Partial. Parser timeout, bounded retry, fallback, cost, usage, latency, and route provenance are implemented; full optimization remains Sprint 5.3.
@@ -59,7 +60,7 @@ Major sources used:
 - `REQ-PRIV-001`: Maintained. Raw parser output and problem text are not log/analytics payloads.
 - `REQ-PRIV-002`: Extended. Parser data participates in account export/deletion.
 - `REQ-PROBLEM-001`: Maintained. `ProblemAsset`, `RecognitionEvidence`, `ProblemParse`, canonical problem, verifier representation, and solution remain separate.
-- `REQ-PROBLEM-003`: Added. Accepted parser output must pass JSON parsing, strict schema validation, parser semantic validation, provenance checks, and supported/review/unsupported handling.
+- `REQ-PROBLEM-003`: Added and locally satisfied for the Sprint 4.5 foundation. Accepted parser output must pass JSON parsing, strict schema validation, parser semantic validation, relation semantic validation, source-backed assumption validation, provenance checks, and supported/review/unsupported handling.
 
 ## AI Architecture
 
@@ -109,6 +110,8 @@ Flyway V001 through V010 validation passed.
 - Location: `packages/schemas/problem-parse.schema.json`
 
 The schema is provider-independent and disallows additional properties. It models support status, subject/topic, task/problem type, expressions, variables, constraints, assumptions, uncertainty, source evidence references, visual quality risks, and review requirement.
+
+Final closure hardening fixes parser assumptions to source-backed explicit assumptions only: `assumptions[].explicit` is `const: true` in JSON Schema and `enum: [true]` in OpenAPI.
 
 ## Parser Prompt
 
@@ -179,6 +182,8 @@ Expressions store parser-level `sourceText`, `normalizedText`, optional display 
 
 Variables must be declared explicitly and match expression/constraint references. Constraints are accepted only when explicit and source-linked. Assumptions preserve explicit-source semantics and are not treated as hidden mathematical facts.
 
+Final closure hardening validates task/relation semantics: `SOLVE_EQUATION` requires at least one expression with `relation = EQUALS`; `SOLVE_INEQUALITY` requires at least one expression with an inequality relation.
+
 ## Provenance and Uncertainty
 
 Every parse job and parse revision stores exact `recognition_evidence_id` and `recognition_evidence_revision`. Structured source references must point at real recognition block IDs. Recognition uncertainty, parser uncertainty, and visual quality risks remain separate fields and are not collapsed into a fake confidence score.
@@ -187,7 +192,7 @@ Every parse job and parse revision stores exact `recognition_evidence_id` and `r
 
 Schema-invalid output is rejected and retried when retry budget remains. Semantic-invalid output is terminal and creates no durable accepted parse revision. Unsupported content is a durable accepted parser outcome with a stable unsupported reason. Ambiguous content is a durable `REVIEW_REQUIRED` outcome with parser/recognition uncertainty preserved.
 
-Semantic validation rejects unknown subject/topic values, unsupported task/problem combinations, missing expressions for supported output, mismatched variables, constraints referencing unknown variables, fabricated source block IDs, unsupported output without a reason, and unsupported reasons on supported parses.
+Semantic validation rejects unknown subject/topic values, unsupported task/problem combinations, missing expressions for supported output, equation/inequality task relation mismatches, mismatched variables, constraints referencing unknown variables, fabricated source block IDs, unsupported output without a reason, and unsupported reasons on supported parses. Schema validation rejects parser assumptions unless they are explicitly source-backed.
 
 ## Error Taxonomy
 
@@ -280,16 +285,16 @@ The seed is synthetic only and is not production student content, a protected ho
 Focused Sprint 4.5 backend suite:
 
 - `ConfiguredAiModelGatewayTest`: 5 passed.
-- `ProblemParseApplicationServiceTest`: 8 passed.
+- `ProblemParseApplicationServiceTest`: 11 passed.
 - `ProblemParseControllerTest`: 2 passed.
-- `FlywayMigrationTest`: 3 passed.
+- `FlywayMigrationTest`: 4 passed.
 - `ModularityTest`: 1 passed.
-- Total: 19 passed, 0 failed, 0 errors, 0 skipped.
+- Total: 23 passed, 0 failed, 0 errors, 0 skipped.
 
 Full validation:
 
-- `make test-api`: 93 passed, 0 failed, 0 errors, 0 skipped.
-- `make test-ios`: 72 passed, 0 failed, 0 skipped, result `Passed`.
+- `make test-api`: 103 passed, 0 failed, 0 errors, 0 skipped.
+- `make test-ios`: 74 passed, 0 failed, result `** TEST SUCCEEDED **`.
 - `make test-verifier`: 13 passed, 1 dependency deprecation warning.
 - `make contracts-check`: pass.
 - `docker compose config --quiet`: pass.
@@ -298,12 +303,23 @@ Full validation:
 - `make doctor`: pass with existing local `gh` CLI warning.
 - `git diff --check`: pass.
 
+iOS final gate clarification:
+
+- Sandboxed `xcrun simctl bootstatus` can fail because the sandbox cannot access CoreSimulator. That is a local permission boundary, not a product simulator boot failure and not an XCTest hang.
+- Elevated `xcrun simctl bootstatus 56E87D46-F64B-4AC7-AB87-1D94F5C9F3D0 -b`: pass, terminal boot readiness reached in 9 seconds during final closure.
+- `xcodebuild test-without-building -only-testing:VerifiedAITests`: pass during final closure investigation.
+- Full `make test-ios`: pass, 74 tests, no remaining `xcodebuild`, XCTest runner, or hanging iOS test process after completion.
+- The intermediate 11:03 build failure was caused by accidental summary prose inserted into `KeychainStore.swift`; that accidental source insertion was removed, `KeychainStore.swift` no longer carries that incident diff, and the current iOS gate is pass.
+
 Local provider validation passed through deterministic fixture provider tests and end-to-end parse application tests. Real provider validation is blocked by `TD-AI-001` and `TD-AI-003`.
 
 ## Specific Acceptance Evidence
 
 - Schema-invalid validation: retryable parser failure, no parse revision.
 - Semantic-invalid validation: terminal parser failure, no parse revision.
+- Equation task without equation relation validation: terminal semantic parser failure, no parse revision.
+- Inequality task without inequality relation validation: terminal semantic parser failure, no parse revision.
+- Non-explicit parser assumption validation: retryable schema parser failure, no parse revision.
 - Unsupported validation: durable `UNSUPPORTED` parse with stable reason.
 - Ambiguous validation: durable `REVIEW_REQUIRED` parse with uncertainty.
 - Revision validation: immutable monotonic revisions and concurrency uniqueness.
@@ -326,7 +342,7 @@ New open debt:
 
 Closed debt: none.
 
-Release blockers: none for local Sprint 4.5 exit. Real provider/parser calibration debts block production parser enablement, not Sprint 4.6 local readiness.
+Release blockers: none for local Sprint 4.5 exit. Real provider/parser calibration debts block production parser enablement, not Sprint 4.6 local readiness. There is no open iOS simulator hang debt; current evidence distinguishes sandbox CoreSimulator permission failure from simulator readiness and XCTest execution.
 
 ## Documentation Changes
 
@@ -334,7 +350,7 @@ Updated canonical documentation spans domain docs, AI orchestration/prompt/evalu
 
 ## Git Finalization
 
-Checkpoint commit is permitted after final documentation manifest validation and repository checks pass.
+Follow-up Sprint 4.5 semantic-hardening commit is permitted only with exact staging. The working tree contains unrelated auth/iOS work, including mixed changes in `packages/contracts/openapi/public-api.yaml`; the OpenAPI assumption contract must be staged by hunk, not by whole-file `git add`.
 
 ## Sprint 4.6 Readiness
 

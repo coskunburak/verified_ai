@@ -167,6 +167,54 @@ final class ProblemParseApplicationServiceTest extends PostgresIntegrationTestSu
     }
 
     @Test
+    void semanticInvalidEquationTaskWithoutEquationRelationFailsWithoutDurableParseRevision() {
+        UUID userId = insertUser();
+        UUID sessionId = insertRecognizedProblem(userId, "x + 2", false, "PASS");
+        aiGateway.enqueue(semanticInvalidEquationMissingRelationOutput());
+
+        parseApplicationService.requestParse(userId, sessionId);
+        parseApplicationService.runDueParseJobs(10);
+
+        ProblemParseStatusResult result = parseApplicationService.getParse(userId, sessionId);
+        assertThat(result.jobStatus()).isEqualTo("FAILED_TERMINAL");
+        assertThat(result.lastErrorCode()).isEqualTo("PROBLEM_PARSE_FAILED");
+        assertThat(result.lastFailureClass()).isEqualTo("SEMANTIC_INVALID");
+        assertThat(count("problem_parses")).isEqualTo(0);
+    }
+
+    @Test
+    void semanticInvalidInequalityTaskWithoutInequalityRelationFailsWithoutDurableParseRevision() {
+        UUID userId = insertUser();
+        UUID sessionId = insertRecognizedProblem(userId, "x + 2 = 5", false, "PASS");
+        aiGateway.enqueue(semanticInvalidInequalityMissingRelationOutput());
+
+        parseApplicationService.requestParse(userId, sessionId);
+        parseApplicationService.runDueParseJobs(10);
+
+        ProblemParseStatusResult result = parseApplicationService.getParse(userId, sessionId);
+        assertThat(result.jobStatus()).isEqualTo("FAILED_TERMINAL");
+        assertThat(result.lastErrorCode()).isEqualTo("PROBLEM_PARSE_FAILED");
+        assertThat(result.lastFailureClass()).isEqualTo("SEMANTIC_INVALID");
+        assertThat(count("problem_parses")).isEqualTo(0);
+    }
+
+    @Test
+    void nonExplicitAssumptionFailsWithoutDurableParseRevision() {
+        UUID userId = insertUser();
+        UUID sessionId = insertRecognizedProblem(userId, "x + 2 = 5", false, "PASS");
+        aiGateway.enqueue(nonExplicitAssumptionOutput());
+
+        parseApplicationService.requestParse(userId, sessionId);
+        parseApplicationService.runDueParseJobs(10);
+
+        ProblemParseStatusResult result = parseApplicationService.getParse(userId, sessionId);
+        assertThat(result.jobStatus()).isEqualTo("FAILED_RETRYABLE");
+        assertThat(result.lastErrorCode()).isEqualTo("PROBLEM_PARSE_FAILED");
+        assertThat(result.lastFailureClass()).isEqualTo("SCHEMA_INVALID");
+        assertThat(count("problem_parses")).isEqualTo(0);
+    }
+
+    @Test
     void ambiguousRecognitionEvidenceForcesReviewRequiredParseState() {
         UUID userId = insertUser();
         UUID sessionId = insertRecognizedProblem(userId, "x^2? + 3x = 10", true, "PASS");
@@ -436,6 +484,24 @@ final class ProblemParseApplicationServiceTest extends PostgresIntegrationTestSu
     private static String semanticInvalidVariableMismatchOutput() {
         return """
             {"schemaVersion":"problem-parse-v1","supportStatus":"SUPPORTED","unsupportedReason":null,"subjectId":"MATH","topicId":"MATH.EQUATIONS","taskType":"SOLVE_EQUATION","problemType":"EQUATION","expressions":[{"id":"expr-1","role":"PRIMARY","sourceText":"x + 2 = 5","normalizedText":"x + 2 = 5","displayLatex":"x + 2 = 5","relation":"EQUALS","sourceBlockIds":["block-1"]}],"variables":[{"symbol":"y","role":"VARIABLE","sourceBlockIds":["block-1"]}],"constraints":[],"assumptions":[],"uncertainty":{"recognition":[],"parse":[],"reviewRequired":false},"sourceEvidenceRefs":[{"blockId":"block-1","fieldPath":"expressions[0]"}],"visualQualityRisks":[],"reviewRequired":false}
+            """;
+    }
+
+    private static String semanticInvalidEquationMissingRelationOutput() {
+        return """
+            {"schemaVersion":"problem-parse-v1","supportStatus":"SUPPORTED","unsupportedReason":null,"subjectId":"MATH","topicId":"MATH.EQUATIONS","taskType":"SOLVE_EQUATION","problemType":"EQUATION","expressions":[{"id":"expr-1","role":"PRIMARY","sourceText":"x + 2","normalizedText":"x + 2","displayLatex":"x + 2","relation":null,"sourceBlockIds":["block-1"]}],"variables":[{"symbol":"x","role":"VARIABLE","sourceBlockIds":["block-1"]}],"constraints":[],"assumptions":[],"uncertainty":{"recognition":[],"parse":[],"reviewRequired":false},"sourceEvidenceRefs":[{"blockId":"block-1","fieldPath":"expressions[0]"}],"visualQualityRisks":[],"reviewRequired":false}
+            """;
+    }
+
+    private static String semanticInvalidInequalityMissingRelationOutput() {
+        return """
+            {"schemaVersion":"problem-parse-v1","supportStatus":"SUPPORTED","unsupportedReason":null,"subjectId":"MATH","topicId":"MATH.EQUATIONS","taskType":"SOLVE_INEQUALITY","problemType":"INEQUALITY","expressions":[{"id":"expr-1","role":"PRIMARY","sourceText":"x + 2 = 5","normalizedText":"x + 2 = 5","displayLatex":"x + 2 = 5","relation":"EQUALS","sourceBlockIds":["block-1"]}],"variables":[{"symbol":"x","role":"VARIABLE","sourceBlockIds":["block-1"]}],"constraints":[],"assumptions":[],"uncertainty":{"recognition":[],"parse":[],"reviewRequired":false},"sourceEvidenceRefs":[{"blockId":"block-1","fieldPath":"expressions[0]"}],"visualQualityRisks":[],"reviewRequired":false}
+            """;
+    }
+
+    private static String nonExplicitAssumptionOutput() {
+        return """
+            {"schemaVersion":"problem-parse-v1","supportStatus":"SUPPORTED","unsupportedReason":null,"subjectId":"MATH","topicId":"MATH.EQUATIONS","taskType":"SOLVE_EQUATION","problemType":"EQUATION","expressions":[{"id":"expr-1","role":"PRIMARY","sourceText":"x + 2 = 5","normalizedText":"x + 2 = 5","displayLatex":"x + 2 = 5","relation":"EQUALS","sourceBlockIds":["block-1"]}],"variables":[{"symbol":"x","role":"VARIABLE","sourceBlockIds":["block-1"]}],"constraints":[],"assumptions":[{"id":"assumption-1","text":"x is real","explicit":false,"sourceBlockIds":["block-1"]}],"uncertainty":{"recognition":[],"parse":[],"reviewRequired":false},"sourceEvidenceRefs":[{"blockId":"block-1","fieldPath":"expressions[0]"}],"visualQualityRisks":[],"reviewRequired":false}
             """;
     }
 

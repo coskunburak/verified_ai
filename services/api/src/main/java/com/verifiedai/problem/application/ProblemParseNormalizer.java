@@ -225,7 +225,17 @@ class ProblemParseNormalizer {
         if (sourceRefs.isEmpty()) {
             throw semantic("supported parser outcome requires source evidence references");
         }
+        validateTaskExpressionSemantics(taskType, expressions);
         validateVariables(expressions, variables, constraints);
+    }
+
+    private void validateTaskExpressionSemantics(String taskType, List<ExpressionInfo> expressions) {
+        if ("SOLVE_EQUATION".equals(taskType) && expressions.stream().noneMatch(ExpressionInfo::isEquation)) {
+            throw semantic("solve equation task requires equation expression evidence");
+        }
+        if ("SOLVE_INEQUALITY".equals(taskType) && expressions.stream().noneMatch(ExpressionInfo::isInequality)) {
+            throw semantic("solve inequality task requires inequality expression evidence");
+        }
     }
 
     private void validateVariables(
@@ -346,12 +356,12 @@ class ProblemParseNormalizer {
             String id = requiredText(assumption, "id", 64);
             String text = requiredText(assumption, "text", 1000);
             JsonNode explicit = required(assumption, "explicit");
-            if (!explicit.isBoolean()) {
-                throw schema("assumption explicit must be boolean");
+            if (!explicit.isBoolean() || !explicit.asBoolean()) {
+                throw schema("assumption explicit must be true");
             }
             List<String> sourceBlockIds = stringArray(assumption.path("sourceBlockIds"), "sourceBlockIds", 16, 64);
             requireKnownBlocks(sourceBlockIds, blockIds);
-            values.add(new AssumptionInfo(id, text, explicit.asBoolean(), sourceBlockIds));
+            values.add(new AssumptionInfo(id, text, true, sourceBlockIds));
         }
         return values;
     }
@@ -696,6 +706,13 @@ class ProblemParseNormalizer {
         String relation,
         List<String> sourceBlockIds
     ) {
+        boolean isEquation() {
+            return "EQUALS".equals(relation);
+        }
+
+        boolean isInequality() {
+            return Set.of("LESS_THAN", "LESS_THAN_OR_EQUAL", "GREATER_THAN", "GREATER_THAN_OR_EQUAL").contains(relation);
+        }
     }
 
     private record VariableInfo(String symbol, String role, List<String> sourceBlockIds) {

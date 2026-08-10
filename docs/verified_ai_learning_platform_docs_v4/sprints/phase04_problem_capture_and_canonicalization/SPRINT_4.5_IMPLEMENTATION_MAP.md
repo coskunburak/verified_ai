@@ -110,8 +110,11 @@ The validator must reject or route to review/unsupported when:
 - subject/topic is unknown,
 - task/problem type is unsupported,
 - supported tasks lack required expressions,
+- equation-solving tasks do not include equation relation evidence,
+- inequality-solving tasks do not include inequality relation evidence,
 - variables do not match expression/constraint references,
 - constraints reference unknown variables,
+- parser assumptions are not explicitly source-backed,
 - source evidence references do not exist in the input `RecognitionEvidence`,
 - provider fabricates untraceable source block IDs,
 - unsupported structures are coerced into supported fields.
@@ -149,6 +152,8 @@ Recognition block uncertainty and document uncertainty are preserved separately 
 ## Source Evidence Provenance
 
 Every parse job and parse revision stores exact `recognition_evidence_id` and `recognition_evidence_revision`. Structured fields reference recognition `block.id` values where possible. Unknown/fabricated block IDs fail semantic validation.
+
+Assumptions are trusted as parser-level assumptions only when the current source explicitly supports them. `assumptions[].explicit` is fixed to `true` in `problem-parse-v1`, and each assumption must carry known `sourceBlockIds`; inferred hidden mathematical assumptions remain untrusted parser output and are rejected before durable parse revision creation.
 
 ## Database Migration
 

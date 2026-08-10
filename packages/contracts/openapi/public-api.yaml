@@ -1708,6 +1708,7 @@ components:
           type: string
         explicit:
           type: boolean
+          enum: [true]
         sourceBlockIds:
           type: array
           items:
