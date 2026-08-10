@@ -35,3 +35,4 @@ This repository currently contains platform foundation work only: app shell, API
 
 Do not add AI solving, provider SDK integration, tutoring, mastery, billing, subscriptions, exam mode, proprietary model training, or self-hosted inference before the corresponding later sprint.
 
+# verified_ai
