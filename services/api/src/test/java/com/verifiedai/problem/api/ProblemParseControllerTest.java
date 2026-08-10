@@ -56,6 +56,7 @@ final class ProblemParseControllerTest extends PostgresIntegrationTestSupport {
     void cleanTables() {
         jdbcTemplate.execute("""
             truncate table
+                canonical_problems,
                 problem_parses,
                 problem_parse_jobs,
                 recognition_evidence,
@@ -128,6 +129,48 @@ final class ProblemParseControllerTest extends PostgresIntegrationTestSupport {
         assertThat(current.body()).doesNotContain("raw_output_jsonb");
         assertThat(current.body()).doesNotContain("primarySkill");
         assertThat(count("problem_parses")).isEqualTo(1);
+    }
+
+    @Test
+    void authenticatedUserCanCanonicalizeSupportedParseWithoutAstExposure() throws Exception {
+        AuthSessionResult session = signIn("canonical-problem-api-user");
+        UUID sessionId = insertRecognizedProblem(session.userId(), "x + 1 = 2");
+
+        httpClient.send(
+            authorized(session, "/api/v1/problem-sessions/" + sessionId + "/parse")
+                .POST(HttpRequest.BodyPublishers.noBody())
+                .build(),
+            HttpResponse.BodyHandlers.ofString()
+        );
+        assertThat(parseApplicationService.runDueParseJobs(10)).isEqualTo(1);
+
+        HttpResponse<String> canonicalize = httpClient.send(
+            authorized(session, "/api/v1/problem-sessions/" + sessionId + "/canonicalize")
+                .POST(HttpRequest.BodyPublishers.noBody())
+                .build(),
+            HttpResponse.BodyHandlers.ofString()
+        );
+
+        assertThat(canonicalize.statusCode()).as(canonicalize.body()).isEqualTo(201);
+        JsonNode created = objectMapper.readTree(canonicalize.body());
+        assertThat(created.path("schemaVersion").asText()).isEqualTo("canonical-problem-v1");
+        assertThat(created.path("verifierSchemaVersion").asText()).isEqualTo("verifier-input-v1");
+        assertThat(created.path("problemType").asText()).isEqualTo("EQUATION");
+        assertThat(canonicalize.body()).doesNotContain("canonicalProblemJson");
+        assertThat(canonicalize.body()).doesNotContain("verifierInputJson");
+        assertThat(canonicalize.body()).doesNotContain("\"kind\"");
+
+        HttpResponse<String> current = httpClient.send(
+            authorized(session, "/api/v1/problem-sessions/" + sessionId + "/canonical-problem")
+                .GET()
+                .build(),
+            HttpResponse.BodyHandlers.ofString()
+        );
+
+        assertThat(current.statusCode()).as(current.body()).isEqualTo(200);
+        JsonNode parsed = objectMapper.readTree(current.body());
+        assertThat(parsed.path("canonicalProblemId").asText()).isEqualTo(created.path("canonicalProblemId").asText());
+        assertThat(count("canonical_problems")).isEqualTo(1);
     }
 
     private AuthSessionResult signIn(String subject) {

@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "verifier-input-v1",
+  "canonicalSchemaVersion": "canonical-problem-v1",
+  "problemType": "ALGEBRAIC_EXPRESSION",
+  "taskType": "SIMPLIFY",
+  "variables": [],
+  "statements": [
+    {
+      "kind": "EXPRESSION",
+      "sourceExpressionId": "expr-1",
+      "relation": null,
+      "left": null,
+      "right": null,
+      "expression": {
+        "kind": "CALL",
+        "function": "__import__",
+        "args": [{"kind": "NUMBER", "numericType": "INTEGER", "value": "1"}]
+      },
+      "sourceBlockIds": ["block-1"]
+    }
+  ],
+  "restrictions": [],
+  "complexityPolicy": {
+    "version": "canonical-math-limits-v1",
+    "maxExpressionLength": 512,
+    "maxAstNodes": 120,
+    "maxAstDepth": 32,
+    "maxExponentMagnitude": 12,
+    "maxNumericDigits": 64,
+    "maxFunctionNestingDepth": 8
+  }
+}

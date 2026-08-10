@@ -1,0 +1,275 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.verified-ai-learning.example/verifier-input.schema.json",
+  "title": "VerifierInput",
+  "description": "Sprint 4.6 typed AST handoff contract for the internal deterministic math verifier. This schema never accepts raw OCR, raw LLM text, Python code, SymPy strings, solutions, or verification verdicts.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "canonicalSchemaVersion",
+    "problemType",
+    "taskType",
+    "variables",
+    "statements",
+    "restrictions",
+    "complexityPolicy"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "verifier-input-v1"
+    },
+    "canonicalSchemaVersion": {
+      "const": "canonical-problem-v1"
+    },
+    "problemType": {
+      "type": "string",
+      "enum": ["ARITHMETIC_EXPRESSION", "ALGEBRAIC_EXPRESSION", "EQUATION", "INEQUALITY"]
+    },
+    "taskType": {
+      "type": "string",
+      "enum": ["EVALUATE", "SIMPLIFY", "SOLVE_EQUATION", "SOLVE_INEQUALITY"]
+    },
+    "variables": {
+      "type": "array",
+      "maxItems": 16,
+      "items": {
+        "$ref": "#/$defs/variable"
+      }
+    },
+    "statements": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "$ref": "#/$defs/statement"
+      }
+    },
+    "restrictions": {
+      "type": "array",
+      "maxItems": 32,
+      "items": {
+        "$ref": "#/$defs/restriction"
+      }
+    },
+    "complexityPolicy": {
+      "$ref": "#/$defs/complexityPolicy"
+    }
+  },
+  "$defs": {
+    "variable": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["symbol", "role", "domain", "sourceBlockIds"],
+      "properties": {
+        "symbol": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_]{0,15}$"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["VARIABLE", "PARAMETER", "UNKNOWN"]
+        },
+        "domain": {
+          "type": "string",
+          "enum": ["UNKNOWN", "REAL", "INTEGER"]
+        },
+        "sourceBlockIds": {
+          "$ref": "#/$defs/sourceBlockIds"
+        }
+      }
+    },
+    "statement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "sourceExpressionId", "relation", "left", "right", "expression", "sourceBlockIds"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["EXPRESSION", "RELATION"]
+        },
+        "sourceExpressionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "relation": {
+          "type": ["string", "null"],
+          "enum": ["EQUALS", "NOT_EQUALS", "LESS_THAN", "LESS_THAN_OR_EQUAL", "GREATER_THAN", "GREATER_THAN_OR_EQUAL", null]
+        },
+        "left": {
+          "anyOf": [
+            {"$ref": "#/$defs/expressionNode"},
+            {"type": "null"}
+          ]
+        },
+        "right": {
+          "anyOf": [
+            {"$ref": "#/$defs/expressionNode"},
+            {"type": "null"}
+          ]
+        },
+        "expression": {
+          "anyOf": [
+            {"$ref": "#/$defs/expressionNode"},
+            {"type": "null"}
+          ]
+        },
+        "sourceBlockIds": {
+          "$ref": "#/$defs/sourceBlockIds"
+        }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"kind": {"const": "EXPRESSION"}}},
+          "then": {
+            "properties": {
+              "relation": {"type": "null"},
+              "left": {"type": "null"},
+              "right": {"type": "null"},
+              "expression": {"$ref": "#/$defs/expressionNode"}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"kind": {"const": "RELATION"}}},
+          "then": {
+            "properties": {
+              "relation": {"type": "string"},
+              "left": {"$ref": "#/$defs/expressionNode"},
+              "right": {"$ref": "#/$defs/expressionNode"},
+              "expression": {"type": "null"}
+            }
+          }
+        }
+      ]
+    },
+    "restriction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "relation", "left", "right", "reason", "provenance", "sourceBlockIds"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96
+        },
+        "relation": {
+          "type": "string",
+          "enum": ["EQUALS", "NOT_EQUALS", "LESS_THAN", "LESS_THAN_OR_EQUAL", "GREATER_THAN", "GREATER_THAN_OR_EQUAL"]
+        },
+        "left": {
+          "$ref": "#/$defs/expressionNode"
+        },
+        "right": {
+          "$ref": "#/$defs/expressionNode"
+        },
+        "reason": {
+          "type": "string",
+          "enum": ["SOURCE_EXPLICIT", "DENOMINATOR_NON_ZERO", "SQRT_DOMAIN_NON_NEGATIVE", "LOG_DOMAIN_POSITIVE", "TAN_DOMAIN_COS_NON_ZERO"]
+        },
+        "provenance": {
+          "type": "string",
+          "enum": ["SOURCE", "DERIVED"]
+        },
+        "sourceBlockIds": {
+          "$ref": "#/$defs/sourceBlockIds"
+        }
+      }
+    },
+    "expressionNode": {
+      "oneOf": [
+        {"$ref": "#/$defs/numberNode"},
+        {"$ref": "#/$defs/variableNode"},
+        {"$ref": "#/$defs/unaryNode"},
+        {"$ref": "#/$defs/binaryNode"},
+        {"$ref": "#/$defs/functionNode"}
+      ]
+    },
+    "numberNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "numericType", "value"],
+      "properties": {
+        "kind": {"const": "NUMBER"},
+        "numericType": {"type": "string", "enum": ["INTEGER", "DECIMAL", "RATIONAL"]},
+        "value": {
+          "type": "string",
+          "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?$",
+          "maxLength": 80
+        }
+      }
+    },
+    "variableNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "symbol"],
+      "properties": {
+        "kind": {"const": "VARIABLE"},
+        "symbol": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_]{0,15}$"
+        }
+      }
+    },
+    "unaryNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "operator", "operand"],
+      "properties": {
+        "kind": {"const": "UNARY"},
+        "operator": {"type": "string", "enum": ["NEGATE"]},
+        "operand": {"$ref": "#/$defs/expressionNode"}
+      }
+    },
+    "binaryNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "operator", "left", "right"],
+      "properties": {
+        "kind": {"const": "BINARY"},
+        "operator": {"type": "string", "enum": ["ADD", "SUBTRACT", "MULTIPLY", "DIVIDE", "POWER"]},
+        "left": {"$ref": "#/$defs/expressionNode"},
+        "right": {"$ref": "#/$defs/expressionNode"}
+      }
+    },
+    "functionNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "function", "args"],
+      "properties": {
+        "kind": {"const": "FUNCTION"},
+        "function": {"type": "string", "enum": ["SQRT", "SIN", "COS", "TAN", "LOG", "EXP"]},
+        "args": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "items": {"$ref": "#/$defs/expressionNode"}
+        }
+      }
+    },
+    "complexityPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "maxExpressionLength", "maxAstNodes", "maxAstDepth", "maxExponentMagnitude", "maxNumericDigits", "maxFunctionNestingDepth"],
+      "properties": {
+        "version": {"const": "canonical-math-limits-v1"},
+        "maxExpressionLength": {"const": 512},
+        "maxAstNodes": {"const": 120},
+        "maxAstDepth": {"const": 32},
+        "maxExponentMagnitude": {"const": 12},
+        "maxNumericDigits": {"const": 64},
+        "maxFunctionNestingDepth": {"const": 8}
+      }
+    },
+    "sourceBlockIds": {
+      "type": "array",
+      "maxItems": 16,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 64
+      }
+    }
+  }
+}

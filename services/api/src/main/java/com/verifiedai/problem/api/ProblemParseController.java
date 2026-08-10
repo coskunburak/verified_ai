@@ -1,5 +1,6 @@
 package com.verifiedai.problem.api;
 
+import com.verifiedai.problem.application.CanonicalProblemApplicationService;
 import com.verifiedai.problem.application.ProblemParseApplicationService;
 import com.verifiedai.sharedkernel.security.AuthenticatedUser;
 import java.util.UUID;
@@ -16,9 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/problem-sessions")
 class ProblemParseController {
+    private final CanonicalProblemApplicationService canonicalProblemApplicationService;
     private final ProblemParseApplicationService parseApplicationService;
 
-    ProblemParseController(ProblemParseApplicationService parseApplicationService) {
+    ProblemParseController(
+        CanonicalProblemApplicationService canonicalProblemApplicationService,
+        ProblemParseApplicationService parseApplicationService
+    ) {
+        this.canonicalProblemApplicationService = canonicalProblemApplicationService;
         this.parseApplicationService = parseApplicationService;
     }
 
@@ -41,6 +47,30 @@ class ProblemParseController {
         @PathVariable UUID sessionId
     ) {
         return ProblemParseResponse.from(parseApplicationService.getParse(
+            AuthenticatedUser.from(jwt).userId(),
+            sessionId
+        ));
+    }
+
+    @PostMapping("/{sessionId}/canonicalize")
+    @ResponseStatus(HttpStatus.CREATED)
+    CanonicalProblemResponse canonicalize(
+        @AuthenticationPrincipal Jwt jwt,
+        @PathVariable UUID sessionId
+    ) {
+        return CanonicalProblemResponse.from(canonicalProblemApplicationService.canonicalize(
+            AuthenticatedUser.from(jwt).userId(),
+            sessionId
+        ));
+    }
+
+    @GetMapping("/{sessionId}/canonical-problem")
+    @ResponseStatus(HttpStatus.OK)
+    CanonicalProblemResponse getCanonicalProblem(
+        @AuthenticationPrincipal Jwt jwt,
+        @PathVariable UUID sessionId
+    ) {
+        return CanonicalProblemResponse.from(canonicalProblemApplicationService.getCanonicalProblem(
             AuthenticatedUser.from(jwt).userId(),
             sessionId
         ));

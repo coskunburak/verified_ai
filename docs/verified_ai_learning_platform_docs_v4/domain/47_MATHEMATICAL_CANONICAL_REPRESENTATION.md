@@ -18,6 +18,12 @@ Sprint 4.5 parser-level structure: subject/topic/task/problem type, parser-level
 ### Layer 4 — Verifier representation
 Safe parser-compatible symbolic representation for deterministic math service.
 
+In Sprint 4.6, Layer 4 is represented by two versioned JSON documents:
+- `canonical-problem-v1`: durable backend-owned `CanonicalProblem` stored from an accepted `ProblemParse`.
+- `verifier-input-v1`: narrower internal verifier handoff payload consumed by the Python math verifier.
+
+Both documents use typed AST nodes with explicit `kind` discriminators. They do not include Java class metadata, Python code, SymPy strings, solution steps, verification verdicts, skill classification, or difficulty estimates.
+
 ## Example
 
 Visual problem:
@@ -60,6 +66,56 @@ In Sprint 4.5, `display_latex` and `normalized_text` are parser-level notation o
 
 Never pass arbitrary user strings into Python eval.
 
+Sprint 4.6 production v1 uses AST/json rather than `safe_symbolic_expression` strings for the backend-to-verifier contract.
+
+## Sprint 4.6 canonical v1 scope
+
+Canonical v1 supports:
+- arithmetic expressions,
+- algebraic expressions,
+- single equations,
+- single inequalities,
+- source-explicit relational constraints that fit the same expression grammar.
+
+Canonical v1 does not yet canonicalize calculus, systems, solution sets, units, diagrams, probability, statistics, linear algebra, or multi-part problems. Those structures remain parse-layer data until a later sprint defines safe canonical semantics.
+
+Allowed AST nodes:
+- `NUMBER`
+- `VARIABLE`
+- `UNARY`
+- `BINARY`
+- `FUNCTION`
+
+Allowed operators:
+- `NEGATE`
+- `ADD`
+- `SUBTRACT`
+- `MULTIPLY`
+- `DIVIDE`
+- `POWER`
+
+Allowed functions:
+- `SQRT`
+- `SIN`
+- `COS`
+- `TAN`
+- `LOG`
+- `EXP`
+
+Numeric literals are stored as exact strings. Decimals are not converted to binary floating point.
+
+## Canonical constraints and restrictions
+
+Source-explicit parser constraints are stored separately from deterministic derived restrictions:
+- `sourceConstraints`: constraints explicitly supported by the parse/source.
+- `derivedRestrictions`: restrictions discovered by safe parsing, such as denominator and function-domain restrictions.
+
+Denominators produce `DENOMINATOR_NON_ZERO` restrictions. Product denominators are decomposed into separate factor restrictions where possible. Algebraic cancellation must not remove a restriction, so `(x^2 - 1)/(x - 1)` retains the restriction `(x - 1) != 0`.
+
+`sqrt(argument)` derives `SQRT_DOMAIN_NON_NEGATIVE`, `log(argument)` derives `LOG_DOMAIN_POSITIVE`, and `tan(argument)` derives `TAN_DOMAIN_COS_NON_ZERO`.
+
+Default variable domain is `UNKNOWN` unless source-backed parser data states a stricter supported domain.
+
 ## Expression safety
 
 Verifier accepts only allowlisted operations/functions. Parse into AST and enforce:
@@ -68,6 +124,14 @@ Verifier accepts only allowlisted operations/functions. Parse into AST and enfor
 - exponent magnitude,
 - symbolic complexity,
 - supported functions.
+
+Sprint 4.6 v1 limits are:
+- maximum expression length: 512 characters,
+- maximum AST nodes: 120,
+- maximum AST depth: 32,
+- maximum numeric exponent magnitude: 12,
+- maximum numeric literal digits: 64,
+- maximum function nesting depth: 8.
 
 ## Equality versus equivalence
 

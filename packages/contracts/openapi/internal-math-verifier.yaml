@@ -36,6 +36,34 @@ paths:
           description: Internal authentication required
         "422":
           description: Expression outside supported verifier subset
+  /internal/v1/verify/validate-input:
+    post:
+      summary: Validate typed canonical verifier input
+      description: Accepts only the Sprint 4.6 verifier-input-v1 typed AST contract. Raw OCR, raw LLM text, Python code, and SymPy expression strings are not accepted on this path.
+      security:
+        - internalToken: []
+      parameters:
+        - in: header
+          name: X-Request-Id
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VerifierInputRequest"
+      responses:
+        "200":
+          description: Verifier input accepted by schema, symbol, allowlist, and complexity checks
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerifierInputValidationResponse"
+        "401":
+          description: Internal authentication required
+        "422":
+          description: Payload is outside the typed verifier input contract
 components:
   securitySchemes:
     internalToken:
@@ -80,4 +108,224 @@ components:
           type: string
         correlationId:
           type: string
-
+    VerifierInputRequest:
+      type: object
+      required: [schemaVersion, canonicalSchemaVersion, problemType, taskType, variables, statements, restrictions, complexityPolicy]
+      properties:
+        schemaVersion:
+          type: string
+          enum: [verifier-input-v1]
+        canonicalSchemaVersion:
+          type: string
+          enum: [canonical-problem-v1]
+        problemType:
+          type: string
+          enum: [ARITHMETIC_EXPRESSION, ALGEBRAIC_EXPRESSION, EQUATION, INEQUALITY]
+        taskType:
+          type: string
+          enum: [EVALUATE, SIMPLIFY, SOLVE_EQUATION, SOLVE_INEQUALITY]
+        variables:
+          type: array
+          maxItems: 16
+          items:
+            $ref: "#/components/schemas/VerifierVariable"
+        statements:
+          type: array
+          minItems: 1
+          maxItems: 8
+          items:
+            $ref: "#/components/schemas/VerifierStatement"
+        restrictions:
+          type: array
+          maxItems: 32
+          items:
+            $ref: "#/components/schemas/VerifierRestriction"
+        complexityPolicy:
+          $ref: "#/components/schemas/ComplexityPolicy"
+    VerifierVariable:
+      type: object
+      required: [symbol, role, domain, sourceBlockIds]
+      properties:
+        symbol:
+          type: string
+          pattern: "^[A-Za-z][A-Za-z0-9_]{0,15}$"
+        role:
+          type: string
+          enum: [VARIABLE, PARAMETER, UNKNOWN]
+        domain:
+          type: string
+          enum: [UNKNOWN, REAL, INTEGER]
+        sourceBlockIds:
+          type: array
+          maxItems: 16
+          items:
+            type: string
+    VerifierStatement:
+      type: object
+      required: [kind, sourceExpressionId, relation, left, right, expression, sourceBlockIds]
+      properties:
+        kind:
+          type: string
+          enum: [EXPRESSION, RELATION]
+        sourceExpressionId:
+          type: string
+        relation:
+          type: [string, "null"]
+          enum: [EQUALS, NOT_EQUALS, LESS_THAN, LESS_THAN_OR_EQUAL, GREATER_THAN, GREATER_THAN_OR_EQUAL, null]
+        left:
+          anyOf:
+            - $ref: "#/components/schemas/VerifierExpressionNode"
+            - type: "null"
+        right:
+          anyOf:
+            - $ref: "#/components/schemas/VerifierExpressionNode"
+            - type: "null"
+        expression:
+          anyOf:
+            - $ref: "#/components/schemas/VerifierExpressionNode"
+            - type: "null"
+        sourceBlockIds:
+          type: array
+          maxItems: 16
+          items:
+            type: string
+    VerifierRestriction:
+      type: object
+      required: [id, relation, left, right, reason, provenance, sourceBlockIds]
+      properties:
+        id:
+          type: string
+        relation:
+          type: string
+          enum: [EQUALS, NOT_EQUALS, LESS_THAN, LESS_THAN_OR_EQUAL, GREATER_THAN, GREATER_THAN_OR_EQUAL]
+        left:
+          $ref: "#/components/schemas/VerifierExpressionNode"
+        right:
+          $ref: "#/components/schemas/VerifierExpressionNode"
+        reason:
+          type: string
+          enum: [SOURCE_EXPLICIT, DENOMINATOR_NON_ZERO, SQRT_DOMAIN_NON_NEGATIVE, LOG_DOMAIN_POSITIVE, TAN_DOMAIN_COS_NON_ZERO]
+        provenance:
+          type: string
+          enum: [SOURCE, DERIVED]
+        sourceBlockIds:
+          type: array
+          maxItems: 16
+          items:
+            type: string
+    VerifierExpressionNode:
+      oneOf:
+        - $ref: "#/components/schemas/VerifierNumberNode"
+        - $ref: "#/components/schemas/VerifierVariableNode"
+        - $ref: "#/components/schemas/VerifierUnaryNode"
+        - $ref: "#/components/schemas/VerifierBinaryNode"
+        - $ref: "#/components/schemas/VerifierFunctionNode"
+    VerifierNumberNode:
+      type: object
+      required: [kind, numericType, value]
+      properties:
+        kind:
+          type: string
+          enum: [NUMBER]
+        numericType:
+          type: string
+          enum: [INTEGER, DECIMAL, RATIONAL]
+        value:
+          type: string
+    VerifierVariableNode:
+      type: object
+      required: [kind, symbol]
+      properties:
+        kind:
+          type: string
+          enum: [VARIABLE]
+        symbol:
+          type: string
+          pattern: "^[A-Za-z][A-Za-z0-9_]{0,15}$"
+    VerifierUnaryNode:
+      type: object
+      required: [kind, operator, operand]
+      properties:
+        kind:
+          type: string
+          enum: [UNARY]
+        operator:
+          type: string
+          enum: [NEGATE]
+        operand:
+          $ref: "#/components/schemas/VerifierExpressionNode"
+    VerifierBinaryNode:
+      type: object
+      required: [kind, operator, left, right]
+      properties:
+        kind:
+          type: string
+          enum: [BINARY]
+        operator:
+          type: string
+          enum: [ADD, SUBTRACT, MULTIPLY, DIVIDE, POWER]
+        left:
+          $ref: "#/components/schemas/VerifierExpressionNode"
+        right:
+          $ref: "#/components/schemas/VerifierExpressionNode"
+    VerifierFunctionNode:
+      type: object
+      required: [kind, function, args]
+      properties:
+        kind:
+          type: string
+          enum: [FUNCTION]
+        function:
+          type: string
+          enum: [SQRT, SIN, COS, TAN, LOG, EXP]
+        args:
+          type: array
+          minItems: 1
+          maxItems: 1
+          items:
+            $ref: "#/components/schemas/VerifierExpressionNode"
+    ComplexityPolicy:
+      type: object
+      required: [version, maxExpressionLength, maxAstNodes, maxAstDepth, maxExponentMagnitude, maxNumericDigits, maxFunctionNestingDepth]
+      properties:
+        version:
+          type: string
+          enum: [canonical-math-limits-v1]
+        maxExpressionLength:
+          type: integer
+          enum: [512]
+        maxAstNodes:
+          type: integer
+          enum: [120]
+        maxAstDepth:
+          type: integer
+          enum: [32]
+        maxExponentMagnitude:
+          type: integer
+          enum: [12]
+        maxNumericDigits:
+          type: integer
+          enum: [64]
+        maxFunctionNestingDepth:
+          type: integer
+          enum: [8]
+    VerifierInputValidationResponse:
+      type: object
+      required: [status, schemaVersion, verifierVersion, statementCount, restrictionCount, correlationId]
+      properties:
+        status:
+          type: string
+          enum: [ACCEPTED]
+        schemaVersion:
+          type: string
+          enum: [verifier-input-v1]
+        verifierVersion:
+          type: string
+        statementCount:
+          type: integer
+          minimum: 1
+        restrictionCount:
+          type: integer
+          minimum: 0
+        correlationId:
+          type: string

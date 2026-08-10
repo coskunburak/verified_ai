@@ -49,6 +49,19 @@ final class FlywayMigrationTest extends PostgresIntegrationTestSupport {
         assertThat(indexExists("ix_problem_parses_evidence")).isTrue();
     }
 
+    @Test
+    void canonicalProblemLifecycleMigrationCreatesSafeVerifierTablesConstraintsAndIndexes() {
+        assertThat(tableExists("canonical_problems")).isTrue();
+        assertThat(constraintExists("fk_canonical_problems_session_user")).isTrue();
+        assertThat(constraintExists("fk_canonical_problems_parse")).isTrue();
+        assertThat(constraintExists("ck_canonical_problems_schema_versions")).isTrue();
+        assertThat(constraintExists("ck_canonical_problems_problem_type")).isTrue();
+        assertThat(constraintExists("ck_canonical_problems_json_objects")).isTrue();
+        assertThat(constraintExists("uq_canonical_problems_parse_schema")).isTrue();
+        assertThat(indexExists("ix_canonical_problems_session_revision")).isTrue();
+        assertThat(indexExists("ix_canonical_problems_parse")).isTrue();
+    }
+
     private boolean tableExists(String tableName) {
         Integer count = jdbcTemplate.queryForObject(
             "select count(*) from information_schema.tables where table_schema = 'public' and table_name = ?",

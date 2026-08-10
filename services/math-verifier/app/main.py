@@ -5,6 +5,7 @@ import uuid
 from collections.abc import Awaitable, Callable
 
 from fastapi import FastAPI, Request, Response
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 from app.api.routes.health import router as health_router
@@ -57,6 +58,19 @@ async def verification_error_handler(request: Request, exc: VerificationError) -
             "message": exc.public_message,
             "correlationId": getattr(request.state, "correlation_id", "unavailable"),
             "recoverable": exc.recoverable,
+        },
+    )
+
+
+@app.exception_handler(RequestValidationError)
+async def request_validation_error_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
+    return JSONResponse(
+        status_code=422,
+        content={
+            "code": "VERIFIER_INPUT_SCHEMA_INVALID",
+            "message": "Request payload is outside the verifier schema",
+            "correlationId": getattr(request.state, "correlation_id", "unavailable"),
+            "recoverable": True,
         },
     )
 

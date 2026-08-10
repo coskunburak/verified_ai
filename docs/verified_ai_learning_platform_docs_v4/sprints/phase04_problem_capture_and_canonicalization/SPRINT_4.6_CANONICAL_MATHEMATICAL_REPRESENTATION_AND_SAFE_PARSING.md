@@ -344,6 +344,20 @@ Attach or persist links/artifacts for:
 - rollout and rollback configuration;
 - known limitations and follow-up issues.
 
+## Sprint 4.6 implementation outcome
+
+Implemented outcome:
+- `canonical-problem-v1` and `verifier-input-v1` shared schemas define the Layer 4 typed AST contract.
+- Backend canonicalization creates immutable `canonical_problems` rows from accepted `ProblemParse` revisions only.
+- Canonical v1 supports arithmetic/algebra expressions, single equations, single inequalities, and relational source constraints.
+- The deterministic parser enforces declared variables, exact numeric literals, allowlisted operators/functions, and v1 complexity limits.
+- Derived restrictions preserve denominator and function-domain requirements without algebraic cancellation.
+- Public API exposes canonical display metadata only; raw parser output and internal verifier AST payloads are not exposed to iOS.
+- The Python verifier validates typed AST payloads through explicit constructors and rejects schema/identifier/complexity attacks.
+- Privacy export/deletion includes canonical problem data and deletes it through the `problem_sessions` cascade.
+
+Out of scope remains unchanged: no solving, answer checking, verification verdicts, primary skill/difficulty classification, calculus canonicalization, parse correction UI, or direct mobile access to the math verifier.
+
 ## Codex execution rule
 
 Codex must implement this sprint in small reviewable slices, re-reading the highest-precedence semantic documents before changing domain/API/data contracts. It must not “simplify” the architecture by moving rules into prompts, client code, provider SDK adapters, generic helpers, or ungoverned ML scripts.

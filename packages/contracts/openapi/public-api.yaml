@@ -789,6 +789,94 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+  /api/v1/problem-sessions/{sessionId}/canonicalize:
+    post:
+      summary: Create the safe canonical mathematical representation for an accepted parse
+      description: Converts the latest supported ProblemParse into a durable Layer 4 canonical problem and verifier-input representation. This endpoint does not solve, verify, classify skill, assign difficulty, or expose raw parser output.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "201":
+          description: Canonical problem created or existing canonical problem reused
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CanonicalProblemResponse"
+        "401":
+          description: Access token is invalid or expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Account or entitlement does not allow canonicalization
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Problem session was not found for the authenticated owner
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "409":
+          description: Problem parse is missing or outside canonical v1 scope
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "422":
+          description: Parser expression cannot be safely canonicalized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /api/v1/problem-sessions/{sessionId}/canonical-problem:
+    get:
+      summary: Return canonical problem display metadata for the authenticated owner
+      description: Returns lifecycle-safe canonical problem metadata and display fields. Internal AST and verifier endpoints are not exposed to the mobile client.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Current canonical problem summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CanonicalProblemResponse"
+        "401":
+          description: Access token is invalid or expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Account is not active
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Canonical problem or problem session was not found for the authenticated owner
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
   /api/v1/me/billing/apple/configuration:
     get:
       summary: Return backend-owned App Store purchase configuration for the authenticated user
@@ -1575,6 +1663,74 @@ components:
           format: date-time
         completedAt:
           type: [string, "null"]
+          format: date-time
+    CanonicalProblemResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - canonicalProblemId
+        - problemSessionId
+        - problemParseId
+        - problemParseRevision
+        - canonicalRevision
+        - schemaVersion
+        - verifierSchemaVersion
+        - problemType
+        - taskType
+        - normalizedText
+        - displayLatex
+        - variables
+        - sourceConstraintCount
+        - derivedRestrictionCount
+        - createdAt
+      properties:
+        canonicalProblemId:
+          type: string
+          format: uuid
+        problemSessionId:
+          type: string
+          format: uuid
+        problemParseId:
+          type: string
+          format: uuid
+        problemParseRevision:
+          type: integer
+          minimum: 1
+        canonicalRevision:
+          type: integer
+          minimum: 1
+        schemaVersion:
+          type: string
+          enum: [canonical-problem-v1]
+        verifierSchemaVersion:
+          type: string
+          enum: [verifier-input-v1]
+        problemType:
+          type: string
+          enum: [ARITHMETIC_EXPRESSION, ALGEBRAIC_EXPRESSION, EQUATION, INEQUALITY]
+        taskType:
+          type: string
+          enum: [EVALUATE, SIMPLIFY, SOLVE_EQUATION, SOLVE_INEQUALITY]
+        normalizedText:
+          type: [string, "null"]
+          description: Presentation-safe normalized text, not executable verifier input.
+        displayLatex:
+          type: [string, "null"]
+          description: Presentation notation only.
+        variables:
+          type: array
+          maxItems: 16
+          items:
+            type: string
+            pattern: "^[A-Za-z][A-Za-z0-9_]{0,15}$"
+        sourceConstraintCount:
+          type: integer
+          minimum: 0
+        derivedRestrictionCount:
+          type: integer
+          minimum: 0
+        createdAt:
+          type: string
           format: date-time
     NormalizedProblemParse:
       type: object

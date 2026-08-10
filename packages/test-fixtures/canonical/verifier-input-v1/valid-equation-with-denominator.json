@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "verifier-input-v1",
+  "canonicalSchemaVersion": "canonical-problem-v1",
+  "problemType": "EQUATION",
+  "taskType": "SOLVE_EQUATION",
+  "variables": [
+    {
+      "symbol": "x",
+      "role": "VARIABLE",
+      "domain": "UNKNOWN",
+      "sourceBlockIds": ["block-1"]
+    }
+  ],
+  "statements": [
+    {
+      "kind": "RELATION",
+      "sourceExpressionId": "expr-1",
+      "relation": "EQUALS",
+      "left": {
+        "kind": "BINARY",
+        "operator": "DIVIDE",
+        "left": {"kind": "NUMBER", "numericType": "INTEGER", "value": "1"},
+        "right": {
+          "kind": "BINARY",
+          "operator": "SUBTRACT",
+          "left": {"kind": "VARIABLE", "symbol": "x"},
+          "right": {"kind": "NUMBER", "numericType": "INTEGER", "value": "2"}
+        }
+      },
+      "right": {"kind": "NUMBER", "numericType": "INTEGER", "value": "3"},
+      "expression": null,
+      "sourceBlockIds": ["block-1"]
+    }
+  ],
+  "restrictions": [
+    {
+      "id": "derived-1-expr-1",
+      "relation": "NOT_EQUALS",
+      "left": {
+        "kind": "BINARY",
+        "operator": "SUBTRACT",
+        "left": {"kind": "VARIABLE", "symbol": "x"},
+        "right": {"kind": "NUMBER", "numericType": "INTEGER", "value": "2"}
+      },
+      "right": {"kind": "NUMBER", "numericType": "INTEGER", "value": "0"},
+      "reason": "DENOMINATOR_NON_ZERO",
+      "provenance": "DERIVED",
+      "sourceBlockIds": ["block-1"]
+    }
+  ],
+  "complexityPolicy": {
+    "version": "canonical-math-limits-v1",
+    "maxExpressionLength": 512,
+    "maxAstNodes": 120,
+    "maxAstDepth": 32,
+    "maxExponentMagnitude": 12,
+    "maxNumericDigits": 64,
+    "maxFunctionNestingDepth": 8
+  }
+}

@@ -349,6 +349,44 @@ class ProblemAssetLifecycleContributor implements AccountDataLifecycleContributo
             },
             userId
         );
+        List<Map<String, Object>> canonicalProblems = jdbcTemplate.query(
+            """
+            select id,
+                   problem_session_id,
+                   problem_parse_id,
+                   problem_parse_revision,
+                   canonical_revision,
+                   schema_version,
+                   verifier_schema_version,
+                   problem_type,
+                   task_type,
+                   canonical_problem_jsonb::text as canonical_problem_json,
+                   verifier_input_jsonb::text as verifier_input_json,
+                   display_jsonb::text as display_json,
+                   created_at
+            from canonical_problems
+            where user_id = ?
+            order by created_at desc
+            """,
+            (resultSet, rowNum) -> {
+                Map<String, Object> row = new LinkedHashMap<>();
+                row.put("canonicalProblemId", resultSet.getObject("id").toString());
+                row.put("problemSessionId", resultSet.getObject("problem_session_id").toString());
+                row.put("problemParseId", resultSet.getObject("problem_parse_id").toString());
+                row.put("problemParseRevision", resultSet.getInt("problem_parse_revision"));
+                row.put("canonicalRevision", resultSet.getInt("canonical_revision"));
+                row.put("schemaVersion", resultSet.getString("schema_version"));
+                row.put("verifierSchemaVersion", resultSet.getString("verifier_schema_version"));
+                row.put("problemType", resultSet.getString("problem_type"));
+                row.put("taskType", resultSet.getString("task_type"));
+                row.put("canonicalProblemJson", resultSet.getString("canonical_problem_json"));
+                row.put("verifierInputJson", resultSet.getString("verifier_input_json"));
+                row.put("displayJson", resultSet.getString("display_json"));
+                row.put("createdAt", resultSet.getTimestamp("created_at").toInstant().toString());
+                return row;
+            },
+            userId
+        );
         Map<String, Object> export = new LinkedHashMap<>();
         export.put("assets", assets);
         export.put("derivatives", derivatives);
@@ -357,13 +395,14 @@ class ProblemAssetLifecycleContributor implements AccountDataLifecycleContributo
         export.put("recognitionEvidence", recognitionEvidence);
         export.put("problemParseJobs", problemParseJobs);
         export.put("problemParses", problemParses);
+        export.put("canonicalProblems", canonicalProblems);
         export.put("rawBinaryIncluded", false);
         export.put("derivedBinaryIncluded", false);
         export.put("rawRecognitionProviderOutputIncluded", false);
         export.put("rawProblemParserOutputIncluded", false);
         export.put(
             "retentionNote",
-            "Raw source image/PDF objects and derived preprocessing objects are private object-storage assets and are removed during account deletion. Recognition and parser rows cascade with problem sessions; raw AI provider output is stored separately and excluded from export payloads."
+            "Raw source image/PDF objects and derived preprocessing objects are private object-storage assets and are removed during account deletion. Recognition, parser, and canonical rows cascade with problem sessions; raw AI provider output is stored separately and excluded from export payloads."
         );
         return export;
     }
