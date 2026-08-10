@@ -7,7 +7,7 @@ name = "verified-ai-math-verifier"
 version = "0.1.0"
 requires-python = ">=3.11"
 dependencies = [
-  "fastapi>=0.116,<1.0",
+  "fastapi>=0.141.1,<1.0",
   "uvicorn[standard]>=0.35,<1.0",
   "pydantic>=2.8,<3.0",
   "sympy>=1.13,<2.0",
