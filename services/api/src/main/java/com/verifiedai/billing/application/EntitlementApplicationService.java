@@ -67,8 +67,12 @@ public class EntitlementApplicationService implements CapabilityAccessPolicy {
     }
 
     @Override
+    @Transactional(noRollbackFor = ApiProblemException.class)
     public void requireBasicSolve(UUID userId) {
-        requireCapability(userId, PremiumCapability.BASIC_SOLVE);
+        requireCapability(
+            userId,
+            PremiumCapability.BASIC_SOLVE
+        );
     }
 
     @Transactional

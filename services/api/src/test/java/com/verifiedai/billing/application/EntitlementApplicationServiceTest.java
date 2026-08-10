@@ -107,6 +107,78 @@ final class EntitlementApplicationServiceTest extends PostgresIntegrationTestSup
         }
     }
 
+    @Test
+    void concurrentBasicSolveAccessCreatesOneDefaultEntitlementRow()
+        throws Exception {
+
+        UUID userId = insertUser();
+
+        var executor =
+            Executors.newFixedThreadPool(2);
+
+        var barrier =
+            new CyclicBarrier(2);
+
+        try {
+            var futures =
+                new ArrayList<Future<Void>>();
+
+            for (int index = 0; index < 2; index++) {
+                futures.add(
+                    executor.submit(() -> {
+                        barrier.await();
+
+                        entitlementApplicationService
+                            .requireBasicSolve(
+                                userId
+                            );
+
+                        return null;
+                    })
+                );
+            }
+
+            futures.get(0).get();
+            futures.get(1).get();
+
+            assertThat(
+                count("entitlements")
+            ).isEqualTo(1);
+
+            assertThat(
+                countWhere(
+                    "entitlements",
+                    "user_id = '" + userId + "'"
+                )
+            ).isEqualTo(1);
+
+            EntitlementResult result =
+                entitlementApplicationService
+                    .getCurrent(userId);
+
+            assertThat(
+                result.tier()
+            ).isEqualTo(
+                EntitlementTier.FREE
+            );
+
+            assertThat(
+                result.status()
+            ).isEqualTo(
+                EntitlementStatus.ACTIVE
+            );
+
+            assertThat(
+                result.capabilities()
+            ).contains(
+                PremiumCapability.BASIC_SOLVE
+            );
+
+        } finally {
+            executor.shutdownNow();
+        }
+    }
+
     private UUID insertUser() {
         UUID userId = UUID.randomUUID();
         Instant now = Instant.parse("2026-08-08T00:00:00Z");

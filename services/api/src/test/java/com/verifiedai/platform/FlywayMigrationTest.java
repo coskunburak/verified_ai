@@ -24,6 +24,225 @@ final class FlywayMigrationTest extends PostgresIntegrationTestSupport {
     }
 
     @Test
+    void problemClassificationLifecycleMigrationCreatesTablesConstraintsAndIndexes() {
+        assertThat(
+            tableExists(
+                "problem_classification_jobs"
+            )
+        ).isTrue();
+
+        assertThat(
+            tableExists(
+                "problem_classifications"
+            )
+        ).isTrue();
+
+        assertThat(
+            tableExists(
+                "problem_classification_secondary_skills"
+            )
+        ).isTrue();
+
+        assertThat(
+            constraintExists(
+                "fk_classification_jobs_session_user"
+            )
+        ).isTrue();
+
+        assertThat(
+            constraintExists(
+                "fk_classification_jobs_canonical"
+            )
+        ).isTrue();
+
+        assertThat(
+            constraintExists(
+                "ck_classification_jobs_canonical_revision"
+            )
+        ).isTrue();
+
+        assertThat(
+            constraintExists(
+                "ck_classification_jobs_status"
+            )
+        ).isTrue();
+
+        assertThat(
+            constraintExists(
+                "ck_classification_jobs_capability"
+            )
+        ).isTrue();
+
+        assertThat(
+            constraintExists(
+                "ck_classification_jobs_attempts"
+            )
+        ).isTrue();
+
+        assertThat(
+            constraintExists(
+                "ck_classification_jobs_fingerprint"
+            )
+        ).isTrue();
+
+        assertThat(
+            constraintExists(
+                "uq_classification_jobs_fingerprint"
+            )
+        ).isTrue();
+
+        assertThat(
+            constraintExists(
+                "fk_classifications_job"
+            )
+        ).isTrue();
+
+        assertThat(
+            constraintExists(
+                "fk_classifications_session_user"
+            )
+        ).isTrue();
+
+        assertThat(
+            constraintExists(
+                "fk_classifications_canonical"
+            )
+        ).isTrue();
+
+        assertThat(
+            constraintExists(
+                "ck_classifications_revision"
+            )
+        ).isTrue();
+
+        assertThat(
+            constraintExists(
+                "ck_classifications_source"
+            )
+        ).isTrue();
+
+        assertThat(
+            constraintExists(
+                "ck_classifications_status"
+            )
+        ).isTrue();
+
+        assertThat(
+            constraintExists(
+                "ck_classifications_review_reason"
+            )
+        ).isTrue();
+
+        assertThat(
+            constraintExists(
+                "ck_classifications_difficulty"
+            )
+        ).isTrue();
+
+        assertThat(
+            constraintExists(
+                "ck_classifications_confidence"
+            )
+        ).isTrue();
+
+        assertThat(
+            constraintExists(
+                "ck_classifications_capability"
+            )
+        ).isTrue();
+
+        assertThat(
+            constraintExists(
+                "ck_classifications_fingerprint"
+            )
+        ).isTrue();
+
+        assertThat(
+            constraintExists(
+                "ck_classifications_semantics"
+            )
+        ).isTrue();
+
+        assertThat(
+            constraintExists(
+                "uq_classifications_job"
+            )
+        ).isTrue();
+
+        assertThat(
+            constraintExists(
+                "uq_classifications_canonical_revision"
+            )
+        ).isTrue();
+
+        assertThat(
+            constraintExists(
+                "uq_classifications_request_fingerprint"
+            )
+        ).isTrue();
+
+        assertThat(
+            constraintExists(
+                "fk_classification_secondary_classification"
+            )
+        ).isTrue();
+
+        assertThat(
+            constraintExists(
+                "ck_classification_secondary_ordinal"
+            )
+        ).isTrue();
+
+        assertThat(
+            constraintExists(
+                "uq_classification_secondary_ordinal"
+            )
+        ).isTrue();
+
+        assertThat(
+            indexExists(
+                "ix_classification_jobs_due"
+            )
+        ).isTrue();
+
+        assertThat(
+            indexExists(
+                "ix_classification_jobs_session_created"
+            )
+        ).isTrue();
+
+        assertThat(
+            indexExists(
+                "ix_classification_jobs_canonical"
+            )
+        ).isTrue();
+
+        assertThat(
+            indexExists(
+                "ix_classifications_user_created"
+            )
+        ).isTrue();
+
+        assertThat(
+            indexExists(
+                "ix_classifications_session_created"
+            )
+        ).isTrue();
+
+        assertThat(
+            indexExists(
+                "ix_classifications_canonical_revision"
+            )
+        ).isTrue();
+
+        assertThat(
+            indexExists(
+                "ix_classification_secondary_skill"
+            )
+        ).isTrue();
+    }
+
+    @Test
     void problemAssetUploadLifecycleMigrationCreatesCanonicalTablesConstraintsAndIndexes() {
         assertThat(tableExists("problem_sessions")).isTrue();
         assertThat(tableExists("problem_assets")).isTrue();

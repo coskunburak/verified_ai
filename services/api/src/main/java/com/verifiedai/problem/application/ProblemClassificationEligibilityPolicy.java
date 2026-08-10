@@ -6,20 +6,15 @@ import org.springframework.stereotype.Component;
 @Component
 final class ProblemClassificationEligibilityPolicy {
 
-    private static final Set<String> SUPPORTED_PROBLEM_TYPES =
+    private static final Set<String>
+        SUPPORTED_CLASSIFICATION_KEYS =
         Set.of(
-            "ARITHMETIC_EXPRESSION",
-            "ALGEBRAIC_EXPRESSION",
-            "EQUATION",
-            "INEQUALITY"
-        );
-
-    private static final Set<String> SUPPORTED_TASK_TYPES =
-        Set.of(
-            "EVALUATE",
-            "SIMPLIFY",
-            "SOLVE_EQUATION",
-            "SOLVE_INEQUALITY"
+            "ARITHMETIC_EXPRESSION:EVALUATE",
+            "ARITHMETIC_EXPRESSION:SIMPLIFY",
+            "ALGEBRAIC_EXPRESSION:EVALUATE",
+            "ALGEBRAIC_EXPRESSION:SIMPLIFY",
+            "EQUATION:SOLVE_EQUATION",
+            "INEQUALITY:SOLVE_INEQUALITY"
         );
 
     ProblemClassificationEligibility evaluate(
@@ -29,28 +24,46 @@ final class ProblemClassificationEligibilityPolicy {
     ) {
         if (
             problemType == null
-                || !SUPPORTED_PROBLEM_TYPES.contains(problemType)
+                || problemType.isBlank()
+                || taskType == null
+                || taskType.isBlank()
         ) {
-            return ProblemClassificationEligibility.unsupportedOutcome(
-                "Canonical problem type is outside classification v1 scope"
-            );
+            return ProblemClassificationEligibility
+                .unsupportedOutcome(
+                    "Canonical problem type/task pair is outside classification v1 scope"
+                );
         }
+
+        String classificationKey =
+            problemType + ":" + taskType;
 
         if (
-            taskType == null
-                || !SUPPORTED_TASK_TYPES.contains(taskType)
+            !SUPPORTED_CLASSIFICATION_KEYS
+                .contains(classificationKey)
         ) {
-            return ProblemClassificationEligibility.unsupportedOutcome(
-                "Canonical task type is outside classification v1 scope"
-            );
+            return ProblemClassificationEligibility
+                .unsupportedOutcome(
+                    "Canonical problem type/task pair is outside classification v1 scope"
+                );
         }
 
+        /*
+         * Upstream review risk is evaluated only after
+         * confirming that the canonical type/task pair
+         * belongs to the supported v1 classification surface.
+         *
+         * This ensures unsupported inputs remain
+         * UNSUPPORTED instead of being mislabeled as
+         * REVIEW_REQUIRED.
+         */
         if (upstreamReviewRequired) {
-            return ProblemClassificationEligibility.reviewRequiredOutcome(
-                "Canonical problem carries upstream review risk"
-            );
+            return ProblemClassificationEligibility
+                .reviewRequiredOutcome(
+                    "Canonical problem carries upstream review risk"
+                );
         }
 
-        return ProblemClassificationEligibility.eligibleOutcome();
+        return ProblemClassificationEligibility
+            .eligibleOutcome();
     }
 }
