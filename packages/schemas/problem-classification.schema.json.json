@@ -1,0 +1,191 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:verified-ai:problem-classification:v1",
+  "title": "Problem Classification",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "ontologyVersion",
+    "status",
+    "primarySkillId",
+    "secondarySkillIds",
+    "difficulty",
+    "reviewReason"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "problem-classification-v1"
+    },
+    "ontologyVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "status": {
+      "enum": [
+        "CLASSIFIED",
+        "REVIEW_REQUIRED",
+        "UNKNOWN",
+        "UNSUPPORTED"
+      ]
+    },
+    "primarySkillId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "secondarySkillIds": {
+      "type": "array",
+      "maxItems": 5,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
+      }
+    },
+    "difficulty": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "EASY",
+        "MEDIUM",
+        "HARD",
+        null
+      ]
+    },
+    "reviewReason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "AMBIGUOUS_PRIMARY_SKILL",
+        "LOW_CLASSIFICATION_CONFIDENCE",
+        "UPSTREAM_RISK",
+        "ONTOLOGY_COVERAGE_GAP",
+        "INSUFFICIENT_SEMANTIC_EVIDENCE",
+        null
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "CLASSIFIED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "primarySkillId": {
+            "type": "string"
+          },
+          "difficulty": {
+            "enum": [
+              "EASY",
+              "MEDIUM",
+              "HARD"
+            ]
+          },
+          "reviewReason": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "REVIEW_REQUIRED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "primarySkillId": {
+            "type": "null"
+          },
+          "secondarySkillIds": {
+            "maxItems": 0
+          },
+          "difficulty": {
+            "type": "null"
+          },
+          "reviewReason": {
+            "enum": [
+              "AMBIGUOUS_PRIMARY_SKILL",
+              "LOW_CLASSIFICATION_CONFIDENCE",
+              "UPSTREAM_RISK",
+              "ONTOLOGY_COVERAGE_GAP",
+              "INSUFFICIENT_SEMANTIC_EVIDENCE"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "UNKNOWN"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "primarySkillId": {
+            "type": "null"
+          },
+          "secondarySkillIds": {
+            "maxItems": 0
+          },
+          "difficulty": {
+            "type": "null"
+          },
+          "reviewReason": {
+            "enum": [
+              "ONTOLOGY_COVERAGE_GAP",
+              "INSUFFICIENT_SEMANTIC_EVIDENCE",
+              null
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "UNSUPPORTED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "primarySkillId": {
+            "type": "null"
+          },
+          "secondarySkillIds": {
+            "maxItems": 0
+          },
+          "difficulty": {
+            "type": "null"
+          },
+          "reviewReason": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
+}

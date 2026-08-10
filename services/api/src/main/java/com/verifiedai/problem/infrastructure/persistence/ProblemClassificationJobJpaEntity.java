@@ -9,6 +9,8 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import java.time.Instant;
 import java.util.UUID;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "problem_classification_jobs")
@@ -53,7 +55,12 @@ public class ProblemClassificationJobJpaEntity {
     @Column(name = "route_policy_version", nullable = false)
     private String routePolicyVersion;
 
-    @Column(name = "request_fingerprint", nullable = false)
+    @JdbcTypeCode(SqlTypes.CHAR)
+    @Column(
+        name = "request_fingerprint",
+        nullable = false,
+        length = 64
+    )
     private String requestFingerprint;
 
     @Column(name = "attempt_count", nullable = false)
