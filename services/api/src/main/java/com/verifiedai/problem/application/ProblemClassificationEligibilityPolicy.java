@@ -31,7 +31,7 @@ final class ProblemClassificationEligibilityPolicy {
             problemType == null
                 || !SUPPORTED_PROBLEM_TYPES.contains(problemType)
         ) {
-            return ProblemClassificationEligibility.unsupported(
+            return ProblemClassificationEligibility.unsupportedOutcome(
                 "Canonical problem type is outside classification v1 scope"
             );
         }
@@ -40,17 +40,17 @@ final class ProblemClassificationEligibilityPolicy {
             taskType == null
                 || !SUPPORTED_TASK_TYPES.contains(taskType)
         ) {
-            return ProblemClassificationEligibility.unsupported(
+            return ProblemClassificationEligibility.unsupportedOutcome(
                 "Canonical task type is outside classification v1 scope"
             );
         }
 
         if (upstreamReviewRequired) {
-            return ProblemClassificationEligibility.reviewRequired(
+            return ProblemClassificationEligibility.reviewRequiredOutcome(
                 "Canonical problem carries upstream review risk"
             );
         }
 
-        return ProblemClassificationEligibility.eligible();
+        return ProblemClassificationEligibility.eligibleOutcome();
     }
 }
