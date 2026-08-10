@@ -29,6 +29,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
+import com.verifiedai.problem.domain.model.ClassificationDifficulty;
+import com.verifiedai.problem.domain.model.ProblemClassificationReviewReason;
+import com.verifiedai.problem.domain.model.ProblemClassificationStatus;
 
 @Service
 public class ProblemClassificationApplicationService {
@@ -153,14 +156,130 @@ public class ProblemClassificationApplicationService {
             }
 
             // Domain validation
+            ProblemClassificationStatus classificationStatus;
+
             try {
-                validator.validate(status, primarySkillId, secondarySkillIds, difficulty, confidence, ontology.ontologyVersion());
-            } catch (ApiProblemException validationException) {
-                if (validationException.code() == ApiErrorCode.CLASSIFICATION_SKILL_UNKNOWN
-                    || validationException.code() == ApiErrorCode.CLASSIFICATION_HIERARCHY_INVALID) {
-                    metrics.ontologyInvalid();
+                classificationStatus = ProblemClassificationStatus.valueOf(status);
+            } catch (IllegalArgumentException | NullPointerException exception) {
+                metrics.schemaInvalid();
+
+                throw problem(
+                    HttpStatus.UNPROCESSABLE_ENTITY,
+                    ApiErrorCode.CLASSIFICATION_SCHEMA_INVALID,
+                    "Classification status is invalid",
+                    true,
+                    "RETRY"
+                );
+            }
+
+            ClassificationDifficulty classificationDifficulty = null;
+
+            if (difficulty != null) {
+                try {
+                    classificationDifficulty =
+                        ClassificationDifficulty.valueOf(difficulty);
+                } catch (IllegalArgumentException exception) {
+                    metrics.schemaInvalid();
+
+                    throw problem(
+                        HttpStatus.UNPROCESSABLE_ENTITY,
+                        ApiErrorCode.CLASSIFICATION_SCHEMA_INVALID,
+                        "Classification difficulty is invalid",
+                        true,
+                        "RETRY"
+                    );
                 }
-                throw validationException;
+            }
+
+            ProblemClassificationReviewReason reviewReason = null;
+
+            String rawReviewReason =
+                textOrNull(responseNode, "reviewReason");
+
+            if (rawReviewReason != null) {
+                try {
+                    reviewReason =
+                        ProblemClassificationReviewReason.valueOf(
+                            rawReviewReason
+                        );
+                } catch (IllegalArgumentException exception) {
+                    metrics.schemaInvalid();
+
+                    throw problem(
+                        HttpStatus.UNPROCESSABLE_ENTITY,
+                        ApiErrorCode.CLASSIFICATION_SCHEMA_INVALID,
+                        "Classification review reason is invalid",
+                        true,
+                        "RETRY"
+                    );
+                }
+            }
+
+            /*
+             * Transitional compatibility only.
+             *
+             * The current LOCAL_FIXTURE output predates the explicit
+             * reviewReason contract. The fixture itself will be changed
+             * in the production v2 patch.
+             */
+            if (
+                classificationStatus
+                    == ProblemClassificationStatus.REVIEW_REQUIRED
+                    && reviewReason == null
+            ) {
+                reviewReason =
+                    ProblemClassificationReviewReason
+                        .AMBIGUOUS_PRIMARY_SKILL;
+            }
+
+            ProblemClassificationProposal proposal =
+                new ProblemClassificationProposal(
+                    schemaVersion,
+                    ontology.ontologyVersion(),
+                    classificationStatus,
+                    primarySkillId,
+                    secondarySkillIds,
+                    classificationDifficulty,
+                    reviewReason
+                );
+
+            ValidatedProblemClassification validated;
+
+            try {
+                validated = validator.validate(proposal);
+            } catch (
+                ProblemClassificationValidationException
+                    validationException
+            ) {
+                switch (validationException.failure()) {
+                    case PRIMARY_SKILL_UNKNOWN,
+                         PRIMARY_SKILL_PARENT_INVALID,
+                         SECONDARY_SKILL_UNKNOWN,
+                         SECONDARY_SKILL_INCOMPATIBLE,
+                         ONTOLOGY_VERSION_MISMATCH -> {
+                        metrics.ontologyInvalid();
+
+                        throw problem(
+                            HttpStatus.UNPROCESSABLE_ENTITY,
+                            ApiErrorCode.CLASSIFICATION_ONTOLOGY_INVALID,
+                            "Classification output is incompatible with the canonical ontology",
+                            true,
+                            "RETRY"
+                        );
+                    }
+
+                    default -> {
+                        metrics.schemaInvalid();
+
+                        throw problem(
+                            HttpStatus.UNPROCESSABLE_ENTITY,
+                            ApiErrorCode.CLASSIFICATION_SCHEMA_INVALID,
+                            "Classification output failed semantic validation",
+                            true,
+                            "RETRY"
+                        );
+                    }
+                }
             }
 
             // Derive subject/topic from primary skill (server-side, not trusting AI)

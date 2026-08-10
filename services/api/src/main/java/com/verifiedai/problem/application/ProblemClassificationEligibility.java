@@ -5,7 +5,8 @@ public record ProblemClassificationEligibility(
     boolean upstreamReviewRequired,
     String reason
 ) {
-    static ProblemClassificationEligibility eligible() {
+
+    static ProblemClassificationEligibility eligibleOutcome() {
         return new ProblemClassificationEligibility(
             true,
             false,
@@ -13,7 +14,7 @@ public record ProblemClassificationEligibility(
         );
     }
 
-    static ProblemClassificationEligibility reviewRequired(
+    static ProblemClassificationEligibility reviewRequiredOutcome(
         String reason
     ) {
         return new ProblemClassificationEligibility(
@@ -23,7 +24,7 @@ public record ProblemClassificationEligibility(
         );
     }
 
-    static ProblemClassificationEligibility unsupported(
+    static ProblemClassificationEligibility unsupportedOutcome(
         String reason
     ) {
         return new ProblemClassificationEligibility(
