@@ -9,6 +9,24 @@ struct AuthSession: Codable, Equatable, Sendable {
     let refreshTokenExpiresAt: Date
 }
 
+enum EmailAuthenticationMode: String, CaseIterable, Identifiable {
+    case signIn
+    case signUp
+
+    var id: String {
+        rawValue
+    }
+
+    var title: String {
+        switch self {
+        case .signIn:
+            return "Sign In"
+        case .signUp:
+            return "Sign Up"
+        }
+    }
+}
+
 enum AuthenticationState: Equatable {
     case unknown
     case unauthenticated

@@ -1,6 +1,15 @@
 import Foundation
 
-final class AuthenticationAPI: @unchecked Sendable {
+protocol AuthenticationServicing: Sendable {
+    func exchangeAppleCredential(identityToken: String, authorizationCode: String?, nonce: String) async throws -> AuthSession
+    func signUpWithEmail(email: String, password: String) async throws -> AuthSession
+    func signInWithEmail(email: String, password: String) async throws -> AuthSession
+    func continueAsGuest() async throws -> AuthSession
+    func refresh(refreshToken: String) async throws -> AuthSession
+    func logout() async throws
+}
+
+final class AuthenticationAPI: AuthenticationServicing, @unchecked Sendable {
     private let apiClient: APIClient
     private let encoder = JSONEncoder()
 
@@ -14,6 +23,24 @@ final class AuthenticationAPI: @unchecked Sendable {
             HTTPRequest(
                 endpoint: Endpoint(path: "/api/v1/auth/apple", method: .post),
                 body: body,
+                allowsAuthRefreshRetry: false
+            )
+        )
+        return try response.body.session()
+    }
+
+    func signUpWithEmail(email: String, password: String) async throws -> AuthSession {
+        try await exchangeEmailCredential(path: "/api/v1/auth/email/sign-up", email: email, password: password)
+    }
+
+    func signInWithEmail(email: String, password: String) async throws -> AuthSession {
+        try await exchangeEmailCredential(path: "/api/v1/auth/email/sign-in", email: email, password: password)
+    }
+
+    func continueAsGuest() async throws -> AuthSession {
+        let response: HTTPResponse<AuthSessionWireResponse> = try await apiClient.send(
+            HTTPRequest(
+                endpoint: Endpoint(path: "/api/v1/auth/guest", method: .post),
                 allowsAuthRefreshRetry: false
             )
         )
@@ -41,12 +68,29 @@ final class AuthenticationAPI: @unchecked Sendable {
         )
         _ = response.statusCode
     }
+
+    private func exchangeEmailCredential(path: String, email: String, password: String) async throws -> AuthSession {
+        let body = try encoder.encode(EmailAuthRequest(email: email, password: password))
+        let response: HTTPResponse<AuthSessionWireResponse> = try await apiClient.send(
+            HTTPRequest(
+                endpoint: Endpoint(path: path, method: .post),
+                body: body,
+                allowsAuthRefreshRetry: false
+            )
+        )
+        return try response.body.session()
+    }
 }
 
 private struct AppleSignInRequest: Encodable {
     let identityToken: String
     let authorizationCode: String?
     let nonce: String
+}
+
+private struct EmailAuthRequest: Encodable {
+    let email: String
+    let password: String
 }
 
 private struct RefreshSessionRequest: Encodable {

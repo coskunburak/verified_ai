@@ -41,7 +41,14 @@ class SecurityConfiguration {
                 })
             )
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.POST, "/api/v1/auth/apple", "/api/v1/auth/refresh").permitAll()
+                .requestMatchers(
+                    HttpMethod.POST,
+                    "/api/v1/auth/apple",
+                    "/api/v1/auth/email/sign-up",
+                    "/api/v1/auth/email/sign-in",
+                    "/api/v1/auth/guest",
+                    "/api/v1/auth/refresh"
+                ).permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/webhooks/apple/app-store").permitAll()
                 .requestMatchers(
                     "/api/v1/platform/health",

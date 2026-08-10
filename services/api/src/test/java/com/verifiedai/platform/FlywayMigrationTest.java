@@ -62,6 +62,15 @@ final class FlywayMigrationTest extends PostgresIntegrationTestSupport {
         assertThat(indexExists("ix_canonical_problems_parse")).isTrue();
     }
 
+    @Test
+    void emailAndGuestIdentityMigrationCreatesCredentialTableAndProviderConstraint() {
+        assertThat(tableExists("user_password_credentials")).isTrue();
+        assertThat(constraintExists("uq_user_password_credentials_email")).isTrue();
+        assertThat(constraintExists("ck_user_password_credentials_algorithm")).isTrue();
+        assertThat(constraintExists("ck_user_identities_provider")).isTrue();
+        assertThat(indexExists("ix_user_password_credentials_email")).isTrue();
+    }
+
     private boolean tableExists(String tableName) {
         Integer count = jdbcTemplate.queryForObject(
             "select count(*) from information_schema.tables where table_schema = 'public' and table_name = ?",

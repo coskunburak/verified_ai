@@ -70,6 +70,19 @@ app:
       max-response-bytes: ${AI_PROBLEM_PARSER_MAX_RESPONSE_BYTES:65536}
       max-cost-micros: ${AI_PROBLEM_PARSER_MAX_COST_MICROS:20000}
       pricing-version: ${AI_PROBLEM_PARSER_PRICING_VERSION:problem-parser-local-v1}
+    problem-classifier:
+      enabled: ${AI_PROBLEM_CLASSIFIER_ENABLED:true}
+      primary-provider: ${AI_PROBLEM_CLASSIFIER_PRIMARY_PROVIDER:LOCAL_FIXTURE}
+      fallback-provider: ${AI_PROBLEM_CLASSIFIER_FALLBACK_PROVIDER:}
+      route-policy-version: ${AI_PROBLEM_CLASSIFIER_ROUTE_POLICY_VERSION:problem-classifier-route-v1}
+      prompt-id: ${AI_PROBLEM_CLASSIFIER_PROMPT_ID:problem-classifier}
+      prompt-version: ${AI_PROBLEM_CLASSIFIER_PROMPT_VERSION:v001}
+      schema-version: ${AI_PROBLEM_CLASSIFIER_SCHEMA_VERSION:problem-classification-v1}
+      timeout: ${AI_PROBLEM_CLASSIFIER_TIMEOUT:PT15S}
+      max-attempts: ${AI_PROBLEM_CLASSIFIER_MAX_ATTEMPTS:2}
+      max-response-bytes: ${AI_PROBLEM_CLASSIFIER_MAX_RESPONSE_BYTES:16384}
+      max-cost-micros: ${AI_PROBLEM_CLASSIFIER_MAX_COST_MICROS:10000}
+      pricing-version: ${AI_PROBLEM_CLASSIFIER_PRICING_VERSION:problem-classifier-local-v1}
   problem-recognition:
     max-input-bytes: ${PROBLEM_RECOGNITION_MAX_INPUT_BYTES:10485760}
     max-blocks: ${PROBLEM_RECOGNITION_MAX_BLOCKS:128}

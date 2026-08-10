@@ -6,4 +6,6 @@ public interface AiModelGateway {
     AiVisionParseResult executeVisionParse(AiVisionParseRequest request);
 
     AiProblemNormalizeResult executeProblemNormalize(AiProblemNormalizeRequest request);
+
+    AiProblemClassifyResult executeProblemClassify(AiProblemClassifyRequest request);
 }

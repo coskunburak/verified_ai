@@ -14,6 +14,23 @@ enum AppEnvironment: String, CaseIterable, Equatable {
         return configured.flatMap(AppEnvironment.init(rawValue:)) ?? .development
     }
 
+    static func resolvedAPIBaseURL(configuredValue: String?, environment: AppEnvironment) -> URL {
+        if let configuredValue,
+           let configuredURL = URL(string: configuredValue),
+           configuredURL.scheme != nil,
+           configuredURL.host != nil {
+            return configuredURL
+        }
+        return environment.apiBaseURL
+    }
+
+    static func apiBaseURL(bundle: Bundle = .main, environment: AppEnvironment) -> URL {
+        resolvedAPIBaseURL(
+            configuredValue: bundle.object(forInfoDictionaryKey: "API_BASE_URL") as? String,
+            environment: environment
+        )
+    }
+
     var apiBaseURL: URL {
         switch self {
         case .development:
@@ -29,4 +46,3 @@ enum AppEnvironment: String, CaseIterable, Equatable {
         rawValue.capitalized
     }
 }
-

@@ -41,7 +41,19 @@ public class UserIdentityJpaEntity {
     }
 
     public static UserIdentityJpaEntity apple(UUID userId, String providerSubject, Instant now) {
-        return new UserIdentityJpaEntity(UUID.randomUUID(), userId, "APPLE", providerSubject, now);
+        return of(userId, "APPLE", providerSubject, now);
+    }
+
+    public static UserIdentityJpaEntity email(UUID userId, String providerSubject, Instant now) {
+        return of(userId, "EMAIL", providerSubject, now);
+    }
+
+    public static UserIdentityJpaEntity guest(UUID userId, String providerSubject, Instant now) {
+        return of(userId, "GUEST", providerSubject, now);
+    }
+
+    private static UserIdentityJpaEntity of(UUID userId, String provider, String providerSubject, Instant now) {
+        return new UserIdentityJpaEntity(UUID.randomUUID(), userId, provider, providerSubject, now);
     }
 
     public UUID userId() {

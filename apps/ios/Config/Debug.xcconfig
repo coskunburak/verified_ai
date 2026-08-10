@@ -1,4 +1,4 @@
 #include "Base.xcconfig"
 APP_ENVIRONMENT = development
+// Simulator uses localhost. For a physical iPhone, replace localhost with the Mac LAN IP.
 API_BASE_URL = http:/$()/localhost:8080
-

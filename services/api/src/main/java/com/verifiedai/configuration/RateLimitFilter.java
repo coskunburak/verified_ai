@@ -23,6 +23,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Order(Ordered.HIGHEST_PRECEDENCE + 20)
 class RateLimitFilter extends OncePerRequestFilter {
     private static final RateLimitPolicy AUTH_APPLE = new RateLimitPolicy("auth_apple", 10, Duration.ofMinutes(1), true);
+    private static final RateLimitPolicy AUTH_EMAIL_SIGN_UP = new RateLimitPolicy("auth_email_sign_up", 5, Duration.ofMinutes(5), true);
+    private static final RateLimitPolicy AUTH_EMAIL_SIGN_IN = new RateLimitPolicy("auth_email_sign_in", 10, Duration.ofMinutes(1), true);
+    private static final RateLimitPolicy AUTH_GUEST = new RateLimitPolicy("auth_guest", 20, Duration.ofMinutes(1), true);
     private static final RateLimitPolicy AUTH_REFRESH = new RateLimitPolicy("auth_refresh", 20, Duration.ofMinutes(1), true);
     private static final RateLimitPolicy AUTH_LOGOUT = new RateLimitPolicy("auth_logout", 30, Duration.ofMinutes(1), false);
     private static final RateLimitPolicy PURCHASE_EVIDENCE = new RateLimitPolicy("billing_purchase_evidence", 20, Duration.ofMinutes(5), false);
@@ -72,6 +75,15 @@ class RateLimitFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         if ("POST".equals(method) && "/api/v1/auth/apple".equals(path)) {
             return Optional.of(AUTH_APPLE);
+        }
+        if ("POST".equals(method) && "/api/v1/auth/email/sign-up".equals(path)) {
+            return Optional.of(AUTH_EMAIL_SIGN_UP);
+        }
+        if ("POST".equals(method) && "/api/v1/auth/email/sign-in".equals(path)) {
+            return Optional.of(AUTH_EMAIL_SIGN_IN);
+        }
+        if ("POST".equals(method) && "/api/v1/auth/guest".equals(path)) {
+            return Optional.of(AUTH_GUEST);
         }
         if ("POST".equals(method) && "/api/v1/auth/refresh".equals(path)) {
             return Optional.of(AUTH_REFRESH);

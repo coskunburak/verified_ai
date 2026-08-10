@@ -11,13 +11,18 @@ import com.verifiedai.identity.infrastructure.persistence.UserIdentityJpaEntity;
 import com.verifiedai.identity.infrastructure.persistence.UserIdentityJpaRepository;
 import com.verifiedai.identity.infrastructure.persistence.UserJpaEntity;
 import com.verifiedai.identity.infrastructure.persistence.UserJpaRepository;
+import com.verifiedai.identity.infrastructure.persistence.UserPasswordCredentialJpaEntity;
+import com.verifiedai.identity.infrastructure.persistence.UserPasswordCredentialJpaRepository;
 import com.verifiedai.identity.infrastructure.security.AccessTokenIssuer;
+import com.verifiedai.identity.infrastructure.security.PasswordHasher;
 import com.verifiedai.identity.infrastructure.security.RefreshTokenGenerator;
 import com.verifiedai.identity.infrastructure.security.RefreshTokenHasher;
 import com.verifiedai.sharedkernel.error.ApiErrorCode;
 import com.verifiedai.sharedkernel.error.ApiProblemException;
+import java.text.Normalizer;
 import java.time.Clock;
 import java.time.Instant;
+import java.util.Locale;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -29,9 +34,11 @@ public class IdentityApplicationService {
     private final AppleIdentityVerifier appleIdentityVerifier;
     private final UserJpaRepository userRepository;
     private final UserIdentityJpaRepository identityRepository;
+    private final UserPasswordCredentialJpaRepository passwordCredentialRepository;
     private final SessionJpaRepository sessionRepository;
     private final RefreshTokenJpaRepository refreshTokenRepository;
     private final AccessTokenIssuer accessTokenIssuer;
+    private final PasswordHasher passwordHasher;
     private final RefreshTokenGenerator refreshTokenGenerator;
     private final RefreshTokenHasher refreshTokenHasher;
     private final IdentityAuthProperties properties;
@@ -44,9 +51,11 @@ public class IdentityApplicationService {
         AppleIdentityVerifier appleIdentityVerifier,
         UserJpaRepository userRepository,
         UserIdentityJpaRepository identityRepository,
+        UserPasswordCredentialJpaRepository passwordCredentialRepository,
         SessionJpaRepository sessionRepository,
         RefreshTokenJpaRepository refreshTokenRepository,
         AccessTokenIssuer accessTokenIssuer,
+        PasswordHasher passwordHasher,
         RefreshTokenGenerator refreshTokenGenerator,
         RefreshTokenHasher refreshTokenHasher,
         IdentityAuthProperties properties,
@@ -58,9 +67,11 @@ public class IdentityApplicationService {
         this.appleIdentityVerifier = appleIdentityVerifier;
         this.userRepository = userRepository;
         this.identityRepository = identityRepository;
+        this.passwordCredentialRepository = passwordCredentialRepository;
         this.sessionRepository = sessionRepository;
         this.refreshTokenRepository = refreshTokenRepository;
         this.accessTokenIssuer = accessTokenIssuer;
+        this.passwordHasher = passwordHasher;
         this.refreshTokenGenerator = refreshTokenGenerator;
         this.refreshTokenHasher = refreshTokenHasher;
         this.properties = properties;
@@ -70,15 +81,15 @@ public class IdentityApplicationService {
         this.securityEvents = securityEvents;
     }
 
-    @Transactional
+    @Transactional(noRollbackFor = ApiProblemException.class)
     public AuthSessionResult signInWithApple(AppleSignInCommand command) {
         metrics.loginAttempt();
         try {
             VerifiedAppleIdentity verifiedIdentity = appleIdentityVerifier.verify(command.identityToken(), command.nonce());
-            lockIdentitySubject(verifiedIdentity.providerSubject());
+            lockIdentitySubject("APPLE", verifiedIdentity.providerSubject());
             UUID userId = findOrCreateAppleUser(verifiedIdentity.providerSubject());
             requireActiveUser(userId);
-            AuthSessionResult result = issueSession(userId);
+            AuthSessionResult result = issueSession(userId, "APPLE");
             metrics.loginSuccess();
             securityEvents.record("LOGIN_SUCCESS", userId, result.sessionId(), "APPLE");
             return result;
@@ -86,6 +97,90 @@ public class IdentityApplicationService {
             metrics.loginFailure();
             if (exception instanceof ApiProblemException) {
                 securityEvents.record("LOGIN_FAILURE", null, null, "APPLE_IDENTITY_INVALID");
+            }
+            throw exception;
+        }
+    }
+
+    @Transactional(noRollbackFor = ApiProblemException.class)
+    public AuthSessionResult signUpWithEmail(EmailSignUpCommand command) {
+        metrics.loginAttempt();
+        try {
+            String email = normalizeEmail(command.email());
+            requireAcceptablePassword(command.password());
+            lockIdentitySubject("EMAIL", email);
+
+            if (identityRepository.findByProviderAndProviderSubject("EMAIL", email).isPresent()
+                || passwordCredentialRepository.findByEmailNormalized(email).isPresent()) {
+                throw emailAlreadyRegistered();
+            }
+
+            Instant now = clock.instant();
+            UserJpaEntity user = userRepository.save(UserJpaEntity.active(UUID.randomUUID(), now));
+            identityRepository.saveAndFlush(UserIdentityJpaEntity.email(user.id(), email, now));
+            passwordCredentialRepository.saveAndFlush(
+                UserPasswordCredentialJpaEntity.issue(user.id(), email, passwordHasher.hash(command.password()), now)
+            );
+            securityEvents.record("USER_CREATED", user.id(), null, "EMAIL");
+
+            AuthSessionResult result = issueSession(user.id(), "EMAIL");
+            metrics.loginSuccess();
+            securityEvents.record("LOGIN_SUCCESS", user.id(), result.sessionId(), "EMAIL");
+            return result;
+        } catch (RuntimeException exception) {
+            metrics.loginFailure();
+            if (exception instanceof ApiProblemException) {
+                securityEvents.record("LOGIN_FAILURE", null, null, "EMAIL_SIGN_UP_FAILED");
+            }
+            throw exception;
+        }
+    }
+
+    @Transactional(noRollbackFor = ApiProblemException.class)
+    public AuthSessionResult signInWithEmail(EmailSignInCommand command) {
+        metrics.loginAttempt();
+        try {
+            String email = normalizeEmail(command.email());
+            UserPasswordCredentialJpaEntity credential = passwordCredentialRepository.findByEmailNormalized(email)
+                .orElseThrow(this::credentialsInvalid);
+            if (!passwordHasher.matches(command.password(), credential.passwordHash())) {
+                throw credentialsInvalid();
+            }
+
+            UUID userId = credential.userId();
+            requireActiveUser(userId);
+            credential.markUsed(clock.instant());
+
+            AuthSessionResult result = issueSession(userId, "EMAIL");
+            metrics.loginSuccess();
+            securityEvents.record("LOGIN_SUCCESS", userId, result.sessionId(), "EMAIL");
+            return result;
+        } catch (RuntimeException exception) {
+            metrics.loginFailure();
+            if (exception instanceof ApiProblemException) {
+                securityEvents.record("LOGIN_FAILURE", null, null, "EMAIL_CREDENTIAL_INVALID");
+            }
+            throw exception;
+        }
+    }
+
+    @Transactional(noRollbackFor = ApiProblemException.class)
+    public AuthSessionResult continueAsGuest() {
+        metrics.loginAttempt();
+        try {
+            Instant now = clock.instant();
+            UserJpaEntity user = userRepository.save(UserJpaEntity.active(UUID.randomUUID(), now));
+            identityRepository.saveAndFlush(UserIdentityJpaEntity.guest(user.id(), UUID.randomUUID().toString(), now));
+            securityEvents.record("USER_CREATED", user.id(), null, "GUEST");
+
+            AuthSessionResult result = issueSession(user.id(), "GUEST");
+            metrics.loginSuccess();
+            securityEvents.record("LOGIN_SUCCESS", user.id(), result.sessionId(), "GUEST");
+            return result;
+        } catch (RuntimeException exception) {
+            metrics.loginFailure();
+            if (exception instanceof ApiProblemException) {
+                securityEvents.record("LOGIN_FAILURE", null, null, "GUEST_FAILED");
             }
             throw exception;
         }
@@ -185,7 +280,7 @@ public class IdentityApplicationService {
             });
     }
 
-    private AuthSessionResult issueSession(UUID userId) {
+    private AuthSessionResult issueSession(UUID userId, String provider) {
         requireActiveUser(userId);
         Instant now = clock.instant();
         Instant refreshExpiresAt = now.plus(properties.refreshToken().ttl());
@@ -202,7 +297,7 @@ public class IdentityApplicationService {
             )
         );
         AccessTokenIssuer.IssuedAccessToken accessToken = accessTokenIssuer.issue(userId, session.id());
-        securityEvents.record("SESSION_CREATED", userId, session.id(), "APPLE");
+        securityEvents.record("SESSION_CREATED", userId, session.id(), provider);
         return new AuthSessionResult(
             userId,
             session.id(),
@@ -219,13 +314,39 @@ public class IdentityApplicationService {
         securityEvents.record("SESSION_REVOKED", session.userId(), session.id(), reason);
     }
 
-    private void lockIdentitySubject(String providerSubject) {
+    private void lockIdentitySubject(String provider, String providerSubject) {
         jdbcTemplate.query(
             "select pg_advisory_xact_lock(hashtextextended(?, 3101))",
-            preparedStatement -> preparedStatement.setString(1, "APPLE:" + providerSubject),
+            preparedStatement -> preparedStatement.setString(1, provider + ":" + providerSubject),
             resultSet -> {
             }
         );
+    }
+
+    private String normalizeEmail(String email) {
+        String normalized = Normalizer.normalize(email == null ? "" : email, Normalizer.Form.NFKC)
+            .trim()
+            .toLowerCase(Locale.ROOT);
+        int atIndex = normalized.indexOf('@');
+        if (normalized.length() < 3
+            || normalized.length() > 320
+            || atIndex <= 0
+            || atIndex == normalized.length() - 1
+            || normalized.contains(" ")) {
+            throw requestValidationFailed("Email address is invalid");
+        }
+        return normalized;
+    }
+
+    private void requireAcceptablePassword(String password) {
+        if (password == null || password.length() < 8 || password.length() > 128 || password.isBlank()) {
+            throw passwordRejected();
+        }
+        boolean hasLetter = password.codePoints().anyMatch(Character::isLetter);
+        boolean hasDigit = password.codePoints().anyMatch(Character::isDigit);
+        if (!hasLetter || !hasDigit) {
+            throw passwordRejected();
+        }
     }
 
     private ApiProblemException refreshInvalid() {
@@ -235,6 +356,46 @@ public class IdentityApplicationService {
             "Refresh session is invalid",
             false,
             "SIGN_IN"
+        );
+    }
+
+    private ApiProblemException credentialsInvalid() {
+        return new ApiProblemException(
+            HttpStatus.UNAUTHORIZED,
+            ApiErrorCode.AUTH_CREDENTIALS_INVALID,
+            "Email or password is invalid",
+            true,
+            "RETRY"
+        );
+    }
+
+    private ApiProblemException emailAlreadyRegistered() {
+        return new ApiProblemException(
+            HttpStatus.CONFLICT,
+            ApiErrorCode.AUTH_EMAIL_ALREADY_REGISTERED,
+            "Email address is already registered",
+            true,
+            "SIGN_IN"
+        );
+    }
+
+    private ApiProblemException passwordRejected() {
+        return new ApiProblemException(
+            HttpStatus.UNPROCESSABLE_ENTITY,
+            ApiErrorCode.AUTH_PASSWORD_REJECTED,
+            "Password does not meet requirements",
+            true,
+            "RETRY"
+        );
+    }
+
+    private ApiProblemException requestValidationFailed(String title) {
+        return new ApiProblemException(
+            HttpStatus.BAD_REQUEST,
+            ApiErrorCode.REQUEST_VALIDATION_FAILED,
+            title,
+            true,
+            "RETRY"
         );
     }
 

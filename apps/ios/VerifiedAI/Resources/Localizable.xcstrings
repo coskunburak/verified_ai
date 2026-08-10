@@ -1,7 +1,346 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%@ · %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ · %2$@"
+          }
+        }
+      }
+    },
+    "%@ required" : {
+
+    },
+    "%lld evidence block(s) captured for the next parser step." : {
+
+    },
+    "%lld evidence block(s) were captured. Some evidence needs review later." : {
+
+    },
+    "%lld minutes per day" : {
+
+    },
+    "%lld percent" : {
+
+    },
+    "%lld/160" : {
+
+    },
+    "%lld%%" : {
+
+    },
+    "A secure study workspace for scanned problems, verified reasoning, and progress that stays tied to your account." : {
+
+    },
+    "Access is loading" : {
+
+    },
+    "Account" : {
+
+    },
+    "Adjust crop" : {
+
+    },
+    "Asset %@ is available for the next ingestion step." : {
+
+    },
+    "Back" : {
+
+    },
+    "Camera preview" : {
+
+    },
+    "Camera preview unavailable" : {
+
+    },
+    "Capture" : {
+
+    },
+    "Capture homework, crop it, and prepare it for verification." : {
+
+    },
+    "Capture looks usable for the next step." : {
+
+    },
+    "Captured problem preview" : {
+
+    },
+    "Choose" : {
+
+    },
+    "Choose %@" : {
+
+    },
+    "Choose File" : {
+
+    },
+    "Choose Photo" : {
+
+    },
+    "Close" : {
+
+    },
+    "Close problem capture" : {
+
+    },
+    "Confirm Deletion" : {
+
+    },
+    "Continue" : {
+
+    },
+    "Continue Without Account" : {
+
+    },
+    "Create Account" : {
+
+    },
+    "Crop preview" : {
+
+    },
+    "Dashboard" : {
+
+    },
+    "Data Export" : {
+
+    },
+    "DELETE" : {
+
+    },
+    "Deletion" : {
+
+    },
+    "Done" : {
+
+    },
+    "Edit Crop" : {
+
+    },
+    "Education level" : {
+
+    },
+    "English" : {
+
+    },
+    "Explanation depth" : {
+
+    },
+    "Export Data" : {
+
+    },
+    "Files" : {
+
+    },
+    "Finish" : {
+
+    },
+    "Fit the full problem here" : {
+
+    },
+    "Full Image" : {
+
+    },
+    "Guest sessions are private to this device and can be upgraded later by creating an account." : {
+
+    },
+    "How should explanations feel?" : {
+
+    },
+    "Keep the entire problem inside the frame. Avoid glare and cut-off edges." : {
+
+    },
+    "Keep the full problem visible. You can review, crop, retake, or replace it before the next step." : {
+
+    },
+    "Language" : {
+
+    },
+    "Learning goal" : {
+
+    },
+    "Loading" : {
+
+    },
+    "Loading account" : {
+
+    },
+    "Loading profile" : {
+
+    },
+    "Open Settings" : {
+
+    },
+    "Photo" : {
+
+    },
+    "Place the full math problem inside the guide, then use the shutter button." : {
+
+    },
+    "Plan Access" : {
+
+    },
+    "Preparing capture" : {
+
+    },
+    "Preparing secure workspace" : {
+
+    },
+    "Preview unavailable" : {
+
+    },
+    "Problem asset ready" : {
+
+    },
+    "Problem Capture" : {
+
+    },
+    "Profile" : {
+
+    },
+    "Read Problem" : {
+
+    },
+    "Reading finished" : {
+
+    },
+    "Reading finished with uncertainty" : {
+
+    },
+    "Reading the problem" : {
+
+    },
+    "Recognition input %@" : {
+
+    },
+    "Replace" : {
+
+    },
+    "Request Deletion" : {
+
+    },
+    "Reserving secure upload" : {
+
+    },
+    "Restore Purchases" : {
+
+    },
+    "Retake" : {
+
+    },
+    "Retry" : {
+
+    },
+    "Return to Review" : {
+
+    },
+    "Review capture" : {
+
+    },
+    "Save Crop" : {
+
+    },
+    "Saving profile" : {
+
+    },
+    "Scan a Problem" : {
+
+    },
+    "Scan or import a math problem" : {
+
+    },
+    "Sign In" : {
+
+    },
+    "Sign Out" : {
+
+    },
+    "Start Capture" : {
+
+    },
+    "Status %@" : {
+
+    },
+    "Subscription" : {
+
+    },
+    "The backend is checking object size, content type, and SHA-256 integrity." : {
+
+    },
+    "The backend is creating a private asset reservation." : {
+
+    },
+    "The backend is creating a recognition-ready derivative and checking capture quality." : {
+
+    },
+    "The backend is starting a durable parser job." : {
+
+    },
+    "The backend is starting a durable recognition job." : {
+
+    },
+    "This problem type is not supported yet." : {
+
+    },
+    "Timezone" : {
+
+    },
+    "Today" : {
+
+    },
+    "Try Camera Again" : {
+
+    },
+    "Try Reading Again" : {
+
+    },
+    "Try Understanding Again" : {
+
+    },
+    "Turkish" : {
+
+    },
+    "Understand Problem" : {
+
+    },
+    "Understanding finished" : {
+
+    },
+    "Understanding finished with uncertainty" : {
+
+    },
+    "Understanding the problem" : {
+
+    },
+    "Uploading problem asset" : {
+
+    },
+    "Use This Problem" : {
+
+    },
+    "Verified AI" : {
+
+    },
+    "Verifying upload" : {
+
+    },
+    "What are you working toward?" : {
+
+    },
+    "What level are you studying?" : {
+
+    },
+    "You are offline" : {
+
+    },
+    "You can retake, edit the crop, or continue with this warning." : {
+
+    },
+    "Your local capture is still available for retry." : {
+
+    }
   },
   "version" : "1.0"
 }
-
