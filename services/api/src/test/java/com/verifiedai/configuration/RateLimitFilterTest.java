@@ -71,6 +71,26 @@ final class RateLimitFilterTest {
         assertThat(limiter.policyNames()).containsExactly("problem_upload_presign", "problem_upload_complete", "problem_asset_preprocess");
     }
 
+    @Test
+    void emailAndGuestAuthEndpointsUseDedicatedPolicies() throws ServletException, IOException {
+        RecordingLimiter limiter = new RecordingLimiter();
+        RateLimitFilter filter = new RateLimitFilter(limiter, new SecurityMetrics(new SimpleMeterRegistry()));
+
+        MockHttpServletRequest signUp = new MockHttpServletRequest("POST", "/api/v1/auth/email/sign-up");
+        signUp.setRemoteAddr("203.0.113.20");
+        filter.doFilter(signUp, new MockHttpServletResponse(), new MockFilterChain());
+
+        MockHttpServletRequest signIn = new MockHttpServletRequest("POST", "/api/v1/auth/email/sign-in");
+        signIn.setRemoteAddr("203.0.113.20");
+        filter.doFilter(signIn, new MockHttpServletResponse(), new MockFilterChain());
+
+        MockHttpServletRequest guest = new MockHttpServletRequest("POST", "/api/v1/auth/guest");
+        guest.setRemoteAddr("203.0.113.20");
+        filter.doFilter(guest, new MockHttpServletResponse(), new MockFilterChain());
+
+        assertThat(limiter.policyNames()).containsExactly("auth_email_sign_up", "auth_email_sign_in", "auth_guest");
+    }
+
     private static final class DegradedOpenLimiter implements RateLimiter {
         @Override
         public RateLimitDecision check(RateLimitPolicy policy, String keyMaterial) {

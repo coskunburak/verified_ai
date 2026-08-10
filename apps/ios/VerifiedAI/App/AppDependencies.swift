@@ -31,7 +31,7 @@ struct AppDependencies {
         let authenticationSessionStore = AuthenticationSessionStore(secureStorage: secureStorage)
         let networkMonitor = NetworkMonitor()
         let apiClient = APIClient(
-            baseURL: environment.apiBaseURL,
+            baseURL: AppEnvironment.apiBaseURL(environment: environment),
             session: URLSession.shared,
             authTokenProvider: authenticationSessionStore,
             correlationContext: correlationContext

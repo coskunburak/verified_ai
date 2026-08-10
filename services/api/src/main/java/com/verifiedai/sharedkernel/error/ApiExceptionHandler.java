@@ -4,6 +4,8 @@ import com.verifiedai.sharedkernel.observability.CorrelationIds;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -35,6 +37,19 @@ class ApiExceptionHandler {
             exception.details()
         );
         return ResponseEntity.status(exception.status()).body(response);
+    }
+
+    @ExceptionHandler({MethodArgumentNotValidException.class, HttpMessageNotReadableException.class})
+    ResponseEntity<ProblemDetailsResponse> handleValidation(Exception exception) {
+        ProblemDetailsResponse response = new ProblemDetailsResponse(
+            "https://errors.verified-ai-learning.example/request-validation-failed",
+            "Request validation failed",
+            HttpStatus.BAD_REQUEST.value(),
+            ApiErrorCode.REQUEST_VALIDATION_FAILED,
+            CorrelationIds.current(),
+            Map.of("recoverable", true, "userAction", "RETRY")
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)

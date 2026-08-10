@@ -53,6 +53,76 @@ final class IdentityApplicationServiceTest extends PostgresIntegrationTestSuppor
     }
 
     @Test
+    void signUpWithEmailCreatesCredentialIdentityAndSession() {
+        AuthSessionResult result = identityApplicationService.signUpWithEmail(
+            new EmailSignUpCommand(" Student@Example.COM ", "Password123")
+        );
+
+        assertThat(result.userId()).isNotNull();
+        assertThat(result.sessionId()).isNotNull();
+        assertThat(count("users")).isEqualTo(1);
+        assertThat(countWhere("user_identities", "provider = 'EMAIL' and provider_subject = 'student@example.com'")).isEqualTo(1);
+        assertThat(countWhere("user_password_credentials", "email_normalized = 'student@example.com'")).isEqualTo(1);
+        String passwordHash = jdbcTemplate.queryForObject(
+            "select password_hash from user_password_credentials where email_normalized = 'student@example.com'",
+            String.class
+        );
+        assertThat(passwordHash).isNotEqualTo("Password123").startsWith("$2");
+    }
+
+    @Test
+    void signInWithEmailUsesExistingCredentialAndRecordsUse() {
+        AuthSessionResult signUp = identityApplicationService.signUpWithEmail(
+            new EmailSignUpCommand("student@example.com", "Password123")
+        );
+
+        AuthSessionResult signIn = identityApplicationService.signInWithEmail(
+            new EmailSignInCommand("STUDENT@example.com", "Password123")
+        );
+
+        assertThat(signIn.userId()).isEqualTo(signUp.userId());
+        assertThat(signIn.sessionId()).isNotEqualTo(signUp.sessionId());
+        assertThat(count("users")).isEqualTo(1);
+        assertThat(count("sessions")).isEqualTo(2);
+        assertThat(countWhere("user_password_credentials", "last_used_at is not null")).isEqualTo(1);
+    }
+
+    @Test
+    void duplicateEmailSignUpIsRejected() {
+        identityApplicationService.signUpWithEmail(new EmailSignUpCommand("student@example.com", "Password123"));
+
+        assertThatThrownBy(() -> identityApplicationService.signUpWithEmail(
+            new EmailSignUpCommand("student@example.com", "Password123")
+        ))
+            .isInstanceOf(ApiProblemException.class)
+            .extracting(exception -> ((ApiProblemException) exception).code())
+            .isEqualTo(ApiErrorCode.AUTH_EMAIL_ALREADY_REGISTERED);
+    }
+
+    @Test
+    void wrongEmailPasswordIsRejected() {
+        identityApplicationService.signUpWithEmail(new EmailSignUpCommand("student@example.com", "Password123"));
+
+        assertThatThrownBy(() -> identityApplicationService.signInWithEmail(
+            new EmailSignInCommand("student@example.com", "WrongPassword123")
+        ))
+            .isInstanceOf(ApiProblemException.class)
+            .extracting(exception -> ((ApiProblemException) exception).code())
+            .isEqualTo(ApiErrorCode.AUTH_CREDENTIALS_INVALID);
+    }
+
+    @Test
+    void continueAsGuestCreatesAnonymousIdentityAndSession() {
+        AuthSessionResult result = identityApplicationService.continueAsGuest();
+
+        assertThat(result.userId()).isNotNull();
+        assertThat(result.sessionId()).isNotNull();
+        assertThat(countWhere("user_identities", "provider = 'GUEST'")).isEqualTo(1);
+        assertThat(count("sessions")).isEqualTo(1);
+        assertThat(count("refresh_tokens")).isEqualTo(1);
+    }
+
+    @Test
     void twoConcurrentFirstLoginsForSameAppleSubjectCreateOneUser() throws Exception {
         var executor = Executors.newFixedThreadPool(2);
         var barrier = new CyclicBarrier(2);

@@ -4,7 +4,9 @@ struct RootView: View {
     let environment: AppEnvironment
     let dependencies: AppDependencies
 
-    @State private var launchState: AppLaunchState = .ready
+    @State private var launchState: AppLaunchState = .initializing
+    @State private var isSplashVisible = true
+    @State private var didRestoreSession = false
     @State private var signInViewModel: SignInViewModel
     @State private var onboardingViewModel: OnboardingViewModel
     @State private var accountSettingsViewModel: AccountSettingsViewModel
@@ -66,16 +68,21 @@ struct RootView: View {
 
     var body: some View {
         Group {
-            switch signInViewModel.state {
-            case .authenticated(let session):
-                authenticatedContent(session: session)
-            default:
-                SignInView(viewModel: signInViewModel)
+            if isSplashVisible {
+                SplashScreenView()
+            } else {
+                switch signInViewModel.state {
+                case .authenticated(let session):
+                    authenticatedContent(session: session)
+                default:
+                    SignInView(viewModel: signInViewModel)
+                }
             }
         }
         .tint(ColorTokens.action)
+        .preferredColorScheme(.dark)
         .task {
-            await signInViewModel.restore()
+            await restoreSessionOnce()
         }
     }
 
@@ -83,15 +90,13 @@ struct RootView: View {
     private func authenticatedContent(session: AuthSession) -> some View {
         NavigationStack {
             switch onboardingViewModel.state {
-            case .ready:
-                entitledHomeContent()
-            case .loading, .idle:
+            case .saving:
                 ProgressView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(ColorTokens.background)
                     .navigationTitle("Verified AI")
             default:
-                OnboardingFlowView(viewModel: onboardingViewModel)
+                entitledHomeContent()
             }
         }
         .toolbar {
@@ -218,5 +223,68 @@ struct RootView: View {
         isAccountSettingsPresented = false
         resetAuthenticatedState()
         signInViewModel.discardLocalSession()
+    }
+
+    private func restoreSessionOnce() async {
+        guard !didRestoreSession else {
+            return
+        }
+        didRestoreSession = true
+        launchState = .initializing
+
+        async let restore: Void = signInViewModel.restore()
+        async let delay: Void = minimumSplashDelay()
+        _ = await (restore, delay)
+
+        launchState = .ready
+        withAnimation(.easeOut(duration: 0.25)) {
+            isSplashVisible = false
+        }
+    }
+
+    private func minimumSplashDelay() async {
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("--ui-testing") {
+            return
+        }
+        #endif
+        try? await Task.sleep(nanoseconds: 850_000_000)
+    }
+}
+
+private struct SplashScreenView: View {
+    var body: some View {
+        ZStack {
+            ColorTokens.background.ignoresSafeArea()
+
+            VStack(spacing: SpacingTokens.md) {
+                Image(systemName: "checkmark.seal.fill")
+                    .font(.system(size: 48, weight: .semibold))
+                    .foregroundStyle(ColorTokens.action)
+                    .frame(width: 82, height: 82)
+                    .background(ColorTokens.surface)
+                    .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: RadiusTokens.medium)
+                            .stroke(ColorTokens.border, lineWidth: 1)
+                    }
+
+                VStack(spacing: SpacingTokens.xs) {
+                    Text("Verified AI")
+                        .font(.system(size: 34, weight: .semibold, design: .rounded))
+                        .foregroundStyle(ColorTokens.textPrimary)
+                        .accessibilityIdentifier("appTitle")
+                    Text("Preparing secure workspace")
+                        .font(TypographyTokens.caption)
+                        .foregroundStyle(ColorTokens.textSecondary)
+                }
+
+                ProgressView()
+                    .tint(ColorTokens.action)
+                    .padding(.top, SpacingTokens.sm)
+                    .accessibilityLabel("Loading")
+            }
+            .padding(SpacingTokens.lg)
+        }
     }
 }
