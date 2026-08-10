@@ -6,22 +6,38 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface ProblemClassificationJpaRepository extends JpaRepository<ProblemClassificationJpaEntity, UUID> {
-    Optional<ProblemClassificationJpaEntity> findFirstByProblemSessionIdAndUserIdOrderByRevisionDesc(
-        UUID problemSessionId,
+public interface ProblemClassificationJpaRepository
+    extends JpaRepository<ProblemClassificationJpaEntity, UUID> {
+
+    Optional<ProblemClassificationJpaEntity>
+    findByClassificationJobId(
+        UUID classificationJobId
+    );
+
+    Optional<ProblemClassificationJpaEntity>
+    findByRequestFingerprint(
+        String requestFingerprint
+    );
+
+    Optional<ProblemClassificationJpaEntity>
+    findFirstByCanonicalProblemIdAndUserIdOrderByRevisionDesc(
+        UUID canonicalProblemId,
         UUID userId
     );
 
-    Optional<ProblemClassificationJpaEntity> findByCanonicalProblemIdAndOntologyVersionAndSchemaVersion(
-        UUID canonicalProblemId,
-        String ontologyVersion,
-        String schemaVersion
+    Optional<ProblemClassificationJpaEntity>
+    findFirstByProblemSessionIdAndUserIdOrderByCreatedAtDesc(
+        UUID problemSessionId,
+        UUID userId
     );
 
     @Query("""
         select coalesce(max(classification.revision), 0)
         from ProblemClassificationJpaEntity classification
-        where classification.problemSessionId = :problemSessionId
+        where classification.canonicalProblemId = :canonicalProblemId
         """)
-    int maxRevision(@Param("problemSessionId") UUID problemSessionId);
+    int maxRevision(
+        @Param("canonicalProblemId")
+        UUID canonicalProblemId
+    );
 }

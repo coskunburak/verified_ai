@@ -83,8 +83,6 @@ app:
       max-response-bytes: ${AI_PROBLEM_CLASSIFIER_MAX_RESPONSE_BYTES:16384}
       max-cost-micros: ${AI_PROBLEM_CLASSIFIER_MAX_COST_MICROS:10000}
       pricing-version: ${AI_PROBLEM_CLASSIFIER_PRICING_VERSION:problem-classifier-local-v1}
-      stuck-running-timeout: ${PROBLEM_CLASSIFIER_STUCK_RUNNING_TIMEOUT:PT2M}
-      worker-interval: ${PROBLEM_CLASSIFIER_WORKER_INTERVAL:PT5S}
   problem-recognition:
     max-input-bytes: ${PROBLEM_RECOGNITION_MAX_INPUT_BYTES:10485760}
     max-blocks: ${PROBLEM_RECOGNITION_MAX_BLOCKS:128}
@@ -93,6 +91,9 @@ app:
     coordinate-tolerance: ${PROBLEM_RECOGNITION_COORDINATE_TOLERANCE:0.000001}
     stuck-running-timeout: ${PROBLEM_RECOGNITION_STUCK_RUNNING_TIMEOUT:PT2M}
     worker-interval: ${PROBLEM_RECOGNITION_WORKER_INTERVAL:PT5S}
+  problem-classifier:
+    stuck-running-timeout: ${PROBLEM_CLASSIFIER_STUCK_RUNNING_TIMEOUT:PT2M}
+    worker-interval: ${PROBLEM_CLASSIFIER_WORKER_INTERVAL:PT5S}
   problem-parser:
     stuck-running-timeout: ${PROBLEM_PARSER_STUCK_RUNNING_TIMEOUT:PT2M}
     worker-interval: ${PROBLEM_PARSER_WORKER_INTERVAL:PT5S}

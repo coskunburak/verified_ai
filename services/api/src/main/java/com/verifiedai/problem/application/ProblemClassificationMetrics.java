@@ -1,6 +1,7 @@
 package com.verifiedai.problem.application;
 
 import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.DistributionSummary;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import java.util.concurrent.TimeUnit;
@@ -8,53 +9,116 @@ import org.springframework.stereotype.Component;
 
 @Component
 class ProblemClassificationMetrics {
-    private final Counter startedCounter;
-    private final Counter successCounter;
-    private final Counter reviewRequiredCounter;
-    private final Counter unknownCounter;
-    private final Counter failureCounter;
-    private final Counter schemaInvalidCounter;
-    private final Counter ontologyInvalidCounter;
-    private final Counter fallbackCounter;
-    private final Timer latencyTimer;
 
-    ProblemClassificationMetrics(MeterRegistry meterRegistry) {
-        this.startedCounter = Counter.builder("problem.classification.started")
-            .description("Classification attempts started")
-            .register(meterRegistry);
-        this.successCounter = Counter.builder("problem.classification.success")
-            .description("Successful classifications")
-            .register(meterRegistry);
-        this.reviewRequiredCounter = Counter.builder("problem.classification.review_required")
-            .description("Classifications requiring review")
-            .register(meterRegistry);
-        this.unknownCounter = Counter.builder("problem.classification.unknown")
-            .description("Unknown classifications")
-            .register(meterRegistry);
-        this.failureCounter = Counter.builder("problem.classification.failure")
-            .description("Classification failures")
-            .register(meterRegistry);
-        this.schemaInvalidCounter = Counter.builder("problem.classification.schema_invalid")
-            .description("Schema-invalid AI responses")
-            .register(meterRegistry);
-        this.ontologyInvalidCounter = Counter.builder("problem.classification.ontology_invalid")
-            .description("Ontology-invalid AI responses")
-            .register(meterRegistry);
-        this.fallbackCounter = Counter.builder("problem.classification.fallback")
-            .description("Fallback provider used")
-            .register(meterRegistry);
-        this.latencyTimer = Timer.builder("problem.classification.latency")
-            .description("Classification total latency")
+    private final MeterRegistry meterRegistry;
+
+    ProblemClassificationMetrics(
+        MeterRegistry meterRegistry
+    ) {
+        this.meterRegistry = meterRegistry;
+    }
+
+    void started() {
+        counter(
+            "ai.problem.classification.started.total"
+        ).increment();
+    }
+
+    void success(
+        String provider,
+        String status,
+        String source
+    ) {
+        counter(
+            "ai.problem.classification.success.total",
+            "provider",
+            provider,
+            "status",
+            status,
+            "source",
+            source
+        ).increment();
+    }
+
+    void failure(String failureClass) {
+        counter(
+            "ai.problem.classification.failure.total",
+            "failure_class",
+            failureClass
+        ).increment();
+    }
+
+    void schemaInvalid() {
+        counter(
+            "ai.problem.classification.schema_invalid.total"
+        ).increment();
+    }
+
+    void semanticInvalid() {
+        counter(
+            "ai.problem.classification.semantic_invalid.total"
+        ).increment();
+    }
+
+    void ontologyInvalid() {
+        counter(
+            "ai.problem.classification.ontology_invalid.total"
+        ).increment();
+    }
+
+    void candidateInvalid() {
+        counter(
+            "ai.problem.classification.candidate_invalid.total"
+        ).increment();
+    }
+
+    void fallback() {
+        counter(
+            "ai.problem.classification.fallback.total"
+        ).increment();
+    }
+
+    void providerLatency(long millis) {
+        timer(
+            "ai.problem.classification.provider.duration"
+        ).record(
+            millis,
+            TimeUnit.MILLISECONDS
+        );
+    }
+
+    void totalLatency(long nanos) {
+        timer(
+            "ai.problem.classification.total.duration"
+        ).record(
+            nanos,
+            TimeUnit.NANOSECONDS
+        );
+    }
+
+    void estimatedCost(long micros) {
+        DistributionSummary
+            .builder(
+                "ai.problem.classification.estimated_cost_micros"
+            )
+            .baseUnit("micro_usd")
+            .register(meterRegistry)
+            .record(micros);
+    }
+
+    private Counter counter(
+        String name,
+        String... tags
+    ) {
+        return Counter
+            .builder(name)
+            .tags(tags)
             .register(meterRegistry);
     }
 
-    void started() { startedCounter.increment(); }
-    void success() { successCounter.increment(); }
-    void reviewRequired() { reviewRequiredCounter.increment(); }
-    void unknown() { unknownCounter.increment(); }
-    void failure() { failureCounter.increment(); }
-    void schemaInvalid() { schemaInvalidCounter.increment(); }
-    void ontologyInvalid() { ontologyInvalidCounter.increment(); }
-    void fallback() { fallbackCounter.increment(); }
-    void latency(long nanos) { latencyTimer.record(nanos, TimeUnit.NANOSECONDS); }
+    private Timer timer(String name) {
+        return Timer
+            .builder(name)
+            .register(meterRegistry);
+    }
 }
