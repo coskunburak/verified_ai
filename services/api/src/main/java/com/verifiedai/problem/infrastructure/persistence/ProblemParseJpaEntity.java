@@ -18,7 +18,7 @@ public class ProblemParseJpaEntity {
     @Id
     private UUID id;
 
-    @Column(name = "parse_job_id", nullable = false)
+    @Column(name = "parse_job_id")
     private UUID parseJobId;
 
     @Column(name = "user_id", nullable = false)
@@ -52,26 +52,26 @@ public class ProblemParseJpaEntity {
     private String schemaVersion;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "raw_output_jsonb", nullable = false, columnDefinition = "jsonb")
+    @Column(name = "raw_output_jsonb", columnDefinition = "jsonb")
     private String rawOutputJson;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "normalized_problem_jsonb", nullable = false, columnDefinition = "jsonb")
     private String normalizedProblemJson;
 
-    @Column(nullable = false)
+    @Column
     private String provider;
 
-    @Column(nullable = false)
+    @Column
     private String model;
 
-    @Column(name = "route_policy_version", nullable = false)
+    @Column(name = "route_policy_version")
     private String routePolicyVersion;
 
-    @Column(name = "prompt_id", nullable = false)
+    @Column(name = "prompt_id")
     private String promptId;
 
-    @Column(name = "prompt_version", nullable = false)
+    @Column(name = "prompt_version")
     private String promptVersion;
 
     @Column(name = "provider_request_id")
@@ -80,8 +80,8 @@ public class ProblemParseJpaEntity {
     @Column(name = "provider_response_id")
     private String providerResponseId;
 
-    @Column(name = "fallback_used", nullable = false)
-    private boolean fallbackUsed;
+    @Column(name = "fallback_used")
+    private Boolean fallbackUsed;
 
     @Column(name = "input_tokens")
     private Integer inputTokens;
@@ -92,22 +92,22 @@ public class ProblemParseJpaEntity {
     @Column(name = "image_units")
     private Integer imageUnits;
 
-    @Column(name = "request_units", nullable = false)
-    private int requestUnits;
+    @Column(name = "request_units")
+    private Integer requestUnits;
 
-    @Column(name = "provider_latency_ms", nullable = false)
-    private long providerLatencyMs;
+    @Column(name = "provider_latency_ms")
+    private Long providerLatencyMs;
 
-    @Column(name = "total_latency_ms", nullable = false)
-    private long totalLatencyMs;
+    @Column(name = "total_latency_ms")
+    private Long totalLatencyMs;
 
-    @Column(name = "estimated_cost_micros", nullable = false)
-    private long estimatedCostMicros;
+    @Column(name = "estimated_cost_micros")
+    private Long estimatedCostMicros;
 
-    @Column(nullable = false)
+    @Column
     private String currency;
 
-    @Column(name = "pricing_version", nullable = false)
+    @Column(name = "pricing_version")
     private String pricingVersion;
 
     @Column(name = "raw_output_retention_until")
@@ -116,11 +116,30 @@ public class ProblemParseJpaEntity {
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
+    @Column(name = "parent_parse_id")
+    private UUID parentParseId;
+
+    @Column(name = "correction_idempotency_key", length = 128)
+    private String correctionIdempotencyKey;
+
+    @Column(name = "correction_request_hash", length = 64)
+    private String correctionRequestHash;
+
+    @Column(name = "correction_reason", length = 32)
+    private String correctionReason;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "corrected_fields_jsonb", columnDefinition = "jsonb")
+    private String correctedFieldsJson;
+
+    @Column(name = "correction_schema_version", length = 64)
+    private String correctionSchemaVersion;
+
     protected ProblemParseJpaEntity() {
     }
 
     @SuppressWarnings("ParameterNumber")
-    public ProblemParseJpaEntity(
+    public static ProblemParseJpaEntity fromAi(
         UUID id,
         UUID parseJobId,
         UUID userId,
@@ -141,39 +160,111 @@ public class ProblemParseJpaEntity {
         Instant rawOutputRetentionUntil,
         Instant createdAt
     ) {
-        this.id = id;
-        this.parseJobId = parseJobId;
-        this.userId = userId;
-        this.problemSessionId = problemSessionId;
-        this.recognitionEvidenceId = recognitionEvidenceId;
-        this.recognitionEvidenceRevision = recognitionEvidenceRevision;
-        this.revision = revision;
-        this.source = ProblemParseSource.AI.name();
-        this.supportStatus = supportStatus;
-        this.unsupportedReason = unsupportedReason;
-        this.reviewRequired = reviewRequired;
-        this.schemaVersion = schemaVersion;
-        this.rawOutputJson = rawOutputJson;
-        this.normalizedProblemJson = normalizedProblemJson;
-        this.provider = provenance.provider();
-        this.model = provenance.model();
-        this.routePolicyVersion = provenance.routePolicyVersion();
-        this.promptId = provenance.promptId();
-        this.promptVersion = provenance.promptVersion();
-        this.providerRequestId = provenance.providerRequestId();
-        this.providerResponseId = provenance.providerResponseId();
-        this.fallbackUsed = provenance.fallbackUsed();
-        this.inputTokens = usage.inputTokens();
-        this.outputTokens = usage.outputTokens();
-        this.imageUnits = usage.imageUnits();
-        this.requestUnits = usage.requestUnits();
-        this.providerLatencyMs = providerLatencyMs;
-        this.totalLatencyMs = totalLatencyMs;
-        this.estimatedCostMicros = usage.estimatedCostMicros();
-        this.currency = usage.currency();
-        this.pricingVersion = usage.pricingVersion();
-        this.rawOutputRetentionUntil = rawOutputRetentionUntil;
-        this.createdAt = createdAt;
+        ProblemParseJpaEntity entity = new ProblemParseJpaEntity();
+        entity.id = id;
+        entity.parseJobId = parseJobId;
+        entity.userId = userId;
+        entity.problemSessionId = problemSessionId;
+        entity.recognitionEvidenceId = recognitionEvidenceId;
+        entity.recognitionEvidenceRevision = recognitionEvidenceRevision;
+        entity.revision = revision;
+        entity.source = ProblemParseSource.AI.name();
+        entity.supportStatus = supportStatus;
+        entity.unsupportedReason = unsupportedReason;
+        entity.reviewRequired = reviewRequired;
+        entity.schemaVersion = schemaVersion;
+        entity.rawOutputJson = rawOutputJson;
+        entity.normalizedProblemJson = normalizedProblemJson;
+        entity.provider = provenance.provider();
+        entity.model = provenance.model();
+        entity.routePolicyVersion = provenance.routePolicyVersion();
+        entity.promptId = provenance.promptId();
+        entity.promptVersion = provenance.promptVersion();
+        entity.providerRequestId = provenance.providerRequestId();
+        entity.providerResponseId = provenance.providerResponseId();
+        entity.fallbackUsed = provenance.fallbackUsed();
+        entity.inputTokens = usage.inputTokens();
+        entity.outputTokens = usage.outputTokens();
+        entity.imageUnits = usage.imageUnits();
+        entity.requestUnits = usage.requestUnits();
+        entity.providerLatencyMs = providerLatencyMs;
+        entity.totalLatencyMs = totalLatencyMs;
+        entity.estimatedCostMicros = usage.estimatedCostMicros();
+        entity.currency = usage.currency();
+        entity.pricingVersion = usage.pricingVersion();
+        entity.rawOutputRetentionUntil = rawOutputRetentionUntil;
+        entity.createdAt = createdAt;
+        entity.parentParseId = null;
+        entity.correctionIdempotencyKey = null;
+        entity.correctionRequestHash = null;
+        entity.correctionReason = null;
+        entity.correctedFieldsJson = null;
+        entity.correctionSchemaVersion = null;
+        return entity;
+    }
+
+    @SuppressWarnings("ParameterNumber")
+    public static ProblemParseJpaEntity fromUserCorrection(
+        UUID id,
+        UUID parentParseId,
+        UUID userId,
+        UUID problemSessionId,
+        UUID recognitionEvidenceId,
+        int recognitionEvidenceRevision,
+        int revision,
+        String supportStatus,
+        String unsupportedReason,
+        boolean reviewRequired,
+        String schemaVersion,
+        String normalizedProblemJson,
+        String correctionIdempotencyKey,
+        String correctionRequestHash,
+        String correctionReason,
+        String correctedFieldsJson,
+        String correctionSchemaVersion,
+        Instant createdAt
+    ) {
+        ProblemParseJpaEntity entity = new ProblemParseJpaEntity();
+        entity.id = id;
+        entity.userId = userId;
+        entity.problemSessionId = problemSessionId;
+        entity.recognitionEvidenceId = recognitionEvidenceId;
+        entity.recognitionEvidenceRevision = recognitionEvidenceRevision;
+        entity.revision = revision;
+        entity.source = ProblemParseSource.USER.name();
+        entity.supportStatus = supportStatus;
+        entity.unsupportedReason = unsupportedReason;
+        entity.reviewRequired = reviewRequired;
+        entity.schemaVersion = schemaVersion;
+        entity.normalizedProblemJson = normalizedProblemJson;
+        entity.createdAt = createdAt;
+        entity.parentParseId = parentParseId;
+        entity.correctionIdempotencyKey = correctionIdempotencyKey;
+        entity.correctionRequestHash = correctionRequestHash;
+        entity.correctionReason = correctionReason;
+        entity.correctedFieldsJson = correctedFieldsJson;
+        entity.correctionSchemaVersion = correctionSchemaVersion;
+        entity.parseJobId = null;
+        entity.rawOutputJson = null;
+        entity.provider = null;
+        entity.model = null;
+        entity.routePolicyVersion = null;
+        entity.promptId = null;
+        entity.promptVersion = null;
+        entity.providerRequestId = null;
+        entity.providerResponseId = null;
+        entity.fallbackUsed = null;
+        entity.inputTokens = null;
+        entity.outputTokens = null;
+        entity.imageUnits = null;
+        entity.requestUnits = null;
+        entity.providerLatencyMs = null;
+        entity.totalLatencyMs = null;
+        entity.estimatedCostMicros = null;
+        entity.currency = null;
+        entity.pricingVersion = null;
+        entity.rawOutputRetentionUntil = null;
+        return entity;
     }
 
     public UUID id() {
@@ -264,19 +355,19 @@ public class ProblemParseJpaEntity {
         return imageUnits;
     }
 
-    public int requestUnits() {
+    public Integer requestUnits() {
         return requestUnits;
     }
 
-    public long providerLatencyMs() {
+    public Long providerLatencyMs() {
         return providerLatencyMs;
     }
 
-    public long totalLatencyMs() {
+    public Long totalLatencyMs() {
         return totalLatencyMs;
     }
 
-    public long estimatedCostMicros() {
+    public Long estimatedCostMicros() {
         return estimatedCostMicros;
     }
 
@@ -290,5 +381,29 @@ public class ProblemParseJpaEntity {
 
     public Instant createdAt() {
         return createdAt;
+    }
+
+    public UUID parentParseId() {
+        return parentParseId;
+    }
+
+    public String correctionIdempotencyKey() {
+        return correctionIdempotencyKey;
+    }
+
+    public String correctionRequestHash() {
+        return correctionRequestHash;
+    }
+
+    public String correctionReason() {
+        return correctionReason;
+    }
+
+    public String correctedFieldsJson() {
+        return correctedFieldsJson;
+    }
+
+    public String correctionSchemaVersion() {
+        return correctionSchemaVersion;
     }
 }

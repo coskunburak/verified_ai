@@ -7,6 +7,7 @@ import com.verifiedai.problem.infrastructure.persistence.CanonicalProblemJpaEnti
 import com.verifiedai.problem.infrastructure.persistence.CanonicalProblemJpaRepository;
 import com.verifiedai.problem.infrastructure.persistence.ProblemParseJpaEntity;
 import com.verifiedai.problem.infrastructure.persistence.ProblemParseJpaRepository;
+import com.verifiedai.problem.infrastructure.persistence.ProblemSessionJpaEntity;
 import com.verifiedai.problem.infrastructure.persistence.ProblemSessionJpaRepository;
 import com.verifiedai.sharedkernel.error.ApiErrorCode;
 import com.verifiedai.sharedkernel.error.ApiProblemException;
@@ -62,7 +63,7 @@ public class CanonicalProblemApplicationService {
             requireActiveAccount(userId);
             capabilityAccessPolicy.requireBasicSolve(userId);
             CanonicalProblemResult result = transactionTemplate.execute(status -> {
-                sessionRepository.findByIdAndUserIdForUpdate(problemSessionId, userId)
+                ProblemSessionJpaEntity session = sessionRepository.findByIdAndUserIdForUpdate(problemSessionId, userId)
                     .orElseThrow(() -> problem(
                         HttpStatus.NOT_FOUND,
                         ApiErrorCode.RESOURCE_FORBIDDEN,
@@ -70,15 +71,7 @@ public class CanonicalProblemApplicationService {
                         false,
                         "RETRY"
                     ));
-                ProblemParseJpaEntity parse = parseRepository
-                    .findFirstByProblemSessionIdAndUserIdOrderByRevisionDesc(problemSessionId, userId)
-                    .orElseThrow(() -> problem(
-                        HttpStatus.CONFLICT,
-                        ApiErrorCode.PROBLEM_PARSE_FAILED,
-                        "Problem parse is required before canonicalization",
-                        true,
-                        "PARSE"
-                    ));
+                ProblemParseJpaEntity parse = selectedParse(session, userId, problemSessionId);
                 return canonicalRepository
                     .findByProblemParseIdAndProblemParseRevisionAndSchemaVersion(
                         parse.id(),
@@ -106,7 +99,7 @@ public class CanonicalProblemApplicationService {
 
     public CanonicalProblemResult getCanonicalProblem(UUID userId, UUID problemSessionId) {
         requireActiveAccount(userId);
-        sessionRepository.findByIdAndUserId(problemSessionId, userId)
+        ProblemSessionJpaEntity session = sessionRepository.findByIdAndUserId(problemSessionId, userId)
             .orElseThrow(() -> problem(
                 HttpStatus.NOT_FOUND,
                 ApiErrorCode.RESOURCE_FORBIDDEN,
@@ -114,7 +107,12 @@ public class CanonicalProblemApplicationService {
                 false,
                 "RETRY"
             ));
-        return canonicalRepository.findFirstByProblemSessionIdAndUserIdOrderByCanonicalRevisionDesc(problemSessionId, userId)
+        ProblemParseJpaEntity parse = selectedParse(session, userId, problemSessionId);
+        return canonicalRepository.findByProblemParseIdAndProblemParseRevisionAndSchemaVersion(
+                parse.id(),
+                parse.revision(),
+                CanonicalProblemBuilder.CANONICAL_SCHEMA_VERSION
+            )
             .map(this::resultFor)
             .orElseThrow(() -> problem(
                 HttpStatus.NOT_FOUND,
@@ -122,6 +120,27 @@ public class CanonicalProblemApplicationService {
                 "Canonical problem has not been created",
                 true,
                 "CANONICALIZE"
+            ));
+    }
+
+    private ProblemParseJpaEntity selectedParse(ProblemSessionJpaEntity session, UUID userId, UUID problemSessionId) {
+        UUID selectedParseId = session.currentParseId();
+        if (selectedParseId == null) {
+            throw problem(
+                HttpStatus.CONFLICT,
+                ApiErrorCode.PROBLEM_PARSE_NOT_FOUND,
+                "No parse is selected",
+                true,
+                "PARSE"
+            );
+        }
+        return parseRepository.findByIdAndUserIdAndProblemSessionId(selectedParseId, userId, problemSessionId)
+            .orElseThrow(() -> problem(
+                HttpStatus.CONFLICT,
+                ApiErrorCode.PROBLEM_PARSE_NOT_FOUND,
+                "Selected parse was not found",
+                true,
+                "PARSE"
             ));
     }
 

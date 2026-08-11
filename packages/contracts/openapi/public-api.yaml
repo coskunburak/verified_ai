@@ -1004,10 +1004,175 @@ paths:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
 
+  /api/v1/problem-sessions/{sessionId}/parse-review:
+    get:
+      summary: Return the selected parse for user review
+      description: Returns the selected ProblemParse and safe normalized parse document for the authenticated owner. Raw parser output, provider request data, request hashes, and idempotency keys are not exposed.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Selected parse review state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemParseReviewResponse"
+        "401":
+          description: Access token is invalid or expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Account or entitlement does not allow parse review
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Problem session was not found for the authenticated owner
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "409":
+          description: No selected parse is available for review
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/problem-sessions/{sessionId}/parse-revisions:
+    post:
+      summary: Create a user-corrected parse revision
+      description: Creates an idempotent USER ProblemParse revision from the selected parse and selects it for future canonicalization. Server validation owns parse schema normalization and canonicalization remains a separate explicit step.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProblemParseCorrectionRequest"
+      responses:
+        "201":
+          description: User-corrected parse revision created or idempotently replayed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateProblemParseCorrectionResponse"
+        "400":
+          description: Correction request is malformed or the Idempotency-Key is missing
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "401":
+          description: Access token is invalid or expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Account or entitlement does not allow parse correction
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Problem session was not found for the authenticated owner
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "409":
+          description: Selected parse changed or idempotency key conflicts with different content
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "413":
+          description: Corrected parse document is too large
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "422":
+          description: Corrected parse document is semantically invalid or unchanged
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "429":
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+    get:
+      summary: Return parse revision history for a problem session
+      description: Returns AI and USER parse revision metadata for the authenticated owner. Correction request hashes and idempotency keys are never exposed.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Parse revision history
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemParseRevisionHistoryResponse"
+        "401":
+          description: Access token is invalid or expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Account or entitlement does not allow revision history
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Problem session was not found for the authenticated owner
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
   /api/v1/problem-sessions/{sessionId}/canonicalize:
     post:
       summary: Create the safe canonical mathematical representation for an accepted parse
-      description: Converts the latest supported ProblemParse into a durable Layer 4 canonical problem and verifier-input representation. This endpoint does not solve, verify, classify skill, assign difficulty, or expose raw parser output.
+      description: Converts the selected supported ProblemParse into a durable Layer 4 canonical problem and verifier-input representation. This endpoint does not solve, verify, classify skill, assign difficulty, or expose raw parser output.
       security:
         - bearerAuth: []
       parameters:
@@ -1058,7 +1223,7 @@ paths:
   /api/v1/problem-sessions/{sessionId}/canonical-problem:
     get:
       summary: Return canonical problem display metadata for the authenticated owner
-      description: Returns lifecycle-safe canonical problem metadata and display fields. Internal AST and verifier endpoints are not exposed to the mobile client.
+      description: Returns lifecycle-safe canonical problem metadata and display fields for the currently selected parse. Internal AST and verifier endpoints are not exposed to the mobile client.
       security:
         - bearerAuth: []
       parameters:
@@ -2096,6 +2261,186 @@ components:
           format: date-time
         completedAt:
           type: [string, "null"]
+          format: date-time
+
+    ProblemParseReviewResponse:
+      type: object
+      additionalProperties: false
+      required: [problemSessionId, currentParse, revisionCount, canCorrect]
+      properties:
+        problemSessionId:
+          type: string
+          format: uuid
+        currentParse:
+          $ref: "#/components/schemas/ProblemParseReviewCurrentParse"
+        revisionCount:
+          type: integer
+          minimum: 0
+        canCorrect:
+          type: boolean
+
+    ProblemParseReviewCurrentParse:
+      type: object
+      additionalProperties: false
+      required: [problemParseId, revision, source, supportStatus, reviewRequired, normalizedProblem, createdAt]
+      properties:
+        problemParseId:
+          type: string
+          format: uuid
+        revision:
+          type: integer
+          minimum: 1
+        source:
+          type: string
+          enum: [AI, USER]
+        supportStatus:
+          type: string
+          enum: [SUPPORTED, REVIEW_REQUIRED, UNSUPPORTED]
+        reviewRequired:
+          type: boolean
+        normalizedProblem:
+          $ref: "#/components/schemas/NormalizedProblemParse"
+        createdAt:
+          type: string
+          format: date-time
+
+    CreateProblemParseCorrectionRequest:
+      type: object
+      additionalProperties: false
+      required: [baseParseId, baseRevision, correctionReason, problem]
+      properties:
+        baseParseId:
+          type: string
+          format: uuid
+        baseRevision:
+          type: integer
+          minimum: 1
+        correctionReason:
+          type: string
+          enum:
+            - OCR_TEXT_ERROR
+            - MATH_EXPRESSION_ERROR
+            - VARIABLE_ERROR
+            - CONSTRAINT_ERROR
+            - ASSUMPTION_ERROR
+            - TASK_TYPE_ERROR
+            - PROBLEM_TYPE_ERROR
+            - OTHER
+        problem:
+          $ref: "#/components/schemas/NormalizedProblemParse"
+
+    CreateProblemParseCorrectionResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - problemSessionId
+        - problemParseId
+        - revision
+        - source
+        - parentParseId
+        - selected
+        - supportStatus
+        - reviewRequired
+        - canonicalizationRequired
+        - createdAt
+      properties:
+        problemSessionId:
+          type: string
+          format: uuid
+        problemParseId:
+          type: string
+          format: uuid
+        revision:
+          type: integer
+          minimum: 1
+        source:
+          type: string
+          enum: [USER]
+        parentParseId:
+          type: string
+          format: uuid
+        selected:
+          type: boolean
+        supportStatus:
+          type: string
+          enum: [SUPPORTED, REVIEW_REQUIRED]
+        reviewRequired:
+          type: boolean
+        canonicalizationRequired:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    ProblemParseRevisionHistoryResponse:
+      type: object
+      additionalProperties: false
+      required: [problemSessionId, selectedParseId, revisions]
+      properties:
+        problemSessionId:
+          type: string
+          format: uuid
+        selectedParseId:
+          type: [string, "null"]
+          format: uuid
+        revisions:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProblemParseRevisionEntry"
+
+    ProblemParseRevisionEntry:
+      type: object
+      additionalProperties: false
+      required:
+        - problemParseId
+        - revision
+        - source
+        - parentParseId
+        - selected
+        - supportStatus
+        - reviewRequired
+        - correctionReason
+        - correctedFieldCategories
+        - createdAt
+      properties:
+        problemParseId:
+          type: string
+          format: uuid
+        revision:
+          type: integer
+          minimum: 1
+        source:
+          type: string
+          enum: [AI, USER]
+        parentParseId:
+          type: [string, "null"]
+          format: uuid
+        selected:
+          type: boolean
+        supportStatus:
+          type: string
+          enum: [SUPPORTED, REVIEW_REQUIRED, UNSUPPORTED]
+        reviewRequired:
+          type: boolean
+        correctionReason:
+          type: [string, "null"]
+          enum:
+            - OCR_TEXT_ERROR
+            - MATH_EXPRESSION_ERROR
+            - VARIABLE_ERROR
+            - CONSTRAINT_ERROR
+            - ASSUMPTION_ERROR
+            - TASK_TYPE_ERROR
+            - PROBLEM_TYPE_ERROR
+            - OTHER
+            - null
+        correctedFieldCategories:
+          type: array
+          items:
+            type: string
+            enum: [EXPRESSION, VARIABLES, CONSTRAINTS, ASSUMPTIONS, TASK_TYPE, PROBLEM_TYPE]
+        createdAt:
+          type: string
           format: date-time
 
     CanonicalProblemResponse:

@@ -38,6 +38,14 @@ Sprint 4.5 scope within `problem`:
 - must not import OpenAI, Gemini, Apple Vision, or other provider SDK classes;
 - does not create canonical safe math, primary skill/difficulty classification, solve jobs, verification evidence, mastery evidence, or Sprint 4.8 user-correction behavior.
 
+Sprint 4.8 scope within `problem`:
+- owns user-corrected `ProblemParse` revisions and `ProblemSession.current_parse_id` selection authority;
+- validates correction ownership, base revision freshness, correction size, idempotency fingerprint, and normalized problem semantics server-side;
+- records correction lineage and corrected-field metadata without overwriting prior parse revisions or fabricating AI provider provenance;
+- exposes review, correction, and revision-history APIs under the existing problem controller boundary;
+- ensures canonicalization consumes the selected parse pointer instead of latest parse revision;
+- exports correction metadata through the problem lifecycle contributor while excluding request hashes, idempotency keys, raw parser output, and raw student content from generic logs/metrics.
+
 ## solving
 Receives canonical Problem, creates SolverRuns and Solution. Does not decide VERIFIED.
 

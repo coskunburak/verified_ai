@@ -2,6 +2,8 @@ package com.verifiedai.problem.infrastructure.persistence;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.time.Instant;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -9,7 +11,26 @@ import org.springframework.data.repository.query.Param;
 public interface ProblemParseJpaRepository extends JpaRepository<ProblemParseJpaEntity, UUID> {
     Optional<ProblemParseJpaEntity> findByParseJobId(UUID parseJobId);
 
+    Optional<ProblemParseJpaEntity> findByIdAndUserIdAndProblemSessionId(UUID id, UUID userId, UUID problemSessionId);
+
+    Optional<ProblemParseJpaEntity> findByCorrectionIdempotencyKeyAndUserIdAndProblemSessionId(
+        String correctionIdempotencyKey,
+        UUID userId,
+        UUID problemSessionId
+    );
+
     Optional<ProblemParseJpaEntity> findFirstByProblemSessionIdAndUserIdOrderByRevisionDesc(UUID problemSessionId, UUID userId);
+
+    List<ProblemParseJpaEntity> findAllByProblemSessionIdAndUserIdOrderByRevisionDesc(UUID problemSessionId, UUID userId);
+
+    long countByProblemSessionIdAndUserId(UUID problemSessionId, UUID userId);
+
+    long countByProblemSessionIdAndUserIdAndSourceAndCreatedAtGreaterThanEqual(
+        UUID problemSessionId,
+        UUID userId,
+        String source,
+        Instant createdAt
+    );
 
     @Query("""
         select coalesce(max(parse.revision), 0)

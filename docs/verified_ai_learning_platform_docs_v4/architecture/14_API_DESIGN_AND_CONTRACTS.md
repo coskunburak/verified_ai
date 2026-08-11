@@ -31,7 +31,7 @@
 | Complete upload | Yes | User + upload intent + key | Do not double-register object state. |
 | Request recognition | Yes | User + ProblemSession + selected recognition input + prompt/schema | Reuse the existing recognition job for the same input/provenance tuple. |
 | Request problem parse | Yes | User + ProblemSession + RecognitionEvidence revision + `PROBLEM_NORMALIZE` prompt/schema/route | Reuse the existing parse job for the same input/provenance tuple. |
-| Patch/select parse revision | Conditional | Problem session + revision | Version conflict returns stable conflict error. |
+| Create user parse correction | Yes | User + ProblemSession + base parse revision + key | Return existing correction for matching fingerprint; reject key reuse for different payload. |
 | Request solve | Yes | Problem session + selected parse + key | Reuse existing solve job if logical command matches. |
 | Submit attempt | Yes | User + problem + key | Avoid duplicate mastery/mistake evidence. |
 | Complete study session/item | Yes | Study session/item + key | Avoid double completion. |
@@ -124,6 +124,9 @@ Sprint 4.3 preprocessing responses include `preprocessingStatus`, `qualityOutcom
 - `GET /api/v1/problem-sessions/{id}/recognition` - authenticated; returns the current recognition job/evidence status, selected input derivative/source asset IDs, review-required flag, safe normalized recognition blocks, and no raw provider output or object-storage keys.
 - `POST /api/v1/problem-sessions/{id}/parse` - authenticated; creates or reuses a durable parser job for the exact accepted RecognitionEvidence revision and returns `202 Accepted`. The worker invokes `PROBLEM_NORMALIZE`, validates `problem-parse-v1`, and may return supported, review-required, unsupported, or failed lifecycle state without solving.
 - `GET /api/v1/problem-sessions/{id}/parse` - authenticated; returns current parse job/revision status, support status, normalized parser-level structure, source evidence references, review-required flag, prompt/schema/model provenance, and no raw parser output.
+- `GET /api/v1/problem-sessions/{id}/parse-review` - authenticated; returns the selected parse, editable normalized problem document, correction eligibility, and current revision metadata.
+- `POST /api/v1/problem-sessions/{id}/parse-revisions` - authenticated; requires `Idempotency-Key`; creates a user-corrected parse revision from a selected base parse when semantic validation succeeds.
+- `GET /api/v1/problem-sessions/{id}/parse-revisions` - authenticated; returns immutable parse revision history with source, parent, corrected fields, support status, and selection state.
 - `POST /api/v1/problem-sessions/{id}/solve`
 
 ### Jobs
@@ -178,6 +181,8 @@ Sprint 4.4 recognition idempotency is scoped to authenticated user, ProblemSessi
 
 Sprint 4.5 parse idempotency is scoped to authenticated user, ProblemSession, exact RecognitionEvidence id/revision, `PROBLEM_NORMALIZE`, prompt ID/version, schema version, and route policy version. Retrying the command returns the existing logical parse job rather than creating unlimited parser calls or duplicate revisions.
 
+Sprint 4.8 correction idempotency is scoped to authenticated user, ProblemSession, base parse id/revision, correction reason, correction schema version, and canonical corrected problem JSON. Matching retries return the existing corrected revision. Reusing a key for different correction content returns `PARSE_CORRECTION_IDEMPOTENCY_CONFLICT`.
+
 ## Concurrency
 
 User-editable parse revisions and learning profile updates use explicit version/revision and optimistic conflict response.
@@ -202,7 +207,7 @@ Verification API exposes only high-level evidence.
 
 Recognition APIs expose only normalized raw evidence needed for the next product step. They never expose raw provider payloads, provider secrets, signed URLs, object keys, system prompts, canonical parse claims, solutions, or verification status.
 
-Problem parse APIs expose only normalized parser-level structure needed for review and later canonicalization. They never expose raw parser payloads, provider secrets, system prompts, safe verifier AST, primary skill/difficulty classification, solutions, answers, or verification status.
+Problem parse APIs expose only normalized parser-level structure needed for review and later canonicalization. They never expose raw parser payloads, provider secrets, system prompts, safe verifier AST, primary skill/difficulty classification, solutions, answers, or verification status. User-correction APIs expose correction reason, corrected field names, source, parent, and selected status, but not correction request hashes or idempotency keys.
 
 ## Contract lifecycle
 

@@ -17,6 +17,7 @@ struct AppDependencies {
     let capturedAssetStore: CapturedAssetStoring
     let captureQualityAnalyzer: CaptureQualityAnalyzing
     let problemAssetUploadAPI: ProblemAssetUploadServicing
+    let problemReviewAPI: ProblemReviewServicing
     let presignedObjectUploader: PresignedObjectUploading
     let logger: AppLogger
     let networkMonitor: NetworkMonitoring
@@ -52,6 +53,7 @@ struct AppDependencies {
         let capturedAssetStore = DefaultCapturedAssetStore()
         let captureQualityAnalyzer = DefaultCaptureQualityAnalyzer()
         let problemAssetUploadAPI = ProblemAssetUploadAPI(apiClient: apiClient)
+        let problemReviewAPI = ProblemReviewAPI(apiClient: apiClient)
         let presignedObjectUploader = URLSessionPresignedObjectUploader()
         Task {
             await authenticationSessionStore.setRefreshHandler { refreshToken in
@@ -77,6 +79,7 @@ struct AppDependencies {
             capturedAssetStore: capturedAssetStore,
             captureQualityAnalyzer: captureQualityAnalyzer,
             problemAssetUploadAPI: problemAssetUploadAPI,
+            problemReviewAPI: problemReviewAPI,
             presignedObjectUploader: presignedObjectUploader,
             logger: logger,
             networkMonitor: networkMonitor,

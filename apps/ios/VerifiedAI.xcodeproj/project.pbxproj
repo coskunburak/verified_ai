@@ -90,6 +90,16 @@
 		100000000000000000000051 /* PresignedObjectUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000059 /* PresignedObjectUploader.swift */; };
 		100000000000000000000052 /* ProblemAssetUploadViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000005A /* ProblemAssetUploadViewModel.swift */; };
 		100000000000000000000053 /* ProblemAssetUploadViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000005B /* ProblemAssetUploadViewModelTests.swift */; };
+		100000000000000000000054 /* ProblemReviewModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000005C /* ProblemReviewModels.swift */; };
+		100000000000000000000055 /* ProblemReviewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000005D /* ProblemReviewState.swift */; };
+		100000000000000000000056 /* ProblemReviewAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000005E /* ProblemReviewAPI.swift */; };
+		100000000000000000000057 /* ProblemReviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000005F /* ProblemReviewViewModel.swift */; };
+		100000000000000000000058 /* ProblemReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000060 /* ProblemReviewView.swift */; };
+		100000000000000000000059 /* ProblemExpressionEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000061 /* ProblemExpressionEditor.swift */; };
+		10000000000000000000005A /* ProblemVariableEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000062 /* ProblemVariableEditor.swift */; };
+		10000000000000000000005B /* ProblemConstraintEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000063 /* ProblemConstraintEditor.swift */; };
+		10000000000000000000005C /* ProblemAssumptionEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000064 /* ProblemAssumptionEditor.swift */; };
+		10000000000000000000005D /* ProblemRevisionHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000065 /* ProblemRevisionHistoryView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -201,6 +211,16 @@
 		200000000000000000000059 /* PresignedObjectUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresignedObjectUploader.swift; sourceTree = "<group>"; };
 		20000000000000000000005A /* ProblemAssetUploadViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProblemAssetUploadViewModel.swift; sourceTree = "<group>"; };
 		20000000000000000000005B /* ProblemAssetUploadViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProblemAssetUploadViewModelTests.swift; sourceTree = "<group>"; };
+		20000000000000000000005C /* ProblemReviewModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProblemReviewModels.swift; sourceTree = "<group>"; };
+		20000000000000000000005D /* ProblemReviewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProblemReviewState.swift; sourceTree = "<group>"; };
+		20000000000000000000005E /* ProblemReviewAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProblemReviewAPI.swift; sourceTree = "<group>"; };
+		20000000000000000000005F /* ProblemReviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProblemReviewViewModel.swift; sourceTree = "<group>"; };
+		200000000000000000000060 /* ProblemReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProblemReviewView.swift; sourceTree = "<group>"; };
+		200000000000000000000061 /* ProblemExpressionEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProblemExpressionEditor.swift; sourceTree = "<group>"; };
+		200000000000000000000062 /* ProblemVariableEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProblemVariableEditor.swift; sourceTree = "<group>"; };
+		200000000000000000000063 /* ProblemConstraintEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProblemConstraintEditor.swift; sourceTree = "<group>"; };
+		200000000000000000000064 /* ProblemAssumptionEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProblemAssumptionEditor.swift; sourceTree = "<group>"; };
+		200000000000000000000065 /* ProblemRevisionHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProblemRevisionHistoryView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -332,6 +352,7 @@
 				710000000000000000000017 /* Home */,
 				710000000000000000000019 /* Onboarding */,
 				71000000000000000000001D /* ProblemCapture */,
+				71000000000000000000002B /* ProblemReview */,
 				710000000000000000000021 /* Subscription */,
 			);
 			path = Features;
@@ -617,6 +638,47 @@
 			path = Subscription;
 			sourceTree = "<group>";
 		};
+		71000000000000000000002B /* ProblemReview */ = {
+			isa = PBXGroup;
+			children = (
+				71000000000000000000002C /* Domain */,
+				71000000000000000000002D /* Data */,
+				71000000000000000000002E /* Presentation */,
+			);
+			path = ProblemReview;
+			sourceTree = "<group>";
+		};
+		71000000000000000000002C /* Domain */ = {
+			isa = PBXGroup;
+			children = (
+				20000000000000000000005C /* ProblemReviewModels.swift */,
+				20000000000000000000005D /* ProblemReviewState.swift */,
+			);
+			path = Domain;
+			sourceTree = "<group>";
+		};
+		71000000000000000000002D /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				20000000000000000000005E /* ProblemReviewAPI.swift */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		71000000000000000000002E /* Presentation */ = {
+			isa = PBXGroup;
+			children = (
+				20000000000000000000005F /* ProblemReviewViewModel.swift */,
+				200000000000000000000060 /* ProblemReviewView.swift */,
+				200000000000000000000061 /* ProblemExpressionEditor.swift */,
+				200000000000000000000062 /* ProblemVariableEditor.swift */,
+				200000000000000000000063 /* ProblemConstraintEditor.swift */,
+				200000000000000000000064 /* ProblemAssumptionEditor.swift */,
+				200000000000000000000065 /* ProblemRevisionHistoryView.swift */,
+			);
+			path = Presentation;
+			sourceTree = "<group>";
+		};
 		710000000000000000000022 /* Domain */ = {
 			isa = PBXGroup;
 			children = (
@@ -897,6 +959,16 @@
 				100000000000000000000048 /* ProblemCaptureViewModel.swift in Sources */,
 				100000000000000000000052 /* ProblemAssetUploadViewModel.swift in Sources */,
 				100000000000000000000049 /* ProblemCaptureView.swift in Sources */,
+				100000000000000000000054 /* ProblemReviewModels.swift in Sources */,
+				100000000000000000000055 /* ProblemReviewState.swift in Sources */,
+				100000000000000000000056 /* ProblemReviewAPI.swift in Sources */,
+				100000000000000000000057 /* ProblemReviewViewModel.swift in Sources */,
+				100000000000000000000058 /* ProblemReviewView.swift in Sources */,
+				100000000000000000000059 /* ProblemExpressionEditor.swift in Sources */,
+				10000000000000000000005A /* ProblemVariableEditor.swift in Sources */,
+				10000000000000000000005B /* ProblemConstraintEditor.swift in Sources */,
+				10000000000000000000005C /* ProblemAssumptionEditor.swift in Sources */,
+				10000000000000000000005D /* ProblemRevisionHistoryView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

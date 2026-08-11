@@ -312,6 +312,7 @@ final class CanonicalProblemApplicationServiceTest extends PostgresIntegrationTe
         int revision
     ) {
         UUID parseJobId = UUID.randomUUID();
+        UUID parseId = UUID.randomUUID();
         jdbcTemplate.update(
             """
             insert into problem_parse_jobs (
@@ -349,7 +350,7 @@ final class CanonicalProblemApplicationServiceTest extends PostgresIntegrationTe
                     'problem-parser-route-v1', 'problem-parser', ?, false, 16, 32, null, 1,
                     11, 13, 64, 'USD', 'test-pricing-v1', ?)
             """,
-            UUID.randomUUID(),
+            parseId,
             parseJobId,
             userId,
             sessionId,
@@ -361,6 +362,12 @@ final class CanonicalProblemApplicationServiceTest extends PostgresIntegrationTe
             normalizedProblemJson,
             "v00" + revision,
             Timestamp.from(NOW.plusSeconds(revision))
+        );
+        jdbcTemplate.update(
+            "update problem_sessions set current_parse_id = ?, updated_at = ? where id = ?",
+            parseId,
+            Timestamp.from(NOW.plusSeconds(revision)),
+            sessionId
         );
     }
 

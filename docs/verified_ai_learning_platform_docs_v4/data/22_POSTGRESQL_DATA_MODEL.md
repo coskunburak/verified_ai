@@ -133,7 +133,7 @@ Account deletion deletes the profile row. Export includes profile fields before 
 - version
 Index(user_id, created_at desc)
 
-Sprint 4.2 creates the minimal durable session foundation. Allowed initial upload statuses are `CREATED` and `ASSET_UPLOADED`; later Phase 4 sprints may advance through `PARSING`, `PARSED`, `SOLVING`, `VERIFYING`, `COMPLETED`, `REVIEW_REQUIRED`, `FAILED`, or `CANCELLED`. `input_mode` is one of `CAMERA`, `PHOTO_LIBRARY`, `FILE`, or `PDF`. The table includes a composite `(id, user_id)` uniqueness constraint so child assets can enforce same-owner relationships.
+Sprint 4.2 creates the minimal durable session foundation. Allowed initial upload statuses are `CREATED` and `ASSET_UPLOADED`; later Phase 4 sprints may advance through `PARSING`, `PARSED`, `SOLVING`, `VERIFYING`, `COMPLETED`, `REVIEW_REQUIRED`, `FAILED`, or `CANCELLED`. `input_mode` is one of `CAMERA`, `PHOTO_LIBRARY`, `FILE`, or `PDF`. The table includes a composite `(id, user_id)` uniqueness constraint so child assets can enforce same-owner relationships. Sprint 4.8 makes `current_parse_id` the authoritative selected parse pointer and constrains it to a parse owned by the same user and session.
 
 ### problem_assets
 - id
@@ -269,9 +269,17 @@ Sprint 4.4 evidence is raw recognition evidence only. Raw provider output is sto
 - prompt_id/prompt_version
 - route_policy_version
 - usage/cost/latency fields
+- parent_parse_id nullable
+- correction_reason nullable
+- corrected_fields_jsonb nullable
+- correction_request_hash nullable
+- correction_idempotency_key nullable
+- correction_schema_version nullable
 - created_at
 
-Sprint 4.5 also adds `problem_parse_jobs` with user/session/evidence ownership, `PROBLEM_NORMALIZE` capability, status, attempt/lock/retry timing, prompt/schema/route identity, last failure class, usage/cost/latency, and provider/model provenance. `problem_parses` is append-only: revision is unique within `problem_session_id`, raw parser output is separate from normalized parser output, and every row references the exact RecognitionEvidence id/revision used to produce it. Successful, review-required, and unsupported parser outcomes may create revisions; schema/semantic failures do not create accepted revisions. Sprint 4.5 does not create canonical `problems`, safe verifier representations, skill classifications, or selected user-corrected parses.
+Sprint 4.5 also adds `problem_parse_jobs` with user/session/evidence ownership, `PROBLEM_NORMALIZE` capability, status, attempt/lock/retry timing, prompt/schema/route identity, last failure class, usage/cost/latency, and provider/model provenance. `problem_parses` is append-only: revision is unique within `problem_session_id`, raw parser output is separate from normalized parser output, and every row references the exact RecognitionEvidence id/revision used to produce it. Successful, review-required, and unsupported parser outcomes may create revisions; schema/semantic failures do not create accepted revisions.
+
+Sprint 4.8 extends `problem_parses` with `source=USER` correction revisions. AI revisions carry parser job and provider/prompt/route/usage provenance. USER revisions carry parent parse lineage, correction reason, corrected-field metadata, correction schema version, and idempotency fingerprinting without fabricating AI provenance. A partial unique index on user/session/idempotency key prevents duplicate correction creation, and same-owner/session foreign keys prevent cross-session parentage.
 
 ### problems
 - id

@@ -261,11 +261,19 @@ final class FlywayMigrationTest extends PostgresIntegrationTestSupport {
         assertThat(constraintExists("ck_problem_parse_jobs_status")).isTrue();
         assertThat(constraintExists("ck_problem_parse_jobs_capability")).isTrue();
         assertThat(constraintExists("uq_problem_parse_jobs_logical_input")).isTrue();
-        assertThat(constraintExists("ck_problem_parses_json_objects")).isTrue();
+        assertThat(constraintExists("ck_problem_parses_normalized_json_object")).isTrue();
+        assertThat(constraintExists("ck_problem_parses_raw_output_json_object")).isTrue();
+        assertThat(constraintExists("ck_problem_parses_ai_source")).isTrue();
+        assertThat(constraintExists("ck_problem_parses_user_source")).isTrue();
         assertThat(constraintExists("ck_problem_parses_support_status")).isTrue();
+        assertThat(constraintExists("fk_problem_parses_parent")).isTrue();
+        assertThat(constraintExists("fk_problem_sessions_current_parse")).isTrue();
+        assertThat(constraintExists("ck_problem_parses_corrected_fields_json")).isTrue();
         assertThat(constraintExists("uq_problem_parses_session_revision")).isTrue();
+        assertThat(indexExists("uq_problem_parses_correction_idempotency")).isTrue();
         assertThat(indexExists("ix_problem_parse_jobs_due")).isTrue();
         assertThat(indexExists("ix_problem_parses_evidence")).isTrue();
+        assertThat(indexExists("ix_problem_parses_parent")).isTrue();
     }
 
     @Test
