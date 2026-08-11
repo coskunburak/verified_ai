@@ -2,6 +2,7 @@ package com.verifiedai.problem.infrastructure.persistence;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -22,6 +23,12 @@ public interface ProblemClassificationJpaRepository
     Optional<ProblemClassificationJpaEntity>
     findFirstByCanonicalProblemIdAndUserIdOrderByRevisionDesc(
         UUID canonicalProblemId,
+        UUID userId
+    );
+
+    List<ProblemClassificationJpaEntity>
+    findByCanonicalProblemIdInAndUserIdOrderByRevisionDesc(
+        List<UUID> canonicalProblemIds,
         UUID userId
     );
 

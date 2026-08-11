@@ -118,8 +118,8 @@ Upload completion is idempotent after success. Reusing a reservation idempotency
 Sprint 4.3 preprocessing responses include `preprocessingStatus`, `qualityOutcome`, optional `failureCode`, `preferredRecognitionDerivativeId`, `derivatives`, `qualitySignals`, and `userRecoveryActions`. The selected `OCR_OPTIMIZED` derivative is a future Sprint 4.4 recognition input only; Sprint 4.3 does not perform OCR, vision recognition, parsing, solving, or verification.
 
 ### Problem sessions
-- `POST /api/v1/problem-sessions`
-- `GET /api/v1/problem-sessions/{id}`
+- `GET /api/v1/problem-sessions?limit=20&cursor=...` - authenticated; derives owner from the bearer principal and returns `{items,nextCursor}` using keyset pagination over `updated_at DESC, id DESC`. `limit` defaults to 20 and is capped at 50. List items include coarse session status, derived `stage`, derived `nextAction`, retry/review flags, selected parse summary fields, current classification summary fields, timestamps, and no raw student content.
+- `GET /api/v1/problem-sessions/{sessionId}` - authenticated; derives owner from the bearer principal and returns the authoritative recovery projection for one session: coarse status, derived `stage`, derived `nextAction`, retry/review/failure fields, selected current parse summary, current canonical summary only when it matches the selected parse, current classification summary only when it matches the current canonical, active durable job, timestamps, and version.
 - `POST /api/v1/problem-sessions/{id}/recognition` - authenticated; creates or reuses a durable recognition job for the selected READY `OCR_OPTIMIZED` derivative and returns `202 Accepted`. The request does not hold the HTTP connection open for provider execution.
 - `GET /api/v1/problem-sessions/{id}/recognition` - authenticated; returns the current recognition job/evidence status, selected input derivative/source asset IDs, review-required flag, safe normalized recognition blocks, and no raw provider output or object-storage keys.
 - `POST /api/v1/problem-sessions/{id}/parse` - authenticated; creates or reuses a durable parser job for the exact accepted RecognitionEvidence revision and returns `202 Accepted`. The worker invokes `PROBLEM_NORMALIZE`, validates `problem-parse-v1`, and may return supported, review-required, unsupported, or failed lifecycle state without solving.
@@ -128,6 +128,8 @@ Sprint 4.3 preprocessing responses include `preprocessingStatus`, `qualityOutcom
 - `POST /api/v1/problem-sessions/{id}/parse-revisions` - authenticated; requires `Idempotency-Key`; creates a user-corrected parse revision from a selected base parse when semantic validation succeeds.
 - `GET /api/v1/problem-sessions/{id}/parse-revisions` - authenticated; returns immutable parse revision history with source, parent, corrected fields, support status, and selection state.
 - `POST /api/v1/problem-sessions/{id}/solve`
+
+Sprint 4.9 history/detail/reconnect reads are recovery projections only. They must not reserve uploads, start preprocessing, create recognition jobs, create parser jobs, canonicalize, classify, solve, verify, or call an AI provider. Recovery commands remain exact stage-specific POSTs; there is no generic recover-all endpoint. If durable lineage is ambiguous, for example an accepted parse exists but `problem_sessions.current_parse_id` is missing, detail fails closed rather than guessing a downstream authority.
 
 ### Jobs
 - `GET /api/v1/solve-jobs/{id}`

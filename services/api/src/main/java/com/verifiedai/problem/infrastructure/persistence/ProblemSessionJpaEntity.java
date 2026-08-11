@@ -84,6 +84,10 @@ public class ProblemSessionJpaEntity {
         return updatedAt;
     }
 
+    public Instant completedAt() {
+        return completedAt;
+    }
+
     public long version() {
         return version;
     }
@@ -98,9 +102,29 @@ public class ProblemSessionJpaEntity {
     }
 
     public void markAssetUploaded(Instant now) {
-        if (ProblemSessionStatus.CREATED.name().equals(status)) {
+        if (ProblemSessionStatus.CREATED.name().equals(status) || ProblemSessionStatus.FAILED.name().equals(status)) {
             status = ProblemSessionStatus.ASSET_UPLOADED.name();
             updatedAt = now;
         }
+    }
+
+    public void markParsing(Instant now) {
+        status = ProblemSessionStatus.PARSING.name();
+        updatedAt = now;
+    }
+
+    public void markParsed(Instant now) {
+        status = ProblemSessionStatus.PARSED.name();
+        updatedAt = now;
+    }
+
+    public void markReviewRequired(Instant now) {
+        status = ProblemSessionStatus.REVIEW_REQUIRED.name();
+        updatedAt = now;
+    }
+
+    public void markFailed(Instant now) {
+        status = ProblemSessionStatus.FAILED.name();
+        updatedAt = now;
     }
 }

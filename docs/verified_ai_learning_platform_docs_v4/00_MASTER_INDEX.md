@@ -238,6 +238,8 @@ Documentation is part of the product and part of the implementation contract.
 - `sprints/phase04_problem_capture_and_canonicalization/SPRINT_4.7_EXECUTION_REPORT.md` — Sprint 4.7 classification execution evidence and final-gate checklist.
 - `sprints/phase04_problem_capture_and_canonicalization/SPRINT_4.8_IMPLEMENTATION_MAP.md` — Sprint 4.8 selected parse, user correction, revision history, and iOS review implementation map.
 - `sprints/phase04_problem_capture_and_canonicalization/SPRINT_4.8_EXECUTION_REPORT.md` — Sprint 4.8 user-correctable parse review implementation evidence and final-gate checklist.
+- `sprints/phase04_problem_capture_and_canonicalization/SPRINT_4.9_IMPLEMENTATION_MAP.md` — Sprint 4.9 problem-session history, retry, resume, and recovery implementation map.
+- `sprints/phase04_problem_capture_and_canonicalization/SPRINT_4.9_EXECUTION_REPORT.md` — Sprint 4.9 problem-session history/recovery implementation evidence and validation status.
 
 For implementation agents, sprint documents are execution plans. They never override domain invariants, accepted ADRs, security rules, or canonical API/data contracts.
 

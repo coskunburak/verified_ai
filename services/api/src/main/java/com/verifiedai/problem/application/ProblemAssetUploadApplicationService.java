@@ -4,6 +4,7 @@ import com.verifiedai.billing.application.CapabilityAccessPolicy;
 import com.verifiedai.problem.domain.model.ProblemAssetKind;
 import com.verifiedai.problem.domain.model.ProblemAssetSource;
 import com.verifiedai.problem.domain.model.ProblemAssetStatus;
+import com.verifiedai.problem.domain.model.ProblemSessionStatus;
 import com.verifiedai.problem.domain.port.PresignedProblemAssetUpload;
 import com.verifiedai.problem.domain.port.ProblemAssetObjectMetadata;
 import com.verifiedai.problem.domain.port.ProblemAssetObjectNotFoundException;
@@ -47,6 +48,8 @@ public class ProblemAssetUploadApplicationService {
     private final JdbcTemplate jdbcTemplate;
     private final Clock clock;
     private final ProblemAssetUploadMetrics metrics;
+    private final ProblemSessionLifecyclePolicy lifecyclePolicy;
+    private final ProblemSessionMetrics sessionMetrics;
 
     ProblemAssetUploadApplicationService(
         ProblemSessionJpaRepository sessionRepository,
@@ -56,7 +59,9 @@ public class ProblemAssetUploadApplicationService {
         CapabilityAccessPolicy capabilityAccessPolicy,
         JdbcTemplate jdbcTemplate,
         Clock clock,
-        ProblemAssetUploadMetrics metrics
+        ProblemAssetUploadMetrics metrics,
+        ProblemSessionLifecyclePolicy lifecyclePolicy,
+        ProblemSessionMetrics sessionMetrics
     ) {
         this.sessionRepository = sessionRepository;
         this.assetRepository = assetRepository;
@@ -66,6 +71,8 @@ public class ProblemAssetUploadApplicationService {
         this.jdbcTemplate = jdbcTemplate;
         this.clock = clock;
         this.metrics = metrics;
+        this.lifecyclePolicy = lifecyclePolicy;
+        this.sessionMetrics = sessionMetrics;
     }
 
     @Transactional
@@ -163,7 +170,7 @@ public class ProblemAssetUploadApplicationService {
 
             verifyStoredObject(asset);
             asset.markAvailable(now);
-            session.markAssetUploaded(now);
+            transition(session, ProblemSessionStatus.ASSET_UPLOADED, now);
             metrics.completeSuccess(assetKind);
             metrics.completionVerificationLatency(System.nanoTime() - started);
             return completionResult(asset, session);
@@ -449,6 +456,23 @@ public class ProblemAssetUploadApplicationService {
             asset.status(),
             asset.availableAt()
         );
+    }
+
+    private void transition(ProblemSessionJpaEntity session, ProblemSessionStatus target, Instant now) {
+        ProblemSessionStatus current = ProblemSessionStatus.valueOf(session.status());
+        if (current == target) {
+            return;
+        }
+        if (target == ProblemSessionStatus.ASSET_UPLOADED
+            && current != ProblemSessionStatus.CREATED
+            && current != ProblemSessionStatus.FAILED) {
+            return;
+        }
+        lifecyclePolicy.requireTransition(current, target);
+        if (target == ProblemSessionStatus.ASSET_UPLOADED) {
+            session.markAssetUploaded(now);
+        }
+        sessionMetrics.lifecycleTransition(current.name(), target.name());
     }
 
     private static BigDecimal decimal(Double value) {

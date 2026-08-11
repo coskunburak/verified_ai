@@ -132,8 +132,11 @@ Account deletion deletes the profile row. Export includes profile fields before 
 - completed_at
 - version
 Index(user_id, created_at desc)
+Index(user_id, updated_at desc, id desc)
 
 Sprint 4.2 creates the minimal durable session foundation. Allowed initial upload statuses are `CREATED` and `ASSET_UPLOADED`; later Phase 4 sprints may advance through `PARSING`, `PARSED`, `SOLVING`, `VERIFYING`, `COMPLETED`, `REVIEW_REQUIRED`, `FAILED`, or `CANCELLED`. `input_mode` is one of `CAMERA`, `PHOTO_LIBRARY`, `FILE`, or `PDF`. The table includes a composite `(id, user_id)` uniqueness constraint so child assets can enforce same-owner relationships. Sprint 4.8 makes `current_parse_id` the authoritative selected parse pointer and constrains it to a parse owned by the same user and session.
+
+Sprint 4.9 keeps `problem_sessions.status` coarse and derives fine-grained recovery state from durable child facts instead of adding recognition/classification-specific session statuses. The closed derived `ProblemSessionStage` vocabulary is `AWAITING_UPLOAD`, `PREPROCESSING`, `RECOGNITION`, `PARSING`, `PARSE_REVIEW`, `CANONICALIZATION`, `CLASSIFICATION`, `READY_FOR_SOLVE`, and `TERMINAL`. The closed derived `ProblemSessionNextAction` vocabulary is `NONE`, `RESUME_UPLOAD`, `START_PREPROCESSING`, `RETRY_PREPROCESSING`, `START_RECOGNITION`, `WAIT_RECOGNITION`, `RETRY_RECOGNITION`, `START_PARSE`, `WAIT_PARSE`, `RETRY_PARSE`, `REVIEW_PARSE`, `CANONICALIZE`, `START_CLASSIFICATION`, `WAIT_CLASSIFICATION`, `RETRY_CLASSIFICATION`, `READY_FOR_SOLVE`, `RECAPTURE_OR_REIMPORT`, and `UNSUPPORTED`. V015 adds `(user_id, updated_at DESC, id DESC)` for owner-scoped keyset history queries. The selected parse authority remains `current_parse_id`; current canonical summaries must match that parse, and current classification summaries must match the current canonical.
 
 ### problem_assets
 - id

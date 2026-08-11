@@ -4,6 +4,108 @@ info:
   version: 0.1.0
 
 paths:
+  /api/v1/problem-sessions:
+    get:
+      summary: List problem session history
+      description: >
+        Returns a keyset-paginated history of problem sessions for the
+        authenticated owner, ordered by updatedAt descending and session id
+        descending. This endpoint is read-only and never invokes AI providers,
+        recovery engines, classification, canonicalization, parsing, recognition,
+        or preprocessing side effects.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 20
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            maxLength: 256
+      responses:
+        "200":
+          description: Problem session history page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemSessionHistoryResponse"
+        "400":
+          description: Cursor is invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Account is not active
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/problem-sessions/{sessionId}:
+    get:
+      summary: Get problem session recovery detail
+      description: >
+        Returns the current durable recovery projection for one problem session.
+        The selected parse authority is problem_sessions.current_parse_id; current
+        canonical and classification summaries are only authoritative when they
+        match that selected parse lineage. This endpoint is read-only and never
+        invokes AI providers or mutates workflow jobs.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Problem session recovery detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemSessionDetailResponse"
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Account is not active
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Problem session was not found for the authenticated owner
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "409":
+          description: Selected parse lineage is ambiguous
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
   /api/v1/problem-sessions/{sessionId}/classification:
     post:
       summary: Request canonical problem classification
@@ -1353,6 +1455,317 @@ components:
       bearerFormat: JWT
 
   schemas:
+    ProblemSessionHistoryResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProblemSessionSummaryResponse"
+        nextCursor:
+          type: [string, "null"]
+          maxLength: 256
+
+    ProblemSessionSummaryResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - problemSessionId
+        - status
+        - stage
+        - inputMode
+        - nextAction
+        - retryable
+        - reviewRequired
+        - createdAt
+        - updatedAt
+      properties:
+        problemSessionId:
+          type: string
+          format: uuid
+        status:
+          $ref: "#/components/schemas/ProblemSessionStatus"
+        stage:
+          $ref: "#/components/schemas/ProblemSessionStage"
+        inputMode:
+          type: string
+        nextAction:
+          $ref: "#/components/schemas/ProblemSessionNextAction"
+        retryable:
+          type: boolean
+        reviewRequired:
+          type: boolean
+        currentParseRevision:
+          type: [integer, "null"]
+          minimum: 1
+        currentParseSource:
+          type: [string, "null"]
+          enum:
+            - AI
+            - USER
+            - null
+        classificationStatus:
+          type: [string, "null"]
+          enum:
+            - CLASSIFIED
+            - REVIEW_REQUIRED
+            - UNKNOWN
+            - UNSUPPORTED
+            - null
+        primarySkillId:
+          type: [string, "null"]
+        difficulty:
+          type: [string, "null"]
+          enum:
+            - EASY
+            - MEDIUM
+            - HARD
+            - null
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: [string, "null"]
+          format: date-time
+
+    ProblemSessionDetailResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - problemSessionId
+        - status
+        - stage
+        - inputMode
+        - nextAction
+        - retryable
+        - reviewRequired
+        - failureCode
+        - currentParse
+        - canonicalProblem
+        - classification
+        - activeJob
+        - createdAt
+        - updatedAt
+        - version
+      properties:
+        problemSessionId:
+          type: string
+          format: uuid
+        status:
+          $ref: "#/components/schemas/ProblemSessionStatus"
+        stage:
+          $ref: "#/components/schemas/ProblemSessionStage"
+        inputMode:
+          type: string
+        nextAction:
+          $ref: "#/components/schemas/ProblemSessionNextAction"
+        retryable:
+          type: boolean
+        reviewRequired:
+          type: boolean
+        failureCode:
+          type: [string, "null"]
+        currentParse:
+          anyOf:
+            - $ref: "#/components/schemas/ProblemSessionCurrentParseSummary"
+            - type: "null"
+        canonicalProblem:
+          anyOf:
+            - $ref: "#/components/schemas/ProblemSessionCanonicalSummary"
+            - type: "null"
+        classification:
+          anyOf:
+            - $ref: "#/components/schemas/ProblemSessionClassificationSummary"
+            - type: "null"
+        activeJob:
+          anyOf:
+            - $ref: "#/components/schemas/ProblemSessionActiveJob"
+            - type: "null"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: [string, "null"]
+          format: date-time
+        version:
+          type: integer
+          minimum: 0
+
+    ProblemSessionCurrentParseSummary:
+      type: object
+      additionalProperties: false
+      required:
+        - parseId
+        - revision
+        - source
+        - supportStatus
+        - reviewRequired
+      properties:
+        parseId:
+          type: string
+          format: uuid
+        revision:
+          type: integer
+          minimum: 1
+        source:
+          type: string
+          enum:
+            - AI
+            - USER
+        supportStatus:
+          type: string
+          enum:
+            - SUPPORTED
+            - REVIEW_REQUIRED
+            - UNSUPPORTED
+        reviewRequired:
+          type: boolean
+
+    ProblemSessionCanonicalSummary:
+      type: object
+      additionalProperties: false
+      required:
+        - canonicalProblemId
+        - canonicalRevision
+        - problemParseId
+        - problemParseRevision
+        - problemType
+        - taskType
+      properties:
+        canonicalProblemId:
+          type: string
+          format: uuid
+        canonicalRevision:
+          type: integer
+          minimum: 1
+        problemParseId:
+          type: string
+          format: uuid
+        problemParseRevision:
+          type: integer
+          minimum: 1
+        problemType:
+          type: string
+        taskType:
+          type: string
+
+    ProblemSessionClassificationSummary:
+      type: object
+      additionalProperties: false
+      required:
+        - classificationId
+        - revision
+        - status
+      properties:
+        classificationId:
+          type: string
+          format: uuid
+        revision:
+          type: integer
+          minimum: 1
+        status:
+          type: string
+          enum:
+            - CLASSIFIED
+            - REVIEW_REQUIRED
+            - UNKNOWN
+            - UNSUPPORTED
+        primarySkillId:
+          type: [string, "null"]
+        difficulty:
+          type: [string, "null"]
+          enum:
+            - EASY
+            - MEDIUM
+            - HARD
+            - null
+        reviewReason:
+          type: [string, "null"]
+
+    ProblemSessionActiveJob:
+      type: object
+      additionalProperties: false
+      required:
+        - type
+        - jobId
+        - status
+        - attemptCount
+        - maxAttempts
+      properties:
+        type:
+          type: string
+          enum:
+            - RECOGNITION
+            - PARSE
+            - CLASSIFICATION
+        jobId:
+          type: string
+          format: uuid
+        status:
+          type: string
+        attemptCount:
+          type: integer
+          minimum: 0
+        maxAttempts:
+          type: integer
+          minimum: 0
+        failureCode:
+          type: [string, "null"]
+
+    ProblemSessionStatus:
+      type: string
+      enum:
+        - CREATED
+        - ASSET_UPLOADED
+        - PARSING
+        - PARSED
+        - REVIEW_REQUIRED
+        - FAILED
+
+    ProblemSessionStage:
+      type: string
+      enum:
+        - AWAITING_UPLOAD
+        - PREPROCESSING
+        - RECOGNITION
+        - PARSING
+        - PARSE_REVIEW
+        - CANONICALIZATION
+        - CLASSIFICATION
+        - READY_FOR_SOLVE
+        - TERMINAL
+
+    ProblemSessionNextAction:
+      type: string
+      enum:
+        - NONE
+        - RESUME_UPLOAD
+        - START_PREPROCESSING
+        - RETRY_PREPROCESSING
+        - START_RECOGNITION
+        - WAIT_RECOGNITION
+        - RETRY_RECOGNITION
+        - START_PARSE
+        - WAIT_PARSE
+        - RETRY_PARSE
+        - REVIEW_PARSE
+        - CANONICALIZE
+        - START_CLASSIFICATION
+        - WAIT_CLASSIFICATION
+        - RETRY_CLASSIFICATION
+        - READY_FOR_SOLVE
+        - RECAPTURE_OR_REIMPORT
+        - UNSUPPORTED
+
     ProblemClassificationResponse:
       type: object
       additionalProperties: false

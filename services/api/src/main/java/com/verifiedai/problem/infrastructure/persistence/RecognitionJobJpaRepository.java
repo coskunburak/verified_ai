@@ -14,6 +14,11 @@ import org.springframework.data.repository.query.Param;
 public interface RecognitionJobJpaRepository extends JpaRepository<RecognitionJobJpaEntity, UUID> {
     Optional<RecognitionJobJpaEntity> findFirstByProblemSessionIdAndUserIdOrderByCreatedAtDesc(UUID problemSessionId, UUID userId);
 
+    List<RecognitionJobJpaEntity> findByProblemSessionIdInAndUserIdOrderByCreatedAtDesc(
+        List<UUID> problemSessionIds,
+        UUID userId
+    );
+
     Optional<RecognitionJobJpaEntity> findByUserIdAndProblemSessionIdAndInputDerivativeIdAndCapabilityAndPromptIdAndPromptVersionAndSchemaVersion(
         UUID userId,
         UUID problemSessionId,

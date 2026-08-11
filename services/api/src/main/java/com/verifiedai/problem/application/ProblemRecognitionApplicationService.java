@@ -8,6 +8,7 @@ import com.verifiedai.ai.application.AiRoutePlan;
 import com.verifiedai.ai.application.AiVisionParseRequest;
 import com.verifiedai.ai.application.AiVisionParseResult;
 import com.verifiedai.billing.application.CapabilityAccessPolicy;
+import com.verifiedai.problem.domain.model.ProblemSessionStatus;
 import com.verifiedai.problem.domain.model.RecognitionJobStatus;
 import com.verifiedai.problem.domain.port.ProblemAssetObjectNotFoundException;
 import com.verifiedai.problem.domain.port.ProblemAssetStorage;
@@ -17,6 +18,7 @@ import com.verifiedai.problem.infrastructure.persistence.ProblemAssetDerivativeJ
 import com.verifiedai.problem.infrastructure.persistence.ProblemAssetJpaEntity;
 import com.verifiedai.problem.infrastructure.persistence.ProblemAssetJpaRepository;
 import com.verifiedai.problem.infrastructure.persistence.ProblemAssetQualityEvidenceJpaRepository;
+import com.verifiedai.problem.infrastructure.persistence.ProblemSessionJpaEntity;
 import com.verifiedai.problem.infrastructure.persistence.ProblemSessionJpaRepository;
 import com.verifiedai.problem.infrastructure.persistence.RecognitionEvidenceJpaEntity;
 import com.verifiedai.problem.infrastructure.persistence.RecognitionEvidenceJpaRepository;
@@ -54,6 +56,8 @@ public class ProblemRecognitionApplicationService {
     private final JdbcTemplate jdbcTemplate;
     private final Clock clock;
     private final ProblemRecognitionMetrics metrics;
+    private final ProblemSessionLifecyclePolicy lifecyclePolicy;
+    private final ProblemSessionMetrics sessionMetrics;
     private final TransactionTemplate transactionTemplate;
 
     @SuppressWarnings("ParameterNumber")
@@ -72,6 +76,8 @@ public class ProblemRecognitionApplicationService {
         JdbcTemplate jdbcTemplate,
         Clock clock,
         ProblemRecognitionMetrics metrics,
+        ProblemSessionLifecyclePolicy lifecyclePolicy,
+        ProblemSessionMetrics sessionMetrics,
         TransactionTemplate transactionTemplate
     ) {
         this.sessionRepository = sessionRepository;
@@ -88,6 +94,8 @@ public class ProblemRecognitionApplicationService {
         this.jdbcTemplate = jdbcTemplate;
         this.clock = clock;
         this.metrics = metrics;
+        this.lifecyclePolicy = lifecyclePolicy;
+        this.sessionMetrics = sessionMetrics;
         this.transactionTemplate = transactionTemplate;
     }
 
@@ -96,7 +104,7 @@ public class ProblemRecognitionApplicationService {
         capabilityAccessPolicy.requireBasicSolve(userId);
         AiRoutePlan routePlan = aiModelGateway.routePlan(AiCapability.VISION_PARSE);
         RecognitionJobJpaEntity job = transactionTemplate.execute(status -> {
-            sessionRepository.findByIdAndUserIdForUpdate(problemSessionId, userId)
+            ProblemSessionJpaEntity session = sessionRepository.findByIdAndUserIdForUpdate(problemSessionId, userId)
                 .orElseThrow(() -> problem(HttpStatus.NOT_FOUND, ApiErrorCode.RESOURCE_FORBIDDEN, "Problem session was not found", false, "RETRY"));
             ProblemAssetDerivativeJpaEntity input = selectedRecognitionInput(userId, problemSessionId);
             ProblemAssetJpaEntity source = assetRepository.findByIdAndUserId(input.sourceAssetId(), userId)
@@ -104,6 +112,7 @@ public class ProblemRecognitionApplicationService {
             if (!source.available()) {
                 throw problem(HttpStatus.CONFLICT, ApiErrorCode.RECOGNITION_INPUT_UNAVAILABLE, "Recognition input source asset is not available", true, "RETRY");
             }
+            transition(session, ProblemSessionStatus.PARSING, clock.instant());
             Optional<RecognitionJobJpaEntity> existing = jobRepository
                 .findByUserIdAndProblemSessionIdAndInputDerivativeIdAndCapabilityAndPromptIdAndPromptVersionAndSchemaVersion(
                     userId,
@@ -376,6 +385,21 @@ public class ProblemRecognitionApplicationService {
         if (!"ACTIVE".equals(status)) {
             throw problem(HttpStatus.FORBIDDEN, ApiErrorCode.ACCOUNT_NOT_ACTIVE, "Account is not active", false, "SIGN_IN");
         }
+    }
+
+    private void transition(ProblemSessionJpaEntity session, ProblemSessionStatus target, Instant now) {
+        ProblemSessionStatus current = ProblemSessionStatus.valueOf(session.status());
+        if (current == target) {
+            return;
+        }
+        if (target == ProblemSessionStatus.PARSING && current == ProblemSessionStatus.PARSED) {
+            return;
+        }
+        lifecyclePolicy.requireTransition(current, target);
+        if (target == ProblemSessionStatus.PARSING) {
+            session.markParsing(now);
+        }
+        sessionMetrics.lifecycleTransition(current.name(), target.name());
     }
 
     private Instant nextAttemptAt(UUID jobId, int attemptCount, Instant now) {

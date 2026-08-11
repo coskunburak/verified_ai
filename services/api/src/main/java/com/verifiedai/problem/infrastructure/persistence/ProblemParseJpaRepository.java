@@ -13,10 +13,17 @@ public interface ProblemParseJpaRepository extends JpaRepository<ProblemParseJpa
 
     Optional<ProblemParseJpaEntity> findByIdAndUserIdAndProblemSessionId(UUID id, UUID userId, UUID problemSessionId);
 
+    List<ProblemParseJpaEntity> findByIdInAndUserId(List<UUID> ids, UUID userId);
+
     Optional<ProblemParseJpaEntity> findByCorrectionIdempotencyKeyAndUserIdAndProblemSessionId(
         String correctionIdempotencyKey,
         UUID userId,
         UUID problemSessionId
+    );
+
+    List<ProblemParseJpaEntity> findByProblemSessionIdInAndUserIdOrderByRevisionDesc(
+        List<UUID> problemSessionIds,
+        UUID userId
     );
 
     Optional<ProblemParseJpaEntity> findFirstByProblemSessionIdAndUserIdOrderByRevisionDesc(UUID problemSessionId, UUID userId);
@@ -38,4 +45,16 @@ public interface ProblemParseJpaRepository extends JpaRepository<ProblemParseJpa
         where parse.problemSessionId = :problemSessionId
         """)
     int maxRevision(@Param("problemSessionId") UUID problemSessionId);
+
+    @Query("""
+        select distinct parse.problemSessionId
+        from ProblemParseJpaEntity parse
+        where parse.userId = :userId
+          and parse.problemSessionId in :problemSessionIds
+          and parse.supportStatus in ('SUPPORTED', 'REVIEW_REQUIRED')
+        """)
+    List<UUID> findAcceptedParseSessionIds(
+        @Param("userId") UUID userId,
+        @Param("problemSessionIds") List<UUID> problemSessionIds
+    );
 }

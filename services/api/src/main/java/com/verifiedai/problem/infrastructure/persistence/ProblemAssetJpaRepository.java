@@ -22,6 +22,12 @@ public interface ProblemAssetJpaRepository extends JpaRepository<ProblemAssetJpa
 
     List<ProblemAssetJpaEntity> findByUserIdOrderByCreatedAtDesc(UUID userId);
 
+    List<ProblemAssetJpaEntity> findByProblemSessionIdInAndUserIdAndStatusOrderByCreatedAtDesc(
+        List<UUID> problemSessionIds,
+        UUID userId,
+        String status
+    );
+
     List<ProblemAssetJpaEntity> findByStatusAndUploadExpiresAtBeforeOrderByUploadExpiresAtAsc(
         String status,
         Instant uploadExpiresAt,
