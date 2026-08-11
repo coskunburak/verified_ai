@@ -2,6 +2,7 @@ package com.verifiedai.problem.infrastructure.persistence;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,6 +16,12 @@ public interface CanonicalProblemJpaRepository extends JpaRepository<CanonicalPr
     Optional<CanonicalProblemJpaEntity> findByProblemParseIdAndProblemParseRevisionAndSchemaVersion(
         UUID problemParseId,
         int problemParseRevision,
+        String schemaVersion
+    );
+
+    List<CanonicalProblemJpaEntity> findByProblemParseIdInAndUserIdAndSchemaVersionOrderByCanonicalRevisionDesc(
+        List<UUID> problemParseIds,
+        UUID userId,
         String schemaVersion
     );
 

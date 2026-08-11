@@ -33,6 +33,7 @@ SwiftData is local cache/offline projection, not backend authority.
 
 Candidate cache models:
 - CachedProblemSummary,
+- CachedProblemSession,
 - CachedSolution,
 - CachedMistake,
 - CachedMasterySnapshot,
@@ -42,6 +43,7 @@ Candidate cache models:
 ## Cache policies
 
 - History: stale-while-revalidate.
+- Problem session recovery: render cached session summaries while offline, then replace them with backend history/detail projections on refresh. Cached `stage`, `nextAction`, parse, canonical, and classification summaries are display state only; the server decides every recoverable action.
 - Mastery: display cache instantly; refresh background.
 - Today plan: cache current snapshot; server owns completion.
 - Entitlement: cache for UI responsiveness but expensive server operations re-check authority.
@@ -53,6 +55,7 @@ Candidate cache models:
 
 Available:
 - saved history,
+- cached problem-session recovery summaries,
 - solutions already downloaded,
 - mistake book,
 - mastery snapshot,
@@ -64,6 +67,7 @@ Not available:
 - authoritative billing changes.
 - account data export or account deletion confirmation.
 - new durable problem-asset upload while offline; the capture can remain local and retry after connectivity returns.
+- foreground/reconnect auto-recovery that would start recognition, parsing, canonicalization, classification, solving, verification, or any AI provider call without an explicit backend command and user action.
 
 ## Conflict semantics
 
@@ -86,4 +90,6 @@ Sprint 4.2 direct object upload uses presigned URLs from the backend and must no
 The client must not implement aggressive automatic retries for expensive solve/tutor operations. Retry semantics come from backend job/error contracts and idempotency keys. Network reconnect must not duplicate solves or trigger multiple paid inference pipelines.
 
 Persist user-visible results/history, not provider-specific routing configuration.
+
+Sprint 4.9 problem-session history/resume uses `GET /api/v1/problem-sessions` and `GET /api/v1/problem-sessions/{sessionId}` as read-only recovery projections. Running jobs are resumed by polling/detail refresh. Exact-stage retry uses the existing stage command named by the backend-derived `nextAction`; there is no client-side recover-all command.
 <!-- HYBRID_AI_STRATEGY_V3:END -->

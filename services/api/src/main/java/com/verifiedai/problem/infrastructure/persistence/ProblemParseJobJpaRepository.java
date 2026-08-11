@@ -14,6 +14,11 @@ import org.springframework.data.repository.query.Param;
 public interface ProblemParseJobJpaRepository extends JpaRepository<ProblemParseJobJpaEntity, UUID> {
     Optional<ProblemParseJobJpaEntity> findFirstByProblemSessionIdAndUserIdOrderByCreatedAtDesc(UUID problemSessionId, UUID userId);
 
+    List<ProblemParseJobJpaEntity> findByProblemSessionIdInAndUserIdOrderByCreatedAtDesc(
+        List<UUID> problemSessionIds,
+        UUID userId
+    );
+
     Optional<ProblemParseJobJpaEntity> findByUserIdAndProblemSessionIdAndRecognitionEvidenceIdAndRecognitionEvidenceRevisionAndCapabilityAndPromptIdAndPromptVersionAndSchemaVersionAndRoutePolicyVersion(
         UUID userId,
         UUID problemSessionId,

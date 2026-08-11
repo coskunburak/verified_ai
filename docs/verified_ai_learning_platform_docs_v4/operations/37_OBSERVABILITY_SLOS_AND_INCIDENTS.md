@@ -101,7 +101,16 @@ Sprint 4.5 parser metrics:
 - `ai.problem.parse.total.latency`
 - `ai.problem.parse.estimated_cost_micros`
 
-Metric labels must remain low-cardinality and must not contain raw profile answers, user IDs, access tokens, provider secrets, filenames, local paths, object keys, OCR text, recognized text, parser expressions, constraints, raw provider/parser output, or raw problem content.
+Sprint 4.9 problem-session history/recovery metrics:
+- `problem.session.lifecycle.transition.total`
+- `problem.session.history.load.total`
+- `problem.session.history.load.latency`
+- `problem.session.detail.load.total`
+- `problem.session.detail.load.latency`
+- `problem.session.recovery.plan.total`
+- `problem.session.recovery.ambiguous.total`
+
+Metric labels must remain low-cardinality and must not contain raw profile answers, user IDs, access tokens, provider secrets, filenames, local paths, object keys, OCR text, recognized text, parser expressions, constraints, raw provider/parser output, raw problem content, selected parse content, canonical AST payloads, classification explanation text, or free-form failure messages. Sprint 4.9 recovery labels are limited to coarse status/stage/next-action/outcome values.
 
 ## SLOs
 
@@ -122,6 +131,7 @@ Actionable alerts:
 - upload storage unavailable, checksum/size mismatch spikes, or pending-upload expiry spikes,
 - recognition timeout/schema-invalid/fallback spikes or estimated recognition cost spikes,
 - parser schema-invalid/semantic-invalid/unsupported/review-required/fallback spikes or estimated parser cost spikes,
+- elevated problem-session ambiguous-lineage failures, retryable terminal recovery actions, or history/detail latency,
 - provider outage without fallback,
 - verification quality anomaly,
 - unexpected AI cost spike.

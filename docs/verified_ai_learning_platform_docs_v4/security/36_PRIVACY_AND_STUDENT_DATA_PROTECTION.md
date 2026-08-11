@@ -72,6 +72,13 @@ Sprint 4.8 correction privacy:
 - account export includes correction lineage and corrected-field metadata, but excludes correction request hashes and idempotency keys;
 - user corrections are not verified mathematical truth, model-training data, or evaluation gold data by default.
 
+Sprint 4.9 problem-session history and recovery privacy:
+- history/detail APIs expose owner-scoped lifecycle metadata, selected parse identifiers/revision/source/support status, current canonical identifiers/revision/type, current classification status/skill/difficulty, active job status, and recovery action only;
+- history list responses avoid raw problem images, OCR text, normalized recognition evidence, normalized parser documents, raw provider output, raw parser output, object keys, signed URLs, prompts, system messages, and provider secrets;
+- reconnect/detail reads do not invoke AI providers and do not duplicate expensive inference work;
+- SwiftData problem-session history is an account-scoped presentation cache and must be cleared or isolated on logout, account switch, or confirmed account deletion;
+- recovery metadata and history cache content are not training data by default.
+
 ## External AI processing
 
 Provider settings/contracts must be reviewed for retention, training use and regional processing. Never promise a privacy property that is not technically/contractually enforced.
@@ -100,7 +107,7 @@ Implemented guarantees:
 
 Phase 4+ data-owning modules must implement the account lifecycle contributor before storing user assets, problem history, attempts, mastery, study plans, tutor transcripts, or AI operational metadata.
 
-Sprint 4.2 implements that contributor for `problem_sessions` and `problem_assets`. Sprint 4.4 extends it for recognition jobs/evidence metadata. Sprint 4.5 extends it for parse jobs/revisions while excluding raw parser output from normal exports. Sprint 4.8 extends it for user correction metadata while excluding correction retry fingerprints. The rule remains open for future canonical problem, attempt, mastery, tutor, and AI operational stores.
+Sprint 4.2 implements that contributor for `problem_sessions` and `problem_assets`. Sprint 4.4 extends it for recognition jobs/evidence metadata. Sprint 4.5 extends it for parse jobs/revisions while excluding raw parser output from normal exports. Sprint 4.8 extends it for user correction metadata while excluding correction retry fingerprints. Sprint 4.9 reads those existing stores for owner-scoped history/recovery and adds no new raw-content store beyond local presentation cache. The rule remains open for future canonical problem, attempt, mastery, tutor, and AI operational stores.
 
 ## Minors
 

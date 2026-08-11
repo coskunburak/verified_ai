@@ -7,6 +7,7 @@ struct HomePlaceholderView: View {
     let entitlementMessage: String?
     let retry: () -> Void
     let startProblemCapture: () -> Void
+    let problemHistoryViewModel: ProblemHistoryViewModel?
     let manageSubscription: () -> Void
     let manageAccount: () -> Void
 
@@ -15,6 +16,12 @@ struct HomePlaceholderView: View {
             VStack(alignment: .leading, spacing: SpacingTokens.lg) {
                 header
                 primaryAction
+                if let problemHistoryViewModel {
+                    ProblemHistorySectionView(
+                        viewModel: problemHistoryViewModel,
+                        startProblemCapture: startProblemCapture
+                    )
+                }
                 accessSection
                 activitySection
             }
@@ -245,6 +252,7 @@ private extension View {
         entitlementMessage: nil,
         retry: {},
         startProblemCapture: {},
+        problemHistoryViewModel: nil,
         manageSubscription: {},
         manageAccount: {}
     )

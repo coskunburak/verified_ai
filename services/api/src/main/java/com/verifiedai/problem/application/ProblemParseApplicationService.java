@@ -11,6 +11,7 @@ import com.verifiedai.billing.application.CapabilityAccessPolicy;
 import com.verifiedai.problem.domain.model.ProblemParseJobStatus;
 import com.verifiedai.problem.domain.model.ProblemParseSource;
 import com.verifiedai.problem.domain.model.ProblemParseSupportStatus;
+import com.verifiedai.problem.domain.model.ProblemSessionStatus;
 import com.verifiedai.problem.infrastructure.parser.ProblemParserProperties;
 import com.verifiedai.problem.infrastructure.persistence.ProblemParseJobJpaEntity;
 import com.verifiedai.problem.infrastructure.persistence.ProblemParseJobJpaRepository;
@@ -50,6 +51,8 @@ public class ProblemParseApplicationService {
     private final ProblemParseMetrics metrics;
     private final ProblemParseSelectionPolicy selectionPolicy;
     private final ProblemParseCorrectionMetrics correctionMetrics;
+    private final ProblemSessionLifecyclePolicy lifecyclePolicy;
+    private final ProblemSessionMetrics sessionMetrics;
     private final TransactionTemplate transactionTemplate;
 
     @SuppressWarnings("ParameterNumber")
@@ -67,6 +70,8 @@ public class ProblemParseApplicationService {
         ProblemParseMetrics metrics,
         ProblemParseSelectionPolicy selectionPolicy,
         ProblemParseCorrectionMetrics correctionMetrics,
+        ProblemSessionLifecyclePolicy lifecyclePolicy,
+        ProblemSessionMetrics sessionMetrics,
         TransactionTemplate transactionTemplate
     ) {
         this.sessionRepository = sessionRepository;
@@ -82,6 +87,8 @@ public class ProblemParseApplicationService {
         this.metrics = metrics;
         this.selectionPolicy = selectionPolicy;
         this.correctionMetrics = correctionMetrics;
+        this.lifecyclePolicy = lifecyclePolicy;
+        this.sessionMetrics = sessionMetrics;
         this.transactionTemplate = transactionTemplate;
     }
 
@@ -90,8 +97,9 @@ public class ProblemParseApplicationService {
         capabilityAccessPolicy.requireBasicSolve(userId);
         AiRoutePlan routePlan = aiModelGateway.routePlan(AiCapability.PROBLEM_NORMALIZE);
         ProblemParseJobJpaEntity job = transactionTemplate.execute(status -> {
-            sessionRepository.findByIdAndUserIdForUpdate(problemSessionId, userId)
+            ProblemSessionJpaEntity session = sessionRepository.findByIdAndUserIdForUpdate(problemSessionId, userId)
                 .orElseThrow(() -> problem(HttpStatus.NOT_FOUND, ApiErrorCode.RESOURCE_FORBIDDEN, "Problem session was not found", false, "RETRY"));
+            transitionToParsingIfNeeded(session, clock.instant());
             RecognitionEvidenceJpaEntity evidence = currentRecognitionEvidence(userId, problemSessionId);
             Optional<ProblemParseJobJpaEntity> existing = parseJobRepository
                 .findByUserIdAndProblemSessionIdAndRecognitionEvidenceIdAndRecognitionEvidenceRevisionAndCapabilityAndPromptIdAndPromptVersionAndSchemaVersionAndRoutePolicyVersion(
@@ -252,10 +260,16 @@ public class ProblemParseApplicationService {
                     null,
                     now
                 ));
-                if (!ProblemParseSupportStatus.UNSUPPORTED.name().equals(normalized.supportStatus())
-                    && selectionPolicy.shouldSelectAiParse(session.currentParseId())) {
+                boolean selected = !ProblemParseSupportStatus.UNSUPPORTED.name().equals(normalized.supportStatus())
+                    && selectionPolicy.shouldSelectAiParse(session.currentParseId());
+                if (selected) {
                     session.selectParse(saved.id(), now);
                     correctionMetrics.selectionChanged(ProblemParseSource.AI.name());
+                    transition(
+                        session,
+                        normalized.reviewRequired() ? ProblemSessionStatus.REVIEW_REQUIRED : ProblemSessionStatus.PARSED,
+                        now
+                    );
                 }
             }
             if (ProblemParseSupportStatus.UNSUPPORTED.name().equals(normalized.supportStatus())) {
@@ -357,6 +371,35 @@ public class ProblemParseApplicationService {
         if (!"ACTIVE".equals(userStatus)) {
             throw problem(HttpStatus.FORBIDDEN, ApiErrorCode.ACCOUNT_NOT_ACTIVE, "Account is not active", false, "SIGN_IN");
         }
+    }
+
+    private void transitionToParsingIfNeeded(ProblemSessionJpaEntity session, Instant now) {
+        ProblemSessionStatus current = ProblemSessionStatus.valueOf(session.status());
+        if (current == ProblemSessionStatus.PARSING || current == ProblemSessionStatus.PARSED) {
+            return;
+        }
+        transition(session, ProblemSessionStatus.PARSING, now);
+    }
+
+    private void transition(ProblemSessionJpaEntity session, ProblemSessionStatus target, Instant now) {
+        ProblemSessionStatus current = ProblemSessionStatus.valueOf(session.status());
+        if (current == target) {
+            return;
+        }
+        if (current == ProblemSessionStatus.ASSET_UPLOADED
+            && (target == ProblemSessionStatus.PARSED || target == ProblemSessionStatus.REVIEW_REQUIRED)) {
+            transition(session, ProblemSessionStatus.PARSING, now);
+            current = ProblemSessionStatus.valueOf(session.status());
+        }
+        lifecyclePolicy.requireTransition(current, target);
+        if (target == ProblemSessionStatus.PARSING) {
+            session.markParsing(now);
+        } else if (target == ProblemSessionStatus.PARSED) {
+            session.markParsed(now);
+        } else if (target == ProblemSessionStatus.REVIEW_REQUIRED) {
+            session.markReviewRequired(now);
+        }
+        sessionMetrics.lifecycleTransition(current.name(), target.name());
     }
 
     private Instant nextAttemptAt(UUID jobId, int attemptCount, Instant now) {

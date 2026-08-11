@@ -26,6 +26,12 @@ public interface ProblemClassificationJobJpaRepository
         UUID userId
     );
 
+    List<ProblemClassificationJobJpaEntity>
+    findByCanonicalProblemIdInAndUserIdOrderByCreatedAtDesc(
+        List<UUID> canonicalProblemIds,
+        UUID userId
+    );
+
     Optional<ProblemClassificationJobJpaEntity>
         findByRequestFingerprint(
             String requestFingerprint

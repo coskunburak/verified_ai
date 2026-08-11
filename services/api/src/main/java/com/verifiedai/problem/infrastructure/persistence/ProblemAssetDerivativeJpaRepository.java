@@ -8,6 +8,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface ProblemAssetDerivativeJpaRepository extends JpaRepository<ProblemAssetDerivativeJpaEntity, UUID> {
     List<ProblemAssetDerivativeJpaEntity> findBySourceAssetIdAndUserIdOrderByCreatedAtDesc(UUID sourceAssetId, UUID userId);
 
+    List<ProblemAssetDerivativeJpaEntity> findByProblemSessionIdInAndUserIdOrderByCreatedAtDesc(
+        List<UUID> problemSessionIds,
+        UUID userId
+    );
+
     Optional<ProblemAssetDerivativeJpaEntity> findBySourceAssetIdAndUserIdAndDerivativeKindAndProcessorNameAndProcessorVersionAndConfigurationVersion(
         UUID sourceAssetId,
         UUID userId,

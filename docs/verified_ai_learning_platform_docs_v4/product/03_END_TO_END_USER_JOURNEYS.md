@@ -100,6 +100,7 @@ Invariant: Tutor mode does not silently become answer-dump mode.
 
 Available offline:
 - cached history,
+- cached problem-session progress and recovery summaries,
 - saved solutions,
 - mistake book,
 - latest mastery snapshot,
@@ -110,7 +111,17 @@ Unavailable offline:
 - deterministic server verification,
 - authoritative subscription changes.
 
-## 9. Account deletion journey
+## 9. Resume/recovery journey
+
+1. User reopens the app after termination, backgrounding, or a transient outage.
+2. Home shows cached problem-session history immediately when available.
+3. The app refreshes `GET /api/v1/problem-sessions` and then `GET /api/v1/problem-sessions/{sessionId}` for the selected session.
+4. Backend returns the coarse status, derived stage, exact next action, retryability, active job, selected parse summary, current canonical summary, and current classification summary.
+5. Running recognition/parse/classification jobs are polled by refresh, not duplicated.
+6. Retry actions invoke only the existing exact-stage command named by the backend; successful prior work is reused.
+7. Unsupported, ambiguous, or terminal states explain recapture/reimport or limitation rather than silently retrying expensive AI work.
+
+## 10. Account deletion journey
 
 1. User requests deletion.
 2. Product explains scope.

@@ -3,6 +3,7 @@ package com.verifiedai.problem.application;
 import com.verifiedai.billing.application.CapabilityAccessPolicy;
 import com.verifiedai.problem.domain.model.ProblemParseSource;
 import com.verifiedai.problem.domain.model.ProblemParseSupportStatus;
+import com.verifiedai.problem.domain.model.ProblemSessionStatus;
 import com.verifiedai.problem.infrastructure.persistence.ProblemParseJpaEntity;
 import com.verifiedai.problem.infrastructure.persistence.ProblemParseJpaRepository;
 import com.verifiedai.problem.infrastructure.persistence.ProblemSessionJpaEntity;
@@ -39,6 +40,8 @@ public class ProblemParseCorrectionApplicationService {
     private final JdbcTemplate jdbcTemplate;
     private final Clock clock;
     private final ProblemParseCorrectionMetrics metrics;
+    private final ProblemSessionLifecyclePolicy lifecyclePolicy;
+    private final ProblemSessionMetrics sessionMetrics;
     private final TransactionTemplate transactionTemplate;
 
     @SuppressWarnings("ParameterNumber")
@@ -54,6 +57,8 @@ public class ProblemParseCorrectionApplicationService {
         JdbcTemplate jdbcTemplate,
         Clock clock,
         ProblemParseCorrectionMetrics metrics,
+        ProblemSessionLifecyclePolicy lifecyclePolicy,
+        ProblemSessionMetrics sessionMetrics,
         TransactionTemplate transactionTemplate
     ) {
         this.sessionRepository = sessionRepository;
@@ -67,6 +72,8 @@ public class ProblemParseCorrectionApplicationService {
         this.jdbcTemplate = jdbcTemplate;
         this.clock = clock;
         this.metrics = metrics;
+        this.lifecyclePolicy = lifecyclePolicy;
+        this.sessionMetrics = sessionMetrics;
         this.transactionTemplate = transactionTemplate;
     }
 
@@ -191,6 +198,13 @@ public class ProblemParseCorrectionApplicationService {
                 ProblemParseJpaEntity saved = parseRepository.saveAndFlush(created);
                 if (selectionPolicy.shouldSelectUserCorrection()) {
                     session.selectParse(saved.id(), now);
+                    if (!ProblemParseSupportStatus.UNSUPPORTED.name().equals(normalized.supportStatus())) {
+                        transition(
+                            session,
+                            normalized.reviewRequired() ? ProblemSessionStatus.REVIEW_REQUIRED : ProblemSessionStatus.PARSED,
+                            now
+                        );
+                    }
                     metrics.selectionChanged(ProblemParseSource.USER.name());
                 }
                 metrics.success(reason);
@@ -409,6 +423,27 @@ public class ProblemParseCorrectionApplicationService {
         if (!"ACTIVE".equals(userStatus)) {
             throw problem(HttpStatus.FORBIDDEN, ApiErrorCode.ACCOUNT_NOT_ACTIVE, "Account is not active", false, "SIGN_IN");
         }
+    }
+
+    private void transition(ProblemSessionJpaEntity session, ProblemSessionStatus target, Instant now) {
+        ProblemSessionStatus current = ProblemSessionStatus.valueOf(session.status());
+        if (current == target) {
+            return;
+        }
+        if (current == ProblemSessionStatus.ASSET_UPLOADED
+            && (target == ProblemSessionStatus.PARSED || target == ProblemSessionStatus.REVIEW_REQUIRED)) {
+            transition(session, ProblemSessionStatus.PARSING, now);
+            current = ProblemSessionStatus.valueOf(session.status());
+        }
+        lifecyclePolicy.requireTransition(current, target);
+        if (target == ProblemSessionStatus.PARSED) {
+            session.markParsed(now);
+        } else if (target == ProblemSessionStatus.REVIEW_REQUIRED) {
+            session.markReviewRequired(now);
+        } else if (target == ProblemSessionStatus.PARSING) {
+            session.markParsing(now);
+        }
+        sessionMetrics.lifecycleTransition(current.name(), target.name());
     }
 
     private static ApiProblemException concealedSession() {
