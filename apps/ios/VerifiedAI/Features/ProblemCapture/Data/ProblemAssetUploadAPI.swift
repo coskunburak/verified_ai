@@ -91,6 +91,46 @@ final class ProblemAssetUploadAPI: ProblemAssetUploadServicing, @unchecked Senda
         )
         return try response.body.result()
     }
+
+    func canonicalize(problemSessionId: UUID) async throws -> CanonicalProblemResult {
+        let response: HTTPResponse<CanonicalProblemWireResponse> = try await apiClient.send(
+            HTTPRequest(
+                endpoint: Endpoint(path: "/api/v1/problem-sessions/\(problemSessionId.uuidString)/canonicalize", method: .post),
+                allowsAuthRefreshRetry: false
+            )
+        )
+        return try response.body.result()
+    }
+
+    func getCanonicalProblem(problemSessionId: UUID) async throws -> CanonicalProblemResult {
+        let response: HTTPResponse<CanonicalProblemWireResponse> = try await apiClient.send(
+            HTTPRequest(
+                endpoint: Endpoint(path: "/api/v1/problem-sessions/\(problemSessionId.uuidString)/canonical-problem", method: .get),
+                allowsAuthRefreshRetry: false
+            )
+        )
+        return try response.body.result()
+    }
+
+    func requestClassification(problemSessionId: UUID) async throws -> ProblemClassificationResult {
+        let response: HTTPResponse<ProblemClassificationWireResponse> = try await apiClient.send(
+            HTTPRequest(
+                endpoint: Endpoint(path: "/api/v1/problem-sessions/\(problemSessionId.uuidString)/classification", method: .post),
+                allowsAuthRefreshRetry: false
+            )
+        )
+        return try response.body.result()
+    }
+
+    func getClassification(problemSessionId: UUID) async throws -> ProblemClassificationResult {
+        let response: HTTPResponse<ProblemClassificationWireResponse> = try await apiClient.send(
+            HTTPRequest(
+                endpoint: Endpoint(path: "/api/v1/problem-sessions/\(problemSessionId.uuidString)/classification", method: .get),
+                allowsAuthRefreshRetry: false
+            )
+        )
+        return try response.body.result()
+    }
 }
 
 private struct ProblemAssetUploadWireRequest: Encodable {
@@ -556,6 +596,139 @@ private struct ProblemParseVisualQualityRiskWireResponse: Decodable {
 
     var risk: ProblemParseVisualQualityRisk {
         ProblemParseVisualQualityRisk(signalType: signalType, severity: severity, messageCode: messageCode)
+    }
+}
+
+private struct CanonicalProblemWireResponse: Decodable {
+    let canonicalProblemId: UUID
+    let problemSessionId: UUID
+    let problemParseId: UUID
+    let problemParseRevision: Int
+    let canonicalRevision: Int
+    let schemaVersion: String
+    let verifierSchemaVersion: String
+    let problemType: String
+    let taskType: String
+    let normalizedText: String?
+    let displayLatex: String?
+    let variables: [String]
+    let sourceConstraintCount: Int
+    let derivedRestrictionCount: Int
+    let createdAt: String
+
+    func result() throws -> CanonicalProblemResult {
+        guard let createdAtDate = ISO8601WireDate.parse(createdAt) else {
+            throw NetworkError.decoding("unsupported_canonical_problem_created_date")
+        }
+        return CanonicalProblemResult(
+            canonicalProblemId: canonicalProblemId,
+            problemSessionId: problemSessionId,
+            problemParseId: problemParseId,
+            problemParseRevision: problemParseRevision,
+            canonicalRevision: canonicalRevision,
+            schemaVersion: schemaVersion,
+            verifierSchemaVersion: verifierSchemaVersion,
+            problemType: problemType,
+            taskType: taskType,
+            normalizedText: normalizedText,
+            displayLatex: displayLatex,
+            variables: variables,
+            sourceConstraintCount: sourceConstraintCount,
+            derivedRestrictionCount: derivedRestrictionCount,
+            createdAt: createdAtDate
+        )
+    }
+}
+
+private struct ProblemClassificationWireResponse: Decodable {
+    let classificationJobId: UUID?
+    let problemSessionId: UUID
+    let canonicalProblemId: UUID
+    let canonicalProblemRevision: Int
+    let jobStatus: String
+    let capability: String
+    let attemptCount: Int
+    let maxAttempts: Int
+    let lastErrorCode: String?
+    let lastFailureClass: String?
+    let classificationId: UUID?
+    let classificationRevision: Int?
+    let classificationSource: String?
+    let classificationStatus: String?
+    let reviewReason: String?
+    let subjectId: String?
+    let topicId: String?
+    let primarySkillId: String?
+    let secondarySkillIds: [String]
+    let difficulty: String?
+    let confidenceBand: String?
+    let confidenceCalibration: String?
+    let provider: String?
+    let model: String?
+    let fallbackUsed: Bool?
+    let ontologyVersion: String
+    let projectionVersion: String
+    let schemaVersion: String
+    let difficultyPolicyVersion: String
+    let confidencePolicyVersion: String
+    let createdAt: String?
+    let updatedAt: String?
+    let completedAt: String?
+    let classificationCreatedAt: String?
+
+    func result() throws -> ProblemClassificationResult {
+        let createdAtDate = ISO8601WireDate.parse(createdAt)
+        if createdAt != nil, createdAtDate == nil {
+            throw NetworkError.decoding("unsupported_problem_classification_created_date")
+        }
+        let updatedAtDate = ISO8601WireDate.parse(updatedAt)
+        if updatedAt != nil, updatedAtDate == nil {
+            throw NetworkError.decoding("unsupported_problem_classification_updated_date")
+        }
+        let completedAtDate = ISO8601WireDate.parse(completedAt)
+        if completedAt != nil, completedAtDate == nil {
+            throw NetworkError.decoding("unsupported_problem_classification_completion_date")
+        }
+        let classificationCreatedAtDate = ISO8601WireDate.parse(classificationCreatedAt)
+        if classificationCreatedAt != nil, classificationCreatedAtDate == nil {
+            throw NetworkError.decoding("unsupported_problem_classification_revision_created_date")
+        }
+        return ProblemClassificationResult(
+            classificationJobId: classificationJobId,
+            problemSessionId: problemSessionId,
+            canonicalProblemId: canonicalProblemId,
+            canonicalProblemRevision: canonicalProblemRevision,
+            jobStatus: jobStatus,
+            capability: capability,
+            attemptCount: attemptCount,
+            maxAttempts: maxAttempts,
+            lastErrorCode: lastErrorCode,
+            lastFailureClass: lastFailureClass,
+            classificationId: classificationId,
+            classificationRevision: classificationRevision,
+            classificationSource: classificationSource,
+            classificationStatus: classificationStatus,
+            reviewReason: reviewReason,
+            subjectId: subjectId,
+            topicId: topicId,
+            primarySkillId: primarySkillId,
+            secondarySkillIds: secondarySkillIds,
+            difficulty: difficulty,
+            confidenceBand: confidenceBand,
+            confidenceCalibration: confidenceCalibration,
+            provider: provider,
+            model: model,
+            fallbackUsed: fallbackUsed,
+            ontologyVersion: ontologyVersion,
+            projectionVersion: projectionVersion,
+            schemaVersion: schemaVersion,
+            difficultyPolicyVersion: difficultyPolicyVersion,
+            confidencePolicyVersion: confidencePolicyVersion,
+            createdAt: createdAtDate,
+            updatedAt: updatedAtDate,
+            completedAt: completedAtDate,
+            classificationCreatedAt: classificationCreatedAtDate
+        )
     }
 }
 

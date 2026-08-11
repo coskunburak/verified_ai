@@ -208,6 +208,110 @@ final class ProblemAssetUploadViewModel {
         await startParse(reference)
     }
 
+    func refreshParseAfterReview(_ reference: ParsedProblemReference) async {
+        let requestID = UUID()
+        activeRequestID = requestID
+
+        guard networkMonitor.isReachable else {
+            logger.warning("problem_parse.review_refresh_offline")
+            message = "Refreshing the selected parse needs a network connection."
+            return
+        }
+
+        do {
+            let current = try await uploadAPI.getParse(problemSessionId: reference.parse.problemSessionId)
+            guard activeRequestID == requestID else { return }
+            if !applyParseResult(current, reference: reference.recognizedProblem) {
+                state = .parsing(reference.recognizedProblem, current)
+                message = "Understanding is still in progress."
+            }
+        } catch {
+            logger.warning("problem_parse.review_refresh_failed")
+            message = "Selected parse could not be refreshed."
+        }
+    }
+
+    func startCanonicalization(_ reference: ParsedProblemReference) async {
+        let requestID = UUID()
+        activeRequestID = requestID
+
+        guard networkMonitor.isReachable else {
+            logger.warning("problem_canonicalization.offline")
+            state = .canonicalizationFailed(reference, nil)
+            message = "Preparing verification needs a network connection."
+            return
+        }
+
+        do {
+            state = .canonicalizing(reference)
+            message = "Preparing the verified problem form."
+            let canonical = try await uploadAPI.canonicalize(problemSessionId: reference.parse.problemSessionId)
+            guard activeRequestID == requestID else { return }
+            let canonicalized = CanonicalizedProblemReference(parsedProblem: reference, canonicalProblem: canonical)
+            logger.info("problem_canonicalization.succeeded")
+            state = .canonicalized(canonicalized)
+            message = "Verification preparation finished."
+        } catch let error as NetworkError {
+            logger.warning("problem_canonicalization.failed")
+            state = .canonicalizationFailed(reference, nil)
+            if case .server(let problem) = error {
+                message = "Verification preparation failed: \(problem.code)"
+            } else {
+                message = "Verification preparation could not continue."
+            }
+        } catch {
+            logger.warning("problem_canonicalization.failed")
+            state = .canonicalizationFailed(reference, nil)
+            message = "Verification preparation could not continue."
+        }
+    }
+
+    func retryCanonicalization() async {
+        guard case .canonicalizationFailed(let reference, _) = state else {
+            return
+        }
+        await startCanonicalization(reference)
+    }
+
+    func startClassification(_ reference: CanonicalizedProblemReference) async {
+        let requestID = UUID()
+        activeRequestID = requestID
+
+        guard networkMonitor.isReachable else {
+            logger.warning("problem_classification.offline")
+            state = .classificationFailed(reference, nil)
+            message = "Classifying the problem needs a network connection."
+            return
+        }
+
+        do {
+            state = .startingClassification(reference)
+            message = "Classifying the problem."
+            let requested = try await uploadAPI.requestClassification(problemSessionId: reference.canonicalProblem.problemSessionId)
+            guard activeRequestID == requestID else { return }
+            await observeClassification(requested, reference: reference, requestID: requestID)
+        } catch let error as NetworkError {
+            logger.warning("problem_classification.failed")
+            state = .classificationFailed(reference, nil)
+            if case .server(let problem) = error {
+                message = "Classification failed: \(problem.code)"
+            } else {
+                message = "Classification could not continue."
+            }
+        } catch {
+            logger.warning("problem_classification.failed")
+            state = .classificationFailed(reference, nil)
+            message = "Classification could not continue."
+        }
+    }
+
+    func retryClassification() async {
+        guard case .classificationFailed(let reference, _) = state else {
+            return
+        }
+        await startClassification(reference)
+    }
+
     func cancel() {
         activeRequestID = nil
         state = .idle
@@ -401,6 +505,90 @@ final class ProblemAssetUploadViewModel {
             return true
         }
         return false
+    }
+
+    private func observeClassification(
+        _ initial: ProblemClassificationResult,
+        reference: CanonicalizedProblemReference,
+        requestID: UUID
+    ) async {
+        var current = initial
+        for attempt in 0...5 {
+            guard activeRequestID == requestID else { return }
+            if applyClassificationResult(current, reference: reference) {
+                return
+            }
+            state = .classifying(reference, current)
+            message = "Classifying the problem."
+            let delayNanos = UInt64(min(2.0, 0.4 * Double(attempt + 1)) * 1_000_000_000)
+            try? await Task.sleep(nanoseconds: delayNanos)
+            guard activeRequestID == requestID else { return }
+            do {
+                current = try await uploadAPI.getClassification(problemSessionId: reference.canonicalProblem.problemSessionId)
+            } catch {
+                logger.warning("problem_classification.poll_failed")
+                state = .classificationFailed(reference, current)
+                message = "Classification status could not be refreshed."
+                return
+            }
+        }
+        state = .classifying(reference, current)
+        message = "Classification is still in progress."
+    }
+
+    @discardableResult
+    private func applyClassificationResult(
+        _ classification: ProblemClassificationResult,
+        reference: CanonicalizedProblemReference
+    ) -> Bool {
+        guard classificationMatchesCurrentCanonical(classification, reference: reference) else {
+            logger.warning("problem_classification.stale_canonical")
+            state = .classificationFailed(reference, classification)
+            message = "Classification belongs to a different problem revision. Refresh and try again."
+            return true
+        }
+
+        if classification.isTerminalSuccess {
+            let classified = ClassifiedProblemReference(
+                canonicalizedProblem: reference,
+                classification: classification
+            )
+            if classification.isUnsupported {
+                logger.warning("problem_classification.unsupported")
+                state = .classificationUnsupported(reference, classification)
+                message = classification.reviewReason ?? "This problem cannot be classified yet."
+            } else if classification.needsReview || !classification.isClassified {
+                logger.warning("problem_classification.review_required")
+                state = .classificationReviewRequired(classified)
+                message = classification.reviewReason ?? "Classification needs review."
+            } else {
+                logger.info("problem_classification.succeeded")
+                state = .classified(classified)
+                message = "Classification finished."
+            }
+            return true
+        }
+        if classification.isTerminalFailure {
+            logger.warning("problem_classification.terminal_failure")
+            state = .classificationFailed(reference, classification)
+            message = "Classification could not finish."
+            return true
+        }
+        if classification.isRetryableFailure {
+            logger.warning("problem_classification.retryable_failure")
+            state = .classificationFailed(reference, classification)
+            message = "Classification can be retried."
+            return true
+        }
+        return false
+    }
+
+    private func classificationMatchesCurrentCanonical(
+        _ classification: ProblemClassificationResult,
+        reference: CanonicalizedProblemReference
+    ) -> Bool {
+        classification.canonicalProblemId == reference.canonicalProblem.canonicalProblemId
+            && classification.canonicalProblemRevision == reference.canonicalProblem.canonicalRevision
     }
 
     private func makeUploadRequest(from asset: CapturedAsset) throws -> ProblemAssetUploadRequest {

@@ -87,7 +87,11 @@ struct ProblemCaptureView: View {
                     viewModel: problemReviewViewModel,
                     problemSessionId: context.problemSessionId,
                     onFinished: {
+                        let parsedReference = context.parsedReference
                         reviewSheet = nil
+                        if let parsedReference {
+                            Task { await uploadViewModel.refreshParseAfterReview(parsedReference) }
+                        }
                     }
                 )
             }
@@ -550,12 +554,23 @@ struct ProblemCaptureView: View {
                     .foregroundStyle(ColorTokens.action)
                 parseSummary(reference.parse)
                 Button {
-                    reviewSheet = ProblemReviewSheetContext(problemSessionId: reference.parse.problemSessionId)
+                    Task { await uploadViewModel.startCanonicalization(reference) }
+                } label: {
+                    Label("Prepare Verification", systemImage: "checkmark.shield")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .accessibilityIdentifier("problemCapture.canonicalize.start")
+                Button {
+                    reviewSheet = ProblemReviewSheetContext(
+                        problemSessionId: reference.parse.problemSessionId,
+                        parsedReference: reference
+                    )
                 } label: {
                     Label("Review Problem", systemImage: "square.and.pencil")
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(.bordered)
                 .accessibilityIdentifier("problemCapture.reviewProblem")
                 Button {
                     onDismiss()
@@ -563,14 +578,17 @@ struct ProblemCaptureView: View {
                     Label("Done", systemImage: "checkmark")
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(.bordered)
             case .parseReviewRequired(let reference):
                 Label("Understanding finished with uncertainty", systemImage: "exclamationmark.triangle")
                     .font(TypographyTokens.title)
                     .foregroundStyle(ColorTokens.warning)
                 parseSummary(reference.parse)
                 Button {
-                    reviewSheet = ProblemReviewSheetContext(problemSessionId: reference.parse.problemSessionId)
+                    reviewSheet = ProblemReviewSheetContext(
+                        problemSessionId: reference.parse.problemSessionId,
+                        parsedReference: reference
+                    )
                 } label: {
                     Label("Review Problem", systemImage: "square.and.pencil")
                         .frame(maxWidth: .infinity)
@@ -583,7 +601,7 @@ struct ProblemCaptureView: View {
                     Label("Done", systemImage: "checkmark")
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(.bordered)
             case .parseUnsupported(_, let parse):
                 Label("This problem type is not supported yet.", systemImage: "exclamationmark.triangle")
                     .font(TypographyTokens.title)
@@ -615,6 +633,127 @@ struct ProblemCaptureView: View {
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
+            case .canonicalizing:
+                Label("Preparing verification", systemImage: "checkmark.shield")
+                    .font(TypographyTokens.title)
+                    .foregroundStyle(ColorTokens.textPrimary)
+                ProgressView()
+                    .accessibilityIdentifier("problemCapture.canonicalize.progress")
+                Text("The backend is creating the canonical problem from the selected parse.")
+                    .font(TypographyTokens.body)
+                    .foregroundStyle(ColorTokens.textSecondary)
+            case .canonicalized(let reference):
+                Label("Verification preparation finished", systemImage: "checkmark.seal")
+                    .font(TypographyTokens.title)
+                    .foregroundStyle(ColorTokens.action)
+                canonicalSummary(reference.canonicalProblem)
+                Button {
+                    Task { await uploadViewModel.startClassification(reference) }
+                } label: {
+                    Label("Classify Problem", systemImage: "tag")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .accessibilityIdentifier("problemCapture.classification.start")
+                Button {
+                    onDismiss()
+                } label: {
+                    Label("Done", systemImage: "checkmark")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+            case .canonicalizationFailed(_, let canonical):
+                Label(uploadViewModel.message ?? "Verification preparation could not finish.", systemImage: "exclamationmark.triangle")
+                    .font(TypographyTokens.body.weight(.semibold))
+                    .foregroundStyle(ColorTokens.warning)
+                    .accessibilityIdentifier("problemCapture.canonicalize.failure")
+                if let canonical {
+                    Text("Canonical revision \(canonical.canonicalRevision)")
+                        .font(TypographyTokens.body)
+                        .foregroundStyle(ColorTokens.textSecondary)
+                }
+                Button {
+                    Task { await uploadViewModel.retryCanonicalization() }
+                } label: {
+                    Label("Try Preparing Again", systemImage: "arrow.clockwise")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+            case .startingClassification:
+                Label("Classifying the problem", systemImage: "tag")
+                    .font(TypographyTokens.title)
+                    .foregroundStyle(ColorTokens.textPrimary)
+                ProgressView()
+                    .accessibilityIdentifier("problemCapture.classification.starting")
+                Text("The backend is starting a durable classification job.")
+                    .font(TypographyTokens.body)
+                    .foregroundStyle(ColorTokens.textSecondary)
+            case .classifying(_, let classification):
+                Label("Classifying the problem", systemImage: "tag")
+                    .font(TypographyTokens.title)
+                    .foregroundStyle(ColorTokens.textPrimary)
+                ProgressView()
+                    .accessibilityIdentifier("problemCapture.classification.progress")
+                Text("Status \(classification.jobStatus)")
+                    .font(TypographyTokens.caption)
+                    .foregroundStyle(ColorTokens.textSecondary)
+            case .classified(let reference):
+                Label("Classification finished", systemImage: "checkmark.seal")
+                    .font(TypographyTokens.title)
+                    .foregroundStyle(ColorTokens.action)
+                classificationSummary(reference.classification)
+                Button {
+                    onDismiss()
+                } label: {
+                    Label("Done", systemImage: "checkmark")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+            case .classificationReviewRequired(let reference):
+                Label("Classification needs review", systemImage: "exclamationmark.triangle")
+                    .font(TypographyTokens.title)
+                    .foregroundStyle(ColorTokens.warning)
+                classificationSummary(reference.classification)
+                Button {
+                    onDismiss()
+                } label: {
+                    Label("Done", systemImage: "checkmark")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+            case .classificationUnsupported(_, let classification):
+                Label("This problem cannot be classified yet.", systemImage: "exclamationmark.triangle")
+                    .font(TypographyTokens.title)
+                    .foregroundStyle(ColorTokens.warning)
+                Text(classification.reviewReason ?? classification.classificationStatus ?? "Try another problem or review the parse.")
+                    .font(TypographyTokens.body)
+                    .foregroundStyle(ColorTokens.textSecondary)
+                Button {
+                    onDismiss()
+                } label: {
+                    Label("Done", systemImage: "checkmark")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+            case .classificationFailed(_, let classification):
+                Label(uploadViewModel.message ?? "Classification could not finish.", systemImage: "exclamationmark.triangle")
+                    .font(TypographyTokens.body.weight(.semibold))
+                    .foregroundStyle(ColorTokens.warning)
+                    .accessibilityIdentifier("problemCapture.classification.failure")
+                if let classification {
+                    Text(classification.lastErrorCode ?? classification.jobStatus)
+                        .font(TypographyTokens.body)
+                        .foregroundStyle(ColorTokens.textSecondary)
+                }
+                if classification?.isTerminalFailure != true {
+                    Button {
+                        Task { await uploadViewModel.retryClassification() }
+                    } label: {
+                        Label("Try Classification Again", systemImage: "arrow.clockwise")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
             case .preprocessingWarning(let reference, let acceptedAsset):
                 Label(uploadViewModel.message ?? "Capture quality needs review.", systemImage: "exclamationmark.triangle")
                     .font(TypographyTokens.body.weight(.semibold))
@@ -814,6 +953,53 @@ struct ProblemCaptureView: View {
         }
     }
 
+    private func canonicalSummary(_ canonical: CanonicalProblemResult) -> some View {
+        VStack(alignment: .leading, spacing: SpacingTokens.sm) {
+            Text(canonical.taskType)
+                .font(TypographyTokens.body.weight(.semibold))
+                .foregroundStyle(ColorTokens.textPrimary)
+            Text(canonical.displayLatex ?? canonical.normalizedText ?? canonical.taskType)
+                .font(TypographyTokens.body)
+                .foregroundStyle(ColorTokens.textSecondary)
+            Text("Canonical revision \(canonical.canonicalRevision) · \(canonical.problemType)")
+                .font(TypographyTokens.caption)
+                .foregroundStyle(ColorTokens.textSecondary)
+            if !canonical.variables.isEmpty {
+                Text("Variables \(canonical.variables.joined(separator: ", "))")
+                    .font(TypographyTokens.caption)
+                    .foregroundStyle(ColorTokens.textSecondary)
+            }
+        }
+    }
+
+    private func classificationSummary(_ classification: ProblemClassificationResult) -> some View {
+        VStack(alignment: .leading, spacing: SpacingTokens.sm) {
+            Text(classification.primarySkillId ?? classification.classificationStatus ?? "Unclassified")
+                .font(TypographyTokens.body.weight(.semibold))
+                .foregroundStyle(ColorTokens.textPrimary)
+            if let topic = classification.topicId {
+                Text(topic)
+                    .font(TypographyTokens.body)
+                    .foregroundStyle(ColorTokens.textSecondary)
+            }
+            if let difficulty = classification.difficulty {
+                Text("Difficulty \(difficulty)")
+                    .font(TypographyTokens.caption)
+                    .foregroundStyle(ColorTokens.textSecondary)
+            }
+            if let confidence = classification.confidenceBand {
+                Text("Confidence \(confidence)")
+                    .font(TypographyTokens.caption)
+                    .foregroundStyle(ColorTokens.textSecondary)
+            }
+            if let reviewReason = classification.reviewReason {
+                Text(reviewReason)
+                    .font(TypographyTokens.caption)
+                    .foregroundStyle(ColorTokens.textSecondary)
+            }
+        }
+    }
+
     private func retryLabel(for failure: ProblemAssetUploadFailure) -> String {
         if case .preprocessingFailed = failure {
             return "Retry Preprocessing"
@@ -824,6 +1010,7 @@ struct ProblemCaptureView: View {
 
 private struct ProblemReviewSheetContext: Identifiable {
     let problemSessionId: UUID
+    let parsedReference: ParsedProblemReference?
 
     var id: UUID {
         problemSessionId

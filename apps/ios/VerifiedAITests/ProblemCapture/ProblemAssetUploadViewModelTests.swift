@@ -275,6 +275,84 @@ final class ProblemAssetUploadViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.state, .parseUnsupported(recognized, FakeProblemAssetUploadAPI.parseUnsupported))
     }
 
+    func testCanonicalizationSuccessTransitionsFromParsedToCanonicalized() async throws {
+        let viewModel = makeViewModel()
+        let parsed = ParsedProblemReference(
+            recognizedProblem: RecognizedProblemReference(
+                preprocessedAsset: FakeProblemAssetUploadAPI.preprocessedReference,
+                recognition: FakeProblemAssetUploadAPI.recognitionSucceeded
+            ),
+            parse: FakeProblemAssetUploadAPI.parseSucceeded
+        )
+
+        await viewModel.startCanonicalization(parsed)
+
+        XCTAssertEqual(
+            viewModel.state,
+            .canonicalized(CanonicalizedProblemReference(
+                parsedProblem: parsed,
+                canonicalProblem: FakeProblemAssetUploadAPI.canonicalProblem
+            ))
+        )
+    }
+
+    func testClassificationSuccessTransitionsFromCanonicalizedToClassified() async throws {
+        let viewModel = makeViewModel()
+
+        await viewModel.startClassification(FakeProblemAssetUploadAPI.canonicalizedReference)
+
+        XCTAssertEqual(
+            viewModel.state,
+            .classified(ClassifiedProblemReference(
+                canonicalizedProblem: FakeProblemAssetUploadAPI.canonicalizedReference,
+                classification: FakeProblemAssetUploadAPI.classificationSucceeded
+            ))
+        )
+    }
+
+    func testClassificationRetryableFailureCanRetryToSuccess() async throws {
+        let api = FakeProblemAssetUploadAPI(classificationResults: [
+            FakeProblemAssetUploadAPI.classificationRetryableFailure,
+            FakeProblemAssetUploadAPI.classificationSucceeded
+        ])
+        let viewModel = makeViewModel(api: api)
+
+        await viewModel.startClassification(FakeProblemAssetUploadAPI.canonicalizedReference)
+
+        XCTAssertEqual(
+            viewModel.state,
+            .classificationFailed(
+                FakeProblemAssetUploadAPI.canonicalizedReference,
+                FakeProblemAssetUploadAPI.classificationRetryableFailure
+            )
+        )
+
+        await viewModel.retryClassification()
+
+        XCTAssertEqual(
+            viewModel.state,
+            .classified(ClassifiedProblemReference(
+                canonicalizedProblem: FakeProblemAssetUploadAPI.canonicalizedReference,
+                classification: FakeProblemAssetUploadAPI.classificationSucceeded
+            ))
+        )
+    }
+
+    func testReviewRequiredClassificationTransitionsToReviewRequired() async throws {
+        let api = FakeProblemAssetUploadAPI(classificationResults: [FakeProblemAssetUploadAPI.classificationReviewRequired])
+        let viewModel = makeViewModel(api: api)
+
+        await viewModel.startClassification(FakeProblemAssetUploadAPI.canonicalizedReference)
+
+        XCTAssertEqual(
+            viewModel.state,
+            .classificationReviewRequired(ClassifiedProblemReference(
+                canonicalizedProblem: FakeProblemAssetUploadAPI.canonicalizedReference,
+                classification: FakeProblemAssetUploadAPI.classificationReviewRequired
+            ))
+        )
+    }
+
     private func makeViewModel(
         api: FakeProblemAssetUploadAPI = FakeProblemAssetUploadAPI(),
         uploader: FakePresignedObjectUploader = FakePresignedObjectUploader(),
@@ -596,6 +674,141 @@ private actor FakeProblemAssetUploadAPI: ProblemAssetUploadServicing {
         updatedAt: Date(timeIntervalSince1970: 1_800_003_100),
         completedAt: Date(timeIntervalSince1970: 1_800_003_100)
     )
+    static let canonicalProblem = CanonicalProblemResult(
+        canonicalProblemId: UUID(uuidString: "00000000-0000-0000-0000-000000001001")!,
+        problemSessionId: problemSessionId,
+        problemParseId: UUID(uuidString: "00000000-0000-0000-0000-000000000903")!,
+        problemParseRevision: 1,
+        canonicalRevision: 1,
+        schemaVersion: "canonical-problem-v1",
+        verifierSchemaVersion: "safe-verifier-v1",
+        problemType: "EQUATION",
+        taskType: "SOLVE_EQUATION",
+        normalizedText: "x + 2 = 5",
+        displayLatex: "x + 2 = 5",
+        variables: ["x"],
+        sourceConstraintCount: 0,
+        derivedRestrictionCount: 0,
+        createdAt: Date(timeIntervalSince1970: 1_800_003_200)
+    )
+    static let canonicalizedReference = CanonicalizedProblemReference(
+        parsedProblem: ParsedProblemReference(
+            recognizedProblem: RecognizedProblemReference(
+                preprocessedAsset: preprocessedReference,
+                recognition: recognitionSucceeded
+            ),
+            parse: parseSucceeded
+        ),
+        canonicalProblem: canonicalProblem
+    )
+    static let classificationSucceeded = ProblemClassificationResult(
+        classificationJobId: UUID(uuidString: "00000000-0000-0000-0000-000000001101")!,
+        problemSessionId: problemSessionId,
+        canonicalProblemId: canonicalProblem.canonicalProblemId,
+        canonicalProblemRevision: canonicalProblem.canonicalRevision,
+        jobStatus: "SUCCEEDED",
+        capability: "PROBLEM_CLASSIFY",
+        attemptCount: 1,
+        maxAttempts: 2,
+        lastErrorCode: nil,
+        lastFailureClass: nil,
+        classificationId: UUID(uuidString: "00000000-0000-0000-0000-000000001102")!,
+        classificationRevision: 1,
+        classificationSource: "AI",
+        classificationStatus: "CLASSIFIED",
+        reviewReason: nil,
+        subjectId: "MATH",
+        topicId: "MATH.EQUATIONS",
+        primarySkillId: "ALGEBRA.LINEAR_EQUATIONS_ONE_VARIABLE",
+        secondarySkillIds: [],
+        difficulty: "EASY",
+        confidenceBand: "MEDIUM",
+        confidenceCalibration: "UNCALIBRATED",
+        provider: "LOCAL_FIXTURE",
+        model: "local-fixture-classifier-v1",
+        fallbackUsed: false,
+        ontologyVersion: "curriculum-v1-seed",
+        projectionVersion: "classification-projection-v1",
+        schemaVersion: "problem-classification-v1",
+        difficultyPolicyVersion: "classification-difficulty-v1",
+        confidencePolicyVersion: "classification-confidence-v1",
+        createdAt: Date(timeIntervalSince1970: 1_800_003_300),
+        updatedAt: Date(timeIntervalSince1970: 1_800_003_400),
+        completedAt: Date(timeIntervalSince1970: 1_800_003_400),
+        classificationCreatedAt: Date(timeIntervalSince1970: 1_800_003_400)
+    )
+    static let classificationRetryableFailure = ProblemClassificationResult(
+        classificationJobId: UUID(uuidString: "00000000-0000-0000-0000-000000001103")!,
+        problemSessionId: problemSessionId,
+        canonicalProblemId: canonicalProblem.canonicalProblemId,
+        canonicalProblemRevision: canonicalProblem.canonicalRevision,
+        jobStatus: "FAILED_RETRYABLE",
+        capability: "PROBLEM_CLASSIFY",
+        attemptCount: 1,
+        maxAttempts: 2,
+        lastErrorCode: "CLASSIFICATION_TIMEOUT",
+        lastFailureClass: "TIMEOUT",
+        classificationId: nil,
+        classificationRevision: nil,
+        classificationSource: nil,
+        classificationStatus: nil,
+        reviewReason: nil,
+        subjectId: nil,
+        topicId: nil,
+        primarySkillId: nil,
+        secondarySkillIds: [],
+        difficulty: nil,
+        confidenceBand: nil,
+        confidenceCalibration: nil,
+        provider: nil,
+        model: nil,
+        fallbackUsed: nil,
+        ontologyVersion: "curriculum-v1-seed",
+        projectionVersion: "classification-projection-v1",
+        schemaVersion: "problem-classification-v1",
+        difficultyPolicyVersion: "classification-difficulty-v1",
+        confidencePolicyVersion: "classification-confidence-v1",
+        createdAt: nil,
+        updatedAt: nil,
+        completedAt: nil,
+        classificationCreatedAt: nil
+    )
+    static let classificationReviewRequired = ProblemClassificationResult(
+        classificationJobId: UUID(uuidString: "00000000-0000-0000-0000-000000001104")!,
+        problemSessionId: problemSessionId,
+        canonicalProblemId: canonicalProblem.canonicalProblemId,
+        canonicalProblemRevision: canonicalProblem.canonicalRevision,
+        jobStatus: "SUCCEEDED",
+        capability: "PROBLEM_CLASSIFY",
+        attemptCount: 1,
+        maxAttempts: 2,
+        lastErrorCode: nil,
+        lastFailureClass: nil,
+        classificationId: UUID(uuidString: "00000000-0000-0000-0000-000000001105")!,
+        classificationRevision: 1,
+        classificationSource: "AI",
+        classificationStatus: "REVIEW_REQUIRED",
+        reviewReason: "AMBIGUOUS_SKILL",
+        subjectId: "MATH",
+        topicId: nil,
+        primarySkillId: nil,
+        secondarySkillIds: [],
+        difficulty: nil,
+        confidenceBand: "LOW",
+        confidenceCalibration: "UNCALIBRATED",
+        provider: "LOCAL_FIXTURE",
+        model: "local-fixture-classifier-v1",
+        fallbackUsed: false,
+        ontologyVersion: "curriculum-v1-seed",
+        projectionVersion: "classification-projection-v1",
+        schemaVersion: "problem-classification-v1",
+        difficultyPolicyVersion: "classification-difficulty-v1",
+        confidencePolicyVersion: "classification-confidence-v1",
+        createdAt: Date(timeIntervalSince1970: 1_800_003_500),
+        updatedAt: Date(timeIntervalSince1970: 1_800_003_600),
+        completedAt: Date(timeIntervalSince1970: 1_800_003_600),
+        classificationCreatedAt: Date(timeIntervalSince1970: 1_800_003_600)
+    )
 
     private var reserveErrors: [Error]
     private var completeErrors: [Error]
@@ -603,12 +816,16 @@ private actor FakeProblemAssetUploadAPI: ProblemAssetUploadServicing {
     private var preprocessingErrors: [Error]
     private var recognitionResults: [ProblemRecognitionResult]
     private var parseResults: [ProblemParseResult]
+    private var canonicalResults: [CanonicalProblemResult]
+    private var classificationResults: [ProblemClassificationResult]
     private var reservations: [ReceivedReservation] = []
     private var completionKeys: [String] = []
     private var completionUploadIds: [UUID] = []
     private var preprocessingAssetIds: [UUID] = []
     private var recognitionSessionIds: [UUID] = []
     private var parseSessionIds: [UUID] = []
+    private var canonicalSessionIds: [UUID] = []
+    private var classificationSessionIds: [UUID] = []
 
     init(
         reserveErrors: [Error] = [],
@@ -616,7 +833,9 @@ private actor FakeProblemAssetUploadAPI: ProblemAssetUploadServicing {
         preprocessingResults: [ProblemAssetPreprocessingResult] = [FakeProblemAssetUploadAPI.preprocessingPass],
         preprocessingErrors: [Error] = [],
         recognitionResults: [ProblemRecognitionResult] = [FakeProblemAssetUploadAPI.recognitionSucceeded],
-        parseResults: [ProblemParseResult] = [FakeProblemAssetUploadAPI.parseSucceeded]
+        parseResults: [ProblemParseResult] = [FakeProblemAssetUploadAPI.parseSucceeded],
+        canonicalResults: [CanonicalProblemResult] = [FakeProblemAssetUploadAPI.canonicalProblem],
+        classificationResults: [ProblemClassificationResult] = [FakeProblemAssetUploadAPI.classificationSucceeded]
     ) {
         self.reserveErrors = reserveErrors
         self.completeErrors = completeErrors
@@ -624,6 +843,8 @@ private actor FakeProblemAssetUploadAPI: ProblemAssetUploadServicing {
         self.preprocessingErrors = preprocessingErrors
         self.recognitionResults = recognitionResults
         self.parseResults = parseResults
+        self.canonicalResults = canonicalResults
+        self.classificationResults = classificationResults
     }
 
     func reserveUpload(
@@ -694,6 +915,38 @@ private actor FakeProblemAssetUploadAPI: ProblemAssetUploadServicing {
         return Self.parseSucceeded
     }
 
+    func canonicalize(problemSessionId: UUID) async throws -> CanonicalProblemResult {
+        canonicalSessionIds.append(problemSessionId)
+        if !canonicalResults.isEmpty {
+            return canonicalResults.removeFirst()
+        }
+        return Self.canonicalProblem
+    }
+
+    func getCanonicalProblem(problemSessionId: UUID) async throws -> CanonicalProblemResult {
+        canonicalSessionIds.append(problemSessionId)
+        if !canonicalResults.isEmpty {
+            return canonicalResults.removeFirst()
+        }
+        return Self.canonicalProblem
+    }
+
+    func requestClassification(problemSessionId: UUID) async throws -> ProblemClassificationResult {
+        classificationSessionIds.append(problemSessionId)
+        if !classificationResults.isEmpty {
+            return classificationResults.removeFirst()
+        }
+        return Self.classificationSucceeded
+    }
+
+    func getClassification(problemSessionId: UUID) async throws -> ProblemClassificationResult {
+        classificationSessionIds.append(problemSessionId)
+        if !classificationResults.isEmpty {
+            return classificationResults.removeFirst()
+        }
+        return Self.classificationSucceeded
+    }
+
     func receivedReservation() -> ReceivedReservation? {
         reservations.last
     }
@@ -712,6 +965,14 @@ private actor FakeProblemAssetUploadAPI: ProblemAssetUploadServicing {
 
     func preprocessCount() -> Int {
         preprocessingAssetIds.count
+    }
+
+    func canonicalizeCount() -> Int {
+        canonicalSessionIds.count
+    }
+
+    func classificationCount() -> Int {
+        classificationSessionIds.count
     }
 }
 

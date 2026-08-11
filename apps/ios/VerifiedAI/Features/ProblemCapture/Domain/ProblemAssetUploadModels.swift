@@ -18,6 +18,15 @@ enum ProblemAssetUploadPhase: Equatable, Sendable {
     case parseReviewRequired(ParsedProblemReference)
     case parseUnsupported(RecognizedProblemReference, ProblemParseResult)
     case parseFailed(RecognizedProblemReference, ProblemParseResult?)
+    case canonicalizing(ParsedProblemReference)
+    case canonicalized(CanonicalizedProblemReference)
+    case canonicalizationFailed(ParsedProblemReference, CanonicalProblemResult?)
+    case startingClassification(CanonicalizedProblemReference)
+    case classifying(CanonicalizedProblemReference, ProblemClassificationResult)
+    case classified(ClassifiedProblemReference)
+    case classificationReviewRequired(ClassifiedProblemReference)
+    case classificationUnsupported(CanonicalizedProblemReference, ProblemClassificationResult)
+    case classificationFailed(CanonicalizedProblemReference, ProblemClassificationResult?)
     case preprocessingWarning(PreprocessedProblemAssetReference, AcceptedCapturedAsset)
     case preprocessingFailed(DurableProblemAssetReference?, ProblemAssetPreprocessingResult?, AcceptedCapturedAsset)
     case recoverableFailure(ProblemAssetUploadFailure, AcceptedCapturedAsset)
@@ -64,6 +73,16 @@ struct RecognizedProblemReference: Equatable, Sendable {
 struct ParsedProblemReference: Equatable, Sendable {
     let recognizedProblem: RecognizedProblemReference
     let parse: ProblemParseResult
+}
+
+struct CanonicalizedProblemReference: Equatable, Sendable {
+    let parsedProblem: ParsedProblemReference
+    let canonicalProblem: CanonicalProblemResult
+}
+
+struct ClassifiedProblemReference: Equatable, Sendable {
+    let canonicalizedProblem: CanonicalizedProblemReference
+    let classification: ProblemClassificationResult
 }
 
 struct ProblemAssetPreprocessingResult: Equatable, Sendable {
@@ -213,6 +232,89 @@ struct ProblemParseResult: Equatable, Sendable {
 
     var isTerminalFailure: Bool {
         jobStatus == "FAILED_TERMINAL"
+    }
+}
+
+struct CanonicalProblemResult: Equatable, Sendable {
+    let canonicalProblemId: UUID
+    let problemSessionId: UUID
+    let problemParseId: UUID
+    let problemParseRevision: Int
+    let canonicalRevision: Int
+    let schemaVersion: String
+    let verifierSchemaVersion: String
+    let problemType: String
+    let taskType: String
+    let normalizedText: String?
+    let displayLatex: String?
+    let variables: [String]
+    let sourceConstraintCount: Int
+    let derivedRestrictionCount: Int
+    let createdAt: Date
+}
+
+struct ProblemClassificationResult: Equatable, Sendable {
+    let classificationJobId: UUID?
+    let problemSessionId: UUID
+    let canonicalProblemId: UUID
+    let canonicalProblemRevision: Int
+    let jobStatus: String
+    let capability: String
+    let attemptCount: Int
+    let maxAttempts: Int
+    let lastErrorCode: String?
+    let lastFailureClass: String?
+    let classificationId: UUID?
+    let classificationRevision: Int?
+    let classificationSource: String?
+    let classificationStatus: String?
+    let reviewReason: String?
+    let subjectId: String?
+    let topicId: String?
+    let primarySkillId: String?
+    let secondarySkillIds: [String]
+    let difficulty: String?
+    let confidenceBand: String?
+    let confidenceCalibration: String?
+    let provider: String?
+    let model: String?
+    let fallbackUsed: Bool?
+    let ontologyVersion: String
+    let projectionVersion: String
+    let schemaVersion: String
+    let difficultyPolicyVersion: String
+    let confidencePolicyVersion: String
+    let createdAt: Date?
+    let updatedAt: Date?
+    let completedAt: Date?
+    let classificationCreatedAt: Date?
+
+    var isTerminalSuccess: Bool {
+        jobStatus == "SUCCEEDED"
+    }
+
+    var isInProgress: Bool {
+        jobStatus == "NOT_STARTED" || jobStatus == "QUEUED" || jobStatus == "RUNNING"
+    }
+
+    var isRetryableFailure: Bool {
+        jobStatus == "FAILED_RETRYABLE"
+    }
+
+    var isTerminalFailure: Bool {
+        jobStatus == "FAILED_TERMINAL"
+    }
+
+    var isClassified: Bool {
+        classificationStatus == "CLASSIFIED"
+    }
+
+    var needsReview: Bool {
+        classificationStatus == "REVIEW_REQUIRED" || classificationStatus == "UNKNOWN"
+    }
+
+    var isUnsupported: Bool {
+        classificationStatus == "UNSUPPORTED"
     }
 }
 

@@ -1,7 +1,7 @@
 # Sprint 4.7 Implementation Map
 
 ## Status
-IMPLEMENTED — FINAL QUALITY GATES REQUIRED BEFORE COMPLETE
+COMPLETE — BACKEND AND IOS PRODUCTION FLOW INTEGRATED
 
 ## Core invariant
 
@@ -83,6 +83,31 @@ as Sprint 4.7 CanonicalProblem E2E coverage.
 Classification lifecycle participates in account export/deletion.
 
 Raw classifier provider output is excluded from account export.
+
+## iOS production flow
+
+Sprint 4.7 is exposed in iOS through the existing `ProblemCapture`
+workflow boundary rather than a separate client-side classifier.
+
+- `ProblemAssetUploadServicing` includes canonicalization and
+  classification commands/read endpoints:
+  `POST /api/v1/problem-sessions/{sessionId}/canonicalize`,
+  `GET /api/v1/problem-sessions/{sessionId}/canonical-problem`,
+  `POST /api/v1/problem-sessions/{sessionId}/classification`, and
+  `GET /api/v1/problem-sessions/{sessionId}/classification`.
+- `ProblemAssetUploadPhase` keeps parse, canonical, and classification
+  references as separate typed states.
+- Capture UX now progresses from successful parse to verification
+  preparation, canonical summary, durable classification start/polling,
+  classified, review-required, unsupported, and retryable failure states.
+- Parse review close refreshes the backend-selected current parse before
+  the user can prepare verification from a corrected revision.
+- Problem history/recovery invokes backend-derived `CANONICALIZE`,
+  `START_CLASSIFICATION`, and `RETRY_CLASSIFICATION` actions through the
+  same workflow API. It does not synthesize taxonomy decisions locally.
+- iOS tests cover canonicalization transition, classification success,
+  classification retry, review-required classification, and history
+  recovery action dispatch.
 
 ## Explicitly out of scope
 
