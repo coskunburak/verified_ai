@@ -862,6 +862,11 @@ class ProblemAssetLifecycleContributor
                     estimated_cost_micros,
                     currency,
                     pricing_version,
+                    parent_parse_id,
+                    correction_reason,
+                    corrected_fields_jsonb::text
+                        as corrected_fields_json,
+                    correction_schema_version,
                     created_at
                 from problem_parses
                 where user_id = ?
@@ -879,11 +884,11 @@ class ProblemAssetLifecycleContributor
                     );
                     row.put(
                         "parseJobId",
-                        resultSet
-                            .getObject(
+                        objectStringOrNull(
+                            resultSet.getObject(
                                 "parse_job_id"
                             )
-                            .toString()
+                        )
                     );
                     row.put(
                         "problemSessionId",
@@ -981,7 +986,8 @@ class ProblemAssetLifecycleContributor
                     );
                     row.put(
                         "fallbackUsed",
-                        resultSet.getBoolean(
+                        booleanOrNull(
+                            resultSet,
                             "fallback_used"
                         )
                     );
@@ -1005,7 +1011,7 @@ class ProblemAssetLifecycleContributor
                     );
                     row.put(
                         "requestUnits",
-                        resultSet.getInt(
+                        resultSet.getObject(
                             "request_units"
                         )
                     );
@@ -1037,6 +1043,32 @@ class ProblemAssetLifecycleContributor
                         "pricingVersion",
                         resultSet.getString(
                             "pricing_version"
+                        )
+                    );
+                    row.put(
+                        "parentParseId",
+                        objectStringOrNull(
+                            resultSet.getObject(
+                                "parent_parse_id"
+                            )
+                        )
+                    );
+                    row.put(
+                        "correctionReason",
+                        resultSet.getString(
+                            "correction_reason"
+                        )
+                    );
+                    row.put(
+                        "correctedFields",
+                        resultSet.getString(
+                            "corrected_fields_json"
+                        )
+                    );
+                    row.put(
+                        "correctionSchemaVersion",
+                        resultSet.getString(
+                            "correction_schema_version"
                         )
                     );
                     row.put(
@@ -1706,10 +1738,11 @@ class ProblemAssetLifecycleContributor
             "retentionNote",
             "Raw source image/PDF objects and derived preprocessing objects "
                 + "are private object-storage assets and are removed during "
-                + "account deletion. Recognition, parser, canonical-problem, "
-                + "and classification lifecycle rows cascade with the owning "
-                + "problem session. Raw AI provider outputs are excluded from "
-                + "account export payloads."
+                + "account deletion. Recognition, parser, user correction, "
+                + "canonical-problem, and classification lifecycle rows cascade "
+                + "with the owning problem session. Raw AI provider outputs, "
+                + "correction request hashes, and idempotency keys are excluded "
+                + "from account export payloads."
         );
 
         return export;
@@ -1766,5 +1799,23 @@ class ProblemAssetLifecycleContributor
             : timestamp
             .toInstant()
             .toString();
+    }
+
+    private static String objectStringOrNull(
+        Object value
+    ) {
+        return value == null
+            ? null
+            : value.toString();
+    }
+
+    private static Boolean booleanOrNull(
+        java.sql.ResultSet resultSet,
+        String column
+    ) throws java.sql.SQLException {
+        boolean value = resultSet.getBoolean(column);
+        return resultSet.wasNull()
+            ? null
+            : value;
     }
 }

@@ -14,6 +14,7 @@ struct RootView: View {
     @State private var paywallViewModel: PaywallViewModel
     @State private var problemCaptureViewModel: ProblemCaptureViewModel
     @State private var problemAssetUploadViewModel: ProblemAssetUploadViewModel
+    @State private var problemReviewViewModel: ProblemReviewViewModel
     @State private var isPaywallPresented = false
     @State private var isAccountSettingsPresented = false
     @State private var isProblemCapturePresented = false
@@ -61,6 +62,11 @@ struct RootView: View {
             uploadAPI: dependencies.problemAssetUploadAPI,
             objectUploader: dependencies.presignedObjectUploader,
             assetStore: dependencies.capturedAssetStore,
+            networkMonitor: dependencies.networkMonitor,
+            logger: dependencies.logger
+        ))
+        _problemReviewViewModel = State(initialValue: ProblemReviewViewModel(
+            reviewAPI: dependencies.problemReviewAPI,
             networkMonitor: dependencies.networkMonitor,
             logger: dependencies.logger
         ))
@@ -182,6 +188,7 @@ struct RootView: View {
                 ProblemCaptureView(
                     viewModel: problemCaptureViewModel,
                     uploadViewModel: problemAssetUploadViewModel,
+                    problemReviewViewModel: problemReviewViewModel,
                     cameraClient: dependencies.problemCameraClient,
                     onDismiss: { isProblemCapturePresented = false }
                 )
@@ -216,6 +223,7 @@ struct RootView: View {
         entitlementViewModel.reset()
         paywallViewModel.reset()
         problemAssetUploadViewModel.reset()
+        problemReviewViewModel.reset()
         Task { await problemCaptureViewModel.cancel() }
     }
 

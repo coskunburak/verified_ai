@@ -66,6 +66,12 @@ Sprint 4.5 parser privacy:
 - account export includes parse metadata and normalized parser output, but excludes raw parser output by default;
 - account deletion removes parse rows through the problem-session lifecycle and does not claim provider-side deletion until a real provider contract supplies that guarantee.
 
+Sprint 4.8 correction privacy:
+- user-corrected parse revisions are sensitive student learning content and must not be sent to generic analytics, metric labels, or logs;
+- correction APIs return only selected normalized problem content, source, parent revision metadata, correction reason, and corrected field names;
+- account export includes correction lineage and corrected-field metadata, but excludes correction request hashes and idempotency keys;
+- user corrections are not verified mathematical truth, model-training data, or evaluation gold data by default.
+
 ## External AI processing
 
 Provider settings/contracts must be reviewed for retention, training use and regional processing. Never promise a privacy property that is not technically/contractually enforced.
@@ -94,7 +100,7 @@ Implemented guarantees:
 
 Phase 4+ data-owning modules must implement the account lifecycle contributor before storing user assets, problem history, attempts, mastery, study plans, tutor transcripts, or AI operational metadata.
 
-Sprint 4.2 implements that contributor for `problem_sessions` and `problem_assets`. Sprint 4.4 extends it for recognition jobs/evidence metadata. Sprint 4.5 extends it for parse jobs/revisions while excluding raw parser output from normal exports. The rule remains open for future canonical problem, attempt, mastery, tutor, and AI operational stores.
+Sprint 4.2 implements that contributor for `problem_sessions` and `problem_assets`. Sprint 4.4 extends it for recognition jobs/evidence metadata. Sprint 4.5 extends it for parse jobs/revisions while excluding raw parser output from normal exports. Sprint 4.8 extends it for user correction metadata while excluding correction retry fingerprints. The rule remains open for future canonical problem, attempt, mastery, tutor, and AI operational stores.
 
 ## Minors
 

@@ -37,6 +37,7 @@ class RateLimitFilter extends OncePerRequestFilter {
     private static final RateLimitPolicy ASSET_PREPROCESS = new RateLimitPolicy("problem_asset_preprocess", 30, Duration.ofMinutes(10), false);
     private static final RateLimitPolicy PROBLEM_RECOGNITION = new RateLimitPolicy("problem_recognition", 20, Duration.ofMinutes(10), false);
     private static final RateLimitPolicy PROBLEM_PARSE = new RateLimitPolicy("problem_parse", 20, Duration.ofMinutes(10), false);
+    private static final RateLimitPolicy PROBLEM_PARSE_CORRECTION = new RateLimitPolicy("problem_parse_correction", 20, Duration.ofMinutes(10), false);
 
     private final RateLimiter rateLimiter;
     private final SecurityMetrics metrics;
@@ -117,6 +118,9 @@ class RateLimitFilter extends OncePerRequestFilter {
         }
         if ("POST".equals(method) && path.startsWith("/api/v1/problem-sessions/") && path.endsWith("/parse")) {
             return Optional.of(PROBLEM_PARSE);
+        }
+        if ("POST".equals(method) && path.startsWith("/api/v1/problem-sessions/") && path.endsWith("/parse-revisions")) {
+            return Optional.of(PROBLEM_PARSE_CORRECTION);
         }
         return Optional.empty();
     }

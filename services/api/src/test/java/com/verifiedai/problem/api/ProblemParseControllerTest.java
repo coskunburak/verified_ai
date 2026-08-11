@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.verifiedai.identity.application.AppleSignInCommand;
 import com.verifiedai.identity.application.AuthSessionResult;
 import com.verifiedai.identity.application.IdentityApplicationService;
@@ -171,6 +172,121 @@ final class ProblemParseControllerTest extends PostgresIntegrationTestSupport {
         JsonNode parsed = objectMapper.readTree(current.body());
         assertThat(parsed.path("canonicalProblemId").asText()).isEqualTo(created.path("canonicalProblemId").asText());
         assertThat(count("canonical_problems")).isEqualTo(1);
+    }
+
+    @Test
+    void authenticatedUserCanReviewCorrectAndCanonicalizeSelectedParseRevision() throws Exception {
+        AuthSessionResult session = signIn("parse-correction-api-user");
+        UUID sessionId = insertRecognizedProblem(session.userId(), "x + 1 = 2");
+
+        httpClient.send(
+            authorized(session, "/api/v1/problem-sessions/" + sessionId + "/parse")
+                .POST(HttpRequest.BodyPublishers.noBody())
+                .build(),
+            HttpResponse.BodyHandlers.ofString()
+        );
+        assertThat(parseApplicationService.runDueParseJobs(10)).isEqualTo(1);
+
+        HttpResponse<String> reviewResponse = httpClient.send(
+            authorized(session, "/api/v1/problem-sessions/" + sessionId + "/parse-review")
+                .GET()
+                .build(),
+            HttpResponse.BodyHandlers.ofString()
+        );
+
+        assertThat(reviewResponse.statusCode()).as(reviewResponse.body()).isEqualTo(200);
+        JsonNode review = objectMapper.readTree(reviewResponse.body());
+        JsonNode currentParse = review.path("currentParse");
+        assertThat(currentParse.path("source").asText()).isEqualTo("AI");
+        assertThat(review.path("revisionCount").asInt()).isEqualTo(1);
+        assertThat(review.path("canCorrect").asBoolean()).isTrue();
+        assertThat(reviewResponse.body()).doesNotContain("rawOutput");
+        assertThat(reviewResponse.body()).doesNotContain("idempotency");
+
+        ObjectNode correctedProblem = currentParse.path("normalizedProblem").deepCopy();
+        ObjectNode expression = (ObjectNode) correctedProblem.path("expressions").get(0);
+        expression.put("sourceText", "x + 2 = 5");
+        expression.put("normalizedText", "x + 2 = 5");
+        expression.put("displayLatex", "x + 2 = 5");
+
+        ObjectNode correctionRequest = objectMapper.createObjectNode();
+        correctionRequest.put("baseParseId", currentParse.path("problemParseId").asText());
+        correctionRequest.put("baseRevision", currentParse.path("revision").asInt());
+        correctionRequest.put("correctionReason", "MATH_EXPRESSION_ERROR");
+        correctionRequest.set("problem", correctedProblem);
+        String idempotencyKey = "parse-correction-api-test-" + sessionId;
+
+        HttpResponse<String> correctionResponse = httpClient.send(
+            authorized(session, "/api/v1/problem-sessions/" + sessionId + "/parse-revisions")
+                .header("Content-Type", "application/json")
+                .header("Idempotency-Key", idempotencyKey)
+                .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(correctionRequest)))
+                .build(),
+            HttpResponse.BodyHandlers.ofString()
+        );
+
+        assertThat(correctionResponse.statusCode()).as(correctionResponse.body()).isEqualTo(201);
+        JsonNode correction = objectMapper.readTree(correctionResponse.body());
+        assertThat(correction.path("source").asText()).isEqualTo("USER");
+        assertThat(correction.path("revision").asInt()).isEqualTo(2);
+        assertThat(correction.path("parentParseId").asText()).isEqualTo(currentParse.path("problemParseId").asText());
+        assertThat(correction.path("selected").asBoolean()).isTrue();
+        assertThat(correction.path("canonicalizationRequired").asBoolean()).isTrue();
+
+        HttpResponse<String> replayResponse = httpClient.send(
+            authorized(session, "/api/v1/problem-sessions/" + sessionId + "/parse-revisions")
+                .header("Content-Type", "application/json")
+                .header("Idempotency-Key", idempotencyKey)
+                .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(correctionRequest)))
+                .build(),
+            HttpResponse.BodyHandlers.ofString()
+        );
+
+        assertThat(replayResponse.statusCode()).as(replayResponse.body()).isEqualTo(201);
+        JsonNode replay = objectMapper.readTree(replayResponse.body());
+        assertThat(replay.path("problemParseId").asText()).isEqualTo(correction.path("problemParseId").asText());
+        assertThat(count("problem_parses")).isEqualTo(2);
+
+        HttpResponse<String> updatedReviewResponse = httpClient.send(
+            authorized(session, "/api/v1/problem-sessions/" + sessionId + "/parse-review")
+                .GET()
+                .build(),
+            HttpResponse.BodyHandlers.ofString()
+        );
+
+        JsonNode updatedReview = objectMapper.readTree(updatedReviewResponse.body());
+        assertThat(updatedReview.path("currentParse").path("source").asText()).isEqualTo("USER");
+        assertThat(updatedReview.path("currentParse").path("revision").asInt()).isEqualTo(2);
+        assertThat(updatedReview.path("currentParse").path("normalizedProblem").path("expressions").get(0).path("normalizedText").asText())
+            .isEqualTo("x + 2 = 5");
+
+        HttpResponse<String> historyResponse = httpClient.send(
+            authorized(session, "/api/v1/problem-sessions/" + sessionId + "/parse-revisions")
+                .GET()
+                .build(),
+            HttpResponse.BodyHandlers.ofString()
+        );
+
+        assertThat(historyResponse.statusCode()).as(historyResponse.body()).isEqualTo(200);
+        JsonNode history = objectMapper.readTree(historyResponse.body());
+        assertThat(history.path("selectedParseId").asText()).isEqualTo(correction.path("problemParseId").asText());
+        assertThat(history.path("revisions").size()).isEqualTo(2);
+        assertThat(history.path("revisions").get(0).path("correctedFieldCategories").toString()).contains("EXPRESSION");
+        assertThat(historyResponse.body()).doesNotContain("correctionRequestHash");
+        assertThat(historyResponse.body()).doesNotContain("Idempotency");
+
+        HttpResponse<String> canonicalize = httpClient.send(
+            authorized(session, "/api/v1/problem-sessions/" + sessionId + "/canonicalize")
+                .POST(HttpRequest.BodyPublishers.noBody())
+                .build(),
+            HttpResponse.BodyHandlers.ofString()
+        );
+
+        assertThat(canonicalize.statusCode()).as(canonicalize.body()).isEqualTo(201);
+        JsonNode canonical = objectMapper.readTree(canonicalize.body());
+        assertThat(canonical.path("problemParseId").asText()).isEqualTo(correction.path("problemParseId").asText());
+        assertThat(canonical.path("problemParseRevision").asInt()).isEqualTo(2);
+        assertThat(canonical.path("normalizedText").asText()).isEqualTo("x + 2 = 5");
     }
 
     private AuthSessionResult signIn(String subject) {

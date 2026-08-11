@@ -88,6 +88,15 @@ public class ProblemSessionJpaEntity {
         return version;
     }
 
+    public UUID currentParseId() {
+        return currentParseId;
+    }
+
+    public void selectParse(UUID parseId, Instant now) {
+        this.currentParseId = parseId;
+        this.updatedAt = now;
+    }
+
     public void markAssetUploaded(Instant now) {
         if (ProblemSessionStatus.CREATED.name().equals(status)) {
             status = ProblemSessionStatus.ASSET_UPLOADED.name();

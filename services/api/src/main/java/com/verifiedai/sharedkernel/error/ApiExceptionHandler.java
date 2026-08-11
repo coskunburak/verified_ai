@@ -2,6 +2,8 @@ package com.verifiedai.sharedkernel.error;
 
 import com.verifiedai.sharedkernel.observability.CorrelationIds;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -12,9 +14,11 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 
 @RestControllerAdvice
 class ApiExceptionHandler {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApiExceptionHandler.class);
 
     @ExceptionHandler(Exception.class)
     ResponseEntity<ProblemDetailsResponse> handleUnexpected(Exception exception) {
+        LOGGER.error("api.unexpected_exception", exception);
         ProblemDetailsResponse response = new ProblemDetailsResponse(
             "https://errors.verified-ai-learning.example/internal-error",
             "Internal error",

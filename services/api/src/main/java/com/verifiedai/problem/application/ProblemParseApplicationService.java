@@ -9,12 +9,14 @@ import com.verifiedai.ai.application.AiProviderFailureClass;
 import com.verifiedai.ai.application.AiRoutePlan;
 import com.verifiedai.billing.application.CapabilityAccessPolicy;
 import com.verifiedai.problem.domain.model.ProblemParseJobStatus;
+import com.verifiedai.problem.domain.model.ProblemParseSource;
 import com.verifiedai.problem.domain.model.ProblemParseSupportStatus;
 import com.verifiedai.problem.infrastructure.parser.ProblemParserProperties;
 import com.verifiedai.problem.infrastructure.persistence.ProblemParseJobJpaEntity;
 import com.verifiedai.problem.infrastructure.persistence.ProblemParseJobJpaRepository;
 import com.verifiedai.problem.infrastructure.persistence.ProblemParseJpaEntity;
 import com.verifiedai.problem.infrastructure.persistence.ProblemParseJpaRepository;
+import com.verifiedai.problem.infrastructure.persistence.ProblemSessionJpaEntity;
 import com.verifiedai.problem.infrastructure.persistence.ProblemSessionJpaRepository;
 import com.verifiedai.problem.infrastructure.persistence.RecognitionEvidenceJpaEntity;
 import com.verifiedai.problem.infrastructure.persistence.RecognitionEvidenceJpaRepository;
@@ -46,6 +48,8 @@ public class ProblemParseApplicationService {
     private final JdbcTemplate jdbcTemplate;
     private final Clock clock;
     private final ProblemParseMetrics metrics;
+    private final ProblemParseSelectionPolicy selectionPolicy;
+    private final ProblemParseCorrectionMetrics correctionMetrics;
     private final TransactionTemplate transactionTemplate;
 
     @SuppressWarnings("ParameterNumber")
@@ -61,6 +65,8 @@ public class ProblemParseApplicationService {
         JdbcTemplate jdbcTemplate,
         Clock clock,
         ProblemParseMetrics metrics,
+        ProblemParseSelectionPolicy selectionPolicy,
+        ProblemParseCorrectionMetrics correctionMetrics,
         TransactionTemplate transactionTemplate
     ) {
         this.sessionRepository = sessionRepository;
@@ -74,6 +80,8 @@ public class ProblemParseApplicationService {
         this.jdbcTemplate = jdbcTemplate;
         this.clock = clock;
         this.metrics = metrics;
+        this.selectionPolicy = selectionPolicy;
+        this.correctionMetrics = correctionMetrics;
         this.transactionTemplate = transactionTemplate;
     }
 
@@ -219,10 +227,11 @@ public class ProblemParseApplicationService {
                 return;
             }
             if (parseRepository.findByParseJobId(job.id()).isEmpty()) {
-                sessionRepository.findByIdAndUserIdForUpdate(job.problemSessionId(), job.userId())
+                ProblemSessionJpaEntity session = sessionRepository.findByIdAndUserIdForUpdate(job.problemSessionId(), job.userId())
                     .orElseThrow();
                 int revision = parseRepository.maxRevision(job.problemSessionId()) + 1;
-                parseRepository.save(new ProblemParseJpaEntity(
+                Instant now = clock.instant();
+                ProblemParseJpaEntity saved = parseRepository.save(ProblemParseJpaEntity.fromAi(
                     UUID.randomUUID(),
                     job.id(),
                     job.userId(),
@@ -241,8 +250,13 @@ public class ProblemParseApplicationService {
                     aiResult.providerLatencyMs(),
                     Math.max(0, totalNanos / 1_000_000),
                     null,
-                    clock.instant()
+                    now
                 ));
+                if (!ProblemParseSupportStatus.UNSUPPORTED.name().equals(normalized.supportStatus())
+                    && selectionPolicy.shouldSelectAiParse(session.currentParseId())) {
+                    session.selectParse(saved.id(), now);
+                    correctionMetrics.selectionChanged(ProblemParseSource.AI.name());
+                }
             }
             if (ProblemParseSupportStatus.UNSUPPORTED.name().equals(normalized.supportStatus())) {
                 job.markUnsupported(clock.instant());

@@ -66,7 +66,7 @@ RecognitionEvidence is the durable raw-evidence artifact produced by visual reco
 
 ProblemParseJob is a durable operational child of a user-owned ProblemSession. It coordinates Sprint 4.5 `PROBLEM_NORMALIZE` work over an exact `RecognitionEvidence` id/revision and stores status, attempts, prompt/schema/route identity, failure code, timing, and usage/cost/provenance. It is separate from RecognitionJob and does not solve, classify skill, or create a canonical Problem.
 
-ProblemParse is an immutable parser-level revision. It stores raw parser output separately from normalized parser output, exact RecognitionEvidence provenance, provider/model/prompt/schema/route metadata, source `block.id` references, support status (`SUPPORTED`, `REVIEW_REQUIRED`, or `UNSUPPORTED`), and explicit parser uncertainty. Sprint 4.5 creates only AI-source revisions; user correction, selected-parse semantics, and canonical safe mathematical representation remain later sprints.
+ProblemParse is an immutable parser-level revision. It stores raw parser output separately from normalized parser output, exact RecognitionEvidence provenance, provider/model/prompt/schema/route metadata for AI revisions, source `block.id` references, support status (`SUPPORTED`, `REVIEW_REQUIRED`, or `UNSUPPORTED`), and explicit parser uncertainty. Sprint 4.8 adds user-corrected `source=USER` revisions with parent lineage and correction metadata; the selected parse is the `ProblemSession.current_parse_id` pointer, not the latest row by revision or timestamp.
 
 ## Problem
 

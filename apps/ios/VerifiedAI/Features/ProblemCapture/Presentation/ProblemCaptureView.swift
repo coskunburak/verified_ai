@@ -7,6 +7,7 @@ import UIKit
 struct ProblemCaptureView: View {
     @Bindable var viewModel: ProblemCaptureViewModel
     @Bindable var uploadViewModel: ProblemAssetUploadViewModel
+    @Bindable var problemReviewViewModel: ProblemReviewViewModel
     let cameraClient: ProblemCameraClient
     let onDismiss: () -> Void
 
@@ -14,6 +15,7 @@ struct ProblemCaptureView: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var selectedPhotoItem: PhotosPickerItem?
     @State private var isFileImporterPresented = false
+    @State private var reviewSheet: ProblemReviewSheetContext?
 
     var body: some View {
         NavigationStack {
@@ -77,6 +79,17 @@ struct ProblemCaptureView: View {
                 case .failure:
                     await viewModel.importDocument(at: nil, contentType: nil)
                 }
+            }
+        }
+        .sheet(item: $reviewSheet) { context in
+            NavigationStack {
+                ProblemReviewView(
+                    viewModel: problemReviewViewModel,
+                    problemSessionId: context.problemSessionId,
+                    onFinished: {
+                        reviewSheet = nil
+                    }
+                )
             }
         }
     }
@@ -537,6 +550,14 @@ struct ProblemCaptureView: View {
                     .foregroundStyle(ColorTokens.action)
                 parseSummary(reference.parse)
                 Button {
+                    reviewSheet = ProblemReviewSheetContext(problemSessionId: reference.parse.problemSessionId)
+                } label: {
+                    Label("Review Problem", systemImage: "square.and.pencil")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .accessibilityIdentifier("problemCapture.reviewProblem")
+                Button {
                     onDismiss()
                 } label: {
                     Label("Done", systemImage: "checkmark")
@@ -548,6 +569,14 @@ struct ProblemCaptureView: View {
                     .font(TypographyTokens.title)
                     .foregroundStyle(ColorTokens.warning)
                 parseSummary(reference.parse)
+                Button {
+                    reviewSheet = ProblemReviewSheetContext(problemSessionId: reference.parse.problemSessionId)
+                } label: {
+                    Label("Review Problem", systemImage: "square.and.pencil")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .accessibilityIdentifier("problemCapture.reviewProblem")
                 Button {
                     onDismiss()
                 } label: {
@@ -790,6 +819,14 @@ struct ProblemCaptureView: View {
             return "Retry Preprocessing"
         }
         return "Retry Upload"
+    }
+}
+
+private struct ProblemReviewSheetContext: Identifiable {
+    let problemSessionId: UUID
+
+    var id: UUID {
+        problemSessionId
     }
 }
 
