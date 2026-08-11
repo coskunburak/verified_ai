@@ -130,9 +130,12 @@ final class ProblemHistoryViewModel {
                 _ = try await workflowAPI.requestRecognition(problemSessionId: detail.problemSessionId)
             case .startParse, .retryParse:
                 _ = try await workflowAPI.requestParse(problemSessionId: detail.problemSessionId)
-            case .waitRecognition, .waitParse, .waitClassification, .reviewParse, .canonicalize, .startClassification,
-                 .retryClassification, .readyForSolve, .none, .resumeUpload, .startPreprocessing, .retryPreprocessing,
-                 .recaptureOrReimport, .unsupported:
+            case .canonicalize:
+                _ = try await workflowAPI.canonicalize(problemSessionId: detail.problemSessionId)
+            case .startClassification, .retryClassification:
+                _ = try await workflowAPI.requestClassification(problemSessionId: detail.problemSessionId)
+            case .waitRecognition, .waitParse, .waitClassification, .reviewParse, .readyForSolve, .none,
+                 .resumeUpload, .startPreprocessing, .retryPreprocessing, .recaptureOrReimport, .unsupported:
                 break
             }
             await reconnect(problemSessionId: detail.problemSessionId)

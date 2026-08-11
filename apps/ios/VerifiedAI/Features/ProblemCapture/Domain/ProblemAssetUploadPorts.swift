@@ -9,6 +9,10 @@ protocol ProblemAssetUploadServicing: Sendable {
     func getRecognition(problemSessionId: UUID) async throws -> ProblemRecognitionResult
     func requestParse(problemSessionId: UUID) async throws -> ProblemParseResult
     func getParse(problemSessionId: UUID) async throws -> ProblemParseResult
+    func canonicalize(problemSessionId: UUID) async throws -> CanonicalProblemResult
+    func getCanonicalProblem(problemSessionId: UUID) async throws -> CanonicalProblemResult
+    func requestClassification(problemSessionId: UUID) async throws -> ProblemClassificationResult
+    func getClassification(problemSessionId: UUID) async throws -> ProblemClassificationResult
 }
 
 protocol PresignedObjectUploading: Sendable {

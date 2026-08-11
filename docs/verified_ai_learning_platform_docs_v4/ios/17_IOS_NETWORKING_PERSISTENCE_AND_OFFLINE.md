@@ -92,4 +92,14 @@ The client must not implement aggressive automatic retries for expensive solve/t
 Persist user-visible results/history, not provider-specific routing configuration.
 
 Sprint 4.9 problem-session history/resume uses `GET /api/v1/problem-sessions` and `GET /api/v1/problem-sessions/{sessionId}` as read-only recovery projections. Running jobs are resumed by polling/detail refresh. Exact-stage retry uses the existing stage command named by the backend-derived `nextAction`; there is no client-side recover-all command.
+
+Sprint 4.7 mobile classification uses only backend commands and reads:
+`POST /api/v1/problem-sessions/{sessionId}/canonicalize`,
+`GET /api/v1/problem-sessions/{sessionId}/canonical-problem`,
+`POST /api/v1/problem-sessions/{sessionId}/classification`, and
+`GET /api/v1/problem-sessions/{sessionId}/classification`. The capture
+view-model polls classification with bounded backoff and treats
+`CLASSIFIED`, `REVIEW_REQUIRED`, `UNKNOWN`, and `UNSUPPORTED` as
+backend-owned semantic outcomes. The client never invents skill IDs,
+difficulty, confidence, or taxonomy labels while offline or during retry.
 <!-- HYBRID_AI_STRATEGY_V3:END -->

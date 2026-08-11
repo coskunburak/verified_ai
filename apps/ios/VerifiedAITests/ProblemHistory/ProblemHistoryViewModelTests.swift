@@ -51,6 +51,40 @@ final class ProblemHistoryViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.selectedDetail, refreshedDetail)
     }
 
+    func testPerformNextActionCanonicalizesForCanonicalizeRecoveryAction() async throws {
+        let detail = ProblemSessionDetail.fixture(nextAction: .canonicalize)
+        let refreshedDetail = ProblemSessionDetail.fixture(nextAction: .startClassification)
+        let historyAPI = FakeProblemSessionHistoryAPI(details: [refreshedDetail])
+        let workflowAPI = FakeProblemAssetUploadAPI()
+        let viewModel = makeViewModel(historyAPI: historyAPI, workflowAPI: workflowAPI)
+
+        await viewModel.performNextAction(for: detail)
+
+        let canonicalizeRequests = await workflowAPI.canonicalizeSessionIds()
+        let classificationRequests = await workflowAPI.classificationSessionIds()
+        XCTAssertEqual(canonicalizeRequests, [detail.problemSessionId])
+        XCTAssertEqual(classificationRequests, [])
+        XCTAssertEqual(viewModel.selectedDetail, refreshedDetail)
+    }
+
+    func testPerformNextActionStartsClassificationForClassificationRecoveryActions() async throws {
+        for action in [ProblemSessionNextAction.startClassification, .retryClassification] {
+            let detail = ProblemSessionDetail.fixture(nextAction: action)
+            let refreshedDetail = ProblemSessionDetail.fixture(nextAction: .waitClassification)
+            let historyAPI = FakeProblemSessionHistoryAPI(details: [refreshedDetail])
+            let workflowAPI = FakeProblemAssetUploadAPI()
+            let viewModel = makeViewModel(historyAPI: historyAPI, workflowAPI: workflowAPI)
+
+            await viewModel.performNextAction(for: detail)
+
+            let canonicalizeRequests = await workflowAPI.canonicalizeSessionIds()
+            let classificationRequests = await workflowAPI.classificationSessionIds()
+            XCTAssertEqual(canonicalizeRequests, [])
+            XCTAssertEqual(classificationRequests, [detail.problemSessionId])
+            XCTAssertEqual(viewModel.selectedDetail, refreshedDetail)
+        }
+    }
+
     private func makeViewModel(
         historyAPI: FakeProblemSessionHistoryAPI = FakeProblemSessionHistoryAPI(),
         workflowAPI: FakeProblemAssetUploadAPI = FakeProblemAssetUploadAPI(),
@@ -134,6 +168,8 @@ private actor FakeProblemSessionHistoryAPI: ProblemSessionHistoryServicing {
 private actor FakeProblemAssetUploadAPI: ProblemAssetUploadServicing {
     private var recognitionRequests: [UUID] = []
     private var parseRequests: [UUID] = []
+    private var canonicalizeRequests: [UUID] = []
+    private var classificationRequests: [UUID] = []
 
     func reserveUpload(_ request: ProblemAssetUploadRequest, idempotencyKey: String) async throws -> ProblemAssetUploadReservation {
         throw NetworkError.invalidResponse
@@ -169,12 +205,38 @@ private actor FakeProblemAssetUploadAPI: ProblemAssetUploadServicing {
         .fixture(problemSessionId: problemSessionId, status: "QUEUED")
     }
 
+    func canonicalize(problemSessionId: UUID) async throws -> CanonicalProblemResult {
+        canonicalizeRequests.append(problemSessionId)
+        return .fixture(problemSessionId: problemSessionId)
+    }
+
+    func getCanonicalProblem(problemSessionId: UUID) async throws -> CanonicalProblemResult {
+        .fixture(problemSessionId: problemSessionId)
+    }
+
+    func requestClassification(problemSessionId: UUID) async throws -> ProblemClassificationResult {
+        classificationRequests.append(problemSessionId)
+        return .fixture(problemSessionId: problemSessionId, jobStatus: "QUEUED")
+    }
+
+    func getClassification(problemSessionId: UUID) async throws -> ProblemClassificationResult {
+        .fixture(problemSessionId: problemSessionId, jobStatus: "QUEUED")
+    }
+
     func recognitionSessionIds() -> [UUID] {
         recognitionRequests
     }
 
     func parseSessionIds() -> [UUID] {
         parseRequests
+    }
+
+    func canonicalizeSessionIds() -> [UUID] {
+        canonicalizeRequests
+    }
+
+    func classificationSessionIds() -> [UUID] {
+        classificationRequests
     }
 }
 
@@ -299,6 +361,69 @@ private extension ProblemParseResult {
             createdAt: nil,
             updatedAt: nil,
             completedAt: nil
+        )
+    }
+}
+
+private extension CanonicalProblemResult {
+    static func fixture(problemSessionId: UUID) -> CanonicalProblemResult {
+        CanonicalProblemResult(
+            canonicalProblemId: UUID(uuidString: "00000000-0000-0000-0000-000000004905")!,
+            problemSessionId: problemSessionId,
+            problemParseId: UUID(uuidString: "00000000-0000-0000-0000-000000004902")!,
+            problemParseRevision: 2,
+            canonicalRevision: 1,
+            schemaVersion: "canonical-problem-v1",
+            verifierSchemaVersion: "safe-verifier-v1",
+            problemType: "EQUATION",
+            taskType: "SOLVE_EQUATION",
+            normalizedText: "x + 2 = 5",
+            displayLatex: "x + 2 = 5",
+            variables: ["x"],
+            sourceConstraintCount: 0,
+            derivedRestrictionCount: 0,
+            createdAt: Date(timeIntervalSince1970: 1_800_000_200)
+        )
+    }
+}
+
+private extension ProblemClassificationResult {
+    static func fixture(problemSessionId: UUID, jobStatus: String) -> ProblemClassificationResult {
+        ProblemClassificationResult(
+            classificationJobId: UUID(uuidString: "00000000-0000-0000-0000-000000004906")!,
+            problemSessionId: problemSessionId,
+            canonicalProblemId: UUID(uuidString: "00000000-0000-0000-0000-000000004905")!,
+            canonicalProblemRevision: 1,
+            jobStatus: jobStatus,
+            capability: "PROBLEM_CLASSIFY",
+            attemptCount: 0,
+            maxAttempts: 2,
+            lastErrorCode: nil,
+            lastFailureClass: nil,
+            classificationId: nil,
+            classificationRevision: nil,
+            classificationSource: nil,
+            classificationStatus: nil,
+            reviewReason: nil,
+            subjectId: nil,
+            topicId: nil,
+            primarySkillId: nil,
+            secondarySkillIds: [],
+            difficulty: nil,
+            confidenceBand: nil,
+            confidenceCalibration: nil,
+            provider: nil,
+            model: nil,
+            fallbackUsed: nil,
+            ontologyVersion: "curriculum-v1-seed",
+            projectionVersion: "classification-projection-v1",
+            schemaVersion: "problem-classification-v1",
+            difficultyPolicyVersion: "classification-difficulty-v1",
+            confidencePolicyVersion: "classification-confidence-v1",
+            createdAt: nil,
+            updatedAt: nil,
+            completedAt: nil,
+            classificationCreatedAt: nil
         )
     }
 }
