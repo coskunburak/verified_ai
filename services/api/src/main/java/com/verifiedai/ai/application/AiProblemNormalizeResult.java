@@ -5,5 +5,18 @@ public record AiProblemNormalizeResult(
     AiProvenance provenance,
     AiUsage usage,
     long providerLatencyMs
-) {
+) implements AiCapabilityResult {
+
+    @Override
+    public AiProblemNormalizeResult withExecutionMetadata(
+        AiProvenance provenance,
+        long providerLatencyMs
+    ) {
+        return new AiProblemNormalizeResult(
+            rawOutputJson,
+            provenance,
+            usage,
+            providerLatencyMs
+        );
+    }
 }

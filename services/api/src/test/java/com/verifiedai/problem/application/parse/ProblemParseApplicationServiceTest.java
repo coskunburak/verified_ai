@@ -1780,6 +1780,11 @@ final class ProblemParseApplicationServiceTest
                     throw new UnsupportedOperationException(
                         "Problem classification is outside parser tests"
                     );
+
+                default ->
+                    throw new UnsupportedOperationException(
+                        "Capability is outside parser tests"
+                    );
             };
         }
 

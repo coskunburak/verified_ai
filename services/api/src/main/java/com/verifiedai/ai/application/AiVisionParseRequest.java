@@ -17,5 +17,5 @@ public record AiVisionParseRequest(
     String schemaVersion,
     Duration timeout,
     List<String> upstreamQualityWarnings
-) {
+) implements AiCapabilityRequest {
 }

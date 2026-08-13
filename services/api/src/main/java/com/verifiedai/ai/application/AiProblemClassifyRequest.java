@@ -15,5 +15,5 @@ public record AiProblemClassifyRequest(
     String promptVersion,
     String schemaVersion,
     Duration timeout
-) {
+)implements AiCapabilityRequest {
 }

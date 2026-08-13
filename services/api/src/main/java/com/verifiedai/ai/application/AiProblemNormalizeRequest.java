@@ -13,5 +13,5 @@ public record AiProblemNormalizeRequest(
     String promptVersion,
     String schemaVersion,
     Duration timeout
-) {
+)implements AiCapabilityRequest {
 }
