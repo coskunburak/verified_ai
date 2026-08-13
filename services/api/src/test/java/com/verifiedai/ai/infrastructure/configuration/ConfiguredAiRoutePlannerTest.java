@@ -5,6 +5,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.verifiedai.ai.application.AiCapability;
 import com.verifiedai.ai.application.AiCapabilityRegistry;
 import com.verifiedai.ai.application.AiRoutePlan;
+import com.verifiedai.ai.application.OutputSchemaArtifact;
+import com.verifiedai.ai.application.OutputSchemaRegistry;
+import com.verifiedai.ai.application.PromptArtifact;
+import com.verifiedai.ai.application.PromptRegistry;
+import com.verifiedai.ai.application.PromptRegistryFailureCode;
+import com.verifiedai.ai.application.PromptRegistryValidationException;
+import com.verifiedai.ai.application.PromptRegistryValidator;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +72,35 @@ final class ConfiguredAiRoutePlannerTest {
     }
 
     @Test
+    void productionEnabledRouteWithLocalOnlyPromptFailsStartup() {
+        assertThatThrownBy(() ->
+            planner(
+                vision(
+                    true,
+                    "OPENAI",
+                    AiRoutePlan.ReleaseStage.PRODUCTION
+                ),
+                disabledParser(),
+                disabledClassifier(),
+                registry(true, Map.of()),
+                "production"
+            )
+        )
+            .isInstanceOf(
+                PromptRegistryValidationException.class
+            )
+            .extracting(
+                exception ->
+                    ((PromptRegistryValidationException)
+                        exception).code()
+            )
+            .isEqualTo(
+                PromptRegistryFailureCode
+                    .AI_PROMPT_NOT_PRODUCTION_APPROVED
+            );
+    }
+
+    @Test
     void futureSolveCapabilityCannotBeEnabled() {
         assertThatThrownBy(() ->
             planner(
@@ -92,6 +128,42 @@ final class ConfiguredAiRoutePlannerTest {
             );
     }
 
+    @Test
+    void futureArbitrateAndTutorCapabilitiesCannotBeEnabled() {
+        for (
+            AiCapability capability :
+            List.of(
+                AiCapability.ARBITRATE,
+                AiCapability.TUTOR
+            )
+        ) {
+            assertThatThrownBy(() ->
+                planner(
+                    disabledVision(),
+                    disabledParser(),
+                    disabledClassifier(),
+                    registry(
+                        true,
+                        Map.of(
+                            capability,
+                            futureCapability(true)
+                        )
+                    ),
+                    "local"
+                )
+            )
+                .isInstanceOf(
+                    IllegalStateException.class
+                )
+                .hasMessageContaining(
+                    capability.name()
+                )
+                .hasMessageContaining(
+                    "cannot be enabled"
+                );
+        }
+    }
+
     private static ConfiguredAiRoutePlanner planner(
         AiVisionRecognitionProperties vision,
         AiProblemParserProperties parser,
@@ -105,7 +177,24 @@ final class ConfiguredAiRoutePlannerTest {
             classifier,
             registry,
             AiCapabilityRegistry.defaults(),
+            promptRegistryValidator(),
             environment
+        );
+    }
+
+    private static PromptRegistryValidator
+    promptRegistryValidator() {
+        return new PromptRegistryValidator(
+            PromptRegistry.defaults(),
+            OutputSchemaRegistry.defaults(),
+            entry -> new PromptArtifact(
+                entry.promptArtifactPath(),
+                1
+            ),
+            (schema, prompt) -> new OutputSchemaArtifact(
+                schema.artifactPath(),
+                1
+            )
         );
     }
 

@@ -10,6 +10,7 @@ import com.verifiedai.ai.application.AiRoutePlan;
 import com.verifiedai.ai.application.AiRoutePlanner;
 import com.verifiedai.ai.application.AiRoutePolicy;
 import com.verifiedai.ai.application.AiRouteTarget;
+import com.verifiedai.ai.application.PromptRegistryValidator;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
@@ -38,6 +39,7 @@ final class ConfiguredAiRoutePlanner
         AiProblemClassifierProperties classifier,
         AiRouteRegistryProperties generic,
         AiCapabilityRegistry capabilityRegistry,
+        PromptRegistryValidator promptRegistryValidator,
         @Value("${app.environment:local}")
         String environment
     ) {
@@ -174,6 +176,11 @@ final class ConfiguredAiRoutePlanner
             environment,
             generic,
             capabilityRegistry
+        );
+
+        promptRegistryValidator.validateEnabledRoutes(
+            this.policies.values(),
+            environment
         );
     }
 

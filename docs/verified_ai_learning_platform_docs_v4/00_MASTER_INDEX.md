@@ -244,6 +244,8 @@ Documentation is part of the product and part of the implementation contract.
 - `sprints/phase04_problem_capture_and_canonicalization/SPRINT_4.10_EXECUTION_REPORT.md` — Sprint 4.10 ingestion golden dataset and local deterministic evaluation-gate execution evidence.
 - `sprints/phase04_problem_capture_and_canonicalization/PHASE_04_EXECUTION_REPORT.md` — Phase 4 local implementation evidence, open external blockers, and Phase 5 handoff.
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.1_IMPLEMENTATION_MAP.md` — Sprint 5.1 provider-neutral AI gateway, capability model, route policy, usage ledger, and rollout implementation map.
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.2_IMPLEMENTATION_MAP.md` — Sprint 5.2 prompt registry, schema governance, release-stage policy, artifact validation, and rollout/rollback implementation map.
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.2_EXECUTION_REPORT.md` — Sprint 5.2 implementation evidence, validation status, safety boundaries, and rollout/rollback summary.
 
 For implementation agents, sprint documents are execution plans. They never override domain invariants, accepted ADRs, security rules, or canonical API/data contracts.
 
