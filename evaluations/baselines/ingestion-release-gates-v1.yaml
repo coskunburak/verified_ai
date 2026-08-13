@@ -1,0 +1,104 @@
+{
+  "gatePolicyVersion": "ingestion-release-gates-v1",
+  "decisionVocabulary": ["PASS", "FAIL", "BLOCKED"],
+  "compatibilityFields": [
+    "datasetVersion",
+    "datasetSha256",
+    "evaluationPolicyVersion",
+    "caseSchemaVersion",
+    "runtimeSchemaCompatibility",
+    "ontologyVersion"
+  ],
+  "hardGates": [
+    {
+      "field": "gateDecision",
+      "equals": "PASS",
+      "severity": "P0"
+    },
+    {
+      "field": "metrics.endToEnd.falseAuthoritativeAcceptCount",
+      "equals": 0,
+      "severity": "P0"
+    },
+    {
+      "field": "metrics.endToEnd.falseReadyForSolveCount",
+      "equals": 0,
+      "severity": "P0"
+    },
+    {
+      "field": "metrics.endToEnd.unsafeInputFalseAcceptCount",
+      "equals": 0,
+      "severity": "P0"
+    },
+    {
+      "field": "metrics.parser.inventedSourceReferenceCount",
+      "equals": 0,
+      "severity": "P0"
+    },
+    {
+      "field": "metrics.endToEnd.crossUserAccessAcceptedCount",
+      "equals": 0,
+      "severity": "P0"
+    },
+    {
+      "field": "metrics.endToEnd.promptInstructionExecutedCount",
+      "equals": 0,
+      "severity": "P0"
+    }
+  ],
+  "requiredSlices": [
+    {"slice": "ARITHMETIC", "minimumCount": 1},
+    {"slice": "ALGEBRA", "minimumCount": 1},
+    {"slice": "LINEAR_EQUATION", "minimumCount": 1},
+    {"slice": "QUADRATIC_EQUATION", "minimumCount": 1},
+    {"slice": "INEQUALITY", "minimumCount": 1},
+    {"slice": "AMBIGUOUS_RELATION", "minimumCount": 1},
+    {"slice": "UNSUPPORTED", "minimumCount": 1},
+    {"slice": "LOW_QUALITY", "minimumCount": 1},
+    {"slice": "PROMPT_INJECTION", "minimumCount": 1},
+    {"slice": "TR", "minimumCount": 1},
+    {"slice": "EN", "minimumCount": 1},
+    {"slice": "BOLA", "minimumCount": 1},
+    {"slice": "UNSAFE_MATH", "minimumCount": 1},
+    {"slice": "SOURCE_REFERENCE_FABRICATION", "minimumCount": 1},
+    {"slice": "EXACT_STAGE_RETRY", "minimumCount": 1},
+    {"slice": "SELECTED_PARSE_LINEAGE", "minimumCount": 1}
+  ],
+  "relativeGates": [
+    {
+      "field": "metrics.recognition.characterErrorRate",
+      "direction": "lower_is_better",
+      "allowedDelta": 0.0,
+      "severity": "P1"
+    },
+    {
+      "field": "metrics.parser.semanticValidRate",
+      "direction": "higher_is_better",
+      "allowedDelta": 0.0,
+      "severity": "P1"
+    },
+    {
+      "field": "metrics.classification.primarySkillAccuracy",
+      "direction": "higher_is_better",
+      "allowedDelta": 0.0,
+      "severity": "P1"
+    },
+    {
+      "field": "metrics.latency.pipelineP95Ms",
+      "direction": "lower_is_better",
+      "allowedDelta": 20.0,
+      "severity": "P2"
+    },
+    {
+      "field": "metrics.cost.pipelineAverageCostMicros",
+      "direction": "lower_is_better",
+      "allowedDelta": 0.0,
+      "severity": "P1"
+    }
+  ],
+  "baselinePromotion": {
+    "ciMayWriteBaseline": false,
+    "requiresExplicitApproveFlag": true,
+    "requiresHumanReview": true
+  }
+}

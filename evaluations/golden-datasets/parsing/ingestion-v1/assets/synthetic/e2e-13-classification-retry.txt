@@ -1,0 +1,1 @@
+Synthetic fixture e2e-13: classification timeout then retry classification only after canonical success.

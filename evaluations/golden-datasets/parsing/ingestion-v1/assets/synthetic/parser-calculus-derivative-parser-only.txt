@@ -1,0 +1,1 @@
+Synthetic fixture parser-only: Differentiate x^3 + 2x, parser scope only, no Phase 4 E2E support claim.

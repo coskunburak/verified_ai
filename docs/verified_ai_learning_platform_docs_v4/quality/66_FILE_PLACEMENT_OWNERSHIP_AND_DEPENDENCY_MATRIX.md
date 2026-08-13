@@ -11,11 +11,13 @@ This document is the operational companion to the exhaustive hierarchy. It turns
 | SwiftUI screen | `apps/ios/.../Features/<Feature>/Presentation` | iOS feature | ViewModel + UI/accessibility for critical flow | `Core`, unrelated feature |
 | iOS use case | `Features/<Feature>/Domain` | iOS feature | Unit | View, networking concrete layer |
 | iOS API DTO | `Features/<Feature>/Data` | iOS feature | Mapping/contract | SharedDomain |
+| Dense iOS feature subflow | `Features/<Feature>/<Layer>/<Subflow>` | iOS feature | Same as owning layer | Flat layer dumping ground |
 | Design token/component | `Core/DesignSystem` | iOS platform | Snapshot/accessibility where relevant | Individual feature when globally reused |
 | Backend REST controller | `<module>/api` | Bounded context | API/authorization/contract | global `controllers` |
 | Backend use-case orchestration | `<module>/application` | Bounded context | application/integration | controller, JPA entity |
 | Domain invariant/value object | `<module>/domain` | Bounded context | domain tests | prompt, controller, database trigger as sole authority |
 | JPA entity/repository adapter | `<module>/infrastructure/persistence` | Bounded context | Testcontainers integration | domain, another module |
+| Dense backend module workflow | `<module>/<layer>/<workflow>` | Bounded context | Mirror layer tests | A single 50+ class layer package |
 | External provider adapter | owning module `infrastructure/external` | Bounded context/platform | contract/resilience | domain/application concrete provider dependency |
 | AI provider adapter | `backend/ai/infrastructure/<provider>` | AI platform | mocked/provider contract + eval | solving/mastery domain |
 | AI prompt | `/prompts/<capability>/<version>` | AI platform | golden eval | Java/Swift inline string except tiny noncanonical templates |

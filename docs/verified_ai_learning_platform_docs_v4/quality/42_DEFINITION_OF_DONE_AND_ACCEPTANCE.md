@@ -38,6 +38,13 @@ For AI features:
 - golden-evaluation impact,
 - no unjustified certainty.
 
+For Phase 4 ingestion changes after Sprint 4.10:
+- dataset validation must pass;
+- deterministic local fixture regression must pass;
+- candidate-vs-approved-baseline comparison must pass or return a truthful `BLOCKED`;
+- connected provider and protected holdout blockers must be explicit rather than treated as local success;
+- false authoritative acceptance and false ready for solve are hard release gates.
+
 ## Security/privacy
 - new threat/data flow reviewed,
 - retention classification,

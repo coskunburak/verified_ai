@@ -105,18 +105,38 @@ Example `ProblemCapture`:
 ```text
 ProblemCapture/
 ├── Domain/
-│   ├── ProblemCaptureModels.swift
-│   └── ProblemCapturePorts.swift
+│   ├── Model/
+│   │   ├── ProblemCaptureModels.swift
+│   │   └── ProblemAssetUploadModels.swift
+│   └── Port/
+│       ├── ProblemCapturePorts.swift
+│       └── ProblemAssetUploadPorts.swift
 ├── Data/
-│   ├── AVFoundationProblemCameraClient.swift
-│   ├── CapturedAssetStore.swift
-│   └── CaptureQualityAnalyzer.swift
+│   ├── Camera/
+│   │   └── AVFoundationProblemCameraClient.swift
+│   ├── Local/
+│   │   └── CapturedAssetStore.swift
+│   ├── Quality/
+│   │   └── CaptureQualityAnalyzer.swift
+│   └── Remote/
+│       ├── ProblemAssetUploadAPI.swift
+│       └── PresignedObjectUploader.swift
 ├── Presentation/
-│   ├── ProblemCaptureView.swift
-│   └── ProblemCaptureViewModel.swift
+│   ├── Capture/
+│   │   ├── ProblemCaptureView.swift
+│   │   └── ProblemCaptureViewModel.swift
+│   └── Upload/
+│       └── ProblemAssetUploadViewModel.swift
 ```
 
 Sprint 4.1 implements the local pre-upload subset of `ProblemCapture`. `CapturedAsset` is an iOS temporary artifact with source, file URL, preview bytes, dimensions, crop metadata, and local quality assessment. It is not a backend `ProblemAsset`, not a canonical `Problem`, and not a `ProblemSession`.
+
+Sprint 4.10-prep hardens the feature hierarchy: models and ports are separated
+inside `Domain`, concrete camera/local/quality/remote adapters are separated
+inside `Data`, and `Presentation` is split by capture and upload UI state.
+`ProblemReview` and `ProblemHistory` follow the same feature-first rule with
+`Domain/Model`, `Domain/Port` or `Domain/State`, `Data/Remote`,
+`Data/Local`, and flow-specific presentation folders.
 
 ## Dependency injection
 

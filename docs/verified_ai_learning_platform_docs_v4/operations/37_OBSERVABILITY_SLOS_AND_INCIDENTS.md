@@ -112,6 +112,8 @@ Sprint 4.9 problem-session history/recovery metrics:
 
 Metric labels must remain low-cardinality and must not contain raw profile answers, user IDs, access tokens, provider secrets, filenames, local paths, object keys, OCR text, recognized text, parser expressions, constraints, raw provider/parser output, raw problem content, selected parse content, canonical AST payloads, classification explanation text, or free-form failure messages. Sprint 4.9 recovery labels are limited to coarse status/stage/next-action/outcome values.
 
+Sprint 4.10 ingestion evaluation metrics live primarily in generated reports rather than production Micrometer labels. Per-case detail remains report data under `.generated/evaluations/`; production telemetry stays low-cardinality. Reports include recognition/parser/canonicalization/classification/E2E metrics, critical slice tables, false-authoritative/false-ready counts, latency p50/p95, cost, provider/fallback provenance, and `PASS`/`FAIL`/`BLOCKED` reasons.
+
 ## SLOs
 
 Define numeric SLOs from measured baseline for API availability, problem submission, solve completion and billing sync. AI correctness uses quality gates rather than availability SLO alone.
@@ -133,6 +135,7 @@ Actionable alerts:
 - parser schema-invalid/semantic-invalid/unsupported/review-required/fallback spikes or estimated parser cost spikes,
 - elevated problem-session ambiguous-lineage failures, retryable terminal recovery actions, or history/detail latency,
 - provider outage without fallback,
+- scheduled connected ingestion evaluation failure or blocker during a release window,
 - verification quality anomaly,
 - unexpected AI cost spike.
 

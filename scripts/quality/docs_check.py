@@ -53,6 +53,7 @@ REQUIRED_CAPABILITY_IDS = {
     "CAP-BILL-001",
     "CAP-PRIV-001",
     "CAP-PROBLEM-002",
+    "CAP-PROBLEM-006",
     "CAP-AI-001",
     "CAP-SOLVE-002",
     "CAP-VERIFY-001",
@@ -76,6 +77,7 @@ REQUIRED_REQUIREMENT_IDS = {
     "REQ-PRIV-001",
     "REQ-DATA-001",
     "REQ-PROBLEM-001",
+    "REQ-INGEST-EVAL-001",
     "REQ-ATTEMPT-001",
     "REQ-MASTERY-001",
     "REQ-ADAPT-001",
@@ -168,7 +170,7 @@ def check_forbidden_metadata() -> list[str]:
 
 def markdown_table_ids(text: str, prefix: str) -> list[str]:
     ids: list[str] = []
-    pattern = re.compile(rf"^\|\s*({re.escape(prefix)}-[A-Z]+-[0-9]{{3}})\s*\|", re.MULTILINE)
+    pattern = re.compile(rf"^\|\s*({re.escape(prefix)}(?:-[A-Z]+)+-[0-9]{{3}})\s*\|", re.MULTILINE)
     for match in pattern.finditer(text):
         ids.append(match.group(1))
     return ids

@@ -1,0 +1,1 @@
+Synthetic fixture e2e-06: AI R1 says x+1=2, USER R2 selected says x+2=5, AI R3 historical ignored.

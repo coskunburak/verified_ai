@@ -48,6 +48,8 @@ Each provider route defines connection/response/total timeouts and retryable err
 
 The initial `VISION_PARSE` and `PROBLEM_NORMALIZE` routes have explicit provider timeout, max-attempt, max-response-size, and max-cost configuration. Local/test may use deterministic fixture routes; production must not route either capability to a fake provider when enabled.
 
+Sprint 4.10 evaluation reports record Phase 4 ingestion latency and cost separately from provider-independent dataset validation. The deterministic `LOCAL_FIXTURE_REGRESSION` baseline has zero provider cost and must not be used as production provider economics. Connected evaluation requires explicit `AI_EVAL_MAX_TOTAL_COST_MICROS`, `AI_EVAL_MAX_CASES`, and `AI_EVAL_TIMEOUT` controls; budget exhaustion is `BLOCKED_BUDGET`, never partial PASS.
+
 ## 6. Reliability fallback
 
 1. retry bounded transient failure;
@@ -69,6 +71,8 @@ Track:
 - quota headroom;
 - evaluation-quality drift;
 - cost drift.
+
+Sprint 4.10 quality drift response is: freeze promotion, inspect the failing slice, compare route/prompt/schema/provider provenance, review prior report and approved baseline, rollback the candidate route/config where applicable, and add a permanent regression fixture for novel trusted failures.
 
 ## 8. Secondary-solver SLO
 

@@ -1,0 +1,158 @@
+{
+  "approvalScope": "LOCAL_FIXTURE_REGRESSION_ONLY",
+  "approvalStatus": "APPROVED_DETERMINISTIC_LOCAL_FIXTURE_BASELINE",
+  "approvedAt": "2026-08-12T13:59:29Z",
+  "approvedBy": "manual --approve",
+  "baselineId": "production-ingestion-v1",
+  "baselineLimitations": [
+    "This is a deterministic local fixture baseline only.",
+    "It is not real provider OCR/parser/classifier quality evidence.",
+    "Connected provider and protected holdout remain blocked without external configuration."
+  ],
+  "baselineSchemaVersion": "ingestion-approved-baseline-v1",
+  "caseSchemaVersion": "ingestion-evaluation-case-v1",
+  "datasetId": "phase4-ingestion-golden",
+  "datasetSha256": "769befe32df0f8646aec4c5fa49c777bb4b39b990e92fd70af18811f6270a50f",
+  "datasetVersion": "ingestion-v1",
+  "evaluationPolicyVersion": "ingestion-evaluation-policy-v1",
+  "executionMode": "LOCAL_FIXTURE_REGRESSION",
+  "metrics": {
+    "canonicalization": {
+      "astExactStructureRate": 1.0,
+      "idempotencyRate": 1.0,
+      "repeatabilityRate": 1.0,
+      "schemaValidRate": 1.0,
+      "selectedParseCorrectnessRate": 1.0,
+      "supportedSuccessRate": 1.0,
+      "unsafeRejectionRate": 1.0,
+      "unsupportedRejectionRate": 1.0
+    },
+    "classification": {
+      "confidencePolicyComplianceRate": 1.0,
+      "difficultyAccuracy": 1.0,
+      "falseAuthoritativeClassificationCount": 0,
+      "primarySkillAccuracy": 1.0,
+      "secondarySkillPrecision": 1.0,
+      "secondarySkillRecall": 1.0,
+      "statusExactAccuracy": 1.0,
+      "subjectAccuracy": 1.0,
+      "topicAccuracy": 1.0
+    },
+    "cost": {
+      "pipelineAverageCostMicros": 0.0,
+      "pipelineP95CostMicros": 0.0,
+      "stageAverageCostMicros": {
+        "classification": 0.0,
+        "parse": 0.0,
+        "recognition": 0.0
+      }
+    },
+    "endToEnd": {
+      "correctionRequiredEstimateRate": 0.1111111111111111,
+      "crossUserAccessAcceptedCount": 0,
+      "endToEndIngestionSuccessRate": 1.0,
+      "expectedReviewRate": 1.0,
+      "expectedUnsupportedRate": 1.0,
+      "falseAuthoritativeAcceptCount": 0,
+      "falseAuthoritativeAcceptRate": 0.0,
+      "falseReadyForSolveCount": 0,
+      "falseReadyForSolveRate": 0.0,
+      "pipelineAverageCostMicros": 0.0,
+      "pipelineP50LatencyMs": 28.5,
+      "pipelineP95CostMicros": 0.0,
+      "pipelineP95LatencyMs": 38.3,
+      "promptInstructionExecutedCount": 0,
+      "silentWrongRate": 0.0,
+      "stageAverageCostMicros": {
+        "classification": 0.0,
+        "parse": 0.0,
+        "recognition": 0.0
+      },
+      "staleLineageAcceptedCount": 0,
+      "unsafeInputFalseAcceptCount": 0
+    },
+    "latency": {
+      "pipelineP50Ms": 28.5,
+      "pipelineP95Ms": 38.3
+    },
+    "parser": {
+      "assumptionPolicyAccuracy": 1.0,
+      "expressionNormalizedMatchRate": 1.0,
+      "inventedAssumptionCount": 0,
+      "inventedSourceReferenceCount": 0,
+      "jsonValidRate": 1.0,
+      "problemTypeAccuracy": 1.0,
+      "reviewRequiredRecall": 1.0,
+      "schemaValidRate": 1.0,
+      "semanticValidRate": 0.9444444444444444,
+      "sourceReferenceValidRate": 1.0,
+      "subjectAccuracy": 1.0,
+      "supportStatusExactAccuracy": 1.0,
+      "taskTypeAccuracy": 1.0,
+      "topicAccuracy": 1.0,
+      "unsupportedAccuracy": 1.0,
+      "variablePrecision": 1.0,
+      "variableRecall": 1.0,
+      "variableSetAccuracy": 1.0
+    },
+    "recognition": {
+      "ambiguityReviewRecall": 1.0,
+      "blockExtractionAccuracy": 0.9444444444444444,
+      "blockKindAccuracy": 0.9444444444444444,
+      "characterErrorRate": 0.05555555555555555,
+      "coordinateValidityRate": 1.0,
+      "criticalSymbolErrorRate": 0.03571428571428571,
+      "mathTokenErrorRate": 0.05555555555555555,
+      "normalizationVersion": "recognition-eval-normalization-v1",
+      "normalizedExactMatchRate": 0.9444444444444444,
+      "readingOrderAccuracy": 0.9444444444444444,
+      "tokenizerVersion": "recognition-math-tokenizer-v1"
+    }
+  },
+  "ontologyVersion": "curriculum-v1-seed",
+  "reportSchemaVersion": "ingestion-evaluation-report-v1",
+  "routeProvenance": [
+    {
+      "capability": "VISION_PARSE",
+      "fallbackUsed": false,
+      "model": "local-fixture",
+      "pricingVersion": "fixture-zero-cost-v1",
+      "promptId": "vision-recognition",
+      "promptVersion": "v001",
+      "provider": "LOCAL_FIXTURE",
+      "routePolicyVersion": "vision-route-v1",
+      "schemaVersion": "recognition-evidence-v1"
+    },
+    {
+      "capability": "PROBLEM_NORMALIZE",
+      "fallbackUsed": false,
+      "model": "local-fixture",
+      "pricingVersion": "fixture-zero-cost-v1",
+      "promptId": "problem-parser",
+      "promptVersion": "v001",
+      "provider": "LOCAL_FIXTURE",
+      "routePolicyVersion": "problem-parser-route-v1",
+      "schemaVersion": "problem-parse-v1"
+    },
+    {
+      "capability": "PROBLEM_CLASSIFY",
+      "fallbackUsed": false,
+      "model": "local-fixture",
+      "pricingVersion": "fixture-zero-cost-v1",
+      "promptId": "problem-classifier",
+      "promptVersion": "v001",
+      "provider": "LOCAL_FIXTURE",
+      "routePolicyVersion": "problem-classifier-route-v1",
+      "schemaVersion": "problem-classification-v1"
+    }
+  ],
+  "runtimeSchemaCompatibility": {
+    "canonicalProblem": "canonical-problem-v1",
+    "problemClassification": "problem-classification-v1",
+    "problemParse": "problem-parse-v1",
+    "recognitionEvidence": "recognition-evidence-v1",
+    "verifierInput": "verifier-input-v1"
+  },
+  "sourceGitCommit": "7016c6dd4837fd940dfde20978f180ee050b2cf5",
+  "sourceReportSha256": "d58561b67ad97d1b6491bc63d7d6cafdf082906283b5b8483bcc47e29efd472c"
+}

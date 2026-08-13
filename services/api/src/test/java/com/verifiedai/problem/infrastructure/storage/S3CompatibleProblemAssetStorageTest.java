@@ -1,8 +1,5 @@
 package com.verifiedai.problem.infrastructure.storage;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import com.verifiedai.problem.domain.port.ProblemAssetObjectNotFoundException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -23,6 +20,9 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Testcontainers
 final class S3CompatibleProblemAssetStorageTest {

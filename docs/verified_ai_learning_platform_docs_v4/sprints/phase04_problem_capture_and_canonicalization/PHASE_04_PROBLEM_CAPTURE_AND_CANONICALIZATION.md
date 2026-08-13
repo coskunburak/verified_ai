@@ -25,6 +25,14 @@ This phase groups the production delivery units required for **Problem Capture &
 ## Phase exit gate
 The phase is complete only when every sprint-specific acceptance criterion is satisfied, phase-level integration tests pass, documentation is current, no unresolved P0/P1 defects remain in the phase scope, and the next phase can consume the delivered contracts without relying on undocumented assumptions.
 
+## Sprint 4.10 closeout status
+
+Sprint 4.10 adds the local deterministic ingestion evaluation foundation for OCR recognition, parser normalization, canonicalization handoff, and classification checks. The committed corpus is synthetic, explicitly non-training-eligible, and covered by schema validation, coverage checks, local fixture evaluation, baseline comparison, and CI wiring through `make eval-ai`.
+
+This does not complete production-provider accuracy validation. Connected representative evaluation is blocked by the absence of an approved provider route in this workspace, and protected holdout evaluation is blocked because the restricted payload is not available in the repository. Phase 4 therefore has local implementation evidence, but production exit remains limited by `TD-CAPTURE-001`, `TD-AI-001`, `TD-AI-002`, `TD-AI-003`, `TD-AI-004`, and `TD-AI-005`.
+
+Phase 5 solving, verification verdicts, tutoring, attempts, mastery, and broader AI evaluation were not started by Sprint 4.10.
+
 ## Required review at phase close
 - Architecture drift review.
 - Security/privacy delta review.

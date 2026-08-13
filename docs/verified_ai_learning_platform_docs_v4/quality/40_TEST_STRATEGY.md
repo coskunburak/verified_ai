@@ -54,6 +54,8 @@ Critical UI journeys:
 
 Separate from ordinary unit suite. Golden dataset protects parser/solver/verifier/mistake/tutor quality.
 
+Sprint 4.10 makes Phase 4 ingestion evaluation a dedicated deterministic gate. `make eval-ai` validates the ingestion-v1 dataset, runs deterministic local fixture scoring, generates a privacy-minimized report, and compares it with the approved deterministic baseline. This does not replace backend application-service tests or connected provider quality evaluation.
+
 ## Regression priority
 
 1. Trust/verification safety.
