@@ -1,5 +1,6 @@
 package com.verifiedai.ai.infrastructure.configuration;
 
+import com.verifiedai.ai.application.AiRoutePlan;
 import java.time.Duration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -7,8 +8,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record AiProblemClassifierProperties(
     boolean enabled,
     String primaryProvider,
+    String primaryModel,
     String fallbackProvider,
+    String fallbackModel,
     String routePolicyVersion,
+    String routeId,
     String promptId,
     String promptVersion,
     String schemaVersion,
@@ -16,6 +20,7 @@ public record AiProblemClassifierProperties(
     int maxAttempts,
     int maxResponseBytes,
     long maxCostMicros,
-    String pricingVersion
+    String pricingVersion,
+    AiRoutePlan.ReleaseStage releaseStage
 ) {
 }

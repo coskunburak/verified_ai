@@ -30,6 +30,8 @@ import com.verifiedai.problem.infrastructure.persistence.repository.RecognitionJ
 import com.verifiedai.problem.infrastructure.recognition.ProblemRecognitionProperties;
 import com.verifiedai.sharedkernel.error.ApiErrorCode;
 import com.verifiedai.sharedkernel.error.ApiProblemException;
+import com.verifiedai.ai.application.AiExecutionContext;
+import com.verifiedai.sharedkernel.observability.CorrelationIds;
 import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.Duration;
@@ -228,24 +230,46 @@ public class ProblemRecognitionApplicationService {
     private AiVisionParseResult executeProvider(RecognitionExecutionContext context) {
         byte[] imageBytes = storage.readBytes(context.inputDerivative().objectKey(), properties.maxInputBytes());
         AiRoutePlan routePlan = aiModelGateway.routePlan(AiCapability.VISION_PARSE);
-        AiVisionParseResult result = aiModelGateway.executeVisionParse(new AiVisionParseRequest(
-            context.job().problemSessionId(),
-            context.sourceAsset().id(),
-            context.inputDerivative().id(),
-            context.inputDerivative().contentType(),
-            imageBytes,
-            context.inputDerivative().width(),
-            context.inputDerivative().height(),
-            context.job().promptId(),
-            context.job().promptVersion(),
-            context.job().schemaVersion(),
-            routePlan.timeout(),
-            context.qualitySignals()
-                .stream()
-                .filter(signal -> !"PASS".equals(signal.severity()))
-                .map(ProblemAssetQualitySignalResult::signalType)
-                .toList()
-        ));
+        AiVisionParseRequest request =
+            new AiVisionParseRequest(
+                context.job().problemSessionId(),
+                context.sourceAsset().id(),
+                context.inputDerivative().id(),
+                context.inputDerivative().contentType(),
+                imageBytes,
+                context.inputDerivative().width(),
+                context.inputDerivative().height(),
+                context.job().promptId(),
+                context.job().promptVersion(),
+                context.job().schemaVersion(),
+                routePlan.timeout(),
+                context.qualitySignals()
+                    .stream()
+                    .filter(signal ->
+                        !"PASS".equals(
+                            signal.severity()
+                        )
+                    )
+                    .map(
+                        ProblemAssetQualitySignalResult::signalType
+                    )
+                    .toList()
+            );
+
+        AiExecutionContext aiExecutionContext =
+            AiExecutionContext.forJobAttempt(
+                context.job().id(),
+                context.attemptNumber(),
+                context.job().userId(),
+                context.job().problemSessionId(),
+                CorrelationIds.current()
+            );
+
+        AiVisionParseResult result =
+            aiModelGateway.executeVisionParse(
+                request,
+                aiExecutionContext
+            );
         if (result.rawOutputJson().getBytes(StandardCharsets.UTF_8).length > routePlan.maxResponseBytes()) {
             throw new AiProviderException(AiProviderFailureClass.OUTPUT_TOO_LARGE, false, "Recognition provider output exceeded response limit");
         }
@@ -418,8 +442,15 @@ public class ProblemRecognitionApplicationService {
             case OUTPUT_TOO_LARGE -> ApiErrorCode.RECOGNITION_OUTPUT_TOO_LARGE;
             case UNSUPPORTED_PAYLOAD -> ApiErrorCode.RECOGNITION_UNSUPPORTED;
             case SCHEMA_INVALID -> ApiErrorCode.RECOGNITION_SCHEMA_INVALID;
-            case PROVIDER_UNAVAILABLE, CONFIGURATION_DISABLED, INVALID_AUTH -> ApiErrorCode.RECOGNITION_PROVIDER_UNAVAILABLE;
-            case UNKNOWN -> ApiErrorCode.RECOGNITION_FAILED;
+            case PROVIDER_UNAVAILABLE,
+                CONFIGURATION_DISABLED,
+                INVALID_AUTH,
+                LEDGER_UNAVAILABLE,
+                PROVIDER_NOT_REGISTERED ->
+                ApiErrorCode.RECOGNITION_PROVIDER_UNAVAILABLE;
+            case BUDGET_EXCEEDED,
+                POLICY_BLOCKED,
+                UNKNOWN -> ApiErrorCode.RECOGNITION_FAILED;
         };
     }
 

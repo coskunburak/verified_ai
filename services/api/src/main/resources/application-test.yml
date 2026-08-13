@@ -6,4 +6,7 @@ spring:
     url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/verified_ai_test}
   flyway:
     clean-disabled: false
-
+app:
+  ai:
+    usage-ledger:
+      enabled: false

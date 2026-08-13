@@ -3,745 +3,1239 @@ package com.verifiedai.ai.infrastructure.provider;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.verifiedai.ai.application.AiProblemClassifyRequest;
-import com.verifiedai.ai.application.AiProblemClassifyResult;
-import com.verifiedai.ai.application.AiProblemNormalizeRequest;
-import com.verifiedai.ai.application.AiProblemNormalizeResult;
+import com.verifiedai.ai.application.AiCapability;
+import com.verifiedai.ai.application.AiCapabilityRegistry;
+import com.verifiedai.ai.application.AiCapabilityRequest;
+import com.verifiedai.ai.application.AiCapabilityResult;
+import com.verifiedai.ai.application.AiExecutionCommand;
+import com.verifiedai.ai.application.AiExecutionContext;
+import com.verifiedai.ai.application.AiExecutionResult;
+import com.verifiedai.ai.application.AiExecutionStatus;
+import com.verifiedai.ai.application.AiGatewayMetrics;
+import com.verifiedai.ai.application.AiProvenance;
 import com.verifiedai.ai.application.AiProviderException;
 import com.verifiedai.ai.application.AiProviderFailureClass;
-import com.verifiedai.ai.application.AiProvenance;
+import com.verifiedai.ai.application.AiRouteContext;
 import com.verifiedai.ai.application.AiRoutePlan;
+import com.verifiedai.ai.application.AiRoutePlanner;
+import com.verifiedai.ai.application.AiRoutePolicy;
+import com.verifiedai.ai.application.AiRouteTarget;
 import com.verifiedai.ai.application.AiUsage;
-import com.verifiedai.ai.application.AiVisionParseRequest;
+import com.verifiedai.ai.application.AiUsageRecord;
+import com.verifiedai.ai.application.AiUsageRecorder;
 import com.verifiedai.ai.application.AiVisionParseResult;
-import com.verifiedai.ai.infrastructure.configuration.AiProblemClassifierProperties;
-import com.verifiedai.ai.infrastructure.configuration.AiProblemParserProperties;
-import com.verifiedai.ai.infrastructure.configuration.AiVisionRecognitionProperties;
-import java.nio.charset.StandardCharsets;
+import java.time.Clock;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 final class ConfiguredAiModelGatewayTest {
 
+    private static final Clock CLOCK =
+        Clock.fixed(
+            Instant.parse(
+                "2026-01-01T00:00:00Z"
+            ),
+            ZoneOffset.UTC
+        );
+
     @Test
-    void retryablePrimaryFailureUsesFallbackAndMarksProvenance() {
-        ConfiguredAiModelGateway gateway =
-            new ConfiguredAiModelGateway(
-                properties("PRIMARY", "FALLBACK"),
-                parserProperties("UNAVAILABLE", ""),
-                classifierProperties("UNAVAILABLE", ""),
-                List.of(
-                    failingProvider(
-                        "PRIMARY",
-                        AiProviderFailureClass.TIMEOUT,
-                        true
-                    ),
-                    successfulProvider(
-                        "FALLBACK",
-                        "fallback-model"
-                    )
-                ),
-                List.of(
-                    unavailableProblemProvider()
-                ),
-                List.of(
-                    unavailableClassificationProvider()
-                ),
-                "local"
+    void retryablePrimaryFailureUsesFallback() {
+        CountingProvider primary =
+            failingProvider(
+                "PRIMARY",
+                AiProviderFailureClass.TIMEOUT,
+                true
             );
 
-        AiVisionParseResult result =
-            gateway.executeVisionParse(request());
+        CountingProvider fallback =
+            successfulProvider("FALLBACK");
 
-        assertThat(
-            result.provenance().provider()
-        ).isEqualTo("FALLBACK");
+        AiExecutionResult result =
+            gateway(
+                FixedRoutePlanner.enabled(
+                    visionPlan(
+                        "PRIMARY",
+                        "primary-model",
+                        List.of(
+                            new AiRouteTarget(
+                                "FALLBACK",
+                                "fallback-model"
+                            )
+                        ),
+                        65_536,
+                        20_000
+                    )
+                ),
+                primary,
+                fallback
+            ).execute(
+                command(
+                    AiCapability.VISION_PARSE,
+                    null
+                )
+            );
 
-        assertThat(
-            result.provenance().model()
-        ).isEqualTo("fallback-model");
-
-        assertThat(
-            result.provenance().fallbackUsed()
-        ).isTrue();
-
-        assertThat(
-            result.rawOutputJson()
-        ).contains("recognition-evidence-v1");
+        assertThat(result.status())
+            .isEqualTo(AiExecutionStatus.SUCCEEDED);
+        assertThat(primary.callCount()).isEqualTo(1);
+        assertThat(fallback.callCount()).isEqualTo(1);
+        assertThat(result.fallbackUsed()).isTrue();
+        assertThat(result.provenance().provider())
+            .isEqualTo("FALLBACK");
     }
 
     @Test
     void terminalPrimaryFailureDoesNotUseFallback() {
-        ConfiguredAiModelGateway gateway =
-            new ConfiguredAiModelGateway(
-                properties("PRIMARY", "FALLBACK"),
-                parserProperties("UNAVAILABLE", ""),
-                classifierProperties("UNAVAILABLE", ""),
-                List.of(
-                    failingProvider(
+        CountingProvider primary =
+            failingProvider(
+                "PRIMARY",
+                AiProviderFailureClass.INVALID_AUTH,
+                false
+            );
+
+        CountingProvider fallback =
+            successfulProvider("FALLBACK");
+
+        AiExecutionResult result =
+            gateway(
+                FixedRoutePlanner.enabled(
+                    visionPlan(
                         "PRIMARY",
-                        AiProviderFailureClass.INVALID_AUTH,
-                        false
-                    ),
-                    successfulProvider(
-                        "FALLBACK",
-                        "fallback-model"
+                        "primary-model",
+                        List.of(
+                            new AiRouteTarget(
+                                "FALLBACK",
+                                "fallback-model"
+                            )
+                        ),
+                        65_536,
+                        20_000
                     )
                 ),
-                List.of(
-                    unavailableProblemProvider()
-                ),
-                List.of(
-                    unavailableClassificationProvider()
-                ),
-                "local"
+                primary,
+                fallback
+            ).execute(
+                command(
+                    AiCapability.VISION_PARSE,
+                    null
+                )
             );
 
-        assertThatThrownBy(
-            () -> gateway.executeVisionParse(request())
-        )
-            .isInstanceOf(AiProviderException.class)
-            .satisfies(exception -> {
-                AiProviderException providerException =
-                    (AiProviderException) exception;
-
-                assertThat(
-                    providerException.failureClass()
-                ).isEqualTo(
-                    AiProviderFailureClass.INVALID_AUTH
-                );
-
-                assertThat(
-                    providerException.retryable()
-                ).isFalse();
-            });
+        assertThat(result.status())
+            .isEqualTo(
+                AiExecutionStatus.FAILED_TERMINAL
+            );
+        assertThat(result.failureClass())
+            .isEqualTo(
+                AiProviderFailureClass.INVALID_AUTH
+            );
+        assertThat(primary.callCount()).isEqualTo(1);
+        assertThat(fallback.callCount()).isZero();
     }
 
     @Test
-    void productionConfigurationRejectsLocalFixtureProviderWhenEnabled() {
-        ConfiguredAiModelGateway gateway =
-            new ConfiguredAiModelGateway(
-                properties("LOCAL_FIXTURE", ""),
-                parserProperties("UNAVAILABLE", ""),
-                classifierProperties("UNAVAILABLE", ""),
-                List.of(
-                    successfulProvider(
-                        "LOCAL_FIXTURE",
-                        "local-fixture-vision-v1"
-                    )
-                ),
-                List.of(
-                    unavailableProblemProvider()
-                ),
-                List.of(
-                    unavailableClassificationProvider()
-                ),
-                "production"
+    void fallbackMarksProvenanceExactlyOnce() {
+        CountingProvider primary =
+            failingProvider(
+                "PRIMARY",
+                AiProviderFailureClass.TIMEOUT,
+                true
             );
 
-        assertThatThrownBy(
-            gateway::validateProductionConfiguration
-        )
-            .isInstanceOf(IllegalStateException.class)
-            .hasMessageContaining("LOCAL_FIXTURE");
-    }
+        CountingProvider fallback =
+            successfulProvider("FALLBACK");
 
-    @Test
-    void retryableProblemParserFailureUsesFallbackAndMarksProvenance() {
-        ConfiguredAiModelGateway gateway =
-            new ConfiguredAiModelGateway(
-                properties("UNAVAILABLE", ""),
-                parserProperties(
-                    "PRIMARY",
-                    "FALLBACK"
-                ),
-                classifierProperties("UNAVAILABLE", ""),
-                List.of(
-                    successfulProvider(
-                        "UNAVAILABLE",
-                        "unused"
-                    )
-                ),
-                List.of(
-                    failingProblemProvider(
+        RecordingMetrics metrics =
+            new RecordingMetrics();
+
+        AiExecutionResult result =
+            gateway(
+                FixedRoutePlanner.enabled(
+                    visionPlan(
                         "PRIMARY",
-                        AiProviderFailureClass.TIMEOUT,
-                        true
-                    ),
-                    successfulProblemProvider(
-                        "FALLBACK",
-                        "fallback-parser-model"
+                        "primary-model",
+                        List.of(
+                            new AiRouteTarget(
+                                "FALLBACK",
+                                "fallback-model"
+                            )
+                        ),
+                        65_536,
+                        20_000
                     )
                 ),
-                List.of(
-                    unavailableClassificationProvider()
-                ),
-                "local"
+                metrics,
+                RecordingUsageRecorder.success(),
+                primary,
+                fallback
+            ).execute(
+                command(
+                    AiCapability.VISION_PARSE,
+                    null
+                )
             );
 
-        AiProblemNormalizeResult result =
-            gateway.executeProblemNormalize(
-                problemRequest()
-            );
-
-        assertThat(
-            result.provenance().provider()
-        ).isEqualTo("FALLBACK");
-
-        assertThat(
-            result.provenance().model()
-        ).isEqualTo(
-            "fallback-parser-model"
-        );
-
-        assertThat(
-            result.provenance().fallbackUsed()
-        ).isTrue();
-
-        assertThat(
-            result.rawOutputJson()
-        ).contains("problem-parse-v1");
+        assertThat(result.status())
+            .isEqualTo(AiExecutionStatus.SUCCEEDED);
+        assertThat(result.fallbackUsed()).isTrue();
+        assertThat(result.provenance().fallbackUsed())
+            .isTrue();
+        assertThat(result.output().provenance().fallbackUsed())
+            .isTrue();
+        assertThat(metrics.fallbackCount)
+            .isEqualTo(1);
     }
 
     @Test
-    void productionConfigurationRejectsLocalFixtureProblemParserWhenEnabled() {
-        ConfiguredAiModelGateway gateway =
-            new ConfiguredAiModelGateway(
-                properties("UNAVAILABLE", ""),
-                parserProperties(
-                    "LOCAL_FIXTURE",
-                    ""
-                ),
-                classifierProperties("UNAVAILABLE", ""),
-                List.of(
-                    successfulProvider(
-                        "UNAVAILABLE",
-                        "unused"
-                    )
-                ),
-                List.of(
-                    successfulProblemProvider(
-                        "LOCAL_FIXTURE",
-                        "local-fixture-problem-parser-v1"
-                    )
-                ),
-                List.of(
-                    unavailableClassificationProvider()
-                ),
-                "production"
+    void disabledCapabilityDoesNotCallProvider() {
+        CountingProvider provider =
+            successfulProvider("PRIMARY");
+
+        FixedRoutePlanner planner =
+            FixedRoutePlanner.disabled(
+                AiCapability.VISION_PARSE
             );
 
-        assertThatThrownBy(
-            gateway::validateProductionConfiguration
-        )
-            .isInstanceOf(IllegalStateException.class)
-            .hasMessageContaining("LOCAL_FIXTURE");
+        AiExecutionResult result =
+            gateway(
+                planner,
+                provider
+            ).execute(
+                command(
+                    AiCapability.VISION_PARSE,
+                    null
+                )
+            );
+
+        assertThat(result.status())
+            .isEqualTo(AiExecutionStatus.DISABLED);
+        assertThat(provider.callCount()).isZero();
+        assertThat(planner.routePlanCalls).isZero();
     }
 
     @Test
-    void retryableProblemClassifierFailureUsesFallbackAndMarksProvenance() {
-        ConfiguredAiModelGateway gateway =
-            new ConfiguredAiModelGateway(
-                properties("UNAVAILABLE", ""),
-                parserProperties("UNAVAILABLE", ""),
-                classifierProperties(
-                    "PRIMARY",
-                    "FALLBACK"
-                ),
-                List.of(
-                    successfulProvider(
-                        "UNAVAILABLE",
-                        "unused"
-                    )
-                ),
-                List.of(
-                    unavailableProblemProvider()
-                ),
-                List.of(
-                    failingClassificationProvider(
+    void budgetBlockedBeforeProviderCall() {
+        CountingProvider provider =
+            successfulProvider("PRIMARY");
+
+        AiExecutionResult result =
+            gateway(
+                FixedRoutePlanner.enabled(
+                    visionPlan(
                         "PRIMARY",
-                        AiProviderFailureClass.TIMEOUT,
-                        true
-                    ),
-                    successfulClassificationProvider(
-                        "FALLBACK",
-                        "fallback-classifier-model"
+                        "primary-model",
+                        List.of(),
+                        65_536,
+                        10_000
                     )
                 ),
-                "local"
+                provider
+            ).execute(
+                command(
+                    AiCapability.VISION_PARSE,
+                    1L
+                )
             );
 
-        AiProblemClassifyResult result =
-            gateway.executeProblemClassify(
-                classificationRequest()
+        assertThat(result.status())
+            .isEqualTo(
+                AiExecutionStatus.BLOCKED_BUDGET
             );
-
-        assertThat(
-            result.provenance().provider()
-        ).isEqualTo("FALLBACK");
-
-        assertThat(
-            result.provenance().model()
-        ).isEqualTo(
-            "fallback-classifier-model"
-        );
-
-        assertThat(
-            result.provenance().fallbackUsed()
-        ).isTrue();
-
-        assertThat(
-            result.rawOutputJson()
-        ).contains(
-            "problem-classification-v1"
-        );
+        assertThat(provider.callCount()).isZero();
+        assertThat(result.attemptCount()).isZero();
     }
 
     @Test
-    void productionConfigurationRejectsLocalFixtureProblemClassifierWhenEnabled() {
+    void providerOutputTooLargeIsTerminal() {
+        CountingProvider provider =
+            successfulProvider(
+                "PRIMARY",
+                Set.of(AiCapability.VISION_PARSE),
+                "too-large-output",
+                null,
+                10,
+                0
+            );
+
+        AiExecutionResult result =
+            gateway(
+                FixedRoutePlanner.enabled(
+                    visionPlan(
+                        "PRIMARY",
+                        "primary-model",
+                        List.of(),
+                        4,
+                        20_000
+                    )
+                ),
+                provider
+            ).execute(
+                command(
+                    AiCapability.VISION_PARSE,
+                    null
+                )
+            );
+
+        assertThat(result.status())
+            .isEqualTo(
+                AiExecutionStatus.FAILED_TERMINAL
+            );
+        assertThat(result.failureClass())
+            .isEqualTo(
+                AiProviderFailureClass.OUTPUT_TOO_LARGE
+            );
+        assertThat(provider.callCount()).isEqualTo(1);
+    }
+
+    @Test
+    void providerWithWrongPromptProvenanceIsBlocked() {
+        CountingProvider provider =
+            successfulProvider(
+                "PRIMARY",
+                Set.of(AiCapability.VISION_PARSE),
+                "{\"schemaVersion\":\"recognition-evidence-v1\"}",
+                "wrong-prompt",
+                10,
+                0
+            );
+
+        AiExecutionResult result =
+            gateway(
+                FixedRoutePlanner.enabled(
+                    visionPlan(
+                        "PRIMARY",
+                        "primary-model",
+                        List.of(),
+                        65_536,
+                        20_000
+                    )
+                ),
+                provider
+            ).execute(
+                command(
+                    AiCapability.VISION_PARSE,
+                    null
+                )
+            );
+
+        assertThat(result.status())
+            .isEqualTo(
+                AiExecutionStatus.BLOCKED_POLICY
+            );
+        assertThat(result.failureClass())
+            .isEqualTo(
+                AiProviderFailureClass.POLICY_BLOCKED
+            );
+    }
+
+    @Test
+    void unregisteredProviderFailsStartup() {
         ConfiguredAiModelGateway gateway =
-            new ConfiguredAiModelGateway(
-                properties("UNAVAILABLE", ""),
-                parserProperties("UNAVAILABLE", ""),
-                classifierProperties(
-                    "LOCAL_FIXTURE",
-                    ""
-                ),
-                List.of(
-                    successfulProvider(
-                        "UNAVAILABLE",
-                        "unused"
+            gateway(
+                FixedRoutePlanner.enabled(
+                    visionPlan(
+                        "MISSING",
+                        "missing-model",
+                        List.of(),
+                        65_536,
+                        20_000
                     )
-                ),
-                List.of(
-                    unavailableProblemProvider()
-                ),
-                List.of(
-                    successfulClassificationProvider(
-                        "LOCAL_FIXTURE",
-                        "local-fixture-problem-classifier-v2"
-                    )
-                ),
-                "production"
+                )
             );
 
         assertThatThrownBy(
-            gateway::validateProductionConfiguration
+            gateway::validateProviderConfiguration
         )
-            .isInstanceOf(IllegalStateException.class)
-            .hasMessageContaining("LOCAL_FIXTURE")
-            .hasMessageContaining("classifier");
-    }
-
-    private static AiVisionRecognitionProperties properties(
-        String primaryProvider,
-        String fallbackProvider
-    ) {
-        return new AiVisionRecognitionProperties(
-            true,
-            primaryProvider,
-            fallbackProvider,
-            "vision-route-v1",
-            "vision-recognition",
-            "v001",
-            "recognition-evidence-v1",
-            Duration.ofSeconds(20),
-            2,
-            65_536,
-            20_000,
-            "test-pricing-v1"
-        );
-    }
-
-    private static AiProblemParserProperties parserProperties(
-        String primaryProvider,
-        String fallbackProvider
-    ) {
-        return new AiProblemParserProperties(
-            true,
-            primaryProvider,
-            fallbackProvider,
-            "problem-parser-route-v1",
-            "problem-parser",
-            "v001",
-            "problem-parse-v1",
-            Duration.ofSeconds(20),
-            2,
-            65_536,
-            20_000,
-            "test-pricing-v1"
-        );
-    }
-
-    private static AiProblemClassifierProperties classifierProperties(
-        String primaryProvider,
-        String fallbackProvider
-    ) {
-        return new AiProblemClassifierProperties(
-            true,
-            primaryProvider,
-            fallbackProvider,
-            "problem-classifier-route-v1",
-            "problem-classifier",
-            "v001",
-            "problem-classification-v1",
-            Duration.ofSeconds(15),
-            2,
-            16_384,
-            10_000,
-            "test-classifier-pricing-v1"
-        );
-    }
-
-    private static AiVisionParseRequest request() {
-        return new AiVisionParseRequest(
-            UUID.randomUUID(),
-            UUID.randomUUID(),
-            UUID.randomUUID(),
-            "image/jpeg",
-            "image".getBytes(
-                StandardCharsets.UTF_8
-            ),
-            1200,
-            900,
-            "vision-recognition",
-            "v001",
-            "recognition-evidence-v1",
-            Duration.ofSeconds(20),
-            List.of(
-                "RESOLUTION:WARNING"
+            .isInstanceOf(
+                IllegalStateException.class
             )
-        );
+            .hasMessageContaining(
+                "not registered"
+            )
+            .hasMessageContaining(
+                "VISION_PARSE"
+            );
     }
 
-    private static AiProblemNormalizeRequest problemRequest() {
-        return new AiProblemNormalizeRequest(
-            UUID.randomUUID(),
-            UUID.randomUUID(),
-            1,
-            """
-            {
-              "schemaVersion":"recognition-evidence-v1",
-              "blocks":[
-                {
-                  "id":"block-1",
-                  "text":"x + 1 = 2"
-                }
-              ],
-              "documentUncertainty":[],
-              "reviewRequired":false
-            }
-            """,
-            """
-            {
-              "qualitySignals":[]
-            }
-            """,
-            "problem-parser",
-            "v001",
-            "problem-parse-v1",
-            Duration.ofSeconds(20)
-        );
+    @Test
+    void duplicateProviderIdFailsConstruction() {
+        assertThatThrownBy(() ->
+            gateway(
+                FixedRoutePlanner.enabled(
+                    visionPlan(
+                        "PRIMARY",
+                        "primary-model",
+                        List.of(),
+                        65_536,
+                        20_000
+                    )
+                ),
+                successfulProvider("PRIMARY"),
+                successfulProvider("primary")
+            )
+        )
+            .isInstanceOf(
+                IllegalStateException.class
+            )
+            .hasMessageContaining(
+                "Duplicate AI provider id"
+            );
     }
 
-    private static AiProblemClassifyRequest classificationRequest() {
-        return new AiProblemClassifyRequest(
-            UUID.randomUUID(),
-            UUID.randomUUID(),
-            "EQUATION",
-            "SOLVE_EQUATION",
-            """
-            {
-              "projectionVersion":"problem-classification-projection-v1",
-              "canonicalSchemaVersion":"canonical-problem-v1",
-              "problemType":"EQUATION",
-              "taskType":"SOLVE_EQUATION",
-              "normalizedText":"x + 1 = 2",
-              "displayLatex":"x + 1 = 2",
-              "variables":["x"],
-              "statementCount":1,
-              "sourceConstraintCount":0,
-              "derivedRestrictionCount":0,
-              "upstreamReviewRequired":false
-            }
-            """,
-            "curriculum-v1-seed",
-            """
-            {
-              "ontologyVersion":"curriculum-v1-seed",
-              "primarySkillIds":[
-                "MATH.EQUATIONS.LINEAR_ONE_VARIABLE"
-              ],
-              "secondarySkillIds":[
-                "MATH.EQUATIONS.LINEAR_ONE_VARIABLE"
-              ]
-            }
-            """,
-            "problem-classifier",
-            "v001",
-            "problem-classification-v1",
-            Duration.ofSeconds(15)
-        );
+    @Test
+    void unsupportedCapabilityProviderPairFailsStartup() {
+        ConfiguredAiModelGateway gateway =
+            gateway(
+                FixedRoutePlanner.enabled(
+                    visionPlan(
+                        "PRIMARY",
+                        "primary-model",
+                        List.of(),
+                        65_536,
+                        20_000
+                    )
+                ),
+                successfulProvider(
+                    "PRIMARY",
+                    Set.of(
+                        AiCapability.PROBLEM_CLASSIFY
+                    ),
+                    "{\"schemaVersion\":\"recognition-evidence-v1\"}",
+                    null,
+                    10,
+                    0
+                )
+            );
+
+        assertThatThrownBy(
+            gateway::validateProviderConfiguration
+        )
+            .isInstanceOf(
+                IllegalStateException.class
+            )
+            .hasMessageContaining(
+                "does not support"
+            )
+            .hasMessageContaining(
+                "VISION_PARSE"
+            );
     }
 
-    private static VisionParseProviderAdapter successfulProvider(
-        String providerId,
-        String model
+    @Test
+    void ledgerReservationFailurePreventsProviderCall() {
+        CountingProvider provider =
+            successfulProvider("PRIMARY");
+
+        RecordingUsageRecorder recorder =
+            RecordingUsageRecorder.failingReserve();
+
+        AiExecutionResult result =
+            gateway(
+                FixedRoutePlanner.enabled(
+                    visionPlan(
+                        "PRIMARY",
+                        "primary-model",
+                        List.of(),
+                        65_536,
+                        20_000
+                    )
+                ),
+                new RecordingMetrics(),
+                recorder,
+                provider
+            ).execute(
+                command(
+                    AiCapability.VISION_PARSE,
+                    null
+                )
+            );
+
+        assertThat(result.status())
+            .isEqualTo(
+                AiExecutionStatus.BLOCKED_POLICY
+            );
+        assertThat(result.failureClass())
+            .isEqualTo(
+                AiProviderFailureClass.LEDGER_UNAVAILABLE
+            );
+        assertThat(result.retryable()).isTrue();
+        assertThat(provider.callCount()).isZero();
+        assertThat(recorder.reservations).isEmpty();
+    }
+
+    @Test
+    void ledgerCompletionFailureDoesNotReturnFalseSuccess() {
+        CountingProvider provider =
+            successfulProvider("PRIMARY");
+
+        AiExecutionResult result =
+            gateway(
+                FixedRoutePlanner.enabled(
+                    visionPlan(
+                        "PRIMARY",
+                        "primary-model",
+                        List.of(),
+                        65_536,
+                        20_000
+                    )
+                ),
+                new RecordingMetrics(),
+                RecordingUsageRecorder.failingComplete(),
+                provider
+            ).execute(
+                command(
+                    AiCapability.VISION_PARSE,
+                    null
+                )
+            );
+
+        assertThat(provider.callCount()).isEqualTo(1);
+        assertThat(result.status())
+            .isEqualTo(
+                AiExecutionStatus.FAILED_RETRYABLE
+            );
+        assertThat(result.failureClass())
+            .isEqualTo(
+                AiProviderFailureClass.LEDGER_UNAVAILABLE
+            );
+        assertThat(result.output()).isNull();
+    }
+
+    @Test
+    void gatewayRecordsLatencyOnSuccess() {
+        CountingProvider provider =
+            successfulProvider(
+                "PRIMARY",
+                Set.of(AiCapability.VISION_PARSE),
+                "{\"schemaVersion\":\"recognition-evidence-v1\"}",
+                null,
+                10,
+                5
+            );
+
+        RecordingMetrics metrics =
+            new RecordingMetrics();
+
+        AiExecutionResult result =
+            gateway(
+                FixedRoutePlanner.enabled(
+                    visionPlan(
+                        "PRIMARY",
+                        "primary-model",
+                        List.of(),
+                        65_536,
+                        20_000
+                    )
+                ),
+                metrics,
+                RecordingUsageRecorder.success(),
+                provider
+            ).execute(
+                command(
+                    AiCapability.VISION_PARSE,
+                    null
+                )
+            );
+
+        assertThat(result.status())
+            .isEqualTo(AiExecutionStatus.SUCCEEDED);
+        assertThat(metrics.results).hasSize(1);
+        assertThat(
+            metrics.results.getFirst()
+                .providerLatencyMs()
+        ).isGreaterThanOrEqualTo(1);
+        assertThat(
+            metrics.results.getFirst()
+                .gatewayLatencyMs()
+        ).isGreaterThanOrEqualTo(1);
+    }
+
+    @Test
+    void gatewayRecordsLatencyOnFailure() {
+        CountingProvider provider =
+            failingProvider(
+                "PRIMARY",
+                AiProviderFailureClass.TIMEOUT,
+                false,
+                5
+            );
+
+        RecordingMetrics metrics =
+            new RecordingMetrics();
+
+        AiExecutionResult result =
+            gateway(
+                FixedRoutePlanner.enabled(
+                    visionPlan(
+                        "PRIMARY",
+                        "primary-model",
+                        List.of(),
+                        65_536,
+                        20_000
+                    )
+                ),
+                metrics,
+                RecordingUsageRecorder.success(),
+                provider
+            ).execute(
+                command(
+                    AiCapability.VISION_PARSE,
+                    null
+                )
+            );
+
+        assertThat(result.status())
+            .isEqualTo(
+                AiExecutionStatus.FAILED_TERMINAL
+            );
+        assertThat(metrics.results).hasSize(1);
+        assertThat(
+            metrics.results.getFirst()
+                .providerLatencyMs()
+        ).isGreaterThanOrEqualTo(1);
+        assertThat(
+            metrics.results.getFirst()
+                .gatewayLatencyMs()
+        ).isGreaterThanOrEqualTo(1);
+    }
+
+    @Test
+    void futureSolveCapabilityIsDisabled() {
+        CountingProvider provider =
+            successfulProvider(
+                "PRIMARY",
+                Set.of(AiCapability.SOLVE),
+                "{\"schemaVersion\":\"solve-v1\"}",
+                null,
+                10,
+                0
+            );
+
+        AiExecutionResult result =
+            gateway(
+                FixedRoutePlanner.disabled(
+                    AiCapability.SOLVE
+                ),
+                provider
+            ).execute(
+                command(
+                    AiCapability.SOLVE,
+                    null
+                )
+            );
+
+        assertThat(result.status())
+            .isEqualTo(AiExecutionStatus.DISABLED);
+        assertThat(provider.callCount()).isZero();
+    }
+
+    private static ConfiguredAiModelGateway gateway(
+        FixedRoutePlanner planner,
+        AiProviderAdapter... providers
     ) {
-        return new VisionParseProviderAdapter() {
-            @Override
-            public String providerId() {
-                return providerId;
-            }
-
-            @Override
-            public AiVisionParseResult execute(
-                AiVisionParseRequest request,
-                AiRoutePlan routePlan
-            ) {
-                return new AiVisionParseResult(
-                    """
-                    {
-                      "schemaVersion":"recognition-evidence-v1",
-                      "blocks":[],
-                      "documentUncertainty":[],
-                      "reviewRequired":false
-                    }
-                    """,
-                    new AiProvenance(
-                        providerId,
-                        model,
-                        routePlan.routePolicyVersion(),
-                        request.promptId(),
-                        request.promptVersion(),
-                        request.schemaVersion(),
-                        "request-id",
-                        "response-id",
-                        false
-                    ),
-                    new AiUsage(
-                        1,
-                        2,
-                        1,
-                        1,
-                        3,
-                        "USD",
-                        "test-pricing-v1"
-                    ),
-                    5
-                );
-            }
-        };
+        return gateway(
+            planner,
+            new RecordingMetrics(),
+            RecordingUsageRecorder.success(),
+            providers
+        );
     }
 
-    private static VisionParseProviderAdapter failingProvider(
+    private static ConfiguredAiModelGateway gateway(
+        FixedRoutePlanner planner,
+        RecordingMetrics metrics,
+        RecordingUsageRecorder usageRecorder,
+        AiProviderAdapter... providers
+    ) {
+        return new ConfiguredAiModelGateway(
+            planner,
+            AiCapabilityRegistry.defaults(),
+            List.of(providers),
+            usageRecorder,
+            metrics,
+            CLOCK
+        );
+    }
+
+    private static AiRoutePlan visionPlan(
+        String primaryProvider,
+        String primaryModel,
+        List<AiRouteTarget> fallbacks,
+        int maxResponseBytes,
+        long maxCostMicros
+    ) {
+        return routePlan(
+            AiCapability.VISION_PARSE,
+            primaryProvider,
+            primaryModel,
+            fallbacks,
+            maxResponseBytes,
+            maxCostMicros
+        );
+    }
+
+    private static AiRoutePlan routePlan(
+        AiCapability capability,
+        String primaryProvider,
+        String primaryModel,
+        List<AiRouteTarget> fallbacks,
+        int maxResponseBytes,
+        long maxCostMicros
+    ) {
+        return new AiRoutePlan(
+            capability,
+            routePolicyVersion(capability),
+            capability.name()
+                .toLowerCase(Locale.ROOT)
+                + "-default-v1",
+            new AiRouteTarget(
+                primaryProvider,
+                primaryModel
+            ),
+            fallbacks,
+            promptId(capability),
+            promptVersion(capability),
+            schemaVersion(capability),
+            Duration.ofSeconds(10),
+            Math.max(
+                1,
+                1 + fallbacks.size()
+            ),
+            maxResponseBytes,
+            maxCostMicros,
+            "test-pricing-v1",
+            AiRoutePlan.CachePolicy.DISABLED,
+            AiRoutePlan.StreamingPolicy.DISABLED,
+            "NO_TRAINING_BY_DEFAULT",
+            "UNSPECIFIED",
+            capability.name() + ":PRIMARY",
+            null,
+            AiRoutePlan.ReleaseStage.LOCAL_ONLY
+        );
+    }
+
+    private static AiExecutionCommand command(
+        AiCapability capability,
+        Long maxCostMicros
+    ) {
+        return new AiExecutionCommand(
+            capability,
+            new TestCapabilityRequest(),
+            new AiExecutionContext(
+                UUID.randomUUID(),
+                UUID.randomUUID(),
+                UUID.randomUUID(),
+                "correlation-id",
+                "trace-id",
+                null,
+                null,
+                Map.of()
+            ),
+            AiRouteContext.basic(
+                capability,
+                Duration.ofSeconds(10)
+            ),
+            "application/json",
+            null,
+            executable(capability)
+                ? promptId(capability)
+                : null,
+            executable(capability)
+                ? promptVersion(capability)
+                : null,
+            executable(capability)
+                ? schemaVersion(capability)
+                : null,
+            maxCostMicros
+        );
+    }
+
+    private static CountingProvider successfulProvider(
+        String providerId
+    ) {
+        return successfulProvider(
+            providerId,
+            Set.of(AiCapability.VISION_PARSE),
+            "{\"schemaVersion\":\"recognition-evidence-v1\"}",
+            null,
+            10,
+            0
+        );
+    }
+
+    private static CountingProvider successfulProvider(
+        String providerId,
+        Set<AiCapability> supportedCapabilities,
+        String rawOutputJson,
+        String promptIdOverride,
+        long estimatedCostMicros,
+        long delayMillis
+    ) {
+        return new CountingProvider(
+            providerId,
+            supportedCapabilities,
+            null,
+            false,
+            rawOutputJson,
+            promptIdOverride,
+            estimatedCostMicros,
+            delayMillis
+        );
+    }
+
+    private static CountingProvider failingProvider(
         String providerId,
         AiProviderFailureClass failureClass,
         boolean retryable
     ) {
-        return new VisionParseProviderAdapter() {
-            @Override
-            public String providerId() {
-                return providerId;
+        return failingProvider(
+            providerId,
+            failureClass,
+            retryable,
+            0
+        );
+    }
+
+    private static CountingProvider failingProvider(
+        String providerId,
+        AiProviderFailureClass failureClass,
+        boolean retryable,
+        long delayMillis
+    ) {
+        return new CountingProvider(
+            providerId,
+            Set.of(AiCapability.VISION_PARSE),
+            failureClass,
+            retryable,
+            null,
+            null,
+            0,
+            delayMillis
+        );
+    }
+
+    private static boolean executable(
+        AiCapability capability
+    ) {
+        return capability == AiCapability.VISION_PARSE
+            || capability == AiCapability.PROBLEM_NORMALIZE
+            || capability == AiCapability.PROBLEM_CLASSIFY;
+    }
+
+    private static String routePolicyVersion(
+        AiCapability capability
+    ) {
+        return switch (capability) {
+            case VISION_PARSE -> "vision-route-v1";
+            case PROBLEM_NORMALIZE -> "problem-parser-route-v1";
+            case PROBLEM_CLASSIFY -> "problem-classifier-route-v1";
+            default -> capability.name()
+                .toLowerCase(Locale.ROOT)
+                + "-route-v1";
+        };
+    }
+
+    private static String promptId(
+        AiCapability capability
+    ) {
+        return switch (capability) {
+            case VISION_PARSE -> "vision-recognition";
+            case PROBLEM_NORMALIZE -> "problem-parser";
+            case PROBLEM_CLASSIFY -> "problem-classifier";
+            default -> capability.name()
+                .toLowerCase(Locale.ROOT);
+        };
+    }
+
+    private static String promptVersion(
+        AiCapability capability
+    ) {
+        return executable(capability)
+            ? "v001"
+            : "future";
+    }
+
+    private static String schemaVersion(
+        AiCapability capability
+    ) {
+        return switch (capability) {
+            case VISION_PARSE -> "recognition-evidence-v1";
+            case PROBLEM_NORMALIZE -> "problem-parse-v1";
+            case PROBLEM_CLASSIFY -> "problem-classification-v1";
+            default -> capability.name()
+                .toLowerCase(Locale.ROOT)
+                + "-v1";
+        };
+    }
+
+    private record TestCapabilityRequest()
+        implements AiCapabilityRequest {
+    }
+
+    private static final class FixedRoutePlanner
+        implements AiRoutePlanner {
+
+        private final Map<AiCapability, AiRoutePolicy>
+            policies;
+
+        private int routePlanCalls;
+
+        private FixedRoutePlanner(
+            Map<AiCapability, AiRoutePolicy> policies
+        ) {
+            this.policies = Map.copyOf(policies);
+        }
+
+        static FixedRoutePlanner enabled(
+            AiRoutePlan routePlan
+        ) {
+            EnumMap<AiCapability, AiRoutePolicy> policies =
+                disabledPolicies();
+
+            policies.put(
+                routePlan.capability(),
+                AiRoutePolicy.enabled(routePlan)
+            );
+
+            return new FixedRoutePlanner(policies);
+        }
+
+        static FixedRoutePlanner disabled(
+            AiCapability capability
+        ) {
+            EnumMap<AiCapability, AiRoutePolicy> policies =
+                disabledPolicies();
+
+            policies.put(
+                capability,
+                AiRoutePolicy.disabled(capability)
+            );
+
+            return new FixedRoutePlanner(policies);
+        }
+
+        @Override
+        public boolean enabled(
+            AiCapability capability
+        ) {
+            AiRoutePolicy policy =
+                policies.get(capability);
+
+            return policy != null
+                && policy.enabled();
+        }
+
+        @Override
+        public AiRoutePlan routePlan(
+            AiRouteContext context
+        ) {
+            routePlanCalls++;
+
+            AiRoutePolicy policy =
+                policies.get(
+                    context.capability()
+                );
+
+            if (
+                policy == null
+                    || !policy.enabled()
+            ) {
+                throw new AiProviderException(
+                    AiProviderFailureClass
+                        .CONFIGURATION_DISABLED,
+                    false,
+                    "AI capability is disabled"
+                );
             }
 
-            @Override
-            public AiVisionParseResult execute(
-                AiVisionParseRequest request,
-                AiRoutePlan routePlan
+            return policy.routePlan();
+        }
+
+        @Override
+        public Map<AiCapability, AiRoutePolicy>
+        policies() {
+            return policies;
+        }
+
+        private static EnumMap<
+            AiCapability,
+            AiRoutePolicy
+            > disabledPolicies() {
+
+            EnumMap<AiCapability, AiRoutePolicy> policies =
+                new EnumMap<>(
+                    AiCapability.class
+                );
+
+            for (
+                AiCapability capability :
+                AiCapability.values()
             ) {
+                policies.put(
+                    capability,
+                    AiRoutePolicy.disabled(
+                        capability
+                    )
+                );
+            }
+
+            return policies;
+        }
+    }
+
+    private static final class CountingProvider
+        implements AiProviderAdapter {
+
+        private final String providerId;
+        private final Set<AiCapability> supportedCapabilities;
+        private final AiProviderFailureClass failureClass;
+        private final boolean retryable;
+        private final String rawOutputJson;
+        private final String promptIdOverride;
+        private final long estimatedCostMicros;
+        private final long delayMillis;
+        private int callCount;
+
+        private CountingProvider(
+            String providerId,
+            Set<AiCapability> supportedCapabilities,
+            AiProviderFailureClass failureClass,
+            boolean retryable,
+            String rawOutputJson,
+            String promptIdOverride,
+            long estimatedCostMicros,
+            long delayMillis
+        ) {
+            this.providerId = providerId;
+            this.supportedCapabilities =
+                Set.copyOf(supportedCapabilities);
+            this.failureClass = failureClass;
+            this.retryable = retryable;
+            this.rawOutputJson = rawOutputJson;
+            this.promptIdOverride =
+                promptIdOverride;
+            this.estimatedCostMicros =
+                estimatedCostMicros;
+            this.delayMillis = delayMillis;
+        }
+
+        @Override
+        public String providerId() {
+            return providerId;
+        }
+
+        @Override
+        public Set<AiCapability>
+        supportedCapabilities() {
+            return supportedCapabilities;
+        }
+
+        @Override
+        public AiCapabilityResult execute(
+            AiProviderRequest request
+        ) {
+            callCount++;
+            sleep();
+
+            if (failureClass != null) {
                 throw new AiProviderException(
                     failureClass,
                     retryable,
                     "provider failed"
                 );
             }
-        };
-    }
 
-    private static ProblemNormalizeProviderAdapter successfulProblemProvider(
-        String providerId,
-        String model
-    ) {
-        return new ProblemNormalizeProviderAdapter() {
-            @Override
-            public String providerId() {
-                return providerId;
+            AiRoutePlan routePlan =
+                request.routePlan();
+
+            AiRouteTarget target =
+                request.target();
+
+            AiProvenance provenance =
+                new AiProvenance(
+                    target.provider(),
+                    target.model(),
+                    routePlan.routePolicyVersion(),
+                    promptIdOverride == null
+                        ? routePlan.promptId()
+                        : promptIdOverride,
+                    routePlan.promptVersion(),
+                    routePlan.schemaVersion(),
+                    "request-" + callCount,
+                    "response-" + callCount,
+                    false
+                );
+
+            return new AiVisionParseResult(
+                rawOutputJson,
+                provenance,
+                new AiUsage(
+                    1,
+                    2,
+                    null,
+                    1,
+                    estimatedCostMicros,
+                    "USD",
+                    routePlan.pricingVersion()
+                ),
+                0
+            );
+        }
+
+        int callCount() {
+            return callCount;
+        }
+
+        private void sleep() {
+            if (delayMillis <= 0) {
+                return;
             }
 
-            @Override
-            public AiProblemNormalizeResult execute(
-                AiProblemNormalizeRequest request,
-                AiRoutePlan routePlan
-            ) {
-                return new AiProblemNormalizeResult(
-                    """
-                    {
-                      "schemaVersion":"problem-parse-v1",
-                      "supportStatus":"UNSUPPORTED",
-                      "unsupportedReason":"UNSUPPORTED_STRUCTURE",
-                      "subjectId":"MATH",
-                      "topicId":null,
-                      "taskType":null,
-                      "problemType":null,
-                      "expressions":[],
-                      "variables":[],
-                      "constraints":[],
-                      "assumptions":[],
-                      "uncertainty":{
-                        "recognition":[],
-                        "parse":[],
-                        "reviewRequired":false
-                      },
-                      "sourceEvidenceRefs":[],
-                      "visualQualityRisks":[],
-                      "reviewRequired":false
-                    }
-                    """,
-                    new AiProvenance(
-                        providerId,
-                        model,
-                        routePlan.routePolicyVersion(),
-                        request.promptId(),
-                        request.promptVersion(),
-                        request.schemaVersion(),
-                        "request-id",
-                        "response-id",
-                        false
-                    ),
-                    new AiUsage(
-                        1,
-                        2,
-                        null,
-                        1,
-                        3,
-                        "USD",
-                        "test-pricing-v1"
-                    ),
-                    5
+            try {
+                Thread.sleep(delayMillis);
+            } catch (InterruptedException exception) {
+                Thread.currentThread().interrupt();
+                throw new IllegalStateException(
+                    "test provider interrupted",
+                    exception
                 );
             }
-        };
+        }
     }
 
-    private static ProblemNormalizeProviderAdapter failingProblemProvider(
-        String providerId,
-        AiProviderFailureClass failureClass,
-        boolean retryable
-    ) {
-        return new ProblemNormalizeProviderAdapter() {
-            @Override
-            public String providerId() {
-                return providerId;
-            }
+    private static final class RecordingUsageRecorder
+        implements AiUsageRecorder {
 
-            @Override
-            public AiProblemNormalizeResult execute(
-                AiProblemNormalizeRequest request,
-                AiRoutePlan routePlan
-            ) {
-                throw new AiProviderException(
-                    failureClass,
-                    retryable,
-                    "provider failed"
+        private final boolean failReserve;
+        private final boolean failComplete;
+        private final List<AiUsageRecord> reservations =
+            new ArrayList<>();
+        private final List<AiUsageRecord> completions =
+            new ArrayList<>();
+
+        private RecordingUsageRecorder(
+            boolean failReserve,
+            boolean failComplete
+        ) {
+            this.failReserve = failReserve;
+            this.failComplete = failComplete;
+        }
+
+        static RecordingUsageRecorder success() {
+            return new RecordingUsageRecorder(
+                false,
+                false
+            );
+        }
+
+        static RecordingUsageRecorder failingReserve() {
+            return new RecordingUsageRecorder(
+                true,
+                false
+            );
+        }
+
+        static RecordingUsageRecorder failingComplete() {
+            return new RecordingUsageRecorder(
+                false,
+                true
+            );
+        }
+
+        @Override
+        public void reserve(
+            AiUsageRecord record
+        ) {
+            if (failReserve) {
+                throw new IllegalStateException(
+                    "ledger unavailable"
                 );
             }
-        };
-    }
 
-    private static ProblemNormalizeProviderAdapter unavailableProblemProvider() {
-        return failingProblemProvider(
-            "UNAVAILABLE",
-            AiProviderFailureClass.CONFIGURATION_DISABLED,
-            false
-        );
-    }
+            reservations.add(record);
+        }
 
-    private static ProblemClassifyProviderAdapter successfulClassificationProvider(
-        String providerId,
-        String model
-    ) {
-        return new ProblemClassifyProviderAdapter() {
-            @Override
-            public String providerId() {
-                return providerId;
-            }
-
-            @Override
-            public AiProblemClassifyResult execute(
-                AiProblemClassifyRequest request,
-                AiRoutePlan routePlan
-            ) {
-                return new AiProblemClassifyResult(
-                    """
-                    {
-                      "schemaVersion":"problem-classification-v1",
-                      "ontologyVersion":"curriculum-v1-seed",
-                      "status":"CLASSIFIED",
-                      "primarySkillId":"MATH.EQUATIONS.LINEAR_ONE_VARIABLE",
-                      "secondarySkillIds":[],
-                      "difficulty":"EASY",
-                      "reviewReason":null
-                    }
-                    """,
-                    new AiProvenance(
-                        providerId,
-                        model,
-                        routePlan.routePolicyVersion(),
-                        request.promptId(),
-                        request.promptVersion(),
-                        request.schemaVersion(),
-                        "classification-request-id",
-                        "classification-response-id",
-                        false
-                    ),
-                    new AiUsage(
-                        10,
-                        5,
-                        null,
-                        1,
-                        20,
-                        "USD",
-                        "test-classifier-pricing-v1"
-                    ),
-                    4
+        @Override
+        public void complete(
+            AiUsageRecord record
+        ) {
+            if (failComplete) {
+                throw new IllegalStateException(
+                    "ledger unavailable"
                 );
             }
-        };
+
+            completions.add(record);
+        }
     }
 
-    private static ProblemClassifyProviderAdapter failingClassificationProvider(
-        String providerId,
-        AiProviderFailureClass failureClass,
-        boolean retryable
-    ) {
-        return new ProblemClassifyProviderAdapter() {
-            @Override
-            public String providerId() {
-                return providerId;
-            }
+    private static final class RecordingMetrics
+        implements AiGatewayMetrics {
 
-            @Override
-            public AiProblemClassifyResult execute(
-                AiProblemClassifyRequest request,
-                AiRoutePlan routePlan
-            ) {
-                throw new AiProviderException(
-                    failureClass,
-                    retryable,
-                    "classification provider failed"
-                );
-            }
-        };
-    }
+        private final List<AiExecutionResult> results =
+            new ArrayList<>();
 
-    private static ProblemClassifyProviderAdapter unavailableClassificationProvider() {
-        return failingClassificationProvider(
-            "UNAVAILABLE",
-            AiProviderFailureClass.CONFIGURATION_DISABLED,
-            false
-        );
+        private int requestCount;
+        private int retryCount;
+        private int fallbackCount;
+        private int blockedCount;
+        private int ledgerWriteCount;
+
+        @Override
+        public void request(
+            AiRoutePlan routePlan
+        ) {
+            requestCount++;
+        }
+
+        @Override
+        public void result(
+            AiRoutePlan routePlan,
+            AiRouteTarget target,
+            AiExecutionResult result
+        ) {
+            results.add(result);
+        }
+
+        @Override
+        public void retry(
+            AiRoutePlan routePlan,
+            AiRouteTarget failedTarget
+        ) {
+            retryCount++;
+        }
+
+        @Override
+        public void fallback(
+            AiRoutePlan routePlan,
+            AiRouteTarget target
+        ) {
+            fallbackCount++;
+        }
+
+        @Override
+        public void blocked(
+            AiCapability capability,
+            AiExecutionStatus status
+        ) {
+            blockedCount++;
+        }
+
+        @Override
+        public void ledgerWrite(
+            AiCapability capability,
+            String outcome
+        ) {
+            ledgerWriteCount++;
+        }
     }
 }

@@ -3,6 +3,7 @@ package com.verifiedai.problem.application.classification;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.verifiedai.ai.application.AiCapability;
+import com.verifiedai.ai.application.AiExecutionContext;
 import com.verifiedai.ai.application.AiModelGateway;
 import com.verifiedai.ai.application.AiProblemClassifyRequest;
 import com.verifiedai.ai.application.AiProblemClassifyResult;
@@ -28,6 +29,7 @@ import com.verifiedai.problem.infrastructure.persistence.repository.ProblemClass
 import com.verifiedai.problem.infrastructure.persistence.repository.ProblemSessionJpaRepository;
 import com.verifiedai.sharedkernel.error.ApiErrorCode;
 import com.verifiedai.sharedkernel.error.ApiProblemException;
+import com.verifiedai.sharedkernel.observability.CorrelationIds;
 import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.Duration;
@@ -384,6 +386,13 @@ public class ProblemClassificationApplicationService {
                     candidates
                 );
 
+            /*
+             * Classification semantic truth remains in the
+             * problem module.
+             *
+             * The generic AI gateway must not own any of these
+             * normalization/validation/policy decisions.
+             */
             ProblemClassificationProposal proposal =
                 outputNormalizer.normalize(
                     aiResult.rawOutputJson(),
@@ -608,25 +617,62 @@ public class ProblemClassificationApplicationService {
             context.job()
         );
 
-        AiProblemClassifyResult result =
-            aiModelGateway.executeProblemClassify(
-                new AiProblemClassifyRequest(
-                    context.canonicalProblem().id(),
-                    context.job().problemSessionId(),
-                    context.canonicalProblem()
-                        .problemType(),
-                    context.canonicalProblem()
-                        .taskType(),
-                    toJson(projection),
-                    context.job().ontologyVersion(),
-                    toJson(candidates),
-                    context.job().promptId(),
-                    context.job().promptVersion(),
-                    context.job().schemaVersion(),
-                    routePlan.timeout()
-                )
+        /*
+         * Capability-specific request construction remains here.
+         * No concrete provider/model identity leaks into the
+         * problem module.
+         */
+        AiProblemClassifyRequest request =
+            new AiProblemClassifyRequest(
+                context.canonicalProblem().id(),
+                context.job().problemSessionId(),
+                context.canonicalProblem()
+                    .problemType(),
+                context.canonicalProblem()
+                    .taskType(),
+                toJson(projection),
+                context.job().ontologyVersion(),
+                toJson(candidates),
+                context.job().promptId(),
+                context.job().promptVersion(),
+                context.job().schemaVersion(),
+                routePlan.timeout()
             );
 
+        /*
+         * Every durable classification job attempt receives a
+         * deterministic AI operation identity.
+         *
+         * idempotencyKey = jobId
+         * operationId    = deterministic(jobId + attemptNumber)
+         */
+        AiExecutionContext aiExecutionContext =
+            AiExecutionContext.forJobAttempt(
+                context.job().id(),
+                context.attemptNumber(),
+                context.job().userId(),
+                context.job().problemSessionId(),
+                CorrelationIds.current()
+            );
+
+        /*
+         * Provider routing, approved fallback, usage accounting,
+         * technical provenance and gateway execution policy are
+         * owned by AiModelGateway.
+         */
+        AiProblemClassifyResult result =
+            aiModelGateway.executeProblemClassify(
+                request,
+                aiExecutionContext
+            );
+
+        /*
+         * These technical checks existed before Sprint 5.1.
+         *
+         * The gateway now enforces the corresponding execution
+         * contracts centrally as well, but the caller-side guards
+         * remain temporarily as defense-in-depth during migration.
+         */
         if (
             result == null
                 || result.rawOutputJson() == null

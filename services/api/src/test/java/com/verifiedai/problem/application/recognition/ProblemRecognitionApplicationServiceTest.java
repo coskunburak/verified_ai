@@ -1092,6 +1092,11 @@ final class ProblemRecognitionApplicationServiceTest
                     throw new UnsupportedOperationException(
                         "Problem classification is outside recognition tests"
                     );
+
+                default ->
+                    throw new UnsupportedOperationException(
+                        "Capability is outside recognition tests"
+                    );
             };
         }
 

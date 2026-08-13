@@ -8,9 +8,47 @@ spring:
     password: ${POSTGRES_PASSWORD}
 app:
   environment: production
+
   ai:
+    usage-ledger:
+      enabled: true
+
     vision-recognition:
       enabled: ${AI_VISION_RECOGNITION_ENABLED:false}
+      release-stage: ${AI_VISION_RECOGNITION_RELEASE_STAGE:PRODUCTION}
+
+    problem-parser:
+      enabled: ${AI_PROBLEM_PARSER_ENABLED:false}
+      release-stage: ${AI_PROBLEM_PARSER_RELEASE_STAGE:PRODUCTION}
+
+    problem-classifier:
+      enabled: ${AI_PROBLEM_CLASSIFIER_ENABLED:false}
+      release-stage: ${AI_PROBLEM_CLASSIFIER_RELEASE_STAGE:PRODUCTION}
+
+    capabilities:
+      SOLVE:
+        enabled: false
+        release-stage: DISABLED
+
+      ARBITRATE:
+        enabled: false
+        release-stage: DISABLED
+
+      EXPLAIN:
+        enabled: false
+        release-stage: DISABLED
+
+      MISTAKE_CLASSIFY:
+        enabled: false
+        release-stage: DISABLED
+
+      TUTOR:
+        enabled: false
+        release-stage: DISABLED
+
+      PRACTICE_GENERATE:
+        enabled: false
+        release-stage: DISABLED
 management:
   endpoint:
     health:
