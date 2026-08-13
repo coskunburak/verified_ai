@@ -1,0 +1,89 @@
+name: AI Evaluation
+
+on:
+  pull_request:
+    paths:
+      - "services/api/src/main/java/com/verifiedai/problem/**"
+      - "services/api/src/main/java/com/verifiedai/ai/**"
+      - "services/api/src/main/resources/prompts/**"
+      - "services/api/src/main/resources/application*.yml"
+      - "packages/schemas/**"
+      - "packages/curriculum/**"
+      - "evaluations/**"
+      - "scripts/evaluation/**"
+      - "Makefile"
+      - ".github/workflows/ai-evaluation.yml"
+  push:
+    branches: [main]
+    paths:
+      - "services/api/src/main/java/com/verifiedai/problem/**"
+      - "services/api/src/main/java/com/verifiedai/ai/**"
+      - "services/api/src/main/resources/prompts/**"
+      - "services/api/src/main/resources/application*.yml"
+      - "packages/schemas/**"
+      - "packages/curriculum/**"
+      - "evaluations/**"
+      - "scripts/evaluation/**"
+      - "Makefile"
+      - ".github/workflows/ai-evaluation.yml"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Evaluation mode: local, connected, or holdout"
+        required: true
+        default: "local"
+  schedule:
+    - cron: "17 4 * * 1"
+
+jobs:
+  deterministic-ingestion-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Test evaluation runners
+        run: python3 -m unittest evaluations/runners/test_ingestion_evaluation.py
+      - name: Run deterministic ingestion gate
+        env:
+          AI_EVAL_MODE: local
+          AI_EVAL_RUN_ID: ci-local
+        run: make eval-ai
+      - name: Upload safe evaluation artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ingestion-evaluation-local
+          path: |
+            .generated/evaluations/ci-local/ingestion-evaluation-report.json
+            .generated/evaluations/ci-local/ingestion-evaluation-summary.md
+            .generated/evaluations/ci-local/ingestion-release-comparison.json
+          retention-days: 14
+
+  connected-ingestion-evaluation:
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    environment: ai-evaluation
+    env:
+      AI_EVAL_MODE: ${{ github.event.inputs.mode || 'connected' }}
+      AI_EVAL_RUN_ID: connected
+      AI_EVAL_MAX_TOTAL_COST_MICROS: ${{ vars.AI_EVAL_MAX_TOTAL_COST_MICROS || '0' }}
+      AI_EVAL_MAX_CASES: ${{ vars.AI_EVAL_MAX_CASES || '0' }}
+      AI_EVAL_TIMEOUT: ${{ vars.AI_EVAL_TIMEOUT || '0' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run protected/connected ingestion evaluation
+        run: scripts/evaluation/run-golden-suite.sh
+      - name: Upload safe connected artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ingestion-evaluation-connected
+          path: |
+            .generated/evaluations/connected/ingestion-evaluation-report.json
+            .generated/evaluations/connected/ingestion-evaluation-summary.md
+            .generated/evaluations/connected/ingestion-release-comparison.json
+          retention-days: 14

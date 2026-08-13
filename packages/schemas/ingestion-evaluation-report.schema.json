@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.verified-ai-learning.example/ingestion-evaluation-report.schema.json",
+  "title": "Sprint 4.10 ingestion evaluation report",
+  "description": "Machine-readable, privacy-minimized Phase 4 ingestion evaluation report. Reports are generated artifacts; approved baselines are source-controlled.",
+  "type": "object",
+  "required": [
+    "reportSchemaVersion",
+    "evaluationPolicyVersion",
+    "runId",
+    "executionMode",
+    "datasetVersion",
+    "datasetSha256",
+    "gitCommit",
+    "startedAt",
+    "completedAt",
+    "routeProvenance",
+    "runtime",
+    "counts",
+    "metrics",
+    "slices",
+    "criticalFailures",
+    "regressions",
+    "gateDecision",
+    "reportSha256"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "reportSchemaVersion": {"const": "ingestion-evaluation-report-v1"},
+    "evaluationPolicyVersion": {"const": "ingestion-evaluation-policy-v1"},
+    "runId": {"type": "string", "minLength": 8},
+    "executionMode": {
+      "enum": [
+        "DATASET_CONTRACT_VALIDATION",
+        "LOCAL_FIXTURE_REGRESSION",
+        "CONNECTED_REPRESENTATIVE_EVALUATION",
+        "PROTECTED_HOLDOUT_RELEASE_GATE"
+      ]
+    },
+    "datasetVersion": {"type": "string"},
+    "datasetSha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "gitCommit": {"type": "string"},
+    "startedAt": {"type": "string"},
+    "completedAt": {"type": "string"},
+    "routeProvenance": {"type": "array"},
+    "runtime": {"type": "object"},
+    "counts": {"type": "object"},
+    "metrics": {"type": "object"},
+    "slices": {"type": "object"},
+    "criticalFailures": {"type": "array"},
+    "regressions": {"type": "array"},
+    "gateDecision": {"enum": ["PASS", "FAIL", "BLOCKED"]},
+    "gateReasons": {"type": "array", "items": {"type": "string"}},
+    "connectedProviderStatus": {"type": "string"},
+    "protectedHoldoutStatus": {"type": "string"},
+    "reportSha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

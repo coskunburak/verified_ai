@@ -1,10 +1,7 @@
 package com.verifiedai.problem.infrastructure.preprocessing;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import com.verifiedai.problem.domain.model.ProblemAssetDerivativeKind;
-import com.verifiedai.problem.domain.model.ProblemAssetQualitySeverity;
+import com.verifiedai.problem.domain.model.asset.ProblemAssetDerivativeKind;
+import com.verifiedai.problem.domain.model.asset.ProblemAssetQualitySeverity;
 import com.verifiedai.sharedkernel.error.ApiErrorCode;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -18,6 +15,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 final class Java2DProblemAssetImagePreprocessorTest {
     private final Java2DProblemAssetImagePreprocessor preprocessor = new Java2DProblemAssetImagePreprocessor(properties());

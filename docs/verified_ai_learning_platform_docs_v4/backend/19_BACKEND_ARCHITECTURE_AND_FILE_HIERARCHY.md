@@ -58,24 +58,47 @@ services/api/
 ```text
 problem/
 ├── api/
-│   ├── ProblemController.java
-│   └── dto/
+│   ├── asset/
+│   ├── preprocessing/
+│   ├── recognition/
+│   ├── parse/
+│   ├── canonicalization/
+│   ├── classification/
+│   └── session/
 ├── application/
-│   ├── ProblemApplicationService.java
-│   ├── command/
-│   └── query/
+│   ├── asset/
+│   ├── recognition/
+│   ├── parse/
+│   ├── canonicalization/
+│   ├── classification/
+│   └── session/
 ├── domain/
-│   ├── ProblemSession.java
-│   ├── Problem.java
-│   ├── ProblemStatus.java
-│   ├── event/
+│   ├── model/
+│   │   ├── asset/
+│   │   ├── recognition/
+│   │   ├── parse/
+│   │   ├── canonicalization/
+│   │   ├── classification/
+│   │   └── session/
 │   └── port/
 ├── infrastructure/
 │   ├── persistence/
+│   │   ├── entity/
+│   │   └── repository/
+│   ├── preprocessing/
+│   ├── recognition/
+│   ├── parser/
+│   ├── classification/
 │   ├── storage/
 │   └── mapper/
 └── package-info.java
 ```
+
+For feature-dense bounded contexts such as `problem`, keep layer names stable
+and split inside the layer by product workflow. Current production workflows are
+`asset`, `preprocessing`, `recognition`, `parse`, `canonicalization`,
+`classification`, and `session`. Tests mirror the same package below
+`src/test/java`.
 
 ## Meaning of layers
 

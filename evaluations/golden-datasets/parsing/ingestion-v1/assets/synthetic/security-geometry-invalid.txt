@@ -1,0 +1,1 @@
+Synthetic fixture security geometry: provider emits negative and out-of-range coordinates for visible math.

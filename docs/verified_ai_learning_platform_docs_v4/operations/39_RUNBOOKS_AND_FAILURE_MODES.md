@@ -83,6 +83,15 @@ Recognition cost spikes are investigated through `ai.vision.recognition.*` metri
 
 Parser cost spikes are investigated through `ai.problem.parse.*` metrics, route configuration, retry/fallback counts, schema-invalid rate, semantic-invalid rate, unsupported rate, and request volume. Do not skip schema/semantic validation, fabricate certainty, or force unsupported problems into supported structures to lower cost.
 
+## Ingestion quality drift
+
+1. Run or inspect `make eval-ai` for deterministic local fixture regression.
+2. For scheduled connected failures, inspect `ingestion-evaluation-report.json`, `ingestion-release-comparison.json`, failing slice IDs, route/prompt/schema/provider provenance, latency and cost deltas.
+3. Treat `FAIL` as a release blocker for comparable evidence. Treat `BLOCKED` as missing trustworthy evidence, not PASS.
+4. Do not update the approved baseline from CI. Use `scripts/evaluation/update-approved-baseline.sh --approve --source-report <report>` only after explicit review.
+5. Add a permanent regression fixture for any novel trusted parser, canonicalization, classification, lineage, or security failure.
+6. Roll back candidate route/prompt/schema/config when quality, latency, or cost violates the approved gate.
+
 <!-- HYBRID_AI_STRATEGY_V3:START -->
 ## Additional runbooks required
 

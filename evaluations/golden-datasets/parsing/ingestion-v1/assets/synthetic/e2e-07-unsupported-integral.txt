@@ -1,0 +1,1 @@
+Synthetic fixture e2e-07: Evaluate integral exp(-x^2) dx in closed form.

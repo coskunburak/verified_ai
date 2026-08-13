@@ -79,6 +79,13 @@ Sprint 4.9 problem-session history and recovery privacy:
 - SwiftData problem-session history is an account-scoped presentation cache and must be cleared or isolated on logout, account switch, or confirmed account deletion;
 - recovery metadata and history cache content are not training data by default.
 
+Sprint 4.10 evaluation privacy:
+- committed ingestion evaluation cases are synthetic or internally authored and explicitly `NOT_ELIGIBLE` for training;
+- production user corrections are not gold labels by default;
+- generated reports contain case IDs, slices, aggregate metrics, provider/route provenance, latency, cost, and gate reasons, not raw production student content, object keys, signed URLs, secrets, prompt payloads, or protected holdout payloads;
+- the dataset validator scans committed fixture text for obvious email, phone, JWT/token, bearer-token, and production object-key patterns;
+- protected holdout labels/payloads are not committed and cannot be used in prompts, training, or unrestricted CI artifacts.
+
 ## External AI processing
 
 Provider settings/contracts must be reviewed for retention, training use and regional processing. Never promise a privacy property that is not technically/contractually enforced.

@@ -1,0 +1,87 @@
+{
+  "datasetId": "phase4-ingestion-golden",
+  "datasetVersion": "ingestion-v1",
+  "caseSchemaVersion": "ingestion-evaluation-case-v1",
+  "reportSchemaVersion": "ingestion-evaluation-report-v1",
+  "evaluationPolicyVersion": "ingestion-evaluation-policy-v1",
+  "createdAt": "2026-08-12T00:00:00Z",
+  "owner": "AI evaluation / problem ingestion owner",
+  "purpose": "Deterministic Phase 4 ingestion regression, hard-tail, and release-gate source of truth. Local fixture results are not real provider accuracy.",
+  "runtimeSchemaCompatibility": {
+    "recognitionEvidence": "recognition-evidence-v1",
+    "problemParse": "problem-parse-v1",
+    "canonicalProblem": "canonical-problem-v1",
+    "verifierInput": "verifier-input-v1",
+    "problemClassification": "problem-classification-v1"
+  },
+  "routeCompatibility": [
+    {
+      "capability": "VISION_PARSE",
+      "routePolicyVersion": "vision-route-v1",
+      "promptId": "vision-recognition",
+      "promptVersion": "v001",
+      "schemaVersion": "recognition-evidence-v1"
+    },
+    {
+      "capability": "PROBLEM_NORMALIZE",
+      "routePolicyVersion": "problem-parser-route-v1",
+      "promptId": "problem-parser",
+      "promptVersion": "v001",
+      "schemaVersion": "problem-parse-v1"
+    },
+    {
+      "capability": "PROBLEM_CLASSIFY",
+      "routePolicyVersion": "problem-classifier-route-v1",
+      "promptId": "problem-classifier",
+      "promptVersion": "v001",
+      "schemaVersion": "problem-classification-v1"
+    }
+  ],
+  "ontologyVersion": "curriculum-v1-seed",
+  "partitions": ["DEVELOPMENT", "REGRESSION", "HARD_TAIL", "PROTECTED_HOLDOUT"],
+  "caseFiles": {
+    "DEVELOPMENT": "development.jsonl",
+    "REGRESSION": "regression.jsonl",
+    "HARD_TAIL": "hard-tail.jsonl"
+  },
+  "caseCounts": {
+    "DEVELOPMENT": 2,
+    "REGRESSION": 8,
+    "HARD_TAIL": 8,
+    "PROTECTED_HOLDOUT": 0,
+    "totalCommitted": 18,
+    "criticalCommitted": 13
+  },
+  "caseFileSha256": {
+    "development.jsonl": "e747f52b3fc925967730f08036f82b6121284337185fca8543a3c13700ee4b36",
+    "regression.jsonl": "b06c23805664508d0b072f4fc21aad88d1d6e3af8ee57b20e7ce452a3af37bac",
+    "hard-tail.jsonl": "6adb10b4610891b3802217ec55d8967b7e164c71d47dd327967af74a198907d0"
+  },
+  "assetManifestSha256": "01035b87388e3c1d23bdcc7e1c6ac37cf998d609e7b9dcfe84ef8082c8feaa59",
+  "sourcePolicy": {
+    "allowedOrigins": ["SYNTHETIC", "INTERNALLY_AUTHORED", "PERMISSIVELY_LICENSED_PUBLIC"],
+    "forbiddenOrigins": ["PRODUCTION_USER_CONTENT", "UNKNOWN_LICENSE_SCRAPE"],
+    "licensesReadme": "licenses/README.md"
+  },
+  "trainingEligibilityPolicy": {
+    "default": "NOT_ELIGIBLE",
+    "allowedCommittedValues": ["NOT_ELIGIBLE"],
+    "productionUserCorrectionsAreGold": false
+  },
+  "protectedHoldout": {
+    "partition": "PROTECTED_HOLDOUT",
+    "payloadAvailableInRepository": false,
+    "status": "BLOCKED_PROTECTED_HOLDOUT",
+    "version": "ingestion-v1-protected-holdout-contract",
+    "sha256": "BLOCKED_EXTERNAL_PROTECTED_HOLDOUT",
+    "environmentVariablePath": "INGESTION_HOLDOUT_PATH",
+    "environmentVariableSha256": "INGESTION_HOLDOUT_SHA256",
+    "rawPayloadMayBeUploadedAsCiArtifact": false
+  },
+  "knownLimitations": [
+    "Committed assets are synthetic text fixtures for deterministic local regression, not a representative real OCR corpus.",
+    "No approved connected provider route is available in this workspace.",
+    "Protected holdout payload is contract-only and unavailable in this workspace.",
+    "Calculus parser fixtures are not Phase 4 E2E support claims."
+  ]
+}

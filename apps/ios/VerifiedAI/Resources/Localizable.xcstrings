@@ -41,10 +41,28 @@
     "Account" : {
 
     },
+    "Add assumption" : {
+
+    },
+    "Add constraint" : {
+
+    },
+    "Add expression" : {
+
+    },
+    "Add variable" : {
+
+    },
     "Adjust crop" : {
 
     },
     "Asset %@ is available for the next ingestion step." : {
+
+    },
+    "Assumption" : {
+
+    },
+    "Assumptions" : {
 
     },
     "Back" : {
@@ -55,6 +73,19 @@
     },
     "Camera preview unavailable" : {
 
+    },
+    "Canonical revision %lld" : {
+
+    },
+    "Canonical revision %lld · %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Canonical revision %1$lld · %2$@"
+          }
+        }
+      }
     },
     "Capture" : {
 
@@ -80,19 +111,49 @@
     "Choose Photo" : {
 
     },
+    "Classification" : {
+
+    },
+    "Classification finished" : {
+
+    },
+    "Classification needs review" : {
+
+    },
+    "Classify Problem" : {
+
+    },
+    "Classifying the problem" : {
+
+    },
     "Close" : {
 
     },
     "Close problem capture" : {
 
     },
+    "Close problem review" : {
+
+    },
+    "Confidence %@" : {
+
+    },
     "Confirm Deletion" : {
+
+    },
+    "Constraint" : {
+
+    },
+    "Constraints" : {
 
     },
     "Continue" : {
 
     },
     "Continue Without Account" : {
+
+    },
+    "Correction reason" : {
 
     },
     "Create Account" : {
@@ -113,6 +174,9 @@
     "Deletion" : {
 
     },
+    "Difficulty %@" : {
+
+    },
     "Done" : {
 
     },
@@ -129,6 +193,9 @@
 
     },
     "Export Data" : {
+
+    },
+    "Expressions" : {
 
     },
     "Files" : {
@@ -158,7 +225,13 @@
     "Language" : {
 
     },
+    "LaTeX" : {
+
+    },
     "Learning goal" : {
+
+    },
+    "Load More" : {
 
     },
     "Loading" : {
@@ -168,6 +241,12 @@
 
     },
     "Loading profile" : {
+
+    },
+    "None" : {
+
+    },
+    "Normalized text" : {
 
     },
     "Open Settings" : {
@@ -182,10 +261,16 @@
     "Plan Access" : {
 
     },
+    "Prepare Verification" : {
+
+    },
     "Preparing capture" : {
 
     },
     "Preparing secure workspace" : {
+
+    },
+    "Preparing verification" : {
 
     },
     "Preview unavailable" : {
@@ -195,6 +280,15 @@
 
     },
     "Problem Capture" : {
+
+    },
+    "Problem History" : {
+
+    },
+    "Problem Review" : {
+
+    },
+    "Problem type" : {
 
     },
     "Profile" : {
@@ -213,6 +307,30 @@
 
     },
     "Recognition input %@" : {
+
+    },
+    "Refresh problem history" : {
+
+    },
+    "Refresh revision history" : {
+
+    },
+    "Relation" : {
+
+    },
+    "Reload" : {
+
+    },
+    "Remove assumption" : {
+
+    },
+    "Remove constraint" : {
+
+    },
+    "Remove expression" : {
+
+    },
+    "Remove variable" : {
 
     },
     "Replace" : {
@@ -239,7 +357,35 @@
     "Review capture" : {
 
     },
+    "Review Problem" : {
+
+    },
+    "Review section" : {
+
+    },
+    "Revision %lld" : {
+
+    },
+    "Revision %lld · %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Revision %1$lld · %2$@"
+          }
+        }
+      }
+    },
+    "Revision History" : {
+
+    },
+    "Role" : {
+
+    },
     "Save Crop" : {
+
+    },
+    "Save parse correction" : {
 
     },
     "Saving profile" : {
@@ -251,10 +397,16 @@
     "Scan or import a math problem" : {
 
     },
+    "Session" : {
+
+    },
     "Sign In" : {
 
     },
     "Sign Out" : {
+
+    },
+    "Source text" : {
 
     },
     "Start Capture" : {
@@ -266,6 +418,12 @@
     "Subscription" : {
 
     },
+    "Symbol" : {
+
+    },
+    "Task type" : {
+
+    },
     "The backend is checking object size, content type, and SHA-256 integrity." : {
 
     },
@@ -275,10 +433,19 @@
     "The backend is creating a recognition-ready derivative and checking capture quality." : {
 
     },
+    "The backend is creating the canonical problem from the selected parse." : {
+
+    },
+    "The backend is starting a durable classification job." : {
+
+    },
     "The backend is starting a durable parser job." : {
 
     },
     "The backend is starting a durable recognition job." : {
+
+    },
+    "This problem cannot be classified yet." : {
 
     },
     "This problem type is not supported yet." : {
@@ -291,6 +458,12 @@
 
     },
     "Try Camera Again" : {
+
+    },
+    "Try Classification Again" : {
+
+    },
+    "Try Preparing Again" : {
 
     },
     "Try Reading Again" : {
@@ -318,6 +491,15 @@
 
     },
     "Use This Problem" : {
+
+    },
+    "Variables" : {
+
+    },
+    "Variables %@" : {
+
+    },
+    "Verification preparation finished" : {
 
     },
     "Verified AI" : {

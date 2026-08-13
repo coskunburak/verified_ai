@@ -1,0 +1,1 @@
+Synthetic fixture e2e-11: stale canonical/classification from old AI parse must not become current.

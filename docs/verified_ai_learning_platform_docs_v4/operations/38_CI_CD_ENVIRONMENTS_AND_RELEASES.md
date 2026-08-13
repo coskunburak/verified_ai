@@ -34,6 +34,13 @@
 
 Run on model/prompt changes and scheduled quality checks, not every documentation-only PR.
 
+Sprint 4.10 adds `.github/workflows/ai-evaluation.yml`:
+
+- deterministic PR job runs dataset validation, evaluator tests, `make eval-ai`, and baseline comparison on material problem/AI/prompt/schema/curriculum/evaluation changes;
+- generated safe artifacts are uploaded with finite retention;
+- connected/holdout jobs are restricted to `workflow_dispatch` or schedule and protected `ai-evaluation` environment semantics;
+- CI never writes or approves a baseline.
+
 ## Promotion
 
 Local → CI → Staging → Production.

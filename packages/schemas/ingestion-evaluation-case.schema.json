@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.verified-ai-learning.example/ingestion-evaluation-case.schema.json",
+  "title": "Sprint 4.10 ingestion evaluation case",
+  "description": "Engineering/release-only Phase 4 ingestion evaluation case contract. It is not a learner API and is not training data by default.",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "id",
+    "partition",
+    "criticality",
+    "origin",
+    "input",
+    "slices",
+    "expected"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "ingestion-evaluation-case-v1"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{2,96}$"
+    },
+    "partition": {
+      "enum": ["DEVELOPMENT", "REGRESSION", "HARD_TAIL", "PROTECTED_HOLDOUT"]
+    },
+    "criticality": {
+      "enum": ["NORMAL", "CRITICAL"]
+    },
+    "origin": {
+      "type": "object",
+      "required": ["type", "sourceId", "license", "trainingEligibility"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "enum": ["SYNTHETIC", "INTERNALLY_AUTHORED", "PERMISSIVELY_LICENSED_PUBLIC"]
+        },
+        "sourceId": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 128
+        },
+        "license": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 128
+        },
+        "trainingEligibility": {
+          "const": "NOT_ELIGIBLE"
+        }
+      }
+    },
+    "input": {
+      "type": "object",
+      "required": ["assetPath", "contentType", "inputMode", "locale", "assetSha256"],
+      "additionalProperties": false,
+      "properties": {
+        "assetPath": {
+          "type": "string",
+          "minLength": 1
+        },
+        "contentType": {
+          "enum": ["text/plain", "image/jpeg", "image/png", "application/pdf"]
+        },
+        "inputMode": {
+          "enum": ["SYNTHETIC_TEXT_FIXTURE", "CAMERA", "PHOTO_LIBRARY", "FILE_IMPORT", "PDF_IMPORT"]
+        },
+        "locale": {
+          "enum": ["en-US", "tr-TR"]
+        },
+        "assetSha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "slices": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Z0-9_]+$"
+      }
+    },
+    "expected": {
+      "type": "object",
+      "required": [
+        "expectedRecognitionOutcome",
+        "expectedParseOutcome",
+        "expectedCanonicalOutcome",
+        "expectedClassificationOutcome",
+        "expectedSessionOutcome",
+        "terminalStage",
+        "reviewExpected"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "expectedRecognitionOutcome": {"type": "string"},
+        "expectedParseOutcome": {"type": "string"},
+        "expectedCanonicalOutcome": {"type": "string"},
+        "expectedClassificationOutcome": {"type": "string"},
+        "expectedSessionOutcome": {"type": "string"},
+        "terminalStage": {"type": "string"},
+        "reviewExpected": {"type": "boolean"}
+      }
+    },
+    "fixtureObservation": {
+      "type": "object",
+      "description": "Deterministic LOCAL_FIXTURE_REGRESSION observation for scorer and comparator tests. Connected provider reports must record provider-generated observations separately."
+    }
+  }
+}

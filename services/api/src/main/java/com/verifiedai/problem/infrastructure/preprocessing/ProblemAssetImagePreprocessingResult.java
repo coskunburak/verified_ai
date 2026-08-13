@@ -1,9 +1,9 @@
 package com.verifiedai.problem.infrastructure.preprocessing;
 
-import com.verifiedai.problem.domain.model.ProblemAssetDerivativeKind;
-import com.verifiedai.problem.domain.model.ProblemAssetPreprocessingSignalType;
-import com.verifiedai.problem.domain.model.ProblemAssetQualityOutcome;
-import com.verifiedai.problem.domain.model.ProblemAssetQualitySeverity;
+import com.verifiedai.problem.domain.model.asset.ProblemAssetDerivativeKind;
+import com.verifiedai.problem.domain.model.asset.ProblemAssetPreprocessingSignalType;
+import com.verifiedai.problem.domain.model.asset.ProblemAssetQualityOutcome;
+import com.verifiedai.problem.domain.model.asset.ProblemAssetQualitySeverity;
 import java.util.List;
 
 public record ProblemAssetImagePreprocessingResult(

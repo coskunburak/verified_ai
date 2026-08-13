@@ -1,0 +1,1 @@
+Synthetic fixture e2e-10: parser timeout after successful recognition for 3x = 12.

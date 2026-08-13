@@ -56,6 +56,8 @@ User content is data, not instructions; strict prompt separation; no arbitrary t
 
 Sprint 4.4 applies this to image text during recognition. A captured problem can visibly contain strings such as "ignore previous instructions" or "return secrets"; recognition stores those strings only as visible evidence and never executes them, changes schema because of them, fetches URLs from them, or treats them as trusted prompt instructions.
 
+Sprint 4.10 makes prompt-injection-looking visible content a deterministic ingestion release fixture. The hard-tail corpus includes instruction-looking text, invalid geometry, source-reference fabrication, unsafe canonical math, stale lineage, and BOLA cases. The release comparator fails closed if prompt text is treated as instruction authority, unsafe math is accepted, stale lineage becomes current, or cross-user access succeeds.
+
 ### Symbolic-expression abuse
 No Python eval, parser allowlist, expression complexity limits, verifier timeout.
 

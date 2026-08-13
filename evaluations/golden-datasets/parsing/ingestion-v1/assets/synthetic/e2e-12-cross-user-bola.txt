@@ -1,0 +1,1 @@
+Synthetic fixture e2e-12: user B attempts to read or retry user A problem session.

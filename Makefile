@@ -2,7 +2,7 @@ SHELL := /bin/bash
 
 .DEFAULT_GOAL := help
 
-.PHONY: help bootstrap doctor up down test test-api test-ios test-verifier lint format check docs-check contracts-check secret-scan
+.PHONY: help bootstrap doctor up down test test-api test-ios test-verifier eval-ai lint format check docs-check contracts-check secret-scan
 
 JAVA21_HOME ?= /opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home
 JAVA21_ENV := JAVA_HOME="$(JAVA21_HOME)" PATH="$(JAVA21_HOME)/bin:$(PATH)"
@@ -16,6 +16,7 @@ help:
 	@printf "  make up            Start local platform with Docker Compose\\n"
 	@printf "  make down          Stop local platform\\n"
 	@printf "  make test          Run API, verifier, iOS, docs, and secret checks\\n"
+	@printf "  make eval-ai       Run deterministic ingestion quality evaluation\\n"
 	@printf "  make check         Run doctor, lint, docs, contracts, secrets, and tests\\n"
 
 bootstrap:
@@ -40,6 +41,9 @@ test-ios:
 
 test-verifier:
 	@cd services/math-verifier && "$(VERIFIER_PYTHON)" -m pytest
+
+eval-ai:
+	@scripts/evaluation/run-golden-suite.sh
 
 lint:
 	@$(JAVA21_ENV) scripts/quality/lint.sh

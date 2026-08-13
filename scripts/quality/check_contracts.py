@@ -22,6 +22,16 @@ REQUIRED_CONTRACTS = {
         "traceId",
         "details",
     ],
+    "packages/schemas/ingestion-evaluation-case.schema.json": [
+        "ingestion-evaluation-case-v1",
+        "expectedRecognitionOutcome",
+        "trainingEligibility",
+    ],
+    "packages/schemas/ingestion-evaluation-report.schema.json": [
+        "ingestion-evaluation-report-v1",
+        "gateDecision",
+        "reportSha256",
+    ],
 }
 
 
@@ -49,4 +59,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

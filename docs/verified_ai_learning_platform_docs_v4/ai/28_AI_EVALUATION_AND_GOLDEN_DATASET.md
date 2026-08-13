@@ -15,7 +15,17 @@ No prompt/model/router/proprietary-model change is production-ready until measur
 - future canonical expression accuracy after Sprint 4.6;
 - skill/topic classification after Sprint 4.7.
 
-Sprint 4.5 creates `evaluations/parser/golden/problem-parse-v1-seed.json` as a synthetic governance seed only. It covers supported parser-scope examples, unsupported examples, ambiguity, schema-invalid output, semantic-invalid output, and prompt-injection-as-content behavior. It is not a protected holdout, full accuracy benchmark, or training dataset. Sprint 4.10 owns representative ingestion accuracy calibration.
+Sprint 4.5 creates `evaluations/parser/golden/problem-parse-v1-seed.json` as a synthetic governance seed only. It covers supported parser-scope examples, unsupported examples, ambiguity, schema-invalid output, semantic-invalid output, and prompt-injection-as-content behavior. It is not a protected holdout, full accuracy benchmark, or training dataset.
+
+Sprint 4.10 adds the Phase 4 ingestion evaluation foundation:
+
+- `evaluations/golden-datasets/parsing/ingestion-v1/` contains synthetic deterministic development/regression/hard-tail cases with manifest, checksums, provenance, and `NOT_ELIGIBLE` training status;
+- `packages/schemas/ingestion-evaluation-case.schema.json` and `packages/schemas/ingestion-evaluation-report.schema.json` define the engineering-only case/report contracts;
+- `evaluations/runners/validate_ingestion_dataset.py`, metric modules, `run_ingestion_eval.py`, and `compare_release.py` produce privacy-minimized reports and release decisions;
+- `evaluations/baselines/production-ingestion-v1.json` is the approved deterministic local fixture baseline, not real provider quality evidence;
+- `evaluations/baselines/ingestion-release-gates-v1.yaml` fails closed on missing/incomparable evidence, critical false-authoritative acceptance, false-ready-for-solve, unsafe false accept, source fabrication, BOLA, and prompt-instruction execution.
+
+Connected representative evaluation remains blocked until an approved non-fixture provider route and credentials exist. Protected holdout evaluation remains blocked until restricted payload storage and checksums exist. These blockers cannot be reclassified as PASS.
 
 ### Solver evaluation
 - final answer accuracy;
@@ -92,6 +102,8 @@ See `ai/58_PROPRIETARY_DATASET_GOVERNANCE_AND_TRAINING_ELIGIBILITY.md`. Evaluati
 ## 10. CI/release gates
 
 Small deterministic unit datasets run in CI. Larger model evaluations may run in dedicated workflows, but production promotion cannot bypass recorded results.
+
+Sprint 4.10 adds `.github/workflows/ai-evaluation.yml` for deterministic PR evaluation on material ingestion/AI/schema/curriculum/evaluation changes. Connected and holdout jobs run only from trusted dispatch/scheduled contexts and use cost/timeout variables; they may return `BLOCKED` when required external evidence is unavailable.
 
 ## 11. Human review
 
