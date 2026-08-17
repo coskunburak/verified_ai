@@ -51,7 +51,7 @@ jobs:
           AI_EVAL_RUN_ID: ci-local
         run: make eval-ai
       - name: Upload safe evaluation artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ingestion-evaluation-local
           path: |
@@ -79,7 +79,7 @@ jobs:
         run: scripts/evaluation/run-golden-suite.sh
       - name: Upload safe connected artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ingestion-evaluation-connected
           path: |
