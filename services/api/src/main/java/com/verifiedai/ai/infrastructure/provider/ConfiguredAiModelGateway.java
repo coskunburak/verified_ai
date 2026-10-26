@@ -26,6 +26,10 @@ import com.verifiedai.ai.application.AiUsageRecord;
 import com.verifiedai.ai.application.AiUsageRecorder;
 import com.verifiedai.ai.application.AiVisionParseRequest;
 import com.verifiedai.ai.application.AiVisionParseResult;
+import com.verifiedai.ai.application.AiSpendGuard;
+import com.verifiedai.ai.application.AiUsage;
+import java.time.Duration;
+import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.annotation.PostConstruct;
 import java.nio.charset.StandardCharsets;
 import java.time.Clock;
@@ -53,14 +57,21 @@ class ConfiguredAiModelGateway
     private final AiUsageRecorder usageRecorder;
     private final AiGatewayMetrics metrics;
     private final Clock clock;
+    private final AiSpendGuard spendGuard;
 
+    ConfiguredAiModelGateway(AiRoutePlanner planner, AiCapabilityRegistry registry,
+        List<AiProviderAdapter> adapters, AiUsageRecorder recorder, AiGatewayMetrics metrics, Clock clock) {
+        this(planner, registry, adapters, recorder, metrics, clock, AiSpendGuard.denyPaid());
+    }
+
+    @Autowired
     ConfiguredAiModelGateway(
         AiRoutePlanner routePlanner,
         AiCapabilityRegistry capabilityRegistry,
         List<AiProviderAdapter> providerAdapters,
         AiUsageRecorder usageRecorder,
         AiGatewayMetrics metrics,
-        Clock clock
+        Clock clock, AiSpendGuard spendGuard
     ) {
         this.routePlanner = routePlanner;
         this.capabilityRegistry =
@@ -69,6 +80,7 @@ class ConfiguredAiModelGateway
             usageRecorder;
         this.metrics = metrics;
         this.clock = clock;
+        this.spendGuard = spendGuard;
 
         Map<String, AiProviderAdapter> indexed =
             new HashMap<>();
@@ -194,10 +206,15 @@ class ConfiguredAiModelGateway
             );
         }
 
-        AiRoutePlan routePlan =
-            routePlanner.routePlan(
-                command.routeContext()
-            );
+        AiRoutePlan routePlan;
+        try {
+            routePlan = routePlanner.routePlan(command.routeContext(), command.executionContext().userId());
+        } catch (AiProviderException exception) {
+            var status = exception.failureClass() == AiProviderFailureClass.BUDGET_EXCEEDED
+                ? AiExecutionStatus.BLOCKED_BUDGET : AiExecutionStatus.BLOCKED_POLICY;
+            metrics.blocked(command.capability(), status);
+            return failure(command, null, status, exception.failureClass(), false, 0, 0, gatewayStarted, null);
+        }
 
         metrics.request(routePlan);
 
@@ -271,298 +288,119 @@ class ConfiguredAiModelGateway
             }
         }
 
-        if (
-            command.maxCostMicros() != null
-                && routePlan.maxCostMicros()
-                > command.maxCostMicros()
-        ) {
-            AiExecutionResult blocked =
-                failure(
-                    command,
-                    routePlan,
-                    AiExecutionStatus
-                        .BLOCKED_BUDGET,
-                    AiProviderFailureClass
-                        .BUDGET_EXCEEDED,
-                    false,
-                    0,
-                    0,
-                    gatewayStarted,
-                    ledgerRecordId
-                );
-
-            return finish(
-                descriptor,
-                command,
-                routePlan,
-                ledger,
-                blocked,
-                routePlan.primary()
-            );
-        }
-
-        List<AiRouteTarget> targets =
-            routePlan.allTargets();
-
-        int maximumProviderAttempts =
-            Math.min(
-                routePlan.maxAttempts(),
-                targets.size()
-            );
-
+        List<AiRouteTarget> targets = routePlan.allTargets();
+        int maximumAttempts = Math.min(routePlan.maxAttempts(), targets.size());
         long providerNanos = 0;
+        long committed = 0;
         int attempts = 0;
-
-        AiRouteTarget lastTarget =
-            routePlan.primary();
-
-        for (
-            int index = 0;
-            index < maximumProviderAttempts;
-            index++
-        ) {
-            AiRouteTarget target =
-                targets.get(index);
-
+        AiRouteTarget lastTarget = routePlan.primary();
+        Duration totalAllowance = command.routeContext().latencyBudget() == null ? routePlan.timeout()
+            : minimum(routePlan.timeout(), command.routeContext().latencyBudget());
+        Duration initialRemaining = totalAllowance.minusNanos(elapsedNanos(gatewayStarted));
+        if (command.executionContext().deadline() != null) {
+            initialRemaining = minimum(initialRemaining, Duration.between(clock.instant(), command.executionContext().deadline()));
+        }
+        // A single monotonic allowance includes route selection and ledger overhead.
+        long deadlineStarted = System.nanoTime();
+        for (int index = 0; index < maximumAttempts; index++) {
+            AiRouteTarget target = targets.get(index);
             lastTarget = target;
-            attempts++;
-
-            if (index > 0) {
-                metrics.fallback(
-                    routePlan,
-                    target
-                );
-            }
-
-            long providerStarted =
-                System.nanoTime();
-
+            boolean reserved = false;
+            long started = 0;
+            long ceiling = 0;
+            AiUsage reported = null;
             try {
-                AiProviderAdapter adapter =
-                    requireProvider(
-                        command.capability(),
-                        target
-                    );
-
-                AiCapabilityResult output =
-                    adapter.execute(
-                        new AiProviderRequest(
-                            command,
-                            routePlan,
-                            target
-                        )
-                    );
-
-                long callNanos =
-                    elapsedNanos(
-                        providerStarted
-                    );
-
-                providerNanos +=
-                    callNanos;
-
-                validateProviderOutput(
-                    output,
-                    routePlan,
-                    target
-                );
-
-                if (
-                    output
-                        .usage()
-                        .estimatedCostMicros()
-                        > effectiveBudget(
-                        command,
-                        routePlan
-                    )
-                ) {
-                    AiExecutionResult blocked =
-                        failure(
-                            command,
-                            routePlan,
-                            AiExecutionStatus
-                                .BLOCKED_BUDGET,
-                            AiProviderFailureClass
-                                .BUDGET_EXCEEDED,
-                            false,
-                            attempts,
-                            providerNanos,
-                            gatewayStarted,
-                            ledgerRecordId
-                        );
-
-                    return finish(
-                        descriptor,
-                        command,
-                        routePlan,
-                        ledger,
-                        blocked,
-                        target
-                    );
+                Duration remaining = initialRemaining.minusNanos(elapsedNanos(deadlineStarted));
+                if (remaining.isZero() || remaining.isNegative()) {
+                    throw new AiProviderException(AiProviderFailureClass.DEADLINE_EXCEEDED, false, "AI deadline exhausted");
                 }
-
-                boolean fallbackUsed =
-                    index > 0;
-
-                AiProvenance current =
-                    output.provenance();
-
-                AiProvenance provenance =
-                    new AiProvenance(
-                        current.provider(),
-                        current.model(),
-                        routePlan
-                            .routePolicyVersion(),
-                        routePlan.promptId(),
-                        routePlan.promptVersion(),
-                        routePlan.schemaVersion(),
-                        current.providerRequestId(),
-                        current.providerResponseId(),
-                        fallbackUsed
-                    );
-
-                AiCapabilityResult normalizedOutput =
-                    output.withExecutionMetadata(
-                        provenance,
-                        millis(callNanos)
-                    );
-
-                AiExecutionResult success =
-                    new AiExecutionResult(
-                        command
-                            .executionContext()
-                            .operationId(),
-                        command.capability(),
-                        AiExecutionStatus.SUCCEEDED,
-                        normalizedOutput,
-                        routePlan,
-                        provenance,
-                        normalizedOutput.usage(),
-                        millis(providerNanos),
-                        millis(
-                            elapsedNanos(
-                                gatewayStarted
-                            )
-                        ),
-                        attempts,
-                        fallbackUsed,
-                        null,
-                        false,
-                        ledgerRecordId
-                    );
-
-                return finish(
-                    descriptor,
-                    command,
-                    routePlan,
-                    ledger,
-                    success,
-                    target
-                );
-
-            } catch (
-                AiProviderException exception
-            ) {
-                providerNanos +=
-                    elapsedNanos(
-                        providerStarted
-                    );
-
-                boolean hasFallback =
-                    exception.retryable()
-                        && index + 1
-                        < maximumProviderAttempts;
-
-                if (hasFallback) {
-                    metrics.retry(
-                        routePlan,
-                        target
-                    );
+                routePlanner.checkAttempt(command.routeContext(), routePlan, target);
+                AiProviderAdapter adapter = requireProvider(command.capability(), target);
+                ceiling = routePlanner.attemptCeiling(routePlan, target);
+                if (ceiling > effectiveBudget(command, routePlan) - committed) {
+                    throw new AiProviderException(AiProviderFailureClass.BUDGET_EXCEEDED, false, "AI request budget exhausted");
+                }
+                if (ceiling > 0 && !adapter.enforcesCostCeiling()) {
+                    throw new AiProviderException(AiProviderFailureClass.POLICY_BLOCKED, false, "Provider cannot enforce cost bound");
+                }
+                spendGuard.reserve(command, routePlan, target, index + 1, ceiling, effectiveBudget(command, routePlan));
+                reserved = true;
+                metrics.attempt(routePlan, target, "RESERVED", ceiling);
+                committed = Math.addExact(committed, ceiling);
+                remaining = initialRemaining.minusNanos(elapsedNanos(deadlineStarted));
+                if (remaining.isZero() || remaining.isNegative()) {
+                    throw new AiProviderException(AiProviderFailureClass.DEADLINE_EXCEEDED, false, "AI deadline exhausted before dispatch");
+                }
+                attempts++;
+                if (index > 0) metrics.fallback(routePlan, target);
+                started = System.nanoTime();
+                AiCapabilityResult output = adapter.execute(new AiProviderRequest(command, routePlan, target, remaining, ceiling));
+                reported = output == null ? null : output.usage();
+                validateProviderOutput(output, routePlan, target);
+                if (!"USD".equals(reported.currency()) || !routePlan.pricingVersion().equals(reported.pricingVersion())
+                    || reported.estimatedCostMicros() > ceiling) {
+                    throw new AiProviderException(AiProviderFailureClass.BUDGET_EXCEEDED, false, "Provider usage violates approved bound");
+                }
+                if (initialRemaining.minusNanos(elapsedNanos(deadlineStarted)).isNegative()) {
+                    throw new AiProviderException(AiProviderFailureClass.DEADLINE_EXCEEDED, false, "AI response arrived after deadline");
+                }
+                long callNanos = elapsedNanos(started);
+                providerNanos += callNanos;
+                started = 0;
+                spendGuard.report(command, index + 1, reported, null);
+                reserved = false;
+                AiProvenance current = output.provenance();
+                AiProvenance provenance = new AiProvenance(current.provider(), current.model(), routePlan.routePolicyVersion(),
+                    routePlan.promptId(), routePlan.promptVersion(), routePlan.schemaVersion(), current.providerRequestId(),
+                    current.providerResponseId(), index > 0);
+                AiCapabilityResult normalized = output.withExecutionMetadata(provenance, millis(callNanos));
+                AiUsage total = new AiUsage(null, null, null, attempts, committed, "USD", routePlan.pricingVersion());
+                AiExecutionResult result = new AiExecutionResult(command.executionContext().operationId(), command.capability(),
+                    AiExecutionStatus.SUCCEEDED, normalized, routePlan, provenance, total, millis(providerNanos),
+                    millis(elapsedNanos(gatewayStarted)), attempts, index > 0, null, false, ledgerRecordId);
+                return finish(descriptor, command, routePlan, ledger, result, target);
+            } catch (RuntimeException exception) {
+                if (started != 0) providerNanos += elapsedNanos(started);
+                AiProviderFailureClass cause = exception instanceof AiProviderException provider
+                    ? provider.failureClass() : started != 0 ? AiProviderFailureClass.UNKNOWN : AiProviderFailureClass.LEDGER_UNAVAILABLE;
+                metrics.attempt(routePlan, target, cause.name(), 0);
+                boolean retry = exception instanceof AiProviderException provider && provider.retryable() && retryable(cause);
+                if (reserved) {
+                    try { spendGuard.report(command, index + 1, reported, cause); }
+                    catch (RuntimeException reportFailure) { cause = AiProviderFailureClass.LEDGER_UNAVAILABLE; retry = false; }
+                }
+                if (retry && index + 1 < maximumAttempts) {
+                    metrics.retry(routePlan, target);
                     continue;
                 }
-
-                AiExecutionStatus status =
-                    failureStatus(
-                        exception,
-                        target
-                    );
-
-                AiExecutionResult failed =
-                    failure(
-                        command,
-                        routePlan,
-                        status,
-                        exception.failureClass(),
-                        exception.retryable(),
-                        attempts,
-                        providerNanos,
-                        gatewayStarted,
-                        ledgerRecordId
-                    );
-
-                return finish(
-                    descriptor,
-                    command,
-                    routePlan,
-                    ledger,
-                    failed,
-                    lastTarget
-                );
-
-            } catch (
-                RuntimeException exception
-            ) {
-                providerNanos +=
-                    elapsedNanos(
-                        providerStarted
-                    );
-
-                AiExecutionResult failed =
-                    failure(
-                        command,
-                        routePlan,
-                        AiExecutionStatus
-                            .FAILED_TERMINAL,
-                        AiProviderFailureClass.UNKNOWN,
-                        false,
-                        attempts,
-                        providerNanos,
-                        gatewayStarted,
-                        ledgerRecordId
-                    );
-
-                return finish(
-                    descriptor,
-                    command,
-                    routePlan,
-                    ledger,
-                    failed,
-                    lastTarget
-                );
+                AiExecutionStatus status = cause == AiProviderFailureClass.BUDGET_EXCEEDED ? AiExecutionStatus.BLOCKED_BUDGET
+                    : (cause == AiProviderFailureClass.POLICY_BLOCKED || cause == AiProviderFailureClass.REVIEW_REQUIRED)
+                        ? AiExecutionStatus.BLOCKED_POLICY
+                        : cause == AiProviderFailureClass.PROVIDER_UNAVAILABLE ? AiExecutionStatus.BLOCKED_PROVIDER_UNAVAILABLE
+                        : retry ? AiExecutionStatus.FAILED_RETRYABLE : AiExecutionStatus.FAILED_TERMINAL;
+                var failed = failure(command, routePlan, status, cause, retry, attempts, providerNanos, gatewayStarted, ledgerRecordId);
+                return finish(descriptor, command, routePlan, ledger, withCommittedUsage(failed, committed, routePlan.pricingVersion()), target);
             }
         }
+        var failed = failure(command, routePlan, AiExecutionStatus.FAILED_TERMINAL, AiProviderFailureClass.UNKNOWN,
+            false, attempts, providerNanos, gatewayStarted, ledgerRecordId);
+        return finish(descriptor, command, routePlan, ledger, withCommittedUsage(failed, committed, routePlan.pricingVersion()), lastTarget);
+    }
 
-        AiExecutionResult failed =
-            failure(
-                command,
-                routePlan,
-                AiExecutionStatus.FAILED_TERMINAL,
-                AiProviderFailureClass.UNKNOWN,
-                false,
-                attempts,
-                providerNanos,
-                gatewayStarted,
-                ledgerRecordId
-            );
+    private static boolean retryable(AiProviderFailureClass failure) {
+        return failure == AiProviderFailureClass.TIMEOUT || failure == AiProviderFailureClass.RATE_LIMITED
+            || failure == AiProviderFailureClass.PROVIDER_UNAVAILABLE;
+    }
 
-        return finish(
-            descriptor,
-            command,
-            routePlan,
-            ledger,
-            failed,
-            lastTarget
-        );
+    private static Duration minimum(Duration left, Duration right) {
+        return left.compareTo(right) <= 0 ? left : right;
+    }
+
+    private static AiExecutionResult withCommittedUsage(AiExecutionResult result, long committed, String pricing) {
+        return new AiExecutionResult(result.operationId(), result.capability(), result.status(), result.output(),
+            result.routePlan(), result.provenance(), new AiUsage(null, null, null, result.attemptCount(), committed, "USD", pricing),
+            result.providerLatencyMs(), result.gatewayLatencyMs(), result.attemptCount(), result.fallbackUsed(),
+            result.failureClass(), result.retryable(), result.ledgerRecordId());
     }
 
     @Override
@@ -871,8 +709,8 @@ class ConfiguredAiModelGateway
                             .FAILED_RETRYABLE,
                         null,
                         routePlan,
-                        null,
-                        null,
+                        result.provenance(),
+                        result.usage(),
                         result.providerLatencyMs(),
                         result.gatewayLatencyMs(),
                         result.attemptCount(),
@@ -1045,14 +883,10 @@ class ConfiguredAiModelGateway
         AiExecutionCommand command,
         AiRoutePlan routePlan
     ) {
-        if (command.maxCostMicros() == null) {
-            return routePlan.maxCostMicros();
-        }
-
-        return Math.min(
-            routePlan.maxCostMicros(),
-            command.maxCostMicros()
-        );
+        long limit = routePlan.maxCostMicros();
+        if (command.maxCostMicros() != null) limit = Math.min(limit, command.maxCostMicros());
+        if (command.routeContext().maxCostMicros() != null) limit = Math.min(limit, command.routeContext().maxCostMicros());
+        return limit;
     }
 
     private <T extends AiCapabilityResult>

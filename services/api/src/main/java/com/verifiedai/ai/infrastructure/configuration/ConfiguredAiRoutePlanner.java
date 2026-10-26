@@ -10,6 +10,17 @@ import com.verifiedai.ai.application.AiRoutePlan;
 import com.verifiedai.ai.application.AiRoutePlanner;
 import com.verifiedai.ai.application.AiRoutePolicy;
 import com.verifiedai.ai.application.AiRouteTarget;
+import com.verifiedai.ai.application.PromptRegistryValidator;
+import com.verifiedai.ai.application.AiRouteEligibility;
+import com.verifiedai.ai.application.AiRouteSelector;
+import com.verifiedai.ai.application.AiProviderHealth;
+import com.verifiedai.ai.application.AiEntitlementResolver;
+import java.time.Clock;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.UUID;
+import org.springframework.beans.factory.annotation.Autowired;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
@@ -23,24 +34,45 @@ final class ConfiguredAiRoutePlanner
     implements AiRoutePlanner {
 
     private static final EnumSet<AiCapability>
-        SPRINT_5_1_EXECUTABLE_CAPABILITIES =
+        EXECUTABLE_CAPABILITIES =
         EnumSet.of(
             AiCapability.VISION_PARSE,
             AiCapability.PROBLEM_NORMALIZE,
-            AiCapability.PROBLEM_CLASSIFY
+            AiCapability.PROBLEM_CLASSIFY, AiCapability.SOLVE
         );
 
     private final Map<AiCapability, AiRoutePolicy> policies;
 
+    private final AiRoutingProperties routing;
+    private final AiProviderHealth health;
+    private final AiEntitlementResolver entitlement;
+    private final Clock clock;
+    private final List<AiRouteEligibility> catalog;
+
+    ConfiguredAiRoutePlanner(AiVisionRecognitionProperties vision, AiProblemParserProperties parser,
+        AiProblemClassifierProperties classifier, AiRouteRegistryProperties generic,
+        AiCapabilityRegistry registry, PromptRegistryValidator validator, String environment) {
+        this(vision, parser, classifier, generic, registry, validator, environment,
+            new AiRoutingProperties(null, null), AiProviderHealth.unknown(),
+            AiEntitlementResolver.conservative(), Clock.systemUTC());
+    }
+
+    @Autowired
     ConfiguredAiRoutePlanner(
         AiVisionRecognitionProperties vision,
         AiProblemParserProperties parser,
         AiProblemClassifierProperties classifier,
         AiRouteRegistryProperties generic,
         AiCapabilityRegistry capabilityRegistry,
+        PromptRegistryValidator promptRegistryValidator,
         @Value("${app.environment:local}")
-        String environment
+        String environment,
+        AiRoutingProperties routing, AiProviderHealth health, AiEntitlementResolver entitlement, Clock clock
     ) {
+        this.routing = routing;
+        this.health = health;
+        this.entitlement = entitlement;
+        this.clock = clock;
         EnumMap<AiCapability, AiRoutePolicy> built =
             new EnumMap<>(AiCapability.class);
 
@@ -129,7 +161,7 @@ final class ConfiguredAiRoutePlanner
 
             if (
                 configured.enabled()
-                    && !SPRINT_5_1_EXECUTABLE_CAPABILITIES
+                    && !EXECUTABLE_CAPABILITIES
                     .contains(capability)
             ) {
                 throw new IllegalStateException(
@@ -140,13 +172,34 @@ final class ConfiguredAiRoutePlanner
                 );
             }
 
-            /*
-             * Sprint 5.1 only allows explicit disabling of future
-             * capabilities. Existing capabilities continue through
-             * the backwards-compatible Phase 4 configuration.
-             */
+            if (capability == AiCapability.SOLVE && configured.enabled()) {
+                // No approved external model exists. A local-only test route is the sole activation path.
+                boolean local = "local".equalsIgnoreCase(environment) || "test".equalsIgnoreCase(environment);
+                if (!local || !generic.usageLedger().enabled() || configured.primary() == null
+                    || !"LOCAL_FIXTURE".equals(configured.primary().provider())
+                    || !"local-fixture-solver-v1".equals(configured.primary().model())
+                    || !configured.fallbacks().isEmpty() || configured.maxCostMicros()!=0
+                    || configured.releaseStage()!=AiRoutePlan.ReleaseStage.LOCAL_ONLY) {
+                    throw new IllegalStateException("SOLVE activation blocked: no approved production model");
+                }
+            }
+            if (EXECUTABLE_CAPABILITIES.contains(capability)) {
+                if (!configured.enabled()) {
+                    built.put(capability, AiRoutePolicy.disabled(capability));
+                } else {
+                    var c = configured;
+                    built.put(capability, AiRoutePolicy.enabled(new AiRoutePlan(capability,
+                        c.routePolicyVersion(), c.routeId(), new AiRouteTarget(c.primary().provider(), c.primary().model()),
+                        c.fallbacks().stream().map(t -> new AiRouteTarget(t.provider(), t.model())).toList(),
+                        c.promptId(), c.promptVersion(), c.schemaVersion(), c.timeout(), c.maxAttempts(),
+                        c.maxResponseBytes(), c.maxCostMicros(), c.pricingVersion(), c.cachePolicy(), c.streamingPolicy(),
+                        c.providerRetentionPolicy(), c.privacyRegion(), c.circuitBreakerKey(), c.qualityGateVersion(), c.releaseStage())));
+                }
+            }
+
+            // Unrelated future capabilities retain their owning-sprint activation gate.
             if (
-                !SPRINT_5_1_EXECUTABLE_CAPABILITIES
+                !EXECUTABLE_CAPABILITIES
                     .contains(capability)
             ) {
                 built.put(
@@ -170,11 +223,57 @@ final class ConfiguredAiRoutePlanner
 
         this.policies = Map.copyOf(built);
 
+
         validateEnvironment(
             environment,
             generic,
             capabilityRegistry
         );
+
+        promptRegistryValidator.validateEnabledRoutes(
+            this.policies.values(),
+            environment
+        );
+        List<AiRouteEligibility> entries = new ArrayList<>(routing.eligibility());
+        for (AiRoutePolicy policy : built.values()) {
+            if (!policy.enabled()) continue;
+            AiRoutePlan plan = policy.routePlan();
+            for (AiRouteTarget target : plan.allTargets()) {
+                if (entries.stream().anyMatch(c -> c.capability() == plan.capability() && c.target().equals(target))) continue;
+                if ("LOCAL_FIXTURE".equals(target.provider())) {
+                    String fixtureModel = switch (plan.capability()) {
+                        case SOLVE -> "local-fixture-solver-v1";
+                        case VISION_PARSE -> "local-fixture-vision-v1";
+                        case PROBLEM_NORMALIZE -> "local-fixture-problem-parser-v1";
+                        case PROBLEM_CLASSIFY -> "local-fixture-problem-classifier-v1";
+                        default -> throw new IllegalStateException("Unsupported fixture capability");
+                    };
+                    if (!fixtureModel.equals(target.model())) {
+                        throw new IllegalStateException("Unknown local fixture model requires explicit eligibility");
+                    }
+                    entries.add(new AiRouteEligibility(plan.capability(), target, "local-fixture-only-v1", 0,
+                        Duration.ofMillis(1), plan.capability() == AiCapability.SOLVE
+                            ? Set.of("EVALUATE", "SIMPLIFY", "SOLVE_EQUATION", "SOLVE_INEQUALITY") : Set.of("UNKNOWN"), Set.of("UNKNOWN", "EASY", "MEDIUM", "HARD"),
+                        Set.of("FREE", "PRO", "PRO_PLUS"), plan.privacyRegion(), plan.providerRetentionPolicy(), true));
+                } else if (!"UNAVAILABLE".equals(target.provider())) {
+                    throw new IllegalStateException("Enabled remote model requires explicit eligibility");
+                }
+            }
+        }
+        for (AiRouteEligibility entry : entries) {
+            AiRoutePolicy policy = built.get(entry.capability());
+            if (policy == null || !policy.enabled()) continue;
+            AiRoutePlan plan = policy.routePlan();
+            if (!plan.allTargets().contains(entry.target())
+                || !entry.privacyRegion().equals(plan.privacyRegion())
+                || !entry.retentionPolicy().equals(plan.providerRetentionPolicy())
+                || (!"LOCAL_FIXTURE".equals(entry.target().provider())
+                    && (!entry.qualityGateVersion().equals(plan.qualityGateVersion())
+                        || "UNSPECIFIED".equals(entry.privacyRegion())))) {
+                throw new IllegalStateException("Eligibility does not match prompt-bound route policy");
+            }
+        }
+        this.catalog = List.copyOf(entries);
     }
 
     @Override
@@ -192,8 +291,12 @@ final class ConfiguredAiRoutePlanner
     public AiRoutePlan routePlan(
         AiRouteContext context
     ) {
-        AiRoutePolicy policy =
-            policies.get(context.capability());
+        return routePlan(context, null);
+    }
+
+    @Override
+    public AiRoutePlan routePlan(AiRouteContext context, UUID userId) {
+        AiRoutePolicy policy = policies.get(context.capability());
 
         if (
             policy == null
@@ -207,12 +310,42 @@ final class ConfiguredAiRoutePlanner
             );
         }
 
-        return policy.routePlan();
+        AiRoutePlan base = policy.routePlan();
+        // Preserve explicit unavailable routes as honest availability failures.
+        if (base.allTargets().stream().allMatch(t -> "UNAVAILABLE".equals(t.provider()))) return base;
+        String tier = userId == null || base.allTargets().stream().allMatch(t -> "LOCAL_FIXTURE".equals(t.provider()) || "UNAVAILABLE".equals(t.provider()))
+            ? "FREE" : entitlement.tier(userId);
+        var selected = new AiRouteSelector().select(context, tier, catalog.stream()
+            .filter(c -> base.allTargets().contains(c.target()) && c.latencyAllowance().compareTo(base.timeout()) <= 0).toList(), health, clock.instant(), routing.healthMaxAge());
+        long budget = context.maxCostMicros() == null ? base.maxCostMicros()
+            : Math.min(base.maxCostMicros(), context.maxCostMicros());
+        var affordable = selected.stream().filter(c -> c.attemptCeilingMicros() <= budget).toList();
+        if (affordable.isEmpty()) throw new AiProviderException(AiProviderFailureClass.BUDGET_EXCEEDED, false, "AI request budget exhausted");
+        Duration timeout = context.latencyBudget() == null || base.timeout().compareTo(context.latencyBudget()) <= 0
+            ? base.timeout() : context.latencyBudget();
+        return base.selected(affordable.stream().map(AiRouteEligibility::target).toList(), timeout,
+            budget, affordable.getFirst().qualityGateVersion());
     }
 
     @Override
     public Map<AiCapability, AiRoutePolicy> policies() {
         return policies;
+    }
+
+    @Override
+    public long attemptCeiling(AiRoutePlan plan, AiRouteTarget target) {
+        if ("UNAVAILABLE".equals(target.provider())) return 0;
+        return catalog.stream().filter(c -> c.capability() == plan.capability() && c.target().equals(target))
+            .findFirst().orElseThrow(() -> new AiProviderException(AiProviderFailureClass.POLICY_BLOCKED,
+                false, "Unknown model eligibility")).attemptCeilingMicros();
+    }
+
+    @Override
+    public void checkAttempt(AiRouteContext context, AiRoutePlan plan, AiRouteTarget target) {
+        if (!"LOCAL_FIXTURE".equals(target.provider()) && !"UNAVAILABLE".equals(target.provider())
+            && !health.snapshot(target).usable(clock.instant(), routing.healthMaxAge())) {
+            throw new AiProviderException(AiProviderFailureClass.PROVIDER_UNAVAILABLE, true, "Fresh provider health unavailable");
+        }
     }
 
     private AiRoutePolicy legacyPolicy(
@@ -293,9 +426,8 @@ final class ConfiguredAiRoutePlanner
         AiCapabilityRegistry registry
     ) {
         boolean production =
-            "production".equalsIgnoreCase(
-                environment
-            );
+            "production".equalsIgnoreCase(environment == null ? "" : environment.trim())
+                || "prod".equalsIgnoreCase(environment == null ? "" : environment.trim());
 
         if (!production) {
             return;

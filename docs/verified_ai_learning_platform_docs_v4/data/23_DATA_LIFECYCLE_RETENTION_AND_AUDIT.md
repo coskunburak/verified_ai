@@ -91,3 +91,13 @@ Normal production retention and deletion rules remain authoritative even if data
 
 Any future dataset export requires lineage and a revocation/deletion response policy. Analytics stores must not silently become training stores.
 <!-- HYBRID_AI_STRATEGY_V3:END -->
+
+## Sprint 5.4 solution candidates
+
+`solve_jobs` and `solution_candidates` are Sensitive account-linked DERIVED_LEARNING data, retained as
+problem history while needed and deleted through the solving lifecycle contributor and source cascade.
+Export includes source lineage, normalized candidate, state and operation ID; excludes raw rejected model
+output, private reasoning, idempotency keys and provider request/response internals. No raw provider output
+is retained by solving. In-flight completion rechecks ownership and source; account deletion cannot be
+undone by a late worker write. Existing AI usage/spend anonymization remains separate. No training consent
+is inferred. Backup expiry follows the existing platform policy; no new retention exception is introduced.

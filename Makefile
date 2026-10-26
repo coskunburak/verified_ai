@@ -2,7 +2,7 @@ SHELL := /bin/bash
 
 .DEFAULT_GOAL := help
 
-.PHONY: help bootstrap doctor up down test test-api test-ios test-verifier eval-ai lint format check docs-check contracts-check secret-scan
+.PHONY: help bootstrap doctor up down test test-minio-image test-api test-ios test-verifier eval-ai lint format check docs-check contracts-check secret-scan
 
 JAVA21_HOME ?= /opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home
 JAVA21_ENV := JAVA_HOME="$(JAVA21_HOME)" PATH="$(JAVA21_HOME)/bin:$(PATH)"
@@ -33,8 +33,11 @@ down:
 
 test: test-api test-verifier test-ios docs-check secret-scan
 
-test-api:
-	@cd services/api && $(JAVA21_ENV) mvn test
+test-minio-image:
+	@docker build -t verified-ai/minio-test:2024-07-16-3535197 infra/local/minio-test
+
+test-api: test-minio-image
+	@cd services/api && $(JAVA21_ENV) mvn -Dverifiedai.test.minio-image=verified-ai/minio-test:2024-07-16-3535197 test
 
 test-ios:
 	@xcodebuild test -project apps/ios/VerifiedAI.xcodeproj -scheme VerifiedAI -destination 'platform=iOS Simulator,name=iPhone 16 Pro' -derivedDataPath .generated/DerivedData

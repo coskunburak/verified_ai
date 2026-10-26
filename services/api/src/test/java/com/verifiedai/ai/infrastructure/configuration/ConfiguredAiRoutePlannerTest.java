@@ -5,6 +5,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.verifiedai.ai.application.AiCapability;
 import com.verifiedai.ai.application.AiCapabilityRegistry;
 import com.verifiedai.ai.application.AiRoutePlan;
+import com.verifiedai.ai.application.OutputSchemaArtifact;
+import com.verifiedai.ai.application.OutputSchemaRegistry;
+import com.verifiedai.ai.application.PromptArtifact;
+import com.verifiedai.ai.application.PromptRegistry;
+import com.verifiedai.ai.application.PromptRegistryFailureCode;
+import com.verifiedai.ai.application.PromptRegistryValidationException;
+import com.verifiedai.ai.application.PromptRegistryValidator;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +72,36 @@ final class ConfiguredAiRoutePlannerTest {
     }
 
     @Test
-    void futureSolveCapabilityCannotBeEnabled() {
+    void productionEnabledRouteWithLocalOnlyPromptFailsStartup() {
+        assertThatThrownBy(() ->
+            planner(
+                vision(
+                    true,
+                    "OPENAI",
+                    AiRoutePlan.ReleaseStage.PRODUCTION
+                ),
+                disabledParser(),
+                disabledClassifier(),
+                registry(true, Map.of()),
+                "production"
+            )
+        )
+            .isInstanceOf(
+                PromptRegistryValidationException.class
+            )
+            .extracting(
+                exception ->
+                    ((PromptRegistryValidationException)
+                        exception).code()
+            )
+            .isEqualTo(
+                PromptRegistryFailureCode
+                    .AI_PROMPT_NOT_PRODUCTION_APPROVED
+            );
+    }
+
+    @Test
+    void unapprovedSolveCapabilityCannotBeEnabled() {
         assertThatThrownBy(() ->
             planner(
                 disabledVision(),
@@ -88,8 +124,74 @@ final class ConfiguredAiRoutePlannerTest {
                 "SOLVE"
             )
             .hasMessageContaining(
-                "cannot be enabled"
+                "SOLVE activation blocked"
             );
+    }
+
+    @Test
+    void futureArbitrateAndTutorCapabilitiesCannotBeEnabled() {
+        for (
+            AiCapability capability :
+            List.of(
+                AiCapability.ARBITRATE,
+                AiCapability.TUTOR
+            )
+        ) {
+            assertThatThrownBy(() ->
+                planner(
+                    disabledVision(),
+                    disabledParser(),
+                    disabledClassifier(),
+                    registry(
+                        true,
+                        Map.of(
+                            capability,
+                            futureCapability(true)
+                        )
+                    ),
+                    "local"
+                )
+            )
+                .isInstanceOf(
+                    IllegalStateException.class
+                )
+                .hasMessageContaining(
+                    capability.name()
+                )
+                .hasMessageContaining(
+                    "cannot be enabled"
+                );
+        }
+    }
+
+    @Test
+    void prodAliasCannotBypassFixtureGuard() {
+        assertThatThrownBy(() -> planner(
+            vision(true, "LOCAL_FIXTURE", AiRoutePlan.ReleaseStage.PRODUCTION),
+            disabledParser(), disabledClassifier(), registry(true, Map.of()), " prod "))
+            .isInstanceOf(IllegalStateException.class).hasMessageContaining("LOCAL_FIXTURE");
+    }
+
+    @Test
+    void stagingCannotEnableUnapprovedLocalArtifact() {
+        assertThatThrownBy(() -> planner(
+            vision(true, "TEST_PROVIDER", AiRoutePlan.ReleaseStage.STAGING),
+            disabledParser(), disabledClassifier(), registry(true, Map.of()), "staging"))
+            .isInstanceOf(PromptRegistryValidationException.class)
+            .extracting(e -> ((PromptRegistryValidationException) e).code())
+            .isEqualTo(PromptRegistryFailureCode.AI_PROMPT_RELEASE_STAGE_INVALID);
+    }
+
+    @Test
+    void localFixturesWorkWithRealClasspathValidation() {
+        org.assertj.core.api.Assertions.assertThatCode(() -> new ConfiguredAiRoutePlanner(
+            vision(true, "LOCAL_FIXTURE", AiRoutePlan.ReleaseStage.LOCAL_ONLY),
+            disabledParser(), disabledClassifier(), registry(true, Map.of()),
+            AiCapabilityRegistry.defaults(),
+            new PromptRegistryValidator(PromptRegistry.defaults(), OutputSchemaRegistry.defaults(),
+                new ClasspathPromptArtifactResolver(new org.springframework.core.io.DefaultResourceLoader()),
+                new ClasspathOutputSchemaArtifactResolver(new org.springframework.core.io.DefaultResourceLoader())),
+            "local")).doesNotThrowAnyException();
     }
 
     private static ConfiguredAiRoutePlanner planner(
@@ -105,7 +207,24 @@ final class ConfiguredAiRoutePlannerTest {
             classifier,
             registry,
             AiCapabilityRegistry.defaults(),
+            promptRegistryValidator(),
             environment
+        );
+    }
+
+    private static PromptRegistryValidator
+    promptRegistryValidator() {
+        return new PromptRegistryValidator(
+            PromptRegistry.defaults(),
+            OutputSchemaRegistry.defaults(),
+            entry -> new PromptArtifact(
+                entry.promptArtifactPath(),
+                1
+            ),
+            (schema, prompt) -> new OutputSchemaArtifact(
+                schema.artifactPath(),
+                1
+            )
         );
     }
 
@@ -168,7 +287,7 @@ final class ConfiguredAiRoutePlannerTest {
         return new AiVisionRecognitionProperties(
             enabled,
             primaryProvider,
-            "vision-model-v1",
+            "local-fixture-vision-v1",
             "",
             "",
             "vision-route-v1",
@@ -189,7 +308,7 @@ final class ConfiguredAiRoutePlannerTest {
         return new AiProblemParserProperties(
             false,
             "LOCAL_FIXTURE",
-            "parser-model-v1",
+            "local-fixture-problem-parser-v1",
             "",
             "",
             "problem-parser-route-v1",
@@ -211,7 +330,7 @@ final class ConfiguredAiRoutePlannerTest {
         return new AiProblemClassifierProperties(
             false,
             "LOCAL_FIXTURE",
-            "classifier-model-v1",
+            "local-fixture-problem-classifier-v1",
             "",
             "",
             "problem-classifier-route-v1",

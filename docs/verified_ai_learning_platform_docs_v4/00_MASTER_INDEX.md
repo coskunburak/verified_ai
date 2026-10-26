@@ -244,6 +244,13 @@ Documentation is part of the product and part of the implementation contract.
 - `sprints/phase04_problem_capture_and_canonicalization/SPRINT_4.10_EXECUTION_REPORT.md` — Sprint 4.10 ingestion golden dataset and local deterministic evaluation-gate execution evidence.
 - `sprints/phase04_problem_capture_and_canonicalization/PHASE_04_EXECUTION_REPORT.md` — Phase 4 local implementation evidence, open external blockers, and Phase 5 handoff.
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.1_IMPLEMENTATION_MAP.md` — Sprint 5.1 provider-neutral AI gateway, capability model, route policy, usage ledger, and rollout implementation map.
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.2_IMPLEMENTATION_MAP.md` — Sprint 5.2 prompt registry, schema governance, release-stage policy, artifact validation, and rollout/rollback implementation map.
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.2_EXECUTION_REPORT.md` — Sprint 5.2 implementation evidence, validation status, safety boundaries, and rollout/rollback summary.
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.3_IMPLEMENTATION_MAP.md` — routing, durable cost commitments, trust and reliability contracts.
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.3_EXECUTION_REPORT.md` — owner-only test commands and acceptance evidence.
+- `ai/72_OPEN_WEIGHT_MATH_MODEL_RESEARCH.md` — source-linked provisional model comparison.
+- `ai/73_MATH_MODEL_EVALUATION_PLAN.md` — corpus, metrics and quality gates.
+- `ai/74_MODEL_ROUTING_COST_AND_TCO_DECISION.md` — explicit cost assumptions and monthly scenarios.
 
 For implementation agents, sprint documents are execution plans. They never override domain invariants, accepted ADRs, security rules, or canonical API/data contracts.
 
@@ -317,3 +324,8 @@ New canonical governance documents:
 
 Any V1 feature implementation should map to a capability ID and at least one requirement ID before its sprint exits. Post-launch Phase 14+ work must follow the phase expansion policy in `operations/70_RELEASE_TRAINS_AND_BACKLOG_PROMOTION.md`.
 <!-- PROGRAM_GOVERNANCE_V5:END -->
+
+## Sprint 5.4 implementation evidence
+
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_IMPLEMENTATION_MAP.md` — primary candidate contracts, lifecycle, privacy, rollback and handoff.
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_EXECUTION_REPORT.md` — owner-only test stages and blocked live model evidence.

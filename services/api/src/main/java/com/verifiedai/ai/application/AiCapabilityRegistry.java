@@ -98,10 +98,12 @@ public final class AiCapabilityRegistry {
                     AiCapabilityDescriptor.CostBucket.INGESTION
                 ),
 
-                future(
+                descriptor(
                     AiCapability.SOLVE,
                     "solving",
                     "solve-route-v1",
+                    "solver",
+                    "solution-candidate-v1",
                     AiCapabilityDescriptor.CostBucket.SOLVING
                 ),
                 future(

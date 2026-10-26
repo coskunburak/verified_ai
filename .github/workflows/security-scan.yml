@@ -12,6 +12,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install ripgrep
         run: sudo apt-get update && sudo apt-get install -y ripgrep
+      - name: Test secret scanner failure handling
+        run: python3 -m unittest discover -s scripts/security -p test_secret_scan.py
       - name: Secret scan
         run: scripts/security/secret_scan.sh
       - name: Repository hygiene

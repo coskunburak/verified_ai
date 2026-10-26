@@ -20,8 +20,8 @@ This document is the operational companion to the exhaustive hierarchy. It turns
 | Dense backend module workflow | `<module>/<layer>/<workflow>` | Bounded context | Mirror layer tests | A single 50+ class layer package |
 | External provider adapter | owning module `infrastructure/external` | Bounded context/platform | contract/resilience | domain/application concrete provider dependency |
 | AI provider adapter | `backend/ai/infrastructure/<provider>` | AI platform | mocked/provider contract + eval | solving/mastery domain |
-| AI prompt | `/prompts/<capability>/<version>` | AI platform | golden eval | Java/Swift inline string except tiny noncanonical templates |
-| AI JSON schema | `/packages/schemas/ai/...` | AI platform/contracts | schema fixtures | prompt prose only |
+| AI prompt | `services/api/src/main/resources/prompts/<promptId>/<version>.md` for current executable Spring API prompts | AI platform | registry validation + golden eval where applicable | Java/Swift inline string, duplicate root prompt copies, unversioned prompt text |
+| AI JSON schema | `packages/schemas/*.schema.json` | AI platform/contracts | registry/schema fixtures | prompt prose only, stale double-extension filenames |
 | Deterministic math rule | `services/math-verifier/app/verifiers` | Verification | unit/property/security benchmark | LLM prompt, iOS |
 | Golden AI example | `evaluations/golden-datasets` | AI quality | immutability/provenance | production DB seed |
 | Protected test example | `evaluations/protected-holdouts` | AI quality | restricted access | training dataset |

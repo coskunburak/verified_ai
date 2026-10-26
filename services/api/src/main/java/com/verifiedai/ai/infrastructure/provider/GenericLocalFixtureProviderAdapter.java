@@ -34,6 +34,14 @@ final class GenericLocalFixtureProviderAdapter
         this.classifyAdapter = classifyAdapter;
     }
 
+    private SolverFixture solverFixture;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    void solverFixture(SolverFixture fixture) { this.solverFixture = fixture; }
+
+    @Override
+    public boolean enforcesCostCeiling() { return true; }
+
     @Override
     public String providerId() {
         return "LOCAL_FIXTURE";
@@ -41,6 +49,8 @@ final class GenericLocalFixtureProviderAdapter
 
     @Override
     public Set<AiCapability> supportedCapabilities() {
+        if (solverFixture != null) return Set.of(AiCapability.VISION_PARSE,
+            AiCapability.PROBLEM_NORMALIZE, AiCapability.PROBLEM_CLASSIFY, AiCapability.SOLVE);
         return Set.of(
             AiCapability.VISION_PARSE,
             AiCapability.PROBLEM_NORMALIZE,
@@ -83,6 +93,11 @@ final class GenericLocalFixtureProviderAdapter
                         request.routePlan()
                     );
 
+                case SOLVE -> {
+                    if (solverFixture == null) throw new AiProviderException(
+                        AiProviderFailureClass.CONFIGURATION_DISABLED, false, "Test solver is not installed");
+                    yield solverFixture.execute(request);
+                }
                 default ->
                     throw new AiProviderException(
                         AiProviderFailureClass

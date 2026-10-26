@@ -15,6 +15,8 @@ public enum AiProviderFailureClass {
      * Gateway-level failures.
      */
     BUDGET_EXCEEDED,
+    REVIEW_REQUIRED,
+    DEADLINE_EXCEEDED,
     POLICY_BLOCKED,
     LEDGER_UNAVAILABLE,
     PROVIDER_NOT_REGISTERED,

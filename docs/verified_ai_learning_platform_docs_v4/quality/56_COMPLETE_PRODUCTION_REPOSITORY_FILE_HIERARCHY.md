@@ -96,14 +96,7 @@ verified-ai-learning-platform/
 │   └── test-fixtures/
 │
 ├── prompts/
-│   ├── problem-parser/
-│   ├── solver-primary/
-│   ├── solver-secondary/
-│   ├── arbiter/
-│   ├── mistake-classifier/
-│   ├── tutor/
-│   ├── study-planner/
-│   └── README.md
+│   └── README.md              # pointer only; executable API prompts live with the service resources
 │
 ├── evaluations/
 │   ├── golden-datasets/
@@ -904,25 +897,19 @@ Stable skill identifiers are data contracts. Renaming display text must never si
 # 16. Prompt repository
 
 ```text
-prompts/
+services/api/src/main/resources/prompts/
 ├── README.md
+├── vision-recognition/
+│   └── v001.md
 ├── problem-parser/
-│   ├── v001/
-│   │   ├── system.md
-│   │   ├── developer.md
-│   │   ├── output.schema.json
-│   │   ├── examples.jsonl
-│   │   └── metadata.yaml
-│   └── CHANGELOG.md
-├── solver-primary/
-├── solver-secondary/
-├── arbiter/
-├── mistake-classifier/
-├── tutor/
-└── study-planner/
+│   └── v001.md
+└── problem-classifier/
+    └── v001.md
 ```
 
-`metadata.yaml` must declare capability, owner, release status, compatible schema version, evaluation baseline, and safety notes.
+Current executable Spring API prompt metadata is declared in the backend `PromptRegistry`. Registry entries must declare capability, owner, release status, compatible schema version, evaluation reference, training eligibility, and safety notes.
+
+Root `prompts/README.md` is a pointer only and must not become a second editable prompt source.
 
 No production prompt is embedded as an unversioned multi-line string inside a controller or service.
 
@@ -1295,7 +1282,8 @@ This section supersedes any earlier abbreviated tree when file placement require
 | `services/math-verifier` | Verification | Yes, internal | Deterministic math only | Never exposed directly to mobile clients. |
 | `packages/contracts` | Platform | Build-time | No business orchestration | Versioned API/event schemas. |
 | `packages/curriculum` | Learning domain | Build/runtime data | Canonical ontology only | Stable IDs and migrations required. |
-| `prompts` | AI platform | Runtime source artifact | Prompt behavior only | Versioned; evaluated before release. |
+| `services/api/src/main/resources/prompts` | AI platform | Runtime source artifact | Prompt behavior only | Versioned; registered and evaluated before release. |
+| `prompts` | AI platform | No | No | Pointer only for executable prompt location. |
 | `evaluations` | AI quality | CI/offline | No runtime product logic | Golden/protected datasets and reports. |
 | `ml` | Conditional Phase 13 | Offline/runtime later | Specialized ML only | Must not exist before readiness gates. |
 | `infra` | Platform/operations | Deploy-time | No | IaC, monitoring, database operational configuration. |
@@ -2818,8 +2806,8 @@ services/api/src/main/resources/
 │   ├── analytics/
 │   ├── admin/
 │   └── ai/
-├── prompts/                 # packaged release metadata only; canonical prompt source stays /prompts
-├── schemas/                 # packaged validated schemas generated from /packages/schemas
+├── prompts/                 # canonical executable Spring API prompt source
+├── schemas/                 # packaged validated schemas sourced from /packages/schemas
 └── logback-spring.xml
 
 services/api/src/test/java/com/verifiedlearning/
@@ -2936,15 +2924,13 @@ packages/
     ├── users/
     └── storekit/
 
+services/api/src/main/resources/prompts/
+├── vision-recognition/<version>.md
+├── problem-parser/<version>.md
+├── problem-classifier/<version>.md
+└── README.md
+
 prompts/
-├── problem-parser/<version>/
-├── primary-solver/<version>/
-├── secondary-solver/<version>/
-├── arbiter/<version>/
-├── explanation/<version>/
-├── tutor/<version>/
-├── mistake-classifier/<version>/
-├── study-planner/<version>/
 └── README.md
 
 evaluations/
@@ -3100,7 +3086,7 @@ When adding a file, apply this decision order without skipping steps:
 4. **Does it orchestrate a use case?** Backend `application`; iOS `Domain/UseCases`.
 5. **Does it translate HTTP/database/provider details?** `infrastructure` or iOS `Data`.
 6. **Is it an external contract?** `packages/contracts`/`packages/schemas`; generate adapters from there when practical.
-7. **Is it AI behavior?** Prompt source in `/prompts`; schemas in `/packages/schemas`; runtime routing in backend `ai`; quality evidence in `/evaluations`.
+7. **Is it AI behavior?** Current executable API prompt source in `services/api/src/main/resources/prompts`; schemas in `/packages/schemas`; runtime routing in backend `ai`; quality evidence in `/evaluations`.
 8. **Is it deterministic mathematics?** Internal verifier service, not prompts or client code.
 9. **Is it a future learned model?** `/ml` only after Phase 13 gate.
 10. **Is it documentation?** Put it in the domain-specific docs folder and update `00_MASTER_INDEX.md` if canonical.

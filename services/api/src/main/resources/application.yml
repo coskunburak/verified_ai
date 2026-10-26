@@ -42,8 +42,27 @@ management:
     tags:
       service: verified-ai-api
 app:
+  solving:
+    enabled: false
+    worker-enabled: false
   environment: ${APP_ENV:local}
   ai:
+    routing:
+      health-max-age: 30s
+      eligibility: []
+    budget:
+      policy-version: paid-disabled-v1
+      attempt-micros: 0
+      request-micros: 0
+      session-micros: 0
+      user-daily-micros: 0
+      user-monthly-micros: 0
+      provider-monthly-micros: 0
+      global-monthly-micros: 0
+      tier-request-micros:
+        FREE: 0
+        PRO: 0
+        PRO_PLUS: 0
     vision-recognition:
       enabled: ${AI_VISION_RECOGNITION_ENABLED:true}
       primary-provider: ${AI_VISION_RECOGNITION_PRIMARY_PROVIDER:LOCAL_FIXTURE}

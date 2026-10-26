@@ -29,9 +29,14 @@ final class S3CompatibleProblemAssetStorageTest {
     private static final String ACCESS_KEY = "minioadmin";
     private static final String SECRET_KEY = "minioadmin";
     private static final String BUCKET = "verified-ai-problem-assets-test";
+    // Explicit owner-approved mirror/local image only; never silently change release or skip this test.
+    private static final String MINIO_IMAGE = System.getProperty(
+        "verifiedai.test.minio-image",
+        "minio/minio:RELEASE.2024-07-16T23-46-41Z"
+    );
 
     @Container
-    static final GenericContainer<?> MINIO = new GenericContainer<>("minio/minio:RELEASE.2024-07-16T23-46-41Z")
+    static final GenericContainer<?> MINIO = new GenericContainer<>(MINIO_IMAGE)
         .withEnv("MINIO_ROOT_USER", ACCESS_KEY)
         .withEnv("MINIO_ROOT_PASSWORD", SECRET_KEY)
         .withCommand("server", "/data")

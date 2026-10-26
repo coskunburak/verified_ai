@@ -25,7 +25,7 @@ class JpaAiUsageRecorder
     }
 
     @Override
-    @Transactional
+    @Transactional(propagation = org.springframework.transaction.annotation.Propagation.REQUIRES_NEW)
     public void reserve(
         AiUsageRecord record
     ) {

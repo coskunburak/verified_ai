@@ -160,3 +160,11 @@ Future physics/statistics support should represent units separately from numeric
 ## Display
 
 User-facing LaTeX/rendering is derived from canonical representation. Do not use display string as backend computational source when a structured expression exists.
+
+## Sprint 5.4 candidate boundary
+
+Canonical v1 remains unchanged. A Solution Candidate references the selected canonical/parse revision,
+preserves exact assumption/source-constraint/derived-restriction IDs, and stores bounded untrusted AST
+claims separately. Single variable-left final relations and expression answers are supported; general
+solution sets/multipart/geometry/calculus remain unsupported. Candidate structural/semantic acceptance
+is not proof. Candidate prose is plain untrusted content, never code or verifier input authority.
