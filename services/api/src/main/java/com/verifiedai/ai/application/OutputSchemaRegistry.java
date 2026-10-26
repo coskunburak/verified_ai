@@ -40,14 +40,13 @@ public final class OutputSchemaRegistry {
         String schemaVersion
     ) {
         OutputSchemaRegistryEntry entry =
-            entries.get(schemaVersion);
+            schemaVersion == null ? null : entries.get(schemaVersion);
 
         if (entry == null) {
             throw new PromptRegistryValidationException(
                 PromptRegistryFailureCode
                     .AI_SCHEMA_ARTIFACT_MISSING,
-                "AI output schema registry entry is missing: schemaVersion="
-                    + safe(schemaVersion)
+                "AI output schema registry entry is missing"
             );
         }
 
@@ -64,25 +63,29 @@ public final class OutputSchemaRegistry {
                 new OutputSchemaRegistryEntry(
                     "recognition-evidence-v1",
                     "schemas/recognition-evidence.schema.json",
-                    "ai-platform"
+                    "ai-platform",
+                    "https://schemas.verified-ai-learning.example/recognition-evidence.schema.json",
+                    OutputSemanticContract.RECOGNITION_EVIDENCE,
+                    "703cc2008597a46bb7c6d9572d34950fa1b86fc37105dcb88f4466cbd59b455f"
                 ),
                 new OutputSchemaRegistryEntry(
                     "problem-parse-v1",
                     "schemas/problem-parse.schema.json",
-                    "ai-platform"
+                    "ai-platform",
+                    "https://schemas.verified-ai-learning.example/problem-parse.schema.json",
+                    OutputSemanticContract.PROBLEM_PARSE,
+                    "b1eab1750334341577d25cda7f9cbe3ec44cb0130138468753bcb2c6e69f2cc1"
                 ),
                 new OutputSchemaRegistryEntry(
                     "problem-classification-v1",
                     "schemas/problem-classification.schema.json",
-                    "ai-platform"
+                    "ai-platform",
+                    "urn:verified-ai:problem-classification:v1",
+                    OutputSemanticContract.PROBLEM_CLASSIFICATION,
+                    "d4eb465ed22db04a61c046ba4d4693be7a812f6f2dac6728956ca77b67ce4268"
                 )
             )
         );
     }
 
-    private static String safe(
-        String value
-    ) {
-        return value == null ? "NONE" : value;
-    }
 }

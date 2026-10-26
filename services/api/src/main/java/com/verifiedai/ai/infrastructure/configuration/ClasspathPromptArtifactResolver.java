@@ -1,5 +1,6 @@
 package com.verifiedai.ai.infrastructure.configuration;
 
+import com.verifiedai.ai.application.ArtifactIntegrity;
 import com.verifiedai.ai.application.PromptArtifact;
 import com.verifiedai.ai.application.PromptArtifactResolver;
 import com.verifiedai.ai.application.PromptRegistryEntry;
@@ -46,6 +47,7 @@ final class ClasspathPromptArtifactResolver
             readBounded(resource, entry);
 
         validateUtf8(bytes, entry);
+        ArtifactIntegrity.verify(bytes, entry.contentSha256());
 
         return new PromptArtifact(
             path,
@@ -66,7 +68,7 @@ final class ClasspathPromptArtifactResolver
                 || path.contains(":")
                 || path.contains("//")
                 || !path.startsWith("prompts/")
-                || !path.endsWith(".md")
+                || !path.equals("prompts/" + entry.promptId() + "/" + entry.promptVersion() + ".md")
         ) {
             throw failure(
                 PromptRegistryFailureCode

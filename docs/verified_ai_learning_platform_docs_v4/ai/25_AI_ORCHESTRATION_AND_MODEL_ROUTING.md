@@ -227,3 +227,13 @@ A proprietary model is not special-cased in feature code.
 - provenance persistence;
 - feature-flag rollback tests;
 - golden-dataset evaluation for material route changes.
+
+## Sprint 5.3 routing implementation (owner local acceptance passed)
+
+`AiRouteSelector` chooses the cheapest eligible exact target, with deterministic ties,
+explicit quality/task/difficulty/tier/privacy constraints and fresh server health.
+Billing application owns entitlement; request tier/health/flags cannot authorize routing.
+UNKNOWN input remains conservative; review/unsupported paths never manufacture VERIFIED.
+Legacy Phase 4 calls use UNKNOWN context; future capabilities stay disabled.
+See `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.3_IMPLEMENTATION_MAP.md`
+for eligibility binding, health/deadline behavior, telemetry and 5.4 handoff. Owner Groups A–E passed; production rollout gates remain documented.

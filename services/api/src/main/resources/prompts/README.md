@@ -38,9 +38,9 @@ Every executable prompt must have a `PromptRegistryEntry` with:
 - capability
 - owner
 - logical output schema version
-- artifact path
+- artifact path and pinned SHA-256
 - release stage
-- evaluation reference
+- evaluation reference and digest-bound release approval
 - compatible route-policy version
 - safety notes
 - training eligibility
@@ -57,7 +57,7 @@ Schema-valid output is still untrusted until backend semantic validation accepts
 - `STAGING`: staging release candidate.
 - `PRODUCTION`: production route eligible after review and evidence.
 
-Production enabled routes fail closed unless the registry entry is `PRODUCTION`.
+Production enabled routes fail closed unless the registry entry is `PRODUCTION` with matching approval/evaluation evidence. `DRAFT`, `VALIDATED`, `APPROVED`, `DEPRECATED` and `ROLLED_BACK` are not executable. `LOCAL_ONLY` requires local/test fixture-only targets. Staging is disabled by default until an approved candidate is configured.
 
 ## Promotion Workflow
 
@@ -83,3 +83,13 @@ Prompt text must not be the sole enforcement point for taxonomy integrity, schem
 ## Training Eligibility
 
 Prompt-governed production student workflows default to `NOT_ELIGIBLE` for training. Training eligibility requires separate governed lineage and privacy review.
+
+## Immutable release gate
+
+The metadata manifest is `PromptRegistry.defaults()`; schema hashes and semantic owners are
+in `OutputSchemaRegistry.defaults()`. Startup verifies exact bytes. Backend CI compares
+existing versions against the trusted PR base, even if a change also updates registered hashes.
+Required CODEOWNERS review and branch protection complement this check; hosting settings
+still require owner verification. See canonical `ai/26_PROMPT_SCHEMA_AND_VERSIONING.md`
+for approval evidence, schema ownership and rollback policy. All present artifacts remain
+local fixtures; none is approved for real-provider production inference.

@@ -4,6 +4,11 @@ on:
   pull_request:
     paths:
       - "services/api/**"
+      - "packages/schemas/**"
+      - "infra/local/minio-test/**"
+      - "Makefile"
+      - "scripts/quality/check_prompt_immutability.py"
+      - "scripts/quality/test_prompt_immutability.py"
       - ".github/workflows/backend-ci.yml"
   push:
     branches: [main]
@@ -13,12 +18,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Preserve existing prompt and schema versions
+        if: github.event_name == 'pull_request'
+        env:
+          PROMPT_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: python3 scripts/quality/check_prompt_immutability.py --base-ref "$PROMPT_BASE_SHA"
+      - name: Test prompt immutability gate
+        run: python3 -m unittest discover -s scripts/quality -p test_prompt_immutability.py
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "21"
           cache: maven
+      - name: Build pinned MinIO test image
+        run: make test-minio-image
       - name: Test API
         working-directory: services/api
-        run: mvn test
+        run: mvn -Dverifiedai.test.minio-image=verified-ai/minio-test:2024-07-16-3535197 test
 

@@ -35,6 +35,9 @@ final class GenericLocalFixtureProviderAdapter
     }
 
     @Override
+    public boolean enforcesCostCeiling() { return true; }
+
+    @Override
     public String providerId() {
         return "LOCAL_FIXTURE";
     }

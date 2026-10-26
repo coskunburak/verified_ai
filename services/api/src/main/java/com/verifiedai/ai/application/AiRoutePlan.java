@@ -110,9 +110,9 @@ public record AiRoutePlan(
             );
         }
 
-        if (maxAttempts < 1) {
+        if (maxAttempts < 1 || maxAttempts > 8) {
             throw new IllegalArgumentException(
-                "maxAttempts must be >= 1"
+                "maxAttempts must be within [1,8]"
             );
         }
 
@@ -214,6 +214,14 @@ public record AiRoutePlan(
             .anyMatch(target ->
                 target.provider().equals(normalized)
             );
+    }
+
+    public AiRoutePlan selected(List<AiRouteTarget> targets, Duration remaining, long budget, String qualityGate) {
+        return new AiRoutePlan(capability, routePolicyVersion, routeId, targets.getFirst(),
+            targets.subList(1, targets.size()), promptId, promptVersion, schemaVersion,
+            remaining, Math.min(maxAttempts, targets.size()), maxResponseBytes, budget,
+            pricingVersion, cachePolicy, streamingPolicy, providerRetentionPolicy, privacyRegion,
+            circuitBreakerKey, qualityGate, releaseStage);
     }
 
     public enum CachePolicy {

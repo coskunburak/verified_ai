@@ -89,3 +89,18 @@ Cost pressure never permits dishonest output. Investigate abuse/retry/context re
 ## 11. Future self-hosted route
 
 A self-hosted model adds capacity SLOs (GPU utilization, queue depth, model availability, OOM, warmup). It must preserve external fallback and pass TCO gates.
+
+## Sprint 5.3 commitment and reliability contract
+
+Before each paid attempt, PostgreSQL commitments atomically enforce operation/session/
+user day/user month/provider month/global month ceilings plus attempt and tier policy.
+Default paid caps are zero. Unknown usage retains its ceiling; no automatic timeout
+refund. Usage estimates and committed control balances are distinct. Provider invoice
+containment additionally requires an adapter-enforced charge bound; no paid adapter is
+activated. Automatic invoice reconciliation and production health telemetry remain gates.
+
+Fallback only admits transient timeout/rate-limit/unavailable failures and preserves
+quality/privacy. One monotonic deadline and cumulative budget span all attempts; every
+adapter receives remaining time. No additional attempt starts after exhaustion.
+Metrics expose bounded attempt outcomes and committed cost; logs exclude student content.
+Source and test evidence: Sprint 5.3 implementation map/report (owner local acceptance A–E VERIFIED_PASS; production rollout gates remain).

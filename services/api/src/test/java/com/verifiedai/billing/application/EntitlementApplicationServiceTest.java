@@ -44,6 +44,7 @@ final class EntitlementApplicationServiceTest extends PostgresIntegrationTestSup
         assertThat(result.status()).isEqualTo(EntitlementStatus.ACTIVE);
         assertThat(result.capabilities()).containsExactly(PremiumCapability.BASIC_SOLVE);
         assertThat(count("entitlements")).isEqualTo(1);
+        assertThat(entitlementApplicationService.currentAiTier(userId)).isEqualTo("FREE");
     }
 
     @Test

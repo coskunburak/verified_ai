@@ -1,11 +1,11 @@
 # Documentation Manifest
 
-Total Markdown files: **273**
+Total Markdown files: **278**
 
 ## Files
 
-- `00_MASTER_INDEX.md` — 321 lines — 23719 bytes
-- `DOCUMENTATION_MANIFEST.md` — 279 lines — 34314 bytes
+- `00_MASTER_INDEX.md` — 326 lines — 24289 bytes
+- `DOCUMENTATION_MANIFEST.md` — 284 lines — 34764 bytes
 - `DOCUMENTATION_V3_CHANGELOG.md` — 48 lines — 2266 bytes
 - `DOCUMENTATION_V4_CHANGELOG.md` — 29 lines — 1984 bytes
 - `DOCUMENTATION_V5_CHANGELOG.md` — 28 lines — 1154 bytes
@@ -18,16 +18,19 @@ Total Markdown files: **273**
 - `adr/ADR-005_API_FIRST_PROGRESSIVELY_PROPRIETARY_AI_STRATEGY.md` — 21 lines — 1173 bytes
 - `adr/ADR-006_PRODUCTION_STUDENT_DATA_NOT_TRAINING_DATA_BY_DEFAULT.md` — 15 lines — 748 bytes
 - `adr/ADR-007_SELF_HOSTED_MODELS_ONLY_AFTER_TCO_AND_QUALITY_GATES.md` — 14 lines — 681 bytes
-- `ai/25_AI_ORCHESTRATION_AND_MODEL_ROUTING.md` — 229 lines — 6794 bytes
-- `ai/26_PROMPT_SCHEMA_AND_VERSIONING.md` — 122 lines — 5898 bytes
+- `ai/25_AI_ORCHESTRATION_AND_MODEL_ROUTING.md` — 239 lines — 7528 bytes
+- `ai/26_PROMPT_SCHEMA_AND_VERSIONING.md` — 174 lines — 10421 bytes
 - `ai/27_VERIFICATION_ENGINE.md` — 93 lines — 2783 bytes
 - `ai/28_AI_EVALUATION_AND_GOLDEN_DATASET.md` — 121 lines — 5029 bytes
-- `ai/29_AI_COST_LATENCY_AND_RELIABILITY.md` — 91 lines — 4002 bytes
+- `ai/29_AI_COST_LATENCY_AND_RELIABILITY.md` — 106 lines — 5060 bytes
 - `ai/57_API_FIRST_HYBRID_AI_STRATEGY_AND_MODEL_EVOLUTION.md` — 344 lines — 9604 bytes
 - `ai/58_PROPRIETARY_DATASET_GOVERNANCE_AND_TRAINING_ELIGIBILITY.md` — 167 lines — 5628 bytes
 - `ai/59_SMALL_MODEL_FINE_TUNING_AND_SELF_HOSTING_READINESS.md` — 157 lines — 3862 bytes
-- `ai/60_AI_UNIT_ECONOMICS_AND_INFERENCE_COST_ENGINEERING.md` — 170 lines — 4327 bytes
+- `ai/60_AI_UNIT_ECONOMICS_AND_INFERENCE_COST_ENGINEERING.md` — 180 lines — 4963 bytes
 - `ai/61_MODEL_REGISTRY_RELEASE_AND_ROLLBACK_GOVERNANCE.md` — 79 lines — 1860 bytes
+- `ai/72_OPEN_WEIGHT_MATH_MODEL_RESEARCH.md` — 55 lines — 5560 bytes
+- `ai/73_MATH_MODEL_EVALUATION_PLAN.md` — 76 lines — 5139 bytes
+- `ai/74_MODEL_ROUTING_COST_AND_TCO_DECISION.md` — 78 lines — 5214 bytes
 - `architecture/11_SYSTEM_ARCHITECTURE_OVERVIEW.md` — 130 lines — 6804 bytes
 - `architecture/12_RUNTIME_AND_DEPLOYMENT_ARCHITECTURE.md` — 107 lines — 3096 bytes
 - `architecture/13_ASYNC_PROCESSING_AND_JOB_ORCHESTRATION.md` — 118 lines — 4365 bytes
@@ -37,7 +40,7 @@ Total Markdown files: **273**
 - `backend/20_BACKEND_MODULE_CONTRACTS.md` — 96 lines — 6382 bytes
 - `backend/21_AUTHORIZATION_RATE_LIMITING_AND_ABUSE.md` — 90 lines — 5392 bytes
 - `backend/50_ADMIN_SUPPORT_AND_INTERNAL_TOOLS.md` — 74 lines — 2182 bytes
-- `data/22_POSTGRESQL_DATA_MODEL.md` — 606 lines — 16717 bytes
+- `data/22_POSTGRESQL_DATA_MODEL.md` — 622 lines — 17779 bytes
 - `data/23_DATA_LIFECYCLE_RETENTION_AND_AUDIT.md` — 93 lines — 7653 bytes
 - `data/24_CACHING_STORAGE_AND_FILE_ASSETS.md` — 80 lines — 3923 bytes
 - `data/62_TRAINING_DATA_LINEAGE_CONSENT_AND_DATASET_PIPELINE.md` — 76 lines — 2422 bytes
@@ -67,7 +70,7 @@ Total Markdown files: **273**
 - `operations/49_FEATURE_FLAGS_REMOTE_CONFIG_AND_EXPERIMENTATION.md` — 78 lines — 1912 bytes
 - `operations/63_AI_CAPACITY_FINOPS_AND_PROVIDER_BUDGET_OPERATIONS.md` — 65 lines — 1596 bytes
 - `operations/70_RELEASE_TRAINS_AND_BACKLOG_PROMOTION.md` — 94 lines — 5233 bytes
-- `operations/71_TECHNICAL_DEBT_AND_MAINTENANCE_REGISTER.md` — 46 lines — 12941 bytes
+- `operations/71_TECHNICAL_DEBT_AND_MAINTENANCE_REGISTER.md` — 97 lines — 17076 bytes
 - `product/01_PRODUCT_VISION_AND_POSITIONING.md` — 238 lines — 9644 bytes
 - `product/02_PERSONAS_AND_JOBS_TO_BE_DONE.md` — 112 lines — 3352 bytes
 - `product/03_END_TO_END_USER_JOURNEYS.md` — 131 lines — 4529 bytes
@@ -83,10 +86,10 @@ Total Markdown files: **273**
 - `quality/64_AI_MODEL_REPLACEMENT_DECISION_GATES.md` — 65 lines — 1775 bytes
 - `quality/65_CANONICAL_DOCUMENTATION_TREE_AND_SOURCE_OF_TRUTH_MAP.md` — 334 lines — 23081 bytes
 - `quality/66_FILE_PLACEMENT_OWNERSHIP_AND_DEPENDENCY_MATRIX.md` — 52 lines — 5068 bytes
-- `quality/69_REQUIREMENTS_TRACEABILITY_MATRIX.md` — 65 lines — 24723 bytes
+- `quality/69_REQUIREMENTS_TRACEABILITY_MATRIX.md` — 66 lines — 26544 bytes
 - `roadmap/43_PRODUCT_AND_TECHNICAL_ROADMAP.md` — 131 lines — 4895 bytes
 - `roadmap/67_PRODUCT_PROGRAM_STRUCTURE.md` — 68 lines — 4656 bytes
-- `roadmap/68_PRODUCTION_V1_CAPABILITY_COVERAGE_MATRIX.md` — 81 lines — 19494 bytes
+- `roadmap/68_PRODUCTION_V1_CAPABILITY_COVERAGE_MATRIX.md` — 81 lines — 20707 bytes
 - `security/35_SECURITY_THREAT_MODEL.md` — 110 lines — 7144 bytes
 - `security/36_PRIVACY_AND_STUDENT_DATA_PROTECTION.md` — 131 lines — 11415 bytes
 - `sprints/00_SPRINT_MASTER_PLAN.md` — 270 lines — 31209 bytes
@@ -175,9 +178,11 @@ Total Markdown files: **273**
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.12_GOLDEN_DATASET_AI_EVALUATION_COST_REGRESSION_AND_MODEL_RELEASE_GATE.md` — 387 lines — 18248 bytes
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.1_IMPLEMENTATION_MAP.md` — 1522 lines — 49197 bytes
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.1_PROVIDER_NEUTRAL_AI_GATEWAY_AND_CAPABILITY_MODEL.md` — 382 lines — 17861 bytes
-- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.2_EXECUTION_REPORT.md` — 115 lines — 4755 bytes
-- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.2_IMPLEMENTATION_MAP.md` — 308 lines — 13032 bytes
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.2_EXECUTION_REPORT.md` — 384 lines — 21379 bytes
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.2_IMPLEMENTATION_MAP.md` — 168 lines — 13231 bytes
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.2_PROMPT_REGISTRY_SCHEMA_GOVERNANCE_AND_PROMPT_RELEASE_WORKFLOW.md` — 382 lines — 17880 bytes
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.3_EXECUTION_REPORT.md` — 134 lines — 8467 bytes
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.3_IMPLEMENTATION_MAP.md` — 170 lines — 11808 bytes
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.3_MODEL_ROUTER_COST_BUDGETS_FALLBACK_AND_RELIABILITY_POLICY.md` — 382 lines — 17887 bytes
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_PRIMARY_SOLVER_PIPELINE_AND_STRUCTURED_SOLUTION_CANDIDATE.md` — 414 lines — 19848 bytes
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.5_CONDITIONAL_INDEPENDENT_SECONDARY_SOLVER_AND_BLIND_AGREEMENT_ANALYSIS.md` — 382 lines — 18179 bytes

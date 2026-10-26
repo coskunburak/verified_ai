@@ -39,6 +39,14 @@ public class EntitlementApplicationService implements CapabilityAccessPolicy {
     }
 
     @Transactional
+    public String currentAiTier(UUID userId) {
+        EntitlementResult current = getCurrent(userId);
+        return current.status().grantsAccess()
+            && (current.expiresAt() == null || current.expiresAt().isAfter(clock.instant()))
+            ? current.tier().name() : "FREE";
+    }
+
+    @Transactional
     public EntitlementResult getCurrent(UUID userId) {
         lockUserEntitlement(userId);
         EntitlementJpaEntity entitlement = entitlementRepository.findByUserId(userId)

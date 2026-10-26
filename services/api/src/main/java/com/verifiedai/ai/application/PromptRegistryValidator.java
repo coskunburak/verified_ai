@@ -48,6 +48,8 @@ public final class PromptRegistryValidator {
             "policies are required"
         );
 
+        normalizedEnvironment(environment);
+
         for (AiRoutePolicy policy : policies) {
             if (!policy.enabled()) {
                 continue;
@@ -139,24 +141,78 @@ public final class PromptRegistryValidator {
                 routePlan.schemaVersion()
             );
 
+        if (schema.semanticContract().capability() != routePlan.capability()
+            || !schema.semanticContract().supports(schema.schemaVersion())) {
+            throw failure(PromptRegistryFailureCode.AI_SCHEMA_CONTRACT_MISMATCH,
+                routePlan, "AI output schema semantic owner does not match capability");
+        }
+
+        validateRelease(prompt, schema, routePlan, environment);
         promptArtifactResolver.load(prompt);
         schemaArtifactResolver.load(schema, prompt);
     }
 
-    private static boolean production(
+    private static boolean production(String environment) {
+        return "production".equals(normalizedEnvironment(environment));
+    }
+
+    private static String normalizedEnvironment(String environment) {
+        String value = environment == null ? "" : environment.trim().toLowerCase(Locale.ROOT);
+        return switch (value) {
+            case "local", "test", "staging" -> value;
+            case "prod", "production" -> "production";
+            default -> throw new PromptRegistryValidationException(
+                PromptRegistryFailureCode.AI_PROMPT_ENVIRONMENT_INVALID,
+                "AI prompt environment must be local, test, staging, or production"
+            );
+        };
+    }
+
+    private static void validateRelease(
+        PromptRegistryEntry prompt,
+        OutputSchemaRegistryEntry schema,
+        AiRoutePlan route,
         String environment
     ) {
-        if (environment == null) {
-            return false;
+        String env = normalizedEnvironment(environment);
+        boolean local = "local".equals(env) || "test".equals(env);
+        boolean eligible = switch (prompt.releaseStage()) {
+            case LOCAL_ONLY -> local;
+            case STAGING -> !"production".equals(env);
+            case PRODUCTION -> true;
+            default -> false;
+        };
+        if (!eligible || route.releaseStage() == AiRoutePlan.ReleaseStage.DISABLED
+            || ("staging".equals(env)
+                && route.releaseStage() != AiRoutePlan.ReleaseStage.STAGING
+                && route.releaseStage() != AiRoutePlan.ReleaseStage.PRODUCTION)
+            || ("production".equals(env)
+                && route.releaseStage() != AiRoutePlan.ReleaseStage.PRODUCTION)
+            || (route.releaseStage() == AiRoutePlan.ReleaseStage.PRODUCTION
+                && prompt.releaseStage() != PromptReleaseStage.PRODUCTION)
+            || (route.releaseStage() == AiRoutePlan.ReleaseStage.STAGING
+                && prompt.releaseStage() != PromptReleaseStage.STAGING
+                && prompt.releaseStage() != PromptReleaseStage.PRODUCTION)) {
+            throw failure(PromptRegistryFailureCode.AI_PROMPT_RELEASE_STAGE_INVALID,
+                route, "AI prompt or route release stage is not eligible");
         }
-
-        String normalized =
-            environment
-                .trim()
-                .toLowerCase(Locale.ROOT);
-
-        return "production".equals(normalized)
-            || "prod".equals(normalized);
+        if (prompt.releaseStage() == PromptReleaseStage.LOCAL_ONLY) {
+            if (route.allTargets().stream().anyMatch(target ->
+                !"LOCAL_FIXTURE".equals(target.provider()))) {
+                throw failure(PromptRegistryFailureCode.AI_PROMPT_RELEASE_STAGE_INVALID,
+                    route, "Local-only prompt requires fixture-only targets");
+            }
+            return;
+        }
+        PromptReleaseApproval approval = prompt.approval();
+        if (approval == null
+            || !approval.promptSha256().equals(prompt.contentSha256())
+            || !approval.schemaSha256().equals(schema.contentSha256())
+            || !approval.baselineReference().equals(prompt.evaluationBaselineReference())
+            || !approval.evaluationReportReference().equals(prompt.evaluationReportReference())) {
+            throw failure(PromptRegistryFailureCode.AI_PROMPT_APPROVAL_MISSING,
+                route, "AI release requires approval and evaluation evidence for exact artifacts");
+        }
     }
 
     private static PromptRegistryValidationException failure(
@@ -166,19 +222,7 @@ public final class PromptRegistryValidator {
     ) {
         return new PromptRegistryValidationException(
             code,
-            detail
-                + ": code="
-                + code
-                + " capability="
-                + routePlan.capability()
-                + " promptId="
-                + routePlan.promptId()
-                + " promptVersion="
-                + routePlan.promptVersion()
-                + " schemaVersion="
-                + routePlan.schemaVersion()
-                + " routePolicyVersion="
-                + routePlan.routePolicyVersion()
+            detail + ": code=" + code + " capability=" + routePlan.capability()
         );
     }
 }

@@ -29,6 +29,14 @@ final class MicrometerAiGatewayMetrics
     }
 
     @Override
+    public void attempt(AiRoutePlan plan, AiRouteTarget target, String outcome, long committedMicros) {
+        Counter.builder("ai.gateway.attempt.total").tag("capability", plan.capability().name())
+            .tag("provider", target.provider()).tag("outcome", outcome).register(registry).increment();
+        DistributionSummary.builder("ai.gateway.attempt.committed.micros").tag("capability", plan.capability().name())
+            .tag("provider", target.provider()).register(registry).record(committedMicros);
+    }
+
+    @Override
     public void request(
         AiRoutePlan routePlan
     ) {

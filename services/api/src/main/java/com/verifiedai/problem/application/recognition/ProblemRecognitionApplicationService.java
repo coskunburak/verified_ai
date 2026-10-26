@@ -437,7 +437,7 @@ public class ProblemRecognitionApplicationService {
 
     private static ApiErrorCode errorCodeFor(AiProviderFailureClass failureClass) {
         return switch (failureClass) {
-            case TIMEOUT -> ApiErrorCode.RECOGNITION_TIMEOUT;
+            case TIMEOUT, DEADLINE_EXCEEDED -> ApiErrorCode.RECOGNITION_TIMEOUT;
             case RATE_LIMITED -> ApiErrorCode.RECOGNITION_RATE_LIMITED;
             case OUTPUT_TOO_LARGE -> ApiErrorCode.RECOGNITION_OUTPUT_TOO_LARGE;
             case UNSUPPORTED_PAYLOAD -> ApiErrorCode.RECOGNITION_UNSUPPORTED;
@@ -449,6 +449,7 @@ public class ProblemRecognitionApplicationService {
                 PROVIDER_NOT_REGISTERED ->
                 ApiErrorCode.RECOGNITION_PROVIDER_UNAVAILABLE;
             case BUDGET_EXCEEDED,
+                REVIEW_REQUIRED,
                 POLICY_BLOCKED,
                 UNKNOWN -> ApiErrorCode.RECOGNITION_FAILED;
         };

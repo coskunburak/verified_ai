@@ -604,3 +604,19 @@ Production V1 must persist sufficient `ai_usage`/route provenance to calculate c
 
 Do **not** add training-dataset/model-registry tables until proprietary model work begins. When Phase 13 starts, use the forward data contract in `data/62_TRAINING_DATA_LINEAGE_CONSENT_AND_DATASET_PIPELINE.md`.
 <!-- HYBRID_AI_STRATEGY_V3:END -->
+
+## Sprint 5.3 AI spend commitments — V017
+
+AI owns `ai_spend_accounts` (key/nullable user/committed micro-USD), `ai_spend_attempts`
+(operation + attempt unique, FK to existing usage operation, exact target, pricing and
+budget versions, reserved amount, nullable reported estimate, state/timestamps), and
+`ai_spend_allocations` (original account/window links). No new usage ledger or model
+training registry is introduced. Sorted row locks and atomic transactions enforce all
+allowances; unique attempts prevent double reservation. Unknown reports never erase
+commitments. UTC month/day allocation is stable under late settlement.
+
+User deletion anonymizes personal keys and IDs, cascades allocation key updates and
+retains aggregate spend; existing usage anonymization remains. No raw question/image
+columns. Retention/invoice reconciliation approval is required before paid activation.
+Rollback disables paid routes, preserves tables/counters and historical pricing; do
+not drop control state to reset quotas. Migration/concurrency tests PENDING_OWNER_TEST.

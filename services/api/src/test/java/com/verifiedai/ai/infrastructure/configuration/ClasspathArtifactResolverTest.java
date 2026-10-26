@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.verifiedai.ai.application.AiCapability;
 import com.verifiedai.ai.application.OutputSchemaRegistry;
+import com.verifiedai.ai.application.OutputSemanticContract;
 import com.verifiedai.ai.application.OutputSchemaRegistryEntry;
 import com.verifiedai.ai.application.PromptRegistry;
 import com.verifiedai.ai.application.PromptRegistryEntry;
@@ -108,7 +109,10 @@ final class ClasspathArtifactResolverTest {
             new OutputSchemaRegistryEntry(
                 "problem-classification-v1",
                 "schemas/../../secret.json",
-                "ai-platform"
+                "ai-platform",
+                "urn:verified-ai:problem-classification:v1",
+                OutputSemanticContract.PROBLEM_CLASSIFICATION,
+                "a".repeat(64)
             );
 
         assertFailure(
@@ -170,7 +174,9 @@ final class ClasspathArtifactResolverTest {
             "CONNECTED_PROVIDER_EVAL_BLOCKED_NO_APPROVED_PROVIDER_ROUTE",
             List.of("safe note"),
             "problem-classifier-route-v1",
-            PromptTrainingEligibility.NOT_ELIGIBLE
+            PromptTrainingEligibility.NOT_ELIGIBLE,
+            PromptRegistry.defaults().require("problem-classifier", "v001").contentSha256(),
+            null
         );
     }
 

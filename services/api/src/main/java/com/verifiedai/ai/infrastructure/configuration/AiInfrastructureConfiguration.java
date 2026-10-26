@@ -18,9 +18,25 @@ import org.springframework.core.io.ResourceLoader;
     AiVisionRecognitionProperties.class,
     AiProblemParserProperties.class,
     AiProblemClassifierProperties.class,
-    AiRouteRegistryProperties.class
+    AiRouteRegistryProperties.class,
+    AiRoutingProperties.class,
+    AiBudgetProperties.class
 })
 class AiInfrastructureConfiguration {
+
+    @Bean
+    com.verifiedai.ai.application.AiProviderHealth aiProviderHealth() {
+        return com.verifiedai.ai.application.AiProviderHealth.unknown();
+    }
+
+    @Bean
+    com.verifiedai.ai.application.AiEntitlementResolver aiEntitlementResolver(
+        com.verifiedai.billing.application.EntitlementApplicationService billing, java.time.Clock clock) {
+        return userId -> {
+            if (userId == null) return "FREE";
+            return billing.currentAiTier(userId);
+        };
+    }
 
     @Bean
     AiCapabilityRegistry aiCapabilityRegistry() {

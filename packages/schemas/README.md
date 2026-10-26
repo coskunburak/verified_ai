@@ -14,3 +14,9 @@ Versioned JSON schemas live here.
 Logical schema versions are stable API/AI contracts. The API `OutputSchemaRegistry` maps logical versions such as `problem-classification-v1` to these source files, and the API build packages them into the service classpath under `schemas/`.
 
 Schema changes that alter meaning require a new logical version, for example `problem-classification-v2`. Do not rewrite old schema semantics or restore stale double-extension filenames.
+
+The API registry pins SHA-256, `$id`, logical version and existing semantic validator ownership
+for the three executable AI output schemas. Startup checks these bindings, while existing
+problem-module validators still validate responses. Backend CI rejects in-place modifications
+to these V1 schema files. Add a new version/path and explicit validator compatibility for upgrades;
+retain old schemas for stored-output interpretation. Schema validity is not mathematical verification.

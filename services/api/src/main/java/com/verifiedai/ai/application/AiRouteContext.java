@@ -45,7 +45,8 @@ public record AiRouteContext(
         if (
             classificationConfidence != null
                 && (
-                classificationConfidence < 0.0
+                !Double.isFinite(classificationConfidence)
+                    || classificationConfidence < 0.0
                     || classificationConfidence > 1.0
             )
         ) {

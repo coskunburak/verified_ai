@@ -246,6 +246,11 @@ Documentation is part of the product and part of the implementation contract.
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.1_IMPLEMENTATION_MAP.md` — Sprint 5.1 provider-neutral AI gateway, capability model, route policy, usage ledger, and rollout implementation map.
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.2_IMPLEMENTATION_MAP.md` — Sprint 5.2 prompt registry, schema governance, release-stage policy, artifact validation, and rollout/rollback implementation map.
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.2_EXECUTION_REPORT.md` — Sprint 5.2 implementation evidence, validation status, safety boundaries, and rollout/rollback summary.
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.3_IMPLEMENTATION_MAP.md` — routing, durable cost commitments, trust and reliability contracts.
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.3_EXECUTION_REPORT.md` — owner-only test commands and acceptance evidence.
+- `ai/72_OPEN_WEIGHT_MATH_MODEL_RESEARCH.md` — source-linked provisional model comparison.
+- `ai/73_MATH_MODEL_EVALUATION_PLAN.md` — corpus, metrics and quality gates.
+- `ai/74_MODEL_ROUTING_COST_AND_TCO_DECISION.md` — explicit cost assumptions and monthly scenarios.
 
 For implementation agents, sprint documents are execution plans. They never override domain invariants, accepted ADRs, security rules, or canonical API/data contracts.
 

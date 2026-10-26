@@ -168,3 +168,13 @@ A task becomes a candidate only if:
 - adequate eligible data exists;
 - projected savings exceed training/serving/operations TCO with safety margin;
 - quality can be preserved.
+
+## Sprint 5.3 evidence boundary
+
+V017 spend accounts/attempts/allocations control durable commitments; the existing
+`ai_usage_records` remains consolidated usage/provenance. Conservative commitment
+estimates include failed attempts; provider reported usage and currency/price checks
+remain distinct from confirmed invoices. Zero default paid limits require business
+approval before rollout. No in-memory counter is claimed as global financial authority.
+See `ai/74_MODEL_ROUTING_COST_AND_TCO_DECISION.md` for six hypothetical monthly scenarios
+and verified price references. No model inference cost/latency was measured in Sprint 5.3.

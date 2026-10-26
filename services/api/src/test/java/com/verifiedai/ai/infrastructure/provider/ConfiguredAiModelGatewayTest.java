@@ -638,6 +638,79 @@ final class ConfiguredAiModelGatewayTest {
         assertThat(provider.callCount()).isZero();
     }
 
+    @Test
+    void invalidAuthCannotRetryEvenWhenAdapterMarksItRetryable() {
+        var first = failingProvider("PRIMARY", AiProviderFailureClass.INVALID_AUTH, true);
+        var fallback = successfulProvider("FALLBACK");
+        var plan = visionPlan("PRIMARY", "primary-model", List.of(new AiRouteTarget("FALLBACK", "fallback-model")), 65536, 1000);
+        var result = gateway(FixedRoutePlanner.enabled(plan), first, fallback).execute(command(AiCapability.VISION_PARSE, null));
+        assertThat(result.status()).isEqualTo(AiExecutionStatus.FAILED_TERMINAL);
+        assertThat(fallback.callCount()).isZero();
+    }
+
+    @Test
+    void failedAttemptConsumesBudgetAndBlocksFallbackBeforeDispatch() {
+        var first = failingProvider("PRIMARY", AiProviderFailureClass.TIMEOUT, true);
+        var fallback = successfulProvider("FALLBACK");
+        var plan = visionPlan("PRIMARY", "primary-model", List.of(new AiRouteTarget("FALLBACK", "fallback-model")), 65536, 100);
+        var result = gateway(FixedRoutePlanner.enabled(plan), first, fallback).execute(command(AiCapability.VISION_PARSE, null));
+        assertThat(result.status()).isEqualTo(AiExecutionStatus.BLOCKED_BUDGET);
+        assertThat(result.usage().estimatedCostMicros()).isEqualTo(100);
+        assertThat(result.usage().inputTokens()).isNull();
+        assertThat(result.attemptCount()).isEqualTo(1);
+        assertThat(fallback.callCount()).isZero();
+    }
+
+    @Test
+    void cumulativeDeadlineStopsFallback() {
+        var first = failingProvider("PRIMARY", AiProviderFailureClass.TIMEOUT, true, 15);
+        var fallback = successfulProvider("FALLBACK");
+        var base = visionPlan("PRIMARY", "primary-model", List.of(new AiRouteTarget("FALLBACK", "fallback-model")), 65536, 1000);
+        var plan = base.selected(base.allTargets(), Duration.ofMillis(5), 1000, null);
+        var result = gateway(FixedRoutePlanner.enabled(plan), first, fallback).execute(command(AiCapability.VISION_PARSE, null));
+        assertThat(result.failureClass()).isEqualTo(AiProviderFailureClass.DEADLINE_EXCEEDED);
+        assertThat(fallback.callCount()).isZero();
+    }
+
+    @Test
+    void fallbackLedgerIncludesBothCommitments() {
+        var first = failingProvider("PRIMARY", AiProviderFailureClass.TIMEOUT, true);
+        var fallback = successfulProvider("FALLBACK");
+        var plan = visionPlan("PRIMARY", "primary-model", List.of(new AiRouteTarget("FALLBACK", "fallback-model")), 65536, 1000);
+        var result = gateway(FixedRoutePlanner.enabled(plan), first, fallback).execute(command(AiCapability.VISION_PARSE, null));
+        assertThat(result.succeeded()).isTrue();
+        assertThat(result.usage().estimatedCostMicros()).isEqualTo(200);
+        assertThat(result.usage().requestUnits()).isEqualTo(2);
+        assertThat(result.output().usage().estimatedCostMicros()).isEqualTo(10);
+    }
+
+    @Test
+    void reservationFailureBlocksDispatch() {
+        var provider = successfulProvider("PRIMARY");
+        var planner = FixedRoutePlanner.enabled(visionPlan("PRIMARY", "primary-model", List.of(), 65536, 1000));
+        var guard = new com.verifiedai.ai.application.AiSpendGuard() {
+            public void reserve(AiExecutionCommand c, AiRoutePlan p, AiRouteTarget t, int n, long amount, long limit) {
+                throw new IllegalStateException("database unavailable");
+            }
+            public void report(AiExecutionCommand c, int n, AiUsage usage, AiProviderFailureClass failure) { }
+        };
+        var gateway = new ConfiguredAiModelGateway(planner, AiCapabilityRegistry.defaults(), List.of(provider),
+            RecordingUsageRecorder.success(), new RecordingMetrics(), CLOCK, guard);
+        var result = gateway.execute(command(AiCapability.VISION_PARSE, null));
+        assertThat(provider.callCount()).isZero();
+        assertThat(result.failureClass()).isEqualTo(AiProviderFailureClass.LEDGER_UNAVAILABLE);
+    }
+
+    @Test
+    void fallbackReceivesOnlyRemainingDeadline() {
+        var first = failingProvider("PRIMARY", AiProviderFailureClass.TIMEOUT, true, 5);
+        var fallback = successfulProvider("FALLBACK");
+        var plan = visionPlan("PRIMARY", "primary-model", List.of(new AiRouteTarget("FALLBACK", "fallback-model")), 65536, 1000);
+        var result = gateway(FixedRoutePlanner.enabled(plan), first, fallback).execute(command(AiCapability.VISION_PARSE, null));
+        assertThat(result.succeeded()).isTrue();
+        assertThat(fallback.lastTimeout).isLessThan(first.lastTimeout);
+    }
+
     private static ConfiguredAiModelGateway gateway(
         FixedRoutePlanner planner,
         AiProviderAdapter... providers
@@ -662,7 +735,11 @@ final class ConfiguredAiModelGatewayTest {
             List.of(providers),
             usageRecorder,
             metrics,
-            CLOCK
+            CLOCK,
+            new com.verifiedai.ai.application.AiSpendGuard() {
+                public void reserve(AiExecutionCommand c, AiRoutePlan p, AiRouteTarget t, int n, long ceiling, long limit) { }
+                public void report(AiExecutionCommand c, int n, AiUsage u, AiProviderFailureClass f) { }
+            }
         );
     }
 
@@ -961,6 +1038,11 @@ final class ConfiguredAiModelGatewayTest {
         }
 
         @Override
+        public long attemptCeiling(AiRoutePlan plan, AiRouteTarget target) {
+            return Math.min(100, plan.maxCostMicros());
+        }
+
+        @Override
         public Map<AiCapability, AiRoutePolicy>
         policies() {
             return policies;
@@ -1004,6 +1086,7 @@ final class ConfiguredAiModelGatewayTest {
         private final long estimatedCostMicros;
         private final long delayMillis;
         private int callCount;
+        private Duration lastTimeout;
 
         private CountingProvider(
             String providerId,
@@ -1029,6 +1112,9 @@ final class ConfiguredAiModelGatewayTest {
         }
 
         @Override
+        public boolean enforcesCostCeiling() { return true; }
+
+        @Override
         public String providerId() {
             return providerId;
         }
@@ -1044,6 +1130,7 @@ final class ConfiguredAiModelGatewayTest {
             AiProviderRequest request
         ) {
             callCount++;
+            lastTimeout = request.attemptTimeout();
             sleep();
 
             if (failureClass != null) {

@@ -14,6 +14,9 @@ public interface AiProviderAdapter {
         AiProviderRequest request
     );
 
+    /** Must enforce this upper bound at the provider, including failed/timeout charges. */
+    default boolean enforcesCostCeiling() { return false; }
+
     default boolean supports(
         AiCapability capability
     ) {

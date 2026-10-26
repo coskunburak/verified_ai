@@ -1,5 +1,8 @@
 package com.verifiedai.ai.infrastructure.configuration;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.verifiedai.ai.application.ArtifactIntegrity;
 import com.verifiedai.ai.application.OutputSchemaArtifact;
 import com.verifiedai.ai.application.OutputSchemaArtifactResolver;
 import com.verifiedai.ai.application.OutputSchemaRegistryEntry;
@@ -48,11 +51,34 @@ final class ClasspathOutputSchemaArtifactResolver
             readBounded(resource, schema, prompt);
 
         validateUtf8(bytes, schema, prompt);
+        ArtifactIntegrity.verify(bytes, schema.contentSha256());
+        validateContract(bytes, schema, prompt);
 
         return new OutputSchemaArtifact(
             path,
             bytes.length
         );
+    }
+
+    private static void validateContract(
+        byte[] bytes, OutputSchemaRegistryEntry schema, PromptRegistryEntry prompt
+    ) {
+        try {
+            JsonNode root = new ObjectMapper()
+                .enable(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
+                .enable(com.fasterxml.jackson.core.JsonParser.Feature.STRICT_DUPLICATE_DETECTION)
+                .readTree(bytes);
+            if (root == null || !root.isObject()
+                || !schema.schemaId().equals(root.path("$id").asText())
+                || !schema.schemaVersion().equals(
+                    root.path("properties").path("schemaVersion").path("const").asText())) {
+                throw failure(PromptRegistryFailureCode.AI_SCHEMA_CONTRACT_MISMATCH,
+                    schema, prompt, "AI schema identity does not match registry");
+            }
+        } catch (IOException exception) {
+            throw failure(PromptRegistryFailureCode.AI_SCHEMA_CONTRACT_MISMATCH,
+                schema, prompt, "AI schema artifact is not valid JSON");
+        }
     }
 
     private static void validatePath(
@@ -69,7 +95,7 @@ final class ClasspathOutputSchemaArtifactResolver
                 || path.contains(":")
                 || path.contains("//")
                 || !path.startsWith("schemas/")
-                || !path.endsWith(".json")
+                || !path.matches("schemas/[a-z][a-z0-9.-]*\\.json")
         ) {
             throw failure(
                 PromptRegistryFailureCode

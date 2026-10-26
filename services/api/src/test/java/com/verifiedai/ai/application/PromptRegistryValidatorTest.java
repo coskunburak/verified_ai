@@ -63,12 +63,10 @@ final class PromptRegistryValidatorTest {
                     .defaults()
                     .require(capability);
 
-            assertThatCode(() ->
-                registry.require(
-                    descriptor.defaultPromptId(),
-                    "v001"
-                )
-            ).doesNotThrowAnyException();
+            PromptRegistryEntry entry = registry.require(descriptor.defaultPromptId(), "v001");
+            assertThat(entry.capability()).isEqualTo(capability);
+            assertThat(entry.outputSchemaVersion()).isEqualTo(descriptor.defaultSchemaVersion());
+            assertThat(entry.compatibleRoutePolicyVersion()).isEqualTo(descriptor.defaultRoutePolicyVersion());
         }
     }
 
@@ -405,12 +403,18 @@ final class PromptRegistryValidatorTest {
                     new OutputSchemaRegistryEntry(
                         "problem-classification-v1",
                         "schemas/problem-classification.schema.json",
-                        "ai-platform"
+                        "ai-platform",
+                        "urn:verified-ai:problem-classification:v1",
+                        OutputSemanticContract.PROBLEM_CLASSIFICATION,
+                        "a".repeat(64)
                     ),
                     new OutputSchemaRegistryEntry(
                         "problem-classification-v1",
                         "schemas/other.schema.json",
-                        "ai-platform"
+                        "ai-platform",
+                        "urn:verified-ai:problem-classification:v1",
+                        OutputSemanticContract.PROBLEM_CLASSIFICATION,
+                        "a".repeat(64)
                     )
                 )
             ),
@@ -497,7 +501,8 @@ final class PromptRegistryValidatorTest {
             capability,
             routePolicyVersion,
             capability.name().toLowerCase(Locale.ROOT) + "-default-v1",
-            new AiRouteTarget("OPENAI", "model-v1"),
+            new AiRouteTarget(releaseStage == AiRoutePlan.ReleaseStage.LOCAL_ONLY
+                ? "LOCAL_FIXTURE" : "TEST_PROVIDER", "model-v1"),
             List.of(),
             promptId,
             promptVersion,
@@ -534,10 +539,21 @@ final class PromptRegistryValidatorTest {
             "prompts/" + promptId + "/" + promptVersion + ".md",
             releaseStage,
             "evaluations/baselines/production-ingestion-v1.json",
-            "CONNECTED_PROVIDER_EVAL_BLOCKED_NO_APPROVED_PROVIDER_ROUTE",
+            "evaluations/reports/test-release.json",
             List.of("safe note"),
             routePolicyVersion,
-            PromptTrainingEligibility.NOT_ELIGIBLE
+            PromptTrainingEligibility.NOT_ELIGIBLE,
+            "a".repeat(64),
+            releaseStage == PromptReleaseStage.PRODUCTION || releaseStage == PromptReleaseStage.STAGING
+                ? new PromptReleaseApproval(
+                    "a".repeat(64),
+                    OutputSchemaRegistry.defaults().require(schemaVersion).contentSha256(),
+                    "evaluations/baselines/production-ingestion-v1.json",
+                    "evaluations/reports/test-release.json",
+                    "docs/approvals/test-release.md",
+                    "test-reviewer",
+                    java.time.Instant.parse("2026-01-01T00:00:00Z")
+                ) : null
         );
     }
 

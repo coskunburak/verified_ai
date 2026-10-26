@@ -21,10 +21,13 @@ class AiUsageLifecycleContributor
     private final AiUsageRecordJpaRepository
         repository;
 
+    private final org.springframework.jdbc.core.JdbcTemplate jdbc;
+
     AiUsageLifecycleContributor(
-        AiUsageRecordJpaRepository repository
+        AiUsageRecordJpaRepository repository, org.springframework.jdbc.core.JdbcTemplate jdbc
     ) {
         this.repository = repository;
+        this.jdbc = jdbc;
     }
 
     @Override
@@ -60,6 +63,7 @@ class AiUsageLifecycleContributor
         UUID userId,
         Instant now
     ) {
+        jdbc.update("UPDATE ai_spend_accounts SET user_id = NULL, account_key = 'ANON:' || gen_random_uuid()::text WHERE user_id = ?", userId);
         repository.anonymizeUser(
             userId
         );

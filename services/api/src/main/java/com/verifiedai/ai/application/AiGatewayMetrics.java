@@ -32,6 +32,8 @@ public interface AiGatewayMetrics {
         String outcome
     );
 
+    default void attempt(AiRoutePlan plan, AiRouteTarget target, String outcome, long committedMicros) { }
+
     static AiGatewayMetrics noOp() {
         return new AiGatewayMetrics() {
 

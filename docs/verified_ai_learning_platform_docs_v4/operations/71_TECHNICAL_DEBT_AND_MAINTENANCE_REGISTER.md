@@ -38,9 +38,60 @@ This register captures known non-blocking technical debt so it is not lost in ch
 | TD-AI-005 | P2 | Protected ingestion holdout | Sprint 4.10 adds the holdout contract and checksum-aware blocked path, but the restricted protected-holdout payload is not present in the workspace and must not be committed to the public repo. | `CAP-PROBLEM-006` and global `CAP-EVAL-001` cannot claim protected-holdout PASS. The local deterministic baseline remains useful for regression control but is not a production-quality accuracy claim. | AI evaluation / privacy owner | When restricted storage, access policy, data lineage, and non-training eligibility records are available for protected evaluation assets. | Launch readiness / Sprint 5.12 | Open |
 | TD-MATH-001 | P2 | Legacy verifier string endpoint | Sprint 4.6 introduces typed `verifier-input-v1` validation as the production handoff contract, but the internal `/internal/v1/verify/equivalence` compatibility endpoint still accepts guarded expression strings for earlier Phase 2 tests. | Later verification work must avoid routing canonical OCR/LLM text through the legacy string path; otherwise parser safety could drift from the typed AST contract. | Verification owner | Before Sprint 5.8 deterministic algebra verification expands beyond compatibility tests. | Phase 5 | Open |
 
+## Sprint 5.2 evidence follow-up
+
+`CAP-AI-002` / `REQ-AI-003`: current acceptance is `PARTIAL`. Owner-run Group A is
+`VERIFIED_PASS` (2026-10-26, 57 tests, zero failures/errors/skips). Group B is
+`VERIFIED_PASS` from owner logs: immutability 5/5, base comparison, docs/contracts,
+fixed secret-scanner regression 7/7 and actual scan. Group C: 34 Java tests and local evaluation 18/18 (13 critical, zero regressions) are
+`VERIFIED_PASS`; the initial Docker blocker was resolved and the owner rerun passed all
+23 integration tests in three classes (2026-10-26T00:18:15+03:00, zero failures/errors/skips). Group D local acceptance is `VERIFIED_PASS` across combined owner runs: initial 284 API passes plus S3 recovery 1/1, Make image/docs/contracts/secrets passed, verifier 20/20 and iOS TEST SUCCEEDED at 00:31:48+03:00. No single uninterrupted full-gate pass is claimed. Runtime digests and approval bindings plus a base-revision CI gate
+are implemented; required hosted branch protection/CODEOWNERS enforcement is
+`BLOCKED_EXTERNAL` until the repository owner supplies settings evidence. Owner: AI/platform.
+Resolve before production prompt promotion. Existing TD-AI-001 through TD-AI-005 still govern
+connected-provider and holdout evidence; local fixture results cannot close those items.
+Sprint 5.1 implementation exists but its standalone execution report/log evidence is absent;
+CAP-AI-001 remains Partial. This evidence gap does not block local Sprint 5.2 implementation.
+
+## MinIO test dependency recovery
+
+Owner full API regression could not pull the pinned 2024 MinIO image, and no approved
+cached/mirror image exists. `infra/local/minio-test/Dockerfile` preserves the upstream
+release commit for local test recovery; owner build and S3 test passed (1/1).
+Make/CI now build and explicitly select this image; owner Make image target passed
+(0.7s, cached). Hosted CI and integrated make test-api wrapper execution remain unverified;
+the underlying build and explicit Maven invocation have owner evidence.
+Compose still references the unavailable upstream image and needs separate local-stack
+recovery. Owner: platform. Before production use, select a maintained storage/test dependency and approved
+image provenance; this old source and Go toolchain are not a production recommendation.
+
 ## Debt Rules
 
 - A P0/P1 debt item cannot be carried across a phase boundary without an explicit exception in that phase's execution report.
 - A debt item that affects a V1-required capability must reference the relevant capability ID from `roadmap/68_PRODUCTION_V1_CAPABILITY_COVERAGE_MATRIX.md` before implementation begins.
 - Dependency debt must include upgrade, pin, replacement, or removal strategy before Production V1 launch if it affects runtime code.
 - Debt that becomes a security/privacy issue moves to security handling immediately.
+
+## Sprint 5.3 rollout prerequisites
+
+CAP-AI-003 / REQ-AI-004 remain Partial for production rollout; owner local acceptance A–E is VERIFIED_PASS.
+Owner Group A passed on 2026-10-26: 42 tests, zero failures/errors/skips, BUILD SUCCESS.
+Owner Group B passed on 2026-10-26: 16 tests, zero failures/errors/skips, BUILD SUCCESS.
+Owner Group C passed on 2026-10-26: 69 Java tests, zero failures/errors/skips, BUILD SUCCESS;
+local ingestion evaluation PASS (18 cases, 13 critical, no regressions).
+Owner Group D passed on 2026-10-26: immutability, scanner regression 7/7,
+documentation (278 Markdown files), contracts and secret scan. Group E passed on 2026-10-26: make check, API 310 tests with zero failures/errors/skips,
+verifier 20/20 and iOS TEST SUCCEEDED (11:40:02+03:00).
+Default paid budgets are zero; health evidence UNKNOWN blocks real routes. Platform
+owner must provide actual telemetry/circuit recovery, provider charge/deadline guarantees,
+business caps, invoice reconciliation/refund audit and data-retention approval before
+paid rollout. SQL commitment and concurrency tests passed in owner Group B; production invoice
+reconciliation and provider charge guarantees remain external prerequisites.
+Model research is provisional; mathematical/Turkish quality and throughput remain unknown.
+No paid provider, future SOLVE, training, self-hosting or production rollout activated.
+
+Accepted Group E logs also contain Netty/Lettuce listener notification errors with
+RejectedExecutionException (event executor terminated). Test outcomes passed; investigate
+Redis client/executor lifecycle separately before inferring production impact or root cause.
+Verifier test-client/httpx deprecation is a dependency-maintenance follow-up; no dependency
+change was made as part of acceptance. These observations do not invalidate the passing gates.
