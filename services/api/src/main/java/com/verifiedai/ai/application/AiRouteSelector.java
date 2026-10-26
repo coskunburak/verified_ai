@@ -9,11 +9,14 @@ import java.util.Set;
 /** Restrictions are intersected; ties are stable, and no rejected route becomes a fallback. */
 public final class AiRouteSelector {
     private static final Set<AiCapability> EXECUTABLE = Set.of(
-        AiCapability.VISION_PARSE, AiCapability.PROBLEM_NORMALIZE, AiCapability.PROBLEM_CLASSIFY);
+        AiCapability.VISION_PARSE, AiCapability.PROBLEM_NORMALIZE, AiCapability.PROBLEM_CLASSIFY, AiCapability.SOLVE);
 
     public List<AiRouteEligibility> select(AiRouteContext context, String trustedTier,
         List<AiRouteEligibility> candidates, AiProviderHealth health, Instant now, Duration healthMaxAge) {
-        if (!EXECUTABLE.contains(context.capability()) || context.routeRole() != AiRouteContext.RouteRole.DEFAULT) {
+        if (!EXECUTABLE.contains(context.capability())
+            || (context.capability() == AiCapability.SOLVE
+                ? context.routeRole() != AiRouteContext.RouteRole.PRIMARY_SOLVER
+                : context.routeRole() != AiRouteContext.RouteRole.DEFAULT)) {
             throw blocked(AiProviderFailureClass.CONFIGURATION_DISABLED);
         }
         if (Boolean.TRUE.equals(context.parserReviewRequired())

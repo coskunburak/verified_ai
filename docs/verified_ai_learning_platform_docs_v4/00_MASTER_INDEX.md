@@ -324,3 +324,8 @@ New canonical governance documents:
 
 Any V1 feature implementation should map to a capability ID and at least one requirement ID before its sprint exits. Post-launch Phase 14+ work must follow the phase expansion policy in `operations/70_RELEASE_TRAINS_AND_BACKLOG_PROMOTION.md`.
 <!-- PROGRAM_GOVERNANCE_V5:END -->
+
+## Sprint 5.4 implementation evidence
+
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_IMPLEMENTATION_MAP.md` — primary candidate contracts, lifecycle, privacy, rollback and handoff.
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_EXECUTION_REPORT.md` — owner-only test stages and blocked live model evidence.

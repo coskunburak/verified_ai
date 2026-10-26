@@ -7,8 +7,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 
 REQUIRED_CONTRACTS = {
+    "packages/schemas/solution-candidate.schema.json": [
+        "solution-candidate-v1", "canonicalProblemId", "derivedRestrictionIds", "finalAnswer",
+    ],
     "packages/contracts/openapi/public-api.yaml": [
         "/api/v1/platform/health",
+        "/api/v1/problem-sessions/{sessionId}/solves",
+        "PrimarySolveResponse",
         "/api/v1/platform/readiness",
         "ProblemDetails",
     ],

@@ -60,6 +60,9 @@ public final class OutputSchemaRegistry {
     public static OutputSchemaRegistry defaults() {
         return new OutputSchemaRegistry(
             List.of(
+                new OutputSchemaRegistryEntry("solution-candidate-v1", "schemas/solution-candidate.schema.json",
+                    "ai-platform", "urn:verified-ai:solution-candidate:v1", OutputSemanticContract.SOLUTION_CANDIDATE,
+                    "c6ce80a2deb04b5aaf991cd23ad053b0210bd1d92491649f06716110fe0adb06"),
                 new OutputSchemaRegistryEntry(
                     "recognition-evidence-v1",
                     "schemas/recognition-evidence.schema.json",

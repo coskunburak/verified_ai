@@ -1,6 +1,10 @@
 package com.verifiedai.sharedkernel.error;
 
 public enum ApiErrorCode {
+    SOLVE_DISABLED,
+    SOLVE_SOURCE_NOT_READY,
+    SOLVE_STATE_CONFLICT,
+    SOLVE_RETRY_LIMIT,
     INTERNAL_ERROR,
     METHOD_NOT_ALLOWED,
     TEMPORARY_UNAVAILABLE,

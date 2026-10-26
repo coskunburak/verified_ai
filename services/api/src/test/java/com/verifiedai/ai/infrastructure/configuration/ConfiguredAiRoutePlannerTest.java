@@ -101,7 +101,7 @@ final class ConfiguredAiRoutePlannerTest {
     }
 
     @Test
-    void futureSolveCapabilityCannotBeEnabled() {
+    void unapprovedSolveCapabilityCannotBeEnabled() {
         assertThatThrownBy(() ->
             planner(
                 disabledVision(),
@@ -124,7 +124,7 @@ final class ConfiguredAiRoutePlannerTest {
                 "SOLVE"
             )
             .hasMessageContaining(
-                "cannot be enabled"
+                "SOLVE activation blocked"
             );
     }
 

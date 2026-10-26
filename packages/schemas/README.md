@@ -20,3 +20,10 @@ for the three executable AI output schemas. Startup checks these bindings, while
 problem-module validators still validate responses. Backend CI rejects in-place modifications
 to these V1 schema files. Add a new version/path and explicit validator compatibility for upgrades;
 retain old schemas for stored-output interpretation. Schema validity is not mathematical verification.
+
+## Primary solver candidate (Sprint 5.4)
+
+`solution-candidate.schema.json` defines `solution-candidate-v1`: bounded unverified public steps, typed
+final answer, exact source identity and canonical assumption/restriction references. It never replaces
+canonical-problem-v1 or verifier-input-v1 and cannot authorize VERIFIED. Java shape/safety validation is
+owned by solving; independent owner-only schema fixtures live in `evaluations/fixtures/solver`.

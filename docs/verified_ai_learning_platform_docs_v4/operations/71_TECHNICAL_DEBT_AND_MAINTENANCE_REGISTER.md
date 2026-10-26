@@ -95,3 +95,15 @@ RejectedExecutionException (event executor terminated). Test outcomes passed; in
 Redis client/executor lifecycle separately before inferring production impact or root cause.
 Verifier test-client/httpx deprecation is a dependency-maintenance follow-up; no dependency
 change was made as part of acceptance. These observations do not invalidate the passing gates.
+
+## Sprint 5.4 activation and acceptance gates
+
+Primary solver foundation is LOCAL_IMPLEMENTATION_ACCEPTED; owner A–E passed (E completion inferred
+from sequential make check reaching iOS success). Real model activation
+is BLOCKED_MODEL_DECISION / BLOCKED_EXTERNAL_PROVIDER_EVIDENCE. Exact deployment license/privacy,
+health/charge/transport bounds, governed prompt approval, real evaluation and business quotas remain
+prerequisites. Default SOLVE/service/worker are disabled. Only a test-source fixture is implemented.
+OUTCOME_UNKNOWN is retained for operator review, never automatically replayed/refunded. General solution
+sets and richer claims need additive future schemas; no existing canonical contract is broadened.
+Owner: platform/AI maintainer; local runtime gate closed with owner A–E, model gate only after explicit reviewed
+activation and independent evaluation. Monitoring and rollback are documented in the 5.4 implementation map.

@@ -4,6 +4,242 @@ info:
   version: 0.1.0
 
 paths:
+  /api/v1/problem-sessions/{sessionId}/solves:
+    post:
+      summary: Queue a primary unverified solution candidate
+      description: >
+        Feature disabled by default. Only the selected accepted canonical parse is authoritative.
+        No client model, expression, entitlement or verification fields are accepted. Historical
+        candidate reads are marked STALE after source changes. Cancellation fences persistence;
+        it does not promise cancellation or refund of an already dispatched provider call.
+        OUTCOME_UNKNOWN is not automatically retried. Maximum three explicit runs per canonical source.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema: {type: string, format: uuid}
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema: {type: string, pattern: '^[A-Za-z0-9_-]{8,128}$'}
+      responses:
+        "202":
+          description: Unverified solve lifecycle snapshot
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrimarySolveResponse"
+        "400":
+          description: Missing or invalid idempotency key
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Account or entitlement unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Owned resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "409":
+          description: SOLVE_DISABLED, SOLVE_SOURCE_NOT_READY, SOLVE_STATE_CONFLICT, SOLVE_RETRY_LIMIT, PROBLEM_UNSUPPORTED or IDEMPOTENCY_KEY_REUSED
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/problem-sessions/{sessionId}/solves/{jobId}:
+    get:
+      summary: Read an owned solve job and optional unverified candidate
+      description: >
+        Feature disabled by default. Only the selected accepted canonical parse is authoritative.
+        No client model, expression, entitlement or verification fields are accepted. Historical
+        candidate reads are marked STALE after source changes. Cancellation fences persistence;
+        it does not promise cancellation or refund of an already dispatched provider call.
+        OUTCOME_UNKNOWN is not automatically retried. Maximum three explicit runs per canonical source.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema: {type: string, format: uuid}
+        - name: jobId
+          in: path
+          required: true
+          schema: {type: string, format: uuid}
+      responses:
+        "200":
+          description: Unverified solve lifecycle snapshot
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrimarySolveResponse"
+        "400":
+          description: Missing or invalid idempotency key
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Account or entitlement unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Owned resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "409":
+          description: SOLVE_DISABLED, SOLVE_SOURCE_NOT_READY, SOLVE_STATE_CONFLICT, SOLVE_RETRY_LIMIT, PROBLEM_UNSUPPORTED or IDEMPOTENCY_KEY_REUSED
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/problem-sessions/{sessionId}/solves/{jobId}/retry:
+    post:
+      summary: Explicitly retry a retryable solve job with a new idempotency key
+      description: >
+        Feature disabled by default. Only the selected accepted canonical parse is authoritative.
+        No client model, expression, entitlement or verification fields are accepted. Historical
+        candidate reads are marked STALE after source changes. Cancellation fences persistence;
+        it does not promise cancellation or refund of an already dispatched provider call.
+        OUTCOME_UNKNOWN is not automatically retried. Maximum three explicit runs per canonical source.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema: {type: string, format: uuid}
+        - name: jobId
+          in: path
+          required: true
+          schema: {type: string, format: uuid}
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema: {type: string, pattern: '^[A-Za-z0-9_-]{8,128}$'}
+      responses:
+        "202":
+          description: Unverified solve lifecycle snapshot
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrimarySolveResponse"
+        "400":
+          description: Missing or invalid idempotency key
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Account or entitlement unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Owned resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "409":
+          description: SOLVE_DISABLED, SOLVE_SOURCE_NOT_READY, SOLVE_STATE_CONFLICT, SOLVE_RETRY_LIMIT, PROBLEM_UNSUPPORTED or IDEMPOTENCY_KEY_REUSED
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/problem-sessions/{sessionId}/solves/{jobId}/cancel:
+    post:
+      summary: Cancel promotion of an owned queued or running solve
+      description: >
+        Feature disabled by default. Only the selected accepted canonical parse is authoritative.
+        No client model, expression, entitlement or verification fields are accepted. Historical
+        candidate reads are marked STALE after source changes. Cancellation fences persistence;
+        it does not promise cancellation or refund of an already dispatched provider call.
+        OUTCOME_UNKNOWN is not automatically retried. Maximum three explicit runs per canonical source.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema: {type: string, format: uuid}
+        - name: jobId
+          in: path
+          required: true
+          schema: {type: string, format: uuid}
+      responses:
+        "200":
+          description: Unverified solve lifecycle snapshot
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrimarySolveResponse"
+        "400":
+          description: Missing or invalid idempotency key
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Account or entitlement unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Owned resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "409":
+          description: SOLVE_DISABLED, SOLVE_SOURCE_NOT_READY, SOLVE_STATE_CONFLICT, SOLVE_RETRY_LIMIT, PROBLEM_UNSUPPORTED or IDEMPOTENCY_KEY_REUSED
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
   /api/v1/problem-sessions:
     get:
       summary: List problem session history
@@ -1455,6 +1691,31 @@ components:
       bearerFormat: JWT
 
   schemas:
+    PrimarySolveResponse:
+      type: object
+      additionalProperties: false
+      required: [jobId, canonicalProblemId, problemParseId, problemParseRevision, attempt, state, createdAt, verificationNotice]
+      properties:
+        jobId: {type: string, format: uuid}
+        canonicalProblemId: {type: string, format: uuid}
+        problemParseId: {type: string, format: uuid}
+        problemParseRevision: {type: integer, minimum: 1}
+        attempt: {type: integer, minimum: 1, maximum: 3}
+        state:
+          type: string
+          enum: [QUEUED, RUNNING, GENERATED_UNVERIFIED, REVIEW_REQUIRED, RETRYABLE_FAILURE, TERMINAL_FAILURE, POLICY_BLOCKED, UNSUPPORTED, STALE, CANCELLED, OUTCOME_UNKNOWN]
+        failureCode: {type: [string, 'null']}
+        createdAt: {type: string, format: date-time}
+        candidate:
+          oneOf:
+            - $ref: '../../schemas/solution-candidate.schema.json'
+            - type: 'null'
+        provider: {type: [string, 'null']}
+        model: {type: [string, 'null']}
+        promptVersion: {type: [string, 'null']}
+        routePolicyVersion: {type: [string, 'null']}
+        verificationNotice:
+          const: 'AI-generated candidate; mathematical verification has not been performed.'
     ProblemSessionHistoryResponse:
       type: object
       additionalProperties: false

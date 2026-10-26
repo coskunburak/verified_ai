@@ -1,7 +1,9 @@
 package com.verifiedai.ai.application;
 
-/** Ownership identifiers only. Validation remains in the problem module. */
+/** Ownership identifiers only. Validation remains in the owning problem or solving module. */
 public enum OutputSemanticContract {
+    SOLUTION_CANDIDATE(AiCapability.SOLVE, "solution-candidate-v1",
+        "solving.application.SolutionCandidateValidator"),
     RECOGNITION_EVIDENCE(AiCapability.VISION_PARSE, "recognition-evidence-v1",
         "problem.application.recognition.RecognitionEvidenceNormalizer"),
     PROBLEM_PARSE(AiCapability.PROBLEM_NORMALIZE, "problem-parse-v1",

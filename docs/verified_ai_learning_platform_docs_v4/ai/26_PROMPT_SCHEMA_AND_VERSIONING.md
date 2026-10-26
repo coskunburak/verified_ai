@@ -172,3 +172,11 @@ Unknown/missing versions, digest mismatches, invalid references and incompatible
 startup before usage reservation or provider invocation. There is no latest/default fallback,
 paid retry, successful student answer or VERIFIED outcome for these failures. Unsupported
 providers remain rejected by the existing gateway startup validation.
+
+## Sprint 5.4 solver artifacts
+
+`solver/v001` and `solution-candidate-v1` are new digest-pinned LOCAL_ONLY artifacts with no production
+approval. The semantic owner is `solving.application.SolutionCandidateValidator`. The contract binds exact
+canonical/parse IDs, safe AST claims and preserved source restriction IDs; it forbids authoritative
+verification fields and hidden reasoning. Old prompt/schema bytes are unchanged. Owner tests/evaluation
+are pending; any live promotion needs real model and governed release evidence, not fixture success.

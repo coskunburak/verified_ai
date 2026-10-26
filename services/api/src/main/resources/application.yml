@@ -42,6 +42,9 @@ management:
     tags:
       service: verified-ai-api
 app:
+  solving:
+    enabled: false
+    worker-enabled: false
   environment: ${APP_ENV:local}
   ai:
     routing:

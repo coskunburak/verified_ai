@@ -59,6 +59,11 @@ public final class PromptRegistry {
     public static PromptRegistry defaults() {
         return new PromptRegistry(
             List.of(
+                new PromptRegistryEntry("solver", "v001", AiCapability.SOLVE, "ai-platform",
+                    "solution-candidate-v1", "prompts/solver/v001.md", PromptReleaseStage.LOCAL_ONLY,
+                    "evaluations/fixtures/solver", "BLOCKED_MODEL_DECISION",
+                    List.of("no verification claims", "no hidden reasoning", "preserve canonical lineage"),
+                    "solve-route-v1", PromptTrainingEligibility.NOT_ELIGIBLE, "2ba2e16b9cdc782e19e337469daab02d7da0cac5ac04ea046da4cdd26645a32e", null),
                 new PromptRegistryEntry(
                     "vision-recognition",
                     "v001",

@@ -55,7 +55,8 @@ final class PromptRegistryValidatorTest {
             List.of(
                 AiCapability.VISION_PARSE,
                 AiCapability.PROBLEM_NORMALIZE,
-                AiCapability.PROBLEM_CLASSIFY
+                AiCapability.PROBLEM_CLASSIFY,
+                AiCapability.SOLVE
             )
         ) {
             AiCapabilityDescriptor descriptor =

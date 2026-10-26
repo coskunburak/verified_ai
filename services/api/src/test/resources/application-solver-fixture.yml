@@ -1,0 +1,30 @@
+app:
+  environment: test
+  solving:
+    enabled: true
+    worker-enabled: false
+  ai:
+    usage-ledger:
+      enabled: true
+    capabilities:
+      SOLVE:
+        enabled: true
+        route-policy-version: solve-route-v1
+        route-id: solve-local-test-v1
+        primary:
+          provider: LOCAL_FIXTURE
+          model: local-fixture-solver-v1
+        prompt-id: solver
+        prompt-version: v001
+        schema-version: solution-candidate-v1
+        timeout: 30s
+        max-attempts: 1
+        max-response-bytes: 65536
+        max-cost-micros: 0
+        pricing-version: solver-fixture-free-v1
+        cache-policy: DISABLED
+        streaming-policy: DISABLED
+        provider-retention-policy: NO_TRAINING_BY_DEFAULT
+        privacy-region: LOCAL_TEST
+        circuit-breaker-key: solve-local-fixture
+        release-stage: LOCAL_ONLY

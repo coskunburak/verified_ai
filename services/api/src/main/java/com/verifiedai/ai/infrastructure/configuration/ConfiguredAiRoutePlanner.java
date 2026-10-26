@@ -34,11 +34,11 @@ final class ConfiguredAiRoutePlanner
     implements AiRoutePlanner {
 
     private static final EnumSet<AiCapability>
-        SPRINT_5_1_EXECUTABLE_CAPABILITIES =
+        EXECUTABLE_CAPABILITIES =
         EnumSet.of(
             AiCapability.VISION_PARSE,
             AiCapability.PROBLEM_NORMALIZE,
-            AiCapability.PROBLEM_CLASSIFY
+            AiCapability.PROBLEM_CLASSIFY, AiCapability.SOLVE
         );
 
     private final Map<AiCapability, AiRoutePolicy> policies;
@@ -161,7 +161,7 @@ final class ConfiguredAiRoutePlanner
 
             if (
                 configured.enabled()
-                    && !SPRINT_5_1_EXECUTABLE_CAPABILITIES
+                    && !EXECUTABLE_CAPABILITIES
                     .contains(capability)
             ) {
                 throw new IllegalStateException(
@@ -172,7 +172,18 @@ final class ConfiguredAiRoutePlanner
                 );
             }
 
-            if (SPRINT_5_1_EXECUTABLE_CAPABILITIES.contains(capability)) {
+            if (capability == AiCapability.SOLVE && configured.enabled()) {
+                // No approved external model exists. A local-only test route is the sole activation path.
+                boolean local = "local".equalsIgnoreCase(environment) || "test".equalsIgnoreCase(environment);
+                if (!local || !generic.usageLedger().enabled() || configured.primary() == null
+                    || !"LOCAL_FIXTURE".equals(configured.primary().provider())
+                    || !"local-fixture-solver-v1".equals(configured.primary().model())
+                    || !configured.fallbacks().isEmpty() || configured.maxCostMicros()!=0
+                    || configured.releaseStage()!=AiRoutePlan.ReleaseStage.LOCAL_ONLY) {
+                    throw new IllegalStateException("SOLVE activation blocked: no approved production model");
+                }
+            }
+            if (EXECUTABLE_CAPABILITIES.contains(capability)) {
                 if (!configured.enabled()) {
                     built.put(capability, AiRoutePolicy.disabled(capability));
                 } else {
@@ -186,13 +197,9 @@ final class ConfiguredAiRoutePlanner
                 }
             }
 
-            /*
-             * Sprint 5.1 only allows explicit disabling of future
-             * capabilities. Existing capabilities continue through
-             * the backwards-compatible Phase 4 configuration.
-             */
+            // Unrelated future capabilities retain their owning-sprint activation gate.
             if (
-                !SPRINT_5_1_EXECUTABLE_CAPABILITIES
+                !EXECUTABLE_CAPABILITIES
                     .contains(capability)
             ) {
                 built.put(
@@ -235,6 +242,7 @@ final class ConfiguredAiRoutePlanner
                 if (entries.stream().anyMatch(c -> c.capability() == plan.capability() && c.target().equals(target))) continue;
                 if ("LOCAL_FIXTURE".equals(target.provider())) {
                     String fixtureModel = switch (plan.capability()) {
+                        case SOLVE -> "local-fixture-solver-v1";
                         case VISION_PARSE -> "local-fixture-vision-v1";
                         case PROBLEM_NORMALIZE -> "local-fixture-problem-parser-v1";
                         case PROBLEM_CLASSIFY -> "local-fixture-problem-classifier-v1";
@@ -244,7 +252,8 @@ final class ConfiguredAiRoutePlanner
                         throw new IllegalStateException("Unknown local fixture model requires explicit eligibility");
                     }
                     entries.add(new AiRouteEligibility(plan.capability(), target, "local-fixture-only-v1", 0,
-                        Duration.ofMillis(1), Set.of("UNKNOWN"), Set.of("UNKNOWN", "EASY", "MEDIUM", "HARD"),
+                        Duration.ofMillis(1), plan.capability() == AiCapability.SOLVE
+                            ? Set.of("EVALUATE", "SIMPLIFY", "SOLVE_EQUATION", "SOLVE_INEQUALITY") : Set.of("UNKNOWN"), Set.of("UNKNOWN", "EASY", "MEDIUM", "HARD"),
                         Set.of("FREE", "PRO", "PRO_PLUS"), plan.privacyRegion(), plan.providerRetentionPolicy(), true));
                 } else if (!"UNAVAILABLE".equals(target.provider())) {
                     throw new IllegalStateException("Enabled remote model requires explicit eligibility");
