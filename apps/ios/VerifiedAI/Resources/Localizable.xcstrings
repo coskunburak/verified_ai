@@ -1,6 +1,1366 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+  "solve.title": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Solution"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Çözüm"
+        }
+      }
+    }
+  },
+  "solve.start": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Solve Problem"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Problemi Çöz"
+        }
+      }
+    }
+  },
+  "solve.close": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Back to Session"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Oturuma Dön"
+        }
+      }
+    }
+  },
+  "solve.fixture": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Development fixture · Not real model inference"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Geliştirme örneği · Gerçek model çıkarımı değildir"
+        }
+      }
+    }
+  },
+  "solve.progress": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Solution in progress"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Çözüm sürüyor"
+        }
+      }
+    }
+  },
+  "solve.ready": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Ready to request a solution"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Çözüm isteği göndermeye hazır"
+        }
+      }
+    }
+  },
+  "solve.loading": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Checking existing solution"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Mevcut çözüm kontrol ediliyor"
+        }
+      }
+    }
+  },
+  "solve.pending": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "A request may already have reached the server. Recover it with the same request identity."
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "İstek sunucuya ulaşmış olabilir. Aynı istek kimliğiyle kurtarın."
+        }
+      }
+    }
+  },
+  "solve.pollPaused": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Automatic status checks paused. Refresh to check this job again."
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Otomatik durum takibi duraklatıldı. Bu işi yeniden kontrol etmek için durumu yenileyin."
+        }
+      }
+    }
+  },
+  "solve.unverified": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "AI-generated solution — mathematical correctness has not been independently verified."
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Yapay zekâ tarafından oluşturulan çözüm. Matematiksel doğruluğu henüz bağımsız olarak doğrulanmadı."
+        }
+      }
+    }
+  },
+  "solve.proposedAnswer": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Proposed answer"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Önerilen cevap"
+        }
+      }
+    }
+  },
+  "solve.uncertainty": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Needs your attention"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Dikkat gerektiren noktalar"
+        }
+      }
+    }
+  },
+  "solve.steps": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Solution steps"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Çözüm adımları"
+        }
+      }
+    }
+  },
+  "solve.step %lld": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Step %lld"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Adım %lld"
+        }
+      }
+    }
+  },
+  "solve.depends %@": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Uses steps: %@"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Kullanılan adımlar: %@"
+        }
+      }
+    }
+  },
+  "solve.referencesUnavailable": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "This candidate references source assumptions or restrictions. Their text is unavailable in this response; review the original problem."
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Bu aday kaynak varsayımlarına veya kısıtlarına başvuruyor. Metinleri bu yanıtta bulunmuyor; özgün problemi inceleyin."
+        }
+      }
+    }
+  },
+  "solve.details": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Generation details"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Üretim bilgileri"
+        }
+      }
+    }
+  },
+  "solve.metadataNotice": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Model and prompt information is not evidence of mathematical correctness."
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Model ve istem bilgisi matematiksel doğruluk kanıtı değildir."
+        }
+      }
+    }
+  },
+  "solve.retry": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Retry solve"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Çözümü yeniden iste"
+        }
+      }
+    }
+  },
+  "solve.recover": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Recover same request"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Aynı isteği kurtar"
+        }
+      }
+    }
+  },
+  "solve.refresh": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Refresh status"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Durumu yenile"
+        }
+      }
+    }
+  },
+  "solve.cancel": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Cancel request"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "İsteği iptal et"
+        }
+      }
+    }
+  },
+  "solve.review": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Review problem"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Problemi gözden geçir"
+        }
+      }
+    }
+  },
+  "solve.continueSession": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Continue to problem session"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Problem oturumuna devam et"
+        }
+      }
+    }
+  },
+  "solve.error.offline": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Connection unavailable. Reconnect and refresh; no new solve was requested."
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Bağlantı yok. Bağlanıp durumu yenileyin; yeni çözüm istenmedi."
+        }
+      }
+    }
+  },
+  "solve.error.contract": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "The response or recovery record could not be read safely. Refresh status before taking another action."
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Yanıt veya kurtarma kaydı güvenle okunamadı. Başka bir işlemden önce durumu yenileyin."
+        }
+      }
+    }
+  },
+  "solve.error.disabled": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Solving is not enabled in this environment yet."
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Bu ortamda çözüm özelliği henüz etkin değil."
+        }
+      }
+    }
+  },
+  "solve.error.source": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "The problem needs review or preparation before solving."
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Çözümden önce problemin incelenmesi veya hazırlanması gerekiyor."
+        }
+      }
+    }
+  },
+  "solve.error.conflict": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "The request conflicts with an existing job or changed source. Refresh status; do not submit a new request."
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "İstek mevcut işle veya değişen kaynakla çakışıyor. Durumu yenileyin; yeni istek göndermeyin."
+        }
+      }
+    }
+  },
+  "solve.error.limit": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "The allowed solve attempts have been used."
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "İzin verilen çözüm denemeleri kullanıldı."
+        }
+      }
+    }
+  },
+  "solve.error.unsupported": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "This problem is not supported yet."
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Bu problem henüz desteklenmiyor."
+        }
+      }
+    }
+  },
+  "solve.error.auth": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Your session needs authentication. Sign in again to recover the existing job."
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Oturumunuzun kimlik doğrulaması gerekiyor. Mevcut işi kurtarmak için yeniden giriş yapın."
+        }
+      }
+    }
+  },
+  "solve.error.access": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Server access policy does not allow this solve."
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Sunucunun erişim politikası bu çözüme izin vermiyor."
+        }
+      }
+    }
+  },
+  "solve.error.server": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "The request could not be completed. Refresh the existing status before trying again."
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "İstek tamamlanamadı. Yeniden denemeden önce mevcut durumu yenileyin."
+        }
+      }
+    }
+  },
+  "solve.error.connection": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "The connection was interrupted or timed out. The request may have reached the server; refresh or recover the same request."
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Bağlantı kesildi veya zaman aşımına uğradı. İstek sunucuya ulaşmış olabilir; durumu yenileyin veya aynı isteği kurtarın."
+        }
+      }
+    }
+  },
+  "solve.method.ARITHMETIC": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Arithmetic"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Aritmetik"
+        }
+      }
+    }
+  },
+  "solve.method.ALGEBRAIC_TRANSFORMATION": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Algebraic transformation"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Cebirsel dönüşüm"
+        }
+      }
+    }
+  },
+  "solve.method.ISOLATE_VARIABLE": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Isolate the variable"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Değişkeni yalnız bırakma"
+        }
+      }
+    }
+  },
+  "solve.method.INEQUALITY_TRANSFORMATION": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Inequality transformation"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Eşitsizlik dönüşümü"
+        }
+      }
+    }
+  },
+  "solve.state.QUEUED": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Solution requested"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Çözüm istendi"
+        }
+      }
+    }
+  },
+  "solve.detail.QUEUED": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Your request is waiting to be processed."
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "İsteğiniz işleme alınmayı bekliyor."
+        }
+      }
+    }
+  },
+  "solve.state.RUNNING": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Preparing solution"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Çözüm hazırlanıyor"
+        }
+      }
+    }
+  },
+  "solve.detail.RUNNING": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "The server is generating a candidate solution."
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Sunucu bir çözüm adayı oluşturuyor."
+        }
+      }
+    }
+  },
+  "solve.state.GENERATED_UNVERIFIED": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "AI-generated answer"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Yapay zekâ tarafından üretilen cevap"
+        }
+      }
+    }
+  },
+  "solve.detail.GENERATED_UNVERIFIED": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Independent mathematical verification is pending."
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Bağımsız matematiksel doğrulama bekleniyor."
+        }
+      }
+    }
+  },
+  "solve.state.REVIEW_REQUIRED": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Review required"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "İnceleme gerekiyor"
+        }
+      }
+    }
+  },
+  "solve.detail.REVIEW_REQUIRED": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Read the uncertainties before using this proposed answer."
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Önerilen cevabı kullanmadan önce belirsizlikleri inceleyin."
+        }
+      }
+    }
+  },
+  "solve.state.RETRYABLE_FAILURE": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Solution could not be generated"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Çözüm oluşturulamadı"
+        }
+      }
+    }
+  },
+  "solve.detail.RETRYABLE_FAILURE": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "A new attempt is available only within server retry policy."
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Yeni deneme yalnız sunucunun yeniden deneme politikası kapsamında yapılabilir."
+        }
+      }
+    }
+  },
+  "solve.state.TERMINAL_FAILURE": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Solution stopped"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Çözüm durduruldu"
+        }
+      }
+    }
+  },
+  "solve.detail.TERMINAL_FAILURE": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "This job cannot be retried. Return to the problem session."
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Bu iş yeniden denenemez. Problem oturumuna dönün."
+        }
+      }
+    }
+  },
+  "solve.state.POLICY_BLOCKED": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Solution unavailable"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Çözüm kullanılamıyor"
+        }
+      }
+    }
+  },
+  "solve.detail.POLICY_BLOCKED": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Server policy currently prevents this solve."
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Sunucu politikası şu anda bu çözümü engelliyor."
+        }
+      }
+    }
+  },
+  "solve.state.UNSUPPORTED": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Unsupported problem"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Desteklenmeyen problem"
+        }
+      }
+    }
+  },
+  "solve.detail.UNSUPPORTED": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "This mathematical scope is not supported yet."
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Bu matematik kapsamı henüz desteklenmiyor."
+        }
+      }
+    }
+  },
+  "solve.state.STALE": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Source changed"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Kaynak değişti"
+        }
+      }
+    }
+  },
+  "solve.detail.STALE": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "The selected problem changed. The previous answer is hidden; review the current source."
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Seçili problem değişti. Önceki cevap gizlendi; güncel kaynağı inceleyin."
+        }
+      }
+    }
+  },
+  "solve.state.CANCELLED": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Request cancelled"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "İstek iptal edildi"
+        }
+      }
+    }
+  },
+  "solve.detail.CANCELLED": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "The server recorded cancellation. This does not guarantee external processing or billing stopped."
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Sunucu iptali kaydetti. Bu, dış işlemin veya ücretlendirmenin durduğunu garanti etmez."
+        }
+      }
+    }
+  },
+  "solve.state.OUTCOME_UNKNOWN": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Outcome uncertain"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Sonuç belirsiz"
+        }
+      }
+    }
+  },
+  "solve.detail.OUTCOME_UNKNOWN": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Refresh this job to reconcile its outcome. Do not start another solve automatically."
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Sonucu öğrenmek için bu işin durumunu yenileyin. Otomatik olarak yeni çözüm başlatmayın."
+        }
+      }
+    }
+  },
+  "solve.math.open": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "open parenthesis"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "parantez aç"
+        }
+      }
+    }
+  },
+  "solve.math.close": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "close parenthesis"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "parantez kapat"
+        }
+      }
+    }
+  },
+  "solve.math.NEGATE": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "negative"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "eksi"
+        }
+      }
+    }
+  },
+  "solve.math.ADD": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "plus"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "artı"
+        }
+      }
+    }
+  },
+  "solve.math.SUBTRACT": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "minus"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "eksi"
+        }
+      }
+    }
+  },
+  "solve.math.MULTIPLY": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "times"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "çarpı"
+        }
+      }
+    }
+  },
+  "solve.math.DIVIDE": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "divided by"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "bölü"
+        }
+      }
+    }
+  },
+  "solve.math.POWER": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "to the power of"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "üssü"
+        }
+      }
+    }
+  },
+  "solve.math.SQRT": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "square root"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "karekök"
+        }
+      }
+    }
+  },
+  "solve.math.SIN": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "sine"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "sinüs"
+        }
+      }
+    }
+  },
+  "solve.math.COS": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "cosine"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "kosinüs"
+        }
+      }
+    }
+  },
+  "solve.math.TAN": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "tangent"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "tanjant"
+        }
+      }
+    }
+  },
+  "solve.math.LOG": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "logarithm"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "logaritma"
+        }
+      }
+    }
+  },
+  "solve.math.EXP": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "exponential"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "üstel"
+        }
+      }
+    }
+  },
+  "solve.math.EQUALS": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "equals"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "eşittir"
+        }
+      }
+    }
+  },
+  "solve.math.LESS_THAN": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "less than"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "küçüktür"
+        }
+      }
+    }
+  },
+  "solve.math.LESS_THAN_OR_EQUAL": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "less than or equal to"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "küçük eşittir"
+        }
+      }
+    }
+  },
+  "solve.math.GREATER_THAN": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "greater than"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "büyüktür"
+        }
+      }
+    }
+  },
+  "solve.math.GREATER_THAN_OR_EQUAL": {
+    "extractionState": "manual",
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "greater than or equal to"
+        }
+      },
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "büyük eşittir"
+        }
+      }
+    }
+  },
     "%@ · %@" : {
       "localizations" : {
         "en" : {

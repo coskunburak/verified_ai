@@ -10,16 +10,22 @@ struct HomePlaceholderView: View {
     let problemHistoryViewModel: ProblemHistoryViewModel?
     let manageSubscription: () -> Void
     let manageAccount: () -> Void
+    var isSolveFixture = false
+    var makeSolveModel: ((UUID) -> PrimarySolveViewModel)? = nil
+    var reviewViewModel: ProblemReviewViewModel? = nil
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: SpacingTokens.lg) {
                 header
+                if isSolveFixture { Label("solve.fixture", systemImage: "testtube.2").foregroundStyle(ColorTokens.warning) }
                 primaryAction
                 if let problemHistoryViewModel {
                     ProblemHistorySectionView(
                         viewModel: problemHistoryViewModel,
-                        startProblemCapture: startProblemCapture
+                        startProblemCapture: startProblemCapture,
+                        makeSolveModel: makeSolveModel,
+                        reviewViewModel: reviewViewModel
                     )
                 }
                 accessSection

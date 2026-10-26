@@ -85,6 +85,18 @@ final class ProblemHistoryViewModelTests: XCTestCase {
         }
     }
 
+    func testReadyForSolveProducesNavigationIntentWithoutWorkflowMutation() async throws {
+        let detail = ProblemSessionDetail.fixture(nextAction: .readyForSolve)
+        let workflow = FakeProblemAssetUploadAPI()
+        let vm = makeViewModel(workflowAPI: workflow)
+        await vm.performNextAction(for: detail)
+        XCTAssertEqual(vm.solveSessionId, detail.problemSessionId)
+        let parse = await workflow.parseSessionIds()
+        let recognition = await workflow.recognitionSessionIds()
+        XCTAssertTrue(parse.isEmpty); XCTAssertTrue(recognition.isEmpty)
+        vm.reset(); XCTAssertNil(vm.solveSessionId)
+    }
+
     private func makeViewModel(
         historyAPI: FakeProblemSessionHistoryAPI = FakeProblemSessionHistoryAPI(),
         workflowAPI: FakeProblemAssetUploadAPI = FakeProblemAssetUploadAPI(),

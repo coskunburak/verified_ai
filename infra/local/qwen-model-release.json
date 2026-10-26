@@ -1,0 +1,111 @@
+{
+  "manifestVersion": "qwen-evaluation-release-v1",
+  "owner": "ai-platform",
+  "selectionStatus": "OWNER_SELECTED_RESEARCH_CANDIDATE",
+  "qualityGateStatus": "PENDING_OWNER_EVIDENCE",
+  "releaseDecision": "REQUIRES_MORE_EVIDENCE",
+  "productionApproved": false,
+  "officialRepository": "Qwen/Qwen3.5-4B",
+  "revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+  "tokenizerRevision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+  "processorRevision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+  "architecture": "Qwen3_5ForConditionalGeneration",
+  "servedModelId": "qwen3.5-4b-851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a-bf16-vllm0171",
+  "license": {
+    "spdx": "Apache-2.0",
+    "source": "https://huggingface.co/Qwen/Qwen3.5-4B/blob/main/LICENSE",
+    "commercialUse": "Permitted subject to license conditions; release legal review remains pending",
+    "notices": "Retain LICENSE, applicable NOTICE and modification notices; no trademark grant",
+    "pinnedLicenseFileSha256": null
+  },
+  "runtime": {
+    "name": "vLLM",
+    "version": "0.17.1",
+    "image": "vllm/vllm-openai:v0.17.1",
+    "approvedImageDigest": null,
+    "status": "DOCUMENTED_ARCHITECTURE_SUPPORT_NOT_HARDWARE_TESTED",
+    "api": [
+      "GET /v1/models",
+      "POST /tokenize",
+      "POST /v1/chat/completions"
+    ]
+  },
+  "referenceRepresentation": "BF16_REFERENCE",
+  "weightsSha256": null,
+  "quantizationTarget": {
+    "representation": "Q4/INT4",
+    "status": "BLOCKED_UNAPPROVED_ARTIFACT_AND_COMPATIBILITY",
+    "artifactRepository": null,
+    "artifactRevision": null,
+    "method": null,
+    "checksum": null,
+    "processorCompatibility": null,
+    "kernelHardwareCompatibility": null,
+    "pairedQualityEvidence": null
+  },
+  "inputModalities": [
+    "CANONICAL_TEXT"
+  ],
+  "futureModalities": [
+    "IMAGE_REQUIRES_SEPARATE_CANONICAL_AUTHORITY_DESIGN"
+  ],
+  "limits": {
+    "contextTokens": 8192,
+    "maxInputTokens": 6144,
+    "maxOutputTokens": 2048,
+    "maxRequestBytes": 65536,
+    "maxWireResponseBytes": 131072,
+    "maxCandidateBytes": 65536,
+    "maxConcurrency": 2,
+    "maxAttempts": 1,
+    "connectTimeoutMs": 2000,
+    "overallProviderDeadlineMs": 30000,
+    "healthProbeTimeoutMs": 1000,
+    "healthCacheSeconds": 5,
+    "status": "CONSERVATIVE_EXPERIMENT_LIMITS_NOT_CAPACITY_EVIDENCE"
+  },
+  "generation": {
+    "temperature": 0,
+    "topP": 1,
+    "seed": 0,
+    "n": 1,
+    "stream": false,
+    "enableThinking": false
+  },
+  "hardware": {
+    "planningGpuVramGb": 24,
+    "hostRamPlanningGb": 64,
+    "measuredPeakGpuMiB": null,
+    "supportedGpuAndDriver": null
+  },
+  "prompt": {
+    "id": "solver",
+    "version": "v002",
+    "sha256": "8fb4adcd18f82fece9f2111660728255f9be65889be34641815a12bd6c238fd8",
+    "stage": "OFFLINE_EVALUATION",
+    "rollback": "DISABLE_SOLVE"
+  },
+  "schema": {
+    "version": "solution-candidate-v1",
+    "sha256": "c6ce80a2deb04b5aaf991cd23ad053b0210bd1d92491649f06716110fe0adb06"
+  },
+  "routePolicyVersion": "solve-qwen-eval-v1",
+  "qualityGateVersion": "qwen-offline-evaluation-v1",
+  "billingSemantics": "PREPAID_CAPACITY_FIXED_ALLOCATION",
+  "approvedPricingVersion": null,
+  "approvedOperationBudgetMicros": null,
+  "privacy": {
+    "retention": "ZERO_RETENTION",
+    "trainingEligibility": "NOT_ELIGIBLE",
+    "studentDataAllowed": false
+  },
+  "evidenceSources": [
+    "https://huggingface.co/api/models/Qwen/Qwen3.5-4B",
+    "https://huggingface.co/Qwen/Qwen3.5-4B/blob/851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a/config.json",
+    "https://docs.vllm.ai/en/v0.17.1/models/supported_models/",
+    "https://docs.vllm.ai/en/v0.17.1/serving/openai_compatible_server/",
+    "https://docs.vllm.ai/en/v0.17.1/features/structured_outputs/",
+    "https://raw.githubusercontent.com/vllm-project/vllm/v0.17.1/vllm/entrypoints/serve/tokenize/protocol.py"
+  ],
+  "metadataObservedOn": "2026-10-26"
+}

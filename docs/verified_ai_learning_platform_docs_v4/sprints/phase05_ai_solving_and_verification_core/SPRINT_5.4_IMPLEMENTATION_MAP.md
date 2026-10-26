@@ -162,3 +162,10 @@ real model requires new approval/health/transport bounds/privacy/license/evaluat
 corroboration. 5.6 may evolve candidate v1 into richer Solution/Step semantics through additive versions.
 5.7–5.10 validate typed claims independently. Only 5.11 VerificationPolicy may assign VERIFIED. 5.12
 extends real-model evaluation, protected holdouts and measured cost/latency release gates.
+
+## Sprint 5.4-RM follow-on source checkpoint
+
+The fixture-only and fixed-zero descriptions above document the originally accepted A–E baseline.
+The new [real-model integration map](SPRINT_5.4_REAL_MODEL_INTEGRATION_MAP.md) adds owner-approved
+local/test Qwen evaluation, positive fixed capacity allocation and prompt v002; production remains
+blocked. None of those follow-on changes has been compiled or tested by the assistant or owner yet.

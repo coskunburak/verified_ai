@@ -1,11 +1,11 @@
 # Documentation Manifest
 
-Total Markdown files: **280**
+Total Markdown files: **286**
 
 ## Files
 
-- `00_MASTER_INDEX.md` — 331 lines — 24634 bytes
-- `DOCUMENTATION_MANIFEST.md` — 286 lines — 34996 bytes
+- `00_MASTER_INDEX.md` — 343 lines — 25825 bytes
+- `DOCUMENTATION_MANIFEST.md` — 292 lines — 35718 bytes
 - `DOCUMENTATION_V3_CHANGELOG.md` — 48 lines — 2266 bytes
 - `DOCUMENTATION_V4_CHANGELOG.md` — 29 lines — 1984 bytes
 - `DOCUMENTATION_V5_CHANGELOG.md` — 28 lines — 1154 bytes
@@ -19,7 +19,7 @@ Total Markdown files: **280**
 - `adr/ADR-006_PRODUCTION_STUDENT_DATA_NOT_TRAINING_DATA_BY_DEFAULT.md` — 15 lines — 748 bytes
 - `adr/ADR-007_SELF_HOSTED_MODELS_ONLY_AFTER_TCO_AND_QUALITY_GATES.md` — 14 lines — 681 bytes
 - `ai/25_AI_ORCHESTRATION_AND_MODEL_ROUTING.md` — 248 lines — 8204 bytes
-- `ai/26_PROMPT_SCHEMA_AND_VERSIONING.md` — 182 lines — 10970 bytes
+- `ai/26_PROMPT_SCHEMA_AND_VERSIONING.md` — 191 lines — 11618 bytes
 - `ai/27_VERIFICATION_ENGINE.md` — 93 lines — 2783 bytes
 - `ai/28_AI_EVALUATION_AND_GOLDEN_DATASET.md` — 121 lines — 5029 bytes
 - `ai/29_AI_COST_LATENCY_AND_RELIABILITY.md` — 106 lines — 5060 bytes
@@ -28,9 +28,9 @@ Total Markdown files: **280**
 - `ai/59_SMALL_MODEL_FINE_TUNING_AND_SELF_HOSTING_READINESS.md` — 157 lines — 3862 bytes
 - `ai/60_AI_UNIT_ECONOMICS_AND_INFERENCE_COST_ENGINEERING.md` — 180 lines — 4963 bytes
 - `ai/61_MODEL_REGISTRY_RELEASE_AND_ROLLBACK_GOVERNANCE.md` — 79 lines — 1860 bytes
-- `ai/72_OPEN_WEIGHT_MATH_MODEL_RESEARCH.md` — 55 lines — 5560 bytes
-- `ai/73_MATH_MODEL_EVALUATION_PLAN.md` — 76 lines — 5139 bytes
-- `ai/74_MODEL_ROUTING_COST_AND_TCO_DECISION.md` — 78 lines — 5214 bytes
+- `ai/72_OPEN_WEIGHT_MATH_MODEL_RESEARCH.md` — 65 lines — 6289 bytes
+- `ai/73_MATH_MODEL_EVALUATION_PLAN.md` — 88 lines — 6060 bytes
+- `ai/74_MODEL_ROUTING_COST_AND_TCO_DECISION.md` — 91 lines — 6261 bytes
 - `architecture/11_SYSTEM_ARCHITECTURE_OVERVIEW.md` — 130 lines — 6804 bytes
 - `architecture/12_RUNTIME_AND_DEPLOYMENT_ARCHITECTURE.md` — 107 lines — 3096 bytes
 - `architecture/13_ASYNC_PROCESSING_AND_JOB_ORCHESTRATION.md` — 118 lines — 4365 bytes
@@ -70,7 +70,7 @@ Total Markdown files: **280**
 - `operations/49_FEATURE_FLAGS_REMOTE_CONFIG_AND_EXPERIMENTATION.md` — 78 lines — 1912 bytes
 - `operations/63_AI_CAPACITY_FINOPS_AND_PROVIDER_BUDGET_OPERATIONS.md` — 65 lines — 1596 bytes
 - `operations/70_RELEASE_TRAINS_AND_BACKLOG_PROMOTION.md` — 94 lines — 5233 bytes
-- `operations/71_TECHNICAL_DEBT_AND_MAINTENANCE_REGISTER.md` — 109 lines — 18025 bytes
+- `operations/71_TECHNICAL_DEBT_AND_MAINTENANCE_REGISTER.md` — 124 lines — 19265 bytes
 - `product/01_PRODUCT_VISION_AND_POSITIONING.md` — 238 lines — 9644 bytes
 - `product/02_PERSONAS_AND_JOBS_TO_BE_DONE.md` — 112 lines — 3352 bytes
 - `product/03_END_TO_END_USER_JOURNEYS.md` — 131 lines — 4529 bytes
@@ -84,12 +84,12 @@ Total Markdown files: **280**
 - `quality/55_DEVELOPMENT_WORKFLOW_BRANCHING_AND_REVIEW.md` — 67 lines — 1546 bytes
 - `quality/56_COMPLETE_PRODUCTION_REPOSITORY_FILE_HIERARCHY.md` — 3149 lines — 105093 bytes
 - `quality/64_AI_MODEL_REPLACEMENT_DECISION_GATES.md` — 65 lines — 1775 bytes
-- `quality/65_CANONICAL_DOCUMENTATION_TREE_AND_SOURCE_OF_TRUTH_MAP.md` — 334 lines — 23081 bytes
+- `quality/65_CANONICAL_DOCUMENTATION_TREE_AND_SOURCE_OF_TRUTH_MAP.md` — 340 lines — 23440 bytes
 - `quality/66_FILE_PLACEMENT_OWNERSHIP_AND_DEPENDENCY_MATRIX.md` — 52 lines — 5068 bytes
-- `quality/69_REQUIREMENTS_TRACEABILITY_MATRIX.md` — 67 lines — 27181 bytes
+- `quality/69_REQUIREMENTS_TRACEABILITY_MATRIX.md` — 73 lines — 27953 bytes
 - `roadmap/43_PRODUCT_AND_TECHNICAL_ROADMAP.md` — 131 lines — 4895 bytes
 - `roadmap/67_PRODUCT_PROGRAM_STRUCTURE.md` — 68 lines — 4656 bytes
-- `roadmap/68_PRODUCTION_V1_CAPABILITY_COVERAGE_MATRIX.md` — 81 lines — 21012 bytes
+- `roadmap/68_PRODUCTION_V1_CAPABILITY_COVERAGE_MATRIX.md` — 101 lines — 22585 bytes
 - `security/35_SECURITY_THREAT_MODEL.md` — 110 lines — 7144 bytes
 - `security/36_PRIVACY_AND_STUDENT_DATA_PROTECTION.md` — 131 lines — 11415 bytes
 - `sprints/00_SPRINT_MASTER_PLAN.md` — 270 lines — 31209 bytes
@@ -184,9 +184,15 @@ Total Markdown files: **280**
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.3_EXECUTION_REPORT.md` — 134 lines — 8467 bytes
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.3_IMPLEMENTATION_MAP.md` — 170 lines — 11808 bytes
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.3_MODEL_ROUTER_COST_BUDGETS_FALLBACK_AND_RELIABILITY_POLICY.md` — 382 lines — 17887 bytes
-- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_EXECUTION_REPORT.md` — 208 lines — 20318 bytes
-- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_IMPLEMENTATION_MAP.md` — 164 lines — 12673 bytes
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_EXECUTION_REPORT.md` — 233 lines — 22231 bytes
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_IMPLEMENTATION_MAP.md` — 171 lines — 13118 bytes
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_PRIMARY_SOLVER_PIPELINE_AND_STRUCTURED_SOLUTION_CANDIDATE.md` — 414 lines — 19848 bytes
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_QWEN_MODEL_DECISION.md` — 48 lines — 4398 bytes
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_REAL_MODEL_ACCEPTANCE_REPORT.md` — 154 lines — 13400 bytes
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_REAL_MODEL_INTEGRATION_MAP.md` — 97 lines — 7877 bytes
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_REAL_MODEL_OWNER_RUNBOOK.md` — 266 lines — 14684 bytes
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_UI_EXECUTION_REPORT.md` — 440 lines — 30387 bytes
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_UI_IMPLEMENTATION_MAP.md` — 140 lines — 11211 bytes
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.5_CONDITIONAL_INDEPENDENT_SECONDARY_SOLVER_AND_BLIND_AGREEMENT_ANALYSIS.md` — 382 lines — 18179 bytes
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.6_CANONICAL_SOLUTION_AND_STEP_DOMAIN_MODEL.md` — 395 lines — 18682 bytes
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.7_VERIFICATION_PLANNER_AND_VERIFICATION_METHOD_SELECTION.md` — 382 lines — 17871 bytes

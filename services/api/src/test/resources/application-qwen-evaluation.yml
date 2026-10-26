@@ -1,0 +1,96 @@
+# Owner opt-in ONLY. Not imported by normal application/test profiles. No approved prices are supplied.
+app:
+  environment: test
+  solving:
+    enabled: true
+    worker-enabled: false
+    language: tr
+    max-cost-micros: ${QWEN_ALLOCATION_MICROS}
+  ai:
+    usage-ledger:
+      enabled: true
+    vllm-solver:
+      enabled: true
+      endpoint: ${QWEN_ENDPOINT}
+      allowed-origins: ${QWEN_ALLOWED_ORIGIN}
+      api-key: ${QWEN_SERVICE_CREDENTIAL}
+      evaluation-approval: ${QWEN_EVALUATION_APPROVAL}
+      release:
+        repository: Qwen/Qwen3.5-4B
+        revision: 851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a
+        tokenizer-revision: 851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a
+        processor-revision: 851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a
+        runtime-version: 0.17.1
+        runtime-image-digest: ${QWEN_RUNTIME_DIGEST}
+        quantization: BF16_REFERENCE
+        deployment-evidence-sha256: ${QWEN_DEPLOYMENT_SHA256}
+      limits:
+        context-tokens: 8192
+        max-input-tokens: 6144
+        max-output-tokens: 2048
+        max-request-bytes: 65536
+        max-response-bytes: 131072
+        connect-timeout: 2s
+        response-timeout: 30s
+        max-concurrency: 2
+        structured-outputs: ${QWEN_STRUCTURED_OUTPUTS:false}
+      accounting:
+        pricing-version: ${QWEN_PRICING_VERSION}
+        billing-semantics: PREPAID_CAPACITY_FIXED_ALLOCATION
+        attempt-allocation-micros: ${QWEN_ALLOCATION_MICROS}
+        expected-input-micros: ${QWEN_INPUT_MICROS}
+        expected-output-micros: ${QWEN_OUTPUT_MICROS}
+        expected-image-micros: 0
+    routing:
+      health-max-age: 30s
+      eligibility:
+        - capability: SOLVE
+          target:
+            provider: VLLM_SELF_HOSTED
+            model: qwen3.5-4b-851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a-bf16-vllm0171
+          quality-gate-version: qwen-offline-evaluation-v1
+          attempt-ceiling-micros: ${QWEN_ALLOCATION_MICROS}
+          latency-allowance: 30s
+          task-types: [EVALUATE, SIMPLIFY, SOLVE_EQUATION, SOLVE_INEQUALITY]
+          difficulties: [UNKNOWN, EASY, MEDIUM, HARD]
+          entitlement-tiers: [FREE]
+          privacy-region: LOCAL_TEST
+          retention-policy: ZERO_RETENTION
+          approved: true
+    budget:
+      policy-version: ${QWEN_BUDGET_POLICY_VERSION}
+      attempt-micros: ${QWEN_ALLOCATION_MICROS}
+      request-micros: ${QWEN_ALLOCATION_MICROS}
+      session-micros: ${QWEN_TOTAL_MICROS}
+      user-daily-micros: ${QWEN_TOTAL_MICROS}
+      user-monthly-micros: ${QWEN_TOTAL_MICROS}
+      provider-monthly-micros: ${QWEN_TOTAL_MICROS}
+      global-monthly-micros: ${QWEN_TOTAL_MICROS}
+      tier-request-micros:
+        FREE: ${QWEN_ALLOCATION_MICROS}
+        PRO: 0
+        PRO_PLUS: 0
+    capabilities:
+      SOLVE:
+        enabled: true
+        route-policy-version: solve-qwen-eval-v1
+        route-id: qwen-offline-evaluation-v1
+        primary:
+          provider: VLLM_SELF_HOSTED
+          model: qwen3.5-4b-851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a-bf16-vllm0171
+        fallbacks: []
+        prompt-id: solver
+        prompt-version: v002
+        schema-version: solution-candidate-v1
+        timeout: 30s
+        max-attempts: 1
+        max-response-bytes: 65536
+        max-cost-micros: ${QWEN_ALLOCATION_MICROS}
+        pricing-version: ${QWEN_PRICING_VERSION}
+        cache-policy: DISABLED
+        streaming-policy: DISABLED
+        provider-retention-policy: ZERO_RETENTION
+        privacy-region: LOCAL_TEST
+        circuit-breaker-key: qwen-offline-evaluation
+        quality-gate-version: qwen-offline-evaluation-v1
+        release-stage: LOCAL_ONLY

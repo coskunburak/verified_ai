@@ -3,6 +3,7 @@ package com.verifiedai.solving.api;
 import com.verifiedai.solving.application.PrimarySolveService;
 import com.verifiedai.solving.application.SolveCommand;
 import com.verifiedai.solving.application.SolveView;
+import com.verifiedai.solving.application.CurrentSolveQuery;
 import com.verifiedai.sharedkernel.security.AuthenticatedUser;
 import com.verifiedai.sharedkernel.error.ApiErrorCode;
 import com.verifiedai.sharedkernel.error.ApiProblemException;
@@ -16,7 +17,14 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/problem-sessions/{sessionId}/solves")
 class PrimarySolveController {
     private final PrimarySolveService service;
-    PrimarySolveController(PrimarySolveService service) { this.service=service; }
+    private final CurrentSolveQuery currentQuery;
+    PrimarySolveController(PrimarySolveService service, CurrentSolveQuery currentQuery) {
+        this.service=service; this.currentQuery=currentQuery;
+    }
+    @GetMapping("/current")
+    CurrentSolveQuery.CurrentSolveResponse current(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID sessionId) {
+        return currentQuery.current(AuthenticatedUser.from(jwt).userId(), sessionId);
+    }
     @PostMapping
     @ResponseStatus(HttpStatus.ACCEPTED)
     SolveView start(@AuthenticationPrincipal Jwt jwt,@PathVariable UUID sessionId,

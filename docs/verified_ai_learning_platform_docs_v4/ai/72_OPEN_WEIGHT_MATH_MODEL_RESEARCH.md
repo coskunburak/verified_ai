@@ -53,3 +53,13 @@ never execute model-card installation snippets automatically. Long reasoning out
 can erase token-price advantages. Small-model latency and Turkish accuracy are UNKNOWN.
 Hosted inference can reduce operational burden, but availability does not establish
 privacy compliance or exact-model revision guarantees. Self-hosting remains conditional.
+
+## Sprint 5.4-RM owner selection reconciliation (2026-10-26)
+
+The owner-selected primary implementation/evaluation candidate is **Qwen3.5-4B**,
+`Qwen/Qwen3.5-4B@851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a`. This supersedes the primary
+recommendation above for Sprint 5.4-RM; the alternative research remains historical evidence.
+Status is OWNER_SELECTED_RESEARCH_CANDIDATE, not QUALITY_APPROVED_PRODUCTION_MODEL.
+[Decision and sources](../sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_QWEN_MODEL_DECISION.md).
+The isolated vLLM 0.17.1 path uses a BF16 reference; Q4/INT4 remains blocked pending exact artifact,
+hardware/runtime compatibility and paired quality evidence. No real inference or weight download has run.

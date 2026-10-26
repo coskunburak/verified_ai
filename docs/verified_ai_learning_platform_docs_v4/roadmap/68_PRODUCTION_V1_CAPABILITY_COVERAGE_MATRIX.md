@@ -79,3 +79,23 @@ Production V1 cannot be declared ready while any `V1 Required = Yes` row is `Pen
 - expiry date or remediation sprint.
 
 Exceptions are not allowed for false `VERIFIED` prevention, backend-authoritative entitlement, account deletion obligations, or secret/privacy invariants.
+
+## Sprint 5.4-RM capability evidence update
+
+CAP-SOLVE-002 retains the prior local fixture acceptance only. A Qwen3.5-4B real inference adapter,
+exact offline eligibility and owner-run evaluation path exist in source. Owner backend regression passed
+on 2026-10-27 (389 PASS / 2 real-model gated SKIP); separate Python/evaluation and live-model evidence remain pending.
+Production SOLVE remains disabled; no capability is promoted to production coverage by this change.
+Independent verification, Q4 quality/capacity and protected-corpus release evidence remain outstanding.
+See [Sprint 5.4-RM acceptance](../sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_REAL_MODEL_ACCEPTANCE_REPORT.md).
+
+## Sprint 5.4-UI implementation checkpoint — 2026-10-27
+
+Primary unverified candidate iOS experience is authored behind a development gate: history/capture entry,
+typed solve API, bounded polling, owner-scoped current-job lookup, idempotency recovery, safe AST display,
+TR/EN and accessibility basics. Status **AUTOMATED_REGRESSION_PASS / MANUAL_ACCEPTANCE_PARTIAL**:
+iOS 111 tests successful, API 389 PASS / 2 real-model gated SKIP, verifier 20 PASS. Owner screenshots and
+return/EN/large-text/VoiceOver/Reduce Motion checks passed; extended manual matrix remains pending.
+No production coverage or verified-result claim is added. Fixture UI acceptance, real-model acceptance
+and independent verification remain separate.
+Evidence and exact owner commands: [UI execution report](../sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_UI_EXECUTION_REPORT.md).

@@ -76,3 +76,16 @@ Vary output tokens 1x/5x, fallback 0/10/30%, secondary 0/10/25%, retry 0/5/20%, 
 Revenue is not modeled as guaranteed; taxes, subscriber acquisition, support, payment
 fees and gross-margin targets require owner inputs. Numeric business quotas remain
 pending approval; no scenario numbers are copied into runtime configuration.
+
+## Sprint 5.4-RM controlled evaluation accounting
+
+The earlier hosted-first benchmark recommendation is superseded for this work package by the owner's
+Qwen3.5-4B isolated self-hosted evaluation preference; ADR-005/007 production gates are unchanged.
+No scenario prices above were copied into runtime policy. Fixture remains explicitly zero-cost.
+VLLM_SELF_HOSTED accepts only owner-approved PREPAID_CAPACITY_FIXED_ALLOCATION with positive
+input/output allocations, image=0, exact pricing version and existing aggregate spend reservations.
+This is internal capacity allocation, not actual GPU invoice cost or support for a token-billed API.
+Unknown usage retains committed ceilings and NULL reported cost; no automatic replay/refund.
+Marginal cost and fully allocated GPU/storage/network/operator TCO need separate measured evidence.
+Default real-provider budgets remain zero. No real model/economics measurements exist.
+[Integration and limitations](../sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_REAL_MODEL_INTEGRATION_MAP.md).

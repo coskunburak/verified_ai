@@ -47,6 +47,31 @@ class PrimarySolveControllerTest extends PostgresIntegrationTestSupport {
         assertThat(HttpClient.newHttpClient().send(read,HttpResponse.BodyHandlers.ofString()).statusCode()).isEqualTo(404);
         assertThat(post(owner.accessToken(),session,null).body()).contains("IDEMPOTENCY_KEY_REQUIRED");
     }
+    HttpResponse<String> current(String token, UUID session) throws Exception {
+        var request = HttpRequest.newBuilder(URI.create("http://localhost:"+port+"/api/v1/problem-sessions/"+session+"/solves/current"));
+        if (token != null) request.header("Authorization", "Bearer " + token);
+        return HttpClient.newHttpClient().send(request.GET().build(), HttpResponse.BodyHandlers.ofString());
+    }
+    @Test void currentLookupIsAuthenticatedOwnerScopedAndNeverStartsWork() throws Exception {
+        var owner=login(); var other=login(); var f=new SolverSourceFixture(jdbc);
+        UUID session=f.insertSupportedParse(owner.userId(),SolverSourceFixture.equationParseJson("x + 1 = 2"),1);
+        canonical.canonicalize(owner.userId(),session);
+        assertThat(current(null,session).statusCode()).isEqualTo(401);
+        assertThat(current(other.accessToken(),session).statusCode()).isEqualTo(404);
+        var empty=current(owner.accessToken(),session);
+        assertThat(empty.statusCode()).isEqualTo(200);
+        assertThat(new com.fasterxml.jackson.databind.ObjectMapper().readTree(empty.body()).get("job").isNull()).isTrue();
+        assertThat(jdbc.queryForObject("select count(*) from solve_jobs where problem_session_id=?",Integer.class,session)).isZero();
+        var started=post(owner.accessToken(),session,"lookup-"+session);
+        var mapper=new com.fasterxml.jackson.databind.ObjectMapper();
+        String job=mapper.readTree(started.body()).path("jobId").asText();
+        assertThat(mapper.readTree(current(owner.accessToken(),session).body()).path("job").path("jobId").asText()).isEqualTo(job);
+        f.insertSupportedParse(owner.userId(),session,SolverSourceFixture.equationParseJson("x + 2 = 4"),2);
+        canonical.canonicalize(owner.userId(),session);
+        assertThat(mapper.readTree(current(owner.accessToken(),session).body()).path("job").path("state").asText()).isEqualTo("STALE");
+        assertThat(jdbc.queryForObject("select count(*) from solve_jobs where problem_session_id=?",Integer.class,session)).isEqualTo(1);
+        assertThat(jdbc.queryForObject("select state from solve_jobs where id=cast(? as uuid)",String.class,job)).isEqualTo("QUEUED");
+    }
     @TestConfiguration static class AuthConfig {
         @Bean @Primary AppleIdentityVerifier verifier() { return (token,nonce)->new VerifiedAppleIdentity(token); }
     }

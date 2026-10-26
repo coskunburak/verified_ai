@@ -57,6 +57,14 @@ final class ConfiguredAiRoutePlanner
             AiEntitlementResolver.conservative(), Clock.systemUTC());
     }
 
+    ConfiguredAiRoutePlanner(AiVisionRecognitionProperties vision, AiProblemParserProperties parser,
+        AiProblemClassifierProperties classifier, AiRouteRegistryProperties generic,
+        AiCapabilityRegistry registry, PromptRegistryValidator validator, String environment,
+        AiRoutingProperties routing, AiProviderHealth health, AiEntitlementResolver entitlement, Clock clock) {
+        this(vision, parser, classifier, generic, registry, validator, environment, routing, health,
+            entitlement, clock, VllmSolverProperties.disabled());
+    }
+
     @Autowired
     ConfiguredAiRoutePlanner(
         AiVisionRecognitionProperties vision,
@@ -67,7 +75,8 @@ final class ConfiguredAiRoutePlanner
         PromptRegistryValidator promptRegistryValidator,
         @Value("${app.environment:local}")
         String environment,
-        AiRoutingProperties routing, AiProviderHealth health, AiEntitlementResolver entitlement, Clock clock
+        AiRoutingProperties routing, AiProviderHealth health, AiEntitlementResolver entitlement, Clock clock,
+        VllmSolverProperties solverModel
     ) {
         this.routing = routing;
         this.health = health;
@@ -173,15 +182,7 @@ final class ConfiguredAiRoutePlanner
             }
 
             if (capability == AiCapability.SOLVE && configured.enabled()) {
-                // No approved external model exists. A local-only test route is the sole activation path.
-                boolean local = "local".equalsIgnoreCase(environment) || "test".equalsIgnoreCase(environment);
-                if (!local || !generic.usageLedger().enabled() || configured.primary() == null
-                    || !"LOCAL_FIXTURE".equals(configured.primary().provider())
-                    || !"local-fixture-solver-v1".equals(configured.primary().model())
-                    || !configured.fallbacks().isEmpty() || configured.maxCostMicros()!=0
-                    || configured.releaseStage()!=AiRoutePlan.ReleaseStage.LOCAL_ONLY) {
-                    throw new IllegalStateException("SOLVE activation blocked: no approved production model");
-                }
+                SolverModelEligibility.validate(configured, environment, generic.usageLedger().enabled(), solverModel, routing);
             }
             if (EXECUTABLE_CAPABILITIES.contains(capability)) {
                 if (!configured.enabled()) {
@@ -315,8 +316,12 @@ final class ConfiguredAiRoutePlanner
         if (base.allTargets().stream().allMatch(t -> "UNAVAILABLE".equals(t.provider()))) return base;
         String tier = userId == null || base.allTargets().stream().allMatch(t -> "LOCAL_FIXTURE".equals(t.provider()) || "UNAVAILABLE".equals(t.provider()))
             ? "FREE" : entitlement.tier(userId);
-        var selected = new AiRouteSelector().select(context, tier, catalog.stream()
-            .filter(c -> base.allTargets().contains(c.target()) && c.latencyAllowance().compareTo(base.timeout()) <= 0).toList(), health, clock.instant(), routing.healthMaxAge());
+        var candidates = catalog.stream().filter(c -> base.allTargets().contains(c.target())
+            && c.latencyAllowance().compareTo(base.timeout()) <= 0).toList();
+        // A bounded metadata probe may refresh telemetry. Take selection time after that observation.
+        candidates.stream().filter(c -> !"LOCAL_FIXTURE".equals(c.target().provider()))
+            .forEach(c -> health.snapshot(c.target()));
+        var selected = new AiRouteSelector().select(context, tier, candidates, health, clock.instant(), routing.healthMaxAge());
         long budget = context.maxCostMicros() == null ? base.maxCostMicros()
             : Math.min(base.maxCostMicros(), context.maxCostMicros());
         var affordable = selected.stream().filter(c -> c.attemptCeilingMicros() <= budget).toList();

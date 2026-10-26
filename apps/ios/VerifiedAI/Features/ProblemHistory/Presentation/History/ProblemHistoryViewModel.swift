@@ -18,9 +18,11 @@ final class ProblemHistoryViewModel {
     private let networkMonitor: NetworkMonitoring
     private let logger: AppLogger
     private let pageLimit: Int
+    private var accountGeneration = 0
 
     private(set) var state: ProblemHistoryState = .idle
     private(set) var items: [ProblemSessionHistoryItem] = []
+    private(set) var solveSessionId: UUID?
     private(set) var selectedDetail: ProblemSessionDetail?
     private(set) var message: String?
     private(set) var nextCursor: String?
@@ -53,6 +55,7 @@ final class ProblemHistoryViewModel {
     }
 
     func refresh() async {
+        let generation = accountGeneration
         guard networkMonitor.isReachable else {
             loadCached()
             state = .offline
@@ -64,11 +67,13 @@ final class ProblemHistoryViewModel {
         message = nil
         do {
             let page = try await historyAPI.history(limit: pageLimit, cursor: nil)
+            guard generation == accountGeneration else { return }
             try cache.save(page: page)
             items = page.items
             nextCursor = page.nextCursor
             state = .ready
         } catch {
+            guard generation == accountGeneration else { return }
             logger.warning("problem_history.refresh_failed")
             loadCached()
             let text = failureMessage(for: error)
@@ -78,17 +83,20 @@ final class ProblemHistoryViewModel {
     }
 
     func loadMore() async {
+        let generation = accountGeneration
         guard let nextCursor, networkMonitor.isReachable else {
             return
         }
         state = .loading
         do {
             let page = try await historyAPI.history(limit: pageLimit, cursor: nextCursor)
+            guard generation == accountGeneration else { return }
             try cache.save(page: page)
             items.append(contentsOf: page.items)
             self.nextCursor = page.nextCursor
             state = .ready
         } catch {
+            guard generation == accountGeneration else { return }
             logger.warning("problem_history.load_more_failed")
             state = .ready
             message = failureMessage(for: error)
@@ -100,6 +108,7 @@ final class ProblemHistoryViewModel {
     }
 
     func reconnect(problemSessionId: UUID) async {
+        let generation = accountGeneration
         guard networkMonitor.isReachable else {
             state = .offline
             message = "Reconnecting needs a network connection."
@@ -107,17 +116,20 @@ final class ProblemHistoryViewModel {
         }
         do {
             let detail = try await historyAPI.detail(problemSessionId: problemSessionId)
+            guard generation == accountGeneration else { return }
             try cache.save(detail: detail)
             selectedDetail = detail
             merge(detail)
             message = resumeMessage(for: detail)
         } catch {
+            guard generation == accountGeneration else { return }
             logger.warning("problem_history.reconnect_failed")
             message = failureMessage(for: error)
         }
     }
 
     func performNextAction(for detail: ProblemSessionDetail) async {
+        let generation = accountGeneration
         guard networkMonitor.isReachable else {
             state = .offline
             message = "This action needs a network connection."
@@ -134,12 +146,17 @@ final class ProblemHistoryViewModel {
                 _ = try await workflowAPI.canonicalize(problemSessionId: detail.problemSessionId)
             case .startClassification, .retryClassification:
                 _ = try await workflowAPI.requestClassification(problemSessionId: detail.problemSessionId)
-            case .waitRecognition, .waitParse, .waitClassification, .reviewParse, .readyForSolve, .none,
+            case .readyForSolve:
+                solveSessionId = detail.problemSessionId
+                return
+            case .waitRecognition, .waitParse, .waitClassification, .reviewParse, .none,
                  .resumeUpload, .startPreprocessing, .retryPreprocessing, .recaptureOrReimport, .unsupported:
                 break
             }
+            guard generation == accountGeneration else { return }
             await reconnect(problemSessionId: detail.problemSessionId)
         } catch {
+            guard generation == accountGeneration else { return }
             logger.warning("problem_history.next_action_failed")
             message = failureMessage(for: error)
         }
@@ -147,12 +164,15 @@ final class ProblemHistoryViewModel {
 
     func clearSelection() {
         selectedDetail = nil
+        solveSessionId = nil
     }
 
     func reset() {
+        accountGeneration += 1
         state = .idle
         items = []
         selectedDetail = nil
+        solveSessionId = nil
         message = nil
         nextCursor = nil
     }

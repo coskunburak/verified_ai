@@ -74,3 +74,15 @@ protected data access, max cases, max attempts, total reservation and token ceil
 Produce JSONL per-attempt evidence and aggregate JSON/Markdown with immutable input
 manifest hashes. Export no raw student content to metrics/logs. Compare on the same
 manifest; never mix current and historical pricing in an observed-cost column.
+
+## Sprint 5.4-RM prepared implementation
+
+The earlier runner blocker is now partially addressed: an owner-opt-in durable real-model smoke test,
+18-case synthetic canonical benchmark, bounded adapter, independent numeric/schema report tool and
+manual quality/capacity templates are authored. None has been executed. The synthetic corpus has
+11 candidate cases and 7 source/future-scope rejection cases; it is not the 240-case release corpus.
+Independent gold review, protected holdout, OCR evaluation, statistical power and production verdict
+metrics remain unavailable. Rejected raw payloads are not retained, so exact schema acceptance may
+be unavailable; report a lower bound rather than inventing results.
+[Protocol and commands](../sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_REAL_MODEL_OWNER_RUNBOOK.md).
+The proposed quality thresholds require one explicit owner-approved version before promotion.

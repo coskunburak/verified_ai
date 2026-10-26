@@ -26,6 +26,9 @@ public class SolveStore {
     public Optional<SolveJob> active(UUID session) {
         return one("select * from solve_jobs where problem_session_id=? and state in ('QUEUED','RUNNING')",session);
     }
+    public Optional<SolveJob> latestForSession(UUID user, UUID session) {
+        return one("select * from solve_jobs where user_id=? and problem_session_id=? order by created_at desc, attempt_number desc, id desc limit 1", user, session);
+    }
     public SolveJob insert(SolveSource s,String key,UUID retry,int attempt,Instant now,Instant deadline) {
         UUID id=UUID.randomUUID(),operation=UUID.randomUUID();
         jdbc.update("""

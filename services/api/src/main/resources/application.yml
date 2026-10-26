@@ -43,10 +43,14 @@ management:
       service: verified-ai-api
 app:
   solving:
+    max-cost-micros: 0
+    language: tr
     enabled: false
     worker-enabled: false
   environment: ${APP_ENV:local}
   ai:
+    vllm-solver:
+      enabled: false
     routing:
       health-max-age: 30s
       eligibility: []

@@ -98,6 +98,17 @@ struct RootView: View {
         .task {
             await restoreSessionOnce()
         }
+        .onChange(of: signInViewModel.state) { old, new in
+            if case .authenticated(let previous) = old {
+                switch new {
+                case .authenticated(let current):
+                    if current.userId != previous.userId { resetAuthenticatedState() }
+                case .unauthenticated, .expired, .cancelled:
+                    resetAuthenticatedState()
+                default: break
+                }
+            }
+        }
     }
 
     @ViewBuilder
@@ -110,7 +121,7 @@ struct RootView: View {
                     .background(ColorTokens.background)
                     .navigationTitle("Verified AI")
             default:
-                entitledHomeContent()
+                entitledHomeContent(userId: session.userId)
             }
         }
         .toolbar {
@@ -159,7 +170,7 @@ struct RootView: View {
     }
 
     @ViewBuilder
-    private func entitledHomeContent() -> some View {
+    private func entitledHomeContent(userId: UUID) -> some View {
         switch entitlementViewModel.state {
         case .ready, .offline:
             HomePlaceholderView(
@@ -178,7 +189,13 @@ struct RootView: View {
                 },
                 problemHistoryViewModel: problemHistoryViewModel,
                 manageSubscription: { isPaywallPresented = true },
-                manageAccount: { isAccountSettingsPresented = true }
+                manageAccount: { isAccountSettingsPresented = true },
+                isSolveFixture: dependencies.solveFixture,
+                makeSolveModel: dependencies.solveEnabled ? { sessionId in
+                    PrimarySolveViewModel(userId: userId, sessionId: sessionId, service: dependencies.primarySolveAPI,
+                        recovery: dependencies.solveRecovery, network: dependencies.networkMonitor, isFixture: dependencies.solveFixture)
+                } : nil,
+                reviewViewModel: dependencies.solveFixture ? nil : problemReviewViewModel
             )
             .navigationTitle("Verified AI")
             .sheet(isPresented: $isPaywallPresented, onDismiss: {
@@ -199,7 +216,14 @@ struct RootView: View {
                     uploadViewModel: problemAssetUploadViewModel,
                     problemReviewViewModel: problemReviewViewModel,
                     cameraClient: dependencies.problemCameraClient,
-                    onDismiss: { isProblemCapturePresented = false }
+                    onDismiss: { isProblemCapturePresented = false },
+                    onContinueToSession: { sessionId in
+                        isProblemCapturePresented = false
+                        Task {
+                            await problemHistoryViewModel.refresh()
+                            await problemHistoryViewModel.reconnect(problemSessionId: sessionId)
+                        }
+                    }
                 )
             }
         case .loading, .idle:
@@ -227,6 +251,10 @@ struct RootView: View {
     }
 
     private func resetAuthenticatedState() {
+        do { try dependencies.solveRecovery.clearAll() }
+        catch { dependencies.logger.warning("solve.recovery_clear_failed") }
+        try? dependencies.problemSessionCache.clear()
+        isProblemCapturePresented = false
         onboardingViewModel.reset()
         accountSettingsViewModel.reset()
         entitlementViewModel.reset()

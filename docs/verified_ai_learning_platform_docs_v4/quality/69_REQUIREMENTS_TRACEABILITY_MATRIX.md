@@ -65,3 +65,9 @@ Every PR that touches a V1-required feature must cite at least one `REQ-*` ID in
 ## Coverage Consistency Rule
 
 Every `V1 required = Yes` requirement must map to at least one capability in `roadmap/68_PRODUCTION_V1_CAPABILITY_COVERAGE_MATRIX.md`. Every V1-required capability must have at least one requirement ID before its implementation sprint exits.
+
+## Sprint 5.4-UI bounded slice — 2026-10-27
+
+| Requirement | Implementation | Evidence | Status |
+| --- | --- | --- | --- |
+| REQ-UI-SOLVE-001: ready session to unverified candidate, safe retry/recovery and no client VERIFIED verdict | ProblemSolving iOS feature, History navigation, authenticated current-job lookup; account isolation and stale suppression | Owner iOS full suite: 111 tests successful; API 389 PASS / 2 real-model gated SKIP; verifier 20 PASS; screenshots and reported return/EN/large-text/VoiceOver/Reduce Motion PASS; [owner gates A–F](../sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_UI_EXECUTION_REPORT.md) | AUTOMATED_REGRESSION_PASS / MANUAL_ACCEPTANCE_PARTIAL; extended manual matrix pending, real Qwen E2E blocked separately |

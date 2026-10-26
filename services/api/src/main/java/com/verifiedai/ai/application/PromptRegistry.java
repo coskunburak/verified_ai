@@ -59,6 +59,11 @@ public final class PromptRegistry {
     public static PromptRegistry defaults() {
         return new PromptRegistry(
             List.of(
+                new PromptRegistryEntry("solver", "v002", AiCapability.SOLVE, "ai-platform",
+                    "solution-candidate-v1", "prompts/solver/v002.md", PromptReleaseStage.OFFLINE_EVALUATION,
+                    "evaluations/fixtures/solver/qwen-smoke-v1.json", "PENDING_OWNER_REAL_MODEL_EVALUATION",
+                    List.of("no verification claims", "no hidden reasoning", "canonical text only", "isolated evaluation"),
+                    "solve-qwen-eval-v1", PromptTrainingEligibility.NOT_ELIGIBLE, "8fb4adcd18f82fece9f2111660728255f9be65889be34641815a12bd6c238fd8", null),
                 new PromptRegistryEntry("solver", "v001", AiCapability.SOLVE, "ai-platform",
                     "solution-candidate-v1", "prompts/solver/v001.md", PromptReleaseStage.LOCAL_ONLY,
                     "evaluations/fixtures/solver", "BLOCKED_MODEL_DECISION",

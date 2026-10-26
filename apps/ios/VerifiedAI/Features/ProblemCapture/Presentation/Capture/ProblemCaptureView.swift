@@ -10,6 +10,7 @@ struct ProblemCaptureView: View {
     @Bindable var problemReviewViewModel: ProblemReviewViewModel
     let cameraClient: ProblemCameraClient
     let onDismiss: () -> Void
+    var onContinueToSession: ((UUID) -> Void)? = nil
 
     @Environment(\.openURL) private var openURL
     @Environment(\.scenePhase) private var scenePhase
@@ -703,9 +704,11 @@ struct ProblemCaptureView: View {
                     .foregroundStyle(ColorTokens.action)
                 classificationSummary(reference.classification)
                 Button {
-                    onDismiss()
+                    if let onContinueToSession {
+                        onContinueToSession(reference.canonicalizedProblem.parsedProblem.recognizedProblem.preprocessedAsset.durableAsset.problemSessionId)
+                    } else { onDismiss() }
                 } label: {
-                    Label("Done", systemImage: "checkmark")
+                    Label("solve.continueSession", systemImage: "arrow.right.circle")
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
