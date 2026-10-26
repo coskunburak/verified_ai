@@ -4,6 +4,52 @@ info:
   version: 0.1.0
 
 paths:
+  /api/v1/problem-sessions/{sessionId}/solves/current:
+    get:
+      summary: Recover the latest owned primary solve without creating work
+      description: >
+        Returns job null when the owned session has no solve. Otherwise returns the latest
+        lifecycle snapshot, projecting STALE when selected source lineage no longer matches.
+        Read does not dispatch inference, retry, debit entitlement or mutate historical candidates.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema: {type: string, format: uuid}
+      responses:
+        "200":
+          description: Owner-scoped current job or an explicit null
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [job]
+                properties:
+                  job:
+                    oneOf:
+                      - $ref: "#/components/schemas/PrimarySolveResponse"
+                      - type: 'null'
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Account unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Session unavailable or not owned by the authenticated user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
   /api/v1/problem-sessions/{sessionId}/solves:
     post:
       summary: Queue a primary unverified solution candidate

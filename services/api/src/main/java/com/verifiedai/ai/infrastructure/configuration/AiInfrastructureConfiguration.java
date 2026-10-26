@@ -20,13 +20,19 @@ import org.springframework.core.io.ResourceLoader;
     AiProblemClassifierProperties.class,
     AiRouteRegistryProperties.class,
     AiRoutingProperties.class,
-    AiBudgetProperties.class
+    AiBudgetProperties.class,
+    VllmSolverProperties.class
 })
 class AiInfrastructureConfiguration {
 
     @Bean
-    com.verifiedai.ai.application.AiProviderHealth aiProviderHealth() {
-        return com.verifiedai.ai.application.AiProviderHealth.unknown();
+    com.verifiedai.ai.application.AiProviderHealth aiProviderHealth(
+        org.springframework.beans.factory.ObjectProvider<com.verifiedai.ai.infrastructure.provider.VllmSolveProviderAdapter> vllm) {
+        return target -> {
+            var adapter = vllm.getIfAvailable();
+            return adapter == null ? com.verifiedai.ai.application.AiProviderHealth.unknown().snapshot(target)
+                : adapter.health(target);
+        };
     }
 
     @Bean

@@ -107,3 +107,18 @@ OUTCOME_UNKNOWN is retained for operator review, never automatically replayed/re
 sets and richer claims need additive future schemas; no existing canonical contract is broadened.
 Owner: platform/AI maintainer; local runtime gate closed with owner A–E, model gate only after explicit reviewed
 activation and independent evaluation. Monitoring and rollback are documented in the 5.4 implementation map.
+
+## Sprint 5.4-RM remaining release blockers
+
+TD-AI-QWEN-001 — Owner: AI/platform. Source integration passed owner backend synthetic regression
+on 2026-10-27; separate Python/evaluation commands still need new owner evidence. Real Qwen
+quality, exact runtime image/weight attestation, Q4 compatibility, GPU capacity and fully allocated
+TCO are not available. This is a release blocker, not accepted production debt. Owner gates A–G
+and ADR-007 apply. Existing fixture-only implementation statement above is historical.
+TD-AI-QWEN-002 — Owner: AI quality. The 18-case synthetic smoke corpus is not independently reviewed
+release gold. Exact schema rate for rejected raw outputs is unavailable by privacy design; improve
+in-memory independent schema instrumentation before claiming the 99% release gate. Protected holdout,
+OCR separation, load/concurrency experiments and calibrated quality escalation remain unimplemented.
+TD-AI-QWEN-003 — Owner: operations. Fixed capacity allocation is not an external billing guarantee.
+External token-billed fallback, stronger models and production hosting remain disabled until separately
+approved controls exist. No automatic uncertain-work replay, training or provider spending is authorized.

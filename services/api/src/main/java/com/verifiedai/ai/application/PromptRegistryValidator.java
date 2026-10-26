@@ -177,7 +177,7 @@ public final class PromptRegistryValidator {
         String env = normalizedEnvironment(environment);
         boolean local = "local".equals(env) || "test".equals(env);
         boolean eligible = switch (prompt.releaseStage()) {
-            case LOCAL_ONLY -> local;
+            case LOCAL_ONLY, OFFLINE_EVALUATION -> local;
             case STAGING -> !"production".equals(env);
             case PRODUCTION -> true;
             default -> false;
@@ -195,6 +195,15 @@ public final class PromptRegistryValidator {
                 && prompt.releaseStage() != PromptReleaseStage.PRODUCTION)) {
             throw failure(PromptRegistryFailureCode.AI_PROMPT_RELEASE_STAGE_INVALID,
                 route, "AI prompt or route release stage is not eligible");
+        }
+        if (prompt.releaseStage() == PromptReleaseStage.OFFLINE_EVALUATION) {
+            // Experiment permission is not a fabricated quality approval. Model eligibility is checked by the router.
+            if (route.capability() != AiCapability.SOLVE || route.releaseStage() != AiRoutePlan.ReleaseStage.LOCAL_ONLY
+                || route.qualityGateVersion() == null || route.qualityGateVersion().isBlank()) {
+                throw failure(PromptRegistryFailureCode.AI_PROMPT_RELEASE_STAGE_INVALID,
+                    route, "Offline prompt requires an isolated governed solver evaluation");
+            }
+            return;
         }
         if (prompt.releaseStage() == PromptReleaseStage.LOCAL_ONLY) {
             if (route.allTargets().stream().anyMatch(target ->

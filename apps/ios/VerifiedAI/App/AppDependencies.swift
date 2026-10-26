@@ -20,6 +20,10 @@ struct AppDependencies {
     let problemReviewAPI: ProblemReviewServicing
     let problemSessionHistoryAPI: ProblemSessionHistoryServicing
     let problemSessionCache: ProblemSessionCaching
+    let primarySolveAPI: PrimarySolveServicing
+    let solveRecovery: SolveRecoveryStoring
+    let solveEnabled: Bool
+    let solveFixture: Bool
     let presignedObjectUploader: PresignedObjectUploading
     let logger: AppLogger
     let networkMonitor: NetworkMonitoring
@@ -56,8 +60,32 @@ struct AppDependencies {
         let captureQualityAnalyzer = DefaultCaptureQualityAnalyzer()
         let problemAssetUploadAPI = ProblemAssetUploadAPI(apiClient: apiClient)
         let problemReviewAPI = ProblemReviewAPI(apiClient: apiClient)
-        let problemSessionHistoryAPI = ProblemSessionHistoryAPI(apiClient: apiClient)
-        let problemSessionCache = try! SwiftDataProblemSessionCache()
+        var problemSessionHistoryAPI: ProblemSessionHistoryServicing = ProblemSessionHistoryAPI(apiClient: apiClient)
+        let problemSessionCache: ProblemSessionCaching
+        var primarySolveAPI: PrimarySolveServicing = PrimarySolveAPI(client: apiClient)
+        var solveEnabled = false
+        var solveFixture = false
+        #if DEBUG
+        let arguments = ProcessInfo.processInfo.arguments
+        solveFixture = environment == .development && arguments.contains("--solve-fixture") && arguments.contains("--ui-testing-authenticated")
+        solveEnabled = environment == .development && (arguments.contains("--enable-primary-solve") || solveFixture)
+        if solveFixture {
+            let scenario = arguments.first(where: { $0.hasPrefix("--solve-scenario=") })?.components(separatedBy: "=").last ?? "GENERATED_UNVERIFIED"
+            primarySolveAPI = FixturePrimarySolveAPI(scenario: scenario, reset: arguments.contains("--solve-reset"))
+            problemSessionHistoryAPI = FixtureSolveHistoryAPI()
+            problemSessionCache = FixtureSolveHistoryCache()
+        } else {
+            problemSessionCache = try! SwiftDataProblemSessionCache()
+        }
+        #else
+        problemSessionCache = try! SwiftDataProblemSessionCache()
+        #endif
+        let solveRecovery = SolveRecoveryStore(scope: solveFixture ? "synthetic-fixture" : "server-" + environment.rawValue)
+        #if DEBUG
+        if solveFixture && ProcessInfo.processInfo.arguments.contains("--solve-reset") {
+            try? solveRecovery.remove(userId: UUID(uuidString: "00000000-0000-0000-0000-0000000000A1")!, sessionId: FixturePrimarySolveAPI.sessionId)
+        }
+        #endif
         let presignedObjectUploader = URLSessionPresignedObjectUploader()
         Task {
             await authenticationSessionStore.setRefreshHandler { refreshToken in
@@ -86,6 +114,10 @@ struct AppDependencies {
             problemReviewAPI: problemReviewAPI,
             problemSessionHistoryAPI: problemSessionHistoryAPI,
             problemSessionCache: problemSessionCache,
+            primarySolveAPI: primarySolveAPI,
+            solveRecovery: solveRecovery,
+            solveEnabled: solveEnabled,
+            solveFixture: solveFixture,
             presignedObjectUploader: presignedObjectUploader,
             logger: logger,
             networkMonitor: networkMonitor,

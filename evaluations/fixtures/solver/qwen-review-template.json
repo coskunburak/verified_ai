@@ -1,0 +1,4 @@
+{
+  "tr-negative": {"reviewerId": null, "independent": false, "reviewedStepCount": null, "validStepCount": null, "stepValidity": null, "turkishQuality": null, "inventedAssumption": null, "answerEquivalent": null},
+  "INSTRUCTIONS": "Copy outside Git, replace this instruction with one entry per reviewed case. Review only public steps against independent gold. Missing review is unavailable, never a pass."
+}

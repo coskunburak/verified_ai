@@ -206,3 +206,28 @@ Repository-relative actual paths; all changes remain uncommitted.
 | `services/api/src/test/java/com/verifiedai/solving/application/SolutionCandidateContractTest.java` | Prepared fixture, regression or test configuration; not compiled or executed. |
 | `services/api/src/test/java/com/verifiedai/solving/application/SolutionCandidateValidatorTest.java` | Prepared fixture, regression or test configuration; not compiled or executed. |
 | `services/api/src/test/resources/application-solver-fixture.yml` | Prepared fixture, regression or test configuration; not compiled or executed. |
+
+## Stage F / Sprint 5.4-RM implementation checkpoint — 2026-10-26
+
+The historical A–E acceptance above remains valid only for its original code. New real-model work
+is IMPLEMENTED_PENDING_OWNER_TEST; no assistant tests, builds, validators, benchmarks, model
+downloads, inference, paid actions, commits or pushes were executed.
+Local baseline: feature/sprint-5-2-prompt-registry-governance at
+f3cec8ab05bf182137fcfd3f80c41f56b2a5bddd; clean on entry, different from the supplied main reference.
+Qwen3.5-4B research selection is reconciled; production activation remains blocked by evidence/ADRs.
+Controlled adapter, nonproduction route, v002 prompt, budgets, tests and owner protocol are authored.
+Q4 exact artifact and actual quality/capacity/TCO evidence remain blocked.
+[New acceptance report](SPRINT_5.4_REAL_MODEL_ACCEPTANCE_REPORT.md) and
+[owner-run gates](SPRINT_5.4_REAL_MODEL_OWNER_RUNBOOK.md) supersede the old Stage F implementation gap.
+
+## Owner evidence closure — 2026-10-27
+
+The implementation checkpoint above is historical. Current owner regression evidence covers the new
+RM/UI working tree: iOS 111 tests successful; API 389 PASS / 2 real-model gated SKIP; verifier 20 PASS.
+Doctor/lint/docs/contracts passed; successful sequential make continuation establishes secret-scan passage.
+The controlled adapter's artifact/eligibility/HTTP/pipeline suites include 20 passing synthetic tests.
+Separate Python/evaluation runner commands and actual Qwen inference have no new owner evidence.
+UI screenshots and return/EN/large-text/VoiceOver/Reduce Motion checks passed; the extended manual matrix
+remains incomplete. See the [final UI report](SPRINT_5.4_UI_EXECUTION_REPORT.md) and
+[RM acceptance report](SPRINT_5.4_REAL_MODEL_ACCEPTANCE_REPORT.md) for scope, evidence and open blockers.
+The user requested report completion and GitHub commit/push; this does not grant production/model approval.

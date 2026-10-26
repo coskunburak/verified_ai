@@ -33,12 +33,19 @@ public class PrimarySolveService {
     private final Clock clock;
     private final SolveMetrics metrics;
     private final boolean enabled;
+    private final long maxCostMicros;
+    private final Locale locale;
 
     public PrimarySolveService(SolveSourceAccess sources,SolveStore store,CapabilityAccessPolicy access,
         AiModelGateway gateway,AiRoutePlanner routes,SolutionCandidateValidator validator,TransactionTemplate tx,
-        Clock clock,SolveMetrics metrics,@Value("${app.solving.enabled:false}") boolean enabled) {
+        Clock clock,SolveMetrics metrics,@Value("${app.solving.enabled:false}") boolean enabled,
+        @Value("${app.solving.max-cost-micros:0}") long maxCostMicros,
+        @Value("${app.solving.language:tr}") String language) {
         this.sources=sources;this.store=store;this.access=access;this.gateway=gateway;this.routes=routes;
         this.validator=validator;this.tx=tx;this.clock=clock;this.metrics=metrics;this.enabled=enabled;
+        if (maxCostMicros < 0 || !java.util.Set.of("tr", "en").contains(language))
+            throw new IllegalArgumentException("Invalid server-owned solve budget or language");
+        this.maxCostMicros=maxCostMicros;this.locale=Locale.forLanguageTag(language);
     }
 
     public SolveView start(SolveCommand command) {
@@ -122,14 +129,17 @@ public class PrimarySolveService {
         });
         if(source==null || !store.running(id)) return;
         long started=System.nanoTime();
+        var configured=routes.policies().get(AiCapability.SOLVE).routePlan();
+        long ceiling="LOCAL_FIXTURE".equals(configured.primary().provider()) ? 0
+            : Math.min(maxCostMicros,configured.maxCostMicros());
         var context=new AiRouteContext(AiCapability.SOLVE,source.problemType(),source.taskType(),null,null,false,
-            "LOW",false,null,Locale.ENGLISH,Duration.ofSeconds(30),0L,null,Map.of(),null,null,
+            "LOW",false,null,locale,Duration.ofSeconds(30),ceiling,null,Map.of(),null,null,
             "NO_TRAINING_BY_DEFAULT",AiRouteContext.RouteRole.PRIMARY_SOLVER);
         var command=new AiExecutionCommand(AiCapability.SOLVE,
             new AiSolveRequest(source.canonicalProblemId(),source.problemParseId(),source.problemParseRevision(),source.canonicalJson()),
             new AiExecutionContext(snapshot.operationId(),snapshot.userId(),snapshot.sessionId(),id.toString(),null,
                 snapshot.idempotencyKey(),snapshot.deadline(),Map.of()),context,"application/json","canonical-problem-v1",
-            "solver","v001","solution-candidate-v1",0L);
+            configured.promptId(),configured.promptVersion(),"solution-candidate-v1",ceiling);
         AiExecutionResult result=gateway.execute(command); // No surrounding database transaction.
         SolutionCandidate candidate=null;
         SolveState state; String code=null;

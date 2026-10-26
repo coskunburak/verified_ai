@@ -180,3 +180,12 @@ approval. The semantic owner is `solving.application.SolutionCandidateValidator`
 canonical/parse IDs, safe AST claims and preserved source restriction IDs; it forbids authoritative
 verification fields and hidden reasoning. Old prompt/schema bytes are unchanged. Owner tests/evaluation
 are pending; any live promotion needs real model and governed release evidence, not fixture success.
+
+## Sprint 5.4-RM isolated prompt evaluation stage
+
+`OFFLINE_EVALUATION` is an explicit local/test-only stage for a governed SOLVE experiment. It permits
+collecting quality evidence before staging approval; it is not a fabricated evaluation pass.
+`solver/v002` binds solution-candidate-v1 and solve-qwen-eval-v1; the router independently requires
+exact model/release identity, owner approval reference, positive allocation and ledger eligibility.
+LOCAL_ONLY remains fixture-only. Staging/production approval and immutable digest rules are unchanged.
+`solver/v001` and all existing schema bytes are unchanged. See the Sprint 5.4-RM integration map.

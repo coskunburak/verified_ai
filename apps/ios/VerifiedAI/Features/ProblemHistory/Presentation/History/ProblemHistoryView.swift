@@ -1,8 +1,13 @@
 import SwiftUI
 
+private enum RecoveryDestination: Hashable { case solve, review }
+
 struct ProblemHistorySectionView: View {
     @Bindable var viewModel: ProblemHistoryViewModel
     let startProblemCapture: () -> Void
+    var makeSolveModel: ((UUID) -> PrimarySolveViewModel)? = nil
+    var reviewViewModel: ProblemReviewViewModel? = nil
+    @State private var recoveryPath: [RecoveryDestination] = []
 
     @State private var presentedDetail: ProblemSessionDetail?
 
@@ -41,13 +46,23 @@ struct ProblemHistorySectionView: View {
         .task {
             await viewModel.bootstrap()
         }
+        .onChange(of: viewModel.selectedDetail) { _, detail in
+            if presentedDetail == nil { recoveryPath = [] }
+            presentedDetail = detail
+        }
         .sheet(item: $presentedDetail) { detail in
             ProblemSessionRecoveryDetailView(
                 detail: detail,
+                path: $recoveryPath,
+                makeSolveModel: makeSolveModel,
+                reviewViewModel: reviewViewModel,
                 performAction: {
                     Task {
                         await viewModel.performNextAction(for: detail)
                         presentedDetail = viewModel.selectedDetail
+                        if viewModel.solveSessionId == detail.problemSessionId, makeSolveModel != nil {
+                            recoveryPath = [.solve]
+                        }
                     }
                 },
                 startProblemCapture: {
@@ -77,6 +92,7 @@ struct ProblemHistorySectionView: View {
             ForEach(viewModel.items.prefix(5)) { item in
                 ProblemHistoryRow(item: item) {
                     Task {
+                        recoveryPath = []
                         await viewModel.reconnect(to: item)
                         presentedDetail = viewModel.selectedDetail
                     }
@@ -136,14 +152,17 @@ private struct ProblemHistoryRow: View {
             .padding(SpacingTokens.sm)
             .background(ColorTokens.surfaceElevated)
             .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.small))
+            // A plain button must also accept taps between its text and icon content.
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .accessibilityIdentifier("history.session." + item.problemSessionId.uuidString)
     }
 
     private var iconName: String {
         switch item.stage {
         case .readyForSolve:
-            "checkmark.seal"
+            "doc.text"
         case .parseReview:
             "text.magnifyingglass"
         case .terminal:
@@ -158,7 +177,7 @@ private struct ProblemHistoryRow: View {
     private var iconColor: Color {
         switch item.stage {
         case .readyForSolve:
-            ColorTokens.success
+            ColorTokens.action
         case .terminal:
             ColorTokens.warning
         case .parseReview:
@@ -171,13 +190,17 @@ private struct ProblemHistoryRow: View {
 
 private struct ProblemSessionRecoveryDetailView: View {
     let detail: ProblemSessionDetail
+    @Binding var path: [RecoveryDestination]
+    let makeSolveModel: ((UUID) -> PrimarySolveViewModel)?
+    let reviewViewModel: ProblemReviewViewModel?
     let performAction: () -> Void
     let startProblemCapture: () -> Void
 
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
+            ScrollView {
             VStack(alignment: .leading, spacing: SpacingTokens.lg) {
                 VStack(alignment: .leading, spacing: SpacingTokens.sm) {
                     Text(detail.stage.label)
@@ -218,20 +241,39 @@ private struct ProblemSessionRecoveryDetailView: View {
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.borderedProminent)
+                } else if detail.nextAction == .readyForSolve && makeSolveModel == nil {
+                    Text("solve.error.disabled").fixedSize(horizontal: false, vertical: true)
                 } else {
                     Button {
                         performAction()
                     } label: {
-                        Label(detail.nextAction.buttonTitle, systemImage: detail.nextAction.isRefreshOnly ? "arrow.clockwise" : "arrow.right.circle")
+                        Label(detail.nextAction == .readyForSolve ? String(localized: "solve.start") : detail.nextAction.buttonTitle, systemImage: detail.nextAction.isRefreshOnly ? "arrow.clockwise" : "arrow.right.circle")
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.borderedProminent)
+                    .accessibilityIdentifier(detail.nextAction == .readyForSolve ? "history.solve" : "history.next")
                     .disabled(detail.nextAction == .unsupported || detail.nextAction == .none)
                 }
             }
             .padding(SpacingTokens.lg)
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .frame(maxWidth: .infinity, alignment: .topLeading)
+            }
             .background(ColorTokens.background)
+            .navigationDestination(for: RecoveryDestination.self) { destination in
+                switch destination {
+                case .solve:
+                    if let makeSolveModel {
+                        PrimarySolveView(viewModel: makeSolveModel(detail.problemSessionId), reviewProblem: {
+                            if let reviewViewModel { reviewViewModel.reset(); path = [.review] } else { path = [] }
+                        })
+                    }
+                case .review:
+                    if let reviewViewModel {
+                        ProblemReviewView(viewModel: reviewViewModel, problemSessionId: detail.problemSessionId,
+                            onFinished: { path = [] })
+                    }
+                }
+            }
             .navigationTitle("Session")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

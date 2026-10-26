@@ -329,3 +329,15 @@ Any V1 feature implementation should map to a capability ID and at least one req
 
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_IMPLEMENTATION_MAP.md` — primary candidate contracts, lifecycle, privacy, rollback and handoff.
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_EXECUTION_REPORT.md` — owner-only test stages and blocked live model evidence.
+
+## Sprint 5.4-RM real-model activation closure
+
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_QWEN_MODEL_DECISION.md` — owner selection, exact revision and ADR reconciliation; no production approval.
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_REAL_MODEL_INTEGRATION_MAP.md` — controlled transport, eligibility, cost/trust boundaries and remaining gaps.
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_REAL_MODEL_OWNER_RUNBOOK.md` — owner-only gates A–G, isolated startup, evaluation and rollback.
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_REAL_MODEL_ACCEPTANCE_REPORT.md` — owner backend regression PASS, file inventory and remaining real-model/evaluation evidence blockers.
+
+## Sprint 5.4-UI — Primary unverified solution experience
+
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_UI_IMPLEMENTATION_MAP.md` — iOS journey, bounded lifecycle, recovery and trust boundaries.
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_UI_EXECUTION_REPORT.md` — owner automated regression PASS, partial manual acceptance, final report and Git handoff; real model E2E remains separate.

@@ -7,6 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B54000000000000000000001 /* SolutionCandidate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A54000000000000000000001 /* SolutionCandidate.swift */; };
+		B54000000000000000000002 /* PrimarySolveServicing.swift in Sources */ = {isa = PBXBuildFile; fileRef = A54000000000000000000002 /* PrimarySolveServicing.swift */; };
+		B54000000000000000000003 /* PrimarySolveAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A54000000000000000000003 /* PrimarySolveAPI.swift */; };
+		B54000000000000000000004 /* SolveRecoveryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A54000000000000000000004 /* SolveRecoveryStore.swift */; };
+		B54000000000000000000005 /* FixturePrimarySolveAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A54000000000000000000005 /* FixturePrimarySolveAPI.swift */; };
+		B54000000000000000000006 /* PrimarySolveViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A54000000000000000000006 /* PrimarySolveViewModel.swift */; };
+		B54000000000000000000007 /* PrimarySolveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A54000000000000000000007 /* PrimarySolveView.swift */; };
+		B54000000000000000000008 /* MathematicalExpressionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A54000000000000000000008 /* MathematicalExpressionView.swift */; };
+		B54000000000000000000009 /* PrimarySolveContractTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A54000000000000000000009 /* PrimarySolveContractTests.swift */; };
+		B5400000000000000000000A /* MathPresentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5400000000000000000000A /* MathPresentationTests.swift */; };
+		B5400000000000000000000B /* PrimarySolveViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5400000000000000000000B /* PrimarySolveViewModelTests.swift */; };
+		B5400000000000000000000C /* SolveRecoveryStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5400000000000000000000C /* SolveRecoveryStoreTests.swift */; };
+		B5400000000000000000000D /* PrimarySolveUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5400000000000000000000D /* PrimarySolveUITests.swift */; };
 		100000000000000000000001 /* VerifiedAIApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000001 /* VerifiedAIApp.swift */; };
 		100000000000000000000002 /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000002 /* AppEnvironment.swift */; };
 		100000000000000000000003 /* AppDependencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000003 /* AppDependencies.swift */; };
@@ -127,6 +140,19 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A54000000000000000000001 /* SolutionCandidate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/ProblemSolving/Domain/Model/SolutionCandidate.swift; sourceTree = SOURCE_ROOT; };
+		A54000000000000000000002 /* PrimarySolveServicing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/ProblemSolving/Domain/Port/PrimarySolveServicing.swift; sourceTree = SOURCE_ROOT; };
+		A54000000000000000000003 /* PrimarySolveAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/ProblemSolving/Data/Remote/PrimarySolveAPI.swift; sourceTree = SOURCE_ROOT; };
+		A54000000000000000000004 /* SolveRecoveryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/ProblemSolving/Data/Local/SolveRecoveryStore.swift; sourceTree = SOURCE_ROOT; };
+		A54000000000000000000005 /* FixturePrimarySolveAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/ProblemSolving/Data/Debug/FixturePrimarySolveAPI.swift; sourceTree = SOURCE_ROOT; };
+		A54000000000000000000006 /* PrimarySolveViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/ProblemSolving/Presentation/Solution/PrimarySolveViewModel.swift; sourceTree = SOURCE_ROOT; };
+		A54000000000000000000007 /* PrimarySolveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/ProblemSolving/Presentation/Solution/PrimarySolveView.swift; sourceTree = SOURCE_ROOT; };
+		A54000000000000000000008 /* MathematicalExpressionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/ProblemSolving/Presentation/Components/MathematicalExpressionView.swift; sourceTree = SOURCE_ROOT; };
+		A54000000000000000000009 /* PrimarySolveContractTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/ProblemSolving/PrimarySolveContractTests.swift; sourceTree = SOURCE_ROOT; };
+		A5400000000000000000000A /* MathPresentationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/ProblemSolving/MathPresentationTests.swift; sourceTree = SOURCE_ROOT; };
+		A5400000000000000000000B /* PrimarySolveViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/ProblemSolving/PrimarySolveViewModelTests.swift; sourceTree = SOURCE_ROOT; };
+		A5400000000000000000000C /* SolveRecoveryStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/ProblemSolving/SolveRecoveryStoreTests.swift; sourceTree = SOURCE_ROOT; };
+		A5400000000000000000000D /* PrimarySolveUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAIUITests/PrimarySolveUITests.swift; sourceTree = SOURCE_ROOT; };
 		200000000000000000000001 /* VerifiedAIApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAIApp.swift; sourceTree = "<group>"; };
 		200000000000000000000002 /* AppEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEnvironment.swift; sourceTree = "<group>"; };
 		200000000000000000000003 /* AppDependencies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDependencies.swift; sourceTree = "<group>"; };
@@ -310,6 +336,7 @@
 		700000000000000000000005 /* VerifiedAITests */ = {
 			isa = PBXGroup;
 			children = (
+				C54000000000000000000002 /* ProblemSolving */,
 				710000000000000000000025 /* Account */,
 				710000000000000000000026 /* Authentication */,
 				710000000000000000000027 /* Onboarding */,
@@ -327,6 +354,7 @@
 		700000000000000000000006 /* VerifiedAIUITests */ = {
 			isa = PBXGroup;
 			children = (
+				A5400000000000000000000D /* PrimarySolveUITests.swift */,
 				200000000000000000000025 /* VerifiedAIUITests.swift */,
 			);
 			path = VerifiedAIUITests;
@@ -362,6 +390,7 @@
 		710000000000000000000003 /* Features */ = {
 			isa = PBXGroup;
 			children = (
+				C54000000000000000000001 /* ProblemSolving */,
 				71000000000000000000000F /* Account */,
 				710000000000000000000013 /* Authentication */,
 				710000000000000000000017 /* Home */,
@@ -824,6 +853,32 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
+		C54000000000000000000001 /* ProblemSolving */ = {
+			isa = PBXGroup;
+			children = (
+				A54000000000000000000001 /* SolutionCandidate.swift */,
+				A54000000000000000000002 /* PrimarySolveServicing.swift */,
+				A54000000000000000000003 /* PrimarySolveAPI.swift */,
+				A54000000000000000000004 /* SolveRecoveryStore.swift */,
+				A54000000000000000000005 /* FixturePrimarySolveAPI.swift */,
+				A54000000000000000000006 /* PrimarySolveViewModel.swift */,
+				A54000000000000000000007 /* PrimarySolveView.swift */,
+				A54000000000000000000008 /* MathematicalExpressionView.swift */,
+			);
+			name = ProblemSolving;
+			sourceTree = "<group>";
+		};
+		C54000000000000000000002 /* ProblemSolving */ = {
+			isa = PBXGroup;
+			children = (
+				A54000000000000000000009 /* PrimarySolveContractTests.swift */,
+				A5400000000000000000000A /* MathPresentationTests.swift */,
+				A5400000000000000000000B /* PrimarySolveViewModelTests.swift */,
+				A5400000000000000000000C /* SolveRecoveryStoreTests.swift */,
+			);
+			name = ProblemSolving;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -955,6 +1010,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B54000000000000000000001 /* SolutionCandidate.swift in Sources */,
+				B54000000000000000000002 /* PrimarySolveServicing.swift in Sources */,
+				B54000000000000000000003 /* PrimarySolveAPI.swift in Sources */,
+				B54000000000000000000004 /* SolveRecoveryStore.swift in Sources */,
+				B54000000000000000000005 /* FixturePrimarySolveAPI.swift in Sources */,
+				B54000000000000000000006 /* PrimarySolveViewModel.swift in Sources */,
+				B54000000000000000000007 /* PrimarySolveView.swift in Sources */,
+				B54000000000000000000008 /* MathematicalExpressionView.swift in Sources */,
 				100000000000000000000001 /* VerifiedAIApp.swift in Sources */,
 				100000000000000000000002 /* AppEnvironment.swift in Sources */,
 				100000000000000000000003 /* AppDependencies.swift in Sources */,
@@ -1043,6 +1106,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B54000000000000000000009 /* PrimarySolveContractTests.swift in Sources */,
+				B5400000000000000000000A /* MathPresentationTests.swift in Sources */,
+				B5400000000000000000000B /* PrimarySolveViewModelTests.swift in Sources */,
+				B5400000000000000000000C /* SolveRecoveryStoreTests.swift in Sources */,
 				100000000000000000000021 /* AppEnvironmentTests.swift in Sources */,
 				100000000000000000000022 /* AppRouterTests.swift in Sources */,
 				100000000000000000000023 /* APIClientTests.swift in Sources */,
@@ -1065,6 +1132,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B5400000000000000000000D /* PrimarySolveUITests.swift in Sources */,
 				100000000000000000000025 /* VerifiedAIUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
