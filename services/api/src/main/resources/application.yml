@@ -43,6 +43,9 @@ management:
       service: verified-ai-api
 app:
   solving:
+    canonical:
+      worker-enabled: false
+      worker-interval: PT5S
     secondary:
       enabled: false
       worker-enabled: false

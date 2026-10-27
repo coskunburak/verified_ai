@@ -46,6 +46,12 @@ User workflow around one submitted problem, including parse revisions and solve 
 ### Solution
 Reference solution associated with a Problem.
 
+Sprint 5.6 `CanonicalSolution` is an immutable, versioned, server-normalized projection of exactly
+one persisted structurally accepted primary or secondary candidate. It can represent a wrong
+answer. Canonical syntax, schema acceptance and solver agreement confer no correctness verdict.
+`CanonicalSolution.Step` retains its candidate step ID, exact typed claim, bounded explanation
+and ordered references to earlier steps. It is distinct from a learner Attempt and verification evidence.
+
 ### SolutionStep
 Structured visible step.
 

@@ -97,6 +97,16 @@ SolutionStep:
 
 SolverRun is immutable evidence and stores provider/model/prompt/cost/latency metadata.
 
+Sprint 5.6 implements this boundary as `CanonicalSolution` with `Lineage`, `Version`, `Provenance`
+and immutable ordered `Step` records in the solving module. Sealed `MathStatement` and
+`MathExpression` distinguish expressions from relations and retain exact numeric strings, operand
+order and v1 operators/functions. Explanation text is separate from mathematical content.
+Each primary or secondary accepted job has its own projection per representation/normalizer
+version; original candidates and agreement evidence remain separate. The internal
+`solving.application.canonical.CanonicalSolutions` contract enforces owned selected-source reads
+and explicit historical/source-unavailable/version-incompatible states. No correctness status
+is introduced. Materialization does not invoke a model or grant training eligibility.
+
 ## Verification Aggregate
 
 VerificationRun:

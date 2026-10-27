@@ -1,5 +1,32 @@
 # PostgreSQL Data Model
 
+## Sprint 5.6 canonical solution projection (V020)
+
+- `canonical_solutions`: owner/session/canonical/parse/revisions, role and exact source job,
+  originating primary job and optional secondary job, representation/normalizer, operation/ledger
+  provenance references, bounded content JSONB, expected step count and creation time.
+- `canonical_solution_steps`: solution-scoped stable UUID, candidate step ID, unique contiguous
+  ordinal, category, bounded typed claim JSONB, explanation and expected dependency count.
+- `canonical_solution_dependencies`: same-solution step/target composite FKs and ordinals,
+  strictly earlier target, unique dependency and reference order. Reference array order survives read-back.
+- `canonical_materialization_failures`: immutable typed rejection per exact role/job/version,
+  owner/session-bound source references and timestamp. Transient database failures roll back
+  and remain eligible; they are not mislabeled invalid mathematical candidates.
+
+Exact role/job/representation/normalizer uniqueness makes projection idempotent. Composite
+FKs bind accepted primary/secondary evidence, parent, owner, source and revisions. Deferred
+graph completeness triggers enforce step/dependency counts and contiguous order at commit;
+update/delete guards protect accepted content while allowing owned-source cascades. Accepted primary identity is frozen except the existing
+retry-parent deletion nulling behavior. Complete account/source deletion cascades through graphs.
+The database enforces graph structure and bounded artifact envelopes; application validation
+enforces the full math AST, symbols, source restrictions and candidate semantics.
+
+Account export includes historical content and failures; retention follows the original owned
+source and account lifecycle. Ledger IDs are retained as historical references without copying
+provider responses per step. Current reads resolve selected source through the problem module.
+The optional bounded poller reads accepted V018/V019 rows without inference; disabling it leaves
+immutable history intact. No historical migration is edited and no down migration is supplied.
+
 ## Why PostgreSQL
 
 The product is naturally relational and transactional: User → Attempt → Problem → Skill → Mistake → Mastery → StudyPlan → Exam. We require referential integrity, joins, aggregate reporting, transactional updates, stable migrations and auditability.

@@ -25,6 +25,15 @@ This is a highest-precedence document.
 9. Unsupported problem types fail explicitly rather than being coerced into an incorrect schema.
 10. User-corrected parses are not verified mathematical truth, training data, or evaluation gold data by default.
 
+## Canonical solution invariants (Sprint 5.6)
+
+- Canonical syntax is not proof; even an incorrect accepted candidate may have a faithful projection.
+- Exactly one immutable accepted primary or secondary candidate originates each versioned solution.
+- Roles, source ownership, selected parse identity and canonical revision must match; agreement never fuses solutions.
+- Steps retain exact typed claims and original IDs, with contiguous order and only earlier dependencies.
+- New candidate or normalizer versions preserve prior history. Stale source projections never appear in current reads.
+- Canonicalization adds no inference, billing debit, learner evidence or training eligibility.
+
 ## Attempt invariants
 
 1. Student attempt is never replaced by reference Solution.
