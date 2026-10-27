@@ -42,6 +42,20 @@ public class SolveSourceAccess {
         return sources.getFirst();
     }
 
+    /** Historical identity is explicit; this method never promotes a previous parse to current. */
+    @Transactional(propagation = Propagation.MANDATORY, noRollbackFor = ApiProblemException.class)
+    public SolveSource historical(UUID userId, UUID sessionId, UUID canonicalId) {
+        lockOwner(userId, sessionId);
+        var rows=jdbc.query("""
+            select * from canonical_problems where id=? and user_id=? and problem_session_id=?
+            """, (rs,n)->new SolveSource(rs.getObject("id",UUID.class),userId,sessionId,
+                rs.getObject("problem_parse_id",UUID.class),rs.getInt("problem_parse_revision"),
+                rs.getInt("canonical_revision"),rs.getString("problem_type"),rs.getString("task_type"),
+                rs.getString("canonical_problem_jsonb")),canonicalId,userId,sessionId);
+        if(rows.size()!=1) throw error(ApiErrorCode.SOLVE_SOURCE_NOT_READY);
+        return rows.getFirst();
+    }
+
     private static ApiProblemException error(ApiErrorCode code) {
         return new ApiProblemException(code==ApiErrorCode.RESOURCE_FORBIDDEN ? HttpStatus.NOT_FOUND
                 : code==ApiErrorCode.ACCOUNT_NOT_ACTIVE ? HttpStatus.FORBIDDEN : HttpStatus.CONFLICT,

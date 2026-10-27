@@ -346,3 +346,8 @@ Any V1 feature implementation should map to a capability ID and at least one req
 
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.5_IMPLEMENTATION_MAP.md` — versioned escalation, source-only execution, durable non-authoritative evidence and rollback.
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.5_EXECUTION_REPORT.md` — owner Gates A–F backend/fixture PASS; full API 432 passed / 2 gated skips, quality and local evaluation PASS; real secondary evaluation remains blocked.
+
+## Sprint 5.6 — Canonical solution and step model
+
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.6_IMPLEMENTATION_MAP.md` — typed syntax, separate candidate roles, owned history, atomic persistence and bounded recovery.
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.6_EXECUTION_REPORT.md` — owner Gates A–F backend/fixture PASS; full API 481 passed / 2 gated skips, repository quality and local evaluation PASS; real-model acceptance remains separate.
