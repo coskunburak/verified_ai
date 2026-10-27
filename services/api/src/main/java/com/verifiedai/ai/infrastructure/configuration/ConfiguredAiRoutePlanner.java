@@ -41,6 +41,11 @@ final class ConfiguredAiRoutePlanner
             AiCapability.PROBLEM_CLASSIFY, AiCapability.SOLVE
         );
 
+    private com.verifiedai.ai.application.AiSecondaryRoute secondary;
+
+    @Autowired
+    void secondaryRoute(com.verifiedai.ai.application.AiSecondaryRoute secondary) { this.secondary=secondary; }
+
     private final Map<AiCapability, AiRoutePolicy> policies;
 
     private final AiRoutingProperties routing;
@@ -297,6 +302,11 @@ final class ConfiguredAiRoutePlanner
 
     @Override
     public AiRoutePlan routePlan(AiRouteContext context, UUID userId) {
+        if(context.routeRole()==AiRouteContext.RouteRole.SECONDARY_SOLVER) {
+            if(secondary==null || !enabled(AiCapability.SOLVE))
+                throw new AiProviderException(AiProviderFailureClass.CONFIGURATION_DISABLED,false,"Secondary route unavailable");
+            return secondary.plan(context);
+        }
         AiRoutePolicy policy = policies.get(context.capability());
 
         if (
@@ -339,6 +349,10 @@ final class ConfiguredAiRoutePlanner
 
     @Override
     public long attemptCeiling(AiRoutePlan plan, AiRouteTarget target) {
+        if ("secondary-solver".equals(plan.promptId())) {
+            if(secondary==null) throw new AiProviderException(AiProviderFailureClass.POLICY_BLOCKED,false,"Secondary route unavailable");
+            return secondary.attemptCeiling(plan,target);
+        }
         if ("UNAVAILABLE".equals(target.provider())) return 0;
         return catalog.stream().filter(c -> c.capability() == plan.capability() && c.target().equals(target))
             .findFirst().orElseThrow(() -> new AiProviderException(AiProviderFailureClass.POLICY_BLOCKED,

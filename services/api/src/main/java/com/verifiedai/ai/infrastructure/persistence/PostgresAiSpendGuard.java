@@ -54,6 +54,20 @@ public class PostgresAiSpendGuard implements AiSpendGuard {
         accounts.put("SESSION:" + context.problemSessionId(), limits.sessionMicros());
         accounts.put("USER_DAY:" + context.userId() + ":" + date, limits.userDailyMicros());
         accounts.put("USER_MONTH:" + context.userId() + ":" + month, limits.userMonthlyMicros());
+        if(command.routeContext().routeRole()==AiRouteContext.RouteRole.SECONDARY_SOLVER) {
+            java.util.UUID parent;
+            try { parent=java.util.UUID.fromString(context.metadata().get("logicalPrimaryOperationId")); }
+            catch(RuntimeException e) { throw blocked(); }
+            if(parent.equals(context.operationId()) || !Boolean.TRUE.equals(jdbc.queryForObject("""
+                select exists(select 1 from ai_usage_records where operation_id=? and user_id=?
+                    and problem_session_id=? and capability='SOLVE' and prompt_id='solver' and status='SUCCEEDED')
+                """,Boolean.class,parent,context.userId(),context.problemSessionId()))) throw blocked();
+            var caps=jdbc.queryForList("select operation_limit_micros from ai_spend_accounts where account_key=? and operation_limit_micros is not null",
+                Long.class,"OPERATION:"+parent);
+            if(caps.size()!=1) throw blocked();
+            // Secondary has its own operation ledger, while also consuming the original primary operation quota.
+            accounts.put("OPERATION:"+parent,caps.getFirst());
+        }
         // The FK and unique key bind budget attempts to the existing operation ledger.
         jdbc.update("""
             INSERT INTO ai_spend_attempts(operation_id, attempt_number, provider, model, pricing_version,
@@ -67,7 +81,13 @@ public class PostgresAiSpendGuard implements AiSpendGuard {
                 account.getKey(), personal ? context.userId() : null);
             long used = jdbc.queryForObject("SELECT committed_micros FROM ai_spend_accounts WHERE account_key = ? FOR UPDATE",
                 Long.class, account.getKey());
-            if (used > account.getValue() || ceiling > account.getValue() - used) throw blocked();
+            long cap=account.getValue();
+            if(account.getKey().startsWith("OPERATION:")) {
+                jdbc.update("UPDATE ai_spend_accounts SET operation_limit_micros=least(coalesce(operation_limit_micros,?),?) WHERE account_key=?",
+                    cap,cap,account.getKey());
+                cap=jdbc.queryForObject("SELECT operation_limit_micros FROM ai_spend_accounts WHERE account_key=?",Long.class,account.getKey());
+            }
+            if (used > cap || ceiling > cap - used) throw blocked();
             jdbc.update("UPDATE ai_spend_accounts SET committed_micros = committed_micros + ? WHERE account_key = ?",
                 ceiling, account.getKey());
             jdbc.update("INSERT INTO ai_spend_allocations VALUES (?, ?, ?)", context.operationId(), attempt, account.getKey());

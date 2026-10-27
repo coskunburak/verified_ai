@@ -1,0 +1,174 @@
+{
+  "schemaVersion": "secondary-offline-fixtures-v1",
+  "prompt": "secondary-solver/v001",
+  "promptSha256": "4136784f77ece41b0378950e5f6ba912bbe114cee6324693764e4558bb5a0738",
+  "trainingEligibility": "NOT_ELIGIBLE",
+  "realModelEvidence": false,
+  "cases": [
+    {
+      "id": "exact-rational",
+      "primary": "x = 0.5",
+      "secondary": "x = 1/2",
+      "expected": "AGREEMENT",
+      "primaryFinalAnswer": {
+        "kind": "RELATION",
+        "relation": "EQUALS",
+        "left": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        },
+        "right": {
+          "kind": "NUMBER",
+          "numericType": "DECIMAL",
+          "value": "0.5"
+        }
+      },
+      "secondaryFinalAnswer": {
+        "kind": "RELATION",
+        "relation": "EQUALS",
+        "left": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        },
+        "right": {
+          "kind": "BINARY",
+          "operator": "DIVIDE",
+          "left": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "1"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "2"
+          }
+        }
+      }
+    },
+    {
+      "id": "shared-error",
+      "primary": "x = 99",
+      "secondary": "x = 99",
+      "expected": "AGREEMENT",
+      "mathematicalVerificationPerformed": false,
+      "primaryFinalAnswer": {
+        "kind": "RELATION",
+        "relation": "EQUALS",
+        "left": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        },
+        "right": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "99"
+        }
+      },
+      "secondaryFinalAnswer": {
+        "kind": "RELATION",
+        "relation": "EQUALS",
+        "left": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        },
+        "right": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "99"
+        }
+      }
+    },
+    {
+      "id": "incompatible-exact",
+      "primary": "x = 1",
+      "secondary": "x = 2",
+      "expected": "DISAGREEMENT",
+      "primaryFinalAnswer": {
+        "kind": "RELATION",
+        "relation": "EQUALS",
+        "left": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        },
+        "right": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "1"
+        }
+      },
+      "secondaryFinalAnswer": {
+        "kind": "RELATION",
+        "relation": "EQUALS",
+        "left": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        },
+        "right": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "2"
+        }
+      }
+    },
+    {
+      "id": "symbolic-unknown",
+      "primary": "x + x",
+      "secondary": "2*x",
+      "expected": "INDETERMINATE",
+      "primaryFinalAnswer": {
+        "kind": "RELATION",
+        "relation": "EQUALS",
+        "left": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        },
+        "right": {
+          "kind": "BINARY",
+          "operator": "ADD",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          }
+        }
+      },
+      "secondaryFinalAnswer": {
+        "kind": "RELATION",
+        "relation": "EQUALS",
+        "left": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        },
+        "right": {
+          "kind": "BINARY",
+          "operator": "MULTIPLY",
+          "left": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "2"
+          },
+          "right": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          }
+        }
+      }
+    },
+    {
+      "id": "primary-secrets",
+      "forbiddenFields": [
+        "finalAnswer",
+        "steps",
+        "method",
+        "reasoning",
+        "rawOutput",
+        "transcript"
+      ],
+      "expected": "CANONICAL_ONLY"
+    }
+  ]
+}

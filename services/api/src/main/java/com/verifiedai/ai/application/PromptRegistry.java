@@ -59,6 +59,11 @@ public final class PromptRegistry {
     public static PromptRegistry defaults() {
         return new PromptRegistry(
             List.of(
+                new PromptRegistryEntry("secondary-solver", "v001", AiCapability.SOLVE, "ai-platform",
+                    "solution-candidate-v1", "prompts/secondary-solver/v001.md", PromptReleaseStage.LOCAL_ONLY,
+                    "evaluations/fixtures/secondary-solver/blind-v1.json", "PENDING_OWNER_FIXTURE_ACCEPTANCE",
+                    List.of("source blindness", "agreement is not proof", "synthetic model separation only"),
+                    "secondary-route-v1", PromptTrainingEligibility.NOT_ELIGIBLE, "4136784f77ece41b0378950e5f6ba912bbe114cee6324693764e4558bb5a0738", null),
                 new PromptRegistryEntry("solver", "v002", AiCapability.SOLVE, "ai-platform",
                     "solution-candidate-v1", "prompts/solver/v002.md", PromptReleaseStage.OFFLINE_EVALUATION,
                     "evaluations/fixtures/solver/qwen-smoke-v1.json", "PENDING_OWNER_REAL_MODEL_EVALUATION",
