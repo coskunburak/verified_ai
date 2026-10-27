@@ -9,9 +9,15 @@ final class FixturePrimarySolveAPI: PrimarySolveServicing {
     nonisolated static let parseId = UUID(uuidString: "00000000-0000-0000-0000-000000005403")!
     private let defaults: UserDefaults
     private let scenario: String
-    private var reads = 0
-    init(scenario: String = "GENERATED_UNVERIFIED", defaults: UserDefaults = .standard, reset: Bool = false) {
-        self.scenario = scenario; self.defaults = defaults
+    let controlledProgression: Bool
+    private(set) var startRequests = 0
+    private var releasedState: SolveState?
+    private var readGate: (id: UUID, state: SolveState, continuation: AsyncStream<Void>.Continuation)?
+    var waitingForAdvance: SolveState? { readGate?.state }
+
+    init(scenario: String = "GENERATED_UNVERIFIED", defaults: UserDefaults = .standard, reset: Bool = false,
+         controlledProgression: Bool = false) {
+        self.scenario = scenario; self.defaults = defaults; self.controlledProgression = controlledProgression
         if reset { defaults.removeObject(forKey: "solve.fixture.job"); defaults.removeObject(forKey: "solve.fixture.attempt"); defaults.removeObject(forKey: "solve.fixture.state") }
     }
     func current(sessionId: UUID) async throws -> SolveJobSnapshot? {
@@ -19,22 +25,59 @@ final class FixturePrimarySolveAPI: PrimarySolveServicing {
         return try snapshot(job: job, state: defaults.string(forKey: "solve.fixture.state").flatMap(SolveState.init(rawValue:)) ?? terminalState)
     }
     func start(sessionId: UUID, key: String) async throws -> SolveJobSnapshot {
+        startRequests += 1
         if let existing = try await current(sessionId: sessionId) { return existing }
         let job = UUID()
         defaults.set(job.uuidString, forKey: "solve.fixture.job")
-        defaults.set(1, forKey: "solve.fixture.attempt"); reads = 0
+        defaults.set(1, forKey: "solve.fixture.attempt"); releasedState = nil
         return try record(job: job, state: .queued)
     }
     func read(sessionId: UUID, jobId: UUID) async throws -> SolveJobSnapshot {
-        reads += 1
-        return try record(job: jobId, state: reads == 1 ? .running : terminalState)
+        guard let current = try await current(sessionId: sessionId), current.jobId == jobId else {
+            throw SolveContractError.invalidResponse
+        }
+        guard current.state.isActive else { return current }
+        if controlledProgression { try await waitForAdvance(from: current.state) }
+        try Task.checkCancellation()
+        return try record(job: jobId, state: current.state == .queued ? .running : terminalState)
     }
     func retry(sessionId: UUID, jobId: UUID, key: String) async throws -> SolveJobSnapshot {
-        defaults.set(2, forKey: "solve.fixture.attempt"); reads = 0
+        defaults.set(2, forKey: "solve.fixture.attempt"); releasedState = nil
         let job = UUID(); defaults.set(job.uuidString, forKey: "solve.fixture.job")
         return try record(job: job, state: .queued)
     }
     func cancel(sessionId: UUID, jobId: UUID) async throws -> SolveJobSnapshot { try record(job: jobId, state: .cancelled) }
+
+    /// Test-server stimulus only: the real ViewModel poll must consume this permit and render the next state.
+    /// A phase cannot disappear while XCTest is still observing it, regardless of simulator speed.
+    func advance(from state: SolveState) {
+        guard controlledProgression, state.isActive,
+              defaults.string(forKey: "solve.fixture.state") == state.rawValue else { return }
+        if let gate = readGate, gate.state == state {
+            // A just-cancelled old screen may not have cleared its gate yet. Keep the acknowledgement
+            // for the resumed screen's next GET rather than losing it to a terminated stream.
+            if case .terminated = gate.continuation.yield(()) { releasedState = state }
+            gate.continuation.finish()
+        } else {
+            // The UI can acknowledge a phase before its next polling request begins.
+            releasedState = state
+        }
+    }
+    private func waitForAdvance(from state: SolveState) async throws {
+        if releasedState == state { releasedState = nil; return }
+        let (events, continuation) = AsyncStream<Void>.makeStream(bufferingPolicy: .bufferingNewest(1))
+        let id = UUID()
+        readGate?.continuation.finish()
+        readGate = (id, state, continuation)
+        defer {
+            continuation.finish()
+            if readGate?.id == id { readGate = nil }
+        }
+        var iterator = events.makeAsyncIterator()
+        // AsyncStream unblocks on task cancellation, so dismiss/background/relaunch cannot leak a pending GET.
+        guard await iterator.next() != nil else { throw CancellationError() }
+        try Task.checkCancellation()
+    }
     private var terminalState: SolveState {
         if defaults.integer(forKey: "solve.fixture.attempt") > 1 { return .generatedUnverified }
         return SolveState(rawValue: scenario) ?? .generatedUnverified

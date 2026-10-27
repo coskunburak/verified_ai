@@ -88,6 +88,74 @@ final class PrimarySolveViewModelTests: XCTestCase {
         let vm = model(); vm.resume(); await settle { vm.canStart }; store.failSave = true
         vm.start(); await settle { vm.errorKey != nil }; XCTAssertTrue(service.keys.isEmpty); vm.suspend()
     }
+    func testControlledFixturePreservesEveryPhaseUntilAcknowledgedAndPollsTheSameJob() async throws {
+        let suite = "PrimarySolveControlled-" + UUID().uuidString
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let fixture = FixturePrimarySolveAPI(defaults: defaults, reset: true, controlledProgression: true)
+        let vm = PrimarySolveViewModel(userId: user, sessionId: FixturePrimarySolveAPI.sessionId,
+            service: fixture, recovery: store, network: network, isFixture: true, sleep: { _ in await Task.yield() })
+        defer { vm.suspend() }
+        vm.resume(); await settle { vm.canStart }
+        vm.start(); await settle { fixture.waitingForAdvance == .queued }
+        let job = try XCTUnwrap(vm.snapshot?.jobId)
+        for _ in 0..<20 { await Task.yield() }
+        XCTAssertEqual(vm.snapshot?.state, .queued)
+        XCTAssertNil(vm.visibleCandidate)
+        fixture.advance(from: .running) // An out-of-order acknowledgement cannot skip QUEUED.
+        XCTAssertEqual(vm.snapshot?.state, .queued)
+        vm.advanceFixture(); await settle { fixture.waitingForAdvance == .running }
+        XCTAssertEqual(vm.snapshot?.state, .running); XCTAssertEqual(vm.snapshot?.jobId, job)
+        for _ in 0..<20 { await Task.yield() }
+        XCTAssertEqual(vm.snapshot?.state, .running)
+        XCTAssertNil(vm.visibleCandidate)
+        vm.advanceFixture(); await settle { vm.snapshot?.state == .generatedUnverified && !vm.busy }
+        XCTAssertEqual(vm.snapshot?.jobId, job); XCTAssertEqual(fixture.startRequests, 1)
+        XCTAssertNotNil(vm.visibleCandidate); XCTAssertNil(vm.controlledFixtureState)
+    }
+    func testControlledFixtureCancellationAndRelaunchResumeRunningWithoutAnotherStart() async throws {
+        let suite = "PrimarySolveRelaunch-" + UUID().uuidString
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let fixture = FixturePrimarySolveAPI(defaults: defaults, reset: true, controlledProgression: true)
+        let first = PrimarySolveViewModel(userId: user, sessionId: FixturePrimarySolveAPI.sessionId,
+            service: fixture, recovery: store, network: network, isFixture: true, sleep: { _ in await Task.yield() })
+        defer { first.suspend() }
+        first.resume(); await settle { first.canStart }; first.start()
+        await settle { fixture.waitingForAdvance == .queued }
+        first.advanceFixture(); await settle { fixture.waitingForAdvance == .running }
+        let job = try XCTUnwrap(first.snapshot?.jobId)
+        first.suspend(); await settle { fixture.waitingForAdvance == nil }
+        // A fresh fixture instance models process relaunch; only its isolated persisted state survives.
+        let restoredFixture = FixturePrimarySolveAPI(defaults: defaults, controlledProgression: true)
+        let restored = PrimarySolveViewModel(userId: user, sessionId: FixturePrimarySolveAPI.sessionId,
+            service: restoredFixture, recovery: store, network: network, isFixture: true, sleep: { _ in await Task.yield() })
+        defer { restored.suspend() }
+        restored.resume(); await settle { restoredFixture.waitingForAdvance == .running }
+        XCTAssertEqual(restored.snapshot?.jobId, job); XCTAssertFalse(restored.canStart)
+        restored.advanceFixture(); await settle { restored.snapshot?.state == .generatedUnverified && !restored.busy }
+        XCTAssertEqual(restored.snapshot?.jobId, job); XCTAssertEqual(restoredFixture.startRequests, 0)
+        XCTAssertNotNil(restored.visibleCandidate)
+    }
+    func testAutomaticFixtureResumesFromPersistedStateAndNeverRewindsTerminalResults() async throws {
+        let suite = "PrimarySolveAutomatic-" + UUID().uuidString
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let session = FixturePrimarySolveAPI.sessionId
+        let fixture = FixturePrimarySolveAPI(defaults: defaults, reset: true)
+        XCTAssertFalse(fixture.controlledProgression)
+        let job = try await fixture.start(sessionId: session, key: "synthetic-start")
+        let running = try await fixture.read(sessionId: session, jobId: job.jobId)
+        XCTAssertEqual(running.state, .running)
+        let restored = FixturePrimarySolveAPI(defaults: defaults)
+        let current = try await restored.current(sessionId: session)
+        XCTAssertEqual(current?.state, .running); XCTAssertEqual(current?.jobId, job.jobId)
+        let completed = try await restored.read(sessionId: session, jobId: job.jobId)
+        XCTAssertEqual(completed.state, .generatedUnverified)
+        let repeated = try await restored.read(sessionId: session, jobId: job.jobId)
+        XCTAssertEqual(repeated.state, .generatedUnverified); XCTAssertEqual(repeated.jobId, job.jobId)
+        XCTAssertEqual(restored.startRequests, 0)
+    }
 }
 
 @MainActor

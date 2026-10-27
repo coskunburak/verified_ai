@@ -31,6 +31,14 @@ struct PrimarySolveView: View {
         .navigationTitle("solve.title")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            #if DEBUG
+            ToolbarItem(placement: .topBarLeading) {
+                if let state = viewModel.controlledFixtureState {
+                    Button("Advance synthetic job") { viewModel.advanceFixture() }
+                        .accessibilityIdentifier("solve.fixture.advance.\(state.rawValue)")
+                }
+            }
+            #endif
             ToolbarItem(placement: .topBarTrailing) {
                 Button("solve.close") { dismiss() }.accessibilityIdentifier("solve.close")
             }
