@@ -124,6 +124,49 @@ class AiSpendGuardIntegrationTest extends PostgresIntegrationTestSupport {
         assertThat(jdbc.queryForObject("SELECT committed_micros FROM ai_spend_accounts WHERE account_key = 'GLOBAL_MONTH:2090-01-01'", Long.class)).isEqualTo(60);
     }
 
+    @Test
+    void secondaryConsumesOriginalPrimaryQuotaAndUnknownUsageNeverReleasesIt() {
+        var first=solveCommand(null,null);startSolve(first,"solver");
+        var broad=new PostgresAiSpendGuard(jdbc,new AiBudgetProperties("aggregate-v1",100,100,1000,1000,1000,1000,1000,Map.of("FREE",100L)),
+            u->"FREE",Clock.fixed(now,ZoneOffset.UTC));
+        reserve(broad,first,1,60);
+        jdbc.update("update ai_usage_records set status='SUCCEEDED' where operation_id=?",first.executionContext().operationId());
+        var second=solveCommand(first,first.executionContext().userId());startSolve(second,"secondary-solver");
+        assertThatThrownBy(()->reserve(broad,second,1,50)).isInstanceOf(AiProviderException.class);
+        assertThat(jdbc.queryForObject("select count(*) from ai_spend_attempts where operation_id=?",Integer.class,second.executionContext().operationId())).isZero();
+        reserve(broad,second,1,40);
+        new TransactionTemplate(transactions).executeWithoutResult(t->broad.report(second,1,null,AiProviderFailureClass.TIMEOUT));
+        assertThat(jdbc.queryForObject("select committed_micros from ai_spend_accounts where account_key=?",Long.class,
+            "OPERATION:"+first.executionContext().operationId())).isEqualTo(100);
+        assertThat(jdbc.queryForObject("select state from ai_spend_attempts where operation_id=?",String.class,second.executionContext().operationId())).isEqualTo("UNKNOWN");
+        assertThat(jdbc.queryForObject("select count(distinct prompt_id) from ai_usage_records where operation_id in (?,?)",Integer.class,
+            first.executionContext().operationId(),second.executionContext().operationId())).isEqualTo(2);
+    }
+
+    @Test
+    void secondaryCannotBorrowAnotherOwnersOperationQuota() {
+        var first=solveCommand(null,null);startSolve(first,"solver");reserve(guard(now),first,1,20);
+        jdbc.update("update ai_usage_records set status='SUCCEEDED' where operation_id=?",first.executionContext().operationId());
+        var foreign=solveCommand(first,UUID.randomUUID());startSolve(foreign,"secondary-solver");
+        assertThatThrownBy(()->reserve(guard(now),foreign,1,1)).isInstanceOf(AiProviderException.class);
+        assertThat(jdbc.queryForObject("select count(*) from ai_spend_attempts where operation_id=?",Integer.class,foreign.executionContext().operationId())).isZero();
+    }
+
+    private AiExecutionCommand solveCommand(AiExecutionCommand parent,UUID user) {
+        var context=parent==null?command().executionContext():new AiExecutionContext(UUID.randomUUID(),user,
+            parent.executionContext().problemSessionId(),"secondary-test",null,null,null,
+            Map.of("logicalPrimaryOperationId",parent.executionContext().operationId().toString()));
+        var route=new AiRouteContext(AiCapability.SOLVE,"EQUATION","SOLVE_EQUATION",null,null,false,"LOW",null,null,
+            Locale.ENGLISH,Duration.ofSeconds(1),100L,null,Map.of(),null,null,"NO_TRAINING_BY_DEFAULT",
+            parent==null?AiRouteContext.RouteRole.PRIMARY_SOLVER:AiRouteContext.RouteRole.SECONDARY_SOLVER);
+        return new AiExecutionCommand(AiCapability.SOLVE,new AiCapabilityRequest(){},context,route,"application/json",null,null,null,null,100L);
+    }
+    private void startSolve(AiExecutionCommand c,String prompt) {
+        var plan=new AiRoutePlan(AiCapability.SOLVE,"secondary-budget-test-v1","TEST",null,prompt,"v001",
+            "solution-candidate-v1",Duration.ofSeconds(1),1,65536,100,"old-price-v1");
+        ledger.saveAndFlush(AiUsageRecordJpaEntity.from(AiUsageRecord.started(UUID.randomUUID(),c,plan,now)));
+    }
+
     private PostgresAiSpendGuard guard(Instant time) {
         return new PostgresAiSpendGuard(jdbc,
             new AiBudgetProperties("test-limits-v1", 100, 100, 100, 100, 100, 100, 100, Map.of("FREE", 100L)),

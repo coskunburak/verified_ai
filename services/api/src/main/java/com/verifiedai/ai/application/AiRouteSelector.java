@@ -15,7 +15,8 @@ public final class AiRouteSelector {
         List<AiRouteEligibility> candidates, AiProviderHealth health, Instant now, Duration healthMaxAge) {
         if (!EXECUTABLE.contains(context.capability())
             || (context.capability() == AiCapability.SOLVE
-                ? context.routeRole() != AiRouteContext.RouteRole.PRIMARY_SOLVER
+                ? (context.routeRole() != AiRouteContext.RouteRole.PRIMARY_SOLVER
+                    && context.routeRole() != AiRouteContext.RouteRole.SECONDARY_SOLVER)
                 : context.routeRole() != AiRouteContext.RouteRole.DEFAULT)) {
             throw blocked(AiProviderFailureClass.CONFIGURATION_DISABLED);
         }

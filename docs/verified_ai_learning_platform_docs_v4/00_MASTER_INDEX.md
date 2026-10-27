@@ -341,3 +341,8 @@ Any V1 feature implementation should map to a capability ID and at least one req
 
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_UI_IMPLEMENTATION_MAP.md` — iOS journey, bounded lifecycle, recovery and trust boundaries.
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_UI_EXECUTION_REPORT.md` — owner automated regression PASS, partial manual acceptance, final report and Git handoff; real model E2E remains separate.
+
+## Sprint 5.5 — Conditional blind secondary solving
+
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.5_IMPLEMENTATION_MAP.md` — versioned escalation, source-only execution, durable non-authoritative evidence and rollback.
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.5_EXECUTION_REPORT.md` — owner Gates A–F backend/fixture PASS; full API 432 passed / 2 gated skips, quality and local evaluation PASS; real secondary evaluation remains blocked.

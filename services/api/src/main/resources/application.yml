@@ -43,12 +43,19 @@ management:
       service: verified-ai-api
 app:
   solving:
+    secondary:
+      enabled: false
+      worker-enabled: false
+      sample-basis-points: 0
+      max-cost-micros: 0
+      max-concurrency: 2
     max-cost-micros: 0
     language: tr
     enabled: false
     worker-enabled: false
   environment: ${APP_ENV:local}
   ai:
+    secondary-fixture-enabled: false
     vllm-solver:
       enabled: false
     routing:
