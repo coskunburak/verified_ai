@@ -408,7 +408,7 @@ are not the authoritative result for this run. The recorded total comes from the
 API command summary, cross-checked against its 71 per-suite summaries, without rerunning tests.
 
 Owner-generated local evaluation artifacts were also inspected:
-`.generated/evaluations/latest/ingestion-evaluation-summary.md`,
+the local-only ingestion evaluation Markdown summary,
 `.generated/evaluations/latest/ingestion-evaluation-report.json` and
 `.generated/evaluations/latest/ingestion-release-comparison.json`.
 The summary/comparison agree with the owner transcript: baseline production-ingestion-v1,
