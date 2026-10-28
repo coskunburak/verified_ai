@@ -62,7 +62,8 @@ Every high-impact feature PR should either reference an existing requirement ID 
 
 Sprint 5.7 contributes to REQ-VERIFY-001 and CAP-VERIFY-001 through deterministic
 method planning with no correctness verdict, exact owned source lineage and explicit
-unavailable executors. Owner local Gates A–F passed; CI is pending, documented in
+unavailable executors. Owner local Gates A–F and implementation CI passed; current-head
+checks and final review are tracked in PR #31, with pinned evidence documented in
 `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.7_EXECUTION_REPORT.md`.
 The broader verification-policy requirement remains Planned until execution and
 aggregation have their own acceptance evidence.

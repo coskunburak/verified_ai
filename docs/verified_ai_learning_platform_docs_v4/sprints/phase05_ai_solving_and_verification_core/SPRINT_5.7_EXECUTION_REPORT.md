@@ -1,6 +1,6 @@
 # VERIFIED AI — SPRINT 5.7 IMPLEMENTATION HANDOFF
 
-Date: 2026-10-28. Status: **SPRINT_5.7_OWNER_TESTED_PENDING_CI**.
+Date: 2026-10-28. Status: **SPRINT_5.7_LOCAL_AND_CI_VERIFIED_PENDING_OWNER_ACCEPTANCE**.
 Implementation and source inspection are complete. Owner Gate A compiled production and
 test sources and passed all 29 focused unit tests. Owner Gate B passed all 6 PostgreSQL
 integration tests. Owner Gate C passed all 13 architecture and candidate-contract tests.
@@ -8,13 +8,17 @@ Owner Gate D passed all 80 canonical, primary and secondary regression tests.
 Owner Gate E completed the full API suite: 519 total, 517 passed and 2 gated real-Qwen
 tests skipped, with zero failures or errors. Gate F passed docs/contracts/lint, then
 secrets and immutability after correcting the terminal PATH. Local Gates A–F have passed;
-publication, CI and final sprint acceptance remain pending. No mathematical verification
-was executed by this implementation.
+the implementation was published as PR #31 and passed all applicable CI checks.
+Final owner acceptance and merge remain pending. No mathematical verification was
+executed by this implementation.
 
 ## A. Baseline
 
 - Branch: `codex/sprint-5-7-verification-planner`.
-- HEAD and fetched main baseline: `8e5f9bef9ab1cfc5ca77b0f87140d78da363609e`.
+- Branch-creation HEAD and fetched main baseline: `8e5f9bef9ab1cfc5ca77b0f87140d78da363609e`.
+- Published implementation commit: `5d782ccc85629e9944cd2eb09a3884be41b77230`,
+  [PR #31](https://github.com/coskunburak/verified_ai/pull/31). Later evidence-only
+  commits update documentation; latest-head checks remain visible on that PR.
 - Working tree was clean when this branch was created. At the owner-test handoff,
   Sprint 5.7 source, tests and documentation were uncommitted. After Gates A–F, the owner
   explicitly authorized the final documentation check, commit, push, PR and CI tracking.
@@ -178,7 +182,7 @@ new training eligibility. Existing source deletion/account locks remain authorit
 
 ## G. Test matrix
 
-Gates A–F are **OWNER_TESTED / PASS**. Hosted CI remains pending publication.
+Gates A–F are **OWNER_TESTED / PASS**. The published implementation is **CI_VERIFIED**.
 Section H contains the exact commands, selected one gate at a time. Stop on the first
 failure and return the output before proceeding. Prior baseline results do not establish
 Sprint 5.7 acceptance.
@@ -235,6 +239,23 @@ Documentation evidence is for the pre-evidence-update content; its final metadat
 was rerun by the agent under the subsequent publication authorization and passed for
 292 Markdown files. A final metadata check also accompanies any further evidence update.
 
+Hosted evidence for implementation commit `5d782ccc85629e9944cd2eb09a3884be41b77230`:
+
+| Check | Result | Evidence |
+| --- | --- | --- |
+| Backend CI | PASS; 519 total, 517 passed, 2 gated Qwen skips, zero failures/errors; prompt gate tests 5 passed | [Run 40669367510](https://github.com/coskunburak/verified_ai/actions/runs/40669367510) |
+| Documentation CI | PASS | [Run 40669367495](https://github.com/coskunburak/verified_ai/actions/runs/40669367495) |
+| Security Scan | PASS | [Run 40669367499](https://github.com/coskunburak/verified_ai/actions/runs/40669367499) |
+| GitGuardian Security Checks | PASS | [PR #31 checks](https://github.com/coskunburak/verified_ai/pull/31/checks) |
+
+Backend job logs confirmed `BUILD SUCCESS` at `2026-10-28T10:09:40Z` and the same
+519/0 failures/0 errors/2 skipped totals as the owner's full run. These pinned runs
+certify the implementation commit. Evidence-only follow-up commits must pass the same
+applicable current-head checks before handoff; the PR records those results without
+claiming that a check on an earlier SHA certifies a later SHA. iOS, verifier, contracts
+and AI evaluation workflows were not triggered by the PR's changed paths; their absence
+is not recorded as a fresh passing run.
+
 | Gate | Purpose | Prerequisites | Status |
 | --- | --- | --- | --- |
 | A | New planner, registry, decoder and application unit tests | JDK 21, Maven and existing dependencies | OWNER_TESTED / PASS: 29 tests, zero failures/errors/skips |
@@ -243,7 +264,7 @@ was rerun by the agent under the subsequent publication authorization and passed
 | D | Existing canonical, primary and secondary regression suite | C passed; Docker/PostgreSQL | OWNER_TESTED / PASS: 80 tests, zero failures/errors/skips |
 | E | Full API regression including security, deletion, billing and storage | D passed; Docker, PostgreSQL and existing pinned local MinIO image | OWNER_TESTED / PASS: 519 total, 517 passed, 2 gated Qwen skips, zero failures/errors |
 | F | Documentation, contracts, lint, secrets and prompt immutability | E passed; repository Python/tool prerequisites, including rg on PATH | OWNER_TESTED / PASS: all five checks; PATH dependency resolved without code changes |
-| CI | Applicable workflows on the exact eventually published Sprint 5.7 head | Local gates passed; publication authorized; inspect actual PR checks | PENDING_PUBLICATION |
+| CI | Applicable workflows on the exact published Sprint 5.7 head | Local gates passed; publication authorized; inspect actual PR checks | CI_VERIFIED for implementation commit 5d782cc; subsequent current-head evidence is in PR #31 checks |
 
 Unchanged iOS and verifier suites have baseline evidence above; no new iOS/verifier changes
 require a duplicate local run in this handoff. Hosted checks still apply according to the
@@ -306,8 +327,8 @@ the next gate is never launched automatically. Keep Docker running for B, D and 
 ## I. Open issues and limitations
 
 - Sprint defects: no known unresolved defect identified by source inspection or Gates A–F;
-  hosted CI acceptance remains open at publication. Final documentation metadata is
-  checked after recording the evidence and before publication.
+  implementation CI passed. Evidence-only updates must also pass current-head checks.
+  Final documentation metadata is checked after recording evidence and before publication.
   No P0/P1 clearance is claimed.
 - Accepted bounded scope: inequalities, systems, symbolic/fractional powers, inferred
   textual assumptions and general domain implication are unsupported or require review.
@@ -326,28 +347,28 @@ the next gate is never launched automatically. Keep Docker running for B, D and 
 
 ## J. Acceptance verdict
 
-**SPRINT_5.7_OWNER_TESTED_PENDING_CI**.
-The owner has supplied passing evidence for local Gates A–F. CI_VERIFIED and
-PRODUCTION_APPROVED are not claimed. Final acceptance still requires applicable CI on
-the exact published head, final owner acceptance and no unresolved critical defect.
-Sprint 5.8 has not started.
+**SPRINT_5.7_LOCAL_AND_CI_VERIFIED_PENDING_OWNER_ACCEPTANCE**.
+The owner supplied passing evidence for local Gates A–F, and the implementation passed
+applicable CI. Final acceptance still requires current-head checks for any evidence-only
+follow-up, final owner review and no unresolved critical defect. PRODUCTION_APPROVED is
+not claimed. Sprint 5.8 has not started.
 
 ## K. Next action
 
-The owner explicitly authorized Git publication after testing. Publish the implementation
-and PR from `codex/sprint-5-7-verification-planner` to `main`, then track applicable CI;
-no merge or deployment is included. The PR is the authoritative source for checks on
-the latest published head.
+The owner explicitly authorized Git publication after testing. PR #31 is open from
+`codex/sprint-5-7-verification-planner` to `main`; no merge or deployment is included.
+After the evidence update passes current-head checks, the next owner action is final
+review/merge approval. The PR is authoritative for checks on the latest published head.
 
 - Affected files: 25 total, listed individually in Section E (10 production, 7 test,
   8 documentation files).
 - Diff summary: additive deterministic internal planner, bounded canonical decoder,
   explicit unavailable capabilities, owned source/parent rechecks, privacy-safe metrics,
   36 new tests and targeted documentation; no migration or public API.
-- Proposed commit: `feat(verification): add deterministic canonical verification planner`.
-- Proposed PR title: `Sprint 5.7: deterministic canonical verification planning`.
+- Published implementation commit: `feat(verification): add deterministic canonical verification planner`.
+- PR title: `Sprint 5.7: deterministic canonical verification planning`.
 - Traceability: REQ-VERIFY-001 / CAP-VERIFY-001 planning contribution; execution and
   verdict policy remain deferred.
-- Remaining gates: hosted checks on the exact published head and final owner acceptance.
+- Remaining gates: current-head checks for this evidence update and final owner acceptance.
   Owner tests need no application retest unless
   implementation changes.
