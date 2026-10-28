@@ -60,6 +60,13 @@ Every high-impact feature PR should either reference an existing requirement ID 
 
 ## PR Usage Rule
 
+Sprint 5.7 contributes to REQ-VERIFY-001 and CAP-VERIFY-001 through deterministic
+method planning with no correctness verdict, exact owned source lineage and explicit
+unavailable executors. Owner local Gates A–F passed; CI is pending, documented in
+`sprints/phase05_ai_solving_and_verification_core/SPRINT_5.7_EXECUTION_REPORT.md`.
+The broader verification-policy requirement remains Planned until execution and
+aggregation have their own acceptance evidence.
+
 Every PR that touches a V1-required feature must cite at least one `REQ-*` ID in its description or implementation evidence. If no requirement exists, the PR must add one before implementation is considered complete.
 
 ## Coverage Consistency Rule
