@@ -16,5 +16,29 @@ jobs:
       - name: Select Xcode
         run: sudo xcode-select -s /Applications/Xcode.app
       - name: Build and test iOS
-        run: xcodebuild test -project apps/ios/VerifiedAI.xcodeproj -scheme VerifiedAI -destination 'platform=iOS Simulator,name=iPhone 16 Pro' -derivedDataPath DerivedData
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p .generated/ios-ci
+          # Run 40603823381 lost XCTest's app PID during launch while simulator clones
+          # ran concurrently. Serialize tests; keep every assertion and failure status.
+          NSUnbufferedIO=YES xcodebuild test \
+            -project apps/ios/VerifiedAI.xcodeproj \
+            -scheme VerifiedAI \
+            -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
+            -parallel-testing-enabled NO \
+            -derivedDataPath DerivedData \
+            -resultBundlePath .generated/ios-ci/VerifiedAI.xcresult \
+            2>&1 | tee .generated/ios-ci/xcodebuild.log
+      - name: Preserve XCTest results and diagnostics
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-test-results-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            .generated/ios-ci/VerifiedAI.xcresult
+            .generated/ios-ci/xcodebuild.log
+          include-hidden-files: true
+          retention-days: 14
+          if-no-files-found: warn
 

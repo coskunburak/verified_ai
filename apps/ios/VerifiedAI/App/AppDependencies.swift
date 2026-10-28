@@ -65,13 +65,23 @@ struct AppDependencies {
         var primarySolveAPI: PrimarySolveServicing = PrimarySolveAPI(client: apiClient)
         var solveEnabled = false
         var solveFixture = false
+        var solveFixtureScope = "synthetic-fixture"
         #if DEBUG
         let arguments = ProcessInfo.processInfo.arguments
         solveFixture = environment == .development && arguments.contains("--solve-fixture") && arguments.contains("--ui-testing-authenticated")
         solveEnabled = environment == .development && (arguments.contains("--enable-primary-solve") || solveFixture)
         if solveFixture {
+            if let scopeArgument = arguments.first(where: { $0.hasPrefix("--solve-fixture-scope=") }),
+               let scope = UUID(uuidString: String(scopeArgument.dropFirst("--solve-fixture-scope=".count))) {
+                solveFixtureScope += "-" + scope.uuidString
+            }
             let scenario = arguments.first(where: { $0.hasPrefix("--solve-scenario=") })?.components(separatedBy: "=").last ?? "GENERATED_UNVERIFIED"
-            primarySolveAPI = FixturePrimarySolveAPI(scenario: scenario, reset: arguments.contains("--solve-reset"))
+            guard let defaults = UserDefaults(suiteName: "com.verifiedai." + solveFixtureScope) else {
+                preconditionFailure("Synthetic solve fixture persistence is unavailable")
+            }
+            primarySolveAPI = FixturePrimarySolveAPI(scenario: scenario, defaults: defaults,
+                reset: arguments.contains("--solve-reset"),
+                controlledProgression: arguments.contains("--ui-testing") && arguments.contains("--solve-controlled-progression"))
             problemSessionHistoryAPI = FixtureSolveHistoryAPI()
             problemSessionCache = FixtureSolveHistoryCache()
         } else {
@@ -80,7 +90,7 @@ struct AppDependencies {
         #else
         problemSessionCache = try! SwiftDataProblemSessionCache()
         #endif
-        let solveRecovery = SolveRecoveryStore(scope: solveFixture ? "synthetic-fixture" : "server-" + environment.rawValue)
+        let solveRecovery = SolveRecoveryStore(scope: solveFixture ? solveFixtureScope : "server-" + environment.rawValue)
         #if DEBUG
         if solveFixture && ProcessInfo.processInfo.arguments.contains("--solve-reset") {
             try? solveRecovery.remove(userId: UUID(uuidString: "00000000-0000-0000-0000-0000000000A1")!, sessionId: FixturePrimarySolveAPI.sessionId)

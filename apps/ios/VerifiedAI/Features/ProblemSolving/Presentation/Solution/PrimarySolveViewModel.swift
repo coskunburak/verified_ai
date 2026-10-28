@@ -34,6 +34,19 @@ final class PrimarySolveViewModel {
     var canCancel: Bool { active && errorKey == nil && snapshot?.state.isActive == true && !busy }
     var visibleCandidate: SolutionCandidate? { errorKey == nil ? snapshot?.visibleCandidate : nil }
 
+    #if DEBUG
+    /// Explicit synthetic UI-test gate; ordinary fixture runs and live services keep automatic polling.
+    var controlledFixtureState: SolveState? {
+        guard isFixture, (service as? FixturePrimarySolveAPI)?.controlledProgression == true,
+              let state = snapshot?.state, state.isActive else { return nil }
+        return state
+    }
+    func advanceFixture() {
+        guard let state = controlledFixtureState else { return }
+        (service as? FixturePrimarySolveAPI)?.advance(from: state)
+    }
+    #endif
+
     func resume() {
         active = true
         refresh()
