@@ -9,6 +9,20 @@ Verification is the core trust differentiator. An answer is not verified because
 ### VerificationPlanner
 Maps ProblemType and representation to applicable checks.
 
+Sprint 5.7 implements this as the internal owner-scoped `VerificationPlanning` query
+under policy `verification-planner-v1`. Plans are ephemeral, deterministic selections
+bound to exact canonical source/solution lineage; they contain no executed evidence
+or verification verdict. Owner local Gates A–F and implementation CI passed. Current-head
+checks and final review are tracked in PR #31.
+See `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.7_EXECUTION_REPORT.md`.
+
+The current canonical capability registry advertises no executable method. The
+existing symbolic-equivalence endpoint accepts strings and lacks an approved
+canonical execution adapter; typed `validate-input` validates syntax only. Arithmetic,
+substitution, domain checking and completeness executors are later work. Derivative
+and integral backchecks remain unavailable until typed executors, mathematical
+evaluation and release approval exist. Numerical sampling is supporting evidence.
+
 ### MathVerifierGateway
 Calls the internal Python verifier service.
 

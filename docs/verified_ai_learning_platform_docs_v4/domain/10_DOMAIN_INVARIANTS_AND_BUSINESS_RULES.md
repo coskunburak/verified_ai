@@ -11,6 +11,9 @@ This is a highest-precedence document.
 5. PARTIALLY_VERIFIED must identify what was and was not checked.
 6. Historical verification runs are immutable.
 7. User-facing language distinguishes AI generation from deterministic verification.
+8. A verification plan selects required methods; selection is neither execution nor evidence.
+9. Planning requires current owned source/solution lineage. Historical, ambiguous or unsupported inputs cannot silently become current executable plans.
+10. Mathematical applicability is separate from installed, approved execution capability; missing domain or completeness checks cannot be discarded to claim verification.
 
 ## Problem invariants
 
