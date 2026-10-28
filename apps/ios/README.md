@@ -14,8 +14,8 @@ xcodebuild test -project apps/ios/VerifiedAI.xcodeproj -scheme VerifiedAI -desti
 
 Owner local validation passed on 2026-10-28: focused acceptance was confirmed by the owner;
 the supplied full-regression console log records 114 passed tests and TEST SUCCEEDED.
-GitHub Actions validation of these changes remains pending. No build, test or validator was
-executed by the assistant.
+The subsequent PR #30 GitHub Actions run failed during application launch; see the
+artifact-backed investigation below. No build, test or validator was executed by the assistant.
 The investigation began on a clean feature branch at 1e31f3dd8f2d34fa9f1ee4d1012322dcc75ccb10.
 GitHub's comparison with main commit daa5ddf32b0092b70681af3df64e2a8204348ab2 reported
 no file differences; the exact main test/workflow contents were also read and matched locally.
@@ -102,11 +102,117 @@ Focused success is owner-reported; no separate successful focused console log wa
 This establishes local acceptance, not a new main-branch CI result or recovery of the
 historical failing assertion. No further source changes were made after this acceptance.
 
+### PR #30 launch failure — artifact investigation, 2026-10-28
+
+Baseline rechecked against GitHub: PR #30 remains OPEN at
+`c53a389db0b1813f87c0568d0b739da440cbb13b`; main remains
+`daa5ddf32b0092b70681af3df64e2a8204348ab2`. The local feature branch matches the PR
+head, started clean, and is 14 commits behind / 1 ahead of origin/main.
+No Git publication or branch changes were performed.
+
+[Run 40603823381](https://github.com/coskunburak/verified_ai/actions/runs/40603823381)
+failed its iOS job. Artifact `ios-test-results-40603823381-1` (ID `12780158452`)
+was downloaded to `.generated/ci-pr30`. Existing results were inspected with
+`xcresulttool`; no tests were executed. The failed test's activities, hierarchy,
+screenshot, runner logs and scheduling logs establish:
+
+- `testHistoryQueuedRunningUnverifiedStepsAndReopen()` failed in `app.launch()`
+  with `Application 'com.verifiedai.learning' does not have a process ID`.
+  The result issue records `PrimarySolveUITests.swift` line 33; runner console
+  diagnostics report line 34. The launch call is line 33 at the PR head.
+- The last checkpoint is `launch GENERATED_UNVERIFIED, reset=true`. No history
+  navigation, phase acknowledgement, polling assertion, or reopen assertion ran.
+- Runner timestamps below are UTC. Launch began at 23:48:28.602. Xcode reported
+  PID 8100 at 23:49:32.825 and confirmed launch completion at 23:49:36.820.
+  XCTest still tracked `com.verifiedai.learning (pid:0)`, then timed out waiting
+  for `isProcessIDValid` at 23:50:36.883 after 60.061 seconds. Xcode independently
+  reported PID 8100 alive at 23:50:27.055.
+- Teardown reported `appState=1` and could not capture the app hierarchy, but its
+  screen attachment shows the fixture dashboard. This is consistent with failed
+  automation process tracking, not evidence that the app failed to render.
+- Scheduling logs show parallel execution: PrimarySolve UI tests on Clone 1
+  overlapped unit tests on Clone 2. Bootstrapping each worker took almost five
+  minutes. The total failed-test duration was 142.255 seconds.
+
+The concrete failure is XCTest launch/PID tracking before the solve flow. The
+artifact does not prove the underlying Apple framework defect or that resource
+contention alone caused it. It provides no basis for changing polling, fixture
+phase controls, navigation, or accessibility identifiers.
+
+Bounded mitigation: `.github/workflows/ios-ci.yml` passes
+`-parallel-testing-enabled NO` to remove concurrent test runners and cloned
+simulator test execution from this CI gate. All tests, assertions, timeouts,
+`pipefail`, and failure-artifact upload remain intact. Production and test Swift
+sources are unchanged. The tradeoff is potentially longer serial execution.
+Rollback is removal of this flag if subsequent evidence warrants a different fix.
+
+Status: IMPLEMENTED / LOCAL_TESTED / PENDING_CI. The owner subsequently authorized
+agent execution of all tests, superseding the original owner-only execution rule.
+The focused owner run and full agent run below validate the serial configuration locally.
+CI remains FAILED on the current PR head. Sprint 5.7 is BLOCKED until the corrected
+commit passes required CI and the owner merges PR #30. If launch fails again,
+inspect the new result bundle and runner diagnostics before making further changes.
+
+### Serial configuration acceptance — 2026-10-28
+
+- Owner focused run: `PrimarySolve-focused-20261028-031118.xcresult`;
+  1 UI test and 11 ViewModel/fixture tests passed, zero failures, `TEST SUCCEEDED`.
+  The queued/running/reopen UI flow passed in 27.168 seconds.
+- Agent full iOS run: `VerifiedAI-agent-full-20261028-031314.xcresult`;
+  114 passed (104 unit/contract + 10 UI), zero failures and zero skipped tests,
+  `TEST SUCCEEDED`, exit code 0. Counts were independently read from the result
+  bundle summary. The queued/running/reopen flow passed in 26.792 seconds.
+  Console: `.generated/ios-ci/agent-full-xcodebuild.log`.
+- Local runtime: iPhone 16 Pro, iOS Simulator 18.4, Xcode 16.3. The failed hosted
+  run used iOS Simulator 26.2; local success does not establish hosted acceptance.
+- The exact full-suite command is recorded below. No Swift source changes were
+  necessary. No commit, push, merge, or paid model invocation was performed.
+
+The owner's expanded test authorization also covered the existing repository
+regression and quality gates. Agent results on the same working tree:
+
+| Gate / command | Actual result |
+| --- | --- |
+| API: JDK 21, `mvn -Dverifiedai.test.minio-image=verified-ai/minio-test:2024-07-16-3535197 test` from `services/api` | BUILD SUCCESS; 483 discovered, 481 passed, 2 skipped, zero failures/errors |
+| `make test-verifier` | 20 passed; one existing Starlette/httpx deprecation warning |
+| `make docs-check contracts-check` | PASS; 290 Markdown files checked, contracts passed |
+| `make lint` | PASS; Python compile/Ruff and Java compile |
+| `make secret-scan` | PASS |
+| `python3 scripts/quality/check_prompt_immutability.py --base-ref origin/main` | PASS; existing prompt/schema versions unchanged |
+| `python3 -m unittest discover -s scripts/quality -p test_prompt_immutability.py` | 5 passed |
+| `python3 -m unittest discover -s scripts/security -p test_secret_scan.py` | 7 passed |
+| `python3 -m unittest evaluations/runners/test_ingestion_evaluation.py` | 12 passed |
+| `python3 -m unittest discover -s evaluations/runners -p test_qwen_report.py` | 5 passed |
+| `AI_EVAL_MODE=local AI_EVAL_RUN_ID=pr30-agent make eval-ai` | PASS; 18 synthetic cases, no release regressions; existing near-duplicate fixture warnings |
+
+Backend tests used the existing Docker service and pinned MinIO test image;
+no dependencies were installed. Canonical persistence, secondary-solving and
+architecture regressions ran as part of the full Maven suite. The two skipped
+cases are `QwenRealModelEvaluationTest.durableSmoke` and `canonicalBenchmark`:
+`QWEN_OWNER_RUN` is absent, so real-model acceptance remains gated. No skipped
+case is counted as passed. Backend console: `.generated/ci-pr30/agent-backend-test.log`.
+Local evaluation reports: `.generated/evaluations/pr30-agent/`.
+
+The first Qwen report unit-test invocation used the verifier virtual environment
+and failed because it lacks `jsonschema`. Re-running with the existing system
+`python3`, which supplies that dependency, passed all five tests without source
+changes or installation. This was a test-environment correction, not model execution.
+
+Publication handoff: only `.github/workflows/ios-ci.yml` and this README are changed.
+Proposed commit: `fix(ios): serialize CI tests after XCTest launch PID failure`.
+PR #30 can retain its existing title. Publication requires owner authorization;
+hosted acceptance must reference the new commit. Sprint 5.7 remains unimplemented
+pending that acceptance and the owner's merge, as required by the execution gate.
+
 ### Owner acceptance commands
 
 Run from the repository root with Xcode selected and the iPhone 16 Pro simulator installed.
-Timestamped result bundles avoid collisions with previous owner runs. First run the affected
-UI flow and its related ViewModel/fixture regressions:
+The focused and full commands below have passed; retain them for reproduction,
+not a request to repeat accepted tests. Timestamped result bundles avoid collisions.
+Use the same
+serial test setting as CI. First run the affected UI flow (gate A) and related
+ViewModel/fixture regressions (gate B) in one focused invocation. Stop at the first
+failure and share its evidence; do not proceed to the full suite until focused acceptance.
 
 ```sh
 cd /Users/burakcoskun/Desktop/ai_verification_tutor
@@ -115,13 +221,14 @@ xcodebuild test \
   -project apps/ios/VerifiedAI.xcodeproj \
   -scheme VerifiedAI \
   -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
+  -parallel-testing-enabled NO \
   -derivedDataPath .generated/DerivedData \
   -resultBundlePath ".generated/ios-ci/PrimarySolve-focused-$(date +%Y%m%d-%H%M%S).xcresult" \
   -only-testing:VerifiedAIUITests/PrimarySolveUITests/testHistoryQueuedRunningUnverifiedStepsAndReopen \
   -only-testing:VerifiedAITests/PrimarySolveViewModelTests
 ```
 
-After focused acceptance, run the full iOS regression:
+After focused acceptance, run the full iOS regression (gate C):
 
 ```sh
 cd /Users/burakcoskun/Desktop/ai_verification_tutor
@@ -130,12 +237,27 @@ xcodebuild test \
   -project apps/ios/VerifiedAI.xcodeproj \
   -scheme VerifiedAI \
   -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
+  -parallel-testing-enabled NO \
   -derivedDataPath .generated/DerivedData \
   -resultBundlePath ".generated/ios-ci/VerifiedAI-full-$(date +%Y%m%d-%H%M%S).xcresult"
 ```
 
 On failure, share the first assertion/compile error and the corresponding xcresult (including
 PrimarySolve checkpoint/hierarchy/screenshot attachments). On GitHub Actions the artifact is
-named ios-test-results-RUN_ID-RUN_ATTEMPT. Local owner acceptance is complete; CI acceptance
-requires a subsequent GitHub Actions run of these changes.
+named ios-test-results-RUN_ID-RUN_ATTEMPT. Local acceptance of this mitigation is
+complete; hosted CI acceptance remains pending.
+
+Gate D, only after local acceptance and owner-authorized publication to PR #30:
+
+```sh
+gh pr checks 30 --repo coskunburak/verified_ai --watch
+gh pr view 30 --repo coskunburak/verified_ai \
+  --json headRefOid,state,mergedAt,statusCheckRollup
+```
+
+These commands inspect checks; they do not publish changes or trigger a workflow.
+Require a successful iOS run on the corrected published commit, together with the
+other required checks. A rerun of the old commit does not validate this change.
+After owner-local PASS, provide a commit/PR handoff and await explicit publication
+authorization. The owner performs the merge after CI acceptance.
 

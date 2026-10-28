@@ -20,10 +20,13 @@ jobs:
         run: |
           set -o pipefail
           mkdir -p .generated/ios-ci
+          # Run 40603823381 lost XCTest's app PID during launch while simulator clones
+          # ran concurrently. Serialize tests; keep every assertion and failure status.
           NSUnbufferedIO=YES xcodebuild test \
             -project apps/ios/VerifiedAI.xcodeproj \
             -scheme VerifiedAI \
             -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
+            -parallel-testing-enabled NO \
             -derivedDataPath DerivedData \
             -resultBundlePath .generated/ios-ci/VerifiedAI.xcresult \
             2>&1 | tee .generated/ios-ci/xcodebuild.log
