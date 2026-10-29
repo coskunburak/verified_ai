@@ -82,6 +82,35 @@ public final class CanonicalProblemBuilder {
         return new CanonicalizationDocuments(canonicalProblem, verifierInput, display);
     }
 
+    JsonNode buildCalculus(ProblemParseJpaEntity parse) {
+        try {
+            var admitted = com.verifiedai.problem.application.solving.CalculusSourceDocument.parse(parse.normalizedProblemJson());
+            if (!"problem-parse-v2".equals(parse.schemaVersion()) || !"USER".equals(parse.source())
+                || !"SUPPORTED".equals(parse.supportStatus()) || parse.reviewRequired()
+                || admitted.path("reviewRequired").asBoolean(true)) throw new IllegalArgumentException();
+            var c = admitted.path("calculus");
+            String variable = c.path("variable").path("symbol").asText();
+            var parsed = new CanonicalMathParser(Set.of(variable), CanonicalMathLimits.V1)
+                .parse(admitted.path("expressions").get(0).path("normalizedText").asText());
+            if (!objectMapper.readTree(objectMapper.writeValueAsString(parsed.node())).equals(c.path("original")))
+                throw new IllegalArgumentException();
+            var root = objectMapper.createObjectNode();
+            root.put("schemaVersion", "canonical-problem-v2").put("normalizerVersion", "calculus-source-normalizer-v1");
+            root.putObject("sourceParse").put("problemParseId", parse.id().toString())
+                .put("problemParseRevision", parse.revision()).put("problemParseSchemaVersion", parse.schemaVersion()).put("source", parse.source());
+            root.set("problemType", admitted.path("problemType")); root.set("taskType", admitted.path("taskType"));
+            root.set("acceptedParse", admitted); root.set("calculus", c);
+            var d = root.putObject("display");
+            d.set("normalizedText", admitted.path("expressions").get(0).path("normalizedText"));
+            d.set("displayLatex", admitted.path("expressions").get(0).path("displayLatex"));
+            d.putArray("variables").add(variable); d.put("sourceConstraintCount", c.path("restrictions").size());
+            d.put("derivedRestrictionCount", 0).put("reviewRequired", false);
+            return com.verifiedai.sharedkernel.contracts.VersionedJsonContract.validate("canonical-problem-v2", root.toString());
+        } catch (Exception e) {
+            throw new CanonicalizationException(CanonicalizationFailure.UNSUPPORTED_PARSE, "Typed calculus source cannot be canonicalized");
+        }
+    }
+
     private JsonNode parseNormalizedProblem(ProblemParseJpaEntity parse) {
         try {
             return objectMapper.readTree(parse.normalizedProblemJson());

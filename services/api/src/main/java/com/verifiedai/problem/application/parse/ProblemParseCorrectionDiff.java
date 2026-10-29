@@ -24,6 +24,7 @@ class ProblemParseCorrectionDiff {
             addIfChanged(categories, Category.VARIABLES, parent.path("variables"), corrected.path("variables"));
             addIfChanged(categories, Category.CONSTRAINTS, parent.path("constraints"), corrected.path("constraints"));
             addIfChanged(categories, Category.ASSUMPTIONS, parent.path("assumptions"), corrected.path("assumptions"));
+            addIfChanged(categories, Category.CALCULUS_METADATA, parent.path("calculus"), corrected.path("calculus"));
             return categories;
         } catch (Exception exception) {
             throw new IllegalStateException("Stored parse JSON cannot be diffed", exception);
@@ -74,6 +75,7 @@ class ProblemParseCorrectionDiff {
         CONSTRAINTS,
         ASSUMPTIONS,
         TASK_TYPE,
-        PROBLEM_TYPE
+        PROBLEM_TYPE,
+        CALCULUS_METADATA
     }
 }

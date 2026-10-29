@@ -15,8 +15,9 @@ public final class CanonicalCandidateMapper {
     private final CanonicalMathCodec codec;
     public CanonicalCandidateMapper(SolutionCandidateValidator validator,CanonicalMathCodec codec) { this.validator=validator;this.codec=codec; }
     public CanonicalSolution map(AcceptedArtifact a,SolveSource source,Version version,Instant now) {
-        if(!Version.CURRENT.equals(version)) throw new ProjectionRejected(Failure.UNSUPPORTED_REPRESENTATION);
-        if(!"solution-candidate-v1".equals(a.schema())) throw new ProjectionRejected(Failure.UNSUPPORTED_SCHEMA);
+        if(!Version.supported(version)) throw new ProjectionRejected(Failure.UNSUPPORTED_REPRESENTATION);
+        if(!java.util.Set.of("solution-candidate-v1","solution-candidate-v2").contains(a.schema())
+            || !Version.forSchema(a.schema()).equals(version)) throw new ProjectionRejected(Failure.UNSUPPORTED_SCHEMA);
         if(!a.userId().equals(source.userId()) || !a.sessionId().equals(source.problemSessionId())
             || !a.canonicalProblemId().equals(source.canonicalProblemId()) || !a.parseId().equals(source.problemParseId())
             || a.parseRevision()!=source.problemParseRevision()
@@ -30,6 +31,7 @@ public final class CanonicalCandidateMapper {
                 throw new IllegalArgumentException("Original schema provenance mismatch");
             // JSONB text can contain added whitespace; compact it before reusing the original wire-size gate.
             var c=validator.validate(codec.parse(a.artifactJson()).toString(),source,provider);
+            if(!a.schema().equals(c.schemaVersion())) throw new IllegalArgumentException("Accepted candidate version mismatch");
             var lineage=new Lineage(a.userId(),a.sessionId(),a.canonicalProblemId(),a.parseId(),a.parseRevision(),
                 source.canonicalRevision(),a.origin(),a.parentPrimaryJobId());
             var id=CanonicalSolution.identity(a.origin(),version);

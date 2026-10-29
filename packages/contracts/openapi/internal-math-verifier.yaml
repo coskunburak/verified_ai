@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Verified AI Internal Math Verifier API
-  version: 0.2.0
+  version: 0.3.0
 paths:
   /health:
     get:
@@ -129,6 +129,34 @@ paths:
         "422":
           description: Invalid typed calculus contract or correlation mismatch
 
+  /internal/v1/verify/calculus-readiness:
+    get:
+      summary: Authenticated calculus contract readiness
+      description: Reports the actual separately gated worker flag and fixed compatible versions; no mathematical input or deployment approval.
+      security:
+        - internalToken: []
+      responses:
+        "200":
+          description: Readiness metadata, including enabled false when disabled
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [schemaVersion, enabled, algorithm, requestVersion, responseVersion]
+                properties:
+                  schemaVersion:
+                    const: calculus-readiness-v1
+                  enabled:
+                    type: boolean
+                  algorithm:
+                    const: bounded-calculus-v1
+                  requestVersion:
+                    const: calculus-execution-v1
+                  responseVersion:
+                    const: calculus-execution-result-v1
+        "401":
+          description: Internal authentication required
 components:
   securitySchemes:
     internalToken:

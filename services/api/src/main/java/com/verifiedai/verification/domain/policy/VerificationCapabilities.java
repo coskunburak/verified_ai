@@ -22,7 +22,7 @@ public final class VerificationCapabilities {
         var selected = java.util.EnumSet.noneOf(VerificationMethod.class);
         if (!methods.isBlank()) for (var name : methods.split(",")) {
             var method = VerificationMethod.valueOf(name.trim());
-            if (method == VerificationMethod.NUMERIC_SAMPLING || method == VerificationMethod.DERIVATIVE_BACKCHECK
+            if (method == VerificationMethod.FINITE_LIMIT || method == VerificationMethod.NUMERIC_SAMPLING || method == VerificationMethod.DERIVATIVE_BACKCHECK
                 || method == VerificationMethod.INTEGRAL_DIFFERENTIATION_BACKCHECK)
                 throw new IllegalArgumentException("Unapproved executable method");
             selected.add(method);
@@ -30,6 +30,24 @@ public final class VerificationCapabilities {
         approved = enabled && accepted ? Set.copyOf(selected) : Set.of();
     }
     public static VerificationCapabilities none() { return new VerificationCapabilities(false); }
+    private boolean calculusApproved;
+    private volatile boolean calculusReady;
+    public static final String CALCULUS_VERSION = "calculus-capabilities-v1";
+    @org.springframework.beans.factory.annotation.Autowired
+    public void configureCalculus(
+        @org.springframework.beans.factory.annotation.Value("${app.verification.calculus-enabled:false}") boolean enabled,
+        @org.springframework.beans.factory.annotation.Value("${app.verification.calculus-owner-accepted:false}") boolean accepted,
+        @org.springframework.beans.factory.annotation.Value("${app.verification.calculus-algorithm:bounded-calculus-v1}") String algorithm,
+        @org.springframework.beans.factory.annotation.Value("${app.environment:local}") String environment) {
+        if (enabled && (!java.util.Set.of("local","test").contains(environment) || !"bounded-calculus-v1".equals(algorithm)))
+            throw new IllegalArgumentException("Calculus activation requires local/test and supported algorithm");
+        calculusApproved=enabled && accepted;
+    }
+    public void calculusReadiness(boolean ready) { calculusReady=ready; }
+    public Availability calculusAvailability() {
+        return calculusApproved && calculusReady ? Availability.AVAILABLE : Availability.BLOCKED_BY_PRECONDITION;
+    }
+    public String calculusVersion() { return CALCULUS_VERSION + (calculusAvailability()==Availability.AVAILABLE ? "-available" : "-disabled"); }
     public String version() {
         if (approved.isEmpty()) return adapterInstalled ? VERSION : "canonical-capabilities-none-v2";
         String names = approved.stream().map(Enum::name).sorted().collect(java.util.stream.Collectors.joining(","));
@@ -52,7 +70,7 @@ public final class VerificationCapabilities {
         return adapterInstalled && executable(method) ? Availability.BLOCKED_BY_PRECONDITION : Availability.PLANNED_NOT_EXECUTABLE;
     }
     private static boolean executable(VerificationMethod method) {
-        return method != VerificationMethod.NUMERIC_SAMPLING && method != VerificationMethod.DERIVATIVE_BACKCHECK
+        return method != VerificationMethod.FINITE_LIMIT && method != VerificationMethod.NUMERIC_SAMPLING && method != VerificationMethod.DERIVATIVE_BACKCHECK
             && method != VerificationMethod.INTEGRAL_DIFFERENTIATION_BACKCHECK;
     }
     public Reason reason(VerificationMethod method) {

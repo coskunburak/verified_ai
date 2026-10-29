@@ -363,3 +363,12 @@ Any V1 feature implementation should map to a capability ID and at least one req
 
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.9_IMPLEMENTATION_MAP.md` — baseline, internal scope, proof semantics, resource limits and canonical integration blocker.
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.9_EXECUTION_REPORT.md` — exact file inventory, authored tests, owner-only gates A–H and partial completion verdict.
+
+## Sprint 5.9 production integration closure
+
+[Closure implementation map](sprints/phase05_ai_solving_and_verification_core/SPRINT_5.9_PRODUCTION_INTEGRATION_CLOSURE_IMPLEMENTATION_MAP.md)
+and [closure execution report](sprints/phase05_ai_solving_and_verification_core/SPRINT_5.9_PRODUCTION_INTEGRATION_CLOSURE_EXECUTION_REPORT.md)
+record the additive versioned source-to-evidence path. Status:
+IMPLEMENTED_PENDING_OWNER_VALIDATION / CI_PENDING / ROLLOUT_DISABLED.
+Historical isolated Sprint5.9 PARTIAL acceptance is preserved; production release and
+Phase5 completion remain separate.

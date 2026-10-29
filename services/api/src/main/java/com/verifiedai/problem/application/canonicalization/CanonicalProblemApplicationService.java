@@ -76,7 +76,7 @@ public class CanonicalProblemApplicationService {
                     .findByProblemParseIdAndProblemParseRevisionAndSchemaVersion(
                         parse.id(),
                         parse.revision(),
-                        CanonicalProblemBuilder.CANONICAL_SCHEMA_VERSION
+                        schemaFor(parse)
                     )
                     .map(this::resultFor)
                     .orElseGet(() -> createCanonicalProblem(userId, problemSessionId, parse));
@@ -111,7 +111,7 @@ public class CanonicalProblemApplicationService {
         return canonicalRepository.findByProblemParseIdAndProblemParseRevisionAndSchemaVersion(
                 parse.id(),
                 parse.revision(),
-                CanonicalProblemBuilder.CANONICAL_SCHEMA_VERSION
+                schemaFor(parse)
             )
             .map(this::resultFor)
             .orElseThrow(() -> problem(
@@ -149,6 +149,14 @@ public class CanonicalProblemApplicationService {
         UUID problemSessionId,
         ProblemParseJpaEntity parse
     ) {
+        if ("problem-parse-v2".equals(parse.schemaVersion())) {
+            var doc = canonicalProblemBuilder.buildCalculus(parse);
+            var entity = new CanonicalProblemJpaEntity(UUID.randomUUID(), userId, problemSessionId, parse.id(),
+                parse.revision(), canonicalRepository.maxCanonicalRevision(problemSessionId) + 1,
+                "canonical-problem-v2", "canonical-problem-v2", doc.path("problemType").asText(), doc.path("taskType").asText(),
+                doc.toString(), doc.toString(), doc.path("display").toString(), clock.instant());
+            return resultFor(canonicalRepository.saveAndFlush(entity));
+        }
         CanonicalizationDocuments documents = canonicalProblemBuilder.build(parse);
         int canonicalRevision = canonicalRepository.maxCanonicalRevision(problemSessionId) + 1;
         CanonicalProblemJpaEntity entity = new CanonicalProblemJpaEntity(
@@ -168,6 +176,10 @@ public class CanonicalProblemApplicationService {
             clock.instant()
         );
         return resultFor(canonicalRepository.saveAndFlush(entity));
+    }
+
+    private static String schemaFor(ProblemParseJpaEntity parse) {
+        return "problem-parse-v2".equals(parse.schemaVersion()) ? "canonical-problem-v2" : CanonicalProblemBuilder.CANONICAL_SCHEMA_VERSION;
     }
 
     private CanonicalProblemResult resultFor(CanonicalProblemJpaEntity entity) {

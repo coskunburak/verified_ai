@@ -24,7 +24,9 @@ public class VerificationLifecycleContributor implements AccountDataLifecycleCon
     @Transactional(readOnly = true)
     public Map<String, Object> exportUserData(UUID user) {
         // The shared account exporter accepts JSON values; keep time handling inside this module's boundary.
-        return Map.of("runs", EXPORT_MAPPER.convertValue(repository.export(user), EXPORTED_RUNS));
+        try {
+            return Map.of("runs", EXPORT_MAPPER.readValue(EXPORT_MAPPER.writeValueAsString(repository.export(user)), EXPORTED_RUNS));
+        } catch (IOException e) { throw new IllegalArgumentException("Cannot export verification evidence"); }
     }
     private static ObjectMapper exportMapper() {
         var time = new SimpleModule();
@@ -33,7 +35,8 @@ public class VerificationLifecycleContributor implements AccountDataLifecycleCon
                 generator.writeString(value.toString());
             }
         });
-        return new ObjectMapper().registerModule(time);
+        return new ObjectMapper().registerModule(time)
+            .registerModule(com.verifiedai.verification.infrastructure.persistence.EvidenceMathJson.module());
     }
     public void deleteUserData(UUID user, Instant now) {
         // Owned canonical solution/job/account deletion cascades through the composite FK.

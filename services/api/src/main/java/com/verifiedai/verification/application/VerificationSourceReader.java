@@ -24,6 +24,7 @@ public final class VerificationSourceReader {
     public PlanningSource read(SolveSource source) {
         try {
             var root = codec.parse(source.canonicalJson());
+            if ("canonical-problem-v2".equals(text(root,"schemaVersion"))) return calculus(source);
             if (!"canonical-problem-v1".equals(text(root, "schemaVersion"))) reject(Reason.UNSUPPORTED_REPRESENTATION);
             var parse = root.path("sourceParse");
             if (!source.problemParseId().toString().equals(text(parse, "problemParseId"))
@@ -36,8 +37,12 @@ public final class VerificationSourceReader {
             TaskType task;
             try { type = ProblemType.valueOf(source.problemType()); }
             catch (IllegalArgumentException e) { throw new SourceRejected(Reason.UNSUPPORTED_PROBLEM_TYPE); }
+            if (!Set.of(ProblemType.ARITHMETIC_EXPRESSION, ProblemType.ALGEBRAIC_EXPRESSION,
+                ProblemType.EQUATION, ProblemType.INEQUALITY).contains(type)) reject(Reason.UNSUPPORTED_PROBLEM_TYPE);
             try { task = TaskType.valueOf(source.taskType()); }
             catch (IllegalArgumentException e) { throw new SourceRejected(Reason.UNSUPPORTED_TASK_TYPE); }
+            if (!Set.of(TaskType.EVALUATE, TaskType.SIMPLIFY, TaskType.SOLVE_EQUATION,
+                TaskType.SOLVE_INEQUALITY).contains(task)) reject(Reason.UNSUPPORTED_TASK_TYPE);
             var limits = root.path("complexityPolicy");
             if (!"canonical-math-limits-v1".equals(text(limits, "version"))) reject(Reason.UNSUPPORTED_REPRESENTATION);
             for (var limit : new Object[][]{{"maxExpressionLength",512}, {"maxAstNodes",120},
@@ -75,11 +80,38 @@ public final class VerificationSourceReader {
     /** Execution cannot infer a solve variable from a parameter or unknown semantic role. */
     public PlanningSource readForExecution(SolveSource source) {
         var root = codec.parse(source.canonicalJson());
+        if ("canonical-problem-v2".equals(root.path("schemaVersion").asText())) return calculus(source);
         for (var variable : root.path("variables")) {
             if (!"VARIABLE".equals(variable.path("role").asText()))
                 throw new SourceRejected(Reason.UNSUPPORTED_VARIABLE_ROLE);
         }
         return read(source);
+    }
+    private PlanningSource calculus(SolveSource source) {
+        try {
+            var root = com.verifiedai.problem.application.solving.CalculusSourceDocument.canonical(source);
+            var c = root.path("calculus");
+            String variable = c.path("variable").path("symbol").asText();
+            var restrictions = new ArrayList<Restriction>();
+            for (var r : c.path("restrictions")) restrictions.add(new Restriction(r.path("id").asText(),
+                Relation.valueOf(r.path("relation").asText()), expression(r.path("left")), expression(r.path("right"))));
+            var interval = new com.verifiedai.verification.domain.model.CalculusExecution.Interval(
+                exact(c.path("interval").path("lower")), exact(c.path("interval").path("upper")));
+            var a = c.path("approach");
+            var approach = a.isNull() ? null : new com.verifiedai.verification.domain.model.CalculusExecution.Approach(
+                exact(a.path("target")), com.verifiedai.verification.domain.model.CalculusExecution.Direction.valueOf(a.path("direction").asText()));
+            var scope = c.path("integralScope").isNull() ? null
+                : com.verifiedai.verification.domain.model.CalculusExecution.IntegralScope.valueOf(c.path("integralScope").asText());
+            return new PlanningSource(new Identity(source.userId(),source.problemSessionId(),source.canonicalProblemId(),
+                source.problemParseId(),source.problemParseRevision(),source.canonicalRevision()), ProblemType.valueOf(source.problemType()),
+                TaskType.valueOf(source.taskType()), List.of(new MathStatement.Expression(expression(c.path("original")))),
+                java.util.Map.of(variable,Domain.REAL),restrictions,List.of(),restrictions.stream().map(Restriction::id).toList(),List.of(),false,
+                new PlanningSource.CalculusMetadata(interval,approach,scope));
+        } catch (IllegalArgumentException e) { throw new SourceRejected(Reason.INVALID_CANONICAL_STRUCTURE); }
+    }
+    private static com.verifiedai.verification.domain.model.MathematicalExecution.ExactValue exact(JsonNode n) {
+        return n.isNull() ? null : new com.verifiedai.verification.domain.model.MathematicalExecution.ExactValue(
+            n.path("numerator").asText(),n.path("denominator").asText());
     }
     private List<String> restrictions(JsonNode root, String name, int max, String provenance, List<Restriction> result) {
         var ids = new ArrayList<String>();

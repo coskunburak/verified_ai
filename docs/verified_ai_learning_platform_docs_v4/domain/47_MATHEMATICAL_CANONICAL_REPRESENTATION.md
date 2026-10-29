@@ -199,3 +199,19 @@ not become an accepted calculus source. No display text or model explanation sup
 missing metadata. Internal scope identifiers correlate responses; they confer no source
 authorization. End-to-end calculus canonicalization/publication is BLOCKED pending
 versioned source acquisition and owned source assembly. OWNER_VALIDATION_PENDING.
+
+## Sprint 5.9 production integration closure
+
+The closure adds problem-parse-v2 USER revisions with a bounded original AST, exactly
+one REAL variable, open interval, typed restrictions and explicit approach/direction or
+ANTIDERIVATIVE_REPRESENTATIVE scope. Existing correction evidence/review/currentness
+rules apply; normalized expression AST must agree with the typed original. Free-text
+assumptions do not become mathematical obligations. canonical-problem-v2 uses existing
+owned canonical identity/revision columns and preserves the admitted parse and metadata.
+solution-candidate-v2 proposes only an expression with exact source/canonical revision
+references; canonical-solution-v2 is an immutable unverified projection. Published v1
+schemas and calculus-execution-v1 wire meanings remain unchanged. The task-v1 wire scope
+is an authorized server projection/correlation, not canonical authority.
+
+Status: IMPLEMENTED_PENDING_OWNER_VALIDATION / CI_PENDING / ROLLOUT_DISABLED.
+See [closure report](../sprints/phase05_ai_solving_and_verification_core/SPRINT_5.9_PRODUCTION_INTEGRATION_CLOSURE_EXECUTION_REPORT.md).

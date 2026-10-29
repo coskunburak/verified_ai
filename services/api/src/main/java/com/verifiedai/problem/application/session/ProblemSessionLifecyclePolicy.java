@@ -48,4 +48,12 @@ public class ProblemSessionLifecyclePolicy {
             throw new IllegalStateException("Illegal problem session transition " + from + " -> " + to);
         }
     }
+
+    /** A validated, selected user revision can invalidate the previous parse's solve-ready status. */
+    public void requireUserCorrectionTransition(ProblemSessionStatus from, ProblemSessionStatus to) {
+        if (from == ProblemSessionStatus.PARSED && to == ProblemSessionStatus.REVIEW_REQUIRED) {
+            return;
+        }
+        requireTransition(from, to);
+    }
 }

@@ -44,11 +44,15 @@ management:
 app:
   verification:
     execution-enabled: ${VERIFICATION_EXECUTION_ENABLED:false}
+    calculus-enabled: ${VERIFICATION_CALCULUS_ENABLED:false}
+    calculus-owner-accepted: ${VERIFICATION_CALCULUS_OWNER_ACCEPTED:false}
+    calculus-algorithm: bounded-calculus-v1
     owner-accepted: ${VERIFICATION_OWNER_ACCEPTED:false}
     methods: ${VERIFICATION_METHODS:}
     base-url: ${MATH_VERIFIER_BASE_URL:http://math-verifier:8090}
     internal-token: ${MATH_VERIFIER_INTERNAL_TOKEN:local_math_verifier_token_change_me}
   solving:
+    calculus-fixture-enabled: ${CALCULUS_FIXTURE_ENABLED:false}
     canonical:
       worker-enabled: false
       worker-interval: PT5S

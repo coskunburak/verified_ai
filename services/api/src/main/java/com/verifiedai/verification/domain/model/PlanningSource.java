@@ -10,9 +10,16 @@ import java.util.UUID;
 /** Ephemeral typed view of the problem module's authorized snapshot. Never persisted. */
 public record PlanningSource(Identity identity, ProblemType problemType, TaskType taskType,
     List<MathStatement> statements, Map<String, Domain> variables, List<Restriction> restrictions,
-    List<String> assumptionIds, List<String> constraintIds, List<String> derivedRestrictionIds, boolean reviewRequired) {
-    public enum ProblemType { ARITHMETIC_EXPRESSION, ALGEBRAIC_EXPRESSION, EQUATION, INEQUALITY }
-    public enum TaskType { EVALUATE, SIMPLIFY, SOLVE_EQUATION, SOLVE_INEQUALITY }
+    List<String> assumptionIds, List<String> constraintIds, List<String> derivedRestrictionIds, boolean reviewRequired, CalculusMetadata calculus) {
+    public record CalculusMetadata(CalculusExecution.Interval interval, CalculusExecution.Approach approach,
+        CalculusExecution.IntegralScope integralScope) { }
+    public PlanningSource(Identity identity, ProblemType problemType, TaskType taskType,
+        List<MathStatement> statements, Map<String, Domain> variables, List<Restriction> restrictions,
+        List<String> assumptionIds, List<String> constraintIds, List<String> derivedRestrictionIds, boolean reviewRequired) {
+        this(identity,problemType,taskType,statements,variables,restrictions,assumptionIds,constraintIds,derivedRestrictionIds,reviewRequired,null);
+    }
+    public enum ProblemType { ARITHMETIC_EXPRESSION, ALGEBRAIC_EXPRESSION, EQUATION, INEQUALITY, DERIVATIVE, INTEGRAL, LIMIT }
+    public enum TaskType { EVALUATE, SIMPLIFY, SOLVE_EQUATION, SOLVE_INEQUALITY, DIFFERENTIATE, INTEGRATE, FIND_LIMIT }
     public enum Domain { UNKNOWN, REAL, INTEGER }
     public enum Relation { EQUALS, NOT_EQUALS, LESS_THAN, LESS_THAN_OR_EQUAL, GREATER_THAN, GREATER_THAN_OR_EQUAL }
     public record Identity(UUID userId, UUID sessionId, UUID canonicalProblemId, UUID parseId,

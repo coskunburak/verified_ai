@@ -104,3 +104,17 @@ immutability units and unchanged released prompt/schema versions all passed. All
 A–H gates have passing owner evidence for the isolated scope; only this final evidence
 refresh awaits docs-check. Production source-backed calculus and capability approval
 remain BLOCKED / ROLLOUT_DISABLED / HOSTED_CI_NOT_RUN. Sprint 5.9 is PARTIAL.
+
+## Sprint 5.9 production integration closure
+
+REQ-MATH-002 / REQ-VERIFY-001 closure coverage is authored in CalculusSourceContractTest,
+CalculusRevisionControllerTest, CalculusCandidatePlanningTest, CalculusHttpExecutorTest,
+CalculusProductionIntegrationTest, CalculusMigrationIntegrationTest and
+ test_calculus_integration_contract.py, alongside existing v1, architecture and resource
+regressions. Tests cover source/version provenance, exact vs non-proof results, real HTTP,
+PostgreSQL immutable publication, correction races, retries, cross-user access, export/delete
+and rollback reads. All new closure tests are NOT_RUN_BY_AGENT / OWNER_VALIDATION_PENDING.
+No old isolated test counts are attributed to this new working tree.
+
+Status: IMPLEMENTED_PENDING_OWNER_VALIDATION / CI_PENDING / ROLLOUT_DISABLED.
+See [closure report](../sprints/phase05_ai_solving_and_verification_core/SPRINT_5.9_PRODUCTION_INTEGRATION_CLOSURE_EXECUTION_REPORT.md).

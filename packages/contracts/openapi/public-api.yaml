@@ -1433,6 +1433,65 @@ paths:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
 
+  /api/v1/problem-sessions/{sessionId}/calculus-parse-revisions:
+    post:
+      summary: Admit a typed calculus USER source revision
+      description: Additive problem-parse-v2 correction bound to the selected parse and existing recognition evidence. Does not invoke a model or verify a solution. Duplicate JSON keys and unknown fields are rejected. Canonicalization remains explicit.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [baseParseId, baseRevision, correctionReason, problem]
+              properties:
+                baseParseId:
+                  type: string
+                  format: uuid
+                baseRevision:
+                  type: integer
+                  minimum: 1
+                correctionReason:
+                  type: string
+                  enum: [OCR_TEXT_ERROR, MATH_EXPRESSION_ERROR, VARIABLE_ERROR, CONSTRAINT_ERROR, ASSUMPTION_ERROR, TASK_TYPE_ERROR, PROBLEM_TYPE_ERROR, OTHER]
+                problem:
+                  $ref: "../../schemas/problem-parse-v2.schema.json"
+      responses:
+        "201":
+          description: New immutable USER revision selected, or idempotent replay
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateProblemParseCorrectionResponse"
+        "400":
+          description: Malformed typed source or missing idempotency key
+        "401":
+          description: Authentication required
+        "403":
+          description: Account or entitlement denied
+        "404":
+          description: Owned session not found
+        "409":
+          description: Source revision or idempotency conflict
+        "422":
+          description: Invalid source semantics or provenance
   /api/v1/problem-sessions/{sessionId}/parse-revisions:
     post:
       summary: Create a user-corrected parse revision
@@ -1755,6 +1814,7 @@ components:
         candidate:
           oneOf:
             - $ref: '../../schemas/solution-candidate.schema.json'
+            - $ref: '../../schemas/solution-candidate-v2.schema.json'
             - type: 'null'
         provider: {type: [string, 'null']}
         model: {type: [string, 'null']}
@@ -2971,7 +3031,7 @@ components:
           description: Model identifier for safe provenance, not product semantics.
         normalizedProblem:
           anyOf:
-            - $ref: "#/components/schemas/NormalizedProblemParse"
+            - $ref: "#/components/schemas/VersionedProblemParseDocument"
             - type: "null"
         createdAt:
           type: [string, "null"]
@@ -3019,7 +3079,7 @@ components:
         reviewRequired:
           type: boolean
         normalizedProblem:
-          $ref: "#/components/schemas/NormalizedProblemParse"
+          $ref: "#/components/schemas/VersionedProblemParseDocument"
         createdAt:
           type: string
           format: date-time
@@ -3200,16 +3260,16 @@ components:
           minimum: 1
         schemaVersion:
           type: string
-          enum: [canonical-problem-v1]
+          enum: [canonical-problem-v1, canonical-problem-v2]
         verifierSchemaVersion:
           type: string
-          enum: [verifier-input-v1]
+          enum: [verifier-input-v1, canonical-problem-v2]
         problemType:
           type: string
-          enum: [ARITHMETIC_EXPRESSION, ALGEBRAIC_EXPRESSION, EQUATION, INEQUALITY]
+          enum: [ARITHMETIC_EXPRESSION, ALGEBRAIC_EXPRESSION, EQUATION, INEQUALITY, DERIVATIVE, INTEGRAL, LIMIT]
         taskType:
           type: string
-          enum: [EVALUATE, SIMPLIFY, SOLVE_EQUATION, SOLVE_INEQUALITY]
+          enum: [EVALUATE, SIMPLIFY, SOLVE_EQUATION, SOLVE_INEQUALITY, DIFFERENTIATE, INTEGRATE, FIND_LIMIT]
         normalizedText:
           type: [string, "null"]
           description: Presentation-safe normalized text, not executable verifier input.
@@ -3231,6 +3291,11 @@ components:
         createdAt:
           type: string
           format: date-time
+
+    VersionedProblemParseDocument:
+      oneOf:
+        - $ref: "#/components/schemas/NormalizedProblemParse"
+        - $ref: "../../schemas/problem-parse-v2.schema.json"
 
     NormalizedProblemParse:
       type: object

@@ -90,6 +90,13 @@ final class ProblemParseControllerTest extends PostgresIntegrationTestSupport {
         assertThat(response.body()).contains("\"code\":\"AUTH_TOKEN_EXPIRED\"");
     }
 
+    @Test void typedCalculusRevisionEndpointRequiresAuthentication() throws Exception {
+        var response=httpClient.send(HttpRequest.newBuilder(uri("/api/v1/problem-sessions/"+UUID.randomUUID()+"/calculus-parse-revisions"))
+            .header("Content-Type","application/json").POST(HttpRequest.BodyPublishers.ofString("{}"))
+            .build(),HttpResponse.BodyHandlers.ofString());
+        assertThat(response.statusCode()).isEqualTo(401);
+    }
+
     @Test
     void authenticatedUserCanRequestAndPollProblemParseWithoutRawParserOutput() throws Exception {
         AuthSessionResult session = signIn("problem-parse-api-user");

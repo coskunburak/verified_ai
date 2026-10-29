@@ -17,6 +17,9 @@ public record CanonicalSolution(UUID id,Lineage lineage,Version version,Provenan
     public enum Category { RESTATE, TRANSFORM, CONCLUDE }
     public record Version(String representation,String normalizer) {
         public static final Version CURRENT=new Version("canonical-solution-v1","candidate-normalizer-v1");
+        public static final Version CALCULUS=new Version("canonical-solution-v2","candidate-normalizer-v2");
+        public static boolean supported(Version version) { return CURRENT.equals(version) || CALCULUS.equals(version); }
+        public static Version forSchema(String schema) { return "solution-candidate-v2".equals(schema) ? CALCULUS : CURRENT; }
         public Version {
             text(representation,64); text(normalizer,64);
             if(!representation.matches("[a-z][a-z0-9-]{0,63}") || !normalizer.matches("[a-z][a-z0-9-]{0,63}"))
@@ -41,7 +44,8 @@ public record CanonicalSolution(UUID id,Lineage lineage,Version version,Provenan
         public Provenance {
             Objects.requireNonNull(operationId); text(provider,128); optional(model); optional(promptId);
             optional(promptVersion); optional(routePolicyVersion); text(candidateSchema,64);
-            if(candidateVersion!=1 || !"solution-candidate-v1".equals(candidateSchema)) throw new IllegalArgumentException("Unsupported candidate");
+            if(!(candidateVersion==1 && "solution-candidate-v1".equals(candidateSchema)
+                || candidateVersion==2 && "solution-candidate-v2".equals(candidateSchema))) throw new IllegalArgumentException("Unsupported candidate");
         }
         private static void optional(String s) { if(s!=null) text(s,256); }
     }
@@ -57,11 +61,22 @@ public record CanonicalSolution(UUID id,Lineage lineage,Version version,Provenan
         Objects.requireNonNull(id); Objects.requireNonNull(lineage); Objects.requireNonNull(version);
         Objects.requireNonNull(provenance); Objects.requireNonNull(finalStatement); Objects.requireNonNull(createdAt);
         text(generationOrigin,32); text(problemType,64); text(taskType,64); text(method,64);
+        boolean calculus = Version.CALCULUS.equals(version);
         if(!java.util.Set.of("LOCAL_FIXTURE","AI_MODEL").contains(generationOrigin)
-            || !java.util.Set.of("ARITHMETIC_EXPRESSION","ALGEBRAIC_EXPRESSION","EQUATION","INEQUALITY").contains(problemType)
-            || !java.util.Set.of("EVALUATE","SIMPLIFY","SOLVE_EQUATION","SOLVE_INEQUALITY").contains(taskType)
-            || !java.util.Set.of("ARITHMETIC","ALGEBRAIC_TRANSFORMATION","ISOLATE_VARIABLE","INEQUALITY_TRANSFORMATION").contains(method))
+            || !(calculus ? java.util.Set.of("DERIVATIVE","INTEGRAL","LIMIT")
+                : java.util.Set.of("ARITHMETIC_EXPRESSION","ALGEBRAIC_EXPRESSION","EQUATION","INEQUALITY")).contains(problemType)
+            || !(calculus ? java.util.Set.of("DIFFERENTIATE","INTEGRATE","FIND_LIMIT")
+                : java.util.Set.of("EVALUATE","SIMPLIFY","SOLVE_EQUATION","SOLVE_INEQUALITY")).contains(taskType)
+            || !(calculus ? java.util.Set.of("DERIVATIVE_BACKCHECK","INTEGRAL_DIFFERENTIATION_BACKCHECK","FINITE_LIMIT")
+                : java.util.Set.of("ARITHMETIC","ALGEBRAIC_TRANSFORMATION","ISOLATE_VARIABLE","INEQUALITY_TRANSFORMATION")).contains(method))
             throw new IllegalArgumentException("Unsupported solution vocabulary");
+        if (calculus != (provenance.candidateVersion()==2) || calculus && !(finalStatement instanceof MathStatement.Expression))
+            throw new IllegalArgumentException("Canonical/candidate version mismatch");
+        if (calculus && !(switch(problemType+"/"+taskType+"/"+method) {
+            case "DERIVATIVE/DIFFERENTIATE/DERIVATIVE_BACKCHECK",
+                "INTEGRAL/INTEGRATE/INTEGRAL_DIFFERENTIATION_BACKCHECK", "LIMIT/FIND_LIMIT/FINITE_LIMIT" -> true;
+            default -> false;
+        })) throw new IllegalArgumentException("Calculus task mismatch");
         if(!id.equals(identity(lineage.origin(),version))) throw new IllegalArgumentException("Unstable solution identity");
         steps=List.copyOf(steps);
         if(steps.isEmpty() || steps.size()>24) throw new IllegalArgumentException("Invalid step count");

@@ -48,10 +48,55 @@ public class PrimarySolveService {
         this.maxCostMicros=maxCostMicros;this.locale=Locale.forLanguageTag(language);
     }
 
+    private boolean calculusFixtureEnabled;
+    @org.springframework.beans.factory.annotation.Autowired
+    void configureCalculusFixture(@Value("${app.solving.calculus-fixture-enabled:false}") boolean enabled,
+        @Value("${app.environment:local}") String environment) {
+        if (enabled && !java.util.Set.of("local","test").contains(environment))
+            throw new IllegalStateException("Calculus fixture is local/test only");
+        calculusFixtureEnabled=enabled;
+    }
+
+    /** Explicit offline fixture admission; no model invocation or fabricated inference provenance. */
+    public SolveView acceptCalculusFixture(SolveCommand command, String output) {
+        if (!calculusFixtureEnabled) throw conflict(ApiErrorCode.SOLVE_DISABLED);
+        UUID id=tx.execute(status->{
+            var source=sources.current(command.userId(),command.problemSessionId());
+            access.requireBasicSolve(command.userId());
+            if (command.retryOf()!=null || command.idempotencyKey()==null || command.idempotencyKey().isBlank()
+                || command.idempotencyKey().length()>128) throw conflict(ApiErrorCode.SOLVE_STATE_CONFLICT);
+            var candidate=validator.validate(output,source,"LOCAL_FIXTURE");
+            if (!"solution-candidate-v2".equals(candidate.schemaVersion())) throw conflict(ApiErrorCode.PROBLEM_UNSUPPORTED);
+            var duplicate=store.key(command.userId(),command.idempotencyKey());
+            if (duplicate.isPresent()) {
+                var job=duplicate.get();
+                var artifact=store.candidate(job.id()).orElseThrow(()->conflict(ApiErrorCode.SOLVE_STATE_CONFLICT));
+                if (!job.sessionId().equals(source.problemSessionId()) || !matches(job,source)
+                    || !validator.parse((String)artifact.get("artifact")).equals(validator.parse(validator.serialize(candidate))))
+                    throw conflict(ApiErrorCode.IDEMPOTENCY_KEY_REUSED);
+                return job.id();
+            }
+            if (store.latest(source.canonicalProblemId()).isPresent() || store.active(source.problemSessionId()).isPresent())
+                throw conflict(ApiErrorCode.SOLVE_STATE_CONFLICT);
+            var now=clock.instant();
+            var job=store.insert(source,command.idempotencyKey(),null,1,now,now.plusSeconds(60));
+            if (!store.claim(job.id(),now)) throw conflict(ApiErrorCode.SOLVE_STATE_CONFLICT);
+            var state=candidate.ambiguities().isEmpty() && candidate.unresolvedIssues().isEmpty()
+                ? SolveState.GENERATED_UNVERIFIED : SolveState.REVIEW_REQUIRED;
+            if (!store.finish(job.id(),state,null,null,now)) throw conflict(ApiErrorCode.SOLVE_STATE_CONFLICT);
+            store.candidate(job.id(),validator.serialize(candidate),
+                "{\"provider\":\"LOCAL_FIXTURE\",\"model\":\"owner-calculus-fixture-v1\",\"schemaVersion\":\"solution-candidate-v2\",\"routePolicyVersion\":\"calculus-fixture-v1\"}",now);
+            return job.id();
+        });
+        return get(command.userId(),command.problemSessionId(),id);
+    }
+
     public SolveView start(SolveCommand command) {
         UUID id=tx.execute(status->{
             SolveSource source=sources.current(command.userId(),command.problemSessionId());
             access.requireBasicSolve(command.userId());
+            if ("canonical-problem-v2".equals(validator.parse(source.canonicalJson()).path("schemaVersion").asText()))
+                throw conflict(ApiErrorCode.SOLVE_DISABLED);
             var duplicate=store.key(command.userId(),command.idempotencyKey());
             if(duplicate.isPresent()) {
                 var job=duplicate.get();

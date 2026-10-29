@@ -117,3 +117,19 @@ path is introduced. Existing verification lifecycle regression tests remain requ
 A future durable calculus publication version must bind owned canonical source/candidate
 revisions and participate in export/deletion before activation. Calculus diagnostics and
 proofs are not training eligible by default.
+
+## Sprint 5.9 production integration closure
+
+V022 additively permits v2 canonical/candidate contracts and a distinctly identified
+local fixture job route; no released migration or historical row is rewritten. Existing
+owner/source composite FKs, immutable candidate/canonical/evidence triggers and deletion
+cascades remain. V021 JSON evidence now admits a tagged typed calculus variant with
+interval, approach, representative scope, applied restriction ASTs and exact/non-proof result.
+A strict AST persistence codec retains legacy v1 JSON shape and textual UUID exports.
+The persistence envelope nesting bound is 80 to wrap the unchanged depth-32 AST; aggregate
+bytes and worker budgets are unchanged. Existing account lifecycle export/delete includes
+calculus history even with execution disabled. Rollback disables flags, retaining history;
+downgrading to V021 while v2 rows exist is unsupported.
+
+Status: IMPLEMENTED_PENDING_OWNER_VALIDATION / CI_PENDING / ROLLOUT_DISABLED.
+See [closure report](../sprints/phase05_ai_solving_and_verification_core/SPRINT_5.9_PRODUCTION_INTEGRATION_CLOSURE_EXECUTION_REPORT.md).

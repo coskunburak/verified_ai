@@ -48,6 +48,7 @@ public final class MathematicalExecution {
         List<PlanningSource.Restriction> restrictions) {
         public Request {
             Objects.requireNonNull(executionId); Objects.requireNonNull(method);
+            if (method==VerificationMethod.FINITE_LIMIT) throw new IllegalArgumentException("Finite limit requires calculus contract");
             Objects.requireNonNull(original); Objects.requireNonNull(candidate);
             if (correlationId == null || !correlationId.matches("[A-Za-z0-9_-]{1,64}")) throw new IllegalArgumentException("Invalid correlation ID");
             variables = Map.copyOf(variables); restrictions = List.copyOf(restrictions);
@@ -58,6 +59,7 @@ public final class MathematicalExecution {
         Outcome outcome, Reason reasonCode, List<String> restrictionIds, Proof proof) {
         public Result {
             Objects.requireNonNull(method); Objects.requireNonNull(outcome); Objects.requireNonNull(reasonCode);
+            if (method==VerificationMethod.FINITE_LIMIT) throw new IllegalArgumentException("Finite limit requires calculus result contract");
             restrictionIds = List.copyOf(restrictionIds);
             if (!"v1".equals(methodVersion) || !VERIFIER_VERSION.equals(verifierVersion)
                 || restrictionIds.size() > 48 || new HashSet<>(restrictionIds).size() != restrictionIds.size()

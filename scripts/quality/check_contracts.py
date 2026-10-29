@@ -7,6 +7,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 
 REQUIRED_CONTRACTS = {
+    "packages/schemas/problem-parse-v2.schema.json": ["problem-parse-v2", "calculus", "approach", "integralScope"],
+    "packages/schemas/canonical-problem-v2.schema.json": ["canonical-problem-v2", "acceptedParse", "sourceParse"],
+    "packages/schemas/solution-candidate-v2.schema.json": ["solution-candidate-v2", "canonicalRevision", "FINITE_LIMIT"],
     "packages/schemas/calculus-execution.schema.json": [
         "calculus-execution-v1", "calculus-task-v1", "approach", "integralScope",
     ],

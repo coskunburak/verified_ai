@@ -25,7 +25,10 @@ public final class SolutionCandidateValidator {
     private static final Set<String> RELATIONS = Set.of("EQUALS", "LESS_THAN", "LESS_THAN_OR_EQUAL", "GREATER_THAN", "GREATER_THAN_OR_EQUAL");
 
     public SolutionCandidate validate(String output, SolveSource source, String provider) {
+        if ("solution-candidate-v2".equals(parse(output).path("schemaVersion").asText()))
+            return new CalculusCandidateValidator().validate(output, source, provider);
         JsonNode root = parse(output);
+        require("canonical-problem-v1".equals(parse(source.canonicalJson()).path("schemaVersion").asText()),"SOURCE_UNSUPPORTED");
         fields(root, "schemaVersion", "canonicalProblemId", "problemParseId", "problemParseRevision", "candidateVersion",
             "generationOrigin", "problemType", "taskType", "method", "steps", "finalAnswer", "sourceAssumptionIds",
             "sourceConstraintIds", "derivedRestrictionIds", "ambiguities", "unresolvedIssues");
@@ -79,6 +82,10 @@ public final class SolutionCandidateValidator {
     }
 
     public JsonNode sourceDocument(SolveSource source) {
+        if ("canonical-problem-v2".equals(parse(source.canonicalJson()).path("schemaVersion").asText())) {
+            try { return com.verifiedai.problem.application.solving.CalculusSourceDocument.canonical(source); }
+            catch (IllegalArgumentException e) { throw new CandidateRejected("SOURCE_UNSUPPORTED"); }
+        }
         JsonNode c=parse(source.canonicalJson());
         require(TYPES.contains(source.problemType()) && "canonical-problem-v1".equals(c.path("schemaVersion").asText())
             && source.problemType().equals(c.path("problemType").asText())

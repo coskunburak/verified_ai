@@ -34,8 +34,8 @@ public class JdbcVerificationRunRepository implements VerificationRunRepository 
             }
         });
         mapper = new ObjectMapper(JsonFactory.builder().streamReadConstraints(StreamReadConstraints.builder()
-            .maxNestingDepth(32).maxStringLength(4096).build()).build())
-            .registerModule(time).enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION)
+            .maxNestingDepth(80).maxStringLength(4096).build()).build())
+            .registerModule(time).registerModule(EvidenceMathJson.module()).enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION)
             .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS).enable(DeserializationFeature.FAIL_ON_NUMBERS_FOR_ENUMS);
     }
     public Optional<VerificationRun> find(UUID user, UUID session, UUID key) {

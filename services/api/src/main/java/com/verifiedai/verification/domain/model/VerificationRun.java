@@ -12,7 +12,7 @@ public record VerificationRun(UUID id, UUID requestKey, UUID planId, String poli
         Objects.requireNonNull(id); Objects.requireNonNull(requestKey); Objects.requireNonNull(source);
         Objects.requireNonNull(solutionId); Objects.requireNonNull(solutionVersion); Objects.requireNonNull(createdAt);
         evidence = List.copyOf(evidence);
-        if (evidence.isEmpty() || evidence.size() > 5 || evidence.stream().map(e -> e.result().method()).distinct().count() != evidence.size())
+        if (evidence.isEmpty() || evidence.size() > 5 || evidence.stream().map(VerificationEvidence::method).distinct().count() != evidence.size())
             throw new IllegalArgumentException("Invalid evidence count");
         for (var e : evidence) {
             if (!id.equals(e.executionId()) || !planId.equals(e.planId()) || !policyVersion.equals(e.policyVersion())
