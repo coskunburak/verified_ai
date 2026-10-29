@@ -11,21 +11,54 @@ on:
 jobs:
   ios:
     runs-on: macos-15
+    timeout-minutes: 30
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
     steps:
       - uses: actions/checkout@v4
-      - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode.app
+      - name: Prepare Xcode and iOS simulator
+        shell: bash
+        timeout-minutes: 15
+        run: |
+          set -euo pipefail
+          mkdir -p .generated/ios-ci
+          sudo xcode-select -s "$DEVELOPER_DIR"
+          xcodebuild -version | tee .generated/ios-ci/xcode-version.log
+          sudo xcodebuild -runFirstLaunch 2>&1 | tee .generated/ios-ci/xcode-first-launch.log
+
+          # SDK installation does not guarantee an available simulator runtime or device.
+          runtime_id=com.apple.CoreSimulator.SimRuntime.iOS-18-5
+          xcrun simctl list runtimes --json > .generated/ios-ci/runtimes-before.json
+          if ! jq -e --arg id "$runtime_id" \
+            '.runtimes | any(.identifier == $id and .isAvailable == true)' \
+            .generated/ios-ci/runtimes-before.json > /dev/null; then
+            xcodebuild -downloadPlatform iOS -buildVersion 18.5 \
+              2>&1 | tee .generated/ios-ci/runtime-install.log
+          fi
+          xcrun simctl list runtimes --json > .generated/ios-ci/runtimes-after.json
+          jq -e --arg id "$runtime_id" \
+            '.runtimes | any(.identifier == $id and .isAvailable == true)' \
+            .generated/ios-ci/runtimes-after.json > /dev/null
+
+          simulator_id="$(xcrun simctl create VerifiedAI-CI \
+            com.apple.CoreSimulator.SimDeviceType.iPhone-16-Pro "$runtime_id")"
+          echo "IOS_SIMULATOR_UDID=$simulator_id" >> "$GITHUB_ENV"
+          xcrun simctl boot "$simulator_id"
+          xcrun simctl bootstatus "$simulator_id" -b \
+            2>&1 | tee .generated/ios-ci/simulator-boot.log
+          xcrun simctl list devices --json > .generated/ios-ci/devices.json
       - name: Build and test iOS
         shell: bash
         run: |
-          set -o pipefail
+          set -euo pipefail
           mkdir -p .generated/ios-ci
           # Run 40603823381 lost XCTest's app PID during launch while simulator clones
           # ran concurrently. Serialize tests; keep every assertion and failure status.
           NSUnbufferedIO=YES xcodebuild test \
             -project apps/ios/VerifiedAI.xcodeproj \
             -scheme VerifiedAI \
-            -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
+            -destination "platform=iOS Simulator,id=$IOS_SIMULATOR_UDID" \
+            -destination-timeout 120 \
             -parallel-testing-enabled NO \
             -derivedDataPath DerivedData \
             -resultBundlePath .generated/ios-ci/VerifiedAI.xcresult \
@@ -35,9 +68,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ios-test-results-${{ github.run_id }}-${{ github.run_attempt }}
-          path: |
-            .generated/ios-ci/VerifiedAI.xcresult
-            .generated/ios-ci/xcodebuild.log
+          path: .generated/ios-ci/
           include-hidden-files: true
           retention-days: 14
           if-no-files-found: warn
