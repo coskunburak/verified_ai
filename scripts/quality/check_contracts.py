@@ -7,6 +7,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 
 REQUIRED_CONTRACTS = {
+    "packages/schemas/verification-execution.schema.json": [
+        "verification-execution-v1", "original", "candidate", "restrictions",
+    ],
+    "packages/schemas/verification-execution-result.schema.json": [
+        "verification-execution-result-v1", "EXECUTION_FAILED", "restrictionIds", "proof",
+    ],
     "packages/schemas/solution-candidate.schema.json": [
         "solution-candidate-v1", "canonicalProblemId", "derivedRestrictionIds", "finalAnswer",
     ],

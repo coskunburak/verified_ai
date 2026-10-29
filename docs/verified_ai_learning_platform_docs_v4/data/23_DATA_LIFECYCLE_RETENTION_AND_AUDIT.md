@@ -101,3 +101,10 @@ output, private reasoning, idempotency keys and provider request/response intern
 is retained by solving. In-flight completion rechecks ownership and source; account deletion cannot be
 undone by a late worker write. Existing AI usage/spend anonymization remains separate. No training consent
 is inferred. Backup expiry follows the existing platform policy; no new retention exception is introduced.
+
+## Sprint 5.8 verification evidence retention
+
+Verification runs have the same owner/source retention lifecycle as their canonical solutions. They are immutable while retained.
+Account export includes historical method evidence and provenance through `VerificationLifecycleContributor`.
+Deletion cascades from owned canonical solution/job/session/account records; direct standalone evidence deletion is prohibited.
+No training eligibility is granted. Rollback retains additive V021 and history; disable execution rather than dropping evidence tables.

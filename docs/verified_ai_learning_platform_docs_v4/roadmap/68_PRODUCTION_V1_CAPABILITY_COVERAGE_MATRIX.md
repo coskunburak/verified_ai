@@ -99,3 +99,10 @@ return/EN/large-text/VoiceOver/Reduce Motion checks passed; extended manual matr
 No production coverage or verified-result claim is added. Fixture UI acceptance, real-model acceptance
 and independent verification remain separate.
 Evidence and exact owner commands: [UI execution report](../sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_UI_EXECUTION_REPORT.md).
+
+## Sprint 5.8 CAP-VERIFY-001 execution increment
+
+Status remains Partial. Typed arithmetic, restricted rational-polynomial equivalence, rational-root substitution/domain checks
+and restricted singleton completeness have authored implementations and tests. Immutable evidence and owner-scoped publication are additive.
+All local owner gates A–H passed: export/integration; architecture/regressions 141/141; full backend 551 passing with 2 gated Qwen skips; Linux verifier 92/92; lint/docs/contracts/secrets and immutability. Lint cleanup and verifier/wire reruns passed. The final evidence-only documentation refresh awaits docs-check. Hosted CI remains unrun. Capabilities remain disabled pending final-commit CI and explicit rollout approval.
+Calculus, composite verification, arbitration and overall VERIFIED policy are deferred; general completeness is unsupported.

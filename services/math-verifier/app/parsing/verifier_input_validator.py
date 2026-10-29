@@ -75,6 +75,8 @@ def _to_sympy(node: ExpressionNode, symbols: dict[str, sp.Symbol]) -> sp.Expr:
         digit_count = sum(character.isdigit() for character in node.value)
         if digit_count > MAX_CANONICAL_NUMERIC_DIGITS:
             raise UnsafeExpressionError("Numeric literal exceeds verifier limits")
+        if node.numericType == "INTEGER" and "." in node.value:
+            raise UnsafeExpressionError("Integer literal must have integer syntax")
         return sp.Rational(node.value) if node.numericType in {"DECIMAL", "RATIONAL"} else sp.Integer(node.value)
 
     if isinstance(node, VariableNode):
@@ -83,23 +85,27 @@ def _to_sympy(node: ExpressionNode, symbols: dict[str, sp.Symbol]) -> sp.Expr:
         return symbols[node.symbol]
 
     if isinstance(node, UnaryNode):
-        return -_to_sympy(node.operand, symbols)
+        return sp.Mul(-1, _to_sympy(node.operand, symbols), evaluate=False)
 
     if isinstance(node, BinaryNode):
         left = _to_sympy(node.left, symbols)
         right = _to_sympy(node.right, symbols)
         match node.operator:
             case "ADD":
-                return left + right
+                return sp.Add(left, right, evaluate=False)
             case "SUBTRACT":
-                return left - right
+                return sp.Add(left, sp.Mul(-1, right, evaluate=False), evaluate=False)
             case "MULTIPLY":
-                return left * right
+                return sp.Mul(left, right, evaluate=False)
             case "DIVIDE":
-                return left / right
+                if right == 0:
+                    raise UnsafeExpressionError("Undefined division")
+                return sp.Mul(left, sp.Pow(right, -1, evaluate=False), evaluate=False)
             case "POWER":
-                _validate_exponent(node.right)
-                return left**right
+                power = _validate_exponent(node.right)
+                if left == 0 and power <= 0:
+                    raise UnsafeExpressionError("Undefined power")
+                return sp.Pow(left, right, evaluate=False)
         raise UnsafeExpressionError("Unsupported binary operator")
 
     if isinstance(node, FunctionNode):
@@ -112,12 +118,12 @@ def _to_sympy(node: ExpressionNode, symbols: dict[str, sp.Symbol]) -> sp.Expr:
             "LOG": sp.log,
             "EXP": sp.exp,
         }
-        return functions[node.function](argument)
+        return functions[node.function](argument, evaluate=False)
 
     raise UnsafeExpressionError("Unsupported expression node")
 
 
-def _validate_exponent(node: ExpressionNode) -> None:
+def _validate_exponent(node: ExpressionNode) -> int:
     negative = False
     candidate = node
     if isinstance(node, UnaryNode):
@@ -127,11 +133,14 @@ def _validate_exponent(node: ExpressionNode) -> None:
         candidate = node.operand
     if not isinstance(candidate, NumberNode):
         raise UnsafeExpressionError("Symbolic exponents are outside verifier v1")
+    if candidate.numericType != "INTEGER" or "." in candidate.value:
+        raise UnsafeExpressionError("Only exact integer exponents are executable")
     value = Decimal(candidate.value)
     if negative:
         value = -value
     if abs(value) > Decimal(MAX_CANONICAL_EXPONENT_MAGNITUDE):
         raise UnsafeExpressionError("Exponent magnitude exceeds verifier limits")
+    return int(value)
 
 
 def _complexity(node: ExpressionNode) -> Complexity:

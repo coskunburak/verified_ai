@@ -57,4 +57,15 @@ class VerificationSourceReaderTest {
             ((ObjectNode)n.path("statements").get(0)).set("left",expression);
         });
     }
+    @org.junit.jupiter.api.Test void executionDoesNotInferVariableRolesFromParameters() {
+        var source = com.verifiedai.verification.PlanningTestData.equation();
+        var codec = com.verifiedai.verification.PlanningTestData.CODEC;
+        var json = (com.fasterxml.jackson.databind.node.ObjectNode) codec.parse(source.canonicalJson());
+        ((com.fasterxml.jackson.databind.node.ObjectNode) json.path("variables").get(0)).put("role", "PARAMETER");
+        var changed = com.verifiedai.verification.PlanningTestData.json(source, json);
+        var decoder = new VerificationSourceReader(codec);
+        org.assertj.core.api.Assertions.assertThat(decoder.read(changed)).isNotNull();
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> decoder.readForExecution(changed))
+            .isInstanceOf(VerificationSourceReader.SourceRejected.class);
+    }
 }

@@ -168,3 +168,18 @@ preserves exact assumption/source-constraint/derived-restriction IDs, and stores
 claims separately. Single variable-left final relations and expression answers are supported; general
 solution sets/multipart/geometry/calculus remain unsupported. Candidate structural/semantic acceptance
 is not proof. Candidate prose is plain untrusted content, never code or verifier input authority.
+
+## Sprint 5.8 execution representation
+
+Canonical NUMBER lexemes remain exact base-ten strings. RATIONAL v1 uses this same numeric lexeme grammar;
+a fractional quotient is represented by a DIVIDE AST, not a slash-bearing NUMBER string.
+No existing schema version is reinterpreted or extended with root-set syntax.
+
+The new internal execution contract carries typed original/candidate statements, declared variable domains and source restrictions.
+Integer powers require INTEGER numeric nodes (optionally unary NEGATE), magnitude <=12; symbolic/fractional exponents are unsupported.
+Zero to a nonpositive power and zero denominators cannot produce mathematical proof.
+Typed validation now constructs unevaluated SymPy syntax to prevent eager expansion; validation still does not establish definedness or correctness.
+Execution uses independently bounded rational/polynomial algorithms and retains original AST domain obligations.
+
+The single final assignment can represent a candidate singleton for completeness only when independently derived roots match it exactly.
+General finite sets, empty sets and infinite sets require a future versioned canonical answer contract; prose is never parsed as a set.

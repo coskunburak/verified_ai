@@ -72,6 +72,15 @@ public final class VerificationSourceReader {
         } catch (SourceRejected e) { throw e; }
         catch (IllegalArgumentException | NullPointerException e) { throw new SourceRejected(Reason.INVALID_CANONICAL_STRUCTURE); }
     }
+    /** Execution cannot infer a solve variable from a parameter or unknown semantic role. */
+    public PlanningSource readForExecution(SolveSource source) {
+        var root = codec.parse(source.canonicalJson());
+        for (var variable : root.path("variables")) {
+            if (!"VARIABLE".equals(variable.path("role").asText()))
+                throw new SourceRejected(Reason.UNSUPPORTED_VARIABLE_ROLE);
+        }
+        return read(source);
+    }
     private List<String> restrictions(JsonNode root, String name, int max, String provenance, List<Restriction> result) {
         var ids = new ArrayList<String>();
         for (var r : array(root, name, max)) {

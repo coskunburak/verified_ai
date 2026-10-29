@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import re
 import time
 import uuid
 from collections.abc import Awaitable, Callable
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request, Response
 from fastapi.exceptions import RequestValidationError
@@ -11,18 +13,29 @@ from fastapi.responses import JSONResponse
 from app.api.routes.health import router as health_router
 from app.api.routes.metrics import router as metrics_router
 from app.api.routes.verify import router as verify_router
+from app.config import get_settings
 from app.domain.errors import VerificationError
 from app.observability.logging import configure_logging, logger
+from app.security.request_limits import RequestLimits
 
 configure_logging()
 
+
+@asynccontextmanager
+async def lifespan(_app):
+    get_settings()  # Reject unsafe production credentials before accepting traffic.
+    yield
+
 app = FastAPI(
     title="Verified AI Internal Math Verifier",
+    lifespan=lifespan,
     version="0.1.0",
     docs_url=None,
     redoc_url=None,
     openapi_url="/internal/openapi.json",
 )
+
+app.add_middleware(RequestLimits)
 
 
 @app.middleware("http")
@@ -30,10 +43,12 @@ async def correlation_middleware(
     request: Request,
     call_next: Callable[[Request], Awaitable[Response]],
 ) -> Response:
-    correlation_id = request.headers.get("X-Request-Id") or str(uuid.uuid4())
+    supplied = request.headers.get("X-Request-Id", "")
+    correlation_id = supplied if re.fullmatch(r"[A-Za-z0-9_-]{1,64}", supplied) else str(uuid.uuid4())
     request.state.correlation_id = correlation_id
     start = time.perf_counter()
     response = await call_next(request)
+    correlation_id = request.state.correlation_id
     duration_ms = round((time.perf_counter() - start) * 1000, 2)
     response.headers["X-Request-Id"] = correlation_id
     logger.info(
@@ -41,7 +56,7 @@ async def correlation_middleware(
         extra={
             "correlation_id": correlation_id,
             "method": request.method,
-            "path": request.url.path,
+            "path": request.url.path if request.url.path in {"/health", "/metrics", "/internal/v1/verify/execute", "/internal/v1/verify/validate-input", "/internal/v1/verify/equivalence"} else "other",
             "status_code": response.status_code,
             "duration_ms": duration_ms,
         },

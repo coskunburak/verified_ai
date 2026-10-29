@@ -11,7 +11,8 @@ paths:
           description: Verifier process is alive
   /internal/v1/verify/equivalence:
     post:
-      summary: Internal symbolic equivalence check
+      summary: Legacy local/test-only symbolic equivalence check
+      description: Disabled outside local/test environments. Legacy status names have no product verification authority.
       security:
         - internalToken: []
       parameters:
@@ -64,6 +65,38 @@ paths:
           description: Internal authentication required
         "422":
           description: Payload is outside the typed verifier input contract
+  /internal/v1/verify/execute:
+    post:
+      summary: Execute one scoped canonical mathematical check
+      description: Disabled by default. Method outcomes are evidence only; HTTP success never assigns overall verification status. Request bodies are limited to 65536 bytes; responses to 16384 bytes.
+      security:
+        - internalToken: []
+      parameters:
+        - in: header
+          name: X-Request-Id
+          schema:
+            type: string
+            maxLength: 64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../../schemas/verification-execution.schema.json"
+      responses:
+        "200":
+          description: Versioned method evidence, including non-proof failures
+          content:
+            application/json:
+              schema:
+                $ref: "../../schemas/verification-execution-result.schema.json"
+        "401":
+          description: Internal authentication required
+        "413":
+          description: Request byte limit exceeded
+        "422":
+          description: Invalid typed execution contract or correlation mismatch
+
 components:
   securitySchemes:
     internalToken:

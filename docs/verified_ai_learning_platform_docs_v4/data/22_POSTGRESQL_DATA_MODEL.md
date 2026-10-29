@@ -647,3 +647,12 @@ retains aggregate spend; existing usage anonymization remains. No raw question/i
 columns. Retention/invoice reconciliation approval is required before paid activation.
 Rollback disables paid routes, preserves tables/counters and historical pricing; do
 not drop control state to reset quotas. Migration/concurrency tests PENDING_OWNER_TEST.
+
+## Sprint 5.8 verification evidence
+
+V021 adds `verification_runs`: one immutable, atomically published aggregate with bounded typed method evidence JSON,
+exact composite canonical solution/source/owner/version foreign key, unique owner/session/request-key binding,
+plan/policy/capability versions and correlation/time metadata. The table contains no copied raw input or explanation.
+Database checks bind JSON identity to relational identity; constructors validate nested evidence provenance on reads.
+Update and direct delete triggers preserve history; owned source/account cascades remove the aggregate for privacy.
+No mutable current-evidence pointer is introduced. Currentness is reauthorized against selected source at read/publication time.

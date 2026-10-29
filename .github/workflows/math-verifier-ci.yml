@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - "services/math-verifier/**"
+      - "packages/schemas/verification-execution*.schema.json"
+      - "packages/test-fixtures/verification/**"
       - ".github/workflows/math-verifier-ci.yml"
   push:
     branches: [main]
