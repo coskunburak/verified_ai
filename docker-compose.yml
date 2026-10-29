@@ -56,11 +56,20 @@ services:
       - platform-internal
 
   math-verifier:
+    cpus: 2
+    mem_limit: 768m
+    pids_limit: 32
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,noexec,nosuid
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
     build:
       context: ./services/math-verifier
     environment:
       APP_ENV: local
       MATH_VERIFIER_INTERNAL_TOKEN: ${MATH_VERIFIER_INTERNAL_TOKEN:-local_math_verifier_token_change_me}
+      MATH_VERIFIER_EXECUTION_ENABLED: ${MATH_VERIFIER_EXECUTION_ENABLED:-false}
     ports:
       - "127.0.0.1:${MATH_VERIFIER_PORT:-8090}:8090"
     healthcheck:

@@ -1,0 +1,305 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "verification-execution-result-v1"
+    },
+    "executionId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "correlationId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,64}$"
+    },
+    "method": {
+      "type": "string",
+      "enum": [
+        "ARITHMETIC_EVALUATION",
+        "SYMBOLIC_EQUIVALENCE",
+        "EQUATION_SUBSTITUTION",
+        "DOMAIN_CONSTRAINT_CHECK",
+        "SOLUTION_SET_COMPLETENESS"
+      ]
+    },
+    "methodVersion": {
+      "const": "v1"
+    },
+    "verifierVersion": {
+      "const": "canonical-executor-v1"
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "PROVEN",
+        "DISPROVEN",
+        "INCONCLUSIVE",
+        "UNSUPPORTED",
+        "BLOCKED",
+        "EXECUTION_FAILED"
+      ]
+    },
+    "reasonCode": {
+      "type": "string",
+      "enum": [
+        "EXACT_EQUAL",
+        "EXACT_UNEQUAL",
+        "POLYNOMIAL_IDENTITY",
+        "POLYNOMIAL_NONIDENTITY",
+        "VALID_ROOT",
+        "INVALID_ROOT",
+        "DOMAIN_SATISFIED",
+        "DOMAIN_VIOLATION",
+        "UNDEFINED_SOURCE",
+        "UNDEFINED_VALUE",
+        "UNSUPPORTED_SUBSET",
+        "COMPLEXITY_LIMIT",
+        "UNKNOWN_DOMAIN",
+        "MISSING_RESTRICTION",
+        "CONTRADICTORY_CONSTRAINTS",
+        "ASSIGNMENT_REQUIRED",
+        "UNIQUE_SOLUTION",
+        "INCOMPLETE_SOLUTION_SET",
+        "ROOT_SET_NOT_REPRESENTABLE",
+        "TIMEOUT",
+        "RESOURCE_FAILURE",
+        "WORKER_FAILURE",
+        "ADMISSION_LIMIT",
+        "DISABLED"
+      ]
+    },
+    "restrictionIds": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "maxLength": 96
+      },
+      "maxItems": 48
+    },
+    "proof": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "descriptor": {
+              "type": "string",
+              "enum": [
+                "EXACT_RATIONAL_COMPARISON",
+                "POLYNOMIAL_COEFFICIENT_COMPARISON",
+                "ORIGINAL_EQUATION_SUBSTITUTION",
+                "DOMAIN_CHECK",
+                "BOUNDED_POLYNOMIAL_ROOT_SET"
+              ]
+            },
+            "leftValue": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "numerator": {
+                      "type": "string",
+                      "pattern": "^-?(0|[1-9][0-9]*)$",
+                      "maxLength": 320
+                    },
+                    "denominator": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]*$",
+                      "maxLength": 320
+                    }
+                  },
+                  "required": [
+                    "numerator",
+                    "denominator"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "rightValue": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "numerator": {
+                      "type": "string",
+                      "pattern": "^-?(0|[1-9][0-9]*)$",
+                      "maxLength": 320
+                    },
+                    "denominator": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]*$",
+                      "maxLength": 320
+                    }
+                  },
+                  "required": [
+                    "numerator",
+                    "denominator"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "distinctRootCount": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 2
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "descriptor",
+            "leftValue",
+            "rightValue",
+            "distinctRootCount"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "executionId",
+    "correlationId",
+    "method",
+    "methodVersion",
+    "verifierVersion",
+    "outcome",
+    "reasonCode",
+    "restrictionIds",
+    "proof"
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.verified-ai-learning.example/verification-execution-result.schema.json",
+  "title": "VerificationExecutionResultV1",
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "PROVEN",
+              "DISPROVEN"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "proof": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "descriptor": {
+                "type": "string",
+                "enum": [
+                  "EXACT_RATIONAL_COMPARISON",
+                  "POLYNOMIAL_COEFFICIENT_COMPARISON",
+                  "ORIGINAL_EQUATION_SUBSTITUTION",
+                  "DOMAIN_CHECK",
+                  "BOUNDED_POLYNOMIAL_ROOT_SET"
+                ]
+              },
+              "leftValue": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "numerator": {
+                        "type": "string",
+                        "pattern": "^-?(0|[1-9][0-9]*)$",
+                        "maxLength": 320
+                      },
+                      "denominator": {
+                        "type": "string",
+                        "pattern": "^[1-9][0-9]*$",
+                        "maxLength": 320
+                      }
+                    },
+                    "required": [
+                      "numerator",
+                      "denominator"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "rightValue": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "numerator": {
+                        "type": "string",
+                        "pattern": "^-?(0|[1-9][0-9]*)$",
+                        "maxLength": 320
+                      },
+                      "denominator": {
+                        "type": "string",
+                        "pattern": "^[1-9][0-9]*$",
+                        "maxLength": 320
+                      }
+                    },
+                    "required": [
+                      "numerator",
+                      "denominator"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "distinctRootCount": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 2
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "descriptor",
+              "leftValue",
+              "rightValue",
+              "distinctRootCount"
+            ]
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "proof": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
+}

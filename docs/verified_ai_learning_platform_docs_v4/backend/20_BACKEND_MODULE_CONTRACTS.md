@@ -94,3 +94,11 @@ Read-heavy operational tooling. Any mutation goes through normal domain commands
 
 Future `modelops` tooling may read governed evaluation/training artifacts but cannot directly mutate learner mastery, verification, billing, or exam state. Promotion of a model changes routing configuration, not domain ownership.
 <!-- HYBRID_AI_STRATEGY_V3:END -->
+
+## Sprint 5.8 verification execution boundary
+
+`verification.application` owns authorized orchestration through a typed mathematical executor port and run repository port.
+Only `verification.infrastructure.http` implements network transport; only its persistence adapter writes verification-owned rows.
+Neither adapter can access problem/solving repositories or invoke AI providers. Domain/application code cannot depend on HTTP/JDBC adapters.
+Existing owner-scoped canonical application interfaces remain the sole source authorities.
+No public endpoint, iOS contract, provider route, paid inference or aggregate verification policy is introduced.

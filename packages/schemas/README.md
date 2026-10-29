@@ -27,3 +27,7 @@ retain old schemas for stored-output interpretation. Schema validity is not math
 final answer, exact source identity and canonical assumption/restriction references. It never replaces
 canonical-problem-v1 or verifier-input-v1 and cannot authorize VERIFIED. Java shape/safety validation is
 owned by solving; independent owner-only schema fixtures live in `evaluations/fixtures/solver`.
+
+Sprint 5.8 adds verification-execution.schema.json and verification-execution-result.schema.json.
+They define scoped method execution and evidence only; existing canonical/verifier-input versions are unchanged.
+Shared exact mathematical cases live under packages/test-fixtures/verification/execution-v1/.

@@ -79,3 +79,10 @@ Every `V1 required = Yes` requirement must map to at least one capability in `ro
 | Requirement | Implementation | Evidence | Status |
 | --- | --- | --- | --- |
 | REQ-UI-SOLVE-001: ready session to unverified candidate, safe retry/recovery and no client VERIFIED verdict | ProblemSolving iOS feature, History navigation, authenticated current-job lookup; account isolation and stale suppression | Owner iOS full suite: 111 tests successful; API 389 PASS / 2 real-model gated SKIP; verifier 20 PASS; screenshots and reported return/EN/large-text/VoiceOver/Reduce Motion PASS; [owner gates A–F](../sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_UI_EXECUTION_REPORT.md) | AUTOMATED_REGRESSION_PASS / MANUAL_ACCEPTANCE_PARTIAL; extended manual matrix pending, real Qwen E2E blocked separately |
+
+## Sprint 5.8 contribution to REQ-VERIFY-001
+
+Typed deterministic method execution, supervised resource bounds, Java owner/source publication rechecks and V021 immutable evidence
+are implemented for the explicitly documented rational/polynomial subsets. Mathematical/security/contract/application/PostgreSQL tests are authored.
+All local owner gates A–H passed: E export/integration; F 141/141; G backend 551 passing with 2 gated Qwen skips and Linux verifier 92/92; H lint/docs/contracts/secrets, 5 immutability units and unchanged existing prompt/schema versions. Lint cleanup and verifier/wire reruns passed. The final evidence-only documentation refresh awaits docs-check. Hosted CI, rollout approval and overall VERIFIED policy remain unclaimed.
+See `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.8_EXECUTION_REPORT.md`.

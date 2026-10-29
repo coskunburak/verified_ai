@@ -5,6 +5,8 @@ on:
     paths:
       - "services/api/**"
       - "packages/schemas/**"
+      - "packages/test-fixtures/verification/**"
+      - "services/math-verifier/**"
       - "infra/local/minio-test/**"
       - "Makefile"
       - "scripts/quality/check_prompt_immutability.py"
@@ -37,7 +39,14 @@ jobs:
           cache: maven
       - name: Build pinned MinIO test image
         run: make test-minio-image
+      - name: Provision Python verifier for cross-runtime contract
+        run: |
+          python3 -m venv services/math-verifier/.venv
+          services/math-verifier/.venv/bin/python -m pip install -e 'services/math-verifier[dev]'
       - name: Test API
         working-directory: services/api
+        env:
+          VERIFIEDAI_MATH_WIRE: "true"
+          VERIFIEDAI_VERIFIER_PYTHON: ${{ github.workspace }}/services/math-verifier/.venv/bin/python
         run: mvn -Dverifiedai.test.minio-image=verified-ai/minio-test:2024-07-16-3535197 test
 

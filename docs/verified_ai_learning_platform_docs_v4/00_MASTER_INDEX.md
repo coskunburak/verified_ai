@@ -353,3 +353,8 @@ Any V1 feature implementation should map to a capability ID and at least one req
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.6_EXECUTION_REPORT.md` — owner Gates A–F backend/fixture PASS; full API 481 passed / 2 gated skips, repository quality and local evaluation PASS; real-model acceptance remains separate.
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.7_IMPLEMENTATION_MAP.md` — deterministic planning scope, canonical authority, capability boundaries and transaction design.
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.7_EXECUTION_REPORT.md` — owner Gates A–F and implementation CI PASS; full API 517 passed / 2 gated Qwen skips; PR #31 tracks current-head checks and final review, no executable canonical verification claim.
+
+## Sprint 5.8 execution handoff
+
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.8_IMPLEMENTATION_MAP.md` — inspected baseline, bounded method subsets and execution/persistence ownership.
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.8_EXECUTION_REPORT.md` — authored implementation inventory, owner-only gates, operational limits and rollout/rollback.

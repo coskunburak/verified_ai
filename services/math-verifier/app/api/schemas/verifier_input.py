@@ -149,7 +149,7 @@ class VerifierInputRequest(BaseModel):
 class VerifierInputValidationResponse(BaseModel):
     status: Literal["ACCEPTED"] = "ACCEPTED"
     schemaVersion: Literal["verifier-input-v1"] = "verifier-input-v1"
-    verifierVersion: str = "typed-ast-validator-v0.1.0"
+    verifierVersion: str = "typed-ast-validator-v0.2.0"
     statementCount: int
     restrictionCount: int
     correlationId: str = "unavailable"

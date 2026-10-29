@@ -42,6 +42,12 @@ management:
     tags:
       service: verified-ai-api
 app:
+  verification:
+    execution-enabled: ${VERIFICATION_EXECUTION_ENABLED:false}
+    owner-accepted: ${VERIFICATION_OWNER_ACCEPTED:false}
+    methods: ${VERIFICATION_METHODS:}
+    base-url: ${MATH_VERIFIER_BASE_URL:http://math-verifier:8090}
+    internal-token: ${MATH_VERIFIER_INTERNAL_TOKEN:local_math_verifier_token_change_me}
   solving:
     canonical:
       worker-enabled: false

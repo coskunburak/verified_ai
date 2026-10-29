@@ -108,3 +108,18 @@ Future ML introduces additional threats:
 
 Training/model-serving environments require separate credentials and artifact integrity checks.
 <!-- HYBRID_AI_STRATEGY_V3:END -->
+
+## Sprint 5.8 deterministic execution controls
+
+Typed execution rejects extra fields, unknown versions/methods, undeclared/duplicate variables, duplicate restriction IDs,
+unsafe numeric lexemes and exponent abuse. Raw request bytes are bounded before JSON parsing; mathematical input is never executed as Python text.
+Rational intermediates and polynomial degree/terms are bounded before expensive multiplication; residual computation runs in killable spawned processes.
+Per worker: 3-second elapsed deadline, 2-second POSIX CPU ceiling and Linux 512 MiB address-space ceiling; two admitted operations per service process, no queue.
+The deployment uses one Uvicorn worker, connection/backlog limits, non-root execution, dropped capabilities and container CPU/memory/PID limits.
+Production execution requires Linux and a non-development internal secret. macOS owner tests cannot establish Linux memory-limit acceptance.
+
+The Java adapter enforces authentication, correlation/version/method/proof consistency, a total body deadline, a bounded body subscriber and no retries.
+Operational failures remain EXECUTION_FAILED. Invalid source ownership/version, stale selection and account deletion prevent publication.
+V021 composite FKs, immutable triggers and idempotency protect owner binding, history and duplicate publication.
+Legacy string equivalence is disabled outside local/test environments. Input validation is structural and unevaluated; it is never answer authority.
+Logs/metric labels use bounded identifiers/enums; invalid request content and exception reprs are not echoed as evidence.

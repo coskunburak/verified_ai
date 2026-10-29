@@ -51,3 +51,38 @@ def test_typed_ast_rejects_excessive_numeric_exponent() -> None:
 
     with pytest.raises(UnsafeExpressionError):
         validate_verifier_input(request)
+
+
+@pytest.mark.parametrize("value", ["0.5", "2.0"])
+def test_converter_rejects_fractional_or_decimal_exponent_types(value):
+    from app.api.schemas.verifier_input import BinaryNode, NumberNode
+    from app.parsing.verifier_input_validator import _convert
+    node = BinaryNode(kind="BINARY", operator="POWER",
+                      left=NumberNode(kind="NUMBER", numericType="INTEGER", value="2"),
+                      right=NumberNode(kind="NUMBER", numericType="DECIMAL", value=value))
+    with pytest.raises(UnsafeExpressionError):
+        _convert(node, {})
+
+
+def test_power_converter_uses_converted_mathematical_exponent():
+    import sympy as sp
+
+    from app.api.schemas.verifier_input import BinaryNode, NumberNode
+    from app.parsing.verifier_input_validator import _convert
+    node = BinaryNode(kind="BINARY", operator="POWER",
+                      left=NumberNode(kind="NUMBER", numericType="INTEGER", value="2"),
+                      right=NumberNode(kind="NUMBER", numericType="INTEGER", value="10"))
+    converted = _convert(node, {})
+    assert converted.exp == sp.Integer(10)
+    assert converted.doit() == 1024
+
+
+@pytest.mark.parametrize("operator,right", [("DIVIDE", "0"), ("POWER", "0"), ("POWER", "-1")])
+def test_converter_rejects_explicit_undefined_values(operator, right):
+    from app.api.schemas.verifier_input import BinaryNode, NumberNode
+    from app.parsing.verifier_input_validator import _convert
+    node = BinaryNode(kind="BINARY", operator=operator,
+                      left=NumberNode(kind="NUMBER", numericType="INTEGER", value="0"),
+                      right=NumberNode(kind="NUMBER", numericType="INTEGER", value=right))
+    with pytest.raises(UnsafeExpressionError):
+        _convert(node, {})

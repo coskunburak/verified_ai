@@ -129,3 +129,10 @@ Private user content is not automatically reused for training/evaluation. Any fu
 
 Production student content is not training data by default. Any future training use requires an explicit eligibility/purpose process, minimization, lineage, and revocation handling. Product retention/deletion promises remain authoritative.
 <!-- HYBRID_AI_STRATEGY_V3:END -->
+
+## Sprint 5.8 method evidence privacy
+
+Only typed mathematics, opaque execution/correlation IDs, variable domains and restriction references cross into the verifier.
+Student/account/session identifiers, uploaded images, explanation text and provider credentials are excluded from execution payloads.
+Verification evidence remains owner data with immutable provenance, account export and source/account deletion cascades.
+No content is made training eligible and no additional inference or external AI validation is performed.

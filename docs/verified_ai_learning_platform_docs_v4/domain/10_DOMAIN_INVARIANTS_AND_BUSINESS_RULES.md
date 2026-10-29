@@ -109,3 +109,14 @@ This is a highest-precedence document.
 9. Model-training ambitions may not override account deletion, retention, privacy, or data-minimization obligations.
 10. Foundation-model training from scratch is outside the approved product strategy unless a future explicit ADR replaces ADR-005.
 <!-- HYBRID_AI_STRATEGY_V3:END -->
+
+## Method evidence invariants (Sprint 5.8)
+
+- Execution completion, method proof, solution-set coverage and overall verification status are separate facts.
+- Timeouts, admission/resource failure, invalid responses and unsupported mathematics cannot become proof or disproof.
+- Domain obligations are read from original typed syntax before cancellation; UNKNOWN is never assumed REAL.
+- One valid root proves soundness only. Singleton completeness requires independent restricted root-set derivation.
+- Publication reauthorizes the active owner and current selected parse/source after all mathematical network work.
+- Published runs and their method evidence are immutable, scoped to exact source/solution/version identities and idempotency keys.
+- Historical evidence remains explicit history; currentness is checked on reads. Account/source deletion removes evidence through owned cascades.
+- No Sprint 5.8 method assigns an aggregate VERIFIED status or changes canonical solution generation state.
