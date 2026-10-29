@@ -103,6 +103,14 @@ public class ProblemParseCorrectionApplicationService {
     }
 
     public ProblemParseCorrectionResult createCorrection(ProblemParseCorrectionCommand command) {
+        return createCorrection(command, false);
+    }
+
+    public ProblemParseCorrectionResult createCalculusCorrection(ProblemParseCorrectionCommand command) {
+        return createCorrection(command, true);
+    }
+
+    private ProblemParseCorrectionResult createCorrection(ProblemParseCorrectionCommand command, boolean calculus) {
         metrics.request();
         requireActiveAccount(command.userId());
         capabilityAccessPolicy.requireBasicSolve(command.userId());
@@ -111,12 +119,21 @@ public class ProblemParseCorrectionApplicationService {
         requireCorrectionSize(command.correctedProblemJson());
         String reason = correctionReason(command.correctionReason());
         try {
+            if (calculus) {
+                try { com.verifiedai.problem.application.solving.CalculusSourceDocument.parse(command.correctedProblemJson()); }
+                catch (IllegalArgumentException e) {
+                    throw new ProblemParseValidationException(ProblemParseValidationFailure.SCHEMA,"Typed calculus source is invalid");
+                }
+            }
             String hash = hash(command, reason);
             ProblemParseCorrectionResult replay = idempotentReplay(command, hash);
             if (replay != null) {
                 return replay;
             }
             return transactionTemplate.execute(status -> {
+                if (calculus && jdbcTemplate.queryForList("select id from users where id=? and status='ACTIVE' for update",
+                    UUID.class,command.userId()).isEmpty())
+                    throw problem(HttpStatus.FORBIDDEN,ApiErrorCode.ACCOUNT_NOT_ACTIVE,"Account is not active",false,"SIGN_IN");
                 ProblemParseCorrectionResult replayInsideTransaction = idempotentReplay(command, hash);
                 if (replayInsideTransaction != null) {
                     return replayInsideTransaction;
@@ -159,7 +176,7 @@ public class ProblemParseCorrectionApplicationService {
                     ));
                 NormalizedProblemParse normalized = documentValidator.validateUserCorrection(
                     command.correctedProblemJson(),
-                    current.schemaVersion(),
+                    calculus ? "problem-parse-v2" : current.schemaVersion(),
                     evidence
                 );
                 Set<ProblemParseCorrectionDiff.Category> changedFields = correctionDiff.categories(
@@ -188,7 +205,7 @@ public class ProblemParseCorrectionApplicationService {
                     normalized.supportStatus(),
                     normalized.unsupportedReason(),
                     normalized.reviewRequired(),
-                    current.schemaVersion(),
+                    calculus ? "problem-parse-v2" : current.schemaVersion(),
                     normalized.normalizedProblemJson(),
                     command.idempotencyKey().trim(),
                     hash,
@@ -437,7 +454,7 @@ public class ProblemParseCorrectionApplicationService {
             transition(session, ProblemSessionStatus.PARSING, now);
             current = ProblemSessionStatus.valueOf(session.status());
         }
-        lifecyclePolicy.requireTransition(current, target);
+        lifecyclePolicy.requireUserCorrectionTransition(current, target);
         if (target == ProblemSessionStatus.PARSED) {
             session.markParsed(now);
         } else if (target == ProblemSessionStatus.REVIEW_REQUIRED) {

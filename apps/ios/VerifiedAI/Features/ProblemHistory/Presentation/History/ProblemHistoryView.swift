@@ -337,6 +337,7 @@ private extension View {
             .overlay {
                 RoundedRectangle(cornerRadius: RadiusTokens.medium)
                     .stroke(ColorTokens.border, lineWidth: 1)
+                    .allowsHitTesting(false)
             }
     }
 }

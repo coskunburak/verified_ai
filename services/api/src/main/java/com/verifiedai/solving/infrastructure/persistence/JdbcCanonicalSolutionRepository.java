@@ -41,12 +41,13 @@ public class JdbcCanonicalSolutionRepository implements CanonicalSolutionReposit
         if(limit<1 || limit>100) throw new IllegalArgumentException("Recovery batch must be bounded");
         return jdbc.query("select a.* from ("+ACCEPTED+"""
             ) a join users u on u.id=a.user_id and u.status='ACTIVE'
-            where not exists(select 1 from canonical_solutions s where s.source_role=a.source_role and s.source_job_id=a.source_job_id
+            where a.schema_version=? and not exists(select 1 from canonical_solutions s where s.source_role=a.source_role and s.source_job_id=a.source_job_id
                 and s.representation_version=? and s.normalizer_version=?)
               and not exists(select 1 from canonical_materialization_failures f where f.source_role=a.source_role and f.source_job_id=a.source_job_id
                 and f.representation_version=? and f.normalizer_version=?)
             order by a.created_at,a.source_role,a.source_job_id limit ?
-            """,this::artifact,version.representation(),version.normalizer(),version.representation(),version.normalizer(),limit);
+            """,this::artifact,Version.CALCULUS.equals(version)?"solution-candidate-v2":"solution-candidate-v1",
+            version.representation(),version.normalizer(),version.representation(),version.normalizer(),limit);
     }
     public Optional<CanonicalSolution> find(UUID user,UUID session,Origin origin,Version version) {
         return one("select * from canonical_solutions where user_id=? and problem_session_id=? and source_role=? and source_job_id=? and representation_version=? and normalizer_version=?",
@@ -143,7 +144,7 @@ public class JdbcCanonicalSolutionRepository implements CanonicalSolutionReposit
     }
     private CanonicalSolution solution(ResultSet r,int n) throws SQLException {
         String representation=r.getString("representation_version");
-        if(!Version.CURRENT.representation().equals(representation)) throw new UnsupportedRepresentation();
+        if(!java.util.Set.of(Version.CURRENT.representation(),Version.CALCULUS.representation()).contains(representation)) throw new UnsupportedRepresentation();
         UUID id=r.getObject("id",UUID.class);
         var role=Role.valueOf(r.getString("source_role"));
         var lineage=new Lineage(r.getObject("user_id",UUID.class),r.getObject("problem_session_id",UUID.class),

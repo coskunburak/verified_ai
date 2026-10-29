@@ -42,6 +42,9 @@ public class VerificationExecutionService implements VerificationExecution {
         tx = new TransactionTemplate(transactions.getTransactionManager());
         tx.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW); tx.setTimeout(5);
     }
+    private CalculusExecutor calculusExecutor;
+    @org.springframework.beans.factory.annotation.Autowired
+    void calculusExecutor(CalculusExecutor executor) { calculusExecutor=executor; }
     public Publication execute(UUID user, UUID session, UUID solutionId, UUID key) {
         Objects.requireNonNull(key);
         var selection = planning.plan(user, session, solutionId); // Owner, parent, review, and version checks; no caller transaction.
@@ -64,6 +67,8 @@ public class VerificationExecutionService implements VerificationExecution {
         UUID executionId = UUID.nameUUIDFromBytes(("verification-execution-v1/" + user + "/" + session + "/" + key)
             .getBytes(StandardCharsets.UTF_8));
         String correlation = executionId.toString();
+        if (prepared.source().calculus()!=null)
+            return executeCalculus(user,session,key,solution,plan,prepared.source(),executionId,correlation);
         var results = new ArrayList<Result>();
         for (var method : plan.methods()) {
             var request = new Request(executionId, correlation, method.method(), prepared.source().statements().getFirst(),
@@ -126,13 +131,68 @@ public class VerificationExecutionService implements VerificationExecution {
             var stored = repository.find(user, session, key).filter(r -> r.solutionId().equals(solutionId));
             if (stored.isEmpty()) return null;
             boolean current;
-            try { current = CanonicalSolution.Version.CURRENT.equals(owned.solution().version())
+            try { current = CanonicalSolution.Version.supported(owned.solution().version())
                 && VerificationPlanner.matches(reader.read(sources.current(user, session)).identity(), owned.solution()); }
             catch (ApiProblemException e) {
                 if (e.code() != ApiErrorCode.SOLVE_SOURCE_NOT_READY) throw e;
                 current = false;
             }
             return new History(stored.get(), current);
+        });
+    }
+    private Publication executeCalculus(UUID user, UUID session, UUID key, CanonicalSolution solution,
+        VerificationPlan plan, PlanningSource source, UUID executionId, String correlation) {
+        if (calculusExecutor==null || !VerificationPlanner.CALCULUS_POLICY.equals(plan.policyVersion())
+            || plan.methods().size()!=1) return new Publication(State.BLOCKED,null);
+        var selected=plan.methods().getFirst().method();
+        var method=switch(selected) {
+            case DERIVATIVE_BACKCHECK -> CalculusExecution.Method.DERIVATIVE_BACKCHECK;
+            case INTEGRAL_DIFFERENTIATION_BACKCHECK -> CalculusExecution.Method.INTEGRAL_DIFFERENTIATION_BACKCHECK;
+            case FINITE_LIMIT -> CalculusExecution.Method.FINITE_LIMIT;
+            default -> throw new IllegalArgumentException("Not a calculus method");
+        };
+        var scope=CalculusEvidence.scope(source.identity(),solution.id());
+        var metadata=source.calculus();
+        String variable=source.variables().keySet().iterator().next();
+        var request=new CalculusExecution.Request(executionId,correlation,scope,method,variable,PlanningSource.Domain.REAL,
+            metadata.interval(),((com.verifiedai.solving.domain.model.canonical.MathStatement.Expression)source.statements().getFirst()).expression(),
+            ((com.verifiedai.solving.domain.model.canonical.MathStatement.Expression)solution.finalStatement()).expression(),source.restrictions(),
+            metadata.approach(),metadata.integralScope());
+        CalculusExecution.Result computed;
+        long started=System.nanoTime();
+        try { computed=Objects.requireNonNull(calculusExecutor.execute(request)); computed.validateFor(request); }
+        catch (RuntimeException e) {
+            computed=new CalculusExecution.Result(executionId,correlation,scope,method,"v1",CalculusExecution.ALGORITHM,
+                Outcome.EXECUTION_FAILED,CalculusExecution.Reason.INVALID_RESPONSE,
+                source.restrictions().stream().map(PlanningSource.Restriction::id).toList(),null,null);
+        }
+        final var result=computed;
+        metrics.counter("verification.calculus.execution.outcomes","method",method.name(),"outcome",result.outcome().name(),
+            "reason",result.reasonCode().name(),"algorithm",CalculusExecution.ALGORITHM,"capability","calculus-capabilities-v1").increment();
+        metrics.counter("verification.execution.outcomes","method",method.name(),"outcome",result.outcome().name(),
+            "reason",result.reasonCode().name()).increment();
+        metrics.timer("verification.execution.latency","method",method.name()).record(System.nanoTime()-started,java.util.concurrent.TimeUnit.NANOSECONDS);
+        return tx.execute(status->{
+            PlanningSource current;
+            try { current=reader.readForExecution(sources.current(user,session)); }
+            catch (VerificationSourceReader.SourceRejected e) { return new Publication(State.STALE_SOURCE,null); }
+            catch (ApiProblemException e) { if(e.code()!=ApiErrorCode.SOLVE_SOURCE_NOT_READY) throw e; return new Publication(State.STALE_SOURCE,null); }
+            var fresh=planner.plan(current,solution);
+            if (fresh.plan()==null || !fresh.plan().equals(plan) || !current.equals(source)) {
+                metrics.counter("verification.execution.publication","state","STALE_SOURCE").increment();
+                return new Publication(State.STALE_SOURCE,null);
+            }
+            var previous=repository.find(user,session,key);
+            if (previous.isPresent()) return reuse(previous.get(),plan,solution.id());
+            var now=clock.instant().truncatedTo(java.time.temporal.ChronoUnit.MICROS);
+            var evidence=new VerificationEvidence(VerificationEvidence.identity(executionId,selected),executionId,plan.id(),
+                plan.policyVersion(),plan.capabilityVersion(),current.identity(),solution.id(),solution.version(),selected.purpose(),
+                current.variables(),null,correlation,now,CalculusEvidence.of(request,result));
+            var run=new VerificationRun(executionId,key,plan.id(),plan.policyVersion(),plan.capabilityVersion(),current.identity(),
+                solution.id(),solution.version(),correlation,now,List.of(evidence));
+            var stored=repository.publish(run);
+            metrics.counter("verification.execution.publication","state","PUBLISHED").increment();
+            return new Publication(State.PUBLISHED,stored);
         });
     }
     private Publication reuse(VerificationRun stored, VerificationPlan plan, UUID solution) {

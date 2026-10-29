@@ -84,3 +84,12 @@ def execute_calculus(payload: CalculusRequest, request: Request) -> CalculusResu
     result = executor.execute(payload) if get_settings().calculus_enabled else executor.failure(payload, "DISABLED")
     record_execution(result.method, result.outcome, result.reasonCode, (time.monotonic() - start) * 1000)
     return result
+
+
+@router.get("/calculus-readiness", dependencies=[Depends(require_internal_auth)])
+def calculus_readiness() -> dict[str, str | bool]:
+    from app.config import get_settings
+
+    return {"schemaVersion": "calculus-readiness-v1", "enabled": get_settings().calculus_enabled,
+            "algorithm": "bounded-calculus-v1", "requestVersion": "calculus-execution-v1",
+            "responseVersion": "calculus-execution-result-v1"}

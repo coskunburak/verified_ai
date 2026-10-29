@@ -122,3 +122,12 @@ BUILD SUCCESS. All local A–H gates passed for the isolated executor. This docu
 refresh alone awaits docs-check; its passing owner log can close the refresh without
 another document edit. End-to-end source integration BLOCKED / ROLLOUT_DISABLED /
 HOSTED_CI_NOT_RUN. Sprint 5.9 remains PARTIAL. No agent validation.
+
+## Production integration closure follow-up
+
+The original isolated implementation and its PARTIAL owner checkpoints above remain
+historical evidence. The subsequent source-authoritative integration is recorded in
+[closure implementation map](SPRINT_5.9_PRODUCTION_INTEGRATION_CLOSURE_IMPLEMENTATION_MAP.md)
+and [closure execution report](SPRINT_5.9_PRODUCTION_INTEGRATION_CLOSURE_EXECUTION_REPORT.md).
+Closure is IMPLEMENTED_PENDING_OWNER_VALIDATION / CI_PENDING / ROLLOUT_DISABLED;
+the original passing isolated tests do not establish acceptance of the new working tree.

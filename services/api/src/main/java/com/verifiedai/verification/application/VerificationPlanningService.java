@@ -38,6 +38,12 @@ public class VerificationPlanningService implements VerificationPlanning {
         tx.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
         tx.setTimeout(5);
     }
+    private CalculusExecutor calculusExecutor;
+    private com.verifiedai.verification.domain.policy.VerificationCapabilities calculusCapabilities;
+    @org.springframework.beans.factory.annotation.Autowired
+    void calculusRuntime(CalculusExecutor executor, com.verifiedai.verification.domain.policy.VerificationCapabilities capabilities) {
+        calculusExecutor=executor; calculusCapabilities=capabilities;
+    }
     public Result plan(UUID user, UUID session, UUID solutionId) {
         Objects.requireNonNull(user); Objects.requireNonNull(session); Objects.requireNonNull(solutionId);
         long start = System.nanoTime();
@@ -47,9 +53,14 @@ public class VerificationPlanningService implements VerificationPlanning {
             // Canonical reads lock the same owner in their own REQUIRES_NEW transaction.
             // Finish them BEFORE acquiring source locks, otherwise the suspended transaction deadlocks itself.
             var read = solutions.historical(user, session, solutionId);
+            if (read.solution()!=null && Version.CALCULUS.equals(read.solution().version()) && calculusExecutor!=null) {
+                boolean ready=calculusExecutor.calculusReady(); calculusCapabilities.calculusReadiness(ready);
+                metrics.counter("verification.calculus.readiness","state",ready?"READY":"UNAVAILABLE",
+                    "algorithm","bounded-calculus-v1").increment();
+            }
             Read parent = null;
             if (read.solution() != null && read.solution().lineage().origin().role() == Role.SECONDARY) {
-                UUID parentId = CanonicalSolution.identity(new Origin(Role.PRIMARY, read.solution().lineage().parentPrimaryJobId()), Version.CURRENT);
+                UUID parentId = CanonicalSolution.identity(new Origin(Role.PRIMARY, read.solution().lineage().parentPrimaryJobId()), read.solution().version());
                 try { parent = solutions.historical(user, session, parentId); }
                 catch (ApiProblemException e) {
                     if (e.code() != ApiErrorCode.RESOURCE_FORBIDDEN) throw e;
@@ -88,7 +99,7 @@ public class VerificationPlanningService implements VerificationPlanning {
         if (read.solution() == null) return Result.rejected(State.NOT_MATERIALIZED, Reason.NOT_MATERIALIZED);
         if (read.solution().lineage().origin().role() == Role.SECONDARY) {
             if (parent == null || parent.state() != ReadState.GENERATED_UNVERIFIED || parent.solution() == null
-                || !Version.CURRENT.equals(parent.solution().version()) || !VerificationPlanner.matches(identity, parent.solution())
+                || !read.solution().version().equals(parent.solution().version()) || !VerificationPlanner.matches(identity, parent.solution())
                 || !parent.solution().ambiguities().isEmpty() || !parent.solution().unresolvedIssues().isEmpty()
                 || parent.solution().lineage().origin().role() != Role.PRIMARY
                 || !parent.solution().lineage().origin().jobId().equals(read.solution().lineage().parentPrimaryJobId()))
@@ -111,11 +122,12 @@ public class VerificationPlanningService implements VerificationPlanning {
         };
     }
     private void record(Result result) {
-        metrics.counter("verification.planning.completed", "state", result.state().name(), "policy", VerificationPlanner.POLICY_VERSION).increment();
+        String policy=result.plan()==null ? VerificationPlanner.POLICY_VERSION : result.plan().policyVersion();
+        metrics.counter("verification.planning.completed", "state", result.state().name(), "policy", policy).increment();
         if (result.plan() == null) {
             metrics.counter("verification.planning.rejected", "reason", result.reason().name()).increment(); return;
         }
-        metrics.summary("verification.planning.selected_methods", "policy", VerificationPlanner.POLICY_VERSION).record(result.plan().methods().size());
+        metrics.summary("verification.planning.selected_methods", "policy", policy).record(result.plan().methods().size());
         for (var selection : result.plan().methods()) {
             if (selection.availability() != Availability.AVAILABLE)
                 metrics.counter("verification.planning.unavailable", "method", selection.method().name(), "reason", selection.reason().name()).increment();

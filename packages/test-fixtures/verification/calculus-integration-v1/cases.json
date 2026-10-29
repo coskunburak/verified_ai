@@ -1,0 +1,613 @@
+[
+  {
+    "id": "derivative-polynomial",
+    "parse": {
+      "schemaVersion": "problem-parse-v2",
+      "supportStatus": "SUPPORTED",
+      "unsupportedReason": null,
+      "subjectId": "MATH",
+      "topicId": "MATH.CALCULUS.DIFFERENTIATION",
+      "taskType": "DIFFERENTIATE",
+      "problemType": "DERIVATIVE",
+      "expressions": [
+        {
+          "id": "expr-1",
+          "role": "PRIMARY",
+          "sourceText": "x^3",
+          "normalizedText": "x^3",
+          "displayLatex": "x^3",
+          "relation": null,
+          "sourceBlockIds": [
+            "block-1"
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "symbol": "x",
+          "role": "VARIABLE",
+          "sourceBlockIds": [
+            "block-1"
+          ]
+        }
+      ],
+      "constraints": [],
+      "assumptions": [],
+      "uncertainty": {
+        "recognition": [],
+        "parse": [],
+        "reviewRequired": false
+      },
+      "sourceEvidenceRefs": [
+        {
+          "blockId": "block-1",
+          "fieldPath": "calculus.original"
+        },
+        {
+          "blockId": "block-1",
+          "fieldPath": "calculus.variable"
+        },
+        {
+          "blockId": "block-1",
+          "fieldPath": "calculus.interval"
+        },
+        {
+          "blockId": "block-1",
+          "fieldPath": "calculus.restrictions"
+        },
+        {
+          "blockId": "block-1",
+          "fieldPath": "calculus.approach"
+        },
+        {
+          "blockId": "block-1",
+          "fieldPath": "calculus.integralScope"
+        }
+      ],
+      "visualQualityRisks": [],
+      "reviewRequired": false,
+      "calculus": {
+        "variable": {
+          "symbol": "x",
+          "domain": "REAL"
+        },
+        "interval": {
+          "kind": "OPEN_INTERVAL",
+          "lower": null,
+          "upper": null
+        },
+        "original": {
+          "kind": "BINARY",
+          "operator": "POWER",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "3"
+          }
+        },
+        "restrictions": [],
+        "approach": null,
+        "integralScope": null
+      }
+    },
+    "candidateExpression": {
+      "kind": "BINARY",
+      "operator": "MULTIPLY",
+      "left": {
+        "kind": "NUMBER",
+        "numericType": "INTEGER",
+        "value": "3"
+      },
+      "right": {
+        "kind": "BINARY",
+        "operator": "POWER",
+        "left": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        },
+        "right": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "2"
+        }
+      }
+    },
+    "expectedOutcome": "PROVEN",
+    "expectedReason": "EXACT_DERIVATIVE"
+  },
+  {
+    "id": "derivative-wrong",
+    "parse": {
+      "schemaVersion": "problem-parse-v2",
+      "supportStatus": "SUPPORTED",
+      "unsupportedReason": null,
+      "subjectId": "MATH",
+      "topicId": "MATH.CALCULUS.DIFFERENTIATION",
+      "taskType": "DIFFERENTIATE",
+      "problemType": "DERIVATIVE",
+      "expressions": [
+        {
+          "id": "expr-1",
+          "role": "PRIMARY",
+          "sourceText": "x^3",
+          "normalizedText": "x^3",
+          "displayLatex": "x^3",
+          "relation": null,
+          "sourceBlockIds": [
+            "block-1"
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "symbol": "x",
+          "role": "VARIABLE",
+          "sourceBlockIds": [
+            "block-1"
+          ]
+        }
+      ],
+      "constraints": [],
+      "assumptions": [],
+      "uncertainty": {
+        "recognition": [],
+        "parse": [],
+        "reviewRequired": false
+      },
+      "sourceEvidenceRefs": [
+        {
+          "blockId": "block-1",
+          "fieldPath": "calculus.original"
+        },
+        {
+          "blockId": "block-1",
+          "fieldPath": "calculus.variable"
+        },
+        {
+          "blockId": "block-1",
+          "fieldPath": "calculus.interval"
+        },
+        {
+          "blockId": "block-1",
+          "fieldPath": "calculus.restrictions"
+        },
+        {
+          "blockId": "block-1",
+          "fieldPath": "calculus.approach"
+        },
+        {
+          "blockId": "block-1",
+          "fieldPath": "calculus.integralScope"
+        }
+      ],
+      "visualQualityRisks": [],
+      "reviewRequired": false,
+      "calculus": {
+        "variable": {
+          "symbol": "x",
+          "domain": "REAL"
+        },
+        "interval": {
+          "kind": "OPEN_INTERVAL",
+          "lower": null,
+          "upper": null
+        },
+        "original": {
+          "kind": "BINARY",
+          "operator": "POWER",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "3"
+          }
+        },
+        "restrictions": [],
+        "approach": null,
+        "integralScope": null
+      }
+    },
+    "candidateExpression": {
+      "kind": "NUMBER",
+      "numericType": "INTEGER",
+      "value": "99"
+    },
+    "expectedOutcome": "DISPROVEN",
+    "expectedReason": "EXACT_CONTRADICTION"
+  },
+  {
+    "id": "integral-additive-constant",
+    "parse": {
+      "schemaVersion": "problem-parse-v2",
+      "supportStatus": "SUPPORTED",
+      "unsupportedReason": null,
+      "subjectId": "MATH",
+      "topicId": "MATH.CALCULUS.INTEGRATION",
+      "taskType": "INTEGRATE",
+      "problemType": "INTEGRAL",
+      "expressions": [
+        {
+          "id": "expr-1",
+          "role": "PRIMARY",
+          "sourceText": "x^2",
+          "normalizedText": "x^2",
+          "displayLatex": "x^2",
+          "relation": null,
+          "sourceBlockIds": [
+            "block-1"
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "symbol": "x",
+          "role": "VARIABLE",
+          "sourceBlockIds": [
+            "block-1"
+          ]
+        }
+      ],
+      "constraints": [],
+      "assumptions": [],
+      "uncertainty": {
+        "recognition": [],
+        "parse": [],
+        "reviewRequired": false
+      },
+      "sourceEvidenceRefs": [
+        {
+          "blockId": "block-1",
+          "fieldPath": "calculus.original"
+        },
+        {
+          "blockId": "block-1",
+          "fieldPath": "calculus.variable"
+        },
+        {
+          "blockId": "block-1",
+          "fieldPath": "calculus.interval"
+        },
+        {
+          "blockId": "block-1",
+          "fieldPath": "calculus.restrictions"
+        },
+        {
+          "blockId": "block-1",
+          "fieldPath": "calculus.approach"
+        },
+        {
+          "blockId": "block-1",
+          "fieldPath": "calculus.integralScope"
+        }
+      ],
+      "visualQualityRisks": [],
+      "reviewRequired": false,
+      "calculus": {
+        "variable": {
+          "symbol": "x",
+          "domain": "REAL"
+        },
+        "interval": {
+          "kind": "OPEN_INTERVAL",
+          "lower": null,
+          "upper": null
+        },
+        "original": {
+          "kind": "BINARY",
+          "operator": "POWER",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "2"
+          }
+        },
+        "restrictions": [],
+        "approach": null,
+        "integralScope": "ANTIDERIVATIVE_REPRESENTATIVE"
+      }
+    },
+    "candidateExpression": {
+      "kind": "BINARY",
+      "operator": "ADD",
+      "left": {
+        "kind": "BINARY",
+        "operator": "DIVIDE",
+        "left": {
+          "kind": "BINARY",
+          "operator": "POWER",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "3"
+          }
+        },
+        "right": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "3"
+        }
+      },
+      "right": {
+        "kind": "NUMBER",
+        "numericType": "INTEGER",
+        "value": "7"
+      }
+    },
+    "expectedOutcome": "PROVEN",
+    "expectedReason": "EXACT_ANTIDERIVATIVE"
+  },
+  {
+    "id": "limit-removable",
+    "parse": {
+      "schemaVersion": "problem-parse-v2",
+      "supportStatus": "SUPPORTED",
+      "unsupportedReason": null,
+      "subjectId": "MATH",
+      "topicId": "MATH.CALCULUS.LIMITS",
+      "taskType": "FIND_LIMIT",
+      "problemType": "LIMIT",
+      "expressions": [
+        {
+          "id": "expr-1",
+          "role": "PRIMARY",
+          "sourceText": "(x^2-1)/(x-1)",
+          "normalizedText": "(x^2-1)/(x-1)",
+          "displayLatex": "(x^2-1)/(x-1)",
+          "relation": null,
+          "sourceBlockIds": [
+            "block-1"
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "symbol": "x",
+          "role": "VARIABLE",
+          "sourceBlockIds": [
+            "block-1"
+          ]
+        }
+      ],
+      "constraints": [],
+      "assumptions": [],
+      "uncertainty": {
+        "recognition": [],
+        "parse": [],
+        "reviewRequired": false
+      },
+      "sourceEvidenceRefs": [
+        {
+          "blockId": "block-1",
+          "fieldPath": "calculus.original"
+        },
+        {
+          "blockId": "block-1",
+          "fieldPath": "calculus.variable"
+        },
+        {
+          "blockId": "block-1",
+          "fieldPath": "calculus.interval"
+        },
+        {
+          "blockId": "block-1",
+          "fieldPath": "calculus.restrictions"
+        },
+        {
+          "blockId": "block-1",
+          "fieldPath": "calculus.approach"
+        },
+        {
+          "blockId": "block-1",
+          "fieldPath": "calculus.integralScope"
+        }
+      ],
+      "visualQualityRisks": [],
+      "reviewRequired": false,
+      "calculus": {
+        "variable": {
+          "symbol": "x",
+          "domain": "REAL"
+        },
+        "interval": {
+          "kind": "OPEN_INTERVAL",
+          "lower": null,
+          "upper": null
+        },
+        "original": {
+          "kind": "BINARY",
+          "operator": "DIVIDE",
+          "left": {
+            "kind": "BINARY",
+            "operator": "SUBTRACT",
+            "left": {
+              "kind": "BINARY",
+              "operator": "POWER",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "2"
+              }
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "1"
+            }
+          },
+          "right": {
+            "kind": "BINARY",
+            "operator": "SUBTRACT",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "1"
+            }
+          }
+        },
+        "restrictions": [],
+        "approach": {
+          "target": {
+            "numerator": "1",
+            "denominator": "1"
+          },
+          "direction": "TWO_SIDED"
+        },
+        "integralScope": null
+      }
+    },
+    "candidateExpression": {
+      "kind": "NUMBER",
+      "numericType": "INTEGER",
+      "value": "2"
+    },
+    "expectedOutcome": "PROVEN",
+    "expectedReason": "EXACT_FINITE_LIMIT"
+  },
+  {
+    "id": "limit-numerical-only",
+    "parse": {
+      "schemaVersion": "problem-parse-v2",
+      "supportStatus": "SUPPORTED",
+      "unsupportedReason": null,
+      "subjectId": "MATH",
+      "topicId": "MATH.CALCULUS.LIMITS",
+      "taskType": "FIND_LIMIT",
+      "problemType": "LIMIT",
+      "expressions": [
+        {
+          "id": "expr-1",
+          "role": "PRIMARY",
+          "sourceText": "sin(x)^12/100",
+          "normalizedText": "sin(x)^12/100",
+          "displayLatex": "sin(x)^12/100",
+          "relation": null,
+          "sourceBlockIds": [
+            "block-1"
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "symbol": "x",
+          "role": "VARIABLE",
+          "sourceBlockIds": [
+            "block-1"
+          ]
+        }
+      ],
+      "constraints": [],
+      "assumptions": [],
+      "uncertainty": {
+        "recognition": [],
+        "parse": [],
+        "reviewRequired": false
+      },
+      "sourceEvidenceRefs": [
+        {
+          "blockId": "block-1",
+          "fieldPath": "calculus.original"
+        },
+        {
+          "blockId": "block-1",
+          "fieldPath": "calculus.variable"
+        },
+        {
+          "blockId": "block-1",
+          "fieldPath": "calculus.interval"
+        },
+        {
+          "blockId": "block-1",
+          "fieldPath": "calculus.restrictions"
+        },
+        {
+          "blockId": "block-1",
+          "fieldPath": "calculus.approach"
+        },
+        {
+          "blockId": "block-1",
+          "fieldPath": "calculus.integralScope"
+        }
+      ],
+      "visualQualityRisks": [],
+      "reviewRequired": false,
+      "calculus": {
+        "variable": {
+          "symbol": "x",
+          "domain": "REAL"
+        },
+        "interval": {
+          "kind": "OPEN_INTERVAL",
+          "lower": null,
+          "upper": null
+        },
+        "original": {
+          "kind": "BINARY",
+          "operator": "DIVIDE",
+          "left": {
+            "kind": "BINARY",
+            "operator": "POWER",
+            "left": {
+              "kind": "FUNCTION",
+              "function": "SIN",
+              "args": [
+                {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                }
+              ]
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "12"
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "100"
+          }
+        },
+        "restrictions": [],
+        "approach": {
+          "target": {
+            "numerator": "0",
+            "denominator": "1"
+          },
+          "direction": "TWO_SIDED"
+        },
+        "integralScope": null
+      }
+    },
+    "candidateExpression": {
+      "kind": "NUMBER",
+      "numericType": "INTEGER",
+      "value": "0"
+    },
+    "expectedOutcome": "INCONCLUSIVE",
+    "expectedReason": "NUMERICAL_DIAGNOSTIC"
+  }
+]

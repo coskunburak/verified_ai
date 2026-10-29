@@ -31,12 +31,16 @@ public class SolveStore {
     }
     public SolveJob insert(SolveSource s,String key,UUID retry,int attempt,Instant now,Instant deadline) {
         UUID id=UUID.randomUUID(),operation=UUID.randomUUID();
+        boolean calculus="canonical-problem-v2".equals(com.verifiedai.sharedkernel.contracts.VersionedJsonContract.parse(s.canonicalJson()).path("schemaVersion").asText());
         jdbc.update("""
             insert into solve_jobs(id,user_id,problem_session_id,canonical_problem_id,problem_parse_id,
-              problem_parse_revision,idempotency_key,attempt_number,retry_of,operation_id,state,created_at,deadline)
-            values (?,?,?,?,?,?,?,?,?,?,'QUEUED',?,?)
+              problem_parse_revision,idempotency_key,attempt_number,retry_of,operation_id,state,created_at,deadline,
+              prompt_id,prompt_version,schema_version,route_policy_version)
+            values (?,?,?,?,?,?,?,?,?,?,'QUEUED',?,?,?,?,?,?)
             """,id,s.userId(),s.problemSessionId(),s.canonicalProblemId(),s.problemParseId(),s.problemParseRevision(),
-            key,attempt,retry,operation,Timestamp.from(now),Timestamp.from(deadline));
+            key,attempt,retry,operation,Timestamp.from(now),Timestamp.from(deadline),
+            calculus?"owner-calculus-fixture":"solver","v001",calculus?"solution-candidate-v2":"solution-candidate-v1",
+            calculus?"calculus-fixture-v1":"solve-route-v1");
         return get(id).orElseThrow();
     }
     public List<UUID> due(int limit) {
@@ -56,8 +60,9 @@ public class SolveStore {
             """,state.name(),code,ledger,Timestamp.from(now),id,Timestamp.from(now))==1;
     }
     public void candidate(UUID job,String artifact,String provenance,Instant now) {
-        jdbc.update("insert into solution_candidates values (?,'solution-candidate-v1',cast(? as jsonb),cast(? as jsonb),?)",
-            job,artifact,provenance,Timestamp.from(now));
+        String schema=com.verifiedai.sharedkernel.contracts.VersionedJsonContract.parse(artifact).path("schemaVersion").asText();
+        jdbc.update("insert into solution_candidates values (?,?,cast(? as jsonb),cast(? as jsonb),?)",
+            job,schema,artifact,provenance,Timestamp.from(now));
     }
     public Optional<Map<String,Object>> candidate(UUID job) {
         var rows=jdbc.queryForList("select artifact_jsonb::text as artifact, provenance_jsonb::text as provenance from solution_candidates where job_id=?",job);

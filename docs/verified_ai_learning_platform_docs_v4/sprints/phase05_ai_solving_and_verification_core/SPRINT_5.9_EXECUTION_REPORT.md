@@ -294,3 +294,12 @@ PARTIAL — isolated executor and typed contract slice have OWNER-TESTED PASS fo
 local A–H gates. Only final evidence-documentation refresh docs-check remains pending.
 Sprint 5.9 end-to-end acceptance is BLOCKED on canonical source integration.
 ROLLOUT_DISABLED / HOSTED_CI_NOT_RUN. Sprint 5.9 is not complete.
+
+## Production integration closure follow-up
+
+The original isolated implementation and its PARTIAL owner checkpoints above remain
+historical evidence. The subsequent source-authoritative integration is recorded in
+[closure implementation map](SPRINT_5.9_PRODUCTION_INTEGRATION_CLOSURE_IMPLEMENTATION_MAP.md)
+and [closure execution report](SPRINT_5.9_PRODUCTION_INTEGRATION_CLOSURE_EXECUTION_REPORT.md).
+Closure is IMPLEMENTED_PENDING_OWNER_VALIDATION / CI_PENDING / ROLLOUT_DISABLED;
+the original passing isolated tests do not establish acceptance of the new working tree.

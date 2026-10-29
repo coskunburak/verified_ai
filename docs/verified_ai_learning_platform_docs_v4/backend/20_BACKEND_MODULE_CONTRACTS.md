@@ -116,3 +116,19 @@ unchanged. Source-backed calculus integration remains BLOCKED.
 Verifier HTTP clients explicitly select HTTP/1.1, matching Uvicorn's transport. They do
 not request h2c upgrades that can cause POST bodies to be skipped. Authentication,
 body limits, deadlines, no-redirect/no-retry policy and transaction boundaries remain.
+
+## Sprint 5.9 production integration closure
+
+POST /api/v1/problem-sessions/{sessionId}/calculus-parse-revisions is an additive authenticated
+problem-owned USER correction path. It accepts a strict problem-parse-v2 envelope and
+preserves base revision, recognition lineage, review, rate and idempotency rules. Existing
+parse/canonical/solve responses admit explicit v2 alternatives without changing v1 shapes.
+The solving-owned local/test fixture admission is disabled by default and writes through
+the normal job/candidate/projection lifecycle without model inference. The verification
+module assembles requests through its owned source reader, selects a calculus policy and
+uses a typed CalculusExecutor port. Authenticated /internal/v1/verify/calculus-readiness
+exposes only fixed versions/flag; it is not public deployment approval. The new bounded
+shared-kernel contract reader accepts only three bundled v2 schemas and local refs.
+
+Status: IMPLEMENTED_PENDING_OWNER_VALIDATION / CI_PENDING / ROLLOUT_DISABLED.
+See [closure report](../sprints/phase05_ai_solving_and_verification_core/SPRINT_5.9_PRODUCTION_INTEGRATION_CLOSURE_EXECUTION_REPORT.md).

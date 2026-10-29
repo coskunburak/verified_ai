@@ -159,3 +159,17 @@ capabilities remain unchanged and reject calculus activation. Python calculus de
 off and enabling it outside local/test is rejected. Source-backed approach metadata,
 canonical/candidate versions and an authorized publication path remain BLOCKED.
 OWNER_VALIDATION_PENDING; see `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.9_EXECUTION_REPORT.md`.
+
+## Sprint 5.9 production integration closure
+
+A versioned calculus planner selects derivative backcheck, antiderivative representative
+backcheck or FINITE_LIMIT from authoritative v2 sources. The generic v1 execution contract
+cannot execute FINITE_LIMIT. Explicit local/test owner flags and authenticated Python
+readiness are required for availability. Shared HTTP/1.1 transport calls the unchanged
+bounded worker outside transactions. Short publication transactions reauthorize ownership
+and recheck current source/plan before writing tagged calculus-evidence-v1 into the existing
+immutable VerificationRun. Exact certificates and bounded numerical INCONCLUSIVE diagnostics
+remain distinct; no overall VERIFIED state is assigned.
+
+Status: IMPLEMENTED_PENDING_OWNER_VALIDATION / CI_PENDING / ROLLOUT_DISABLED.
+See [closure report](../sprints/phase05_ai_solving_and_verification_core/SPRINT_5.9_PRODUCTION_INTEGRATION_CLOSURE_EXECUTION_REPORT.md).

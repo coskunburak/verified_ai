@@ -21,6 +21,8 @@ class ProblemParseDocumentValidator {
         RecognitionEvidenceJpaEntity recognitionEvidence
     ) {
         try {
+            if ("problem-parse-v2".equals(expectedSchemaVersion))
+                return normalizer.normalize(correctedProblemJson, expectedSchemaVersion, recognitionEvidence);
             JsonNode parsed = objectMapper.readTree(correctedProblemJson);
             if (!parsed.isObject()) {
                 throw new ProblemParseValidationException(

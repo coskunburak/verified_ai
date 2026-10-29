@@ -23,6 +23,8 @@ public final class VerificationPlanner {
     public VerificationPlanner(VerificationCapabilities capabilities) { this.capabilities = capabilities; }
 
     public Result plan(PlanningSource source, CanonicalSolution solution) {
+        if (source.calculus()!=null || CanonicalSolution.Version.CALCULUS.equals(solution.version()))
+            return calculusPlan(source,solution);
         if (!matches(source.identity(), solution)) return Result.rejected(State.STALE_SOURCE, Reason.LINEAGE_MISMATCH);
         if (!CanonicalSolution.Version.CURRENT.equals(solution.version()))
             return Result.rejected(State.UNSUPPORTED, Reason.UNSUPPORTED_REPRESENTATION);
@@ -92,6 +94,59 @@ public final class VerificationPlanner {
             Integer.toString(s.canonicalRevision()), solution.id().toString(), solution.version().representation(), solution.version().normalizer());
         return Result.planned(new VerificationPlan(UUID.nameUUIDFromBytes(identity.getBytes(StandardCharsets.UTF_8)),
             POLICY_VERSION, capabilities.version(), solution.lineage(), solution.id(), solution.version(), selections, List.copyOf(limitations)));
+    }
+    public static final String CALCULUS_POLICY = "verification-planner-calculus-v1";
+    private Result calculusPlan(PlanningSource source, CanonicalSolution solution) {
+        if (!matches(source.identity(),solution)) return Result.rejected(State.STALE_SOURCE,Reason.LINEAGE_MISMATCH);
+        if (source.calculus()==null || !CanonicalSolution.Version.CALCULUS.equals(solution.version())
+            || source.variables().size()!=1 || source.variables().containsValue(Domain.UNKNOWN)
+            || !source.variables().containsValue(Domain.REAL)) return Result.rejected(State.UNSUPPORTED,Reason.UNSUPPORTED_REPRESENTATION);
+        if (source.reviewRequired() || !solution.ambiguities().isEmpty() || !solution.unresolvedIssues().isEmpty())
+            return Result.rejected(State.REVIEW_REQUIRED,Reason.UNRESOLVED_SOLUTION);
+        if (!sameIds(source.assumptionIds(),solution.sourceAssumptionIds()) || !source.assumptionIds().isEmpty()
+            || !sameIds(source.constraintIds(),solution.sourceConstraintIds())
+            || !sameIds(source.derivedRestrictionIds(),solution.derivedRestrictionIds()))
+            return Result.rejected(State.REVIEW_REQUIRED,Reason.SOURCE_REFERENCE_MISMATCH);
+        if (!source.problemType().name().equals(solution.problemType()) || !source.taskType().name().equals(solution.taskType())
+            || source.statements().size()!=1 || !(source.statements().getFirst() instanceof MathStatement.Expression)
+            || !(solution.finalStatement() instanceof MathStatement.Expression))
+            return Result.rejected(State.UNSUPPORTED,Reason.UNSUPPORTED_STATEMENT);
+        VerificationMethod method;
+        try { method=switch(source.problemType().name()+"/"+source.taskType().name()) {
+            case "DERIVATIVE/DIFFERENTIATE" -> VerificationMethod.DERIVATIVE_BACKCHECK;
+            case "INTEGRAL/INTEGRATE" -> VerificationMethod.INTEGRAL_DIFFERENTIATION_BACKCHECK;
+            case "LIMIT/FIND_LIMIT" -> VerificationMethod.FINITE_LIMIT;
+            default -> throw new IllegalArgumentException("Unsupported calculus mapping");
+        }; }
+        catch (IllegalArgumentException e) { return Result.rejected(State.UNSUPPORTED,Reason.UNSUPPORTED_TASK_TYPE); }
+        if (!method.name().equals(solution.method())) return Result.rejected(State.UNSUPPORTED,Reason.LINEAGE_MISMATCH);
+        var metadata=source.calculus();
+        if (metadata.interval()==null || (method==VerificationMethod.FINITE_LIMIT)!=(metadata.approach()!=null)
+            || (method==VerificationMethod.INTEGRAL_DIFFERENTIATION_BACKCHECK)!=(metadata.integralScope()!=null))
+            return Result.rejected(State.UNSUPPORTED,Reason.INVALID_CANONICAL_STRUCTURE);
+        String variable=source.variables().keySet().iterator().next();
+        if (!calculusStatement(source.statements().getFirst(),variable) || !calculusStatement(solution.finalStatement(),variable)
+            || solution.steps().stream().anyMatch(step->!calculusStatement(step.claim(),variable))
+            || source.restrictions().stream().anyMatch(r->!calculusSymbols(r.left(),variable)||!calculusSymbols(r.right(),variable)))
+            return Result.rejected(State.UNSUPPORTED,Reason.UNDECLARED_VARIABLE);
+        var availability=capabilities.calculusAvailability();
+        var reason=availability==Availability.AVAILABLE ? Reason.METHODS_SELECTED : Reason.CAPABILITY_RELEASE_NOT_APPROVED;
+        var selection=new Selection(method,"v1",1,method.purpose(),method.requiredInputs(),availability,reason);
+        String key=CALCULUS_POLICY+"/"+capabilities.calculusVersion()+"/"+source.identity()+"/"+solution.id();
+        return Result.planned(new VerificationPlan(UUID.nameUUIDFromBytes(key.getBytes(StandardCharsets.UTF_8)),
+            CALCULUS_POLICY,capabilities.calculusVersion(),solution.lineage(),solution.id(),solution.version(),List.of(selection),List.of(reason)));
+    }
+    private static boolean calculusStatement(MathStatement statement,String variable) {
+        return statement instanceof MathStatement.Expression e && calculusSymbols(e.expression(),variable);
+    }
+    private static boolean calculusSymbols(MathExpression expression,String variable) {
+        return switch(expression) {
+            case MathExpression.Variable v -> variable.equals(v.symbol());
+            case MathExpression.Unary u -> calculusSymbols(u.operand(),variable);
+            case MathExpression.Binary b -> calculusSymbols(b.left(),variable)&&calculusSymbols(b.right(),variable);
+            case MathExpression.Function f -> calculusSymbols(f.args().getFirst(),variable);
+            default -> true;
+        };
     }
     public static boolean matches(Identity source, CanonicalSolution solution) {
         var l = solution.lineage();

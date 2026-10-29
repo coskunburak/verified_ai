@@ -42,19 +42,20 @@ public class CanonicalSolutionService implements CanonicalSolutions {
                 sources.lockOwner(user,session);
                 // Resolve acceptance before reuse: deleted/forged/role-confused source never returns a solution.
                 var artifact=repository.accepted(user,session,origin).orElseThrow(CanonicalSolutionService::unavailable);
-                var previous=repository.find(user,session,origin,Version.CURRENT);
+                var version=Version.forSchema(artifact.schema());
+                var previous=repository.find(user,session,origin,version);
                 if(previous.isPresent()) return new Materialization(MaterializationState.REUSED,previous.get().id(),null);
-                var failed=repository.failure(user,session,origin,Version.CURRENT);
+                var failed=repository.failure(user,session,origin,version);
                 if(failed.isPresent()) return new Materialization(MaterializationState.REJECTED,null,failed.get());
                 CanonicalSolution solution;
                 try {
                     var source=sources.historical(user,session,artifact.canonicalProblemId());
-                    solution=mapper.map(artifact,source,Version.CURRENT,clock.instant());
+                    solution=mapper.map(artifact,source,version,clock.instant());
                 } catch(CanonicalCandidateMapper.ProjectionRejected e) {
-                    repository.fail(artifact,Version.CURRENT,e.failure(),clock.instant());
+                    repository.fail(artifact,version,e.failure(),clock.instant());
                     return new Materialization(MaterializationState.REJECTED,null,e.failure());
                 } catch(ApiProblemException e) {
-                    repository.fail(artifact,Version.CURRENT,Failure.SOURCE_UNAVAILABLE,clock.instant());
+                    repository.fail(artifact,version,Failure.SOURCE_UNAVAILABLE,clock.instant());
                     return new Materialization(MaterializationState.REJECTED,null,Failure.SOURCE_UNAVAILABLE);
                 }
                 var persisted=repository.insert(solution);
@@ -71,7 +72,11 @@ public class CanonicalSolutionService implements CanonicalSolutions {
     /** Integration for both existing V018/V019 candidates and future accepted rows; never invokes a solver. */
     public int recover(int requested) {
         int limit=Math.min(Math.max(requested,1),100);
-        var pending=tx.execute(status->repository.pending(Version.CURRENT,limit));
+        var pending=tx.execute(status->{
+            var artifacts=new java.util.ArrayList<>(repository.pending(Version.CURRENT,limit));
+            if (artifacts.size()<limit) artifacts.addAll(repository.pending(Version.CALCULUS,limit-artifacts.size()));
+            return artifacts;
+        });
         for(var artifact:pending) {
             try { materialize(artifact.userId(),artifact.sessionId(),artifact.origin()); }
             catch(RuntimeException e) { metrics.counter("solving.canonical.recovery","outcome","DEFERRED").increment(); }
@@ -84,7 +89,8 @@ public class CanonicalSolutionService implements CanonicalSolutions {
             SolveSource source;
             try { source=sources.current(user,session); }
             catch(ApiProblemException e) { metrics.counter("solving.canonical.reads","state","SOURCE_UNAVAILABLE").increment(); return new Current(ReadState.SOURCE_UNAVAILABLE,List.of()); }
-            var solutions=repository.forSource(user,session,source.canonicalProblemId(),source.canonicalRevision(),Version.CURRENT);
+            var solutions=repository.forSource(user,session,source.canonicalProblemId(),source.canonicalRevision(),
+                "canonical-problem-v2".equals(new CanonicalMathCodec().parse(source.canonicalJson()).path("schemaVersion").asText()) ? Version.CALCULUS : Version.CURRENT);
             // Check exact parse lineage again at the internal consumer boundary.
             if(solutions.stream().anyMatch(s->!matches(s,source))) throw new IllegalStateException("Canonical read lineage mismatch");
             if(solutions.isEmpty()) return new Current(ReadState.NOT_MATERIALIZED,List.of());
@@ -104,7 +110,7 @@ public class CanonicalSolutionService implements CanonicalSolutions {
                     return new Read(solutionId,ReadState.HISTORICAL_SOURCE,solution);
                 }
             } catch(ApiProblemException e) { return new Read(solutionId,ReadState.SOURCE_UNAVAILABLE,solution); }
-            if(!Version.CURRENT.equals(solution.version())) return new Read(solutionId,ReadState.HISTORICAL_VERSION,solution);
+            if(!Version.supported(solution.version())) return new Read(solutionId,ReadState.HISTORICAL_VERSION,solution);
             var state=solution.ambiguities().isEmpty() && solution.unresolvedIssues().isEmpty()?ReadState.GENERATED_UNVERIFIED:ReadState.REVIEW_REQUIRED;
             return new Read(solutionId,state,solution);
         });

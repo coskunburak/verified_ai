@@ -6,6 +6,7 @@ on:
       - "services/math-verifier/**"
       - "packages/schemas/verification-execution*.schema.json"
       - "packages/schemas/calculus-execution*.schema.json"
+      - "packages/schemas/*-v2.schema.json"
       - "packages/test-fixtures/verification/**"
       - ".github/workflows/math-verifier-ci.yml"
   push:

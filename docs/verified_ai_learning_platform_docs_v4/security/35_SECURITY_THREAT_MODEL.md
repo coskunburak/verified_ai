@@ -145,3 +145,19 @@ backend and release gates are OWNER_VALIDATION_PENDING.
 Verifier clients pin HTTP/1.1 to avoid unsupported h2c body parsing; no authentication,
 request bounds or mathematical validation is relaxed. Owner contract diagnostics classify
 non-JSON/malformed responses without printing raw response bodies or arbitrary error codes.
+
+## Sprint 5.9 production integration closure
+
+The source-to-evidence closure binds authenticated owner/session, selected accepted parse,
+canonical revision and immutable candidate lineage. Candidates cannot replace original AST,
+variable, interval, approach, restrictions or integral meaning. Strict v2 schema/semantic
+checks reject duplicate keys, unknown fields, unsafe/oversized ASTs, noncanonical fractions,
+unknown domains and ambiguous metadata. Peer readiness is internally authenticated and
+version checked; production activation remains prohibited in Java and Python. Network work
+runs outside transactions; publication rechecks current source under locks, preventing
+correction races and foreign-user replay. Wrong verifier scope/version becomes non-proof
+failure. Export/deletion retains ownership and immutable history. No paid model activation,
+raw mathematical logging or overall VERIFIED arbitration is added.
+
+Status: IMPLEMENTED_PENDING_OWNER_VALIDATION / CI_PENDING / ROLLOUT_DISABLED.
+See [closure report](../sprints/phase05_ai_solving_and_verification_core/SPRINT_5.9_PRODUCTION_INTEGRATION_CLOSURE_EXECUTION_REPORT.md).

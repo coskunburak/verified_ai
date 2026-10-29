@@ -80,6 +80,30 @@ class ProblemParseController {
         ));
     }
 
+    @PostMapping("/{sessionId}/calculus-parse-revisions")
+    @ResponseStatus(HttpStatus.CREATED)
+    CreateProblemParseCorrectionResponse createCalculusRevision(
+        @AuthenticationPrincipal Jwt jwt, @PathVariable UUID sessionId,
+        @RequestHeader(name = "Idempotency-Key", required = false) String key,
+        @RequestBody String payload
+    ) {
+        try {
+            var root=com.verifiedai.sharedkernel.contracts.VersionedJsonContract.parse(payload);
+            var names=new java.util.HashSet<String>(); root.fieldNames().forEachRemaining(names::add);
+            if (!names.equals(java.util.Set.of("baseParseId","baseRevision","correctionReason","problem"))
+                || !root.path("baseParseId").isTextual() || !root.path("baseRevision").isIntegralNumber()
+                || !root.path("baseRevision").canConvertToInt() || !root.path("correctionReason").isTextual())
+                throw new IllegalArgumentException();
+            var command=new com.verifiedai.problem.application.parse.ProblemParseCorrectionCommand(
+                AuthenticatedUser.from(jwt).userId(),sessionId,UUID.fromString(root.path("baseParseId").asText()),
+                root.path("baseRevision").intValue(),key,root.path("correctionReason").asText(),root.path("problem").toString());
+            return CreateProblemParseCorrectionResponse.from(correctionApplicationService.createCalculusCorrection(command));
+        } catch (IllegalArgumentException e) {
+            throw new com.verifiedai.sharedkernel.error.ApiProblemException(HttpStatus.BAD_REQUEST,
+                com.verifiedai.sharedkernel.error.ApiErrorCode.PARSE_CORRECTION_SCHEMA_INVALID,"Typed calculus correction is invalid",true,"EDIT");
+        }
+    }
+
     @GetMapping("/{sessionId}/parse-revisions")
     @ResponseStatus(HttpStatus.OK)
     ProblemParseRevisionHistoryResponse getParseRevisionHistory(

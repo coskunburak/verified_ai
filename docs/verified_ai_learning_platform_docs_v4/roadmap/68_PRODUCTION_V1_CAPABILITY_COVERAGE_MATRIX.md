@@ -117,3 +117,16 @@ An isolated versioned derivative/integral-representative/finite-limit executor i
 implemented, with non-proof numerical diagnostics. Production source representation,
 planning and calculus publication remain BLOCKED; existing v1 capability versions are
 unchanged. This increment does not close CAP-VERIFY-001 or imply overall verification.
+
+## Sprint 5.9 production integration closure
+
+CAP-VERIFY-001 remains PARTIAL for product release. A new source-authoritative calculus
+integration working tree is IMPLEMENTED_PENDING_OWNER_VALIDATION / CI_PENDING /
+ROLLOUT_DISABLED. Its A–H command plan covers real source admission, accepted fixture
+candidate/projection, deterministic planning, authenticated worker execution and immutable
+publication, including race/privacy/rollback cases. The earlier isolated executor's owner
+passes do not constitute closure acceptance. Production release and real-model approvals,
+Sprint5.10/5.11/5.12 and Phase5 completion remain separate.
+
+Status: IMPLEMENTED_PENDING_OWNER_VALIDATION / CI_PENDING / ROLLOUT_DISABLED.
+See [closure report](../sprints/phase05_ai_solving_and_verification_core/SPRINT_5.9_PRODUCTION_INTEGRATION_CLOSURE_EXECUTION_REPORT.md).

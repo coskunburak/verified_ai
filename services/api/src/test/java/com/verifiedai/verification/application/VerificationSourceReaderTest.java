@@ -38,11 +38,26 @@ class VerificationSourceReaderTest {
         rejects(Reason.INVALID_CANONICAL_STRUCTURE, n -> { var s = n.path("statements").get(0).deepCopy(); for (int i=0;i<8;i++) n.withArray("statements").add(s); });
     }
     @Test void unknownTaskHasExplicitOutcome() {
-        var source = equation(); var root = (ObjectNode)CODEC.parse(source.canonicalJson()); root.put("taskType", "DIFFERENTIATE");
-        var changed = new SolveSource(source.canonicalProblemId(), source.userId(), source.problemSessionId(), source.problemParseId(),
-            1, 1, source.problemType(), "DIFFERENTIATE", root.toString());
-        assertThatThrownBy(() -> reader.read(changed)).isInstanceOfSatisfying(VerificationSourceReader.SourceRejected.class,
-            e -> assertThat(e.reason()).isEqualTo(Reason.UNSUPPORTED_TASK_TYPE));
+        for (String task : new String[]{"DIFFERENTIATE", "INTEGRATE", "FIND_LIMIT", "UNKNOWN_TASK"}) {
+            var source = equation(); var root = (ObjectNode)CODEC.parse(source.canonicalJson()); root.put("taskType", task);
+            var changed = new SolveSource(source.canonicalProblemId(), source.userId(), source.problemSessionId(), source.problemParseId(),
+                1, 1, source.problemType(), task, root.toString());
+            assertThatThrownBy(() -> reader.read(changed)).isInstanceOfSatisfying(VerificationSourceReader.SourceRejected.class,
+                e -> assertThat(e.reason()).isEqualTo(Reason.UNSUPPORTED_TASK_TYPE));
+            assertThatThrownBy(() -> reader.readForExecution(changed)).isInstanceOfSatisfying(VerificationSourceReader.SourceRejected.class,
+                e -> assertThat(e.reason()).isEqualTo(Reason.UNSUPPORTED_TASK_TYPE));
+        }
+    }
+    @Test void calculusAndUnknownProblemTypesCannotBeInterpretedAsV1Sources() {
+        for (String type : new String[]{"DERIVATIVE", "INTEGRAL", "LIMIT", "UNKNOWN_PROBLEM"}) {
+            var source = equation(); var root = (ObjectNode)CODEC.parse(source.canonicalJson()); root.put("problemType", type);
+            var changed = new SolveSource(source.canonicalProblemId(), source.userId(), source.problemSessionId(), source.problemParseId(),
+                1, 1, type, source.taskType(), root.toString());
+            assertThatThrownBy(() -> reader.read(changed)).isInstanceOfSatisfying(VerificationSourceReader.SourceRejected.class,
+                e -> assertThat(e.reason()).isEqualTo(Reason.UNSUPPORTED_PROBLEM_TYPE));
+            assertThatThrownBy(() -> reader.readForExecution(changed)).isInstanceOfSatisfying(VerificationSourceReader.SourceRejected.class,
+                e -> assertThat(e.reason()).isEqualTo(Reason.UNSUPPORTED_PROBLEM_TYPE));
+        }
     }
     @Test void jsonSizeDuplicateKeysAndExcessiveAstDepthAreBounded() {
         var source = equation();

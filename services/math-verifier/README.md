@@ -78,3 +78,16 @@ Java verifier clients explicitly select HTTP/1.1. The Uvicorn service does not s
 cleartext HTTP/2 (h2c) upgrades; upgrade requests can skip POST body parsing with httptools.
 The owner cross-runtime harness uses the same HTTP/1.1 policy and classifies non-JSON
 transport failures without logging request/response mathematical payloads.
+
+## Sprint 5.9 source integration closure
+
+The API now has a versioned source-to-evidence path using the existing calculus worker.
+The internal authenticated calculus-readiness route reports the actual Python flag and
+fixed algorithm/request/result versions. Java has independent disabled calculus/owner
+acceptance flags and requires compatible readiness before availability. Production guards
+remain unchanged. Worker mathematics and resource budgets are unchanged.
+
+Closure tests are authored but NOT_RUN_BY_AGENT / OWNER_VALIDATION_PENDING / CI_PENDING.
+See docs/verified_ai_learning_platform_docs_v4/sprints/phase05_ai_solving_and_verification_core/SPRINT_5.9_PRODUCTION_INTEGRATION_CLOSURE_EXECUTION_REPORT.md
+for the single complete owner block. The earlier isolated acceptance does not establish
+passing closure evidence. Production rollout remains disabled.

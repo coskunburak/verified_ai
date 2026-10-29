@@ -91,6 +91,21 @@ class ProblemParseNormalizer {
         String expectedSchemaVersion,
         RecognitionEvidenceJpaEntity recognitionEvidence
     ) {
+        if ("problem-parse-v2".equals(expectedSchemaVersion)) {
+            try {
+                var typed = com.verifiedai.problem.application.solving.CalculusSourceDocument.parse(rawOutputJson);
+                var legacy = ((ObjectNode) typed).deepCopy(); legacy.remove("calculus");
+                legacy.put("schemaVersion", "problem-parse-v1");
+                var admitted = normalize(legacy.toString(), "problem-parse-v1", recognitionEvidence);
+                var normalized = (ObjectNode) objectMapper.readTree(admitted.normalizedProblemJson());
+                normalized.put("schemaVersion", "problem-parse-v2"); normalized.set("calculus", typed.path("calculus"));
+                return new NormalizedProblemParse(rawOutputJson, normalized.toString(), admitted.supportStatus(),
+                    admitted.unsupportedReason(), admitted.reviewRequired());
+            } catch (ProblemParseValidationException e) { throw e;
+            } catch (Exception e) {
+                throw new ProblemParseValidationException(ProblemParseValidationFailure.SCHEMA, "Typed calculus source is invalid");
+            }
+        }
         JsonNode raw = parse(rawOutputJson);
         requireObject(raw, "root");
         rejectUnknown(raw, ROOT_FIELDS, "root");

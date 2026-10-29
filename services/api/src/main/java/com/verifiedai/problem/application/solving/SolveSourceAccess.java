@@ -32,7 +32,8 @@ public class SolveSourceAccess {
             join canonical_problems c on c.problem_parse_id=p.id and c.problem_parse_revision=p.revision
               and c.user_id=s.user_id and c.problem_session_id=s.id
             where s.id=? and s.user_id=? and p.support_status='SUPPORTED' and p.review_required=false
-              and c.schema_version='canonical-problem-v1'
+              and ((c.schema_version='canonical-problem-v1' and p.schema_version='problem-parse-v1')
+                or (c.schema_version='canonical-problem-v2' and p.schema_version='problem-parse-v2'))
               and coalesce((c.display_jsonb->>'reviewRequired')::boolean, true)=false
             """, (rs, n) -> new SolveSource(rs.getObject("id", UUID.class), userId, sessionId,
                 rs.getObject("problem_parse_id", UUID.class), rs.getInt("problem_parse_revision"),

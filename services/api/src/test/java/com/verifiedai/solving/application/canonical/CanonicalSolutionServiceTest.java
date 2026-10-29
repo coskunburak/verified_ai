@@ -58,11 +58,22 @@ class CanonicalSolutionServiceTest {
     }
     @Test void unsupportedHistoricalCandidateGetsTypedFailureAndNoSuccess() {
         var bad=new AcceptedArtifact(artifact.userId(),artifact.sessionId(),artifact.canonicalProblemId(),artifact.parseId(),artifact.parseRevision(),null,
-            artifact.origin(),null,artifact.operationId(),null,"solution-candidate-v2",artifact.artifactJson(),artifact.provenanceJson(),artifact.acceptedAt());
+            artifact.origin(),null,artifact.operationId(),null,"solution-candidate-v99",artifact.artifactJson(),artifact.provenanceJson(),artifact.acceptedAt());
         when(repository.accepted(any(),any(),eq(artifact.origin()))).thenReturn(Optional.of(bad));
         var result=service.materialize(source.userId(),source.problemSessionId(),artifact.origin());
         assertThat(result.failure()).isEqualTo(Failure.UNSUPPORTED_SCHEMA);assertThat(result.solutionId()).isNull();
         verify(repository).fail(eq(bad),eq(Version.CURRENT),eq(Failure.UNSUPPORTED_SCHEMA),any());verify(repository,never()).insert(any());
+    }
+    @Test void calculusSchemaLabelCannotReinterpretLegacyCandidateContent() {
+        var bad=new AcceptedArtifact(artifact.userId(),artifact.sessionId(),artifact.canonicalProblemId(),artifact.parseId(),artifact.parseRevision(),null,
+            artifact.origin(),null,artifact.operationId(),null,"solution-candidate-v2",artifact.artifactJson(),artifact.provenanceJson(),artifact.acceptedAt());
+        when(repository.accepted(any(),any(),eq(artifact.origin()))).thenReturn(Optional.of(bad));
+        var result=service.materialize(source.userId(),source.problemSessionId(),artifact.origin());
+        assertThat(result.state()).isEqualTo(CanonicalSolutions.MaterializationState.REJECTED);
+        assertThat(result.failure()).isEqualTo(Failure.INVALID_CANDIDATE);
+        assertThat(result.solutionId()).isNull();
+        verify(repository).fail(eq(bad),eq(Version.CALCULUS),eq(Failure.INVALID_CANDIDATE),any());
+        verify(repository,never()).insert(any());
     }
     @Test void ownershipCheckedBeforeReadingOrReturningExistingArtifacts() {
         doThrow(new ApiProblemException(HttpStatus.NOT_FOUND,ApiErrorCode.RESOURCE_FORBIDDEN,"Unavailable",false,"REVIEW"))
