@@ -9,6 +9,7 @@ import threading
 import time
 from dataclasses import dataclass
 
+from app.api.schemas.calculus import CalculusRequest, CalculusResult
 from app.api.schemas.execution import ExecutionRequest, ExecutionResult
 
 MAX_RESPONSE_BYTES = 16384
@@ -43,8 +44,12 @@ def apply_resource_limits(budget):
 def _worker(connection, payload, budget):
     try:
         apply_resource_limits(budget)
-        from app.verifiers.canonical_execution import execute
-        response = execute(ExecutionRequest.model_validate_json(payload))
+        if json.loads(payload).get("schemaVersion") == "calculus-execution-v1":
+            from app.verifiers.calculus import execute
+            response = execute(CalculusRequest.model_validate_json(payload))
+        else:
+            from app.verifiers.canonical_execution import execute
+            response = execute(ExecutionRequest.model_validate_json(payload))
         encoded = response.model_dump_json().encode("utf-8")
         if len(encoded) > MAX_RESPONSE_BYTES:
             raise MemoryError()
@@ -70,11 +75,18 @@ class ProcessExecutor:
 
     @staticmethod
     def failure(request, reason):
+        if isinstance(request, CalculusRequest):
+            return CalculusResult(schemaVersion="calculus-execution-result-v1", methodVersion="v1",
+                                  verifierVersion="bounded-calculus-v1",
+                                  executionId=request.executionId, correlationId=request.correlationId,
+                                  scope=request.scope, method=request.method, outcome="EXECUTION_FAILED",
+                                  reasonCode=reason, restrictionIds=[r.id for r in request.restrictions],
+                                  proof=None, diagnostic=None)
         return ExecutionResult(executionId=request.executionId, correlationId=request.correlationId,
                                method=request.method, outcome="EXECUTION_FAILED", reasonCode=reason,
                                restrictionIds=[r.id for r in request.restrictions])
 
-    def execute(self, request: ExecutionRequest) -> ExecutionResult:
+    def execute(self, request: ExecutionRequest | CalculusRequest) -> ExecutionResult | CalculusResult:
         if not self._slots.acquire(blocking=False):
             return self.failure(request, "ADMISSION_LIMIT")
         receive = send = process = None
@@ -95,6 +107,11 @@ class ProcessExecutor:
                 return self.failure(request, "WORKER_FAILURE")
             if data in {b"RESOURCE_FAILURE", b"WORKER_FAILURE"}:
                 return self.failure(request, data.decode("ascii"))
+            if isinstance(request, CalculusRequest):
+                try:
+                    return CalculusResult.model_validate_json(data).validate_for(request)
+                except ValueError:
+                    return self.failure(request, "INVALID_RESPONSE")
             response = ExecutionResult.model_validate(json.loads(data))
             if (response.executionId != request.executionId or response.method != request.method
                     or response.correlationId != request.correlationId):

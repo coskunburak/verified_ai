@@ -1,0 +1,2704 @@
+[
+  {
+    "id": "derivative-constant",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "DERIVATIVE_BACKCHECK",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": null,
+        "upper": null
+      },
+      "original": {
+        "kind": "NUMBER",
+        "numericType": "INTEGER",
+        "value": "5"
+      },
+      "candidate": {
+        "kind": "NUMBER",
+        "numericType": "INTEGER",
+        "value": "0"
+      },
+      "restrictions": [],
+      "approach": null,
+      "integralScope": null
+    },
+    "expectedOutcome": "PROVEN",
+    "expectedReason": "EXACT_DERIVATIVE",
+    "expectedDescriptor": "DERIVATIVE_IDENTITY"
+  },
+  {
+    "id": "derivative-polynomial",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "DERIVATIVE_BACKCHECK",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": null,
+        "upper": null
+      },
+      "original": {
+        "kind": "BINARY",
+        "operator": "POWER",
+        "left": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        },
+        "right": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "3"
+        }
+      },
+      "candidate": {
+        "kind": "BINARY",
+        "operator": "MULTIPLY",
+        "left": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "3"
+        },
+        "right": {
+          "kind": "BINARY",
+          "operator": "POWER",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "2"
+          }
+        }
+      },
+      "restrictions": [],
+      "approach": null,
+      "integralScope": null
+    },
+    "expectedOutcome": "PROVEN",
+    "expectedReason": "EXACT_DERIVATIVE",
+    "expectedDescriptor": "DERIVATIVE_IDENTITY"
+  },
+  {
+    "id": "derivative-wrong-coefficient",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "DERIVATIVE_BACKCHECK",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": null,
+        "upper": null
+      },
+      "original": {
+        "kind": "BINARY",
+        "operator": "POWER",
+        "left": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        },
+        "right": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "3"
+        }
+      },
+      "candidate": {
+        "kind": "BINARY",
+        "operator": "MULTIPLY",
+        "left": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "2"
+        },
+        "right": {
+          "kind": "BINARY",
+          "operator": "POWER",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "2"
+          }
+        }
+      },
+      "restrictions": [],
+      "approach": null,
+      "integralScope": null
+    },
+    "expectedOutcome": "DISPROVEN",
+    "expectedReason": "EXACT_CONTRADICTION",
+    "expectedDescriptor": "RATIONAL_NONIDENTITY"
+  },
+  {
+    "id": "derivative-product",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "DERIVATIVE_BACKCHECK",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": null,
+        "upper": null
+      },
+      "original": {
+        "kind": "BINARY",
+        "operator": "MULTIPLY",
+        "left": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        },
+        "right": {
+          "kind": "BINARY",
+          "operator": "ADD",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "1"
+          }
+        }
+      },
+      "candidate": {
+        "kind": "BINARY",
+        "operator": "ADD",
+        "left": {
+          "kind": "BINARY",
+          "operator": "MULTIPLY",
+          "left": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "2"
+          },
+          "right": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          }
+        },
+        "right": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "1"
+        }
+      },
+      "restrictions": [],
+      "approach": null,
+      "integralScope": null
+    },
+    "expectedOutcome": "PROVEN",
+    "expectedReason": "EXACT_DERIVATIVE",
+    "expectedDescriptor": "DERIVATIVE_IDENTITY"
+  },
+  {
+    "id": "derivative-quotient-positive",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "DERIVATIVE_BACKCHECK",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": {
+          "numerator": "0",
+          "denominator": "1"
+        },
+        "upper": null
+      },
+      "original": {
+        "kind": "BINARY",
+        "operator": "DIVIDE",
+        "left": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "1"
+        },
+        "right": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        }
+      },
+      "candidate": {
+        "kind": "BINARY",
+        "operator": "DIVIDE",
+        "left": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "-1"
+        },
+        "right": {
+          "kind": "BINARY",
+          "operator": "POWER",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "2"
+          }
+        }
+      },
+      "restrictions": [],
+      "approach": null,
+      "integralScope": null
+    },
+    "expectedOutcome": "PROVEN",
+    "expectedReason": "EXACT_DERIVATIVE",
+    "expectedDescriptor": "DERIVATIVE_IDENTITY"
+  },
+  {
+    "id": "derivative-chain-sin",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "DERIVATIVE_BACKCHECK",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": null,
+        "upper": null
+      },
+      "original": {
+        "kind": "FUNCTION",
+        "function": "SIN",
+        "args": [
+          {
+            "kind": "BINARY",
+            "operator": "POWER",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "2"
+            }
+          }
+        ]
+      },
+      "candidate": {
+        "kind": "BINARY",
+        "operator": "MULTIPLY",
+        "left": {
+          "kind": "BINARY",
+          "operator": "MULTIPLY",
+          "left": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "2"
+          },
+          "right": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          }
+        },
+        "right": {
+          "kind": "FUNCTION",
+          "function": "COS",
+          "args": [
+            {
+              "kind": "BINARY",
+              "operator": "POWER",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "2"
+              }
+            }
+          ]
+        }
+      },
+      "restrictions": [],
+      "approach": null,
+      "integralScope": null
+    },
+    "expectedOutcome": "PROVEN",
+    "expectedReason": "EXACT_DERIVATIVE",
+    "expectedDescriptor": "DERIVATIVE_IDENTITY"
+  },
+  {
+    "id": "derivative-chain-exp",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "DERIVATIVE_BACKCHECK",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": null,
+        "upper": null
+      },
+      "original": {
+        "kind": "FUNCTION",
+        "function": "EXP",
+        "args": [
+          {
+            "kind": "BINARY",
+            "operator": "MULTIPLY",
+            "left": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "2"
+            },
+            "right": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            }
+          }
+        ]
+      },
+      "candidate": {
+        "kind": "BINARY",
+        "operator": "MULTIPLY",
+        "left": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "2"
+        },
+        "right": {
+          "kind": "FUNCTION",
+          "function": "EXP",
+          "args": [
+            {
+              "kind": "BINARY",
+              "operator": "MULTIPLY",
+              "left": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "2"
+              },
+              "right": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              }
+            }
+          ]
+        }
+      },
+      "restrictions": [],
+      "approach": null,
+      "integralScope": null
+    },
+    "expectedOutcome": "PROVEN",
+    "expectedReason": "EXACT_DERIVATIVE",
+    "expectedDescriptor": "DERIVATIVE_IDENTITY"
+  },
+  {
+    "id": "derivative-cos",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "DERIVATIVE_BACKCHECK",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": null,
+        "upper": null
+      },
+      "original": {
+        "kind": "FUNCTION",
+        "function": "COS",
+        "args": [
+          {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          }
+        ]
+      },
+      "candidate": {
+        "kind": "BINARY",
+        "operator": "MULTIPLY",
+        "left": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "-1"
+        },
+        "right": {
+          "kind": "FUNCTION",
+          "function": "SIN",
+          "args": [
+            {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            }
+          ]
+        }
+      },
+      "restrictions": [],
+      "approach": null,
+      "integralScope": null
+    },
+    "expectedOutcome": "PROVEN",
+    "expectedReason": "EXACT_DERIVATIVE",
+    "expectedDescriptor": "DERIVATIVE_IDENTITY"
+  },
+  {
+    "id": "derivative-log-positive",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "DERIVATIVE_BACKCHECK",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": {
+          "numerator": "0",
+          "denominator": "1"
+        },
+        "upper": null
+      },
+      "original": {
+        "kind": "FUNCTION",
+        "function": "LOG",
+        "args": [
+          {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          }
+        ]
+      },
+      "candidate": {
+        "kind": "BINARY",
+        "operator": "DIVIDE",
+        "left": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "1"
+        },
+        "right": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        }
+      },
+      "restrictions": [],
+      "approach": null,
+      "integralScope": null
+    },
+    "expectedOutcome": "PROVEN",
+    "expectedReason": "EXACT_DERIVATIVE",
+    "expectedDescriptor": "DERIVATIVE_IDENTITY"
+  },
+  {
+    "id": "derivative-sqrt-positive",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "DERIVATIVE_BACKCHECK",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": {
+          "numerator": "0",
+          "denominator": "1"
+        },
+        "upper": null
+      },
+      "original": {
+        "kind": "FUNCTION",
+        "function": "SQRT",
+        "args": [
+          {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          }
+        ]
+      },
+      "candidate": {
+        "kind": "BINARY",
+        "operator": "DIVIDE",
+        "left": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "1"
+        },
+        "right": {
+          "kind": "BINARY",
+          "operator": "MULTIPLY",
+          "left": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "2"
+          },
+          "right": {
+            "kind": "FUNCTION",
+            "function": "SQRT",
+            "args": [
+              {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              }
+            ]
+          }
+        }
+      },
+      "restrictions": [],
+      "approach": null,
+      "integralScope": null
+    },
+    "expectedOutcome": "PROVEN",
+    "expectedReason": "EXACT_DERIVATIVE",
+    "expectedDescriptor": "DERIVATIVE_IDENTITY"
+  },
+  {
+    "id": "derivative-sqrt-boundary",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "DERIVATIVE_BACKCHECK",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": null,
+        "upper": null
+      },
+      "original": {
+        "kind": "FUNCTION",
+        "function": "SQRT",
+        "args": [
+          {
+            "kind": "BINARY",
+            "operator": "POWER",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "2"
+            }
+          }
+        ]
+      },
+      "candidate": {
+        "kind": "NUMBER",
+        "numericType": "INTEGER",
+        "value": "1"
+      },
+      "restrictions": [],
+      "approach": null,
+      "integralScope": null
+    },
+    "expectedOutcome": "BLOCKED",
+    "expectedReason": "DOMAIN_OBSTRUCTION",
+    "expectedDescriptor": null
+  },
+  {
+    "id": "derivative-hole-not-erased",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "DERIVATIVE_BACKCHECK",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": null,
+        "upper": null
+      },
+      "original": {
+        "kind": "BINARY",
+        "operator": "DIVIDE",
+        "left": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        },
+        "right": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        }
+      },
+      "candidate": {
+        "kind": "NUMBER",
+        "numericType": "INTEGER",
+        "value": "0"
+      },
+      "restrictions": [],
+      "approach": null,
+      "integralScope": null
+    },
+    "expectedOutcome": "BLOCKED",
+    "expectedReason": "DOMAIN_OBSTRUCTION",
+    "expectedDescriptor": null
+  },
+  {
+    "id": "derivative-hole-excluded",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "DERIVATIVE_BACKCHECK",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": {
+          "numerator": "0",
+          "denominator": "1"
+        },
+        "upper": null
+      },
+      "original": {
+        "kind": "BINARY",
+        "operator": "DIVIDE",
+        "left": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        },
+        "right": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        }
+      },
+      "candidate": {
+        "kind": "NUMBER",
+        "numericType": "INTEGER",
+        "value": "0"
+      },
+      "restrictions": [],
+      "approach": null,
+      "integralScope": null
+    },
+    "expectedOutcome": "PROVEN",
+    "expectedReason": "EXACT_DERIVATIVE",
+    "expectedDescriptor": "DERIVATIVE_IDENTITY"
+  },
+  {
+    "id": "derivative-unknown",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "DERIVATIVE_BACKCHECK",
+      "variable": {
+        "symbol": "x",
+        "domain": "UNKNOWN"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": null,
+        "upper": null
+      },
+      "original": {
+        "kind": "BINARY",
+        "operator": "POWER",
+        "left": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        },
+        "right": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "2"
+        }
+      },
+      "candidate": {
+        "kind": "BINARY",
+        "operator": "MULTIPLY",
+        "left": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "2"
+        },
+        "right": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        }
+      },
+      "restrictions": [],
+      "approach": null,
+      "integralScope": null
+    },
+    "expectedOutcome": "BLOCKED",
+    "expectedReason": "UNKNOWN_DOMAIN",
+    "expectedDescriptor": null
+  },
+  {
+    "id": "derivative-integer",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "DERIVATIVE_BACKCHECK",
+      "variable": {
+        "symbol": "x",
+        "domain": "INTEGER"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": null,
+        "upper": null
+      },
+      "original": {
+        "kind": "BINARY",
+        "operator": "POWER",
+        "left": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        },
+        "right": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "2"
+        }
+      },
+      "candidate": {
+        "kind": "BINARY",
+        "operator": "MULTIPLY",
+        "left": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "2"
+        },
+        "right": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        }
+      },
+      "restrictions": [],
+      "approach": null,
+      "integralScope": null
+    },
+    "expectedOutcome": "BLOCKED",
+    "expectedReason": "NON_REAL_DOMAIN",
+    "expectedDescriptor": null
+  },
+  {
+    "id": "derivative-tangent",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "DERIVATIVE_BACKCHECK",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": null,
+        "upper": null
+      },
+      "original": {
+        "kind": "FUNCTION",
+        "function": "TAN",
+        "args": [
+          {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          }
+        ]
+      },
+      "candidate": {
+        "kind": "NUMBER",
+        "numericType": "INTEGER",
+        "value": "1"
+      },
+      "restrictions": [],
+      "approach": null,
+      "integralScope": null
+    },
+    "expectedOutcome": "UNSUPPORTED",
+    "expectedReason": "UNSUPPORTED_SUBSET",
+    "expectedDescriptor": null
+  },
+  {
+    "id": "derivative-transcendental-unresolved",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "DERIVATIVE_BACKCHECK",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": null,
+        "upper": null
+      },
+      "original": {
+        "kind": "FUNCTION",
+        "function": "SIN",
+        "args": [
+          {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          }
+        ]
+      },
+      "candidate": {
+        "kind": "NUMBER",
+        "numericType": "INTEGER",
+        "value": "1"
+      },
+      "restrictions": [],
+      "approach": null,
+      "integralScope": null
+    },
+    "expectedOutcome": "INCONCLUSIVE",
+    "expectedReason": "SYMBOLIC_UNRESOLVED",
+    "expectedDescriptor": null
+  },
+  {
+    "id": "derivative-complexity",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "DERIVATIVE_BACKCHECK",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": null,
+        "upper": null
+      },
+      "original": {
+        "kind": "BINARY",
+        "operator": "POWER",
+        "left": {
+          "kind": "BINARY",
+          "operator": "ADD",
+          "left": {
+            "kind": "BINARY",
+            "operator": "POWER",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "12"
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "1"
+          }
+        },
+        "right": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "12"
+        }
+      },
+      "candidate": {
+        "kind": "NUMBER",
+        "numericType": "INTEGER",
+        "value": "0"
+      },
+      "restrictions": [],
+      "approach": null,
+      "integralScope": null
+    },
+    "expectedOutcome": "UNSUPPORTED",
+    "expectedReason": "COMPLEXITY_LIMIT",
+    "expectedDescriptor": null
+  },
+  {
+    "id": "integral-2x",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "INTEGRAL_DIFFERENTIATION_BACKCHECK",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": null,
+        "upper": null
+      },
+      "original": {
+        "kind": "BINARY",
+        "operator": "MULTIPLY",
+        "left": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "2"
+        },
+        "right": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        }
+      },
+      "candidate": {
+        "kind": "BINARY",
+        "operator": "POWER",
+        "left": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        },
+        "right": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "2"
+        }
+      },
+      "restrictions": [],
+      "approach": null,
+      "integralScope": "ANTIDERIVATIVE_REPRESENTATIVE"
+    },
+    "expectedOutcome": "PROVEN",
+    "expectedReason": "EXACT_ANTIDERIVATIVE",
+    "expectedDescriptor": "ANTIDERIVATIVE_IDENTITY"
+  },
+  {
+    "id": "integral-3x2",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "INTEGRAL_DIFFERENTIATION_BACKCHECK",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": null,
+        "upper": null
+      },
+      "original": {
+        "kind": "BINARY",
+        "operator": "MULTIPLY",
+        "left": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "3"
+        },
+        "right": {
+          "kind": "BINARY",
+          "operator": "POWER",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "2"
+          }
+        }
+      },
+      "candidate": {
+        "kind": "BINARY",
+        "operator": "POWER",
+        "left": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        },
+        "right": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "3"
+        }
+      },
+      "restrictions": [],
+      "approach": null,
+      "integralScope": "ANTIDERIVATIVE_REPRESENTATIVE"
+    },
+    "expectedOutcome": "PROVEN",
+    "expectedReason": "EXACT_ANTIDERIVATIVE",
+    "expectedDescriptor": "ANTIDERIVATIVE_IDENTITY"
+  },
+  {
+    "id": "integral-additive-constant",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "INTEGRAL_DIFFERENTIATION_BACKCHECK",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": null,
+        "upper": null
+      },
+      "original": {
+        "kind": "BINARY",
+        "operator": "MULTIPLY",
+        "left": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "2"
+        },
+        "right": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        }
+      },
+      "candidate": {
+        "kind": "BINARY",
+        "operator": "ADD",
+        "left": {
+          "kind": "BINARY",
+          "operator": "POWER",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "2"
+          }
+        },
+        "right": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "5"
+        }
+      },
+      "restrictions": [],
+      "approach": null,
+      "integralScope": "ANTIDERIVATIVE_REPRESENTATIVE"
+    },
+    "expectedOutcome": "PROVEN",
+    "expectedReason": "EXACT_ANTIDERIVATIVE",
+    "expectedDescriptor": "ANTIDERIVATIVE_IDENTITY"
+  },
+  {
+    "id": "integral-wrong",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "INTEGRAL_DIFFERENTIATION_BACKCHECK",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": null,
+        "upper": null
+      },
+      "original": {
+        "kind": "BINARY",
+        "operator": "MULTIPLY",
+        "left": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "2"
+        },
+        "right": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        }
+      },
+      "candidate": {
+        "kind": "BINARY",
+        "operator": "POWER",
+        "left": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        },
+        "right": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "3"
+        }
+      },
+      "restrictions": [],
+      "approach": null,
+      "integralScope": "ANTIDERIVATIVE_REPRESENTATIVE"
+    },
+    "expectedOutcome": "DISPROVEN",
+    "expectedReason": "EXACT_CONTRADICTION",
+    "expectedDescriptor": "RATIONAL_NONIDENTITY"
+  },
+  {
+    "id": "integral-constant",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "INTEGRAL_DIFFERENTIATION_BACKCHECK",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": null,
+        "upper": null
+      },
+      "original": {
+        "kind": "NUMBER",
+        "numericType": "INTEGER",
+        "value": "3"
+      },
+      "candidate": {
+        "kind": "BINARY",
+        "operator": "MULTIPLY",
+        "left": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "3"
+        },
+        "right": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        }
+      },
+      "restrictions": [],
+      "approach": null,
+      "integralScope": "ANTIDERIVATIVE_REPRESENTATIVE"
+    },
+    "expectedOutcome": "PROVEN",
+    "expectedReason": "EXACT_ANTIDERIVATIVE",
+    "expectedDescriptor": "ANTIDERIVATIVE_IDENTITY"
+  },
+  {
+    "id": "integral-log-positive",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "INTEGRAL_DIFFERENTIATION_BACKCHECK",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": {
+          "numerator": "0",
+          "denominator": "1"
+        },
+        "upper": null
+      },
+      "original": {
+        "kind": "BINARY",
+        "operator": "DIVIDE",
+        "left": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "1"
+        },
+        "right": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        }
+      },
+      "candidate": {
+        "kind": "FUNCTION",
+        "function": "LOG",
+        "args": [
+          {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          }
+        ]
+      },
+      "restrictions": [
+        {
+          "id": "source-positive",
+          "relation": "GREATER_THAN",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "0"
+          }
+        }
+      ],
+      "approach": null,
+      "integralScope": "ANTIDERIVATIVE_REPRESENTATIVE"
+    },
+    "expectedOutcome": "PROVEN",
+    "expectedReason": "EXACT_ANTIDERIVATIVE",
+    "expectedDescriptor": "ANTIDERIVATIVE_IDENTITY"
+  },
+  {
+    "id": "integral-log-negative-component",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "INTEGRAL_DIFFERENTIATION_BACKCHECK",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": null,
+        "upper": {
+          "numerator": "0",
+          "denominator": "1"
+        }
+      },
+      "original": {
+        "kind": "BINARY",
+        "operator": "DIVIDE",
+        "left": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "1"
+        },
+        "right": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        }
+      },
+      "candidate": {
+        "kind": "FUNCTION",
+        "function": "LOG",
+        "args": [
+          {
+            "kind": "BINARY",
+            "operator": "MULTIPLY",
+            "left": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "-1"
+            },
+            "right": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            }
+          }
+        ]
+      },
+      "restrictions": [],
+      "approach": null,
+      "integralScope": "ANTIDERIVATIVE_REPRESENTATIVE"
+    },
+    "expectedOutcome": "PROVEN",
+    "expectedReason": "EXACT_ANTIDERIVATIVE",
+    "expectedDescriptor": "ANTIDERIVATIVE_IDENTITY"
+  },
+  {
+    "id": "integral-missing-positive-domain",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "INTEGRAL_DIFFERENTIATION_BACKCHECK",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": null,
+        "upper": null
+      },
+      "original": {
+        "kind": "BINARY",
+        "operator": "DIVIDE",
+        "left": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "1"
+        },
+        "right": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        }
+      },
+      "candidate": {
+        "kind": "FUNCTION",
+        "function": "LOG",
+        "args": [
+          {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          }
+        ]
+      },
+      "restrictions": [],
+      "approach": null,
+      "integralScope": "ANTIDERIVATIVE_REPRESENTATIVE"
+    },
+    "expectedOutcome": "BLOCKED",
+    "expectedReason": "DOMAIN_OBSTRUCTION",
+    "expectedDescriptor": null
+  },
+  {
+    "id": "integral-sin",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "INTEGRAL_DIFFERENTIATION_BACKCHECK",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": null,
+        "upper": null
+      },
+      "original": {
+        "kind": "FUNCTION",
+        "function": "COS",
+        "args": [
+          {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          }
+        ]
+      },
+      "candidate": {
+        "kind": "FUNCTION",
+        "function": "SIN",
+        "args": [
+          {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          }
+        ]
+      },
+      "restrictions": [],
+      "approach": null,
+      "integralScope": "ANTIDERIVATIVE_REPRESENTATIVE"
+    },
+    "expectedOutcome": "PROVEN",
+    "expectedReason": "EXACT_ANTIDERIVATIVE",
+    "expectedDescriptor": "ANTIDERIVATIVE_IDENTITY"
+  },
+  {
+    "id": "integral-nonconstant-offset",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "INTEGRAL_DIFFERENTIATION_BACKCHECK",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": null,
+        "upper": null
+      },
+      "original": {
+        "kind": "BINARY",
+        "operator": "MULTIPLY",
+        "left": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "2"
+        },
+        "right": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        }
+      },
+      "candidate": {
+        "kind": "BINARY",
+        "operator": "ADD",
+        "left": {
+          "kind": "BINARY",
+          "operator": "POWER",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "2"
+          }
+        },
+        "right": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        }
+      },
+      "restrictions": [],
+      "approach": null,
+      "integralScope": "ANTIDERIVATIVE_REPRESENTATIVE"
+    },
+    "expectedOutcome": "DISPROVEN",
+    "expectedReason": "EXACT_CONTRADICTION",
+    "expectedDescriptor": "RATIONAL_NONIDENTITY"
+  },
+  {
+    "id": "limit-polynomial",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "FINITE_LIMIT",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": null,
+        "upper": null
+      },
+      "original": {
+        "kind": "BINARY",
+        "operator": "ADD",
+        "left": {
+          "kind": "BINARY",
+          "operator": "POWER",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "2"
+          }
+        },
+        "right": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "1"
+        }
+      },
+      "candidate": {
+        "kind": "NUMBER",
+        "numericType": "INTEGER",
+        "value": "5"
+      },
+      "restrictions": [],
+      "approach": {
+        "target": {
+          "numerator": "2",
+          "denominator": "1"
+        },
+        "direction": "TWO_SIDED"
+      },
+      "integralScope": null
+    },
+    "expectedOutcome": "PROVEN",
+    "expectedReason": "EXACT_FINITE_LIMIT",
+    "expectedDescriptor": "RATIONAL_FINITE_LIMIT"
+  },
+  {
+    "id": "limit-removable",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "FINITE_LIMIT",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": null,
+        "upper": null
+      },
+      "original": {
+        "kind": "BINARY",
+        "operator": "DIVIDE",
+        "left": {
+          "kind": "BINARY",
+          "operator": "SUBTRACT",
+          "left": {
+            "kind": "BINARY",
+            "operator": "POWER",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "2"
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "1"
+          }
+        },
+        "right": {
+          "kind": "BINARY",
+          "operator": "SUBTRACT",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "1"
+          }
+        }
+      },
+      "candidate": {
+        "kind": "NUMBER",
+        "numericType": "INTEGER",
+        "value": "2"
+      },
+      "restrictions": [
+        {
+          "id": "denominator-hole",
+          "relation": "NOT_EQUALS",
+          "left": {
+            "kind": "BINARY",
+            "operator": "SUBTRACT",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "1"
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "0"
+          }
+        }
+      ],
+      "approach": {
+        "target": {
+          "numerator": "1",
+          "denominator": "1"
+        },
+        "direction": "TWO_SIDED"
+      },
+      "integralScope": null
+    },
+    "expectedOutcome": "PROVEN",
+    "expectedReason": "EXACT_FINITE_LIMIT",
+    "expectedDescriptor": "RATIONAL_FINITE_LIMIT"
+  },
+  {
+    "id": "limit-removable-wrong",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "FINITE_LIMIT",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": null,
+        "upper": null
+      },
+      "original": {
+        "kind": "BINARY",
+        "operator": "DIVIDE",
+        "left": {
+          "kind": "BINARY",
+          "operator": "SUBTRACT",
+          "left": {
+            "kind": "BINARY",
+            "operator": "POWER",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "2"
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "1"
+          }
+        },
+        "right": {
+          "kind": "BINARY",
+          "operator": "SUBTRACT",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "1"
+          }
+        }
+      },
+      "candidate": {
+        "kind": "NUMBER",
+        "numericType": "INTEGER",
+        "value": "3"
+      },
+      "restrictions": [],
+      "approach": {
+        "target": {
+          "numerator": "1",
+          "denominator": "1"
+        },
+        "direction": "TWO_SIDED"
+      },
+      "integralScope": null
+    },
+    "expectedOutcome": "DISPROVEN",
+    "expectedReason": "EXACT_CONTRADICTION",
+    "expectedDescriptor": "RATIONAL_FINITE_LIMIT"
+  },
+  {
+    "id": "limit-right-boundary",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "FINITE_LIMIT",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": {
+          "numerator": "1",
+          "denominator": "1"
+        },
+        "upper": null
+      },
+      "original": {
+        "kind": "BINARY",
+        "operator": "DIVIDE",
+        "left": {
+          "kind": "BINARY",
+          "operator": "SUBTRACT",
+          "left": {
+            "kind": "BINARY",
+            "operator": "POWER",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "2"
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "1"
+          }
+        },
+        "right": {
+          "kind": "BINARY",
+          "operator": "SUBTRACT",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "1"
+          }
+        }
+      },
+      "candidate": {
+        "kind": "NUMBER",
+        "numericType": "INTEGER",
+        "value": "2"
+      },
+      "restrictions": [],
+      "approach": {
+        "target": {
+          "numerator": "1",
+          "denominator": "1"
+        },
+        "direction": "RIGHT"
+      },
+      "integralScope": null
+    },
+    "expectedOutcome": "PROVEN",
+    "expectedReason": "EXACT_FINITE_LIMIT",
+    "expectedDescriptor": "RATIONAL_FINITE_LIMIT"
+  },
+  {
+    "id": "limit-left-boundary",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "FINITE_LIMIT",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": null,
+        "upper": {
+          "numerator": "1",
+          "denominator": "1"
+        }
+      },
+      "original": {
+        "kind": "BINARY",
+        "operator": "DIVIDE",
+        "left": {
+          "kind": "BINARY",
+          "operator": "SUBTRACT",
+          "left": {
+            "kind": "BINARY",
+            "operator": "POWER",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "2"
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "1"
+          }
+        },
+        "right": {
+          "kind": "BINARY",
+          "operator": "SUBTRACT",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "1"
+          }
+        }
+      },
+      "candidate": {
+        "kind": "NUMBER",
+        "numericType": "INTEGER",
+        "value": "2"
+      },
+      "restrictions": [],
+      "approach": {
+        "target": {
+          "numerator": "1",
+          "denominator": "1"
+        },
+        "direction": "LEFT"
+      },
+      "integralScope": null
+    },
+    "expectedOutcome": "PROVEN",
+    "expectedReason": "EXACT_FINITE_LIMIT",
+    "expectedDescriptor": "RATIONAL_FINITE_LIMIT"
+  },
+  {
+    "id": "limit-excluded-neighborhood",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "FINITE_LIMIT",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": {
+          "numerator": "1",
+          "denominator": "1"
+        },
+        "upper": null
+      },
+      "original": {
+        "kind": "BINARY",
+        "operator": "DIVIDE",
+        "left": {
+          "kind": "BINARY",
+          "operator": "SUBTRACT",
+          "left": {
+            "kind": "BINARY",
+            "operator": "POWER",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "2"
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "1"
+          }
+        },
+        "right": {
+          "kind": "BINARY",
+          "operator": "SUBTRACT",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "1"
+          }
+        }
+      },
+      "candidate": {
+        "kind": "NUMBER",
+        "numericType": "INTEGER",
+        "value": "2"
+      },
+      "restrictions": [],
+      "approach": {
+        "target": {
+          "numerator": "1",
+          "denominator": "1"
+        },
+        "direction": "LEFT"
+      },
+      "integralScope": null
+    },
+    "expectedOutcome": "BLOCKED",
+    "expectedReason": "DOMAIN_OBSTRUCTION",
+    "expectedDescriptor": null
+  },
+  {
+    "id": "limit-pole-two-sided",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "FINITE_LIMIT",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": null,
+        "upper": null
+      },
+      "original": {
+        "kind": "BINARY",
+        "operator": "DIVIDE",
+        "left": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "1"
+        },
+        "right": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        }
+      },
+      "candidate": {
+        "kind": "NUMBER",
+        "numericType": "INTEGER",
+        "value": "0"
+      },
+      "restrictions": [],
+      "approach": {
+        "target": {
+          "numerator": "0",
+          "denominator": "1"
+        },
+        "direction": "TWO_SIDED"
+      },
+      "integralScope": null
+    },
+    "expectedOutcome": "INCONCLUSIVE",
+    "expectedReason": "NONFINITE_LIMIT",
+    "expectedDescriptor": null
+  },
+  {
+    "id": "limit-pole-right",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "FINITE_LIMIT",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": {
+          "numerator": "0",
+          "denominator": "1"
+        },
+        "upper": null
+      },
+      "original": {
+        "kind": "BINARY",
+        "operator": "DIVIDE",
+        "left": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "1"
+        },
+        "right": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        }
+      },
+      "candidate": {
+        "kind": "NUMBER",
+        "numericType": "INTEGER",
+        "value": "0"
+      },
+      "restrictions": [],
+      "approach": {
+        "target": {
+          "numerator": "0",
+          "denominator": "1"
+        },
+        "direction": "RIGHT"
+      },
+      "integralScope": null
+    },
+    "expectedOutcome": "INCONCLUSIVE",
+    "expectedReason": "NONFINITE_LIMIT",
+    "expectedDescriptor": null
+  },
+  {
+    "id": "limit-zero-over-zero-function",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "FINITE_LIMIT",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": null,
+        "upper": null
+      },
+      "original": {
+        "kind": "BINARY",
+        "operator": "DIVIDE",
+        "left": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "0"
+        },
+        "right": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "0"
+        }
+      },
+      "candidate": {
+        "kind": "NUMBER",
+        "numericType": "INTEGER",
+        "value": "0"
+      },
+      "restrictions": [],
+      "approach": {
+        "target": {
+          "numerator": "0",
+          "denominator": "1"
+        },
+        "direction": "TWO_SIDED"
+      },
+      "integralScope": null
+    },
+    "expectedOutcome": "BLOCKED",
+    "expectedReason": "DOMAIN_OBSTRUCTION",
+    "expectedDescriptor": null
+  },
+  {
+    "id": "limit-numerical-agreement-not-proof",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "FINITE_LIMIT",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": null,
+        "upper": null
+      },
+      "original": {
+        "kind": "FUNCTION",
+        "function": "SIN",
+        "args": [
+          {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          }
+        ]
+      },
+      "candidate": {
+        "kind": "NUMBER",
+        "numericType": "INTEGER",
+        "value": "0"
+      },
+      "restrictions": [],
+      "approach": {
+        "target": {
+          "numerator": "0",
+          "denominator": "1"
+        },
+        "direction": "TWO_SIDED"
+      },
+      "integralScope": null
+    },
+    "expectedOutcome": "INCONCLUSIVE",
+    "expectedReason": "NUMERICAL_DIAGNOSTIC",
+    "expectedDescriptor": null
+  },
+  {
+    "id": "limit-numerical-mismatch-not-disproof",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "FINITE_LIMIT",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": null,
+        "upper": null
+      },
+      "original": {
+        "kind": "FUNCTION",
+        "function": "COS",
+        "args": [
+          {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          }
+        ]
+      },
+      "candidate": {
+        "kind": "NUMBER",
+        "numericType": "INTEGER",
+        "value": "9"
+      },
+      "restrictions": [],
+      "approach": {
+        "target": {
+          "numerator": "0",
+          "denominator": "1"
+        },
+        "direction": "TWO_SIDED"
+      },
+      "integralScope": null
+    },
+    "expectedOutcome": "INCONCLUSIVE",
+    "expectedReason": "NUMERICAL_DIAGNOSTIC",
+    "expectedDescriptor": null
+  },
+  {
+    "id": "limit-numerical-overflow",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "FINITE_LIMIT",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": null,
+        "upper": null
+      },
+      "original": {
+        "kind": "FUNCTION",
+        "function": "EXP",
+        "args": [
+          {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "1000"
+          }
+        ]
+      },
+      "candidate": {
+        "kind": "NUMBER",
+        "numericType": "INTEGER",
+        "value": "0"
+      },
+      "restrictions": [],
+      "approach": {
+        "target": {
+          "numerator": "0",
+          "denominator": "1"
+        },
+        "direction": "TWO_SIDED"
+      },
+      "integralScope": null
+    },
+    "expectedOutcome": "INCONCLUSIVE",
+    "expectedReason": "NUMERICAL_DIAGNOSTIC",
+    "expectedDescriptor": null
+  },
+  {
+    "id": "limit-restriction-excludes-left",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "FINITE_LIMIT",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": null,
+        "upper": null
+      },
+      "original": {
+        "kind": "VARIABLE",
+        "symbol": "x"
+      },
+      "candidate": {
+        "kind": "NUMBER",
+        "numericType": "INTEGER",
+        "value": "0"
+      },
+      "restrictions": [
+        {
+          "id": "positive",
+          "relation": "GREATER_THAN",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "0"
+          }
+        }
+      ],
+      "approach": {
+        "target": {
+          "numerator": "0",
+          "denominator": "1"
+        },
+        "direction": "TWO_SIDED"
+      },
+      "integralScope": null
+    },
+    "expectedOutcome": "BLOCKED",
+    "expectedReason": "DOMAIN_OBSTRUCTION",
+    "expectedDescriptor": null
+  },
+  {
+    "id": "limit-unknown-domain",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "FINITE_LIMIT",
+      "variable": {
+        "symbol": "x",
+        "domain": "UNKNOWN"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": null,
+        "upper": null
+      },
+      "original": {
+        "kind": "VARIABLE",
+        "symbol": "x"
+      },
+      "candidate": {
+        "kind": "NUMBER",
+        "numericType": "INTEGER",
+        "value": "0"
+      },
+      "restrictions": [],
+      "approach": {
+        "target": {
+          "numerator": "0",
+          "denominator": "1"
+        },
+        "direction": "TWO_SIDED"
+      },
+      "integralScope": null
+    },
+    "expectedOutcome": "BLOCKED",
+    "expectedReason": "UNKNOWN_DOMAIN",
+    "expectedDescriptor": null
+  },
+  {
+    "id": "derivative-singleton-not-calculus-domain",
+    "request": {
+      "schemaVersion": "calculus-execution-v1",
+      "executionId": "59000000-0000-4000-8000-000000000001",
+      "correlationId": "calculus-fixture",
+      "scope": {
+        "identity": "59000000-0000-4000-8000-000000000002",
+        "sourceRevision": 1,
+        "candidateRevision": 1,
+        "sourceVersion": "calculus-task-v1",
+        "candidateVersion": "calculus-task-v1"
+      },
+      "method": "DERIVATIVE_BACKCHECK",
+      "variable": {
+        "symbol": "x",
+        "domain": "REAL"
+      },
+      "interval": {
+        "kind": "OPEN_INTERVAL",
+        "lower": null,
+        "upper": null
+      },
+      "original": {
+        "kind": "BINARY",
+        "operator": "POWER",
+        "left": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        },
+        "right": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "2"
+        }
+      },
+      "candidate": {
+        "kind": "BINARY",
+        "operator": "MULTIPLY",
+        "left": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "2"
+        },
+        "right": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        }
+      },
+      "restrictions": [
+        {
+          "id": "singleton",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "0"
+          }
+        }
+      ],
+      "approach": null,
+      "integralScope": null
+    },
+    "expectedOutcome": "BLOCKED",
+    "expectedReason": "DOMAIN_OBSTRUCTION",
+    "expectedDescriptor": null
+  }
+]

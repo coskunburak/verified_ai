@@ -183,3 +183,19 @@ Execution uses independently bounded rational/polynomial algorithms and retains 
 
 The single final assignment can represent a candidate singleton for completeness only when independently derived roots match it exactly.
 General finite sets, empty sets and infinite sets require a future versioned canonical answer contract; prose is never parsed as a set.
+
+## Sprint 5.9 calculus representation boundary
+
+`calculus-task-v1` names an internal, nonpersistent verification task. It contains one
+explicit variable/domain, an open connected real interval with exact rational endpoints,
+original/candidate ASTs, restriction references, scope identity and source/candidate
+revisions. Limits additionally require a finite rational target and LEFT/RIGHT/TWO_SIDED;
+integrals require ANTIDERIVATIVE_REPRESENTATIVE. No implicit C, complete family,
+closed/disconnected interval, infinite target or higher-order task is introduced.
+
+Existing canonical-problem-v1, verifier-input-v1 and solution-candidate-v1 remain unchanged.
+ProblemParse calculus task labels lack authoritative approach/direction metadata and do
+not become an accepted calculus source. No display text or model explanation supplies
+missing metadata. Internal scope identifiers correlate responses; they confer no source
+authorization. End-to-end calculus canonicalization/publication is BLOCKED pending
+versioned source acquisition and owned source assembly. OWNER_VALIDATION_PENDING.

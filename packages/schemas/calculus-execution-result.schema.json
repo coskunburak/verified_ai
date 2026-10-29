@@ -1,0 +1,591 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "calculus-execution-result-v1"
+    },
+    "executionId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "correlationId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,64}$"
+    },
+    "scope": {
+      "$ref": "#/$defs/scope"
+    },
+    "method": {
+      "type": "string",
+      "enum": [
+        "DERIVATIVE_BACKCHECK",
+        "INTEGRAL_DIFFERENTIATION_BACKCHECK",
+        "FINITE_LIMIT"
+      ]
+    },
+    "methodVersion": {
+      "const": "v1"
+    },
+    "verifierVersion": {
+      "const": "bounded-calculus-v1"
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "PROVEN",
+        "DISPROVEN",
+        "BLOCKED",
+        "UNSUPPORTED",
+        "INCONCLUSIVE",
+        "EXECUTION_FAILED"
+      ]
+    },
+    "reasonCode": {
+      "type": "string",
+      "enum": [
+        "EXACT_DERIVATIVE",
+        "EXACT_ANTIDERIVATIVE",
+        "EXACT_FINITE_LIMIT",
+        "EXACT_CONTRADICTION",
+        "UNKNOWN_DOMAIN",
+        "NON_REAL_DOMAIN",
+        "DOMAIN_OBSTRUCTION",
+        "UNSUPPORTED_SUBSET",
+        "COMPLEXITY_LIMIT",
+        "NONFINITE_LIMIT",
+        "NUMERICAL_DIAGNOSTIC",
+        "SYMBOLIC_UNRESOLVED",
+        "TIMEOUT",
+        "RESOURCE_FAILURE",
+        "WORKER_FAILURE",
+        "ADMISSION_LIMIT",
+        "DISABLED",
+        "INVALID_RESPONSE"
+      ]
+    },
+    "restrictionIds": {
+      "type": "array",
+      "uniqueItems": true,
+      "maxItems": 48,
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9_-]{1,96}$"
+      }
+    },
+    "proof": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/proof"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "diagnostic": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/diagnostic"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "executionId",
+    "correlationId",
+    "scope",
+    "method",
+    "methodVersion",
+    "verifierVersion",
+    "outcome",
+    "reasonCode",
+    "restrictionIds",
+    "proof",
+    "diagnostic"
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.example/schemas/calculus-execution-result-v1",
+  "$defs": {
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "identity": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "sourceRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "candidateRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "sourceVersion": {
+          "const": "calculus-task-v1"
+        },
+        "candidateVersion": {
+          "const": "calculus-task-v1"
+        }
+      },
+      "required": [
+        "identity",
+        "sourceRevision",
+        "candidateRevision",
+        "sourceVersion",
+        "candidateVersion"
+      ]
+    },
+    "exact": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "numerator": {
+          "type": "string",
+          "pattern": "^-?(0|[1-9][0-9]*)$",
+          "maxLength": 320
+        },
+        "denominator": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*$",
+          "maxLength": 320
+        }
+      },
+      "required": [
+        "numerator",
+        "denominator"
+      ]
+    },
+    "proof": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "descriptor": {
+          "type": "string",
+          "enum": [
+            "DERIVATIVE_IDENTITY",
+            "ANTIDERIVATIVE_IDENTITY",
+            "RATIONAL_NONIDENTITY",
+            "RATIONAL_FINITE_LIMIT"
+          ]
+        },
+        "scope": {
+          "type": "string",
+          "enum": [
+            "OPEN_INTERVAL",
+            "ANTIDERIVATIVE_REPRESENTATIVE",
+            "PUNCTURED_NEIGHBORHOOD"
+          ]
+        },
+        "leftValue": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/exact"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rightValue": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/exact"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "descriptor",
+        "scope",
+        "leftValue",
+        "rightValue"
+      ]
+    },
+    "diagnostic": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "policy": {
+          "const": "calculus-binary64-v1"
+        },
+        "attempted": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 16
+        },
+        "evaluated": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 16
+        },
+        "agreeing": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 16
+        }
+      },
+      "required": [
+        "policy",
+        "attempted",
+        "evaluated",
+        "agreeing"
+      ]
+    }
+  },
+  "oneOf": [
+    {
+      "properties": {
+        "outcome": {
+          "const": "PROVEN"
+        },
+        "method": {
+          "const": "DERIVATIVE_BACKCHECK"
+        },
+        "reasonCode": {
+          "const": "EXACT_DERIVATIVE"
+        },
+        "proof": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "descriptor": {
+              "const": "DERIVATIVE_IDENTITY"
+            },
+            "scope": {
+              "const": "OPEN_INTERVAL"
+            },
+            "leftValue": {
+              "type": "null"
+            },
+            "rightValue": {
+              "type": "null"
+            }
+          },
+          "required": [
+            "descriptor",
+            "scope",
+            "leftValue",
+            "rightValue"
+          ]
+        },
+        "diagnostic": {
+          "type": "null"
+        }
+      }
+    },
+    {
+      "properties": {
+        "outcome": {
+          "const": "PROVEN"
+        },
+        "method": {
+          "const": "INTEGRAL_DIFFERENTIATION_BACKCHECK"
+        },
+        "reasonCode": {
+          "const": "EXACT_ANTIDERIVATIVE"
+        },
+        "proof": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "descriptor": {
+              "const": "ANTIDERIVATIVE_IDENTITY"
+            },
+            "scope": {
+              "const": "ANTIDERIVATIVE_REPRESENTATIVE"
+            },
+            "leftValue": {
+              "type": "null"
+            },
+            "rightValue": {
+              "type": "null"
+            }
+          },
+          "required": [
+            "descriptor",
+            "scope",
+            "leftValue",
+            "rightValue"
+          ]
+        },
+        "diagnostic": {
+          "type": "null"
+        }
+      }
+    },
+    {
+      "properties": {
+        "outcome": {
+          "const": "PROVEN"
+        },
+        "method": {
+          "const": "FINITE_LIMIT"
+        },
+        "reasonCode": {
+          "const": "EXACT_FINITE_LIMIT"
+        },
+        "proof": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "descriptor": {
+              "const": "RATIONAL_FINITE_LIMIT"
+            },
+            "scope": {
+              "const": "PUNCTURED_NEIGHBORHOOD"
+            },
+            "leftValue": {
+              "$ref": "#/$defs/exact"
+            },
+            "rightValue": {
+              "$ref": "#/$defs/exact"
+            }
+          },
+          "required": [
+            "descriptor",
+            "scope",
+            "leftValue",
+            "rightValue"
+          ]
+        },
+        "diagnostic": {
+          "type": "null"
+        }
+      }
+    },
+    {
+      "properties": {
+        "outcome": {
+          "const": "DISPROVEN"
+        },
+        "method": {
+          "const": "DERIVATIVE_BACKCHECK"
+        },
+        "reasonCode": {
+          "const": "EXACT_CONTRADICTION"
+        },
+        "proof": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "descriptor": {
+              "const": "RATIONAL_NONIDENTITY"
+            },
+            "scope": {
+              "const": "OPEN_INTERVAL"
+            },
+            "leftValue": {
+              "type": "null"
+            },
+            "rightValue": {
+              "type": "null"
+            }
+          },
+          "required": [
+            "descriptor",
+            "scope",
+            "leftValue",
+            "rightValue"
+          ]
+        },
+        "diagnostic": {
+          "type": "null"
+        }
+      }
+    },
+    {
+      "properties": {
+        "outcome": {
+          "const": "DISPROVEN"
+        },
+        "method": {
+          "const": "INTEGRAL_DIFFERENTIATION_BACKCHECK"
+        },
+        "reasonCode": {
+          "const": "EXACT_CONTRADICTION"
+        },
+        "proof": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "descriptor": {
+              "const": "RATIONAL_NONIDENTITY"
+            },
+            "scope": {
+              "const": "ANTIDERIVATIVE_REPRESENTATIVE"
+            },
+            "leftValue": {
+              "type": "null"
+            },
+            "rightValue": {
+              "type": "null"
+            }
+          },
+          "required": [
+            "descriptor",
+            "scope",
+            "leftValue",
+            "rightValue"
+          ]
+        },
+        "diagnostic": {
+          "type": "null"
+        }
+      }
+    },
+    {
+      "properties": {
+        "outcome": {
+          "const": "DISPROVEN"
+        },
+        "method": {
+          "const": "FINITE_LIMIT"
+        },
+        "reasonCode": {
+          "const": "EXACT_CONTRADICTION"
+        },
+        "proof": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "descriptor": {
+              "const": "RATIONAL_FINITE_LIMIT"
+            },
+            "scope": {
+              "const": "PUNCTURED_NEIGHBORHOOD"
+            },
+            "leftValue": {
+              "$ref": "#/$defs/exact"
+            },
+            "rightValue": {
+              "$ref": "#/$defs/exact"
+            }
+          },
+          "required": [
+            "descriptor",
+            "scope",
+            "leftValue",
+            "rightValue"
+          ]
+        },
+        "diagnostic": {
+          "type": "null"
+        }
+      }
+    },
+    {
+      "properties": {
+        "outcome": {
+          "const": "BLOCKED"
+        },
+        "reasonCode": {
+          "type": "string",
+          "enum": [
+            "UNKNOWN_DOMAIN",
+            "NON_REAL_DOMAIN",
+            "DOMAIN_OBSTRUCTION"
+          ]
+        },
+        "proof": {
+          "type": "null"
+        }
+      }
+    },
+    {
+      "properties": {
+        "outcome": {
+          "const": "UNSUPPORTED"
+        },
+        "reasonCode": {
+          "type": "string",
+          "enum": [
+            "UNSUPPORTED_SUBSET",
+            "COMPLEXITY_LIMIT"
+          ]
+        },
+        "proof": {
+          "type": "null"
+        }
+      }
+    },
+    {
+      "properties": {
+        "outcome": {
+          "const": "INCONCLUSIVE"
+        },
+        "reasonCode": {
+          "type": "string",
+          "enum": [
+            "NONFINITE_LIMIT",
+            "NUMERICAL_DIAGNOSTIC",
+            "SYMBOLIC_UNRESOLVED"
+          ]
+        },
+        "proof": {
+          "type": "null"
+        }
+      }
+    },
+    {
+      "properties": {
+        "outcome": {
+          "const": "EXECUTION_FAILED"
+        },
+        "reasonCode": {
+          "type": "string",
+          "enum": [
+            "TIMEOUT",
+            "RESOURCE_FAILURE",
+            "WORKER_FAILURE",
+            "ADMISSION_LIMIT",
+            "DISABLED",
+            "INVALID_RESPONSE"
+          ]
+        },
+        "proof": {
+          "type": "null"
+        }
+      }
+    }
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "reasonCode": {
+            "const": "NUMERICAL_DIAGNOSTIC"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "method": {
+            "const": "FINITE_LIMIT"
+          },
+          "diagnostic": {
+            "$ref": "#/$defs/diagnostic"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "diagnostic": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,497 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "calculus-execution-v1"
+    },
+    "executionId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "correlationId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,64}$"
+    },
+    "scope": {
+      "$ref": "#/$defs/scope"
+    },
+    "method": {
+      "type": "string",
+      "enum": [
+        "DERIVATIVE_BACKCHECK",
+        "INTEGRAL_DIFFERENTIATION_BACKCHECK",
+        "FINITE_LIMIT"
+      ]
+    },
+    "variable": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "symbol": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_]{0,15}$"
+        },
+        "domain": {
+          "type": "string",
+          "enum": [
+            "REAL",
+            "INTEGER",
+            "UNKNOWN"
+          ]
+        }
+      },
+      "required": [
+        "symbol",
+        "domain"
+      ]
+    },
+    "interval": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "OPEN_INTERVAL"
+        },
+        "lower": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/exact"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "upper": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/exact"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "lower",
+        "upper"
+      ]
+    },
+    "original": {
+      "$ref": "#/$defs/expressionNode"
+    },
+    "candidate": {
+      "$ref": "#/$defs/expressionNode"
+    },
+    "restrictions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,96}$"
+          },
+          "relation": {
+            "type": "string",
+            "enum": [
+              "EQUALS",
+              "NOT_EQUALS",
+              "LESS_THAN",
+              "LESS_THAN_OR_EQUAL",
+              "GREATER_THAN",
+              "GREATER_THAN_OR_EQUAL"
+            ]
+          },
+          "left": {
+            "$ref": "#/$defs/expressionNode"
+          },
+          "right": {
+            "$ref": "#/$defs/expressionNode"
+          }
+        },
+        "required": [
+          "id",
+          "relation",
+          "left",
+          "right"
+        ]
+      },
+      "maxItems": 48
+    },
+    "approach": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "target": {
+              "$ref": "#/$defs/exact"
+            },
+            "direction": {
+              "type": "string",
+              "enum": [
+                "LEFT",
+                "RIGHT",
+                "TWO_SIDED"
+              ]
+            }
+          },
+          "required": [
+            "target",
+            "direction"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "integralScope": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "ANTIDERIVATIVE_REPRESENTATIVE"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "executionId",
+    "correlationId",
+    "scope",
+    "method",
+    "variable",
+    "interval",
+    "original",
+    "candidate",
+    "restrictions",
+    "approach",
+    "integralScope"
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.example/schemas/calculus-execution-v1",
+  "$defs": {
+    "expressionNode": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/numberNode"
+        },
+        {
+          "$ref": "#/$defs/variableNode"
+        },
+        {
+          "$ref": "#/$defs/unaryNode"
+        },
+        {
+          "$ref": "#/$defs/binaryNode"
+        },
+        {
+          "$ref": "#/$defs/functionNode"
+        }
+      ]
+    },
+    "numberNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "numericType",
+        "value"
+      ],
+      "properties": {
+        "kind": {
+          "const": "NUMBER"
+        },
+        "numericType": {
+          "type": "string",
+          "enum": [
+            "INTEGER",
+            "DECIMAL",
+            "RATIONAL"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?$",
+          "maxLength": 80
+        }
+      }
+    },
+    "variableNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "symbol"
+      ],
+      "properties": {
+        "kind": {
+          "const": "VARIABLE"
+        },
+        "symbol": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_]{0,15}$"
+        }
+      }
+    },
+    "unaryNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "operator",
+        "operand"
+      ],
+      "properties": {
+        "kind": {
+          "const": "UNARY"
+        },
+        "operator": {
+          "type": "string",
+          "enum": [
+            "NEGATE"
+          ]
+        },
+        "operand": {
+          "$ref": "#/$defs/expressionNode"
+        }
+      }
+    },
+    "binaryNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "operator",
+        "left",
+        "right"
+      ],
+      "properties": {
+        "kind": {
+          "const": "BINARY"
+        },
+        "operator": {
+          "type": "string",
+          "enum": [
+            "ADD",
+            "SUBTRACT",
+            "MULTIPLY",
+            "DIVIDE",
+            "POWER"
+          ]
+        },
+        "left": {
+          "$ref": "#/$defs/expressionNode"
+        },
+        "right": {
+          "$ref": "#/$defs/expressionNode"
+        }
+      }
+    },
+    "functionNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "function",
+        "args"
+      ],
+      "properties": {
+        "kind": {
+          "const": "FUNCTION"
+        },
+        "function": {
+          "type": "string",
+          "enum": [
+            "SQRT",
+            "SIN",
+            "COS",
+            "TAN",
+            "LOG",
+            "EXP"
+          ]
+        },
+        "args": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "items": {
+            "$ref": "#/$defs/expressionNode"
+          }
+        }
+      }
+    },
+    "statement": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "EXPRESSION"
+            },
+            "expression": {
+              "$ref": "#/$defs/expressionNode"
+            },
+            "left": {
+              "type": "null"
+            },
+            "right": {
+              "type": "null"
+            },
+            "relation": {
+              "type": "null"
+            }
+          },
+          "required": [
+            "kind",
+            "expression"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "RELATION"
+            },
+            "relation": {
+              "const": "EQUALS"
+            },
+            "left": {
+              "$ref": "#/$defs/expressionNode"
+            },
+            "right": {
+              "$ref": "#/$defs/expressionNode"
+            },
+            "expression": {
+              "type": "null"
+            }
+          },
+          "required": [
+            "kind",
+            "relation",
+            "left",
+            "right"
+          ]
+        }
+      ]
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "identity": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "sourceRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "candidateRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "sourceVersion": {
+          "const": "calculus-task-v1"
+        },
+        "candidateVersion": {
+          "const": "calculus-task-v1"
+        }
+      },
+      "required": [
+        "identity",
+        "sourceRevision",
+        "candidateRevision",
+        "sourceVersion",
+        "candidateVersion"
+      ]
+    },
+    "exact": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "numerator": {
+          "type": "string",
+          "pattern": "^-?(0|[1-9][0-9]*)$",
+          "maxLength": 320
+        },
+        "denominator": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*$",
+          "maxLength": 320
+        }
+      },
+      "required": [
+        "numerator",
+        "denominator"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "method": {
+            "const": "FINITE_LIMIT"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "approach": {
+            "not": {
+              "type": "null"
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "approach": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "method": {
+            "const": "INTEGRAL_DIFFERENTIATION_BACKCHECK"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "integralScope": {
+            "not": {
+              "type": "null"
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "integralScope": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -7,6 +7,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 
 REQUIRED_CONTRACTS = {
+    "packages/schemas/calculus-execution.schema.json": [
+        "calculus-execution-v1", "calculus-task-v1", "approach", "integralScope",
+    ],
+    "packages/schemas/calculus-execution-result.schema.json": [
+        "calculus-execution-result-v1", "bounded-calculus-v1", "NUMERICAL_DIAGNOSTIC", "oneOf",
+    ],
     "packages/schemas/verification-execution.schema.json": [
         "verification-execution-v1", "original", "candidate", "restrictions",
     ],

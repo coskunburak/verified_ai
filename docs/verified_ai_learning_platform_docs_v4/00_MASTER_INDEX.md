@@ -358,3 +358,8 @@ Any V1 feature implementation should map to a capability ID and at least one req
 
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.8_IMPLEMENTATION_MAP.md` — inspected baseline, bounded method subsets and execution/persistence ownership.
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.8_EXECUTION_REPORT.md` — authored implementation inventory, owner-only gates, operational limits and rollout/rollback.
+
+## Sprint 5.9 internal calculus handoff
+
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.9_IMPLEMENTATION_MAP.md` — baseline, internal scope, proof semantics, resource limits and canonical integration blocker.
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.9_EXECUTION_REPORT.md` — exact file inventory, authored tests, owner-only gates A–H and partial completion verdict.

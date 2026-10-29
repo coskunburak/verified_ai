@@ -102,3 +102,17 @@ Only `verification.infrastructure.http` implements network transport; only its p
 Neither adapter can access problem/solving repositories or invoke AI providers. Domain/application code cannot depend on HTTP/JDBC adapters.
 Existing owner-scoped canonical application interfaces remain the sole source authorities.
 No public endpoint, iOS contract, provider route, paid inference or aggregate verification policy is introduced.
+
+## Sprint 5.9 isolated calculus contract
+
+Verification owns `CalculusExecution` and `CalculusWireCodec`. The codec is not a Spring
+component, production executor or canonical-source reader. It validates method, scope,
+versions, restriction references, exact witnesses and non-proof diagnostics. The owner
+contract harness connects its bytes to the authenticated Python calculus HTTP path.
+No calculus source assembly, network execution in an owner transaction, planner activation
+or persistence adapter is added. Existing owned reads and immutable publication remain
+unchanged. Source-backed calculus integration remains BLOCKED.
+
+Verifier HTTP clients explicitly select HTTP/1.1, matching Uvicorn's transport. They do
+not request h2c upgrades that can cause POST bodies to be skipped. Authentication,
+body limits, deadlines, no-redirect/no-retry policy and transaction boundaries remain.
