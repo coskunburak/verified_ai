@@ -4,6 +4,8 @@ from collections import Counter
 from threading import Lock
 from typing import get_args
 
+from app.api.schemas.calculus import METHODS as CALCULUS_METHODS
+from app.api.schemas.calculus import Reason as CalculusReason
 from app.api.schemas.execution import METHODS, Outcome, Reason
 
 VERIFIER_METRIC_NAMES = {
@@ -20,7 +22,8 @@ _execution_lock = Lock()
 
 
 def record_execution(method, outcome, reason, elapsed_ms):
-    if method not in METHODS or outcome not in get_args(Outcome) or reason not in get_args(Reason):
+    reasons = get_args(CalculusReason) if method in CALCULUS_METHODS else get_args(Reason)
+    if method not in (*METHODS, *CALCULUS_METHODS) or outcome not in get_args(Outcome) or reason not in reasons:
         raise ValueError("Unbounded verifier metric label")
     with _execution_lock:
         _execution_counts[(method, outcome, reason)] += 1

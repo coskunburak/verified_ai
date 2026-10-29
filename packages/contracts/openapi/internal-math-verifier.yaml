@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Verified AI Internal Math Verifier API
-  version: 0.1.0
+  version: 0.2.0
 paths:
   /health:
     get:
@@ -96,6 +96,38 @@ paths:
           description: Request byte limit exceeded
         "422":
           description: Invalid typed execution contract or correlation mismatch
+
+  /internal/v1/verify/calculus:
+    post:
+      summary: Execute an isolated typed calculus check for owner acceptance
+      description: Disabled by default and prohibited in production pending source-backed canonical calculus integration. Scope identifiers correlate evidence but do not authorize source access. No persistence or overall verification status. Shares the existing worker admission and byte budgets.
+      security:
+        - internalToken: []
+      parameters:
+        - in: header
+          name: X-Request-Id
+          schema:
+            type: string
+            maxLength: 64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../../schemas/calculus-execution.schema.json"
+      responses:
+        "200":
+          description: Method-specific exact evidence or explicitly non-proof outcome
+          content:
+            application/json:
+              schema:
+                $ref: "../../schemas/calculus-execution-result.schema.json"
+        "401":
+          description: Internal authentication required
+        "413":
+          description: Request byte limit exceeded
+        "422":
+          description: Invalid typed calculus contract or correlation mismatch
 
 components:
   securitySchemes:

@@ -141,3 +141,21 @@ The legacy string equivalence route is local/test-only and carries no product pr
 See `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.8_EXECUTION_REPORT.md` for owner commands and operational limits.
 
 Execution accepts only canonical variables with an explicit VARIABLE role; parameter/unknown roles are blocked before constructing the wire payload.
+
+## Sprint 5.9 internal calculus checkpoint
+
+The separately versioned `calculus-execution-v1` and `calculus-execution-result-v1`
+contracts implement first derivatives, antiderivative representative backchecks and
+finite rational limits. Exact structural differentiation plus polynomial-ring coefficient
+comparison proves scoped identities; rational nonidentity on a nonempty open interval
+can disprove them. Function atoms provide sufficient identity certificates only, never
+nonidentity proofs. Domain obligations are checked on original ASTs before cancellation.
+Limits use polynomial orders of vanishing and source restrictions in an explicitly
+sided punctured neighborhood. Poles yield INCONCLUSIVE/NONFINITE_LIMIT; no infinity
+or nonexistence claim is certified. Numerical limit diagnostics are always INCONCLUSIVE.
+
+The internal task representation is not durable canonical calculus. Production planner
+capabilities remain unchanged and reject calculus activation. Python calculus defaults
+off and enabling it outside local/test is rejected. Source-backed approach metadata,
+canonical/candidate versions and an authorized publication path remain BLOCKED.
+OWNER_VALIDATION_PENDING; see `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.9_EXECUTION_REPORT.md`.

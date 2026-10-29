@@ -108,3 +108,12 @@ Verification runs have the same owner/source retention lifecycle as their canoni
 Account export includes historical method evidence and provenance through `VerificationLifecycleContributor`.
 Deletion cascades from owned canonical solution/job/session/account records; direct standalone evidence deletion is prohibited.
 No training eligibility is granted. Rollback retains additive V021 and history; disable execution rather than dropping evidence tables.
+
+## Sprint 5.9 calculus checkpoint
+
+Internal calculus requests/results are ephemeral; no calculus evidence is written into
+V021 or a new store. No migration, retention exception, account export addition or deletion
+path is introduced. Existing verification lifecycle regression tests remain required.
+A future durable calculus publication version must bind owned canonical source/candidate
+revisions and participate in export/deletion before activation. Calculus diagnostics and
+proofs are not training eligible by default.

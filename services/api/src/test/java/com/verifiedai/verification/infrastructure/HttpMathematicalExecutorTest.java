@@ -14,12 +14,18 @@ import static org.assertj.core.api.Assertions.*;
 
 class HttpMathematicalExecutorTest {
     HttpServer server;
+    final java.util.concurrent.atomic.AtomicReference<String> requestedProtocol = new java.util.concurrent.atomic.AtomicReference<>();
+    final java.util.concurrent.atomic.AtomicReference<String> requestedUpgrade = new java.util.concurrent.atomic.AtomicReference<>();
+    final java.util.concurrent.atomic.AtomicReference<String> requestedHttp2Settings = new java.util.concurrent.atomic.AtomicReference<>();
     final Request request = new Request(UUID.randomUUID(), "http-contract", VerificationMethod.ARITHMETIC_EVALUATION,
         new MathStatement.Expression(number("5")), new MathStatement.Expression(number("5")), Map.of(), List.of());
     @AfterEach void cleanup() { if (server != null) server.stop(0); }
     HttpMathematicalExecutor gateway(int status, String body) throws Exception {
         server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         server.createContext("/internal/v1/verify/execute", exchange -> {
+            requestedProtocol.set(exchange.getProtocol());
+            requestedUpgrade.set(exchange.getRequestHeaders().getFirst("Upgrade"));
+            requestedHttp2Settings.set(exchange.getRequestHeaders().getFirst("HTTP2-Settings"));
             assertThat(exchange.getRequestHeaders().getFirst("X-Internal-Token")).isEqualTo("not_a_secret");
             assertThat(exchange.getRequestHeaders().getFirst("X-Request-Id")).isEqualTo(request.correlationId());
             exchange.getRequestBody().readAllBytes();
@@ -56,6 +62,9 @@ class HttpMathematicalExecutorTest {
                       "rightValue":{"numerator":"5","denominator":"1"},"distinctRootCount":null}}
             """.formatted(request.executionId());
         assertThat(gateway(200, body).execute(request).outcome()).isEqualTo(Outcome.PROVEN);
+        assertThat(requestedProtocol.get()).isEqualTo("HTTP/1.1");
+        assertThat(requestedUpgrade.get()).isNull();
+        assertThat(requestedHttp2Settings.get()).isNull();
     }
     @Test @Timeout(10) void stalledResponseBodyIsBoundedByTotalDeadline() throws Exception {
         server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);

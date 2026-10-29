@@ -123,3 +123,25 @@ Operational failures remain EXECUTION_FAILED. Invalid source ownership/version, 
 V021 composite FKs, immutable triggers and idempotency protect owner binding, history and duplicate publication.
 Legacy string equivalence is disabled outside local/test environments. Input validation is structural and unevaluated; it is never answer authority.
 Logs/metric labels use bounded identifiers/enums; invalid request content and exception reprs are not echoed as evidence.
+
+## Sprint 5.9 calculus controls
+
+The authenticated internal calculus route accepts typed ASTs and rejects canonical v1
+coercion. It shares the existing two-slot spawn pool, request/response limits and CPU,
+address-space and elapsed budgets. Domain restrictions precede cancellation; strict
+method/proof/outcome validation prevents numerical diagnostics from becoming proof.
+Function identities are certified only by bounded structural rules and exact formal
+coefficient equality. Rational interval domains use bounded-degree exact Sturm root
+counting. These symbolic operations remain inside resource-limited children.
+
+Production activation is rejected until source-backed canonical calculus exists. Scope
+IDs are correlation, not authorization. No public API, new student store, AI call or
+provider secret is introduced. New metrics use finite method/outcome/reason enums only.
+Owner Linux tests cover crash, timeout, memory/CPU failure, admission and malformed
+responses. Owner Linux evidence on 2026-10-29: 186 tests passed, including calculus
+CPU/memory/process coverage. Java HTTP required a UUID serialization repair; remaining
+backend and release gates are OWNER_VALIDATION_PENDING.
+
+Verifier clients pin HTTP/1.1 to avoid unsupported h2c body parsing; no authentication,
+request bounds or mathematical validation is relaxed. Owner contract diagnostics classify
+non-JSON/malformed responses without printing raw response bodies or arbitrary error codes.

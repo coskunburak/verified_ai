@@ -38,3 +38,43 @@ Capacity and latency require owner measurement before rollout. Container OOM can
 
 Rollback disables both Java execution activation and this route's feature flag, retaining V021 immutable history.
 New attempts after a failed published run use a fresh request key; same-key retries preserve the original outcome.
+
+## Sprint 5.9 internal calculus checkpoint
+
+`/internal/v1/verify/calculus` is separately versioned, token authenticated and disabled
+by default. `MATH_VERIFIER_CALCULUS_ENABLED=true` is accepted only with APP_ENV local/test;
+production activation fails until source-backed canonical calculus integration exists.
+There is no new production Java executor bean or persistence path. Existing v1 remains unchanged.
+
+Supported proof scope: one real variable on an explicit nonempty open connected interval;
+bounded rational expressions; SIN/COS/EXP chain rules; LOG/SQRT with independently
+established strict argument positivity. Formal function atoms support sufficient coefficient
+identity proofs, not general transcendental equivalence. Antiderivatives prove representatives
+only. Finite rational-polynomial limits use explicit direction and orders of vanishing,
+including removable holes. Poles remain non-proof NONFINITE_LIMIT outcomes.
+
+Limits outside the exact subset may return a `calculus-binary64-v1` diagnostic: eight
+points per required side, offsets of min(1, half distance to interval boundary) / 2^k for
+k=2..9, binary64, absolute/relative tolerance 1e-8. Every original domain obligation and
+restriction is checked at each admitted point; unsupported obligations skip that point.
+Nonfinite values, absolute values above 1e100 or nonzero below 1e-100, detected underflow,
+near-zero denominators and float-coincident approach points are rejected. Counts report
+attempted/evaluated/agreeing samples only; agreement and disagreement never prove anything.
+
+Same worker/AST budgets as v1; at most 16 function atoms and degree 12/128-term formal
+polynomials. Exact polynomial Sturm root counting is supervised. The inspected local
+SymPy metadata is 1.14.0; the existing >=1.13,<2 dependency is unchanged. Owner tests must
+establish compatibility for the installed version; no dependencies or validation were run
+by the implementation agent. Zero additional paid inference and no cache or training.
+
+Owner commands and scope blockers are in
+`docs/verified_ai_learning_platform_docs_v4/sprints/phase05_ai_solving_and_verification_core/SPRINT_5.9_EXECUTION_REPORT.md`
+from the repository root. Local owner A–H gates passed: Linux verifier 186 passing,
+backend 566 passing with two paid-model skips, BUILD SUCCESS, lint/docs/contracts/secrets
+and immutability. Final evidence-documentation refresh awaits docs-check.
+PARTIAL / source integration BLOCKED / ROLLOUT_DISABLED / HOSTED_CI_NOT_RUN.
+
+Java verifier clients explicitly select HTTP/1.1. The Uvicorn service does not support
+cleartext HTTP/2 (h2c) upgrades; upgrade requests can skip POST body parsing with httptools.
+The owner cross-runtime harness uses the same HTTP/1.1 policy and classifies non-JSON
+transport failures without logging request/response mathematical payloads.

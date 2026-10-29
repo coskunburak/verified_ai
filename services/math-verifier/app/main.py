@@ -56,7 +56,7 @@ async def correlation_middleware(
         extra={
             "correlation_id": correlation_id,
             "method": request.method,
-            "path": request.url.path if request.url.path in {"/health", "/metrics", "/internal/v1/verify/execute", "/internal/v1/verify/validate-input", "/internal/v1/verify/equivalence"} else "other",
+            "path": request.url.path if request.url.path in {"/health", "/metrics", "/internal/v1/verify/execute", "/internal/v1/verify/calculus", "/internal/v1/verify/validate-input", "/internal/v1/verify/equivalence"} else "other",
             "status_code": response.status_code,
             "duration_ms": duration_ms,
         },

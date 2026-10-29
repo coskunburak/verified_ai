@@ -32,7 +32,9 @@ public class HttpMathematicalExecutor implements MathematicalExecutor {
             && (token == null || token.length() < 32 || token.equals("local_math_verifier_token_change_me")))
             throw new IllegalArgumentException("Production internal verifier secret required");
         this.endpoint = uri.resolve("/internal/v1/verify/execute"); this.token = token; this.enabled = enabled;
-        client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(1)).followRedirects(HttpClient.Redirect.NEVER).build();
+        // Uvicorn serves HTTP/1.1; avoid h2c upgrade headers that can interrupt POST body parsing.
+        client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1)
+            .connectTimeout(Duration.ofSeconds(1)).followRedirects(HttpClient.Redirect.NEVER).build();
     }
     public Result execute(Request request) {
         if (!enabled) return Result.failed(request, Reason.DISABLED);

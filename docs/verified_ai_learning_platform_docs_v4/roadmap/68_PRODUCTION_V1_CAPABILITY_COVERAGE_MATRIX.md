@@ -106,3 +106,14 @@ Status remains Partial. Typed arithmetic, restricted rational-polynomial equival
 and restricted singleton completeness have authored implementations and tests. Immutable evidence and owner-scoped publication are additive.
 All local owner gates A–H passed: export/integration; architecture/regressions 141/141; full backend 551 passing with 2 gated Qwen skips; Linux verifier 92/92; lint/docs/contracts/secrets and immutability. Lint cleanup and verifier/wire reruns passed. The final evidence-only documentation refresh awaits docs-check. Hosted CI remains unrun. Capabilities remain disabled pending final-commit CI and explicit rollout approval.
 Calculus, composite verification, arbitration and overall VERIFIED policy are deferred; general completeness is unsupported.
+
+## Sprint 5.9 CAP-VERIFY-001 calculus checkpoint
+
+Status: PARTIAL / OWNER-TESTED LOCAL A–H PASS / ROLLOUT_DISABLED.
+Linux verifier 186 passed; backend 566 passed with two paid-model skips and BUILD SUCCESS;
+lint/docs/contracts/secrets and immutability passed. Final evidence refresh awaits docs-check;
+hosted CI is unrun.
+An isolated versioned derivative/integral-representative/finite-limit executor is source
+implemented, with non-proof numerical diagnostics. Production source representation,
+planning and calculus publication remain BLOCKED; existing v1 capability versions are
+unchanged. This increment does not close CAP-VERIFY-001 or imply overall verification.

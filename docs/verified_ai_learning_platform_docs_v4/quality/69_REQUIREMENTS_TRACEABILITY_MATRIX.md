@@ -86,3 +86,21 @@ Typed deterministic method execution, supervised resource bounds, Java owner/sou
 are implemented for the explicitly documented rational/polynomial subsets. Mathematical/security/contract/application/PostgreSQL tests are authored.
 All local owner gates A–H passed: E export/integration; F 141/141; G backend 551 passing with 2 gated Qwen skips and Linux verifier 92/92; H lint/docs/contracts/secrets, 5 immutability units and unchanged existing prompt/schema versions. Lint cleanup and verifier/wire reruns passed. The final evidence-only documentation refresh awaits docs-check. Hosted CI, rollout approval and overall VERIFIED policy remain unclaimed.
 See `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.8_EXECUTION_REPORT.md`.
+
+## Sprint 5.9 contribution to REQ-MATH-002 and REQ-VERIFY-001
+
+`CalculusExecutionTest`, `CalculusWireCodecTest`, `CalculusExecutionContractTest` and
+Python `test_calculus.py`, `test_calculus_contract.py`, `test_calculus_security.py` cover
+scoped calculus semantics, proof/non-proof separation, cross-runtime HTTP, version binding
+and supervised resource failures. Owner Linux evidence on 2026-10-29: 186 tests passed,
+including calculus/math/security/contracts. The 13:24–13:25 backend checkpoint completed
+Maven verify with BUILD SUCCESS: 566 passed, two intentional paid-model skips, zero
+failures/errors. Both actual calculus HTTP tests, all five existing HTTP adapter tests and
+full source/publication/privacy/architecture regressions passed. Prior UUID and h2c
+transport failures are resolved in this owner checkpoint.
+
+Owner Gate H at 13:29 exited 0: lint, docs (296 files), contracts, secrets, five
+immutability units and unchanged released prompt/schema versions all passed. All local
+A–H gates have passing owner evidence for the isolated scope; only this final evidence
+refresh awaits docs-check. Production source-backed calculus and capability approval
+remain BLOCKED / ROLLOUT_DISABLED / HOSTED_CI_NOT_RUN. Sprint 5.9 is PARTIAL.
