@@ -5,9 +5,19 @@ on:
     paths:
       - "services/api/src/main/java/com/verifiedai/problem/**"
       - "services/api/src/main/java/com/verifiedai/ai/**"
+      - "services/api/src/main/java/com/verifiedai/solving/**"
+      - "services/api/src/main/java/com/verifiedai/verification/**"
+      - "services/api/src/test/java/com/verifiedai/ai/**"
+      - "services/api/src/test/java/com/verifiedai/solving/**"
+      - "services/api/src/test/java/com/verifiedai/verification/**"
+      - "services/math-verifier/**"
+      - "services/api/pom.xml"
       - "services/api/src/main/resources/prompts/**"
       - "services/api/src/main/resources/application*.yml"
       - "packages/schemas/**"
+      - "packages/contracts/**"
+      - "packages/test-fixtures/verification/**"
+      - "scripts/quality/sprint_5_12_owner_acceptance.sh"
       - "packages/curriculum/**"
       - "evaluations/**"
       - "scripts/evaluation/**"
@@ -18,9 +28,19 @@ on:
     paths:
       - "services/api/src/main/java/com/verifiedai/problem/**"
       - "services/api/src/main/java/com/verifiedai/ai/**"
+      - "services/api/src/main/java/com/verifiedai/solving/**"
+      - "services/api/src/main/java/com/verifiedai/verification/**"
+      - "services/api/src/test/java/com/verifiedai/ai/**"
+      - "services/api/src/test/java/com/verifiedai/solving/**"
+      - "services/api/src/test/java/com/verifiedai/verification/**"
+      - "services/math-verifier/**"
+      - "services/api/pom.xml"
       - "services/api/src/main/resources/prompts/**"
       - "services/api/src/main/resources/application*.yml"
       - "packages/schemas/**"
+      - "packages/contracts/**"
+      - "packages/test-fixtures/verification/**"
+      - "scripts/quality/sprint_5_12_owner_acceptance.sh"
       - "packages/curriculum/**"
       - "evaluations/**"
       - "scripts/evaluation/**"
@@ -35,9 +55,13 @@ on:
   schedule:
     - cron: "17 4 * * 1"
 
+permissions:
+  contents: read
+
 jobs:
   deterministic-ingestion-regression:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -61,8 +85,9 @@ jobs:
           retention-days: 14
 
   connected-ingestion-evaluation:
-    if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
+    if: (github.event_name == 'workflow_dispatch' || github.event_name == 'schedule') && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     environment: ai-evaluation
     env:
       AI_EVAL_MODE: ${{ github.event.inputs.mode || 'connected' }}
@@ -87,3 +112,30 @@ jobs:
             .generated/evaluations/connected/ingestion-evaluation-summary.md
             .generated/evaluations/connected/ingestion-release-comparison.json
           retention-days: 14
+
+  deterministic-solver-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dataset schema validator
+        run: python3 -m pip install jsonschema==4.23.0
+      - name: Test solver evaluation and release isolation
+        run: python3 -m unittest evaluations/runners/test_solver_evaluation.py
+      - name: Run Phase 5 deterministic gate
+        env:
+          SOLVER_EVAL_OUTPUT: .generated/evaluations/solver-ci
+        run: make VERIFIER_PYTHON=python3 eval-solver
+      - name: Upload synthetic aggregate evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: solver-evaluation-local
+          path: |
+            .generated/evaluations/solver-ci/solver-evaluation-report.json
+            .generated/evaluations/solver-ci/solver-evaluation-summary.md
+          retention-days: 14
+          if-no-files-found: error

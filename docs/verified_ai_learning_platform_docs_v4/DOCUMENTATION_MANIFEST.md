@@ -1,11 +1,11 @@
 # Documentation Manifest
 
-Total Markdown files: **302**
+Total Markdown files: **304**
 
 ## Files
 
-- `00_MASTER_INDEX.md` — 392 lines — 29802 bytes
-- `DOCUMENTATION_MANIFEST.md` — 308 lines — 37623 bytes
+- `00_MASTER_INDEX.md` — 397 lines — 30253 bytes
+- `DOCUMENTATION_MANIFEST.md` — 310 lines — 37855 bytes
 - `DOCUMENTATION_V3_CHANGELOG.md` — 48 lines — 2266 bytes
 - `DOCUMENTATION_V4_CHANGELOG.md` — 29 lines — 1984 bytes
 - `DOCUMENTATION_V5_CHANGELOG.md` — 28 lines — 1154 bytes
@@ -21,13 +21,13 @@ Total Markdown files: **302**
 - `ai/25_AI_ORCHESTRATION_AND_MODEL_ROUTING.md` — 248 lines — 8204 bytes
 - `ai/26_PROMPT_SCHEMA_AND_VERSIONING.md` — 191 lines — 11618 bytes
 - `ai/27_VERIFICATION_ENGINE.md` — 242 lines — 14720 bytes
-- `ai/28_AI_EVALUATION_AND_GOLDEN_DATASET.md` — 121 lines — 5029 bytes
+- `ai/28_AI_EVALUATION_AND_GOLDEN_DATASET.md` — 146 lines — 6781 bytes
 - `ai/29_AI_COST_LATENCY_AND_RELIABILITY.md` — 106 lines — 5060 bytes
 - `ai/57_API_FIRST_HYBRID_AI_STRATEGY_AND_MODEL_EVOLUTION.md` — 344 lines — 9604 bytes
 - `ai/58_PROPRIETARY_DATASET_GOVERNANCE_AND_TRAINING_ELIGIBILITY.md` — 167 lines — 5628 bytes
 - `ai/59_SMALL_MODEL_FINE_TUNING_AND_SELF_HOSTING_READINESS.md` — 157 lines — 3862 bytes
-- `ai/60_AI_UNIT_ECONOMICS_AND_INFERENCE_COST_ENGINEERING.md` — 180 lines — 4963 bytes
-- `ai/61_MODEL_REGISTRY_RELEASE_AND_ROLLBACK_GOVERNANCE.md` — 79 lines — 1860 bytes
+- `ai/60_AI_UNIT_ECONOMICS_AND_INFERENCE_COST_ENGINEERING.md` — 203 lines — 6507 bytes
+- `ai/61_MODEL_REGISTRY_RELEASE_AND_ROLLBACK_GOVERNANCE.md` — 122 lines — 4926 bytes
 - `ai/72_OPEN_WEIGHT_MATH_MODEL_RESEARCH.md` — 65 lines — 6289 bytes
 - `ai/73_MATH_MODEL_EVALUATION_PLAN.md` — 88 lines — 6060 bytes
 - `ai/74_MODEL_ROUTING_COST_AND_TCO_DECISION.md` — 91 lines — 6261 bytes
@@ -83,7 +83,7 @@ Total Markdown files: **302**
 - `quality/54_REPOSITORY_ROOT_HIERARCHY_AND_NAMING_CONVENTIONS.md` — 78 lines — 2260 bytes
 - `quality/55_DEVELOPMENT_WORKFLOW_BRANCHING_AND_REVIEW.md` — 67 lines — 1546 bytes
 - `quality/56_COMPLETE_PRODUCTION_REPOSITORY_FILE_HIERARCHY.md` — 3149 lines — 105093 bytes
-- `quality/64_AI_MODEL_REPLACEMENT_DECISION_GATES.md` — 65 lines — 1775 bytes
+- `quality/64_AI_MODEL_REPLACEMENT_DECISION_GATES.md` — 88 lines — 3371 bytes
 - `quality/65_CANONICAL_DOCUMENTATION_TREE_AND_SOURCE_OF_TRUTH_MAP.md` — 340 lines — 23440 bytes
 - `quality/66_FILE_PLACEMENT_OWNERSHIP_AND_DEPENDENCY_MATRIX.md` — 52 lines — 5068 bytes
 - `quality/69_REQUIREMENTS_TRACEABILITY_MATRIX.md` — 149 lines — 33630 bytes
@@ -179,7 +179,9 @@ Total Markdown files: **302**
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.11_ARBITRATION_UNCERTAINTY_RETRY_AND_HUMAN_HONEST_VERIFICATION_POLICY.md` — 382 lines — 17884 bytes
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.11_EXECUTION_REPORT.md` — 521 lines — 37142 bytes
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.11_IMPLEMENTATION_MAP.md` — 203 lines — 14390 bytes
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.12_EXECUTION_REPORT.md` — 221 lines — 13628 bytes
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.12_GOLDEN_DATASET_AI_EVALUATION_COST_REGRESSION_AND_MODEL_RELEASE_GATE.md` — 387 lines — 18248 bytes
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.12_IMPLEMENTATION_MAP.md` — 103 lines — 6618 bytes
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.1_IMPLEMENTATION_MAP.md` — 1522 lines — 49197 bytes
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.1_PROVIDER_NEUTRAL_AI_GATEWAY_AND_CAPABILITY_MODEL.md` — 382 lines — 17861 bytes
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.2_EXECUTION_REPORT.md` — 384 lines — 21379 bytes

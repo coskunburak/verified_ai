@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "$id": "https://verifiedai.local/schemas/solver-production-evidence-v1",
+  "title": "Reviewed external solver production evidence v1",
+  "description": "Approval attestation over independently reviewed external evidence. This is not a local fixture report or an automated evidence importer. Pin its bytes in the reviewed authorization. Real inference, labels, protected holdout and governance review remain external prerequisites.",
+  "required": [
+    "schemaVersion",
+    "scope",
+    "outcome",
+    "datasetSha256",
+    "workloadSha256",
+    "caseSchemaVersion",
+    "evaluationCodeCommit",
+    "pricingVersion",
+    "currency",
+    "artifacts",
+    "evidence",
+    "criticalFailures",
+    "approvalReference",
+    "approvedBy"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "solver-production-evidence-v1"
+    },
+    "scope": {
+      "type": "string",
+      "const": "REAL_PROVIDER_AND_PROTECTED_HOLDOUT"
+    },
+    "outcome": {
+      "type": "string",
+      "const": "PASS"
+    },
+    "datasetSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "workloadSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "caseSchemaVersion": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{0,95}$"
+    },
+    "evaluationCodeCommit": {
+      "type": "string",
+      "pattern": "^(?:[a-f0-9]{40}|[a-f0-9]{64})$"
+    },
+    "pricingVersion": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{0,95}$"
+    },
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "promptSha256",
+        "schemaSha256",
+        "route"
+      ],
+      "properties": {
+        "promptSha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "schemaSha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "route": {
+          "type": "object",
+          "description": "The complete Jackson AiRoutePlan record. Runtime compares every field with the configured route; all models require name@sha256:<digest>. Schema validation alone does not establish compatibility."
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "independentLabels",
+        "representativeBenchmark",
+        "approvedThresholds",
+        "sufficientObservations",
+        "realProvider",
+        "protectedHoldout",
+        "cost",
+        "latency"
+      ],
+      "properties": {
+        "independentLabels": {
+          "type": "boolean",
+          "const": true
+        },
+        "representativeBenchmark": {
+          "type": "boolean",
+          "const": true
+        },
+        "approvedThresholds": {
+          "type": "boolean",
+          "const": true
+        },
+        "sufficientObservations": {
+          "type": "boolean",
+          "const": true
+        },
+        "realProvider": {
+          "type": "boolean",
+          "const": true
+        },
+        "protectedHoldout": {
+          "type": "boolean",
+          "const": true
+        },
+        "cost": {
+          "type": "boolean",
+          "const": true
+        },
+        "latency": {
+          "type": "boolean",
+          "const": true
+        }
+      }
+    },
+    "criticalFailures": {
+      "type": "integer",
+      "const": 0
+    },
+    "approvalReference": {
+      "type": "string",
+      "pattern": "^docs/[A-Za-z0-9_-]+(?:/[A-Za-z0-9_-]+)*\\.md$"
+    },
+    "approvedBy": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{0,95}$"
+    }
+  }
+}

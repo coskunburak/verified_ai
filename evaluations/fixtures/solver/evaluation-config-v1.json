@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "solver-evaluation-config-v1",
+  "datasetVersion": "solver-engineering-v1",
+  "maxCases": 100,
+  "maxRuntimeSeconds": 30,
+  "maxInputBytes": 1048576,
+  "observationSha256": "f2c40f7648434cde98dd7f3bc2b4ce3c62a577d93cbf0df44295d2af209b1926",
+  "provenance": {
+    "provider": "LOCAL_FIXTURE",
+    "model": "synthetic-observations-v1",
+    "route": "offline-scoring-v1",
+    "prompt": "NONE_NO_INFERENCE",
+    "schema": "solver-evaluation-case-v1",
+    "verificationPolicy": "verification-policy-v1"
+  },
+  "inferenceEnabled": false
+}

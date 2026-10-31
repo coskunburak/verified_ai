@@ -82,13 +82,15 @@ class AiInfrastructureConfiguration {
         PromptRegistry promptRegistry,
         OutputSchemaRegistry outputSchemaRegistry,
         PromptArtifactResolver promptArtifactResolver,
-        OutputSchemaArtifactResolver outputSchemaArtifactResolver
+        OutputSchemaArtifactResolver outputSchemaArtifactResolver,
+        ResourceLoader resourceLoader
     ) {
         return new PromptRegistryValidator(
             promptRegistry,
             outputSchemaRegistry,
             promptArtifactResolver,
-            outputSchemaArtifactResolver
+            outputSchemaArtifactResolver,
+            new ClasspathSolverReleaseEvidenceValidator(resourceLoader)
         );
     }
 

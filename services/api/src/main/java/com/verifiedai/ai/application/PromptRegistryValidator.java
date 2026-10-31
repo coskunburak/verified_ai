@@ -10,6 +10,7 @@ public final class PromptRegistryValidator {
     private final OutputSchemaRegistry schemaRegistry;
     private final PromptArtifactResolver promptArtifactResolver;
     private final OutputSchemaArtifactResolver schemaArtifactResolver;
+    private final SolverReleaseEvidenceValidator solverReleaseEvidenceValidator;
 
     public PromptRegistryValidator(
         PromptRegistry promptRegistry,
@@ -17,6 +18,14 @@ public final class PromptRegistryValidator {
         PromptArtifactResolver promptArtifactResolver,
         OutputSchemaArtifactResolver schemaArtifactResolver
     ) {
+        this(promptRegistry, schemaRegistry, promptArtifactResolver, schemaArtifactResolver,
+            SolverReleaseEvidenceValidator.unavailable());
+    }
+
+    public PromptRegistryValidator(PromptRegistry promptRegistry, OutputSchemaRegistry schemaRegistry,
+        PromptArtifactResolver promptArtifactResolver, OutputSchemaArtifactResolver schemaArtifactResolver,
+        SolverReleaseEvidenceValidator solverReleaseEvidenceValidator) {
+        this.solverReleaseEvidenceValidator = Objects.requireNonNull(solverReleaseEvidenceValidator);
         this.promptRegistry =
             Objects.requireNonNull(
                 promptRegistry,
@@ -150,6 +159,11 @@ public final class PromptRegistryValidator {
         validateRelease(prompt, schema, routePlan, environment);
         promptArtifactResolver.load(prompt);
         schemaArtifactResolver.load(schema, prompt);
+        if (routePlan.capability() == AiCapability.SOLVE
+            && (prompt.releaseStage() == PromptReleaseStage.STAGING
+                || prompt.releaseStage() == PromptReleaseStage.PRODUCTION)) {
+            solverReleaseEvidenceValidator.validate(prompt, schema, routePlan);
+        }
     }
 
     private static boolean production(String environment) {
