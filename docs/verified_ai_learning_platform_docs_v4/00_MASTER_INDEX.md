@@ -390,3 +390,8 @@ script. Complete local owner acceptance passed on 2026-10-31 in run
 20261031-014130-mAGAKm: A–H, calculus_composite and integration_dependency PASS, exit 0.
 State: OWNER_ACCEPTANCE_PASSED. Paid models SKIPPED_BY_POLICY; hosted CI NOT_RUN;
 production rollout DISABLED. No agent tests, commit, push or deployment.
+
+## Sprint 5.12 evaluation and release-governance handoff
+
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.12_IMPLEMENTATION_MAP.md` — synthetic dataset, scoped evaluation, immutable release evidence and CI ownership.
+- `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.12_EXECUTION_REPORT.md` — OWNER_ACCEPTANCE_PASSED for local scope in run 20261031-121345-aTjFqW (A–J PASS, exit 0); external production blockers remain.

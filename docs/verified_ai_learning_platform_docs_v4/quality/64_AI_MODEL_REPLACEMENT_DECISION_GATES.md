@@ -63,3 +63,26 @@ Require a documented savings or strategic benefit margin rather than break-even 
 ## 8. Final decision artifact
 
 Every replacement produces a short decision record containing baseline, candidate, evaluation, economics, rollout, owner, and rollback plan.
+
+## Sprint 5.12 fail-closed implementation
+
+The solver comparator returns PASS, FAIL or BLOCKED with explicit evidence scope.
+Critical false verification, scope widening, ignored contradiction, unsupported coercion,
+schema bypass, privacy/authorization violation, prompt injection and fabricated source
+references fail deterministic gates. Missing or tampered evidence, incompatible datasets,
+missing slices/observations, unapproved thresholds and absent reviewed baselines block.
+A hard failure is not hidden by simultaneous missing external evidence.
+
+A local fixture PASS is limited to authored engineering regression. Connected provider,
+protected holdout, independent labels, representativeness, approved quantitative policy,
+observed economics, approved baseline and stage approval remain required externally.
+The proposed schema validity 99% and accuracy margin 2 percentage points from document
+73 remain proposals. No production quality, latency or monetary threshold is invented.
+
+The baseline tool verifies report integrity, scope, aggregate consistency, source/code
+and policy bindings, approval metadata, SHA-pinned rationale and create-only destination.
+Approvals derive authenticity from human review/branch protection, not from self-asserted
+JSON. Production remains BLOCKED regardless of fixture baseline approval. Java registry
+validation additionally binds reviewed external evidence to exact execution artifacts,
+while existing solver production restrictions remain active. Owner acceptance and hosted
+CI are separate evidence; neither has been run by the implementing agent.

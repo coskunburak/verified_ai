@@ -178,3 +178,26 @@ remain distinct from confirmed invoices. Zero default paid limits require busine
 approval before rollout. No in-memory counter is claimed as global financial authority.
 See `ai/74_MODEL_ROUTING_COST_AND_TCO_DECISION.md` for six hypothetical monthly scenarios
 and verified price references. No model inference cost/latency was measured in Sprint 5.3.
+
+## Sprint 5.12 economic evidence boundary
+
+The solver evaluator has a bounded pure attempt-ledger reducer, not an enabled provider
+ledger importer. It separately retains input/output/reasoning tokens, image units,
+primary/secondary/arbitration attempts, cache hits, retries, fallbacks, failed/rejected
+attempts, reservations, commitments, estimates, invoices and forecasts. Missing usage
+is unavailable, never free inference. Duplicate attempts and incompatible currency,
+pricing version, workload or attribution fail closed.
+
+Cost per correct/verified outcome uses caller-supplied independently justified counts;
+zero or missing denominators are UNAVAILABLE. Real-provider integration must establish
+those counts before invoking the reducer. Per-outcome values derived from estimated
+micros are ESTIMATED, never invoices. Incomplete request ledgers cannot produce unit
+costs. Provider latency uses nearest-rank p50/p95 across recorded attempts, not fixture
+execution time; incomplete latency is unavailable. A future connected adapter must
+add end-to-end request latency separately before claiming user-perceived latency.
+
+Economic comparison requires explicit approved finite nonnegative deltas and compatible
+units. The pure comparison kernel assumes its approval input has already been reviewed;
+it is not a production authorization entry point. No production numeric policy has been
+approved or activated here. Local reports always mark inference economics UNAVAILABLE.
+No measured savings, provider latency or cost benchmark is claimed.

@@ -1,6 +1,7 @@
 package com.verifiedai.ai.application;
 
 public enum PromptRegistryFailureCode {
+    AI_SOLVER_RELEASE_EVIDENCE_INVALID,
     AI_ARTIFACT_METADATA_INVALID,
     AI_ARTIFACT_DIGEST_MISMATCH,
     AI_PROMPT_APPROVAL_MISSING,

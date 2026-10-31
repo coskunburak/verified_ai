@@ -7,6 +7,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 
 REQUIRED_CONTRACTS = {
+    "packages/schemas/solver-evaluation-case.schema.json": ["solver-evaluation-case-v1", "NOT_ELIGIBLE", "independentReview"],
+    "packages/schemas/solver-evaluation-report.schema.json": ["solver-evaluation-report-v1", "productionPromotion", "reportSha256"],
+    "packages/schemas/solver-release-authorization.schema.json": ["solver-release-authorization-v1", "REAL_PROVIDER_AND_PROTECTED_HOLDOUT", "sha256"],
+    "packages/schemas/solver-production-evidence.schema.json": ["solver-production-evidence-v1", "criticalFailures", "protectedHoldout"],
     "packages/schemas/verification-decision.schema.json": ["verification-decision-v1", "PARTIALLY_VERIFIED", "EXPLANATION_STEPS_UNCHECKED"],
     "packages/schemas/numeric-diagnostic.schema.json": ["numeric-diagnostic-v1", "equivalence-binary64-v1", "scopeId"],
     "packages/schemas/numeric-diagnostic-result.schema.json": ["numeric-diagnostic-result-v1", "SAMPLES_AGREE", "oneOf"],

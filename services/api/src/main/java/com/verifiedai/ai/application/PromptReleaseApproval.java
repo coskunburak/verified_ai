@@ -10,9 +10,23 @@ public record PromptReleaseApproval(
     String evaluationReportReference,
     String approvalReference,
     String approvedBy,
-    Instant approvedAt
+    Instant approvedAt,
+    String solverAuthorizationReference,
+    String solverAuthorizationSha256
 ) {
+    /** Legacy ingestion approvals do not authorize solver promotion. */
+    public PromptReleaseApproval(String promptSha256, String schemaSha256,
+        String baselineReference, String evaluationReportReference, String approvalReference,
+        String approvedBy, Instant approvedAt) {
+        this(promptSha256, schemaSha256, baselineReference, evaluationReportReference,
+            approvalReference, approvedBy, approvedAt, null, null);
+    }
+
     public PromptReleaseApproval {
+        if (solverAuthorizationReference != null || solverAuthorizationSha256 != null) {
+            requireReference(solverAuthorizationReference, "evaluations/");
+            ArtifactIntegrity.requireDigest(solverAuthorizationSha256);
+        }
         ArtifactIntegrity.requireDigest(promptSha256);
         ArtifactIntegrity.requireDigest(schemaSha256);
         requireReference(baselineReference, "evaluations/");

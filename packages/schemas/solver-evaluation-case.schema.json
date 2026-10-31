@@ -1,0 +1,203 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "solver-evaluation-case-v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "revision",
+    "family",
+    "partition",
+    "origin",
+    "problemClass",
+    "locale",
+    "modality",
+    "difficulty",
+    "canonicalSupport",
+    "input",
+    "slices",
+    "contracts",
+    "expected"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "solver-evaluation-case-v1"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,95}$"
+    },
+    "revision": {
+      "const": 1
+    },
+    "family": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,95}$"
+    },
+    "partition": {
+      "enum": [
+        "DEVELOPMENT",
+        "REGRESSION",
+        "HARD_TAIL",
+        "PROTECTED_HOLDOUT",
+        "PRODUCTION_CORRECTIONS"
+      ]
+    },
+    "origin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "author",
+        "license",
+        "rightsStatus",
+        "trainingEligibility"
+      ],
+      "properties": {
+        "type": {
+          "const": "PROJECT_AUTHORED_SYNTHETIC"
+        },
+        "author": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "license": {
+          "const": "PROJECT_EVALUATION_ONLY"
+        },
+        "rightsStatus": {
+          "const": "SYNTHETIC_PROJECT_AUTHORED"
+        },
+        "trainingEligibility": {
+          "const": "NOT_ELIGIBLE"
+        }
+      }
+    },
+    "problemClass": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,95}$"
+    },
+    "locale": {
+      "enum": [
+        "en-US",
+        "tr-TR"
+      ]
+    },
+    "modality": {
+      "const": "TEXT"
+    },
+    "difficulty": {
+      "enum": [
+        "STANDARD",
+        "HARD_TAIL"
+      ]
+    },
+    "canonicalSupport": {
+      "enum": [
+        "SUPPORTED",
+        "UNSUPPORTED",
+        "REVIEW_REQUIRED"
+      ]
+    },
+    "input": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "slices": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,95}$"
+      },
+      "minItems": 1,
+      "maxItems": 16,
+      "uniqueItems": true
+    },
+    "contracts": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "solution-candidate-v1",
+          "solution-candidate-v2",
+          "verification-decision-v1",
+          "verification-policy-v1"
+        ]
+      },
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true
+    },
+    "expected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "disposition",
+        "answer",
+        "verification",
+        "scope",
+        "scopeDetail",
+        "uncertainty",
+        "labelBasis",
+        "rationale",
+        "independentReview"
+      ],
+      "properties": {
+        "disposition": {
+          "enum": [
+            "CANDIDATE",
+            "REFUSE",
+            "REVIEW",
+            "REJECT"
+          ]
+        },
+        "answer": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 512
+        },
+        "verification": {
+          "enum": [
+            "VERIFIED",
+            "PARTIALLY_VERIFIED",
+            "UNVERIFIED"
+          ]
+        },
+        "scope": {
+          "enum": [
+            "NONE",
+            "FINAL_ANSWER",
+            "CHECKED_METHOD_CLAIMS",
+            "OPEN_INTERVAL",
+            "ANTIDERIVATIVE_REPRESENTATIVE",
+            "PUNCTURED_NEIGHBORHOOD"
+          ]
+        },
+        "scopeDetail": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 512
+        },
+        "uncertainty": {
+          "type": "boolean"
+        },
+        "labelBasis": {
+          "const": "SYNTHETIC_AUTHOR_JUDGMENT"
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "independentReview": {
+          "const": false
+        }
+      }
+    }
+  }
+}

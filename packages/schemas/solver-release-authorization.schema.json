@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "$id": "https://verifiedai.local/schemas/solver-release-authorization-v1",
+  "title": "Reviewed solver release authorization v1",
+  "description": "Human-reviewed immutable authorization. Pin exact bytes in PromptReleaseApproval. Not emitted by deterministic evaluation. This schema alone never authorizes release.",
+  "required": [
+    "schemaVersion",
+    "scope",
+    "outcome",
+    "approvalReference",
+    "approvedBy",
+    "approvedAt",
+    "report",
+    "baseline"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "solver-release-authorization-v1"
+    },
+    "scope": {
+      "type": "string",
+      "const": "REAL_PROVIDER_AND_PROTECTED_HOLDOUT"
+    },
+    "outcome": {
+      "type": "string",
+      "const": "PASS"
+    },
+    "approvalReference": {
+      "type": "string",
+      "pattern": "^docs/[A-Za-z0-9_-]+(?:/[A-Za-z0-9_-]+)*\\.md$"
+    },
+    "approvedBy": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{0,95}$"
+    },
+    "approvedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "report": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reference",
+        "sha256"
+      ],
+      "properties": {
+        "reference": {
+          "type": "string",
+          "pattern": "^evaluations/[A-Za-z0-9_-]+(?:/[A-Za-z0-9_-]+)*\\.json$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "baseline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reference",
+        "sha256"
+      ],
+      "properties": {
+        "reference": {
+          "type": "string",
+          "pattern": "^evaluations/[A-Za-z0-9_-]+(?:/[A-Za-z0-9_-]+)*\\.json$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    }
+  }
+}

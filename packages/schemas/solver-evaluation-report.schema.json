@@ -1,0 +1,3391 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "solver-evaluation-report-v1",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reportSchemaVersion",
+        "reportSha256",
+        "metricVersion",
+        "datasetVersion",
+        "datasetSha256",
+        "caseSchemaVersion",
+        "configSha256",
+        "provenance",
+        "coverage",
+        "caseCount",
+        "evidenceScope",
+        "labelProvenance",
+        "independentGoldApproval",
+        "economics",
+        "results",
+        "metrics",
+        "slices",
+        "criticalCounts",
+        "productionPromotion",
+        "evaluationCodeSha256",
+        "gitCommit",
+        "gate",
+        "diagnostics"
+      ],
+      "properties": {
+        "reportSchemaVersion": {
+          "const": "solver-evaluation-report-v1"
+        },
+        "reportSha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "metricVersion": {
+          "const": "solver-metrics-v1"
+        },
+        "datasetVersion": {
+          "const": "solver-engineering-v1"
+        },
+        "datasetSha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "caseSchemaVersion": {
+          "const": "solver-evaluation-case-v1"
+        },
+        "configSha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "provider",
+            "model",
+            "route",
+            "prompt",
+            "schema",
+            "verificationPolicy"
+          ],
+          "properties": {
+            "provider": {
+              "const": "LOCAL_FIXTURE"
+            },
+            "model": {
+              "const": "synthetic-observations-v1"
+            },
+            "route": {
+              "const": "offline-scoring-v1"
+            },
+            "prompt": {
+              "const": "NONE_NO_INFERENCE"
+            },
+            "schema": {
+              "const": "solver-evaluation-case-v1"
+            },
+            "verificationPolicy": {
+              "const": "verification-policy-v1"
+            }
+          }
+        },
+        "coverage": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_.-]{1,96}$"
+          },
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "minProperties": 1,
+          "maxProperties": 100
+        },
+        "caseCount": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "evidenceScope": {
+          "enum": [
+            "LOCAL_FIXTURE_REGRESSION",
+            "DATASET_CONTRACT_VALIDATION",
+            "CONNECTED",
+            "PROTECTED_HOLDOUT"
+          ]
+        },
+        "labelProvenance": {
+          "const": "SYNTHETIC_AUTHOR_JUDGMENT"
+        },
+        "independentGoldApproval": {
+          "const": false
+        },
+        "economics": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "state",
+            "reason",
+            "costPerCorrect",
+            "costPerVerified",
+            "providerLatencyP50Ms",
+            "providerLatencyP95Ms"
+          ],
+          "properties": {
+            "state": {
+              "const": "UNAVAILABLE"
+            },
+            "reason": {
+              "const": "FIXTURE_NOT_PROVIDER_COST"
+            },
+            "costPerCorrect": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "state",
+                "reason",
+                "value"
+              ],
+              "properties": {
+                "state": {
+                  "const": "UNAVAILABLE"
+                },
+                "reason": {
+                  "const": "NO_REAL_INFERENCE"
+                },
+                "value": {
+                  "type": "null"
+                }
+              }
+            },
+            "costPerVerified": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "state",
+                "reason",
+                "value"
+              ],
+              "properties": {
+                "state": {
+                  "const": "UNAVAILABLE"
+                },
+                "reason": {
+                  "const": "NO_REAL_INFERENCE"
+                },
+                "value": {
+                  "type": "null"
+                }
+              }
+            },
+            "providerLatencyP50Ms": {
+              "type": "null"
+            },
+            "providerLatencyP95Ms": {
+              "type": "null"
+            }
+          }
+        },
+        "results": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "caseId",
+              "status",
+              "measurements",
+              "critical",
+              "missing"
+            ],
+            "properties": {
+              "caseId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_.-]{1,96}$"
+              },
+              "status": {
+                "enum": [
+                  "COMPLETED",
+                  "ERROR",
+                  "TIMEOUT",
+                  "MISSING"
+                ]
+              },
+              "measurements": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "finalAnswerCorrect",
+                  "schemaValid",
+                  "semanticAccepted",
+                  "dispositionCorrect",
+                  "verificationCorrect",
+                  "scopePreserved",
+                  "uncertaintyHonest",
+                  "sourceFaithful",
+                  "hallucinatedPremise",
+                  "falseAuthoritative",
+                  "stepValid",
+                  "methodAppropriate",
+                  "contradictionDetected",
+                  "staleLineageRejected",
+                  "domainHandled",
+                  "unsupportedHandled",
+                  "secondaryHandled",
+                  "falseVerified",
+                  "correctVerified",
+                  "falseUnverified"
+                ],
+                "properties": {
+                  "finalAnswerCorrect": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "schemaValid": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "semanticAccepted": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "dispositionCorrect": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "verificationCorrect": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "scopePreserved": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "uncertaintyHonest": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "sourceFaithful": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "hallucinatedPremise": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "falseAuthoritative": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "stepValid": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "methodAppropriate": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "contradictionDetected": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "staleLineageRejected": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "domainHandled": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "unsupportedHandled": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "secondaryHandled": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "falseVerified": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "correctVerified": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "falseUnverified": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  }
+                }
+              },
+              "critical": {
+                "type": "array",
+                "items": {
+                  "enum": [
+                    "FALSE_VERIFIED",
+                    "FALSE_PARTIAL_SCOPE",
+                    "CONTRADICTION_IGNORED",
+                    "SCOPE_WIDENING",
+                    "UNSUPPORTED_COERCION",
+                    "SCHEMA_BYPASS",
+                    "PROMPT_INJECTION",
+                    "PRIVACY",
+                    "UNAUTHORIZED_ACCESS",
+                    "SOURCE_FABRICATION"
+                  ]
+                },
+                "uniqueItems": true,
+                "maxItems": 10
+              },
+              "missing": {
+                "type": "boolean"
+              }
+            }
+          },
+          "maxItems": 100
+        },
+        "metrics": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "finalAnswerCorrect",
+                "schemaValid",
+                "semanticAccepted",
+                "dispositionCorrect",
+                "verificationCorrect",
+                "scopePreserved",
+                "uncertaintyHonest",
+                "sourceFaithful",
+                "hallucinatedPremise",
+                "falseAuthoritative",
+                "stepValid",
+                "methodAppropriate",
+                "contradictionDetected",
+                "staleLineageRejected",
+                "domainHandled",
+                "unsupportedHandled",
+                "secondaryHandled",
+                "falseVerified",
+                "correctVerified",
+                "falseUnverified"
+              ],
+              "properties": {
+                "finalAnswerCorrect": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "numerator",
+                    "denominator",
+                    "missing",
+                    "value",
+                    "state"
+                  ],
+                  "properties": {
+                    "numerator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "denominator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "missing": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "value": {
+                      "type": [
+                        "number",
+                        "null"
+                      ],
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "state": {
+                      "enum": [
+                        "MEASURED",
+                        "INCOMPLETE",
+                        "UNAVAILABLE"
+                      ]
+                    }
+                  }
+                },
+                "schemaValid": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "numerator",
+                    "denominator",
+                    "missing",
+                    "value",
+                    "state"
+                  ],
+                  "properties": {
+                    "numerator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "denominator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "missing": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "value": {
+                      "type": [
+                        "number",
+                        "null"
+                      ],
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "state": {
+                      "enum": [
+                        "MEASURED",
+                        "INCOMPLETE",
+                        "UNAVAILABLE"
+                      ]
+                    }
+                  }
+                },
+                "semanticAccepted": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "numerator",
+                    "denominator",
+                    "missing",
+                    "value",
+                    "state"
+                  ],
+                  "properties": {
+                    "numerator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "denominator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "missing": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "value": {
+                      "type": [
+                        "number",
+                        "null"
+                      ],
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "state": {
+                      "enum": [
+                        "MEASURED",
+                        "INCOMPLETE",
+                        "UNAVAILABLE"
+                      ]
+                    }
+                  }
+                },
+                "dispositionCorrect": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "numerator",
+                    "denominator",
+                    "missing",
+                    "value",
+                    "state"
+                  ],
+                  "properties": {
+                    "numerator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "denominator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "missing": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "value": {
+                      "type": [
+                        "number",
+                        "null"
+                      ],
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "state": {
+                      "enum": [
+                        "MEASURED",
+                        "INCOMPLETE",
+                        "UNAVAILABLE"
+                      ]
+                    }
+                  }
+                },
+                "verificationCorrect": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "numerator",
+                    "denominator",
+                    "missing",
+                    "value",
+                    "state"
+                  ],
+                  "properties": {
+                    "numerator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "denominator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "missing": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "value": {
+                      "type": [
+                        "number",
+                        "null"
+                      ],
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "state": {
+                      "enum": [
+                        "MEASURED",
+                        "INCOMPLETE",
+                        "UNAVAILABLE"
+                      ]
+                    }
+                  }
+                },
+                "scopePreserved": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "numerator",
+                    "denominator",
+                    "missing",
+                    "value",
+                    "state"
+                  ],
+                  "properties": {
+                    "numerator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "denominator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "missing": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "value": {
+                      "type": [
+                        "number",
+                        "null"
+                      ],
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "state": {
+                      "enum": [
+                        "MEASURED",
+                        "INCOMPLETE",
+                        "UNAVAILABLE"
+                      ]
+                    }
+                  }
+                },
+                "uncertaintyHonest": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "numerator",
+                    "denominator",
+                    "missing",
+                    "value",
+                    "state"
+                  ],
+                  "properties": {
+                    "numerator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "denominator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "missing": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "value": {
+                      "type": [
+                        "number",
+                        "null"
+                      ],
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "state": {
+                      "enum": [
+                        "MEASURED",
+                        "INCOMPLETE",
+                        "UNAVAILABLE"
+                      ]
+                    }
+                  }
+                },
+                "sourceFaithful": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "numerator",
+                    "denominator",
+                    "missing",
+                    "value",
+                    "state"
+                  ],
+                  "properties": {
+                    "numerator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "denominator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "missing": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "value": {
+                      "type": [
+                        "number",
+                        "null"
+                      ],
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "state": {
+                      "enum": [
+                        "MEASURED",
+                        "INCOMPLETE",
+                        "UNAVAILABLE"
+                      ]
+                    }
+                  }
+                },
+                "hallucinatedPremise": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "numerator",
+                    "denominator",
+                    "missing",
+                    "value",
+                    "state"
+                  ],
+                  "properties": {
+                    "numerator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "denominator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "missing": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "value": {
+                      "type": [
+                        "number",
+                        "null"
+                      ],
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "state": {
+                      "enum": [
+                        "MEASURED",
+                        "INCOMPLETE",
+                        "UNAVAILABLE"
+                      ]
+                    }
+                  }
+                },
+                "falseAuthoritative": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "numerator",
+                    "denominator",
+                    "missing",
+                    "value",
+                    "state"
+                  ],
+                  "properties": {
+                    "numerator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "denominator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "missing": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "value": {
+                      "type": [
+                        "number",
+                        "null"
+                      ],
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "state": {
+                      "enum": [
+                        "MEASURED",
+                        "INCOMPLETE",
+                        "UNAVAILABLE"
+                      ]
+                    }
+                  }
+                },
+                "stepValid": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "numerator",
+                    "denominator",
+                    "missing",
+                    "value",
+                    "state"
+                  ],
+                  "properties": {
+                    "numerator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "denominator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "missing": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "value": {
+                      "type": [
+                        "number",
+                        "null"
+                      ],
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "state": {
+                      "enum": [
+                        "MEASURED",
+                        "INCOMPLETE",
+                        "UNAVAILABLE"
+                      ]
+                    }
+                  }
+                },
+                "methodAppropriate": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "numerator",
+                    "denominator",
+                    "missing",
+                    "value",
+                    "state"
+                  ],
+                  "properties": {
+                    "numerator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "denominator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "missing": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "value": {
+                      "type": [
+                        "number",
+                        "null"
+                      ],
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "state": {
+                      "enum": [
+                        "MEASURED",
+                        "INCOMPLETE",
+                        "UNAVAILABLE"
+                      ]
+                    }
+                  }
+                },
+                "contradictionDetected": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "numerator",
+                    "denominator",
+                    "missing",
+                    "value",
+                    "state"
+                  ],
+                  "properties": {
+                    "numerator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "denominator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "missing": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "value": {
+                      "type": [
+                        "number",
+                        "null"
+                      ],
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "state": {
+                      "enum": [
+                        "MEASURED",
+                        "INCOMPLETE",
+                        "UNAVAILABLE"
+                      ]
+                    }
+                  }
+                },
+                "staleLineageRejected": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "numerator",
+                    "denominator",
+                    "missing",
+                    "value",
+                    "state"
+                  ],
+                  "properties": {
+                    "numerator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "denominator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "missing": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "value": {
+                      "type": [
+                        "number",
+                        "null"
+                      ],
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "state": {
+                      "enum": [
+                        "MEASURED",
+                        "INCOMPLETE",
+                        "UNAVAILABLE"
+                      ]
+                    }
+                  }
+                },
+                "domainHandled": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "numerator",
+                    "denominator",
+                    "missing",
+                    "value",
+                    "state"
+                  ],
+                  "properties": {
+                    "numerator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "denominator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "missing": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "value": {
+                      "type": [
+                        "number",
+                        "null"
+                      ],
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "state": {
+                      "enum": [
+                        "MEASURED",
+                        "INCOMPLETE",
+                        "UNAVAILABLE"
+                      ]
+                    }
+                  }
+                },
+                "unsupportedHandled": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "numerator",
+                    "denominator",
+                    "missing",
+                    "value",
+                    "state"
+                  ],
+                  "properties": {
+                    "numerator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "denominator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "missing": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "value": {
+                      "type": [
+                        "number",
+                        "null"
+                      ],
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "state": {
+                      "enum": [
+                        "MEASURED",
+                        "INCOMPLETE",
+                        "UNAVAILABLE"
+                      ]
+                    }
+                  }
+                },
+                "secondaryHandled": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "numerator",
+                    "denominator",
+                    "missing",
+                    "value",
+                    "state"
+                  ],
+                  "properties": {
+                    "numerator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "denominator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "missing": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "value": {
+                      "type": [
+                        "number",
+                        "null"
+                      ],
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "state": {
+                      "enum": [
+                        "MEASURED",
+                        "INCOMPLETE",
+                        "UNAVAILABLE"
+                      ]
+                    }
+                  }
+                },
+                "falseVerified": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "numerator",
+                    "denominator",
+                    "missing",
+                    "value",
+                    "state"
+                  ],
+                  "properties": {
+                    "numerator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "denominator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "missing": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "value": {
+                      "type": [
+                        "number",
+                        "null"
+                      ],
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "state": {
+                      "enum": [
+                        "MEASURED",
+                        "INCOMPLETE",
+                        "UNAVAILABLE"
+                      ]
+                    }
+                  }
+                },
+                "correctVerified": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "numerator",
+                    "denominator",
+                    "missing",
+                    "value",
+                    "state"
+                  ],
+                  "properties": {
+                    "numerator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "denominator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "missing": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "value": {
+                      "type": [
+                        "number",
+                        "null"
+                      ],
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "state": {
+                      "enum": [
+                        "MEASURED",
+                        "INCOMPLETE",
+                        "UNAVAILABLE"
+                      ]
+                    }
+                  }
+                },
+                "falseUnverified": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "numerator",
+                    "denominator",
+                    "missing",
+                    "value",
+                    "state"
+                  ],
+                  "properties": {
+                    "numerator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "denominator": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "missing": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "value": {
+                      "type": [
+                        "number",
+                        "null"
+                      ],
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "state": {
+                      "enum": [
+                        "MEASURED",
+                        "INCOMPLETE",
+                        "UNAVAILABLE"
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [],
+              "properties": {}
+            }
+          ]
+        },
+        "slices": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_.-]{1,96}$"
+          },
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "count",
+              "metrics"
+            ],
+            "properties": {
+              "count": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100
+              },
+              "metrics": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "finalAnswerCorrect",
+                  "schemaValid",
+                  "semanticAccepted",
+                  "dispositionCorrect",
+                  "verificationCorrect",
+                  "scopePreserved",
+                  "uncertaintyHonest",
+                  "sourceFaithful",
+                  "hallucinatedPremise",
+                  "falseAuthoritative",
+                  "stepValid",
+                  "methodAppropriate",
+                  "contradictionDetected",
+                  "staleLineageRejected",
+                  "domainHandled",
+                  "unsupportedHandled",
+                  "secondaryHandled",
+                  "falseVerified",
+                  "correctVerified",
+                  "falseUnverified"
+                ],
+                "properties": {
+                  "finalAnswerCorrect": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "schemaValid": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "semanticAccepted": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "dispositionCorrect": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "verificationCorrect": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "scopePreserved": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "uncertaintyHonest": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "sourceFaithful": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "hallucinatedPremise": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "falseAuthoritative": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "stepValid": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "methodAppropriate": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "contradictionDetected": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "staleLineageRejected": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "domainHandled": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "unsupportedHandled": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "secondaryHandled": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "falseVerified": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "correctVerified": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "falseUnverified": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "maxProperties": 100
+        },
+        "criticalCounts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "FALSE_VERIFIED",
+            "FALSE_PARTIAL_SCOPE",
+            "CONTRADICTION_IGNORED",
+            "SCOPE_WIDENING",
+            "UNSUPPORTED_COERCION",
+            "SCHEMA_BYPASS",
+            "PROMPT_INJECTION",
+            "PRIVACY",
+            "UNAUTHORIZED_ACCESS",
+            "SOURCE_FABRICATION"
+          ],
+          "properties": {
+            "FALSE_VERIFIED": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "FALSE_PARTIAL_SCOPE": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "CONTRADICTION_IGNORED": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "SCOPE_WIDENING": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "UNSUPPORTED_COERCION": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "SCHEMA_BYPASS": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "PROMPT_INJECTION": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "PRIVACY": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "UNAUTHORIZED_ACCESS": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "SOURCE_FABRICATION": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            }
+          }
+        },
+        "productionPromotion": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "decision",
+            "reasons"
+          ],
+          "properties": {
+            "decision": {
+              "const": "BLOCKED"
+            },
+            "reasons": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_.-]{1,96}$"
+              },
+              "maxItems": 64,
+              "uniqueItems": true
+            }
+          }
+        },
+        "evaluationCodeSha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "gitCommit": {
+          "type": "string",
+          "pattern": "^(?:[a-f0-9]{40}|[a-f0-9]{64}|UNAVAILABLE)$"
+        },
+        "observationSha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "gate": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "decision",
+            "evidenceScope",
+            "reasons"
+          ],
+          "properties": {
+            "decision": {
+              "enum": [
+                "PASS",
+                "FAIL",
+                "BLOCKED"
+              ]
+            },
+            "evidenceScope": {
+              "enum": [
+                "LOCAL_FIXTURE_REGRESSION",
+                "DATASET_CONTRACT_VALIDATION",
+                "CONNECTED",
+                "PROTECTED_HOLDOUT",
+                "INVALID_EVIDENCE"
+              ]
+            },
+            "reasons": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_.-]{1,96}$"
+              },
+              "maxItems": 64,
+              "uniqueItems": true
+            }
+          }
+        },
+        "diagnostics": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "event",
+            "gateOutcome",
+            "falseVerifiedCount",
+            "productionPromotion"
+          ],
+          "properties": {
+            "event": {
+              "const": "EVALUATION_COMPLETED"
+            },
+            "gateOutcome": {
+              "enum": [
+                "PASS",
+                "FAIL",
+                "BLOCKED"
+              ]
+            },
+            "falseVerifiedCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "productionPromotion": {
+              "const": "BLOCKED"
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "evidenceScope": {
+                "const": "LOCAL_FIXTURE_REGRESSION"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "observationSha256"
+            ],
+            "properties": {
+              "results": {
+                "minItems": 1
+              },
+              "metrics": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "finalAnswerCorrect",
+                  "schemaValid",
+                  "semanticAccepted",
+                  "dispositionCorrect",
+                  "verificationCorrect",
+                  "scopePreserved",
+                  "uncertaintyHonest",
+                  "sourceFaithful",
+                  "hallucinatedPremise",
+                  "falseAuthoritative",
+                  "stepValid",
+                  "methodAppropriate",
+                  "contradictionDetected",
+                  "staleLineageRejected",
+                  "domainHandled",
+                  "unsupportedHandled",
+                  "secondaryHandled",
+                  "falseVerified",
+                  "correctVerified",
+                  "falseUnverified"
+                ],
+                "properties": {
+                  "finalAnswerCorrect": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "schemaValid": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "semanticAccepted": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "dispositionCorrect": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "verificationCorrect": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "scopePreserved": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "uncertaintyHonest": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "sourceFaithful": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "hallucinatedPremise": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "falseAuthoritative": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "stepValid": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "methodAppropriate": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "contradictionDetected": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "staleLineageRejected": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "domainHandled": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "unsupportedHandled": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "secondaryHandled": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "falseVerified": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "correctVerified": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  },
+                  "falseUnverified": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "numerator",
+                      "denominator",
+                      "missing",
+                      "value",
+                      "state"
+                    ],
+                    "properties": {
+                      "numerator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "denominator": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "state": {
+                        "enum": [
+                          "MEASURED",
+                          "INCOMPLETE",
+                          "UNAVAILABLE"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "results": {
+                "maxItems": 0
+              },
+              "metrics": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [],
+                "properties": {}
+              },
+              "slices": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [],
+                "properties": {}
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reportSchemaVersion",
+        "reportSha256",
+        "gate",
+        "productionPromotion",
+        "diagnostics"
+      ],
+      "properties": {
+        "reportSchemaVersion": {
+          "const": "solver-evaluation-report-v1"
+        },
+        "reportSha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "gate": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "decision",
+            "evidenceScope",
+            "reasons"
+          ],
+          "properties": {
+            "decision": {
+              "enum": [
+                "PASS",
+                "FAIL",
+                "BLOCKED"
+              ]
+            },
+            "evidenceScope": {
+              "enum": [
+                "LOCAL_FIXTURE_REGRESSION",
+                "DATASET_CONTRACT_VALIDATION",
+                "CONNECTED",
+                "PROTECTED_HOLDOUT",
+                "INVALID_EVIDENCE"
+              ]
+            },
+            "reasons": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_.-]{1,96}$"
+              },
+              "maxItems": 64,
+              "uniqueItems": true
+            }
+          }
+        },
+        "productionPromotion": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "decision",
+            "reasons"
+          ],
+          "properties": {
+            "decision": {
+              "const": "BLOCKED"
+            },
+            "reasons": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_.-]{1,96}$"
+              },
+              "maxItems": 64,
+              "uniqueItems": true
+            }
+          }
+        },
+        "diagnostics": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "event",
+            "reason"
+          ],
+          "properties": {
+            "event": {
+              "const": "DATASET_OR_RUN_FAILURE"
+            },
+            "reason": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_.-]{1,96}$"
+            }
+          }
+        }
+      }
+    }
+  ]
+}

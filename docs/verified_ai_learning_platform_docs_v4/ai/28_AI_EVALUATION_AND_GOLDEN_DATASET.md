@@ -119,3 +119,28 @@ Store:
 - runtime parameters;
 - result artifact/checksum;
 - timestamp/owner.
+
+## Sprint 5.12 engineering evaluation contract
+
+Implementation state: OWNER_ACCEPTANCE_PASSED for local scope in owner run
+20261031-121345-aTjFqW; production promotion remains BLOCKED. The separate solver-v1
+corpus contains 28 project-authored synthetic cases with schema, byte checksums, stable
+ordering, source/rights/training metadata, partition leakage checks and critical coverage.
+Labels are SYNTHETIC_AUTHOR_JUDGMENT, not independently expert-approved gold. This is
+not the proposed 240-case representative benchmark. Protected holdout and governed
+production corrections are explicitly unavailable, never populated from development.
+
+The solver evaluator scores authored fixture observations; it does not execute the
+Java verification policy or infer provider quality. Full backend/verifier suites remain
+required in owner acceptance. Schema validity, answer correctness, disposition, scope,
+contradiction handling, stale lineage, uncertainty and source fidelity are separate.
+Step/method review is UNAVAILABLE where no independent label exists. Exact bounded
+rational answer normalization is supported; symbolic string comparison is an engineering
+label comparison and never a mathematical proof. Only the existing verification policy
+can assign canonical VERIFIED. Evaluation tooling only scores claims.
+
+Reports expose numerators, denominators, missing observations, critical counts and
+per-slice metrics. Timeouts/errors/missing outputs do not disappear from denominators.
+Raw problem/answer payloads are excluded from reports. Both connected and holdout runner
+modes return BLOCKED without inference. Local fixture success cannot authorize promotion.
+See the Sprint 5.12 implementation map and execution report for owner-only acceptance.
