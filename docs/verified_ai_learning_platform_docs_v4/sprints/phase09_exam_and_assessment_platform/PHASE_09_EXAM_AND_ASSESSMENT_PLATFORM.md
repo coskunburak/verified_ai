@@ -61,3 +61,21 @@ The phase exit review must include:
 - migration/rollback readiness;
 - next-phase dependency statement.
 <!-- PHASE_PRODUCTION_V3:END -->
+
+<!-- PHASE_PRODUCTION_V6:START -->
+# Phase Production Execution Contract v6 (ÖSYM YKS TYT/AYT & University Calculus 101 Exam Engine)
+
+## 1. Entry Gate & Target Exam Blueprints (`ADR-011`)
+- Unlocks after the 30-Day Commercial Wedge gate (`Sprint 11.9A`).
+- Focuses sharply on our two highest-WTP exam verticals (`product/76_COMPETITIVE_INTELLIGENCE_AND_MARKET_POSITIONING_MATRIX.md`):
+  1. **Turkish ÖSYM YKS (`TYT` Temel Matematik 40-question blueprint & `AYT` Matematik 40-question blueprint):**
+     - `TYT` focus: Number sense, ratio/proportion, non-routine story-to-algebra translation (`F08`), speed under time pressure (`1.5 min/question`).
+     - `AYT` focus: Polynomials, quadratics, inequalities, logarithms, sequences, limits & continuity, derivatives, integrals, and trigonometry with high domain-trap density (`F09`).
+  2. **University Calculus 101 / AP Calculus AB-BC Midterm & Final Blueprint:**
+     - Limits (`0/0` indeterminate forms, L'Hôpital), derivative rules (chain/product/quotient, implicit differentiation, optimization), and integration (`u`-substitution, integration by parts, definite areas) with pedantic notation checks (`F12`).
+
+## 2. Signature Differentiator: Post-Mock "Deneme Sınavı Hata & Tuzak Karnesi" (`SPRINT_9.4` / `F28`)
+- Instead of making students take a 135-minute mock test inside a phone screen, Phase 9 introduces **"Fotoğraflı Deneme Yanlış/Boş Analiz Kampı"**:
+  - A student photographs the 5–10 questions they got wrong or left blank in their physical paper YKS deneme exam (e.g., Özdebir, 3D, Bilgi Sarmal, Apotemi) alongside their scratchpad work on the booklet.
+  - Verified AI batch-processes those 5–10 attempts, separates **Knowledge Gaps (Bilgi Eksikliği)** from **Algebraic/Sign Mistakes (İşlem Hatası)** and **ÖSYM Domain Traps (Tanım Kümesi Tuzağı)**, calculates how many **Net (`+4.25 Net`)** they lost solely to avoidable mistakes, and generates a tailored 15-minute **Deneme Telafi Antrenmanı**.
+<!-- PHASE_PRODUCTION_V6:END -->

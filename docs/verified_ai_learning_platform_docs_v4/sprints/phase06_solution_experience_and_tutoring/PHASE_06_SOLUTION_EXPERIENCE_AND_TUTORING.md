@@ -75,3 +75,25 @@ The phase exit review must include:
 
 - `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.2_IMPLEMENTATION_MAP.md` — deterministic `VerificationEvidencePresentation`, progressive-disclosure evidence UX, reason/uncertainty/recovery catalog coverage, and read-only verification refresh.
 - `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.2_EXECUTION_REPORT.md` — `OWNER_ACCEPTANCE_PASSED` for local scope in run `20261031-184154-aBdvps` (Gates A–D `PASS`, 134 iOS tests and 9 backend/evaluation suites `PASS`, exit 0).
+
+<!-- PHASE_PRODUCTION_V6:START -->
+# Phase Production Execution Contract v6 (Commercial Wedge & Deep Pedagogical Differentiators)
+
+## 1. Strategic Re-Ordering & Fast-Track Commercial Wedge (`ADR-008`..`ADR-011`)
+Per `sprints/02_FOCUSED_COMMERCIAL_WEDGE_SPRINT_PROGRAM.md`, Phase 6 is split into **Track A (Immediate 30-Day Commercial Wedge)** and **Track B (Post-Beta Expansion)**:
+- **Track A (Mandatory Before TestFlight Beta):** `SPRINT_6.2B` (Managed Cloud AI Routing: `Gemini 2.5 Flash` + `GPT-4.1-mini` + conditional `o4-mini` behind `PostgresAiSpendGuard`), `SPRINT_6.2C` (`CanonicalMathDocument v2`, Solution Set Algebra `FiniteSet`/`Interval`, `DomainConstraintGuard` in `V024`), `SPRINT_6.2D` (iOS Native 2D `SwiftMath` rendering & `DomainTrapRadarBannerView`), `SPRINT_6.7A` (`Analyze My Work` line-by-line attempt verification & `CounterexampleEngine` in `V025`), and `SPRINT_6.7B` (`FirstWrongStepDiffView`, 3-Stage Socratic Hints, and 60-Second Counterfactual Twin Drill `F04`).
+- **Track B (Executed After 50-Student TestFlight Gate Passes):** `SPRINT_6.3`, `SPRINT_6.4`, `SPRINT_6.5`, `SPRINT_6.8`, `SPRINT_6.9` (Interactive Function/Derivative Plotter `F24` & Turkish YKS Story-to-Algebra Visual Bridge `F08`), and `SPRINT_6.10`.
+
+## 2. Signature Differentiators Owned by Phase 6
+- **`F01` Handwritten First-Wrong-Step Pinpointing (`Analyze My Work`):** Evaluates student notebook photos line by line (`L_0 -> L_1 -> ... -> L_k`) using `services/math-verifier/app/attempt_verification.py`.
+- **`F02` Concrete Counterexample Generator (`CounterexampleEngine`):** Proves *why* a student's step transition is invalid by substituting a safe integer `x \in D` where `val(L_{i-1}, x) != val(L_i, x)`.
+- **`F03` Non-Standard Valid Path Recognition:** Validates any mathematically sound student method (completing the square, substitution, Vieta's formulas) via solution-set equivalence (`SolutionSet(L_i) == SolutionSet(L_{i-1})`) rather than brittle template matching.
+- **`F04` Counterfactual Twin Problem Generator:** Generates a `SymPy`-verified 60-second twin question isolating the exact mistake code (`primaryMistakeCode`) detected in `Analyze My Work`.
+- **`F08` YKS "Yeni Nesil" Story-to-Algebra Visual Bridge (`SPRINT_6.8`/`6.9`):** Maps each highlighted Turkish phrase in a contextual word problem directly to its algebraic variable/constraint before solving.
+- **`F09` & `F12` Domain Trap Radar & Calculus Pedantic Guard (`SPRINT_6.2C`):** Automatically flags denominator zeros, negative even radicals, non-positive logarithm arguments, missing `+ C` constants, and `\sqrt{x^2} = |x|` traps.
+- **`F15` Exam-Speed Shortcut vs. Rigorous Method Toggle (`SPRINT_6.7B`/`6.8`):** Offers both the full guaranteed step-by-step derivation and the 30-second ÖSYM exam-speed shortcut.
+
+## 3. Canonical Path & Privacy Invariants
+- All iOS deliverables must reside under `apps/ios/VerifiedAI/Features/...` (reconciling legacy `apps/ios/VerifiedLearning/...` paths).
+- All `student_attempts` and `student_attempt_steps` rows (`V025`) enforce `training_eligible = false` by default and are exported/erased via `StudentAttemptPrivacyLifecycleContributor`.
+<!-- PHASE_PRODUCTION_V6:END -->

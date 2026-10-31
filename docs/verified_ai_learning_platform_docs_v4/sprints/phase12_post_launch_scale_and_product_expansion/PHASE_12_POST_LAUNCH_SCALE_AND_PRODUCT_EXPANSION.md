@@ -61,3 +61,13 @@ The phase exit review must include:
 - migration/rollback readiness;
 - next-phase dependency statement.
 <!-- PHASE_PRODUCTION_V3:END -->
+
+<!-- PHASE_PRODUCTION_V6:START -->
+# Phase Production Execution Contract v6 (Semantic Caching, B2B2C Teacher Dashboards & Curriculum Expansion)
+
+## 1. Post-Launch Margin Expansion (`R0` Canonical & Semantic Cache)
+- Prioritizes `SPRINT_12.1` (`Canonical & AST-Normalized Solution Caching`): because Turkish YKS (`TYT`/`AYT`) learners disproportionately photograph questions from the top 15 national test publishers (3D, Özdebir, Bilgi Sarmal, Apotemi, Orijinal, Karekök) and past ÖSYM exams, canonical AST hashing increases `R0` cache hit rate from `15%` at launch to **`35%–45%` at scale**, driving marginal AI cost per solve down from `$0.0058` to **`~$0.0038`**.
+
+## 2. High-LTV B2B2C "Özel Ders / Dershane" Micro-Cohort Pack (`SPRINT_12.6`)
+- Before building heavy K-12 enterprise district integrations, Phase 12 targets **private math tutors (özel ders öğretmenleri) and boutique YKS coaching studios**: a tutor can link 10–30 students and view an aggregated weekly **Class Mistake Passport & Domain Trap Heatmap** without manual grading.
+<!-- PHASE_PRODUCTION_V6:END -->

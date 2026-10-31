@@ -61,3 +61,17 @@ The phase exit review must include:
 - migration/rollback readiness;
 - next-phase dependency statement.
 <!-- PHASE_PRODUCTION_V3:END -->
+
+<!-- PHASE_PRODUCTION_V6:START -->
+# Phase Production Execution Contract v6 (Unit Economics, Mistake-Moment Paywalls & Viral Growth Loops)
+
+## 1. Canonical Pricing, Quotas & Gross Margin Baseline (`roadmap/80_UNIT_ECONOMICS_30_DAY_LAUNCH_CONTRACT_AND_EXECUTION_ROADMAP.md`)
+All Phase 10 sprints must enforce the V6 server-authoritative unit economics model (`$0.00581` / `~0.20 TL` weighted cost per verified solve + interaction):
+- **`FREE` Tier:** `3` verified solves/day + `1` `Analyze My Work` handwritten diagnosis/day (`o4-mini` escalation disabled; costs `~$0.07/user/month`).
+- **`PRO` Tier (`199.99 TL/month` or `1,499 TL/year` TR; `$9.99/month` or `$59.99/year` Global):** `150` verified solves/month + `60` `Analyze My Work` diagnoses/month + Personal Mistake Passport (`F05`) + Counterfactual Twin Drills (`F04`). Yields **`88.9%` gross margin in Turkey** and **`94.6%` gross margin globally** (after Apple 15% Small Business commission).
+- **`PRO+` Tier (`349.99 TL/month` or `2,499 TL/year` TR; `$19.99/month` or `$119.99/year` Global):** `400` verified solves/month + `150` `Analyze My Work` diagnoses/month + priority `o4-mini` AYT/Calculus escalation + Post-Mock Deneme Kampı (`F28`). Yields **`82.3%`–`92.5%` gross margin**.
+
+## 2. High-Conversion "Mistake-Moment" Paywall & Organic Viral Loops
+- **Mistake-Moment Paywall (`SPRINT_7.0A` / `SPRINT_10.3`):** Paywalls are never shown before the user experiences value. The primary paywall triggers **after** `Analyze My Work` pinpoints the learner's recurring mistake pattern and shows how many exam nets (`+2.5 TYT/AYT Net`) they are losing to that habit.
+- **"Arkadaşına Tuzak / İkiz Soru Gönder" Viral Loop (`SPRINT_10.4` / `F29`):** Allows a learner who just survived a Domain Restriction Trap (`F09`) or solved a Counterfactual Twin (`F04`) to share a 1-tap challenge card to WhatsApp/Instagram/Telegram (*"Bu soruda öğrencilerin %84'ü x=2 yalancı köküne düşüyor, sen 45 saniyede çözebilir misin?"*) with deep-link attribution.
+<!-- PHASE_PRODUCTION_V6:END -->
