@@ -43,6 +43,10 @@ management:
       service: verified-ai-api
 app:
   verification:
+    arbitration-enabled: ${VERIFICATION_ARBITRATION_ENABLED:false}
+    arbitration-owner-accepted: ${VERIFICATION_ARBITRATION_OWNER_ACCEPTED:false}
+    numeric-enabled: ${VERIFICATION_NUMERIC_ENABLED:false}
+    numeric-owner-accepted: ${VERIFICATION_NUMERIC_OWNER_ACCEPTED:false}
     execution-enabled: ${VERIFICATION_EXECUTION_ENABLED:false}
     calculus-enabled: ${VERIFICATION_CALCULUS_ENABLED:false}
     calculus-owner-accepted: ${VERIFICATION_CALCULUS_OWNER_ACCEPTED:false}

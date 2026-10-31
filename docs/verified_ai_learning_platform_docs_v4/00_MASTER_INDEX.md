@@ -372,3 +372,21 @@ record the additive versioned source-to-evidence path. Status:
 IMPLEMENTED_PENDING_OWNER_VALIDATION / CI_PENDING / ROLLOUT_DISABLED.
 Historical isolated Sprint5.9 PARTIAL acceptance is preserved; production release and
 Phase5 completion remain separate.
+
+## Sprint 5.10 composite evidence handoff
+
+[Implementation map](sprints/phase05_ai_solving_and_verification_core/SPRINT_5.10_IMPLEMENTATION_MAP.md)
+and [execution report](sprints/phase05_ai_solving_and_verification_core/SPRINT_5.10_EXECUTION_REPORT.md)
+record composite evidence, additive numeric contracts, safe rollout boundaries and the
+single owner validation block. NOT_RUN_BY_AGENT / LOCAL_A_H_OWNER_PASS / CI_PENDING /
+ROLLOUT_DISABLED. Only the final evidence-documentation docs-check remains locally.
+
+## Sprint 5.11 arbitration handoff
+
+[Implementation map](sprints/phase05_ai_solving_and_verification_core/SPRINT_5.11_IMPLEMENTATION_MAP.md)
+and [execution report](sprints/phase05_ai_solving_and_verification_core/SPRINT_5.11_EXECUTION_REPORT.md)
+record the deterministic policy, immutable decision/API/iOS slice and owner-only acceptance
+script. Complete local owner acceptance passed on 2026-10-31 in run
+20261031-014130-mAGAKm: A–H, calculus_composite and integration_dependency PASS, exit 0.
+State: OWNER_ACCEPTANCE_PASSED. Paid models SKIPPED_BY_POLICY; hosted CI NOT_RUN;
+production rollout DISABLED. No agent tests, commit, push or deployment.

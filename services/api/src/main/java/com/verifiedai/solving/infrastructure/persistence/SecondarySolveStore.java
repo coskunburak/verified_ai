@@ -15,6 +15,19 @@ import org.springframework.stereotype.Repository;
 public class SecondarySolveStore {
     private final JdbcTemplate jdbc;
     public SecondarySolveStore(JdbcTemplate jdbc) { this.jdbc=jdbc; }
+    public record Corroboration(UUID id, UUID canonicalId, UUID parseId, int parseRevision,
+        int canonicalRevision, SecondaryState state, String agreement) { }
+    /** Owner scope is mandatory; the application holds the existing owner/session lock. */
+    public List<Corroboration> corroboration(UUID user, UUID session, UUID parent) {
+        return jdbc.query("""
+            select j.id,j.canonical_problem_id,j.problem_parse_id,j.problem_parse_revision,j.canonical_revision,
+                j.state,e.agreement_jsonb::text as agreement
+            from secondary_solve_jobs j left join secondary_solution_evidence e on e.job_id=j.id
+            where j.user_id=? and j.problem_session_id=? and j.primary_job_id=? order by j.id limit 17
+            """, (r,n) -> new Corroboration(r.getObject("id", UUID.class), r.getObject("canonical_problem_id", UUID.class),
+                r.getObject("problem_parse_id", UUID.class), r.getInt("problem_parse_revision"), r.getInt("canonical_revision"),
+                SecondaryState.valueOf(r.getString("state")), r.getString("agreement")), user, session, parent);
+    }
     public Optional<SecondaryJob> get(UUID id) { return one("select * from secondary_solve_jobs where id=?",id); }
     public Optional<SecondaryJob> forPrimary(UUID primary,String version) {
         return one("select * from secondary_solve_jobs where primary_job_id=? and policy_version=?",primary,version);

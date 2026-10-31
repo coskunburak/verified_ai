@@ -83,14 +83,28 @@ final class PrimarySolveUITests: XCTestCase {
         screenshot.lifetime = .keepAlways
         add(screenshot)
     }
+    func testServerVerificationStatesAndConflictHaveAccessibleHonestPresentation() {
+        for scenario in ["VERIFIED", "PARTIALLY_VERIFIED", "UNVERIFIED", "CONTRADICTION"] {
+            let app = launch(scenario); openSolve(app); start(app)
+            let status = scenario == "CONTRADICTION" ? "UNVERIFIED" : scenario
+            requireExists(app.descendants(matching: .any)["verification.status." + status], in: app,
+                timeout: 15, phase: "server verdict rendered separately from generation")
+            XCTAssertTrue(app.descendants(matching: .any)["solve.fixture"].exists)
+            XCTAssertTrue(app.descendants(matching: .any)["solve.status.GENERATED_UNVERIFIED"].exists)
+            if scenario == "CONTRADICTION" {
+                requireExists(app.descendants(matching: .any)["verification.conflict"], in: app,
+                    timeout: 3, phase: "contradiction warning accessible")
+            }
+        }
+    }
     func testHistoryQueuedRunningUnverifiedStepsAndReopen() {
         // Acknowledgements drive the synthetic server, never the ViewModel snapshot. The real poll
         // still has to deliver each response. XCTest cannot race a two/three-second display window.
         let app = launch(extra: ["--solve-controlled-progression"]); openSolve(app); start(app)
         requireExists(app.descendants(matching: .any)["solve.status.QUEUED"], in: app, timeout: 2, phase: "QUEUED rendered")
-        tapVisible(app.buttons["solve.fixture.advance.QUEUED"], in: app)
+        tapVisible(app.scrollViews.buttons["solve.fixture.advance.QUEUED"], in: app)
         requireExists(app.descendants(matching: .any)["solve.status.RUNNING"], in: app, timeout: 4, phase: "RUNNING rendered by poll")
-        tapVisible(app.buttons["solve.fixture.advance.RUNNING"], in: app)
+        tapVisible(app.scrollViews.buttons["solve.fixture.advance.RUNNING"], in: app)
         requireExists(app.descendants(matching: .any)["solve.unverified"], in: app, timeout: 8, phase: "unverified candidate rendered")
         XCTAssertTrue(app.descendants(matching: .any)["solve.answer"].exists)
         XCTAssertTrue(app.descendants(matching: .any)["solve.fixture"].exists)
@@ -104,6 +118,19 @@ final class PrimarySolveUITests: XCTestCase {
         tapVisible(app.buttons["history.solve"], in: app)
         requireExists(app.descendants(matching: .any)["solve.unverified"], in: app, timeout: 4, phase: "persisted candidate reopened")
         XCTAssertFalse(app.buttons["solve.start"].exists)
+    }
+    func testCalculusProofScopesRemainExplicitAndSeparateFromGeneration() {
+        for (scenario, scope) in [("CALCULUS_DERIVATIVE", "OPEN_INTERVAL"),
+            ("CALCULUS_INTEGRAL", "ANTIDERIVATIVE_REPRESENTATIVE"), ("CALCULUS_LIMIT", "PUNCTURED_NEIGHBORHOOD")] {
+            let app = launch(scenario); openSolve(app); start(app)
+            requireExists(app.descendants(matching: .any)["verification.status.VERIFIED"], in: app,
+                timeout: 15, phase: "calculus projection verified with bounded scope")
+            let disclosure = app.descendants(matching: .any)["verification.scope." + scope]
+            for _ in 0..<6 { if disclosure.exists { break }; app.swipeUp() }
+            requireExists(disclosure, in: app, timeout: 4, phase: "calculus proof scope disclosed")
+            XCTAssertTrue(app.descendants(matching: .any)["solve.fixture"].exists)
+            XCTAssertFalse(app.descendants(matching: .any)["verification.scope.FINAL_ANSWER"].exists)
+        }
     }
     func testReviewRequiredDisplaysUncertainty() {
         let app = launch("REVIEW_REQUIRED"); openSolve(app); start(app)

@@ -35,7 +35,8 @@ import static org.assertj.core.api.Assertions.*;
 
 @EnabledIfEnvironmentVariable(named="VERIFIEDAI_MATH_WIRE",matches="true")
 @TestPropertySource(properties={"app.environment=test","app.verification.calculus-enabled=true",
-    "app.verification.calculus-owner-accepted=true","app.solving.calculus-fixture-enabled=true"})
+    "app.verification.calculus-owner-accepted=true","app.solving.calculus-fixture-enabled=true",
+    "app.verification.arbitration-enabled=true","app.verification.arbitration-owner-accepted=true"})
 @Import(CalculusProductionIntegrationTest.Configuration.class)
 class CalculusProductionIntegrationTest extends PostgresIntegrationTestSupport {
     static final CalculusHttpHarness HTTP=new CalculusHttpHarness();
@@ -44,6 +45,23 @@ class CalculusProductionIntegrationTest extends PostgresIntegrationTestSupport {
     @TestConfiguration static class Configuration {
         @Bean @Primary ControlledCalculus calculusControl(HttpMathematicalExecutor http) { return new ControlledCalculus(http); }
         @Bean @Primary ProblemAssetStorage syntheticStorage() { return org.mockito.Mockito.mock(ProblemAssetStorage.class); }
+        @Bean @Primary com.verifiedai.identity.domain.model.AppleIdentityVerifier identityVerifier() {
+            return (token, nonce) -> new com.verifiedai.identity.domain.model.VerifiedAppleIdentity(token);
+        }
+        @Bean @Primary ArbitrationClock arbitrationClock() { return new ArbitrationClock(); }
+    }
+    static class ArbitrationClock extends java.time.Clock {
+        volatile CountDownLatch entered, release;
+        public java.time.ZoneId getZone() { return java.time.ZoneOffset.UTC; }
+        public java.time.Clock withZone(java.time.ZoneId zone) { return this; }
+        public java.time.Instant instant() {
+            if (entered != null && Thread.currentThread().getName().equals("calculus-arbitration")) {
+                entered.countDown();
+                try { if (!release.await(15, TimeUnit.SECONDS)) throw new IllegalStateException("Arbitration barrier timed out"); }
+                catch (InterruptedException e) { Thread.currentThread().interrupt(); throw new IllegalStateException(e); }
+            }
+            return java.time.Instant.now();
+        }
     }
     static class ControlledCalculus implements CalculusExecutor {
         final HttpMathematicalExecutor http; final AtomicInteger calls=new AtomicInteger();
@@ -76,6 +94,11 @@ class CalculusProductionIntegrationTest extends PostgresIntegrationTestSupport {
     @Autowired SolveSourceAccess sources;
     @Autowired VerificationExecution execution;
     @Autowired VerificationPlanning planning;
+    @Autowired VerificationArbitrationService arbitration;
+    @Autowired CompositeVerification composite;
+    @Autowired ArbitrationClock arbitrationClock;
+    @Autowired com.verifiedai.identity.application.IdentityApplicationService identity;
+    @org.springframework.beans.factory.annotation.Value("${local.server.port}") int port;
     @Autowired VerificationLifecycleContributor privacy;
     @Autowired VerificationCapabilities capabilities;
     @Autowired ControlledCalculus controlled;
@@ -238,5 +261,99 @@ class CalculusProductionIntegrationTest extends PostgresIntegrationTestSupport {
         assertThat(controlled.calls.get()).isEqualTo(before);
         tx.executeWithoutResult(status->jdbc.update("delete from problem_sessions where id=? and user_id=?",session,user));
         assertThat(jdbc.queryForObject("select count(*) from verification_runs where user_id=?",Integer.class,user)).isZero();
+    }
+
+    @Test void calculusCompositeDecisionsReachOwnedHttpProjectionWithoutNewExecutionAndDeleteWithAccount() throws Exception {
+        var login = identity.signInWithApple(new com.verifiedai.identity.application.AppleSignInCommand(
+            UUID.randomUUID().toString(), "unused-code", "nonce"));
+        user = login.userId();
+        for (var example : CalculusIntegrationData.cases()) {
+            var solution = sourceAndCandidate(example); var runKey = UUID.randomUUID(); var requestKey = UUID.randomUUID();
+            var publication = execution.execute(user, session, solution, runKey);
+            int calls = controlled.calls.get();
+            var assessment = composite.current(user, session, solution, runKey).orElseThrow();
+            assertThat(assessment.version()).isEqualTo(CompositeEvidenceAssessment.CALCULUS_VERSION);
+            var d = arbitration.evaluate(user, session, solution, runKey, requestKey);
+            boolean proven = example.path("expectedOutcome").asText().equals("PROVEN");
+            boolean disproven = example.path("expectedOutcome").asText().equals("DISPROVEN");
+            assertThat(d.status()).as(example.path("id").asText()).isEqualTo(proven
+                ? VerificationDecision.Status.VERIFIED : VerificationDecision.Status.UNVERIFIED);
+            var evidence = publication.run().evidence().getFirst();
+            if (proven) {
+                assertThat(d.scope().name()).isEqualTo(evidence.calculus().result().proof().scope().name());
+                assertThat(d.checked()).containsExactly(evidence.method());
+            } else {
+                assertThat(d.scope()).isEqualTo(VerificationDecision.Scope.NONE);
+                assertThat(d.checked()).isEmpty();
+            }
+            assertThat(d.contradictions()).hasSize(disproven ? 1 : 0);
+            assertThat(arbitration.evaluate(user, session, solution, runKey, requestKey)).isEqualTo(d);
+            var job = solutions.historical(user, session, solution).solution().lineage().origin().jobId();
+            assertThat(arbitration.currentForJob(user, session, job)).contains(d);
+            var uri = java.net.URI.create("http://localhost:" + port + "/api/v1/problem-sessions/" + session + "/solves/" + job + "/verification");
+            var client = java.net.http.HttpClient.newHttpClient();
+            var response = client.send(java.net.http.HttpRequest.newBuilder(uri).header("Authorization", "Bearer " + login.accessToken()).GET().build(),
+                java.net.http.HttpResponse.BodyHandlers.ofString());
+            assertThat(response.statusCode()).isEqualTo(200);
+            var projected = CalculusIntegrationData.JSON.readTree(response.body()).path("decision");
+            assertThat(projected.path("scope").asText()).isEqualTo(d.scope().name());
+            assertThat(projected.path("status").asText()).isEqualTo(d.status().name());
+            assertThat(projected.has("source")).isFalse(); assertThat(projected.has("secondary")).isFalse();
+            assertThat(projected.path("uncertainty").toString()).contains("EXPLANATION_STEPS_UNCHECKED");
+            assertThat(controlled.calls.get()).isEqualTo(calls);
+            assertThat(jdbc.queryForObject("select count(*) from ai_usage_records where user_id=?", Integer.class, user)).isZero();
+        }
+        assertThat(privacy.exportUserData(user).get("decisions")).asList().hasSize(CalculusIntegrationData.cases().size());
+        accountPrivacy.requestDeletion(user); accountPrivacy.confirmDeletion(user, "DELETE");
+        assertThat(jdbc.queryForObject("select count(*) from verification_decisions where user_id=?", Integer.class, user)).isZero();
+        assertThat(jdbc.queryForObject("select count(*) from verification_runs where user_id=?", Integer.class, user)).isZero();
+    }
+
+    @Test void laterCalculusEvidenceAndCapabilityRollbackHidePreviousDecision() {
+        var solution = sourceAndCandidate(CalculusIntegrationData.cases().getFirst()); var first = UUID.randomUUID();
+        execution.execute(user, session, solution, first);
+        var request = UUID.randomUUID(); arbitration.evaluate(user, session, solution, first, request);
+        var job = solutions.historical(user, session, solution).solution().lineage().origin().jobId();
+        var next = UUID.randomUUID(); execution.execute(user, session, solution, next);
+        assertThat(arbitration.currentForJob(user, session, job)).isEmpty();
+        assertThatThrownBy(() -> arbitration.evaluate(user, session, solution, first, UUID.randomUUID())).isInstanceOf(ApiProblemException.class);
+        assertThatThrownBy(() -> arbitration.evaluate(user, session, solution, next, request)).isInstanceOf(ApiProblemException.class);
+        arbitration.evaluate(user, session, solution, next, UUID.randomUUID());
+        capabilities.configureCalculus(false, true, CalculusExecution.ALGORITHM, "test");
+        assertThat(arbitration.currentForJob(user, session, job)).isEmpty();
+        assertThat(jdbc.queryForObject("select count(*) from verification_decisions where user_id=?", Integer.class, user)).isEqualTo(2);
+    }
+
+    @Test void calculusDomainObstructionRemainsNonproofThroughPublication() {
+        var example = (ObjectNode) CalculusIntegrationData.cases().getFirst().deepCopy();
+        var restriction = ((ObjectNode) example.path("parse").path("calculus")).withArray("restrictions").addObject();
+        restriction.put("id", "positive-on-whole-interval").put("relation", "GREATER_THAN");
+        restriction.putObject("left").put("kind", "VARIABLE").put("symbol", "x");
+        restriction.putObject("right").put("kind", "NUMBER").put("numericType", "INTEGER").put("value", "0");
+        var solution = sourceAndCandidate(example); var key = UUID.randomUUID();
+        var publication = execution.execute(user, session, solution, key);
+        assertThat(publication.run().evidence().getFirst().calculus().result().reasonCode())
+            .isEqualTo(CalculusExecution.Reason.DOMAIN_OBSTRUCTION);
+        var d = arbitration.evaluate(user, session, solution, key, UUID.randomUUID());
+        assertThat(d.status()).isEqualTo(VerificationDecision.Status.UNVERIFIED);
+        assertThat(d.checked()).isEmpty(); assertThat(d.contradictions()).isEmpty();
+        assertThat(d.recovery()).isEqualTo(VerificationDecision.Recovery.REVIEW_SOURCE);
+        assertThat(d.uncertainty()).contains(VerificationDecision.Uncertainty.DOMAIN_UNRESOLVED);
+    }
+
+    @Test void calculusCorrectionDuringArbitrationRejectsPublicationWithoutHoldingOwnerLock() throws Exception {
+        var solution = sourceAndCandidate(CalculusIntegrationData.cases().getFirst()); var key = UUID.randomUUID();
+        execution.execute(user, session, solution, key);
+        arbitrationClock.entered = new CountDownLatch(1); arbitrationClock.release = new CountDownLatch(1);
+        try (var pool = Executors.newSingleThreadExecutor(r -> new Thread(r, "calculus-arbitration"))) {
+            var pending = pool.submit(() -> arbitration.evaluate(user, session, solution, key, UUID.randomUUID()));
+            try {
+                assertThat(arbitrationClock.entered.await(15, TimeUnit.SECONDS)).isTrue();
+                correction(CalculusIntegrationData.cases().get(2).path("parse"));
+                canonical.canonicalize(user, session);
+            } finally { arbitrationClock.release.countDown(); }
+            assertThatThrownBy(() -> pending.get(15, TimeUnit.SECONDS)).isInstanceOf(ExecutionException.class);
+        } finally { arbitrationClock.entered = null; arbitrationClock.release = null; }
+        assertThat(jdbc.queryForObject("select count(*) from verification_decisions where user_id=?", Integer.class, user)).isZero();
     }
 }

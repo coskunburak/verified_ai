@@ -31,6 +31,22 @@ struct AppDependencies {
     let deepLinkRouter: DeepLinkRouting
     let correlationContext: CorrelationContext
 
+    var solveFlowNetworkMonitor: NetworkMonitoring {
+        Self.networkForSolveFlow(service: primarySolveAPI, history: problemSessionHistoryAPI,
+            isFixture: solveFixture, live: networkMonitor)
+    }
+
+    static func networkForSolveFlow(service: PrimarySolveServicing, history: ProblemSessionHistoryServicing,
+                                    isFixture: Bool, live: NetworkMonitoring) -> NetworkMonitoring {
+        #if DEBUG
+        // Both transports are local fixtures. Host path changes cannot make their data unavailable.
+        if isFixture, service is FixturePrimarySolveAPI, history is FixtureSolveHistoryAPI {
+            return FixtureSolveNetworkMonitor()
+        }
+        #endif
+        return live
+    }
+
     static func live(environment: AppEnvironment) -> AppDependencies {
         let correlationContext = CorrelationContext()
         let logger = AppLogger(subsystem: "com.verifiedai.learning", category: "app")

@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "verification-decision-v1",
+  "id": "00000000-0000-0000-0000-000000005411",
+  "policyVersion": "verification-policy-v1",
+  "solutionId": "00000000-0000-0000-0000-000000005412",
+  "canonicalProblemId": "00000000-0000-0000-0000-000000005402",
+  "problemParseId": "00000000-0000-0000-0000-000000005403",
+  "problemParseRevision": 1,
+  "runId": "00000000-0000-0000-0000-000000005413",
+  "evidenceIds": [
+    "00000000-0000-0000-0000-000000005414"
+  ],
+  "status": "UNVERIFIED",
+  "scope": "NONE",
+  "reasons": [
+    "MISSING_PROOF"
+  ],
+  "checked": [],
+  "unchecked": [
+    "DOMAIN_CONSTRAINT_CHECK",
+    "EQUATION_SUBSTITUTION",
+    "SOLUTION_SET_COMPLETENESS"
+  ],
+  "contradictions": [],
+  "uncertainty": [
+    "EXPLANATION_STEPS_UNCHECKED",
+    "MISSING_MATHEMATICAL_PROOF"
+  ],
+  "recovery": "ADDITIONAL_EVIDENCE",
+  "correlationId": "policy-fixture",
+  "createdAt": "2026-10-30T00:00:00Z"
+}

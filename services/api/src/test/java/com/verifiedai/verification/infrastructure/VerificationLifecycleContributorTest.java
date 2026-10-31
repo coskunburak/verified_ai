@@ -16,7 +16,7 @@ import static org.mockito.Mockito.*;
 
 class VerificationLifecycleContributorTest {
     private final VerificationRunRepository repository = mock(VerificationRunRepository.class);
-    private final VerificationLifecycleContributor contributor = new VerificationLifecycleContributor(repository);
+    private final VerificationLifecycleContributor contributor = new VerificationLifecycleContributor(repository, org.mockito.Mockito.mock(com.verifiedai.verification.domain.repository.VerificationDecisionRepository.class));
     // Deliberately has no Java time module, matching the shared account export boundary.
     private final ObjectMapper accountMapper = new ObjectMapper();
 

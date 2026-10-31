@@ -1,0 +1,572 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.local/schemas/verification-decision-v1",
+  "title": "Verification decision public projection v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "solutionId",
+    "canonicalProblemId",
+    "problemParseId",
+    "runId",
+    "schemaVersion",
+    "policyVersion",
+    "problemParseRevision",
+    "evidenceIds",
+    "correlationId",
+    "createdAt",
+    "status",
+    "scope",
+    "recovery",
+    "reasons",
+    "uncertainty",
+    "checked",
+    "unchecked",
+    "contradictions"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "solutionId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "canonicalProblemId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "problemParseId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "runId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "schemaVersion": {
+      "const": "verification-decision-v1"
+    },
+    "policyVersion": {
+      "const": "verification-policy-v1"
+    },
+    "problemParseRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "evidenceIds": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 5,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      }
+    },
+    "correlationId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,64}$"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "enum": [
+        "VERIFIED",
+        "PARTIALLY_VERIFIED",
+        "UNVERIFIED"
+      ]
+    },
+    "scope": {
+      "enum": [
+        "NONE",
+        "CHECKED_METHOD_CLAIMS",
+        "FINAL_ANSWER",
+        "OPEN_INTERVAL",
+        "ANTIDERIVATIVE_REPRESENTATIVE",
+        "PUNCTURED_NEIGHBORHOOD"
+      ]
+    },
+    "recovery": {
+      "enum": [
+        "NONE",
+        "REVIEW_SOURCE",
+        "REVIEW_CONTRADICTION",
+        "RECONCILE_SOLVERS",
+        "FRESH_CALCULATION",
+        "ADDITIONAL_EVIDENCE",
+        "UNSUPPORTED_CAPABILITY",
+        "RETRY_VERIFICATION",
+        "RETRY_LIMIT",
+        "BUDGET_BLOCKED",
+        "RATE_LIMITED",
+        "RELEASE_BLOCKED",
+        "INVALID_INPUT"
+      ]
+    },
+    "reasons": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "INVALID_EVIDENCE",
+          "STALE_LINEAGE",
+          "REVIEW_REQUIRED",
+          "COMPOSITE_UNAVAILABLE",
+          "SOURCE_SCOPE_UNRESOLVED",
+          "DETERMINISTIC_CONTRADICTION",
+          "EVIDENCE_CONFLICT",
+          "SECONDARY_DISAGREEMENT",
+          "SECONDARY_ASSUMPTIONS",
+          "SECONDARY_INVALID",
+          "SECONDARY_STALE",
+          "CAPABILITY_UNAVAILABLE",
+          "DOMAIN_UNCHECKED",
+          "COMPLETENESS_UNCHECKED",
+          "EXECUTION_FAILURE",
+          "MISSING_PROOF",
+          "RELEASE_DISABLED",
+          "SUBSET_PROVEN",
+          "REQUIRED_CLAIM_PROVEN",
+          "SECONDARY_AGREEMENT"
+        ]
+      }
+    },
+    "uncertainty": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 7,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "EXPLANATION_STEPS_UNCHECKED",
+          "DOMAIN_UNRESOLVED",
+          "COMPLETENESS_UNRESOLVED",
+          "MISSING_MATHEMATICAL_PROOF",
+          "SECONDARY_CONFLICT",
+          "EXECUTION_UNAVAILABLE",
+          "RELEASE_NOT_ACCEPTED"
+        ]
+      },
+      "contains": {
+        "const": "EXPLANATION_STEPS_UNCHECKED"
+      }
+    },
+    "checked": {
+      "type": "array",
+      "maxItems": 5,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "ARITHMETIC_EVALUATION",
+          "SYMBOLIC_EQUIVALENCE",
+          "EQUATION_SUBSTITUTION",
+          "DOMAIN_CONSTRAINT_CHECK",
+          "SOLUTION_SET_COMPLETENESS",
+          "DERIVATIVE_BACKCHECK",
+          "INTEGRAL_DIFFERENTIATION_BACKCHECK",
+          "FINITE_LIMIT"
+        ]
+      }
+    },
+    "unchecked": {
+      "type": "array",
+      "maxItems": 5,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "ARITHMETIC_EVALUATION",
+          "SYMBOLIC_EQUIVALENCE",
+          "EQUATION_SUBSTITUTION",
+          "DOMAIN_CONSTRAINT_CHECK",
+          "SOLUTION_SET_COMPLETENESS",
+          "NUMERIC_SAMPLING",
+          "DERIVATIVE_BACKCHECK",
+          "INTEGRAL_DIFFERENTIATION_BACKCHECK",
+          "FINITE_LIMIT"
+        ]
+      }
+    },
+    "contradictions": {
+      "type": "array",
+      "maxItems": 5,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "ARITHMETIC_EVALUATION",
+          "SYMBOLIC_EQUIVALENCE",
+          "EQUATION_SUBSTITUTION",
+          "DOMAIN_CONSTRAINT_CHECK",
+          "SOLUTION_SET_COMPLETENESS",
+          "NUMERIC_SAMPLING",
+          "DERIVATIVE_BACKCHECK",
+          "INTEGRAL_DIFFERENTIATION_BACKCHECK",
+          "FINITE_LIMIT"
+        ]
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "VERIFIED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "scope": {
+            "enum": [
+              "FINAL_ANSWER",
+              "OPEN_INTERVAL",
+              "ANTIDERIVATIVE_REPRESENTATIVE",
+              "PUNCTURED_NEIGHBORHOOD"
+            ]
+          },
+          "checked": {
+            "minItems": 1,
+            "contains": {
+              "enum": [
+                "ARITHMETIC_EVALUATION",
+                "SYMBOLIC_EQUIVALENCE",
+                "EQUATION_SUBSTITUTION",
+                "SOLUTION_SET_COMPLETENESS",
+                "DERIVATIVE_BACKCHECK",
+                "INTEGRAL_DIFFERENTIATION_BACKCHECK",
+                "FINITE_LIMIT"
+              ]
+            }
+          },
+          "unchecked": {
+            "maxItems": 0
+          },
+          "contradictions": {
+            "maxItems": 0
+          },
+          "recovery": {
+            "const": "NONE"
+          },
+          "reasons": {
+            "contains": {
+              "const": "REQUIRED_CLAIM_PROVEN"
+            }
+          },
+          "uncertainty": {
+            "const": [
+              "EXPLANATION_STEPS_UNCHECKED"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "PARTIALLY_VERIFIED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "scope": {
+            "const": "CHECKED_METHOD_CLAIMS"
+          },
+          "checked": {
+            "minItems": 1,
+            "contains": {
+              "enum": [
+                "ARITHMETIC_EVALUATION",
+                "SYMBOLIC_EQUIVALENCE",
+                "EQUATION_SUBSTITUTION",
+                "SOLUTION_SET_COMPLETENESS"
+              ]
+            }
+          },
+          "unchecked": {
+            "minItems": 1
+          },
+          "contradictions": {
+            "maxItems": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "UNVERIFIED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "scope": {
+            "const": "NONE"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "checked": {
+            "contains": {
+              "const": "DERIVATIVE_BACKCHECK"
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "checked": {
+            "const": [
+              "DERIVATIVE_BACKCHECK"
+            ]
+          },
+          "unchecked": {
+            "maxItems": 0
+          }
+        },
+        "if": {
+          "properties": {
+            "status": {
+              "const": "VERIFIED"
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "scope": {
+              "const": "OPEN_INTERVAL"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "scope": {
+            "const": "OPEN_INTERVAL"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "status": {
+            "const": "VERIFIED"
+          },
+          "checked": {
+            "const": [
+              "DERIVATIVE_BACKCHECK"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "unchecked": {
+            "contains": {
+              "const": "DERIVATIVE_BACKCHECK"
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "status": {
+            "const": "UNVERIFIED"
+          },
+          "checked": {
+            "maxItems": 0
+          },
+          "unchecked": {
+            "const": [
+              "DERIVATIVE_BACKCHECK"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "checked": {
+            "contains": {
+              "const": "INTEGRAL_DIFFERENTIATION_BACKCHECK"
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "checked": {
+            "const": [
+              "INTEGRAL_DIFFERENTIATION_BACKCHECK"
+            ]
+          },
+          "unchecked": {
+            "maxItems": 0
+          }
+        },
+        "if": {
+          "properties": {
+            "status": {
+              "const": "VERIFIED"
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "scope": {
+              "const": "ANTIDERIVATIVE_REPRESENTATIVE"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "scope": {
+            "const": "ANTIDERIVATIVE_REPRESENTATIVE"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "status": {
+            "const": "VERIFIED"
+          },
+          "checked": {
+            "const": [
+              "INTEGRAL_DIFFERENTIATION_BACKCHECK"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "unchecked": {
+            "contains": {
+              "const": "INTEGRAL_DIFFERENTIATION_BACKCHECK"
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "status": {
+            "const": "UNVERIFIED"
+          },
+          "checked": {
+            "maxItems": 0
+          },
+          "unchecked": {
+            "const": [
+              "INTEGRAL_DIFFERENTIATION_BACKCHECK"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "checked": {
+            "contains": {
+              "const": "FINITE_LIMIT"
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "checked": {
+            "const": [
+              "FINITE_LIMIT"
+            ]
+          },
+          "unchecked": {
+            "maxItems": 0
+          }
+        },
+        "if": {
+          "properties": {
+            "status": {
+              "const": "VERIFIED"
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "scope": {
+              "const": "PUNCTURED_NEIGHBORHOOD"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "scope": {
+            "const": "PUNCTURED_NEIGHBORHOOD"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "status": {
+            "const": "VERIFIED"
+          },
+          "checked": {
+            "const": [
+              "FINITE_LIMIT"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "unchecked": {
+            "contains": {
+              "const": "FINITE_LIMIT"
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "status": {
+            "const": "UNVERIFIED"
+          },
+          "checked": {
+            "maxItems": 0
+          },
+          "unchecked": {
+            "const": [
+              "FINITE_LIMIT"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

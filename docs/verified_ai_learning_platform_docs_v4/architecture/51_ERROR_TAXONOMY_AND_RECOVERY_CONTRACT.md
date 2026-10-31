@@ -130,3 +130,16 @@ Recommended product-safe error families include:
 
 Never expose provider secrets, account quota details, internal model IDs unnecessarily, or cost values in user-facing error payloads.
 <!-- HYBRID_AI_STRATEGY_V3:END -->
+
+## Sprint 5.11 verification recovery
+
+Arbitration reuses RESOURCE_FORBIDDEN, ACCOUNT_NOT_ACTIVE, SOLVE_SOURCE_NOT_READY,
+VERIFICATION_UNAVAILABLE, IDEMPOTENCY_KEY_REQUIRED and IDEMPOTENCY_KEY_REUSED.
+Public absence is `{decision: null}`; it is neither VERIFIED nor a wrong-answer claim.
+Decision recovery enums distinguish review source/contradiction, solver reconciliation,
+fresh calculation, additional mathematical evidence, unsupported capability, invalid input,
+release blocking and bounded infrastructure retry. Retry advice permits fewer than three
+runs and a five-minute window; it is never an authorization to dispatch or bill inference.
+Rate/budget classification exists in the pure recovery policy; no new paid escalation path
+is wired. Existing solver budget/entitlement rules remain the sole authority for inference.
+Expired retry advice is suppressed from the current projection; immutable history stays.

@@ -60,6 +60,7 @@ class VerificationExecutionIntegrationTest extends PostgresIntegrationTestSuppor
     @Autowired TransactionTemplate tx;
     @Autowired ControlledExecutor controlled;
     @Autowired VerificationLifecycleContributor privacy;
+    @Autowired CompositeVerification composite;
     @Autowired AccountPrivacyApplicationService accountPrivacy;
     @Autowired ProblemAssetStorage assetStorage;
     @Autowired com.verifiedai.verification.domain.repository.VerificationRunRepository runs;
@@ -86,6 +87,33 @@ class VerificationExecutionIntegrationTest extends PostgresIntegrationTestSuppor
     }
     VerificationExecution.Publication run() { return execution.execute(user, session, solutionId, key); }
     int count() { return jdbc.queryForObject("select count(*) from verification_runs where user_id=?", Integer.class, user); }
+    @Test void currentCompositeIsOwnedEphemeralAndRejectsStaleHistory() {
+        var first = run().run();
+        var result = composite.current(user, session, solutionId, key).orElseThrow();
+        assertThat(result.run()).isEqualTo(first);
+        assertThat(result.category()).isEqualTo(CompositeEvidenceAssessment.Category.INCOMPLETE_EVIDENCE);
+        assertThat(result.domainCoverage()).isEqualTo(CompositeEvidenceAssessment.DomainCoverage.UNRESOLVED);
+        assertThat(result.reasons()).contains(CompositeEvidenceAssessment.Reason.DOMAIN_UNRESOLVED,
+            CompositeEvidenceAssessment.Reason.FAILED_METHOD);
+        assertThat(result.failed()).containsExactly(VerificationMethod.DOMAIN_CONSTRAINT_CHECK,
+            VerificationMethod.EQUATION_SUBSTITUTION, VerificationMethod.SOLUTION_SET_COMPLETENESS);
+        assertThat(result.exactProofPresent()).isFalse();
+        assertThat(result.exactContradictionPresent()).isFalse();
+        assertThat(result.run().evidence()).allSatisfy(e -> {
+            assertThat(e.domainAssumptions()).containsEntry("x", PlanningSource.Domain.UNKNOWN);
+            assertThat(e.result().outcome()).isEqualTo(Outcome.EXECUTION_FAILED);
+            assertThat(e.result().reasonCode()).isEqualTo(Reason.TIMEOUT);
+        });
+        assertThat(composite.current(user, session, solutionId, key)).contains(result);
+        assertThat(count()).isEqualTo(1);
+        assertThatThrownBy(() -> composite.current(fixture.insertUser(), session, solutionId, key)).isInstanceOf(RuntimeException.class);
+        assertThatThrownBy(() -> tx.execute(s -> composite.current(user, session, solutionId, key)))
+            .isInstanceOf(IllegalTransactionStateException.class);
+        fixture.insertSupportedParse(user, session, SolverSourceFixture.equationParseJson("x + 2 = 4"), 2);
+        canonical.canonicalize(user, session);
+        assertThat(composite.current(user, session, solutionId, key)).isEmpty();
+        assertThat(execution.history(user, session, solutionId, key).run()).isEqualTo(first);
+    }
     @Test void durableEvidenceRetriesAndExportPreserveUnverifiedSolution() {
         var first = run();
         assertThat(first.state()).isEqualTo(VerificationExecution.State.PUBLISHED);
@@ -148,6 +176,7 @@ class VerificationExecutionIntegrationTest extends PostgresIntegrationTestSuppor
         assertThat(jdbc.queryForObject("select count(*) from problem_sessions where user_id=?", Integer.class, user)).isZero();
         assertThat(jdbc.queryForObject("select status from users where id=?", String.class, user)).isEqualTo("DELETED");
         for (var objectKey : objectKeys) org.mockito.Mockito.verify(assetStorage).deleteIfExists(objectKey);
+        assertThatThrownBy(() -> composite.current(user, session, solutionId, key)).isInstanceOf(RuntimeException.class);
     }
     @Test void idempotencyKeyCannotBeReboundToAnotherSolution() {
         run(); var another = materialize();

@@ -20,6 +20,7 @@ public record VerificationEvidence(UUID id, UUID executionId, UUID planId, Strin
             domainAssumptions,result,correlationId,createdAt,null);
     }
     public VerificationMethod method() { return result!=null ? result.method() : CalculusEvidence.method(calculus.result().method()); }
+    public MathematicalExecution.Outcome outcome() { return result != null ? result.outcome() : calculus.result().outcome(); }
     public VerificationEvidence {
         Objects.requireNonNull(id); Objects.requireNonNull(executionId); Objects.requireNonNull(planId);
         Objects.requireNonNull(policyVersion); Objects.requireNonNull(capabilityVersion); Objects.requireNonNull(source);

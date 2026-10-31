@@ -42,6 +42,10 @@ public class JdbcVerificationRunRepository implements VerificationRunRepository 
         return jdbc.query("select run_jsonb::text from verification_runs where user_id=? and problem_session_id=? and request_key=?",
             (rs, n) -> decode(rs.getString(1)), user, session, key).stream().findFirst();
     }
+    public Optional<VerificationRun> latest(UUID user, UUID session, UUID solution) {
+        return jdbc.query("select run_jsonb::text from verification_runs where user_id=? and problem_session_id=? and solution_id=? order by created_at desc,id desc limit 1",
+            (rs, n) -> decode(rs.getString(1)), user, session, solution).stream().findFirst();
+    }
     public VerificationRun publish(VerificationRun run) {
         var s = run.source();
         jdbc.update("""

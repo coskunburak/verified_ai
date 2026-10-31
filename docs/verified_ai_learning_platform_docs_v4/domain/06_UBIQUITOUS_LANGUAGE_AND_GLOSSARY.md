@@ -235,3 +235,12 @@ This matrix is the implementation-ready companion to the glossary. "Durable" mea
 
 **Model Release** — versioned external route configuration or proprietary model artifact approved through evaluation and rollout gates.
 <!-- HYBRID_AI_STRATEGY_V3:END -->
+
+## Composite verification vocabulary
+
+**Composite evidence assessment** — versioned, source-bound account of exact method
+support/contradictions, domain coverage, missing obligations and diagnostic conflicts;
+not a product verification verdict.
+
+**Numerical diagnostic** — bounded approximate comparisons under an explicit sampling and
+stability policy. Agreement and mismatch are neither exact proof nor exact disproof.

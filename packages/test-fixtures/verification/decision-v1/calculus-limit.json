@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "verification-decision-v1",
+  "id": "00000000-0000-0000-0000-000000005411",
+  "policyVersion": "verification-policy-v1",
+  "solutionId": "00000000-0000-0000-0000-000000005412",
+  "canonicalProblemId": "00000000-0000-0000-0000-000000005402",
+  "problemParseId": "00000000-0000-0000-0000-000000005403",
+  "problemParseRevision": 1,
+  "runId": "00000000-0000-0000-0000-000000005413",
+  "evidenceIds": [
+    "00000000-0000-0000-0000-000000005414"
+  ],
+  "status": "VERIFIED",
+  "scope": "PUNCTURED_NEIGHBORHOOD",
+  "reasons": [
+    "REQUIRED_CLAIM_PROVEN"
+  ],
+  "checked": [
+    "FINITE_LIMIT"
+  ],
+  "unchecked": [],
+  "contradictions": [],
+  "uncertainty": [
+    "EXPLANATION_STEPS_UNCHECKED"
+  ],
+  "recovery": "NONE",
+  "correlationId": "policy-fixture",
+  "createdAt": "2026-10-30T00:00:00Z"
+}

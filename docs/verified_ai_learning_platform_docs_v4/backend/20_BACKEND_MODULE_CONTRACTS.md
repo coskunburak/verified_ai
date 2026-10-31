@@ -132,3 +132,34 @@ shared-kernel contract reader accepts only three bundled v2 schemas and local re
 
 Status: IMPLEMENTED_PENDING_OWNER_VALIDATION / CI_PENDING / ROLLOUT_DISABLED.
 See [closure report](../sprints/phase05_ai_solving_and_verification_core/SPRINT_5.9_PRODUCTION_INTEGRATION_CLOSURE_EXECUTION_REPORT.md).
+
+## Sprint 5.10 verification composition
+
+Verification owns `CompositeEvidenceAssessment`, `CompositeEvidencePolicy` and the internal
+owner-authorized `CompositeVerification.current` read operation. It projects one immutable
+run only after current source/plan and secondary-parent eligibility checks. It performs
+no network or persistence writes. The optional `NumericExecutor` port uses strict
+`NumericWireCodec` and existing bounded HTTP/1.1 transport, shares admission slots, and
+is not called automatically by planning/execution. Numeric runtime/owner flags are false
+by default and production is guarded. No public API, iOS consumer or final-status policy changes.
+
+## Sprint 5.11 arbitration boundary
+
+Verification owns policy, recovery advice, immutable decision storage and `/api/v1` decision
+controllers. It consumes `SecondaryCorroborationQuery` through solving's named application
+interface, with no dependency on solving persistence, provider routing or billing.
+The query only reads bounded owned secondary records; it never invokes secondary solving.
+Canonical REQUIRES_NEW reads complete before source-owner transactions. Policy evaluation
+occurs between short preparation/publication transactions; publication rechecks the exact
+snapshot. Current GET returns explicit null when disabled, absent, stale or expired retry
+advice. POST accepts an owned solution/run key and UUID idempotency key, never a supplied
+status/confidence/evidence body. Only primary solution aggregate publication is exposed.
+
+### Sprint 5.11 calculus composition closure — 2026-10-31
+
+Verification owns CalculusCompositePolicy, the tagged composite-calculus-evidence-v1
+assessment and the three bounded calculus decision scopes. It reuses the existing
+CalculusEvidence/CalculusExecution contracts and verifies full source metadata equality
+before arbitration. No HTTP/verifier/provider call occurs during composition or decision
+publication. Canonical reads precede owner locking, and current source/capability/run state
+is rechecked before publication. New real-worker and race regressions await owner execution.

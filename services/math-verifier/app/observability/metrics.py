@@ -7,6 +7,8 @@ from typing import get_args
 from app.api.schemas.calculus import METHODS as CALCULUS_METHODS
 from app.api.schemas.calculus import Reason as CalculusReason
 from app.api.schemas.execution import METHODS, Outcome, Reason
+from app.api.schemas.numeric import Reason as NumericReason
+from app.api.schemas.numeric import Status as NumericStatus
 
 VERIFIER_METRIC_NAMES = {
     "requests": "math_verifier_requests_total",
@@ -38,3 +40,11 @@ def execution_metrics():
         for method, value in sorted(_execution_ms.items()):
             lines.append(f'math_verifier_execution_ms_total{{method="{method}"}} {value}')
         return lines
+
+
+def record_numeric(status, reason, elapsed_ms):
+    if status not in get_args(NumericStatus) or reason not in get_args(NumericReason):
+        raise ValueError("Unbounded numeric metric label")
+    with _execution_lock:
+        _execution_counts[("NUMERIC_SAMPLING", status, reason)] += 1
+        _execution_ms["NUMERIC_SAMPLING"] += max(0, elapsed_ms)

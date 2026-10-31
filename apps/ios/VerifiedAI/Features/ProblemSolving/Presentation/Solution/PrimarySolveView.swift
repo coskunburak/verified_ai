@@ -16,6 +16,19 @@ struct PrimarySolveView: View {
                         .accessibilityIdentifier("solve.fixture")
                 }
                 statusCard
+                #if DEBUG
+                if let state = viewModel.controlledFixtureState {
+                    // Keep the test-server stimulus in the content's hit-test tree. A crowded
+                    // navigation toolbar can expose the control without delivering its tap.
+                    Button { [model = viewModel] in model.advanceFixture() } label: {
+                        Text("Advance synthetic job")
+                            .frame(maxWidth: .infinity, minHeight: 44)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.bordered)
+                    .accessibilityIdentifier("solve.fixture.advance.\(state.rawValue)")
+                }
+                #endif
                 if let error = viewModel.errorKey {
                     Label(LocalizedStringKey(error), systemImage: "exclamationmark.triangle")
                         .foregroundStyle(ColorTokens.warning).fixedSize(horizontal: false, vertical: true)
@@ -31,14 +44,6 @@ struct PrimarySolveView: View {
         .navigationTitle("solve.title")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            #if DEBUG
-            ToolbarItem(placement: .topBarLeading) {
-                if let state = viewModel.controlledFixtureState {
-                    Button("Advance synthetic job") { viewModel.advanceFixture() }
-                        .accessibilityIdentifier("solve.fixture.advance.\(state.rawValue)")
-                }
-            }
-            #endif
             ToolbarItem(placement: .topBarTrailing) {
                 Button("solve.close") { dismiss() }.accessibilityIdentifier("solve.close")
             }
@@ -63,7 +68,7 @@ struct PrimarySolveView: View {
             if let state = viewModel.snapshot?.state {
                 Label(LocalizedStringKey(state.titleKey), systemImage: state.isActive ? "hourglass" : "doc.text")
                     .font(.title2.weight(.semibold)).accessibilityIdentifier("solve.status.\(state.rawValue)")
-                Text(LocalizedStringKey(state.detailKey)).fixedSize(horizontal: false, vertical: true)
+                Text(LocalizedStringKey(viewModel.verification == nil ? state.detailKey : "verification.generation")).fixedSize(horizontal: false, vertical: true)
                 if state.isActive && !viewModel.pollingPaused && viewModel.errorKey == nil { ProgressView().accessibilityLabel("solve.progress") }
             } else {
                 Text(LocalizedStringKey(viewModel.loaded ? "solve.ready" : "solve.loading")).font(.title2.weight(.semibold))
@@ -79,9 +84,31 @@ struct PrimarySolveView: View {
 
     @ViewBuilder private func candidateContent(_ candidate: SolutionCandidate) -> some View {
         VStack(alignment: .leading, spacing: SpacingTokens.md) {
-            Label("solve.unverified", systemImage: "info.circle")
-                .font(.callout.weight(.semibold)).fixedSize(horizontal: false, vertical: true)
-                .accessibilityIdentifier("solve.unverified")
+            if let decision = viewModel.verification {
+                Label(LocalizedStringKey(decision.scope.calculusMethod == nil ? decision.status.titleKey : "verification.scopedStatus"), systemImage: "checkmark.shield")
+                    .font(.callout.weight(.semibold)).accessibilityIdentifier("verification.status.\(decision.status.rawValue)")
+                Text(LocalizedStringKey(decision.scope.titleKey)).fixedSize(horizontal: false, vertical: true)
+                    .accessibilityIdentifier("verification.scope.\(decision.scope.rawValue)")
+                if decision.hasConflict {
+                    Label("verification.conflict", systemImage: "exclamationmark.triangle")
+                        .foregroundStyle(ColorTokens.warning).accessibilityIdentifier("verification.conflict")
+                }
+                Text("verification.checked").font(.headline)
+                ForEach(decision.checked, id: \.rawValue) { method in Text(LocalizedStringKey(method.titleKey)) }
+                Text("verification.unchecked").font(.headline)
+                ForEach(decision.unchecked, id: \.rawValue) { method in Text(LocalizedStringKey(method.titleKey)) }
+                Text("verification.stepsUnchecked")
+                ForEach(decision.uncertainty.filter { $0 != "EXPLANATION_STEPS_UNCHECKED" }, id: \.self) { item in
+                    Text(LocalizedStringKey("verification.uncertainty." + item))
+                }
+                if decision.reasons.contains("SECONDARY_AGREEMENT") { Text("verification.agreement") }
+                Text(LocalizedStringKey(decision.recovery.titleKey)).accessibilityIdentifier("verification.recovery")
+            } else {
+                Label("solve.unverified", systemImage: "info.circle")
+                    .font(.callout.weight(.semibold)).fixedSize(horizontal: false, vertical: true)
+                    .accessibilityIdentifier("solve.unverified")
+                Text(LocalizedStringKey(viewModel.verificationUnavailable ? "verification.unavailable" : "verification.absent"))
+            }
             Text("solve.proposedAnswer").font(.headline)
             MathematicalExpressionView(statement: candidate.finalAnswer).accessibilityIdentifier("solve.answer")
             Text(LocalizedStringKey(candidate.method.titleKey)).font(.subheadline).foregroundStyle(ColorTokens.textSecondary)

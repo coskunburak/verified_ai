@@ -16,6 +16,8 @@ final class PrimarySolveViewModel {
     private var active = false
     private(set) var busy = false
     private(set) var loaded = false
+    private(set) var verification: VerificationDecisionSnapshot?
+    private(set) var verificationUnavailable = false
     private(set) var snapshot: SolveJobSnapshot?
     private(set) var pending: SolveRecoveryMarker?
     private(set) var errorKey: String?
@@ -54,7 +56,7 @@ final class PrimarySolveViewModel {
     func suspend() {
         active = false; generation += 1; task?.cancel(); task = nil; busy = false
         // Never display a cached candidate as current after a background/source/account transition.
-        snapshot = nil; loaded = false
+        snapshot = nil; verification = nil; loaded = false
     }
     func refresh() {
         launch { model, token in
@@ -64,6 +66,7 @@ final class PrimarySolveViewModel {
             try model.accept(current)
             model.loaded = true
             await model.poll(token)
+            await model.loadVerification(token)
         }
     }
     func start() {
@@ -94,6 +97,7 @@ final class PrimarySolveViewModel {
             try model.accept(result)
             model.loaded = true
             await model.poll(token)
+            await model.loadVerification(token)
         }
     }
     func cancel() {
@@ -103,12 +107,14 @@ final class PrimarySolveViewModel {
             try model.check(token)
             try model.accept(result)
             await model.poll(token)
+            await model.loadVerification(token)
         }
     }
     /// One task owns both request and bounded polling; cancelling a screen never POSTs /cancel.
     private func launch(_ operation: @escaping @MainActor (PrimarySolveViewModel, Int) async throws -> Void) {
         guard active, !busy else { return }
-        guard network.isReachable else { errorKey = "solve.error.offline"; snapshot = nil; loaded = false; return }
+        guard network.isReachable else { errorKey = "solve.error.offline"; snapshot = nil; verification = nil; loaded = false; return }
+        verification = nil; verificationUnavailable = false
         generation += 1; let token = generation
         task?.cancel(); busy = true; errorKey = nil; pollingPaused = false
         task = Task { [weak self] in
@@ -125,6 +131,17 @@ final class PrimarySolveViewModel {
                 }
             }
             if token == generation { busy = false; task = nil }
+        }
+    }
+    private func loadVerification(_ token: Int) async {
+        guard errorKey == nil, let job = snapshot, job.state == .generatedUnverified else { return }
+        do {
+            let result = try await service.verification(sessionId: sessionId, jobId: job.jobId)
+            try check(token)
+            guard snapshot?.jobId == job.jobId else { return }
+            verification = try result?.validated(for: job)
+        } catch {
+            if token == generation && active && !Task.isCancelled { verification = nil; verificationUnavailable = true }
         }
     }
     private func check(_ token: Int) throws {

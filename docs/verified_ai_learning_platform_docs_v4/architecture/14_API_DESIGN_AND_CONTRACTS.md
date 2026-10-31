@@ -224,3 +224,25 @@ Public responses may expose product-safe provenance/verification evidence where 
 
 Usage-limit responses use stable product-semantic errors rather than leaking provider quotas or raw token budgets.
 <!-- HYBRID_AI_STRATEGY_V3:END -->
+
+## Sprint 5.11 verification projection
+
+GET `/api/v1/problem-sessions/{sessionId}/solves/{jobId}/verification` returns an explicit
+nullable `decision`. It does no computation outside bounded policy/source reads and creates
+no jobs, evidence, decisions or usage. POST
+`/api/v1/problem-sessions/{sessionId}/solutions/{solutionId}/verification/{runKey}` evaluates
+an existing current owned run with a UUID Idempotency-Key. Neither endpoint accepts a
+client verdict. `verification-decision-v1` is an additive public allowlist with strict
+status/scope/reason/recovery codes, checked/unchecked methods, contradiction references,
+lineage, correlation and timestamp. Generation responses are unchanged. iOS renders this
+separate result and clears it on refresh, offline failure, backgrounding or stale responses.
+
+### Sprint 5.11 calculus decision scope — 2026-10-31
+
+The unreleased verification-decision-v1 projection adds OPEN_INTERVAL,
+ANTIDERIVATIVE_REPRESENTATIVE and PUNCTURED_NEIGHBORHOOD. Each VERIFIED calculus projection
+contains exactly its corresponding checked method. Generic FINAL_ANSWER and mixed calculus/
+generic obligations are invalid. Scope refers to the selected source and immutable evidence;
+raw expressions, secondary payloads and internal owner identifiers remain excluded.
+The GET remains read-only; POST evaluates existing evidence without executing mathematics.
+Implementation and contract tests await owner validation; production flags remain disabled.

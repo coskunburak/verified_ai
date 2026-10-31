@@ -17,6 +17,64 @@ final class PrimarySolveViewModelTests: XCTestCase {
         for _ in 0..<200 { if predicate() { return }; await Task.yield() }
         XCTFail("Expected bounded asynchronous transition")
     }
+    func testVerificationClearsOnOfflineSuspendAndNeverEnablesSolveRetry() async throws {
+        service.currentJob = try FixturePrimarySolveAPI.decode(state: .generatedUnverified)
+        service.decision = FixturePrimarySolveAPI.decisionFixture("VERIFIED")
+        let vm = model(); vm.resume(); await settle { vm.verification != nil && !vm.busy }
+        XCTAssertEqual(vm.verification?.status, .verified); XCTAssertFalse(vm.canRetry)
+        XCTAssertTrue(service.keys.isEmpty); XCTAssertTrue(service.retryKeys.isEmpty)
+        network.isReachable = false; vm.refresh()
+        XCTAssertNil(vm.verification)
+        network.isReachable = true; vm.resume(); await settle { vm.verification != nil && !vm.busy }
+        vm.suspend(); XCTAssertNil(vm.verification)
+    }
+    func testLocalSolveFlowReachesVerificationWhenHostNetworkIsOffline() async throws {
+        let suite = "PrimarySolveNetwork-" + UUID().uuidString
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let fixture = FixturePrimarySolveAPI(scenario: "VERIFIED", defaults: defaults, reset: true)
+        network.isReachable = false
+        let selected = AppDependencies.networkForSolveFlow(service: fixture, history: FixtureSolveHistoryAPI(),
+            isFixture: true, live: network)
+        let vm = PrimarySolveViewModel(userId: user, sessionId: FixturePrimarySolveAPI.sessionId,
+            service: fixture, recovery: store, network: selected, isFixture: true, sleep: { _ in await Task.yield() })
+        defer { vm.suspend() }
+        vm.resume(); await settle { vm.canStart }; vm.start()
+        await settle { vm.verification != nil && !vm.busy }
+        XCTAssertEqual(vm.snapshot?.state, .generatedUnverified)
+        XCTAssertEqual(vm.verification?.status, .verified)
+        XCTAssertNil(vm.errorKey); XCTAssertEqual(fixture.startRequests, 1)
+        XCTAssertFalse(network.isReachable)
+    }
+    func testFixtureFlagAloneCannotBypassLiveOfflineGuard() async throws {
+        network.isReachable = false
+        let selected = AppDependencies.networkForSolveFlow(service: service, history: FixtureSolveHistoryAPI(),
+            isFixture: true, live: network)
+        let vm = PrimarySolveViewModel(userId: user, sessionId: session, service: service,
+            recovery: store, network: selected, isFixture: true)
+        vm.resume(); vm.start(); await Task.yield()
+        XCTAssertEqual(vm.errorKey, "solve.error.offline"); XCTAssertTrue(service.keys.isEmpty)
+        vm.suspend()
+        let fixture = FixturePrimarySolveAPI()
+        let ungated = AppDependencies.networkForSolveFlow(service: fixture, history: FixtureSolveHistoryAPI(),
+            isFixture: false, live: network)
+        XCTAssertFalse(ungated.isReachable)
+    }
+    func testLateVerificationResponseCannotReappearAfterSuspend() async throws {
+        service.currentJob = try FixturePrimarySolveAPI.decode(state: .generatedUnverified)
+        service.delayDecision = true; service.decision = FixturePrimarySolveAPI.decisionFixture("VERIFIED")
+        let vm = model(); vm.resume(); await settle { service.decisionContinuation != nil }
+        vm.suspend(); service.decisionContinuation?.resume(); service.decisionContinuation = nil
+        for _ in 0..<20 { await Task.yield() }
+        XCTAssertNil(vm.verification); XCTAssertNil(vm.visibleCandidate)
+    }
+    func testVerificationFailurePreservesGeneratedAnswerWithoutCachedVerdict() async throws {
+        service.currentJob = try FixturePrimarySolveAPI.decode(state: .generatedUnverified)
+        service.failDecision = true
+        let vm = model(); vm.resume(); await settle { vm.verificationUnavailable && !vm.busy }
+        XCTAssertNil(vm.verification); XCTAssertNotNil(vm.visibleCandidate); XCTAssertFalse(vm.canRetry)
+        vm.suspend()
+    }
     func testQueuedRunningGeneratedStopsPollingAndRepeatedTapDoesNotDuplicate() async throws {
         let vm = model(fast: true); vm.resume(); await settle { vm.canStart }
         vm.start(); vm.start()
@@ -160,6 +218,14 @@ final class PrimarySolveViewModelTests: XCTestCase {
 
 @MainActor
 private final class SolveServiceDouble: PrimarySolveServicing {
+    var decision: VerificationDecisionSnapshot?
+    var delayDecision = false, failDecision = false
+    var decisionContinuation: CheckedContinuation<Void, Never>?
+    func verification(sessionId: UUID, jobId: UUID) async throws -> VerificationDecisionSnapshot? {
+        if delayDecision { await withCheckedContinuation { decisionContinuation = $0 } }
+        if failDecision { throw NetworkError.transport("offline") }
+        return decision
+    }
     var currentJob: SolveJobSnapshot?
     var keys: [String] = [], retryKeys: [String] = []
     var readStates: [SolveState] = []
