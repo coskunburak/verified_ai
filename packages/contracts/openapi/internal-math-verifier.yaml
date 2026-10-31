@@ -1,8 +1,39 @@
 openapi: 3.1.0
 info:
   title: Verified AI Internal Math Verifier API
-  version: 0.3.0
+  version: 0.4.0
 paths:
+  /internal/v1/verify/numeric:
+    post:
+      summary: Bounded non-proof numerical diagnostics
+      description: Disabled by default and restricted to local/test acceptance. Agreement and mismatch never mean mathematical proof or disproof. Shares the existing two-worker supervisor and resource budgets.
+      security:
+        - internalToken: []
+      parameters:
+        - in: header
+          name: X-Request-Id
+          schema:
+            type: string
+            pattern: '^[A-Za-z0-9_-]{1,64}$'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../../schemas/numeric-diagnostic.schema.json"
+      responses:
+        "200":
+          description: Diagnostic or sanitized operational failure, never a proof
+          content:
+            application/json:
+              schema:
+                $ref: "../../schemas/numeric-diagnostic-result.schema.json"
+        "401":
+          description: Internal authentication required
+        "413":
+          description: Request exceeds 64 KiB
+        "422":
+          description: Invalid contract or correlation
   /health:
     get:
       summary: Verifier liveness

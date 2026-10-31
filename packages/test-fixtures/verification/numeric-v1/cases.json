@@ -1,0 +1,998 @@
+[
+  {
+    "id": "identity",
+    "request": {
+      "schemaVersion": "numeric-diagnostic-v1",
+      "executionId": "00000000-0000-0000-0000-000000000010",
+      "correlationId": "numeric-fixture",
+      "scopeId": "00000000-0000-0000-0000-000000000011",
+      "policyVersion": "equivalence-binary64-v1",
+      "method": "NUMERIC_SAMPLING",
+      "original": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "BINARY",
+          "operator": "ADD",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          }
+        }
+      },
+      "candidate": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "BINARY",
+          "operator": "MULTIPLY",
+          "left": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "2"
+          },
+          "right": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          }
+        }
+      },
+      "variables": [
+        {
+          "symbol": "x",
+          "domain": "REAL"
+        }
+      ],
+      "restrictions": []
+    },
+    "expectedStatus": "AGREEMENT",
+    "expectedReason": "SAMPLES_AGREE",
+    "mathematicalMeaning": "Exact identity x+x=2x, but this result is diagnostic only."
+  },
+  {
+    "id": "nonidentity",
+    "request": {
+      "schemaVersion": "numeric-diagnostic-v1",
+      "executionId": "00000000-0000-0000-0000-000000000010",
+      "correlationId": "numeric-fixture",
+      "scopeId": "00000000-0000-0000-0000-000000000011",
+      "policyVersion": "equivalence-binary64-v1",
+      "method": "NUMERIC_SAMPLING",
+      "original": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "BINARY",
+          "operator": "POWER",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "2"
+          }
+        }
+      },
+      "candidate": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "BINARY",
+          "operator": "ADD",
+          "left": {
+            "kind": "BINARY",
+            "operator": "POWER",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "2"
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "1"
+          }
+        }
+      },
+      "variables": [
+        {
+          "symbol": "x",
+          "domain": "REAL"
+        }
+      ],
+      "restrictions": []
+    },
+    "expectedStatus": "MISMATCH",
+    "expectedReason": "SAMPLES_DIFFER",
+    "mathematicalMeaning": "Residual -1; exact disproof belongs to separate polynomial executor."
+  },
+  {
+    "id": "unrestricted-hole",
+    "request": {
+      "schemaVersion": "numeric-diagnostic-v1",
+      "executionId": "00000000-0000-0000-0000-000000000010",
+      "correlationId": "numeric-fixture",
+      "scopeId": "00000000-0000-0000-0000-000000000011",
+      "policyVersion": "equivalence-binary64-v1",
+      "method": "NUMERIC_SAMPLING",
+      "original": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "BINARY",
+          "operator": "DIVIDE",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          }
+        }
+      },
+      "candidate": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "1"
+        }
+      },
+      "variables": [
+        {
+          "symbol": "x",
+          "domain": "REAL"
+        }
+      ],
+      "restrictions": []
+    },
+    "expectedStatus": "INCONCLUSIVE",
+    "expectedReason": "UNSTABLE_SAMPLES",
+    "mathematicalMeaning": "Undefined at x=0; cancellation cannot erase the hole."
+  },
+  {
+    "id": "restricted-hole",
+    "request": {
+      "schemaVersion": "numeric-diagnostic-v1",
+      "executionId": "00000000-0000-0000-0000-000000000010",
+      "correlationId": "numeric-fixture",
+      "scopeId": "00000000-0000-0000-0000-000000000011",
+      "policyVersion": "equivalence-binary64-v1",
+      "method": "NUMERIC_SAMPLING",
+      "original": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "BINARY",
+          "operator": "DIVIDE",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          }
+        }
+      },
+      "candidate": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "1"
+        }
+      },
+      "variables": [
+        {
+          "symbol": "x",
+          "domain": "REAL"
+        }
+      ],
+      "restrictions": [
+        {
+          "id": "nonzero-x",
+          "relation": "NOT_EQUALS",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "0"
+          }
+        }
+      ]
+    },
+    "expectedStatus": "AGREEMENT",
+    "expectedReason": "SAMPLES_AGREE",
+    "mathematicalMeaning": "Identity only on x!=0."
+  },
+  {
+    "id": "removable-singularity",
+    "request": {
+      "schemaVersion": "numeric-diagnostic-v1",
+      "executionId": "00000000-0000-0000-0000-000000000010",
+      "correlationId": "numeric-fixture",
+      "scopeId": "00000000-0000-0000-0000-000000000011",
+      "policyVersion": "equivalence-binary64-v1",
+      "method": "NUMERIC_SAMPLING",
+      "original": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "BINARY",
+          "operator": "DIVIDE",
+          "left": {
+            "kind": "BINARY",
+            "operator": "SUBTRACT",
+            "left": {
+              "kind": "BINARY",
+              "operator": "POWER",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "2"
+              }
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "1"
+            }
+          },
+          "right": {
+            "kind": "BINARY",
+            "operator": "SUBTRACT",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "1"
+            }
+          }
+        }
+      },
+      "candidate": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "BINARY",
+          "operator": "ADD",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "1"
+          }
+        }
+      },
+      "variables": [
+        {
+          "symbol": "x",
+          "domain": "REAL"
+        }
+      ],
+      "restrictions": [
+        {
+          "id": "hole",
+          "relation": "NOT_EQUALS",
+          "left": {
+            "kind": "BINARY",
+            "operator": "SUBTRACT",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "1"
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "0"
+          }
+        }
+      ]
+    },
+    "expectedStatus": "AGREEMENT",
+    "expectedReason": "SAMPLES_AGREE",
+    "mathematicalMeaning": "x=1 stays excluded despite algebraic cancellation."
+  },
+  {
+    "id": "sqrt-wrong-domain",
+    "request": {
+      "schemaVersion": "numeric-diagnostic-v1",
+      "executionId": "00000000-0000-0000-0000-000000000010",
+      "correlationId": "numeric-fixture",
+      "scopeId": "00000000-0000-0000-0000-000000000011",
+      "policyVersion": "equivalence-binary64-v1",
+      "method": "NUMERIC_SAMPLING",
+      "original": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "FUNCTION",
+          "function": "SQRT",
+          "args": [
+            {
+              "kind": "BINARY",
+              "operator": "POWER",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "2"
+              }
+            }
+          ]
+        }
+      },
+      "candidate": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        }
+      },
+      "variables": [
+        {
+          "symbol": "x",
+          "domain": "REAL"
+        }
+      ],
+      "restrictions": []
+    },
+    "expectedStatus": "INCONCLUSIVE",
+    "expectedReason": "UNSTABLE_SAMPLES",
+    "mathematicalMeaning": "sqrt(x^2)=abs(x); negative points disagree and zero is near the sqrt boundary."
+  },
+  {
+    "id": "close-but-unequal",
+    "request": {
+      "schemaVersion": "numeric-diagnostic-v1",
+      "executionId": "00000000-0000-0000-0000-000000000010",
+      "correlationId": "numeric-fixture",
+      "scopeId": "00000000-0000-0000-0000-000000000011",
+      "policyVersion": "equivalence-binary64-v1",
+      "method": "NUMERIC_SAMPLING",
+      "original": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "NUMBER",
+          "numericType": "DECIMAL",
+          "value": "0.00000000001"
+        }
+      },
+      "candidate": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "0"
+        }
+      },
+      "variables": [
+        {
+          "symbol": "x",
+          "domain": "REAL"
+        }
+      ],
+      "restrictions": []
+    },
+    "expectedStatus": "AGREEMENT",
+    "expectedReason": "SAMPLES_AGREE",
+    "mathematicalMeaning": "Strictly unequal exact rationals, numerically within 1e-10 tolerance."
+  },
+  {
+    "id": "unstable-identity",
+    "request": {
+      "schemaVersion": "numeric-diagnostic-v1",
+      "executionId": "00000000-0000-0000-0000-000000000010",
+      "correlationId": "numeric-fixture",
+      "scopeId": "00000000-0000-0000-0000-000000000011",
+      "policyVersion": "equivalence-binary64-v1",
+      "method": "NUMERIC_SAMPLING",
+      "original": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "BINARY",
+          "operator": "SUBTRACT",
+          "left": {
+            "kind": "BINARY",
+            "operator": "ADD",
+            "left": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "100000000000000000000"
+            },
+            "right": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "100000000000000000000"
+          }
+        }
+      },
+      "candidate": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        }
+      },
+      "variables": [
+        {
+          "symbol": "x",
+          "domain": "REAL"
+        }
+      ],
+      "restrictions": []
+    },
+    "expectedStatus": "INCONCLUSIVE",
+    "expectedReason": "UNSTABLE_SAMPLES",
+    "mathematicalMeaning": "Exact identity with catastrophic binary64 cancellation."
+  },
+  {
+    "id": "unsupported-exact-contradiction",
+    "request": {
+      "schemaVersion": "numeric-diagnostic-v1",
+      "executionId": "00000000-0000-0000-0000-000000000010",
+      "correlationId": "numeric-fixture",
+      "scopeId": "00000000-0000-0000-0000-000000000011",
+      "policyVersion": "equivalence-binary64-v1",
+      "method": "NUMERIC_SAMPLING",
+      "original": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "FUNCTION",
+          "function": "SIN",
+          "args": [
+            {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            }
+          ]
+        }
+      },
+      "candidate": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "0"
+        }
+      },
+      "variables": [
+        {
+          "symbol": "x",
+          "domain": "REAL"
+        }
+      ],
+      "restrictions": []
+    },
+    "expectedStatus": "MISMATCH",
+    "expectedReason": "SAMPLES_DIFFER",
+    "mathematicalMeaning": "Diagnostic disagreement cannot bypass unsupported exact function proof."
+  },
+  {
+    "id": "contradictory-domain",
+    "request": {
+      "schemaVersion": "numeric-diagnostic-v1",
+      "executionId": "00000000-0000-0000-0000-000000000010",
+      "correlationId": "numeric-fixture",
+      "scopeId": "00000000-0000-0000-0000-000000000011",
+      "policyVersion": "equivalence-binary64-v1",
+      "method": "NUMERIC_SAMPLING",
+      "original": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        }
+      },
+      "candidate": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        }
+      },
+      "variables": [
+        {
+          "symbol": "x",
+          "domain": "REAL"
+        }
+      ],
+      "restrictions": [
+        {
+          "id": "positive",
+          "relation": "GREATER_THAN",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "0"
+          }
+        },
+        {
+          "id": "negative",
+          "relation": "LESS_THAN",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "0"
+          }
+        }
+      ]
+    },
+    "expectedStatus": "INCONCLUSIVE",
+    "expectedReason": "INSUFFICIENT_SAMPLES",
+    "mathematicalMeaning": "No real point meets both restrictions. No vacuous truth."
+  },
+  {
+    "id": "outside-window",
+    "request": {
+      "schemaVersion": "numeric-diagnostic-v1",
+      "executionId": "00000000-0000-0000-0000-000000000010",
+      "correlationId": "numeric-fixture",
+      "scopeId": "00000000-0000-0000-0000-000000000011",
+      "policyVersion": "equivalence-binary64-v1",
+      "method": "NUMERIC_SAMPLING",
+      "original": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        }
+      },
+      "candidate": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        }
+      },
+      "variables": [
+        {
+          "symbol": "x",
+          "domain": "REAL"
+        }
+      ],
+      "restrictions": [
+        {
+          "id": "distant",
+          "relation": "GREATER_THAN",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "100"
+          }
+        }
+      ]
+    },
+    "expectedStatus": "INCONCLUSIVE",
+    "expectedReason": "INSUFFICIENT_SAMPLES",
+    "mathematicalMeaning": "Nonempty domain outside sampling window; no extrapolation."
+  },
+  {
+    "id": "unknown-domain",
+    "request": {
+      "schemaVersion": "numeric-diagnostic-v1",
+      "executionId": "00000000-0000-0000-0000-000000000010",
+      "correlationId": "numeric-fixture",
+      "scopeId": "00000000-0000-0000-0000-000000000011",
+      "policyVersion": "equivalence-binary64-v1",
+      "method": "NUMERIC_SAMPLING",
+      "original": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        }
+      },
+      "candidate": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        }
+      },
+      "variables": [
+        {
+          "symbol": "x",
+          "domain": "UNKNOWN"
+        }
+      ],
+      "restrictions": []
+    },
+    "expectedStatus": "BLOCKED",
+    "expectedReason": "UNKNOWN_DOMAIN",
+    "mathematicalMeaning": ""
+  },
+  {
+    "id": "integer-domain",
+    "request": {
+      "schemaVersion": "numeric-diagnostic-v1",
+      "executionId": "00000000-0000-0000-0000-000000000010",
+      "correlationId": "numeric-fixture",
+      "scopeId": "00000000-0000-0000-0000-000000000011",
+      "policyVersion": "equivalence-binary64-v1",
+      "method": "NUMERIC_SAMPLING",
+      "original": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        }
+      },
+      "candidate": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        }
+      },
+      "variables": [
+        {
+          "symbol": "x",
+          "domain": "INTEGER"
+        }
+      ],
+      "restrictions": []
+    },
+    "expectedStatus": "UNSUPPORTED",
+    "expectedReason": "INTEGER_DOMAIN",
+    "mathematicalMeaning": ""
+  },
+  {
+    "id": "overflow",
+    "request": {
+      "schemaVersion": "numeric-diagnostic-v1",
+      "executionId": "00000000-0000-0000-0000-000000000010",
+      "correlationId": "numeric-fixture",
+      "scopeId": "00000000-0000-0000-0000-000000000011",
+      "policyVersion": "equivalence-binary64-v1",
+      "method": "NUMERIC_SAMPLING",
+      "original": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "BINARY",
+          "operator": "POWER",
+          "left": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "1000000000000000000000000000000000000000000000000000000000000"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "12"
+          }
+        }
+      },
+      "candidate": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "0"
+        }
+      },
+      "variables": [
+        {
+          "symbol": "x",
+          "domain": "REAL"
+        }
+      ],
+      "restrictions": []
+    },
+    "expectedStatus": "INCONCLUSIVE",
+    "expectedReason": "UNSTABLE_SAMPLES",
+    "mathematicalMeaning": ""
+  },
+  {
+    "id": "underflow",
+    "request": {
+      "schemaVersion": "numeric-diagnostic-v1",
+      "executionId": "00000000-0000-0000-0000-000000000010",
+      "correlationId": "numeric-fixture",
+      "scopeId": "00000000-0000-0000-0000-000000000011",
+      "policyVersion": "equivalence-binary64-v1",
+      "method": "NUMERIC_SAMPLING",
+      "original": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "BINARY",
+          "operator": "POWER",
+          "left": {
+            "kind": "NUMBER",
+            "numericType": "DECIMAL",
+            "value": "0.000000000000000000000000000000000000000000000000000000000001"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "12"
+          }
+        }
+      },
+      "candidate": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "0"
+        }
+      },
+      "variables": [
+        {
+          "symbol": "x",
+          "domain": "REAL"
+        }
+      ],
+      "restrictions": []
+    },
+    "expectedStatus": "INCONCLUSIVE",
+    "expectedReason": "UNSTABLE_SAMPLES",
+    "mathematicalMeaning": ""
+  },
+  {
+    "id": "log-domain",
+    "request": {
+      "schemaVersion": "numeric-diagnostic-v1",
+      "executionId": "00000000-0000-0000-0000-000000000010",
+      "correlationId": "numeric-fixture",
+      "scopeId": "00000000-0000-0000-0000-000000000011",
+      "policyVersion": "equivalence-binary64-v1",
+      "method": "NUMERIC_SAMPLING",
+      "original": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "FUNCTION",
+          "function": "LOG",
+          "args": [
+            {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            }
+          ]
+        }
+      },
+      "candidate": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        }
+      },
+      "variables": [
+        {
+          "symbol": "x",
+          "domain": "REAL"
+        }
+      ],
+      "restrictions": []
+    },
+    "expectedStatus": "INCONCLUSIVE",
+    "expectedReason": "UNSTABLE_SAMPLES",
+    "mathematicalMeaning": "Nonpositive arguments are rejected before comparison."
+  },
+  {
+    "id": "sqrt-domain",
+    "request": {
+      "schemaVersion": "numeric-diagnostic-v1",
+      "executionId": "00000000-0000-0000-0000-000000000010",
+      "correlationId": "numeric-fixture",
+      "scopeId": "00000000-0000-0000-0000-000000000011",
+      "policyVersion": "equivalence-binary64-v1",
+      "method": "NUMERIC_SAMPLING",
+      "original": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "FUNCTION",
+          "function": "SQRT",
+          "args": [
+            {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            }
+          ]
+        }
+      },
+      "candidate": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        }
+      },
+      "variables": [
+        {
+          "symbol": "x",
+          "domain": "REAL"
+        }
+      ],
+      "restrictions": []
+    },
+    "expectedStatus": "INCONCLUSIVE",
+    "expectedReason": "UNSTABLE_SAMPLES",
+    "mathematicalMeaning": ""
+  },
+  {
+    "id": "zero-denominator",
+    "request": {
+      "schemaVersion": "numeric-diagnostic-v1",
+      "executionId": "00000000-0000-0000-0000-000000000010",
+      "correlationId": "numeric-fixture",
+      "scopeId": "00000000-0000-0000-0000-000000000011",
+      "policyVersion": "equivalence-binary64-v1",
+      "method": "NUMERIC_SAMPLING",
+      "original": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "BINARY",
+          "operator": "DIVIDE",
+          "left": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "1"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "0"
+          }
+        }
+      },
+      "candidate": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "0"
+        }
+      },
+      "variables": [
+        {
+          "symbol": "x",
+          "domain": "REAL"
+        }
+      ],
+      "restrictions": []
+    },
+    "expectedStatus": "INCONCLUSIVE",
+    "expectedReason": "UNSTABLE_SAMPLES",
+    "mathematicalMeaning": ""
+  },
+  {
+    "id": "near-zero-denominator",
+    "request": {
+      "schemaVersion": "numeric-diagnostic-v1",
+      "executionId": "00000000-0000-0000-0000-000000000010",
+      "correlationId": "numeric-fixture",
+      "scopeId": "00000000-0000-0000-0000-000000000011",
+      "policyVersion": "equivalence-binary64-v1",
+      "method": "NUMERIC_SAMPLING",
+      "original": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "BINARY",
+          "operator": "DIVIDE",
+          "left": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "1"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "DECIMAL",
+            "value": "0.000000000001"
+          }
+        }
+      },
+      "candidate": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "NUMBER",
+          "numericType": "INTEGER",
+          "value": "1"
+        }
+      },
+      "variables": [
+        {
+          "symbol": "x",
+          "domain": "REAL"
+        }
+      ],
+      "restrictions": []
+    },
+    "expectedStatus": "INCONCLUSIVE",
+    "expectedReason": "UNSTABLE_SAMPLES",
+    "mathematicalMeaning": ""
+  },
+  {
+    "id": "limited-points",
+    "request": {
+      "schemaVersion": "numeric-diagnostic-v1",
+      "executionId": "00000000-0000-0000-0000-000000000010",
+      "correlationId": "numeric-fixture",
+      "scopeId": "00000000-0000-0000-0000-000000000011",
+      "policyVersion": "equivalence-binary64-v1",
+      "method": "NUMERIC_SAMPLING",
+      "original": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        }
+      },
+      "candidate": {
+        "kind": "EXPRESSION",
+        "expression": {
+          "kind": "VARIABLE",
+          "symbol": "x"
+        }
+      },
+      "variables": [
+        {
+          "symbol": "x",
+          "domain": "REAL"
+        }
+      ],
+      "restrictions": [
+        {
+          "id": "singleton",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "1"
+          }
+        }
+      ]
+    },
+    "expectedStatus": "INCONCLUSIVE",
+    "expectedReason": "INSUFFICIENT_SAMPLES",
+    "mathematicalMeaning": ""
+  }
+]

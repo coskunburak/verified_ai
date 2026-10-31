@@ -75,7 +75,7 @@ struct RootView: View {
             historyAPI: dependencies.problemSessionHistoryAPI,
             workflowAPI: dependencies.problemAssetUploadAPI,
             cache: dependencies.problemSessionCache,
-            networkMonitor: dependencies.networkMonitor,
+            networkMonitor: dependencies.solveFlowNetworkMonitor,
             logger: dependencies.logger
         ))
     }
@@ -193,7 +193,7 @@ struct RootView: View {
                 isSolveFixture: dependencies.solveFixture,
                 makeSolveModel: dependencies.solveEnabled ? { sessionId in
                     PrimarySolveViewModel(userId: userId, sessionId: sessionId, service: dependencies.primarySolveAPI,
-                        recovery: dependencies.solveRecovery, network: dependencies.networkMonitor, isFixture: dependencies.solveFixture)
+                        recovery: dependencies.solveRecovery, network: dependencies.solveFlowNetworkMonitor, isFixture: dependencies.solveFixture)
                 } : nil,
                 reviewViewModel: dependencies.solveFixture ? nil : problemReviewViewModel
             )

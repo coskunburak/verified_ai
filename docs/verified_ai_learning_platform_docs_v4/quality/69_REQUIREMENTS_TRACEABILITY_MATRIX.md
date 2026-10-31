@@ -118,3 +118,32 @@ No old isolated test counts are attributed to this new working tree.
 
 Status: IMPLEMENTED_PENDING_OWNER_VALIDATION / CI_PENDING / ROLLOUT_DISABLED.
 See [closure report](../sprints/phase05_ai_solving_and_verification_core/SPRINT_5.9_PRODUCTION_INTEGRATION_CLOSURE_EXECUTION_REPORT.md).
+
+## Sprint 5.10 evidence addendum
+
+REQ-VERIFY-001 / REQ-MATH-002: `CompositeEvidencePolicyTest`, `CompositeSourceScopeTest`,
+`NumericHttpExecutorTest`, `NumericDiagnosticContractTest`, Python numeric unit/contract/
+security suites and shared `numeric-v1` fixtures cover scoped composition, non-proof
+sampling, adverse domains, stable reason ordering and boundary/resource failures.
+`VerificationExecutionIntegrationTest` additionally covers owned ephemeral reads and stale
+history rejection. Existing lifecycle/concurrency, exact/calculus and architecture suites
+have owner local acceptance: Linux 283 passed, backend 616 passed with two intentional
+paid-model skips, and Gate H exit 0 (2026-10-30). Finite composite/numeric metrics are
+implemented. NOT_RUN_BY_AGENT; final evidence-documentation docs-check and hosted CI
+remain pending. See Sprint 5.10 execution report for checkpoint logs and scope limits.
+
+## Sprint 5.11 traceability checkpoint
+
+REQ-TRUST-001 / REQ-VERIFY-001: VerificationPolicyTest, VerificationArbitrationServiceTest,
+VerificationDecisionIntegrationTest and decision schema fixtures cover deterministic scope,
+contradiction, missing coverage, freshness and no model calls. REQ-AUTH-001 / REQ-PRIV-001:
+VerificationDecisionControllerTest, immutable FK/trigger/concurrency/export/delete cases.
+Migration: VerificationDecisionMigrationIntegrationTest. Architecture:
+VerificationArbitrationArchitectureTest plus existing Modulith suites. iOS: extended
+PrimarySolveContractTests, PrimarySolveViewModelTests and PrimarySolveUITests.
+The 2026-10-31 closure adds CalculusCompositePolicyTest, real-worker calculus decision/HTTP/
+privacy/currentness/race cases in CalculusProductionIntegrationTest, three shared scoped
+fixtures, Python/iOS malformed-scope contracts and a calculus scope UI test. The owner
+script requires the new suite and named integration cases. All closure checks are
+NOT_RUN_BY_AGENT / PENDING_OWNER_VALIDATION. Earlier generic A–H owner passes do not cover
+these changes. CAP-VERIFY-002 stays Partial; hosted CI and production release remain pending.

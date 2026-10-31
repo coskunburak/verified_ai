@@ -19,13 +19,18 @@ public class VerificationLifecycleContributor implements AccountDataLifecycleCon
     private static final ObjectMapper EXPORT_MAPPER = exportMapper();
     private static final TypeReference<List<Map<String, Object>>> EXPORTED_RUNS = new TypeReference<>() { };
     private final VerificationRunRepository repository;
-    public VerificationLifecycleContributor(VerificationRunRepository repository) { this.repository = repository; }
+    private final com.verifiedai.verification.domain.repository.VerificationDecisionRepository decisions;
+    public VerificationLifecycleContributor(VerificationRunRepository repository,
+        com.verifiedai.verification.domain.repository.VerificationDecisionRepository decisions) {
+        this.repository = repository; this.decisions = decisions;
+    }
     public String category() { return "verificationEvidence"; }
     @Transactional(readOnly = true)
     public Map<String, Object> exportUserData(UUID user) {
         // The shared account exporter accepts JSON values; keep time handling inside this module's boundary.
         try {
-            return Map.of("runs", EXPORT_MAPPER.readValue(EXPORT_MAPPER.writeValueAsString(repository.export(user)), EXPORTED_RUNS));
+            return Map.of("runs", EXPORT_MAPPER.readValue(EXPORT_MAPPER.writeValueAsString(repository.export(user)), EXPORTED_RUNS),
+                "decisions", EXPORT_MAPPER.readValue(EXPORT_MAPPER.writeValueAsString(decisions.export(user)), EXPORTED_RUNS));
         } catch (IOException e) { throw new IllegalArgumentException("Cannot export verification evidence"); }
     }
     private static ObjectMapper exportMapper() {

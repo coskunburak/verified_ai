@@ -69,6 +69,66 @@ final class PrimarySolveContractTests: XCTestCase {
             XCTAssertEqual(PrimarySolveViewModel.message(for: error), "solve.error."+key)
         }
     }
+    func testVerificationFixturesHaveExplicitScopeAndNeverChangeGenerationState() throws {
+        let job = try FixturePrimarySolveAPI.decode(state: .generatedUnverified)
+        for scenario in ["VERIFIED", "PARTIALLY_VERIFIED", "UNVERIFIED", "CONTRADICTION"] {
+            let decision = try FixturePrimarySolveAPI.decisionFixture(scenario).validated(for: job)
+            XCTAssertEqual(decision.hasConflict, scenario == "CONTRADICTION")
+            XCTAssertEqual(job.state, .generatedUnverified)
+            XCTAssertTrue(decision.uncertainty.contains("EXPLANATION_STEPS_UNCHECKED"))
+            XCTAssertFalse(decision.status.titleKey.isEmpty)
+            XCTAssertFalse(decision.recovery.titleKey.isEmpty)
+        }
+    }
+    func testVerificationTransportIsReadOnlyAndMissingDecisionFieldFailsClosed() async throws {
+        let session = UUID(), job = UUID()
+        let transport = SolveContractSession(responses: [Data("{\"decision\":null}".utf8)])
+        let result = try await client(transport).verification(sessionId: session, jobId: job)
+        XCTAssertNil(result)
+        let calls = await transport.requests
+        XCTAssertEqual(calls.count, 1); XCTAssertEqual(calls[0].httpMethod, "GET")
+        XCTAssertEqual(calls[0].url?.path, "/api/v1/problem-sessions/\(session)/solves/\(job)/verification")
+        do {
+            _ = try await client(SolveContractSession(responses: [Data("{}".utf8)])).verification(sessionId: session, jobId: job)
+            XCTFail("Missing decision must not silently decode as absent")
+        } catch { XCTAssertEqual(PrimarySolveViewModel.message(for: error), "solve.error.contract") }
+    }
+    func testSharedDecisionFixturesAndUnknownContractValues() throws {
+        let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+            .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+        let folder = root.appendingPathComponent("packages/test-fixtures/verification/decision-v1")
+        let job = try FixturePrimarySolveAPI.decode(state: .generatedUnverified)
+        for name in ["verified", "partial", "unverified", "contradiction", "calculus-derivative", "calculus-integral", "calculus-limit"] {
+            let data = try Data(contentsOf: folder.appendingPathComponent(name + ".json"))
+            _ = try JSONDecoder().decode(VerificationDecisionSnapshot.self, from: data).validated(for: job)
+        }
+        let data = try Data(contentsOf: folder.appendingPathComponent("verified.json"))
+        for field in ["status", "policyVersion", "scope", "recovery", "problemParseId", "reasons"] {
+            var json = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+            if field == "reasons" { json[field] = ["UNKNOWN"] } else { json[field] = "UNKNOWN" }
+            XCTAssertThrowsError(try JSONDecoder().decode(VerificationDecisionSnapshot.self,
+                from: JSONSerialization.data(withJSONObject: json)).validated(for: job))
+        }
+    }
+    func testCalculusDecisionsCannotClaimGenericFinalAnswerOrAnotherCalculusScope() throws {
+        let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+            .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+        let folder = root.appendingPathComponent("packages/test-fixtures/verification/decision-v1")
+        let job = try FixturePrimarySolveAPI.decode(state: .generatedUnverified)
+        for (name, correctScope) in [("calculus-derivative", "OPEN_INTERVAL"),
+            ("calculus-integral", "ANTIDERIVATIVE_REPRESENTATIVE"), ("calculus-limit", "PUNCTURED_NEIGHBORHOOD")] {
+            let data = try Data(contentsOf: folder.appendingPathComponent(name + ".json"))
+            let base = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+            for wrong in ["FINAL_ANSWER", "OPEN_INTERVAL", "ANTIDERIVATIVE_REPRESENTATIVE", "PUNCTURED_NEIGHBORHOOD"] where wrong != correctScope {
+                var json = base; json["scope"] = wrong
+                XCTAssertThrowsError(try JSONDecoder().decode(VerificationDecisionSnapshot.self,
+                    from: JSONSerialization.data(withJSONObject: json)).validated(for: job))
+            }
+            var mixed = base; mixed["unchecked"] = ["DOMAIN_CONSTRAINT_CHECK"]
+            XCTAssertThrowsError(try JSONDecoder().decode(VerificationDecisionSnapshot.self,
+                from: JSONSerialization.data(withJSONObject: mixed)).validated(for: job))
+        }
+    }
     private func client(_ transport: SolveContractSession) -> PrimarySolveAPI {
         PrimarySolveAPI(client: APIClient(baseURL: URL(string: "https://example.invalid")!, session: transport,
             authTokenProvider: InMemorySecureStorage(), correlationContext: CorrelationContext()))

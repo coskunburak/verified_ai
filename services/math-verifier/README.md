@@ -91,3 +91,16 @@ Closure tests are authored but NOT_RUN_BY_AGENT / OWNER_VALIDATION_PENDING / CI_
 See docs/verified_ai_learning_platform_docs_v4/sprints/phase05_ai_solving_and_verification_core/SPRINT_5.9_PRODUCTION_INTEGRATION_CLOSURE_EXECUTION_REPORT.md
 for the single complete owner block. The earlier isolated acceptance does not establish
 passing closure evidence. Production rollout remains disabled.
+
+## Sprint 5.10 optional numerical diagnostics
+
+`POST /internal/v1/verify/numeric` accepts `numeric-diagnostic-v1` and returns only
+`numeric-diagnostic-result-v1` non-proof statuses. It shares authentication, request limits
+and the existing two-worker supervisor. `MATH_VERIFIER_NUMERIC_ENABLED=false` by default;
+activation is local/test-only. `equivalence-binary64-v1` uses at most 16 deterministic
+points, minimum four stable comparisons, absolute/relative tolerances 1e-10 and conservative
+error/definedness guards. Original AST restrictions remain authoritative. INTEGER/UNKNOWN,
+unsupported functions in rational constraints and relation requests are not sampled.
+No raw expressions, points or seed digests enter telemetry. Existing exact and calculus
+contracts and flags are unchanged. See the Sprint 5.10 execution report for owner-only
+Linux, Java/Python and repository validation; the agent did not execute validation.

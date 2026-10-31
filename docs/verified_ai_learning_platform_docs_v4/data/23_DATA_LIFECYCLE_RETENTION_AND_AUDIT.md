@@ -133,3 +133,22 @@ downgrading to V021 while v2 rows exist is unsupported.
 
 Status: IMPLEMENTED_PENDING_OWNER_VALIDATION / CI_PENDING / ROLLOUT_DISABLED.
 See [closure report](../sprints/phase05_ai_solving_and_verification_core/SPRINT_5.9_PRODUCTION_INTEGRATION_CLOSURE_EXECUTION_REPORT.md).
+
+## Sprint 5.10 ephemeral assessments
+
+Composite assessments are recomputable views of existing owned immutable verification runs.
+Numerical counts are ephemeral optional diagnostics; no new table, migration, export field,
+retention class, training eligibility or deletion obligation is introduced. Account exports
+and deletion continue to use existing run ownership/cascade contracts. Numeric input ASTs
+and deterministic sampling seeds are not stored in assessment telemetry. Historical v1
+and tagged calculus evidence bytes are not rewritten for composition or rollback.
+
+## Sprint 5.11 decision lifecycle
+
+Account export adds `verificationEvidence.decisions`, preserving source/solution/run/evidence
+identities, policy/capability versions, scoped status, reasons, uncertainty and timestamps.
+No raw student problem, answer, private model reasoning or prompts are copied into decisions.
+Account/source/solution deletion cascades through immutable runs into decisions. Direct
+history mutation/deletion remains rejected. Rollout disablement never deletes history.
+No training eligibility or learner mastery update is introduced. New metrics use only
+bounded operation/status/reason/action labels; no student text or identifiers are labels.

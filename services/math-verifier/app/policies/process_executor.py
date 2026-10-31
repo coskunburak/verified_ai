@@ -11,6 +11,7 @@ from dataclasses import dataclass
 
 from app.api.schemas.calculus import CalculusRequest, CalculusResult
 from app.api.schemas.execution import ExecutionRequest, ExecutionResult
+from app.api.schemas.numeric import NumericRequest, NumericResult, parse_result, unavailable
 
 MAX_RESPONSE_BYTES = 16384
 
@@ -44,7 +45,10 @@ def apply_resource_limits(budget):
 def _worker(connection, payload, budget):
     try:
         apply_resource_limits(budget)
-        if json.loads(payload).get("schemaVersion") == "calculus-execution-v1":
+        if json.loads(payload).get("schemaVersion") == "numeric-diagnostic-v1":
+            from app.verifiers.numeric_sampling import execute
+            response = execute(NumericRequest.model_validate_json(payload))
+        elif json.loads(payload).get("schemaVersion") == "calculus-execution-v1":
             from app.verifiers.calculus import execute
             response = execute(CalculusRequest.model_validate_json(payload))
         else:
@@ -75,6 +79,8 @@ class ProcessExecutor:
 
     @staticmethod
     def failure(request, reason):
+        if isinstance(request, NumericRequest):
+            return unavailable(request, "EXECUTION_FAILED", reason)
         if isinstance(request, CalculusRequest):
             return CalculusResult(schemaVersion="calculus-execution-result-v1", methodVersion="v1",
                                   verifierVersion="bounded-calculus-v1",
@@ -86,7 +92,7 @@ class ProcessExecutor:
                                method=request.method, outcome="EXECUTION_FAILED", reasonCode=reason,
                                restrictionIds=[r.id for r in request.restrictions])
 
-    def execute(self, request: ExecutionRequest | CalculusRequest) -> ExecutionResult | CalculusResult:
+    def execute(self, request: ExecutionRequest | CalculusRequest | NumericRequest) -> ExecutionResult | CalculusResult | NumericResult:
         if not self._slots.acquire(blocking=False):
             return self.failure(request, "ADMISSION_LIMIT")
         receive = send = process = None
@@ -107,6 +113,11 @@ class ProcessExecutor:
                 return self.failure(request, "WORKER_FAILURE")
             if data in {b"RESOURCE_FAILURE", b"WORKER_FAILURE"}:
                 return self.failure(request, data.decode("ascii"))
+            if isinstance(request, NumericRequest):
+                try:
+                    return parse_result(data, request)
+                except ValueError:
+                    return self.failure(request, "INVALID_RESPONSE")
             if isinstance(request, CalculusRequest):
                 try:
                     return CalculusResult.model_validate_json(data).validate_for(request)

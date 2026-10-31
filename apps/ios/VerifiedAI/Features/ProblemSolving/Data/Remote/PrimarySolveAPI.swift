@@ -4,6 +4,11 @@ final class PrimarySolveAPI: PrimarySolveServicing, @unchecked Sendable {
     private let client: APIClient
     init(client: APIClient) { self.client = client }
     private func path(_ sessionId: UUID) -> String { "/api/v1/problem-sessions/\(sessionId.uuidString)/solves" }
+    func verification(sessionId: UUID, jobId: UUID) async throws -> VerificationDecisionSnapshot? {
+        let response: HTTPResponse<VerificationReadResponse> = try await client.send(HTTPRequest(
+            endpoint: Endpoint(path: path(sessionId) + "/\(jobId.uuidString)/verification")))
+        return response.body.decision
+    }
     func current(sessionId: UUID) async throws -> SolveJobSnapshot? {
         let response: HTTPResponse<CurrentSolveResponse> = try await client.send(HTTPRequest(endpoint: Endpoint(path: path(sessionId) + "/current")))
         return try response.body.job?.validated()
@@ -40,5 +45,16 @@ private struct CurrentSolveResponse: Decodable {
         let c = try decoder.container(keyedBy: Keys.self)
         guard c.contains(.job) else { throw SolveContractError.invalidResponse }
         job = try c.decodeIfPresent(SolveJobSnapshot.self, forKey: .job)
+    }
+}
+
+
+private struct VerificationReadResponse: Decodable {
+    let decision: VerificationDecisionSnapshot?
+    private enum Keys: String, CodingKey { case decision }
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: Keys.self)
+        guard c.contains(.decision) else { throw SolveContractError.invalidResponse }
+        decision = try c.decodeIfPresent(VerificationDecisionSnapshot.self, forKey: .decision)
     }
 }

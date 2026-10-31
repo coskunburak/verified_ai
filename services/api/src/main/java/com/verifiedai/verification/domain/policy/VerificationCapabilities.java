@@ -29,6 +29,24 @@ public final class VerificationCapabilities {
         }
         approved = enabled && accepted ? Set.copyOf(selected) : Set.of();
     }
+    /** Availability inventory only: numerical sampling is deliberately absent from approved exact methods. */
+    public record NumericCapability(String version, String algorithm, boolean implemented, boolean ownerAccepted,
+        boolean runtimeEnabled, boolean productionApproved) { }
+    private boolean numericAccepted;
+    private boolean numericEnabled;
+    @org.springframework.beans.factory.annotation.Autowired
+    public void configureNumeric(
+        @org.springframework.beans.factory.annotation.Value("${app.verification.numeric-enabled:false}") boolean enabled,
+        @org.springframework.beans.factory.annotation.Value("${app.verification.numeric-owner-accepted:false}") boolean accepted,
+        @org.springframework.beans.factory.annotation.Value("${app.environment:local}") String environment) {
+        if (enabled && !Set.of("local", "test").contains(environment))
+            throw new IllegalArgumentException("Numeric production rollout is not approved");
+        numericAccepted = accepted; numericEnabled = enabled;
+    }
+    public NumericCapability numericCapability() {
+        return new NumericCapability(com.verifiedai.verification.domain.model.NumericDiagnostic.CAPABILITY,
+            com.verifiedai.verification.domain.model.NumericDiagnostic.POLICY, true, numericAccepted, numericEnabled, false);
+    }
     public static VerificationCapabilities none() { return new VerificationCapabilities(false); }
     private boolean calculusApproved;
     private volatile boolean calculusReady;

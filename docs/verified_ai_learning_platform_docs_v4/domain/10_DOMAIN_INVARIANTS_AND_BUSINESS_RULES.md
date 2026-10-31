@@ -120,3 +120,30 @@ This is a highest-precedence document.
 - Published runs and their method evidence are immutable, scoped to exact source/solution/version identities and idempotency keys.
 - Historical evidence remains explicit history; currentness is checked on reads. Account/source deletion removes evidence through owned cascades.
 - No Sprint 5.8 method assigns an aggregate VERIFIED status or changes canonical solution generation state.
+
+## Sprint 5.10 composite invariants
+
+- A composite describes evidence coverage and consistency, never product verification status.
+- Only one current owned plan, candidate revision, source scope and execution may compose;
+  duplicate methods, forged descriptors, unsupported versions and incompatible assumptions reject.
+- Root soundness cannot establish solution-set completeness. Missing required domain checks
+  remain missing; empty evidence cannot establish truth.
+- An unsatisfiable source restriction set blocks ordinary proof interpretation. Unknown
+  feasibility remains unresolved. Original-expression restrictions survive cancellation.
+- Numeric agreement, mismatch and operational failure are strictly non-proof. Exact
+  contradictions survive numerical agreement; a conflict is not automatic adjudication.
+- Composite assessments and numeric diagnostics are ephemeral; immutable historical runs
+  retain their original contracts and five-method limit.
+
+## Sprint 5.11 policy invariants
+
+- Only the versioned VerificationPolicy assigns aggregate status; generation state is independent.
+- VERIFIED covers the final-answer obligations only. Explanation steps remain explicitly unchecked.
+- Partial status requires a meaningful deterministic claim; domain-only checks and solver/numeric agreement are insufficient.
+- Exact disproof and unresolved material conflicts prohibit VERIFIED and PARTIALLY_VERIFIED.
+- Source, solution, evidence, capability and secondary freshness are rechecked before publication and current display.
+- A newer run invalidates the older current projection even without a source change. History remains immutable.
+- GET never dispatches inference, starts verification, retries, reserves usage or writes decisions.
+- Retrying evaluation with a key reuses one matching decision; changed scope rejects. No automatic paid escalation exists.
+- Calculus composition requires its tagged evidence variant and full source interval, approach and restriction matching; generic evidence cannot substitute.
+- Calculus VERIFIED retains OPEN_INTERVAL, ANTIDERIVATIVE_REPRESENTATIVE or PUNCTURED_NEIGHBORHOOD scope; it never implies endpoints, an entire antiderivative family, or explanation steps. Production promotion remains disabled.

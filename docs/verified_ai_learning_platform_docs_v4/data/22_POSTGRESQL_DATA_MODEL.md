@@ -656,3 +656,15 @@ plan/policy/capability versions and correlation/time metadata. The table contain
 Database checks bind JSON identity to relational identity; constructors validate nested evidence provenance on reads.
 Update and direct delete triggers preserve history; owned source/account cascades remove the aggregate for privacy.
 No mutable current-evidence pointer is introduced. Currentness is reauthorized against selected source at read/publication time.
+
+## Sprint 5.11 immutable decisions — V023
+
+`verification_decisions` stores a bounded 16 KiB typed policy record linked to one immutable
+`verification_runs` row by run/owner/session/solution composite FK. Unique owner/session/key
+binds idempotent publication. JSON/column checks and an insertion trigger bind source,
+solution versions, plan, capabilities, correlation and exact evidence references to that
+run. UPDATE and direct DELETE reject; owned cascades remain allowed. Current reads use an
+owner/session/solution/time index and independently validate freshness; there is no mutable
+status column on solving or evidence. Decisions retain the original policy version and
+creation timestamp, with no raw text or private reasoning. V001–V022 remain unchanged.
+Rollback disables arbitration and retains V023/history; do not downgrade or drop the table.

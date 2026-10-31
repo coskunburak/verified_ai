@@ -215,3 +215,16 @@ is an authorized server projection/correlation, not canonical authority.
 
 Status: IMPLEMENTED_PENDING_OWNER_VALIDATION / CI_PENDING / ROLLOUT_DISABLED.
 See [closure report](../sprints/phase05_ai_solving_and_verification_core/SPRINT_5.9_PRODUCTION_INTEGRATION_CLOSURE_EXECUTION_REPORT.md).
+
+## Sprint 5.10 diagnostic representation
+
+`numeric-diagnostic-v1` reuses existing typed expressions, equalities, variables and
+restrictions without changing any released canonical/candidate/exact/calculus schema.
+Its executable diagnostic subset is expression comparison with zero or one REAL variable;
+relations, INTEGER/UNKNOWN and unsupported rational restriction evaluation return non-proof
+unavailability. Method `NUMERIC_SAMPLING`, scopeId and `equivalence-binary64-v1` are explicit.
+The result has bounded counts, enums and correlation/scope IDs, with no proof branch.
+Cross-counter arithmetic and request binding are additionally checked by both typed runtimes.
+A mathematical-input SHA-256 seed is internal only; neither points nor content hashes are
+new telemetry or durable records. Composite source feasibility uses bounded exact affine
+restrictions; unsupported nonlinear feasibility does not become complete coverage.

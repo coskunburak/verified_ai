@@ -161,3 +161,19 @@ raw mathematical logging or overall VERIFIED arbitration is added.
 
 Status: IMPLEMENTED_PENDING_OWNER_VALIDATION / CI_PENDING / ROLLOUT_DISABLED.
 See [closure report](../sprints/phase05_ai_solving_and_verification_core/SPRINT_5.9_PRODUCTION_INTEGRATION_CLOSURE_EXECUTION_REPORT.md).
+
+## Sprint 5.10 numerical/composite boundary
+
+Numeric diagnostics use internal-token authentication, exact request/correlation/scope
+binding, duplicate/unknown-field rejection, 64 KiB preparse input and 16 KiB response caps.
+The existing shared two-worker no-queue supervisor retains 3 s elapsed, 2 s CPU and Linux
+512 MiB memory enforcement. Typed AST and rational complexity budgets are unchanged.
+No eval, expression strings, unrestricted symbolic calls or new dependency is admitted.
+Numerical stability guards are diagnostic filters, never exact certificates. Both runtimes
+reject production numeric activation pending a separate release decision.
+
+Composite reads authorize ownership and parent/source currentness before assessing one
+run. Mixed owners/revisions/method scopes reject. Metrics use finite categories, statuses,
+domain coverage and proof-presence booleans, plus bounded unsupported/failure counts and
+latency; numeric conflicts have a dedicated counter. IDs and content never become labels.
+The existing request correlation log allowlist includes the numeric endpoint.

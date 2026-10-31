@@ -44,7 +44,7 @@ Status values:
 | CAP-SOLVE-001 | Primary solver pipeline | Yes | Sprint 5.4 | `ai/25_AI_ORCHESTRATION_AND_MODEL_ROUTING.md` | Partial | LOCAL_IMPLEMENTATION_ACCEPTED: selected canonical authority, disabled-by-default SOLVE, LOCAL_ONLY artifacts, bounded unverified candidate validation, durable async jobs/candidates, API and privacy lifecycle. Owner stages A–E passed; E completion inferred from sequential make check reaching iOS success. Live model BLOCKED_MODEL_DECISION; no production quality claim. |
 | CAP-SOLVE-002 | Conditional secondary solver | Yes | Sprint 5.5 | `ai/57_API_FIRST_HYBRID_AI_STRATEGY_AND_MODEL_EVOLUTION.md` | Pending | Escalation policy tests; no unconditional two-solver cost. |
 | CAP-VERIFY-001 | Verification planner and deterministic methods | Yes | Sprint 5.7, Sprint 5.8, Sprint 5.9, Sprint 5.10 | `ai/27_VERIFICATION_ENGINE.md` | Partial | Sprint 5.7 adds versioned owner-scoped canonical planning, separate applicability/capability states and conservative domain/completeness requirements; owner Gates A–F and implementation CI passed (full API 517 passed / 2 gated Qwen skips); PR #31 tracks current-head checks and final review. Existing typed validation is not answer checking. Canonical execution adapters, mathematical evidence and verdict policy remain later scope. |
-| CAP-VERIFY-002 | Human-honest arbitration and uncertainty | Yes | Sprint 5.11 | `domain/10_DOMAIN_INVARIANTS_AND_BUSINESS_RULES.md` | Pending | VERIFIED/PARTIAL/UNVERIFIED semantics tested and visible. |
+| CAP-VERIFY-002 | Human-honest arbitration and uncertainty | Yes | Sprint 5.11 | `domain/10_DOMAIN_INVARIANTS_AND_BUSINESS_RULES.md` | Partial | Sprint 5.11 implemented-scope owner A–H PASS, evidence 20261030-140545-EIykOa: Linux 317 passed; backend 654 cases with zero failures/errors and two paid-model skips; iOS 110 unit and 11 UI passed; quality checks passed. Those passes cover the earlier generic scope. Calculus closure authored 2026-10-31: tagged adapter, scoped decisions and full integration regressions now IMPLEMENTED_PENDING_OWNER_VALIDATION. Hosted CI NOT_RUN; rollout disabled. |
 | CAP-EVAL-001 | Golden dataset AI/release gate | Yes | Sprint 4.10 ingestion subset; Sprint 5.12 broader AI evaluation | `ai/28_AI_EVALUATION_AND_GOLDEN_DATASET.md` | Partial | Sprint 4.10 establishes the local deterministic ingestion regression gate and baseline. Global solve, verify, tutoring, model-router, connected-provider, and protected-holdout release evidence remain Sprint 5.12 or later scope before this capability can be Complete. |
 | CAP-SOLUTION-001 | Step-by-step solution UX | Yes | Sprint 6.1 | `product/04_FEATURE_CATALOG_AND_PRODUCT_RULES.md` | Pending | Loading/success/error/offline states, accessibility/localization checks. |
 | CAP-SOLUTION-002 | Verification transparency UX | Yes | Sprint 6.2 | `ai/27_VERIFICATION_ENGINE.md` | Pending | User-safe evidence, no private chain-of-thought leakage. |
@@ -130,3 +130,13 @@ Sprint5.10/5.11/5.12 and Phase5 completion remain separate.
 
 Status: IMPLEMENTED_PENDING_OWNER_VALIDATION / CI_PENDING / ROLLOUT_DISABLED.
 See [closure report](../sprints/phase05_ai_solving_and_verification_core/SPRINT_5.9_PRODUCTION_INTEGRATION_CLOSURE_EXECUTION_REPORT.md).
+
+## Sprint 5.10 capability evidence
+
+CAP-VERIFY-001 gains an internal composite assessment and an independently versioned
+non-proof numeric diagnostic slice. Current v1 source/candidate types are supported;
+calculus composition, general nonlinear feasibility, automatic numerical orchestration,
+final VerificationPolicy arbitration and production numerical rollout remain excluded.
+Owner local A–H gates passed (Linux 283, backend 616/two paid-model skips, Gate H exit 0).
+Final evidence-documentation docs-check and hosted CI remain pending; rollout is disabled.
+The complete platform verification capability is not marked delivered by this addition.

@@ -1,0 +1,294 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.verified-ai-learning.example/numeric-diagnostic-result.schema.json",
+  "title": "NumericDiagnosticResult",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "numeric-diagnostic-result-v1"
+    },
+    "executionId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "correlationId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,64}$"
+    },
+    "scopeId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "method": {
+      "const": "NUMERIC_SAMPLING"
+    },
+    "policyVersion": {
+      "const": "equivalence-binary64-v1"
+    },
+    "status": {
+      "enum": [
+        "AGREEMENT",
+        "MISMATCH",
+        "INCONCLUSIVE",
+        "UNSUPPORTED",
+        "BLOCKED",
+        "EXECUTION_FAILED"
+      ]
+    },
+    "reasonCode": {
+      "type": "string"
+    },
+    "restrictionIds": {
+      "type": "array",
+      "maxItems": 48,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9_-]{1,96}$"
+      }
+    },
+    "attempted": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 16
+    },
+    "admissible": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 16
+    },
+    "evaluated": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 16
+    },
+    "agreeing": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 16
+    },
+    "disagreeing": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 16
+    },
+    "unstable": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 16
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "executionId",
+    "correlationId",
+    "scopeId",
+    "method",
+    "policyVersion",
+    "status",
+    "reasonCode",
+    "restrictionIds",
+    "attempted",
+    "admissible",
+    "evaluated",
+    "agreeing",
+    "disagreeing",
+    "unstable"
+  ],
+  "oneOf": [
+    {
+      "properties": {
+        "status": {
+          "const": "AGREEMENT"
+        },
+        "reasonCode": {
+          "enum": [
+            "SAMPLES_AGREE"
+          ]
+        },
+        "attempted": {
+          "const": 16
+        },
+        "evaluated": {
+          "minimum": 4
+        },
+        "admissible": {
+          "minimum": 4
+        },
+        "unstable": {
+          "const": 0
+        },
+        "disagreeing": {
+          "const": 0
+        }
+      }
+    },
+    {
+      "properties": {
+        "status": {
+          "const": "MISMATCH"
+        },
+        "reasonCode": {
+          "enum": [
+            "SAMPLES_DIFFER"
+          ]
+        },
+        "attempted": {
+          "const": 16
+        },
+        "evaluated": {
+          "minimum": 4
+        },
+        "admissible": {
+          "minimum": 4
+        },
+        "unstable": {
+          "const": 0
+        },
+        "disagreeing": {
+          "minimum": 1
+        }
+      }
+    },
+    {
+      "properties": {
+        "status": {
+          "const": "INCONCLUSIVE"
+        },
+        "reasonCode": {
+          "enum": [
+            "INSUFFICIENT_SAMPLES",
+            "UNSTABLE_SAMPLES"
+          ]
+        },
+        "attempted": {
+          "const": 16
+        }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "reasonCode": {
+              "const": "INSUFFICIENT_SAMPLES"
+            },
+            "evaluated": {
+              "maximum": 3
+            },
+            "unstable": {
+              "const": 0
+            }
+          }
+        },
+        {
+          "properties": {
+            "reasonCode": {
+              "const": "UNSTABLE_SAMPLES"
+            },
+            "unstable": {
+              "minimum": 1
+            }
+          }
+        }
+      ]
+    },
+    {
+      "properties": {
+        "status": {
+          "const": "UNSUPPORTED"
+        },
+        "reasonCode": {
+          "enum": [
+            "UNSUPPORTED_SUBSET",
+            "COMPLEXITY_LIMIT",
+            "INTEGER_DOMAIN"
+          ]
+        },
+        "attempted": {
+          "const": 0
+        },
+        "admissible": {
+          "const": 0
+        },
+        "evaluated": {
+          "const": 0
+        },
+        "agreeing": {
+          "const": 0
+        },
+        "disagreeing": {
+          "const": 0
+        },
+        "unstable": {
+          "const": 0
+        }
+      }
+    },
+    {
+      "properties": {
+        "status": {
+          "const": "BLOCKED"
+        },
+        "reasonCode": {
+          "enum": [
+            "UNKNOWN_DOMAIN"
+          ]
+        },
+        "attempted": {
+          "const": 0
+        },
+        "admissible": {
+          "const": 0
+        },
+        "evaluated": {
+          "const": 0
+        },
+        "agreeing": {
+          "const": 0
+        },
+        "disagreeing": {
+          "const": 0
+        },
+        "unstable": {
+          "const": 0
+        }
+      }
+    },
+    {
+      "properties": {
+        "status": {
+          "const": "EXECUTION_FAILED"
+        },
+        "reasonCode": {
+          "enum": [
+            "TIMEOUT",
+            "RESOURCE_FAILURE",
+            "WORKER_FAILURE",
+            "ADMISSION_LIMIT",
+            "DISABLED",
+            "INVALID_RESPONSE"
+          ]
+        },
+        "attempted": {
+          "const": 0
+        },
+        "admissible": {
+          "const": 0
+        },
+        "evaluated": {
+          "const": 0
+        },
+        "agreeing": {
+          "const": 0
+        },
+        "disagreeing": {
+          "const": 0
+        },
+        "unstable": {
+          "const": 0
+        }
+      }
+    }
+  ],
+  "description": "Non-proof diagnostics. Both runtimes additionally enforce agreeing+disagreeing=evaluated<=admissible<=attempted and evaluated+unstable<=attempted."
+}

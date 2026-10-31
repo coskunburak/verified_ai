@@ -4,6 +4,62 @@ info:
   version: 0.1.0
 
 paths:
+  /api/v1/problem-sessions/{sessionId}/solves/{jobId}/verification:
+    get:
+      summary: Read the current immutable verification decision without starting work
+      description: >
+        Calculus proof retains OPEN_INTERVAL, ANTIDERIVATIVE_REPRESENTATIVE or
+        PUNCTURED_NEIGHBORHOOD scope. It never implies endpoint coverage, a complete
+        antiderivative family, or verified explanation steps. Scope is defined by the
+        selected source and referenced immutable evidence; no raw mathematical content is returned.
+      security:
+        - bearerAuth: []
+      parameters:
+        - {name: sessionId, in: path, required: true, schema: {type: string, format: uuid}}
+        - {name: jobId, in: path, required: true, schema: {type: string, format: uuid}}
+      responses:
+        "200":
+          description: Null when absent, stale or disabled; never an implicit verified verdict
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [decision]
+                properties:
+                  decision:
+                    oneOf:
+                      - $ref: "../../schemas/verification-decision.schema.json"
+                      - type: "null"
+        "401":
+          description: Authentication required
+        "404":
+          description: Owned session unavailable
+  /api/v1/problem-sessions/{sessionId}/solutions/{solutionId}/verification/{runKey}:
+    post:
+      summary: Evaluate an owned existing evidence run; no inference or automatic retry
+      security:
+        - bearerAuth: []
+      parameters:
+        - {name: sessionId, in: path, required: true, schema: {type: string, format: uuid}}
+        - {name: solutionId, in: path, required: true, schema: {type: string, format: uuid}}
+        - {name: runKey, in: path, required: true, schema: {type: string, format: uuid}}
+        - {name: Idempotency-Key, in: header, required: true, schema: {type: string, format: uuid}}
+      responses:
+        "200":
+          description: Immutable decision; retrying the same key returns its original history
+          content:
+            application/json:
+              schema:
+                $ref: "../../schemas/verification-decision.schema.json"
+        "400":
+          description: IDEMPOTENCY_KEY_REQUIRED
+        "401":
+          description: Authentication required
+        "404":
+          description: RESOURCE_FORBIDDEN
+        "409":
+          description: VERIFICATION_UNAVAILABLE or IDEMPOTENCY_KEY_REUSED
   /api/v1/problem-sessions/{sessionId}/solves/current:
     get:
       summary: Recover the latest owned primary solve without creating work

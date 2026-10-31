@@ -11,6 +11,7 @@ class Settings:
     internal_token: str
     execution_enabled: bool = False
     calculus_enabled: bool = False
+    numeric_enabled: bool = False
     expression_max_length: int = 256
     operation_timeout_ms: int = 750
 
@@ -21,6 +22,9 @@ def get_settings() -> Settings:
     if environment not in {"local", "test"} and (len(token) < 32 or token == "local_math_verifier_token_change_me"):
         raise ValueError("A production internal verifier secret is required")
     enabled = os.getenv("MATH_VERIFIER_EXECUTION_ENABLED", "false").lower() == "true"
+    numeric = os.getenv("MATH_VERIFIER_NUMERIC_ENABLED", "false").lower() == "true"
+    if numeric and environment not in {"local", "test"}:
+        raise ValueError("Numeric diagnostics require separate production approval")
     calculus = os.getenv("MATH_VERIFIER_CALCULUS_ENABLED", "false").lower() == "true"
     if calculus and environment not in {"local", "test"}:
         raise ValueError("Calculus requires source-backed canonical integration before production release")
@@ -31,6 +35,7 @@ def get_settings() -> Settings:
         internal_token=token,
         execution_enabled=enabled,
         calculus_enabled=calculus,
+        numeric_enabled=numeric,
         expression_max_length=int(os.getenv("MATH_VERIFIER_EXPRESSION_MAX_LENGTH", "256")),
         operation_timeout_ms=int(os.getenv("MATH_VERIFIER_TIMEOUT_MS", "750")),
     )

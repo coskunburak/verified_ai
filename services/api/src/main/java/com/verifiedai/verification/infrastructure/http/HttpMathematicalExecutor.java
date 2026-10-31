@@ -2,6 +2,7 @@ package com.verifiedai.verification.infrastructure.http;
 
 import com.verifiedai.verification.application.MathematicalExecutor;
 import com.verifiedai.verification.domain.model.MathematicalExecution.*;
+import com.verifiedai.verification.domain.model.NumericDiagnostic;
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.net.http.*;
@@ -13,13 +14,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-public class HttpMathematicalExecutor implements MathematicalExecutor, com.verifiedai.verification.application.CalculusExecutor {
+public class HttpMathematicalExecutor implements MathematicalExecutor, com.verifiedai.verification.application.CalculusExecutor,
+    com.verifiedai.verification.application.NumericExecutor {
     private final HttpClient client;
     private final URI endpoint;
     private final String token;
     private final boolean enabled;
     private final String environment;
     private boolean calculusEnabled;
+    private boolean numericEnabled;
     private final Semaphore slots = new Semaphore(4);
     private final ExecutionWireCodec codec = new ExecutionWireCodec();
     public HttpMathematicalExecutor(@Value("${app.verification.base-url:http://math-verifier:8090}") String baseUrl,
@@ -127,6 +130,37 @@ public class HttpMathematicalExecutor implements MathematicalExecutor, com.verif
         return new com.verifiedai.verification.domain.model.CalculusExecution.Result(r.executionId(),r.correlationId(),r.scope(),r.method(),
             "v1","bounded-calculus-v1",Outcome.EXECUTION_FAILED,reason,
             r.restrictions().stream().map(com.verifiedai.verification.domain.model.PlanningSource.Restriction::id).toList(),null,null);
+    }
+    @org.springframework.beans.factory.annotation.Autowired
+    void configureNumeric(@Value("${app.verification.numeric-enabled:false}") boolean enabled,
+        @Value("${app.verification.numeric-owner-accepted:false}") boolean accepted) {
+        if (enabled && !List.of("local", "test").contains(environment))
+            throw new IllegalArgumentException("Production numeric diagnostics are not approved");
+        numericEnabled = enabled && accepted;
+    }
+    public NumericDiagnostic.Result diagnose(NumericDiagnostic.Request request) {
+        if (!numericEnabled) return NumericDiagnostic.Result.failed(request, NumericDiagnostic.Reason.DISABLED);
+        if (!slots.tryAcquire()) return NumericDiagnostic.Result.failed(request, NumericDiagnostic.Reason.ADMISSION_LIMIT);
+        CompletableFuture<HttpResponse<byte[]>> pending = null;
+        try {
+            var wire = new NumericWireCodec();
+            var http = HttpRequest.newBuilder(endpoint.resolve("/internal/v1/verify/numeric")).timeout(Duration.ofSeconds(4))
+                .header("Content-Type", "application/json").header("Accept", "application/json")
+                .header("X-Internal-Token", token).header("X-Request-Id", request.input().correlationId())
+                .POST(HttpRequest.BodyPublishers.ofByteArray(wire.request(request))).build();
+            pending = client.sendAsync(http, info -> new LimitedBody());
+            var response = pending.get(4500, TimeUnit.MILLISECONDS);
+            if (response.statusCode() != 200) return NumericDiagnostic.Result.failed(request, NumericDiagnostic.Reason.WORKER_FAILURE);
+            if (!response.headers().firstValue("Content-Type").orElse("").toLowerCase(java.util.Locale.ROOT).startsWith("application/json"))
+                return NumericDiagnostic.Result.failed(request, NumericDiagnostic.Reason.INVALID_RESPONSE);
+            return wire.result(response.body(), request);
+        } catch (TimeoutException e) { return NumericDiagnostic.Result.failed(request, NumericDiagnostic.Reason.TIMEOUT); }
+        catch (InterruptedException e) { Thread.currentThread().interrupt(); return NumericDiagnostic.Result.failed(request, NumericDiagnostic.Reason.WORKER_FAILURE); }
+        catch (IllegalArgumentException e) { return NumericDiagnostic.Result.failed(request, NumericDiagnostic.Reason.INVALID_RESPONSE); }
+        catch (ExecutionException e) {
+            return NumericDiagnostic.Result.failed(request, e.getCause() instanceof HttpTimeoutException ? NumericDiagnostic.Reason.TIMEOUT
+                : e.getCause() instanceof IllegalArgumentException ? NumericDiagnostic.Reason.INVALID_RESPONSE : NumericDiagnostic.Reason.WORKER_FAILURE);
+        } finally { if (pending != null && !pending.isDone()) pending.cancel(true); slots.release(); }
     }
     private static final class LimitedBody implements HttpResponse.BodySubscriber<byte[]> {
         private final CompletableFuture<byte[]> body = new CompletableFuture<>();

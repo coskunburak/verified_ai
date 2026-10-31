@@ -20,6 +20,31 @@ final class FixturePrimarySolveAPI: PrimarySolveServicing {
         self.scenario = scenario; self.defaults = defaults; self.controlledProgression = controlledProgression
         if reset { defaults.removeObject(forKey: "solve.fixture.job"); defaults.removeObject(forKey: "solve.fixture.attempt"); defaults.removeObject(forKey: "solve.fixture.state") }
     }
+    func verification(sessionId: UUID, jobId: UUID) async throws -> VerificationDecisionSnapshot? {
+        guard ["VERIFIED", "PARTIALLY_VERIFIED", "UNVERIFIED", "CONTRADICTION",
+            "CALCULUS_DERIVATIVE", "CALCULUS_INTEGRAL", "CALCULUS_LIMIT"].contains(scenario) else { return nil }
+        return Self.decisionFixture(scenario)
+    }
+    nonisolated static func decisionFixture(_ scenario: String) -> VerificationDecisionSnapshot {
+        let calculusScope: VerificationDecisionSnapshot.Scope? = switch scenario {
+        case "CALCULUS_DERIVATIVE": .openInterval
+        case "CALCULUS_INTEGRAL": .antiderivative
+        case "CALCULUS_LIMIT": .neighborhood
+        default: nil
+        }
+        let status = calculusScope == nil ? VerificationDecisionSnapshot.Status(rawValue: scenario) ?? .unverified : .verified
+        let contradiction = scenario == "CONTRADICTION"
+        let verified = status == .verified, partial = status == .partiallyVerified
+        return VerificationDecisionSnapshot(schemaVersion: "verification-decision-v1", id: UUID(), policyVersion: "verification-policy-v1",
+            solutionId: UUID(), canonicalProblemId: canonicalId, problemParseId: parseId, problemParseRevision: 1,
+            runId: UUID(), evidenceIds: [UUID()], status: status, scope: calculusScope ?? (verified ? .finalAnswer : partial ? .subset : .none),
+            reasons: verified ? ["REQUIRED_CLAIM_PROVEN"] : partial ? ["SUBSET_PROVEN"] : contradiction ? ["DETERMINISTIC_CONTRADICTION"] : ["MISSING_PROOF"],
+            checked: calculusScope?.calculusMethod.map { [$0] } ?? (verified ? [.domain, .root, .completeness] : partial ? [.root] : []),
+            unchecked: verified ? [] : contradiction ? [.domain, .root, .completeness] : [.domain, .completeness],
+            contradictions: contradiction ? [.root] : [],
+            uncertainty: ["EXPLANATION_STEPS_UNCHECKED"], recovery: verified ? .none : contradiction ? .reviewContradiction : .evidence,
+            correlationId: "synthetic-decision", createdAt: "2026-10-30T00:00:00Z")
+    }
     func current(sessionId: UUID) async throws -> SolveJobSnapshot? {
         guard let id = defaults.string(forKey: "solve.fixture.job"), let job = UUID(uuidString: id) else { return nil }
         return try snapshot(job: job, state: defaults.string(forKey: "solve.fixture.state").flatMap(SolveState.init(rawValue:)) ?? terminalState)
@@ -117,6 +142,11 @@ final class FixturePrimarySolveAPI: PrimarySolveServicing {
         "ambiguities":\(review ? "[\"Örnek belirsizlik: kaynağı gözden geçirin. / Example uncertainty: review the source.\"]" : "[]"),"unresolvedIssues":[]}
         """
     }
+}
+
+@MainActor
+struct FixtureSolveNetworkMonitor: NetworkMonitoring {
+    let isReachable = true
 }
 
 struct FixtureSolveHistoryAPI: ProblemSessionHistoryServicing {

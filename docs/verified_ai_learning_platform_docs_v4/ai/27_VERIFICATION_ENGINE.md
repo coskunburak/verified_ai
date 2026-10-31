@@ -173,3 +173,70 @@ remain distinct; no overall VERIFIED state is assigned.
 
 Status: IMPLEMENTED_PENDING_OWNER_VALIDATION / CI_PENDING / ROLLOUT_DISABLED.
 See [closure report](../sprints/phase05_ai_solving_and_verification_core/SPRINT_5.9_PRODUCTION_INTEGRATION_CLOSURE_EXECUTION_REPORT.md).
+
+## Sprint 5.10 composite evidence and numerical diagnostics
+
+`CompositeEvidencePolicy` produces `composite-evidence-v1`, a deterministic assessment
+of one current plan/run/candidate/source. EXACT_SUPPORT means all required exact method
+obligations are proven in a nonempty supported source scope; it never assigns VERIFIED.
+Exact contradictions retain their original method/purpose. Conflicting exact domain
+claims, complete-root-set proof versus invalid-root evidence, and numerical disagreement
+are explicit. Missing domain or equation completeness
+remains unresolved even when other methods succeed. Empty affine source domains block
+composition; unsupported feasibility stays unresolved. Input evidence order has no effect.
+
+`CompositeVerification.current` reuses owned canonical/planning reads (including secondary
+parent preconditions), finishes them before the short source-owner transaction, and
+rechecks the fresh plan before projecting immutable evidence. Stale/absent eligible runs
+return no assessment; authorization and malformed stored evidence fail closed. Optional
+diagnostics must match the exact execution, correlation, source-derived scope and original
+ASTs. No worker/network call or durable write occurs in this read path.
+
+The additive numeric endpoint and Java port implement `equivalence-binary64-v1`:
+16 deterministic distinct attempted points on the 1/16 grid in [-8,8], at least four stable evaluations,
+absolute and relative tolerance 1e-10. Agreement and mismatch cannot carry proof.
+Original AST definedness, exact rational source restrictions, cancellation/error estimates,
+near-singularity, nonfinite/overflow/underflow checks precede classification. Unknown and
+integer domains are not sampled as reals. A bounded sample window cannot establish domain
+coverage or disprove a globally quantified statement. Optional sampling is never automatic.
+
+New numeric flags default false and production activation is rejected in both runtimes.
+`numeric-capabilities-v1` is an implementation/acceptance inventory, not exact planner
+approval; the old capability identity and five-method behavior remain unchanged.
+Calculus integration exists after PR #35 but remains excluded from this composite v1 and
+production-disabled. Local A–H owner gates passed; the final evidence-documentation
+docs-check and hosted CI remain pending. See the Sprint 5.10 execution report.
+
+## Sprint 5.11 arbitration implementation boundary
+
+`VerificationPolicy` is the sole aggregate status authority (`verification-policy-v1`).
+It recomposes the exact run with `composite-evidence-v1` or the tagged
+`composite-calculus-evidence-v1` against the authoritative plan,
+source and solution. Source/version integrity and review gates precede proof coverage.
+Exact disproof or conflicting evidence blocks promotion, including partial promotion;
+secondary disagreement/incompatible assumptions/invalid independence/stale lineage requires
+explicit reconciliation. Agreement alone adds no proof. A complete exact final-answer
+claim may become VERIFIED only behind accepted release flags. A meaningful proven subset
+may be PARTIALLY_VERIFIED with explicit missing methods. Domain-only proof is insufficient.
+EXPLANATION_STEPS_UNCHECKED remains visible even for a VERIFIED final answer.
+
+Decisions are immutable V023 records referencing the original run and evidence IDs.
+Publication reauthorizes source ownership and rechecks latest primary, latest run, plan and
+secondary snapshot after evaluation. Read-only GET never invokes a verifier, solver or
+usage reservation. New evidence/source/solution/corroboration invalidates the current
+projection without rewriting history. Retry is advice, capped at three runs and five minutes;
+there is no automatic retry or paid arbitration. Public GET/POST contracts and iOS display
+are separate from generation state. All tests are NOT_RUN_BY_AGENT.
+
+Status: IMPLEMENTED_PENDING_OWNER_VALIDATION for the 2026-10-31 calculus closure.
+CalculusCompositePolicy requires matching interval, target/direction, integral scope and
+restriction ASTs as well as immutable run/source/candidate identity. An exact certificate
+establishes domain obligations only in its declared scope. Public calculus verdicts use
+OPEN_INTERVAL, ANTIDERIVATIVE_REPRESENTATIVE or PUNCTURED_NEIGHBORHOOD, never generic
+FINAL_ANSWER. Numeric diagnostics stay nonproof; exact disproof and secondary conflicts
+block promotion. The antiderivative representative does not establish a complete family.
+Optional numeric diagnostics can be evaluated by the pure policy, but are not durably
+published or automatically collected by arbitration. The production path uses durable
+exact evidence only. Production activation is prohibited; local/test flags default false.
+See [implementation map](../sprints/phase05_ai_solving_and_verification_core/SPRINT_5.11_IMPLEMENTATION_MAP.md)
+and [execution report](../sprints/phase05_ai_solving_and_verification_core/SPRINT_5.11_EXECUTION_REPORT.md).
