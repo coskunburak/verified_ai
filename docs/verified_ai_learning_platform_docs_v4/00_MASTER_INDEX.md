@@ -411,3 +411,23 @@ branch-enforcement and independent-release evidence. See the closure review abov
 
 - `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.2_IMPLEMENTATION_MAP.md` — deterministic evidence presentation mapper, progressive-disclosure verification UX, and full reason/uncertainty/recovery localization.
 - `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.2_EXECUTION_REPORT.md` — `OWNER_ACCEPTANCE_PASSED` for local scope in run `20261031-184154-aBdvps` (Gates A–D `PASS`, 134 iOS tests and 9 backend/evaluation suites `PASS`, exit 0).
+
+<!-- PRODUCTION_INTELLIGENCE_V6:START -->
+## V6 Production Intelligence, Competitive Strategy, Managed API Reset & Focused Commercial Launch (2026-10-31)
+
+Following the comprehensive 2026-10-31 production architecture audit and competitive intelligence investigation (`DOCUMENTATION_V6_CHANGELOG.md`), the following canonical specifications and ADRs govern model routing, symbolic verification V2, mistake intelligence, unit economics, and the 30-Day Focused MVP Launch Gate:
+
+### New Accepted ADRs (V6)
+- `adr/ADR-008_MANAGED_CLOUD_API_ROUTING_AND_QWEN_4B_DE_PROMOTION.md` — Suspends `Qwen/Qwen3.5-4B` (`vLLM`) as a V1 primary solver; adopts `Gemini 2.5 Flash` (OCR/Normalization) + `GPT-4.1-mini` (Default Structured Solver & Tutor) + verifier-triggered `OpenAI o4-mini` (Escalation Solver).
+- `adr/ADR-009_CANONICAL_SOLUTION_SET_ALGEBRA_AND_DOMAIN_GUARD.md` — Expands `CanonicalMathDocument` (`canonical_v2`) and `services/math-verifier` with `FiniteSet`, `Interval`, `Union`, `DomainConstraintGuard` (`extraneous_roots` detection), and deterministic `CounterexampleEngine`.
+- `adr/ADR-010_NATIVE_2D_MATH_RENDERING_AND_STEP_DIFF_HIGHLIGHTING.md` — Upgrades iOS `MathematicalExpressionView.swift` from plain text to native 2D mathematical typesetting (`SwiftMath`) with step-diff highlighting and preserved VoiceOver spoken math.
+- `adr/ADR-011_FOCUSED_V1_COMMERCIAL_LAUNCH_GATE_BEFORE_PHASE_08_13.md` — Freezes Phases 8–13 until the Focused Commercial Wedge (`Live Cloud Solving` + `Analyze My Work / First Wrong Step Diagnosis` + `Domain Restriction Trap Radar`) passes the 50-student TestFlight Beta Go/No-Go Gate.
+
+### New Master Canonical Specifications (V6)
+- `architecture/75_PRODUCTION_ARCHITECTURE_AUDIT_AND_EVIDENCE_LEDGER.md` — Inspected repository evidence ledger (`e6a928db2d70efb0b9f2556e478a243205c54955`), subsystem classification matrix, and code-to-doc reconciliation.
+- `product/76_COMPETITIVE_INTELLIGENCE_AND_MARKET_POSITIONING_MATRIX.md` — Deep tear-down of 13 competitors (Photomath, Symbolab, Brilliant, Wolfram Alpha, Mathway, Gauth, Microsoft Math Solver, Desmos, GeoGebra, ThetaWise, Khanmigo, Solvely, Kunduz), 30 scored innovation proposals, and Top 8 Selected Signature Capabilities.
+- `ai/77_PRODUCTION_MATH_MODEL_BENCHMARK_AND_BUILD_VS_BUY_STRATEGY.md` — 2026 mathematical AI model landscape, `Qwen3.5-4B` technical audit, 6-option Build-vs-Buy-vs-Self-Host decision matrix, 5-layer routing architecture (`R0`–`R4`), and the 500-case `verified-ai-eval-v2` 4-axis benchmark protocol.
+- `ai/78_SYMBOLIC_VERIFICATION_ENGINE_V2_AND_DOMAIN_TRAP_RADAR.md` — Symbolic engine comparison (`SymPy` + `Z3` vs. `SageMath`/`Lean 4`/`Wolfram`), `CanonicalMathDocument v2`, `DomainConstraintGuard`, and `CounterexampleEngine`.
+- `learning/79_PEDAGOGICAL_DIAGNOSIS_HANDWRITING_UX_AND_RETENTION_ENGINE.md` — Cognitive learning architecture, `Analyze My Work` line-by-line handwritten mistake diagnosis, 28-code YKS (`TYT`/`AYT`) & Calculus mistake taxonomy, and deterministic BKT-Lite + Half-Life Decay mastery engine.
+- `roadmap/80_UNIT_ECONOMICS_30_DAY_LAUNCH_CONTRACT_AND_EXECUTION_ROADMAP.md` — Per-solve unit economics (`$0.00581/solve` ≈ `0.20 TL`), Turkey (`199.99 TL` / `349.99 TL`) & Global (`$9.99` / `$19.99`) pricing and gross margin models, 100-to-100,000 paid subscriber TCO projections, and the 30-Day Focused MVP Go/No-Go Contract.
+<!-- PRODUCTION_INTELLIGENCE_V6:END -->

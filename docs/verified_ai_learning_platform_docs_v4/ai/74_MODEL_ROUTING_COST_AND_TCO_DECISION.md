@@ -89,3 +89,11 @@ Unknown usage retains committed ceilings and NULL reported cost; no automatic re
 Marginal cost and fully allocated GPU/storage/network/operator TCO need separate measured evidence.
 Default real-provider budgets remain zero. No real model/economics measurements exist.
 [Integration and limitations](../sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_REAL_MODEL_INTEGRATION_MAP.md).
+
+## V6 Production Routing Cost & Unit Economics Baseline (2026-10-31)
+
+Per `adr/ADR-008_MANAGED_CLOUD_API_ROUTING_AND_QWEN_4B_DE_PROMOTION.md`, `ai/77_PRODUCTION_MATH_MODEL_BENCHMARK_AND_BUILD_VS_BUY_STRATEGY.md`, and `roadmap/80_UNIT_ECONOMICS_30_DAY_LAUNCH_CONTRACT_AND_EXECUTION_ROADMAP.md`:
+
+- **Approved V1 Managed Cloud Routing Stack:** `R0` SHA-256 Canonical Cache (`15%` hit rate) $\to$ `R1` `Gemini 2.5 Flash` OCR/Parse (`$0.30/$2.50` per 1M) $\to$ `R2` `GPT-4.1-mini` Primary Structured Solver (`$0.40/$1.60` per 1M) $\to$ `Python/SymPy` Deterministic Verifier $\to$ Conditional (`15%`) `R3` `OpenAI o4-mini` Escalation Solver (`$1.10/$4.40` per 1M, `max_completion_tokens <= 2048`) $\to$ `R4` `GPT-4.1-mini` Grounded Socratic Tutor.
+- **Weighted Expected Marginal Cost:** **`$0.00581` per verified end-to-end solve** (`~0.20 TL`), yielding `82%–89%` gross contribution margin on Turkish (`199.99 TL` / `349.99 TL`) and global (`$9.99` / `$19.99`) subscriptions after Apple's `15%` Small Business commission.
+- **Self-Hosting Suspension:** Dedicated GPU self-hosting (`Option 4`) is frozen for Production V1 until all 6 quantitative gates in `ai/77_PRODUCTION_MATH_MODEL_BENCHMARK_AND_BUILD_VS_BUY_STRATEGY.md` (`>=25,000` paid learners or `>$4,000/month` single-task API spend) are satisfied.

@@ -129,3 +129,14 @@ Only after production scale/data/economics gates:
 
 External frontier APIs remain fallback for hard-tail problems.
 <!-- HYBRID_AI_STRATEGY_V3:END -->
+
+<!-- FOCUSED_LAUNCH_V6:START -->
+## V6 Focused Commercial Wedge & 30-Day Go/No-Go Launch Gate (2026-10-31)
+
+Per `adr/ADR-011_FOCUSED_V1_COMMERCIAL_LAUNCH_GATE_BEFORE_PHASE_08_13.md` and `roadmap/80_UNIT_ECONOMICS_30_DAY_LAUNCH_CONTRACT_AND_EXECUTION_ROADMAP.md`, execution of Phases 8, 9, 10 (non-essential growth/admin slices), 12, and 13 is frozen until the **Focused Commercial Wedge** is shipped to at least 50 target learners on TestFlight:
+
+1. **Week 1 (Live Cloud AI Activation):** Wire `Gemini 2.5 Flash` (`VISION_PARSE`) and `GPT-4.1-mini` / `o4-mini` (`PRIMARY_SOLVE` / `SECONDARY_SOLVE`) behind existing ports (`adr/ADR-008_MANAGED_CLOUD_API_ROUTING_AND_QWEN_4B_DE_PROMOTION.md`).
+2. **Week 2 (Algebraic Completeness & 2D Math UX):** Upgrade `CanonicalMathDocument` to `canonical_v2` (`FiniteSet`, `Interval`, `DomainConstraintGuard` per `adr/ADR-009_CANONICAL_SOLUTION_SET_ALGEBRA_AND_DOMAIN_GUARD.md`) and integrate native 2D mathematical rendering (`SwiftMath` per `adr/ADR-010_NATIVE_2D_MATH_RENDERING_AND_STEP_DIFF_HIGHLIGHTING.md`).
+3. **Week 3 (Signature Differentiator — `Analyze My Work`):** Ship handwritten student attempt diagnosis (`First Wrong Step` pinpointing via SymPy step-equivalence + concrete counterexamples + Counterfactual Twin drill generation per `learning/79_PEDAGOGICAL_DIAGNOSIS_HANDWRITING_UX_AND_RETENTION_ENGINE.md`).
+4. **Week 4 (50-Student TestFlight Beta & Go/No-Go Gate):** Measure Week-2 retention (`>=30%`), `VERIFIED` yield (`>=85%`), and zero false `VERIFIED` labels before unlocking full Phase 7–11 commercial rollout.
+<!-- FOCUSED_LAUNCH_V6:END -->

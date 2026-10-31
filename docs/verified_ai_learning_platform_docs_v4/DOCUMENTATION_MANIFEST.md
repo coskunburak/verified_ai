@@ -1,14 +1,15 @@
 # Documentation Manifest
 
-Total Markdown files: **309**
+Total Markdown files: **320**
 
 ## Files
 
-- `00_MASTER_INDEX.md` — 413 lines — 31728 bytes
-- `DOCUMENTATION_MANIFEST.md` — 315 lines — 38417 bytes
+- `00_MASTER_INDEX.md` — 433 lines — 35160 bytes
+- `DOCUMENTATION_MANIFEST.md` — 326 lines — 39488 bytes
 - `DOCUMENTATION_V3_CHANGELOG.md` — 48 lines — 2266 bytes
 - `DOCUMENTATION_V4_CHANGELOG.md` — 29 lines — 1984 bytes
 - `DOCUMENTATION_V5_CHANGELOG.md` — 28 lines — 1154 bytes
+- `DOCUMENTATION_V6_CHANGELOG.md` — 38 lines — 2830 bytes
 - `README.md` — 53 lines — 2588 bytes
 - `V3_UPDATE_IMPACT_REPORT.md` — 236 lines — 22441 bytes
 - `adr/ADR-001_POSTGRESQL_OVER_FIRESTORE.md` — 26 lines — 816 bytes
@@ -18,6 +19,10 @@ Total Markdown files: **309**
 - `adr/ADR-005_API_FIRST_PROGRESSIVELY_PROPRIETARY_AI_STRATEGY.md` — 21 lines — 1173 bytes
 - `adr/ADR-006_PRODUCTION_STUDENT_DATA_NOT_TRAINING_DATA_BY_DEFAULT.md` — 15 lines — 748 bytes
 - `adr/ADR-007_SELF_HOSTED_MODELS_ONLY_AFTER_TCO_AND_QUALITY_GATES.md` — 14 lines — 681 bytes
+- `adr/ADR-008_MANAGED_CLOUD_API_ROUTING_AND_QWEN_4B_DE_PROMOTION.md` — 33 lines — 3763 bytes
+- `adr/ADR-009_CANONICAL_SOLUTION_SET_ALGEBRA_AND_DOMAIN_GUARD.md` — 30 lines — 3337 bytes
+- `adr/ADR-010_NATIVE_2D_MATH_RENDERING_AND_STEP_DIFF_HIGHLIGHTING.md` — 23 lines — 2378 bytes
+- `adr/ADR-011_FOCUSED_V1_COMMERCIAL_LAUNCH_GATE_BEFORE_PHASE_08_13.md` — 28 lines — 3107 bytes
 - `ai/25_AI_ORCHESTRATION_AND_MODEL_ROUTING.md` — 248 lines — 8204 bytes
 - `ai/26_PROMPT_SCHEMA_AND_VERSIONING.md` — 191 lines — 11618 bytes
 - `ai/27_VERIFICATION_ENGINE.md` — 242 lines — 14720 bytes
@@ -28,14 +33,17 @@ Total Markdown files: **309**
 - `ai/59_SMALL_MODEL_FINE_TUNING_AND_SELF_HOSTING_READINESS.md` — 157 lines — 3862 bytes
 - `ai/60_AI_UNIT_ECONOMICS_AND_INFERENCE_COST_ENGINEERING.md` — 203 lines — 6507 bytes
 - `ai/61_MODEL_REGISTRY_RELEASE_AND_ROLLBACK_GOVERNANCE.md` — 122 lines — 4926 bytes
-- `ai/72_OPEN_WEIGHT_MATH_MODEL_RESEARCH.md` — 65 lines — 6289 bytes
-- `ai/73_MATH_MODEL_EVALUATION_PLAN.md` — 88 lines — 6060 bytes
-- `ai/74_MODEL_ROUTING_COST_AND_TCO_DECISION.md` — 91 lines — 6261 bytes
+- `ai/72_OPEN_WEIGHT_MATH_MODEL_RESEARCH.md` — 73 lines — 7450 bytes
+- `ai/73_MATH_MODEL_EVALUATION_PLAN.md` — 95 lines — 7103 bytes
+- `ai/74_MODEL_ROUTING_COST_AND_TCO_DECISION.md` — 99 lines — 7567 bytes
+- `ai/77_PRODUCTION_MATH_MODEL_BENCHMARK_AND_BUILD_VS_BUY_STRATEGY.md` — 137 lines — 16092 bytes
+- `ai/78_SYMBOLIC_VERIFICATION_ENGINE_V2_AND_DOMAIN_TRAP_RADAR.md` — 107 lines — 8221 bytes
 - `architecture/11_SYSTEM_ARCHITECTURE_OVERVIEW.md` — 130 lines — 6804 bytes
 - `architecture/12_RUNTIME_AND_DEPLOYMENT_ARCHITECTURE.md` — 107 lines — 3096 bytes
 - `architecture/13_ASYNC_PROCESSING_AND_JOB_ORCHESTRATION.md` — 118 lines — 4365 bytes
 - `architecture/14_API_DESIGN_AND_CONTRACTS.md` — 248 lines — 17886 bytes
 - `architecture/51_ERROR_TAXONOMY_AND_RECOVERY_CONTRACT.md` — 145 lines — 6004 bytes
+- `architecture/75_PRODUCTION_ARCHITECTURE_AUDIT_AND_EVIDENCE_LEDGER.md` — 67 lines — 11185 bytes
 - `backend/19_BACKEND_ARCHITECTURE_AND_FILE_HIERARCHY.md` — 157 lines — 5040 bytes
 - `backend/20_BACKEND_MODULE_CONTRACTS.md` — 165 lines — 11180 bytes
 - `backend/21_AUTHORIZATION_RATE_LIMITING_AND_ABUSE.md` — 90 lines — 5392 bytes
@@ -63,6 +71,7 @@ Total Markdown files: **309**
 - `learning/32_ADAPTIVE_LEARNING_AND_STUDY_PLANNER.md` — 83 lines — 2062 bytes
 - `learning/33_EXAM_MODE_AND_ASSESSMENT_ENGINE.md` — 56 lines — 1100 bytes
 - `learning/34_TUTORING_AND_PEDAGOGICAL_BEHAVIOR.md` — 62 lines — 1863 bytes
+- `learning/79_PEDAGOGICAL_DIAGNOSIS_HANDWRITING_UX_AND_RETENTION_ENGINE.md` — 109 lines — 10792 bytes
 - `operations/37_OBSERVABILITY_SLOS_AND_INCIDENTS.md` — 158 lines — 6145 bytes
 - `operations/38_CI_CD_ENVIRONMENTS_AND_RELEASES.md` — 77 lines — 2366 bytes
 - `operations/39_RUNBOOKS_AND_FAILURE_MODES.md` — 106 lines — 6388 bytes
@@ -76,6 +85,7 @@ Total Markdown files: **309**
 - `product/03_END_TO_END_USER_JOURNEYS.md` — 131 lines — 4529 bytes
 - `product/04_FEATURE_CATALOG_AND_PRODUCT_RULES.md` — 152 lines — 3722 bytes
 - `product/05_MONETIZATION_AND_ENTITLEMENTS.md` — 111 lines — 4221 bytes
+- `product/76_COMPETITIVE_INTELLIGENCE_AND_MARKET_POSITIONING_MATRIX.md` — 113 lines — 15829 bytes
 - `quality/40_TEST_STRATEGY.md` — 96 lines — 2627 bytes
 - `quality/41_ENGINEERING_STANDARDS_FOR_CODEX.md` — 137 lines — 4839 bytes
 - `quality/42_DEFINITION_OF_DONE_AND_ACCEPTANCE.md` — 81 lines — 2088 bytes
@@ -84,12 +94,13 @@ Total Markdown files: **309**
 - `quality/55_DEVELOPMENT_WORKFLOW_BRANCHING_AND_REVIEW.md` — 67 lines — 1546 bytes
 - `quality/56_COMPLETE_PRODUCTION_REPOSITORY_FILE_HIERARCHY.md` — 3149 lines — 105093 bytes
 - `quality/64_AI_MODEL_REPLACEMENT_DECISION_GATES.md` — 88 lines — 3371 bytes
-- `quality/65_CANONICAL_DOCUMENTATION_TREE_AND_SOURCE_OF_TRUTH_MAP.md` — 340 lines — 23440 bytes
+- `quality/65_CANONICAL_DOCUMENTATION_TREE_AND_SOURCE_OF_TRUTH_MAP.md` — 354 lines — 24420 bytes
 - `quality/66_FILE_PLACEMENT_OWNERSHIP_AND_DEPENDENCY_MATRIX.md` — 52 lines — 5068 bytes
 - `quality/69_REQUIREMENTS_TRACEABILITY_MATRIX.md` — 149 lines — 33630 bytes
-- `roadmap/43_PRODUCT_AND_TECHNICAL_ROADMAP.md` — 131 lines — 4895 bytes
+- `roadmap/43_PRODUCT_AND_TECHNICAL_ROADMAP.md` — 142 lines — 6502 bytes
 - `roadmap/67_PRODUCT_PROGRAM_STRUCTURE.md` — 68 lines — 4656 bytes
 - `roadmap/68_PRODUCTION_V1_CAPABILITY_COVERAGE_MATRIX.md` — 142 lines — 26199 bytes
+- `roadmap/80_UNIT_ECONOMICS_30_DAY_LAUNCH_CONTRACT_AND_EXECUTION_ROADMAP.md` — 108 lines — 14009 bytes
 - `security/35_SECURITY_THREAT_MODEL.md` — 179 lines — 12434 bytes
 - `security/36_PRIVACY_AND_STUDENT_DATA_PROTECTION.md` — 138 lines — 11942 bytes
 - `sprints/00_SPRINT_MASTER_PLAN.md` — 270 lines — 31209 bytes
