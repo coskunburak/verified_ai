@@ -10,9 +10,25 @@ enum SolveState: String, Decodable, CaseIterable, Sendable {
     var showsCandidate: Bool { self == .generatedUnverified || self == .reviewRequired }
     var titleKey: String { "solve.state.\(rawValue)" }
     var detailKey: String { "solve.detail.\(rawValue)" }
+    var symbolName: String {
+        switch self {
+        case .queued, .running: "hourglass"
+        case .generatedUnverified: "doc.text"
+        case .reviewRequired: "exclamationmark.bubble"
+        case .retryableFailure, .outcomeUnknown: "arrow.clockwise.circle"
+        case .terminalFailure, .policyBlocked, .unsupported: "exclamationmark.octagon"
+        case .stale: "arrow.triangle.2.circlepath"
+        case .cancelled: "xmark.circle"
+        }
+    }
 }
 
-enum SolveContractError: Error { case invalidResponse, invalidExpression, recoveryStorage }
+enum SolveContractError: Error, Equatable {
+    case invalidResponse
+    case invalidExpression
+    case recoveryStorage
+    case unsupportedCandidateSchema
+}
 
 struct SolveJobSnapshot: Decodable, Equatable, Sendable {
     let jobId: UUID
@@ -29,17 +45,55 @@ struct SolveJobSnapshot: Decodable, Equatable, Sendable {
     let promptVersion: String?
     let routePolicyVersion: String?
     let verificationNotice: String
+    private var hasUnsupportedCandidateSchema = false
+
+    private enum Keys: String, CodingKey {
+        case jobId, canonicalProblemId, problemParseId, problemParseRevision, attempt, state, failureCode
+        case createdAt, candidate, provider, model, promptVersion, routePolicyVersion, verificationNotice
+    }
+
+    private struct CandidateVersionHeader: Decodable {
+        let schemaVersion: String
+        let candidateVersion: Int
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: Keys.self)
+        jobId = try c.decode(UUID.self, forKey: .jobId)
+        canonicalProblemId = try c.decode(UUID.self, forKey: .canonicalProblemId)
+        problemParseId = try c.decode(UUID.self, forKey: .problemParseId)
+        problemParseRevision = try c.decode(Int.self, forKey: .problemParseRevision)
+        attempt = try c.decode(Int.self, forKey: .attempt)
+        state = try c.decode(SolveState.self, forKey: .state)
+        failureCode = try c.decodeIfPresent(String.self, forKey: .failureCode)
+        createdAt = try c.decode(String.self, forKey: .createdAt)
+        provider = try c.decodeIfPresent(String.self, forKey: .provider)
+        model = try c.decodeIfPresent(String.self, forKey: .model)
+        promptVersion = try c.decodeIfPresent(String.self, forKey: .promptVersion)
+        routePolicyVersion = try c.decodeIfPresent(String.self, forKey: .routePolicyVersion)
+        verificationNotice = try c.decode(String.self, forKey: .verificationNotice)
+        if c.contains(.candidate), try !c.decodeNil(forKey: .candidate) {
+            let header = try c.decode(CandidateVersionHeader.self, forKey: .candidate)
+            if header.schemaVersion == "solution-candidate-v1" && header.candidateVersion == 1 {
+                candidate = try c.decode(SolutionCandidate.self, forKey: .candidate)
+            } else {
+                candidate = nil
+                hasUnsupportedCandidateSchema = true
+            }
+        } else {
+            candidate = nil
+        }
+    }
 
     var mayRetry: Bool { state == .retryableFailure && attempt < 3 }
     var visibleCandidate: SolutionCandidate? { state.showsCandidate ? candidate : nil }
 
     func validated() throws -> Self {
-        let date = ISO8601DateFormatter()
-        date.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        let fractional = date.date(from: createdAt)
-        date.formatOptions = [.withInternetDateTime]
+        if hasUnsupportedCandidateSchema {
+            throw SolveContractError.unsupportedCandidateSchema
+        }
         guard problemParseRevision > 0, (1...3).contains(attempt),
-              fractional != nil || date.date(from: createdAt) != nil,
+              Self.isValidISO8601(createdAt),
               verificationNotice == "AI-generated candidate; mathematical verification has not been performed.",
               !state.showsCandidate || candidate != nil,
               [provider, model, promptVersion, routePolicyVersion, failureCode].allSatisfy({ ($0?.count ?? 0) <= 256 }) else {
@@ -51,6 +105,15 @@ struct SolveJobSnapshot: Decodable, Equatable, Sendable {
                   candidate.problemParseRevision == problemParseRevision else { throw SolveContractError.invalidResponse }
         }
         return self
+    }
+
+    fileprivate static func isValidISO8601(_ value: String) -> Bool {
+        guard !value.isEmpty, value.count <= 40 else { return false }
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        if formatter.date(from: value) != nil { return true }
+        formatter.formatOptions = [.withInternetDateTime]
+        return formatter.date(from: value) != nil
     }
 }
 
@@ -84,20 +147,63 @@ struct SolutionCandidate: Decodable, Equatable, Sendable {
     let ambiguities: [String]
     let unresolvedIssues: [String]
 
+    private enum Keys: String, CodingKey {
+        case schemaVersion, canonicalProblemId, problemParseId, problemParseRevision, candidateVersion
+        case generationOrigin, problemType, taskType, method, steps, finalAnswer
+        case sourceAssumptionIds, sourceConstraintIds, derivedRestrictionIds, ambiguities, unresolvedIssues
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: Keys.self)
+        schemaVersion = try c.decode(String.self, forKey: .schemaVersion)
+        candidateVersion = try c.decode(Int.self, forKey: .candidateVersion)
+        guard schemaVersion == "solution-candidate-v1", candidateVersion == 1 else {
+            throw SolveContractError.unsupportedCandidateSchema
+        }
+        canonicalProblemId = try c.decode(UUID.self, forKey: .canonicalProblemId)
+        problemParseId = try c.decode(UUID.self, forKey: .problemParseId)
+        problemParseRevision = try c.decode(Int.self, forKey: .problemParseRevision)
+        generationOrigin = try c.decode(Origin.self, forKey: .generationOrigin)
+        problemType = try c.decode(Problem.self, forKey: .problemType)
+        taskType = try c.decode(TaskKind.self, forKey: .taskType)
+        method = try c.decode(Method.self, forKey: .method)
+        steps = try c.decode([SolutionStep].self, forKey: .steps)
+        finalAnswer = try c.decode(MathStatement.self, forKey: .finalAnswer)
+        sourceAssumptionIds = try c.decode([String].self, forKey: .sourceAssumptionIds)
+        sourceConstraintIds = try c.decode([String].self, forKey: .sourceConstraintIds)
+        derivedRestrictionIds = try c.decode([String].self, forKey: .derivedRestrictionIds)
+        ambiguities = try c.decode([String].self, forKey: .ambiguities)
+        unresolvedIssues = try c.decode([String].self, forKey: .unresolvedIssues)
+    }
+
     var hasSourceReferences: Bool { !sourceAssumptionIds.isEmpty || !sourceConstraintIds.isEmpty || !derivedRestrictionIds.isEmpty }
+
+    func dependencyNumbers(for step: SolutionStep) -> String? {
+        guard !step.dependsOn.isEmpty else { return nil }
+        let numbers = steps.filter { step.dependsOn.contains($0.id) }.map { String($0.order) }
+        return numbers.isEmpty ? nil : numbers.joined(separator: ", ")
+    }
+
     func validate() throws {
-        guard schemaVersion == "solution-candidate-v1", candidateVersion == 1, problemParseRevision > 0,
+        guard schemaVersion == "solution-candidate-v1", candidateVersion == 1 else {
+            throw SolveContractError.unsupportedCandidateSchema
+        }
+        guard problemParseRevision > 0,
               (1...24).contains(steps.count), steps.map(\.order) == Array(1...steps.count),
               Set(steps.map(\.id)).count == steps.count,
-              bounded(sourceAssumptionIds, count: 16, length: 96), bounded(sourceConstraintIds, count: 16, length: 96),
-              bounded(derivedRestrictionIds, count: 32, length: 96),
-              bounded(ambiguities, count: 8, length: 500), bounded(unresolvedIssues, count: 8, length: 500) else {
+              bounded(sourceAssumptionIds, count: 16, length: 96, unique: true),
+              bounded(sourceConstraintIds, count: 16, length: 96, unique: true),
+              bounded(derivedRestrictionIds, count: 32, length: 96, unique: true),
+              bounded(ambiguities, count: 8, length: 500),
+              bounded(unresolvedIssues, count: 8, length: 500) else {
             throw SolveContractError.invalidResponse
         }
         var previous = Set<String>()
         for step in steps {
-            guard !step.id.isEmpty, step.id.count <= 32, !step.explanation.isEmpty, step.explanation.count <= 1000,
-                  bounded(step.dependsOn, count: 24, length: 32), Set(step.dependsOn).isSubset(of: previous) else {
+            guard !step.id.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, step.id.count <= 32,
+                  !step.explanation.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, step.explanation.count <= 1000,
+                  bounded(step.dependsOn, count: 24, length: 32, unique: true),
+                  Set(step.dependsOn).isSubset(of: previous) else {
                 throw SolveContractError.invalidResponse
             }
             try step.claim.validate()
@@ -105,13 +211,19 @@ struct SolutionCandidate: Decodable, Equatable, Sendable {
         }
         try finalAnswer.validate()
     }
-    private func bounded(_ values: [String], count: Int, length: Int) -> Bool {
-        values.count <= count && values.allSatisfy { !$0.isEmpty && $0.count <= length }
+
+    private func bounded(_ values: [String], count: Int, length: Int, unique: Bool = false) -> Bool {
+        values.count <= count
+            && (!unique || Set(values).count == values.count)
+            && values.allSatisfy { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && $0.count <= length }
     }
 }
 
 struct SolutionStep: Decodable, Equatable, Identifiable, Sendable {
-    enum Category: String, Decodable, Sendable { case restate = "RESTATE", transform = "TRANSFORM", conclude = "CONCLUDE" }
+    enum Category: String, Decodable, Sendable {
+        case restate = "RESTATE", transform = "TRANSFORM", conclude = "CONCLUDE"
+        var titleKey: String { "solve.step.category.\(rawValue)" }
+    }
     let id: String
     let order: Int
     let category: Category
@@ -204,14 +316,13 @@ enum MathStatement: Decodable, Equatable, Sendable {
     }
 }
 
-
 /// Server verdict is separate from generation state. This model never calculates correctness.
 struct VerificationDecisionSnapshot: Decodable, Equatable, Sendable {
     enum Status: String, Decodable, CaseIterable, Sendable {
         case verified = "VERIFIED", partiallyVerified = "PARTIALLY_VERIFIED", unverified = "UNVERIFIED"
         var titleKey: String { "verification.status.\(rawValue)" }
     }
-    enum Scope: String, Decodable, Sendable {
+    enum Scope: String, Decodable, CaseIterable, Sendable {
         case none = "NONE", subset = "CHECKED_METHOD_CLAIMS", finalAnswer = "FINAL_ANSWER"
         case openInterval = "OPEN_INTERVAL", antiderivative = "ANTIDERIVATIVE_REPRESENTATIVE", neighborhood = "PUNCTURED_NEIGHBORHOOD"
         var titleKey: String { "verification.scope.\(rawValue)" }
@@ -224,14 +335,54 @@ struct VerificationDecisionSnapshot: Decodable, Equatable, Sendable {
             }
         }
     }
-    enum Recovery: String, Decodable, Sendable {
+    enum Reason: String, Decodable, CaseIterable, Sendable {
+        case invalidEvidence = "INVALID_EVIDENCE"
+        case staleLineage = "STALE_LINEAGE"
+        case reviewRequired = "REVIEW_REQUIRED"
+        case compositeUnavailable = "COMPOSITE_UNAVAILABLE"
+        case sourceScopeUnresolved = "SOURCE_SCOPE_UNRESOLVED"
+        case deterministicContradiction = "DETERMINISTIC_CONTRADICTION"
+        case evidenceConflict = "EVIDENCE_CONFLICT"
+        case secondaryDisagreement = "SECONDARY_DISAGREEMENT"
+        case secondaryAssumptions = "SECONDARY_ASSUMPTIONS"
+        case secondaryInvalid = "SECONDARY_INVALID"
+        case secondaryStale = "SECONDARY_STALE"
+        case capabilityUnavailable = "CAPABILITY_UNAVAILABLE"
+        case domainUnchecked = "DOMAIN_UNCHECKED"
+        case completenessUnchecked = "COMPLETENESS_UNCHECKED"
+        case executionFailure = "EXECUTION_FAILURE"
+        case missingProof = "MISSING_PROOF"
+        case releaseDisabled = "RELEASE_DISABLED"
+        case subsetProven = "SUBSET_PROVEN"
+        case requiredClaimProven = "REQUIRED_CLAIM_PROVEN"
+        case secondaryAgreement = "SECONDARY_AGREEMENT"
+
+        var titleKey: String { "verification.reason.\(rawValue)" }
+        var isSecondaryConflict: Bool {
+            [.secondaryDisagreement, .secondaryAssumptions, .secondaryInvalid, .secondaryStale].contains(self)
+        }
+    }
+    enum Uncertainty: String, Decodable, CaseIterable, Sendable {
+        case explanationStepsUnchecked = "EXPLANATION_STEPS_UNCHECKED"
+        case domainUnresolved = "DOMAIN_UNRESOLVED"
+        case completenessUnresolved = "COMPLETENESS_UNRESOLVED"
+        case missingMathematicalProof = "MISSING_MATHEMATICAL_PROOF"
+        case secondaryConflict = "SECONDARY_CONFLICT"
+        case executionUnavailable = "EXECUTION_UNAVAILABLE"
+        case releaseNotAccepted = "RELEASE_NOT_ACCEPTED"
+
+        var titleKey: String {
+            self == .explanationStepsUnchecked ? "verification.stepsUnchecked" : "verification.uncertainty.\(rawValue)"
+        }
+    }
+    enum Recovery: String, Decodable, CaseIterable, Sendable {
         case none = "NONE", reviewSource = "REVIEW_SOURCE", reviewContradiction = "REVIEW_CONTRADICTION"
         case reconcile = "RECONCILE_SOLVERS", fresh = "FRESH_CALCULATION", evidence = "ADDITIONAL_EVIDENCE"
         case unsupported = "UNSUPPORTED_CAPABILITY", retry = "RETRY_VERIFICATION", limit = "RETRY_LIMIT"
         case budget = "BUDGET_BLOCKED", rate = "RATE_LIMITED", release = "RELEASE_BLOCKED", invalid = "INVALID_INPUT"
         var titleKey: String { "verification.recovery.\(rawValue)" }
     }
-    enum Method: String, Decodable, Sendable {
+    enum Method: String, Decodable, CaseIterable, Sendable {
         case arithmetic = "ARITHMETIC_EVALUATION", symbolic = "SYMBOLIC_EQUIVALENCE", root = "EQUATION_SUBSTITUTION"
         case domain = "DOMAIN_CONSTRAINT_CHECK", completeness = "SOLUTION_SET_COMPLETENESS"
         case numeric = "NUMERIC_SAMPLING", derivative = "DERIVATIVE_BACKCHECK"
@@ -257,10 +408,33 @@ struct VerificationDecisionSnapshot: Decodable, Equatable, Sendable {
     let recovery: Recovery
     let correlationId: String
     let createdAt: String
-    var hasConflict: Bool { !contradictions.isEmpty || reasons.contains("EVIDENCE_CONFLICT") || uncertainty.contains("SECONDARY_CONFLICT") }
-    private static let allowedReasons: Set<String> = ["INVALID_EVIDENCE", "STALE_LINEAGE", "REVIEW_REQUIRED", "COMPOSITE_UNAVAILABLE", "SOURCE_SCOPE_UNRESOLVED", "DETERMINISTIC_CONTRADICTION", "EVIDENCE_CONFLICT", "SECONDARY_DISAGREEMENT", "SECONDARY_ASSUMPTIONS", "SECONDARY_INVALID", "SECONDARY_STALE", "CAPABILITY_UNAVAILABLE", "DOMAIN_UNCHECKED", "COMPLETENESS_UNCHECKED", "EXECUTION_FAILURE", "MISSING_PROOF", "RELEASE_DISABLED", "SUBSET_PROVEN", "REQUIRED_CLAIM_PROVEN", "SECONDARY_AGREEMENT"]
-    private static let allowedUncertainty: Set<String> = ["EXPLANATION_STEPS_UNCHECKED", "DOMAIN_UNRESOLVED", "COMPLETENESS_UNRESOLVED", "MISSING_MATHEMATICAL_PROOF", "SECONDARY_CONFLICT", "EXECUTION_UNAVAILABLE", "RELEASE_NOT_ACCEPTED"]
+
+    var typedReasons: [Reason] { reasons.compactMap(Reason.init(rawValue:)) }
+    var typedUncertainty: [Uncertainty] { uncertainty.compactMap(Uncertainty.init(rawValue:)) }
+    var hasConflict: Bool {
+        !contradictions.isEmpty
+            || reasons.contains(Reason.deterministicContradiction.rawValue)
+            || reasons.contains(Reason.evidenceConflict.rawValue)
+            || uncertainty.contains(Uncertainty.secondaryConflict.rawValue)
+            || typedReasons.contains(where: \.isSecondaryConflict)
+    }
+    var statusSymbolName: String {
+        switch status {
+        case .verified: "checkmark.shield"
+        case .partiallyVerified: "exclamationmark.shield"
+        case .unverified: hasConflict ? "exclamationmark.triangle" : "info.circle"
+        }
+    }
+    var requiresProblemReview: Bool {
+        [.reviewSource, .fresh, .reviewContradiction, .invalid].contains(recovery)
+    }
+    var evidencePresentation: VerificationEvidencePresentation {
+        VerificationEvidencePresentation(decision: self)
+    }
+
     func validated(for job: SolveJobSnapshot) throws -> Self {
+        let parsedReasons = reasons.compactMap(Reason.init(rawValue:))
+        let parsedUncertainty = uncertainty.compactMap(Uncertainty.init(rawValue:))
         guard schemaVersion == "verification-decision-v1", policyVersion == "verification-policy-v1",
               job.state == .generatedUnverified, canonicalProblemId == job.canonicalProblemId,
               problemParseId == job.problemParseId, problemParseRevision == job.problemParseRevision,
@@ -271,28 +445,221 @@ struct VerificationDecisionSnapshot: Decodable, Equatable, Sendable {
               Set(checked).isSubset(of: [.arithmetic, .symbolic, .root, .domain, .completeness, .derivative, .integral, .limit]),
               checked.count + unchecked.count <= 5, Set(contradictions).isSubset(of: unchecked),
               Set(checked).isDisjoint(with: unchecked), Set(checked).isDisjoint(with: contradictions),
-              !reasons.isEmpty, reasons.count <= 32, uncertainty.count <= 8,
-              Set(reasons).isSubset(of: Self.allowedReasons), Set(uncertainty).isSubset(of: Self.allowedUncertainty),
-              (reasons + uncertainty).allSatisfy({ !$0.isEmpty && $0.count <= 64 }),
-              uncertainty.contains("EXPLANATION_STEPS_UNCHECKED"), correlationId.count <= 64,
-              !correlationId.isEmpty, createdAt.count <= 40 else { throw SolveContractError.invalidResponse }
+              (1...Reason.allCases.count).contains(reasons.count), Set(reasons).count == reasons.count,
+              parsedReasons.count == reasons.count,
+              (1...Uncertainty.allCases.count).contains(uncertainty.count), Set(uncertainty).count == uncertainty.count,
+              parsedUncertainty.count == uncertainty.count,
+              parsedUncertainty.contains(.explanationStepsUnchecked),
+              correlationId.range(of: #"^[A-Za-z0-9_-]{1,64}$"#, options: .regularExpression) != nil,
+              SolveJobSnapshot.isValidISO8601(createdAt) else { throw SolveContractError.invalidResponse }
+
+        let reasonSet = Set(parsedReasons)
+        let uncertaintySet = Set(parsedUncertainty)
         let calculusMethods: Set<Method> = [.derivative, .integral, .limit]
         let obligations = checked + unchecked
         if !calculusMethods.isDisjoint(with: obligations) {
             guard obligations.count == 1 else { throw SolveContractError.invalidResponse }
         }
+        guard contradictions.isEmpty == !reasonSet.contains(.deterministicContradiction) else {
+            throw SolveContractError.invalidResponse
+        }
+        if !contradictions.isEmpty {
+            guard status == .unverified, recovery == .reviewContradiction else { throw SolveContractError.invalidResponse }
+        }
+        if reasonSet.contains(where: \.isSecondaryConflict) || uncertaintySet.contains(.secondaryConflict) {
+            guard reasonSet.contains(where: \.isSecondaryConflict),
+                  uncertaintySet.contains(.secondaryConflict),
+                  status == .unverified else { throw SolveContractError.invalidResponse }
+        }
+        if reasonSet.contains(.secondaryAgreement) {
+            guard !reasonSet.contains(where: \.isSecondaryConflict),
+                  !uncertaintySet.contains(.secondaryConflict) else { throw SolveContractError.invalidResponse }
+        }
+
         switch status {
         case .verified:
             let validScope = scope.calculusMethod.map { checked == [$0] }
                 ?? (scope == .finalAnswer && calculusMethods.isDisjoint(with: checked))
             guard validScope, checked.contains(where: { $0 != .domain }), unchecked.isEmpty, !hasConflict,
-                  recovery == .none, uncertainty == ["EXPLANATION_STEPS_UNCHECKED"],
-                  reasons.contains("REQUIRED_CLAIM_PROVEN") else { throw SolveContractError.invalidResponse }
+                  recovery == .none, parsedUncertainty == [.explanationStepsUnchecked],
+                  reasonSet.contains(.requiredClaimProven),
+                  reasonSet.isSubset(of: [.requiredClaimProven, .secondaryAgreement]) else {
+                throw SolveContractError.invalidResponse
+            }
         case .partiallyVerified:
-            guard scope == .subset, checked.contains(where: { $0 != .domain }), !unchecked.isEmpty, !hasConflict else { throw SolveContractError.invalidResponse }
+            let forbiddenPartialReasons: Set<Reason> = [
+                .invalidEvidence, .staleLineage, .reviewRequired, .compositeUnavailable,
+                .deterministicContradiction, .evidenceConflict, .secondaryDisagreement,
+                .secondaryAssumptions, .secondaryInvalid, .secondaryStale,
+                .missingProof, .releaseDisabled, .requiredClaimProven
+            ]
+            guard scope == .subset, checked.contains(where: { $0 != .domain }), !unchecked.isEmpty, !hasConflict,
+                  recovery != .none, recovery != .reviewContradiction, recovery != .reconcile, recovery != .release,
+                  reasonSet.contains(.subsetProven),
+                  reasonSet.isDisjoint(with: forbiddenPartialReasons),
+                  !uncertaintySet.contains(.missingMathematicalProof),
+                  !uncertaintySet.contains(.secondaryConflict),
+                  !uncertaintySet.contains(.releaseNotAccepted) else {
+                throw SolveContractError.invalidResponse
+            }
         case .unverified:
-            guard scope == .none else { throw SolveContractError.invalidResponse }
+            guard scope == .none, recovery != .none,
+                  !reasonSet.contains(.requiredClaimProven),
+                  !reasonSet.contains(.subsetProven) else {
+                throw SolveContractError.invalidResponse
+            }
+            if reasonSet.contains(.releaseDisabled) {
+                guard uncertaintySet.contains(.releaseNotAccepted),
+                      recovery == .release,
+                      !reasonSet.contains(.missingProof) else { throw SolveContractError.invalidResponse }
+            } else {
+                guard reasonSet.contains(.missingProof),
+                      uncertaintySet.contains(.missingMathematicalProof),
+                      !uncertaintySet.contains(.releaseNotAccepted) else { throw SolveContractError.invalidResponse }
+            }
         }
         return self
+    }
+}
+
+/// Deterministic presentation-only projection of a validated server verification decision.
+/// Never synthesizes a mathematical verdict or promotes an unverified candidate.
+struct VerificationEvidencePresentation: Equatable, Sendable {
+    enum Severity: String, Equatable, Sendable {
+        case verified
+        case caution
+        case warning
+        case neutral
+    }
+
+    let statusTitleKey: String
+    let statusIdentifier: String
+    let statusSymbolName: String
+    let severity: Severity
+    let scopeKey: String
+    let scopeIdentifier: String?
+    let summaryKey: String
+    let hasConflict: Bool
+    let conflictWarningKey: String?
+    let contradictedMethodKeys: [String]
+    let checkedMethodKeys: [String]
+    let uncheckedMethodKeys: [String]
+    let reasonKeys: [String]
+    let uncertaintyKeys: [String]
+    let showsSecondaryAgreementNotice: Bool
+    let showsNumericSamplingNotice: Bool
+    let recoveryKey: String?
+    let requiresProblemReview: Bool
+    let hasExpandableEvidence: Bool
+
+    init(decision: VerificationDecisionSnapshot) {
+        let isScopedCalculus = decision.scope.calculusMethod != nil
+        statusTitleKey = isScopedCalculus ? "verification.scopedStatus" : decision.status.titleKey
+        statusIdentifier = "verification.status.\(decision.status.rawValue)"
+        statusSymbolName = decision.statusSymbolName
+        if decision.hasConflict {
+            severity = .warning
+        } else {
+            switch decision.status {
+            case .verified: severity = .verified
+            case .partiallyVerified: severity = .caution
+            case .unverified: severity = decision.requiresProblemReview ? .warning : .neutral
+            }
+        }
+        scopeKey = decision.scope.titleKey
+        scopeIdentifier = "verification.scope.\(decision.scope.rawValue)"
+        if decision.hasConflict {
+            summaryKey = "verification.summary.CONFLICT"
+        } else if isScopedCalculus && decision.status == .verified {
+            summaryKey = "verification.summary.SCOPED_VERIFIED"
+        } else {
+            summaryKey = "verification.summary.\(decision.status.rawValue)"
+        }
+        hasConflict = decision.hasConflict
+        conflictWarningKey = decision.hasConflict ? "verification.conflict" : nil
+        contradictedMethodKeys = decision.contradictions.map(\.titleKey)
+        checkedMethodKeys = decision.checked.map(\.titleKey)
+        uncheckedMethodKeys = decision.unchecked.map(\.titleKey)
+        reasonKeys = decision.typedReasons.map(\.titleKey)
+        let orderedUncertainty: [VerificationDecisionSnapshot.Uncertainty] = [.explanationStepsUnchecked]
+            + decision.typedUncertainty.filter { $0 != .explanationStepsUnchecked }
+        uncertaintyKeys = orderedUncertainty.map(\.titleKey)
+        showsSecondaryAgreementNotice = decision.typedReasons.contains(.secondaryAgreement)
+        showsNumericSamplingNotice = decision.unchecked.contains(.numeric) || decision.contradictions.contains(.numeric)
+        recoveryKey = decision.recovery.titleKey
+        requiresProblemReview = decision.requiresProblemReview
+        hasExpandableEvidence = true
+    }
+
+    static func absent(unavailable: Bool, invalidContract: Bool = false) -> Self {
+        let scopeKey = invalidContract
+            ? "verification.invalid"
+            : (unavailable ? "verification.unavailable" : "verification.absent")
+        let summaryKey = invalidContract
+            ? "verification.summary.INVALID"
+            : (unavailable ? "verification.summary.UNAVAILABLE" : "verification.summary.ABSENT")
+        return Self(
+            statusTitleKey: "solve.unverified",
+            statusIdentifier: "solve.unverified",
+            statusSymbolName: invalidContract ? "exclamationmark.triangle" : "info.circle",
+            severity: invalidContract ? .warning : .neutral,
+            scopeKey: scopeKey,
+            scopeIdentifier: nil,
+            summaryKey: summaryKey,
+            hasConflict: false,
+            conflictWarningKey: nil,
+            contradictedMethodKeys: [],
+            checkedMethodKeys: [],
+            uncheckedMethodKeys: [],
+            reasonKeys: [],
+            uncertaintyKeys: ["verification.stepsUnchecked"],
+            showsSecondaryAgreementNotice: false,
+            showsNumericSamplingNotice: false,
+            recoveryKey: nil,
+            requiresProblemReview: false,
+            hasExpandableEvidence: false
+        )
+    }
+
+    private init(
+        statusTitleKey: String,
+        statusIdentifier: String,
+        statusSymbolName: String,
+        severity: Severity,
+        scopeKey: String,
+        scopeIdentifier: String?,
+        summaryKey: String,
+        hasConflict: Bool,
+        conflictWarningKey: String?,
+        contradictedMethodKeys: [String],
+        checkedMethodKeys: [String],
+        uncheckedMethodKeys: [String],
+        reasonKeys: [String],
+        uncertaintyKeys: [String],
+        showsSecondaryAgreementNotice: Bool,
+        showsNumericSamplingNotice: Bool,
+        recoveryKey: String?,
+        requiresProblemReview: Bool,
+        hasExpandableEvidence: Bool
+    ) {
+        self.statusTitleKey = statusTitleKey
+        self.statusIdentifier = statusIdentifier
+        self.statusSymbolName = statusSymbolName
+        self.severity = severity
+        self.scopeKey = scopeKey
+        self.scopeIdentifier = scopeIdentifier
+        self.summaryKey = summaryKey
+        self.hasConflict = hasConflict
+        self.conflictWarningKey = conflictWarningKey
+        self.contradictedMethodKeys = contradictedMethodKeys
+        self.checkedMethodKeys = checkedMethodKeys
+        self.uncheckedMethodKeys = uncheckedMethodKeys
+        self.reasonKeys = reasonKeys
+        self.uncertaintyKeys = uncertaintyKeys
+        self.showsSecondaryAgreementNotice = showsSecondaryAgreementNotice
+        self.showsNumericSamplingNotice = showsNumericSamplingNotice
+        self.recoveryKey = recoveryKey
+        self.requiresProblemReview = requiresProblemReview
+        self.hasExpandableEvidence = hasExpandableEvidence
     }
 }

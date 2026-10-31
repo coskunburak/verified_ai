@@ -13,12 +13,29 @@ final class MathPresentationTests: XCTestCase {
         XCTAssertEqual(MathPresentation.expression(.binary(.divide, one, .binary(.add, x, one))), "(1 / (x + 1))")
         XCTAssertEqual(MathPresentation.expression(.binary(.subtract, x, .binary(.subtract, two, one))), "(x − (2 − 1))")
     }
-    func testRelationsAndExactNumericStrings() {
+    func testRelationsFunctionsAndExactNumericStrings() {
         XCTAssertEqual(MathPresentation.statement(.relation(.lessEqual, x, two)), "x ≤ 2")
         XCTAssertEqual(MathPresentation.statement(.relation(.less, x, two)), "x < 2")
+        XCTAssertEqual(MathPresentation.statement(.relation(.greaterEqual, x, one)), "x ≥ 1")
+        XCTAssertEqual(MathPresentation.statement(.relation(.greater, x, one)), "x > 1")
         XCTAssertEqual(MathPresentation.expression(.number("0.1000000000000000001", .decimal)), "0.1000000000000000001")
         XCTAssertEqual(MathPresentation.expression(.function(.sqrt, x)), "√(x)")
+        XCTAssertEqual(MathPresentation.expression(.function(.sin, x)), "sin(x)")
+        XCTAssertEqual(MathPresentation.expression(.function(.cos, x)), "cos(x)")
+        XCTAssertEqual(MathPresentation.expression(.function(.tan, x)), "tan(x)")
+        XCTAssertEqual(MathPresentation.expression(.function(.log, x)), "log(x)")
+        XCTAssertEqual(MathPresentation.expression(.function(.exp, x)), "exp(x)")
         XCTAssertEqual(MathPresentation.expression(.binary(.divide, one, two)), "(1 / 2)")
+    }
+    func testSpokenRepresentationPreservesSemanticDistinctions() {
+        let negatedPower = MathPresentation.expression(.negate(.binary(.power, x, two)), spoken: true)
+        let negativeBase = MathPresentation.expression(.binary(.power, .negate(x), two), spoken: true)
+        XCTAssertNotEqual(negatedPower, negativeBase)
+        let inequality = MathPresentation.statement(.relation(.lessEqual, .binary(.add, x, one), two), spoken: true)
+        XCTAssertFalse(inequality.isEmpty)
+        XCTAssertTrue(inequality.contains("x"))
+        XCTAssertTrue(inequality.contains("1"))
+        XCTAssertTrue(inequality.contains("2"))
     }
     func testUnsupportedAndCodeBearingNodesAreRejected() {
         for json in [#"{"kind":"HTML","value":"<script>alert(1)</script>"}"#,

@@ -10,24 +10,54 @@ final class PrimarySolveContractTests: XCTestCase {
             XCTAssertEqual(job.state, state)
             XCTAssertEqual(job.visibleCandidate != nil, state.showsCandidate)
             XCTAssertFalse(job.verificationNotice.contains("VERIFIED"))
+            XCTAssertFalse(state.symbolName.isEmpty)
         }
     }
     func testMissingFieldsUnknownStateAndUntrustedVerificationNoticeFailClosed() throws {
         let valid = FixturePrimarySolveAPI.data(state: .generatedUnverified)
-        for mutation in ["missing", "unknown", "verified", "lineage", "order"] {
+        for mutation in ["missing", "unknown", "verified", "lineage", "order", "duplicateDep", "blankExplanation", "duplicateAssumption"] {
             var json = try XCTUnwrap(JSONSerialization.jsonObject(with: valid) as? [String: Any])
             switch mutation {
             case "missing": json.removeValue(forKey: "jobId")
             case "unknown": json["state"] = "VERIFIED"
             case "verified": json["verificationNotice"] = "100% correct"
             case "lineage": json["problemParseRevision"] = 2
-            default:
+            case "order":
                 var candidate = json["candidate"] as! [String: Any]
                 var steps = candidate["steps"] as! [[String: Any]]
                 steps[0]["order"] = 2; candidate["steps"] = steps; json["candidate"] = candidate
+            case "duplicateDep":
+                var candidate = json["candidate"] as! [String: Any]
+                var steps = candidate["steps"] as! [[String: Any]]
+                steps[1]["dependsOn"] = ["s1", "s1"]; candidate["steps"] = steps; json["candidate"] = candidate
+            case "blankExplanation":
+                var candidate = json["candidate"] as! [String: Any]
+                var steps = candidate["steps"] as! [[String: Any]]
+                steps[0]["explanation"] = "   "; candidate["steps"] = steps; json["candidate"] = candidate
+            default:
+                var candidate = json["candidate"] as! [String: Any]
+                candidate["sourceAssumptionIds"] = ["a1", "a1"]; json["candidate"] = candidate
             }
             let data = try JSONSerialization.data(withJSONObject: json)
             XCTAssertThrowsError(try JSONDecoder().decode(SolveJobSnapshot.self, from: data).validated())
+        }
+    }
+    func testUnsupportedCandidateSchemaV2FailsClosedAsUnsupportedRatherThanNetworkOrVerified() async throws {
+        let v2JobData = FixturePrimarySolveAPI.unsupportedV2Data()
+        do {
+            _ = try JSONDecoder().decode(SolveJobSnapshot.self, from: v2JobData).validated()
+            XCTFail("Expected solution-candidate-v2 to fail closed in user-facing v1 contract")
+        } catch {
+            XCTAssertEqual(error as? SolveContractError, .unsupportedCandidateSchema)
+            XCTAssertEqual(PrimarySolveViewModel.message(for: error), "solve.error.unsupported")
+        }
+        let transport = SolveContractSession(responses: [v2JobData])
+        do {
+            _ = try await client(transport).read(sessionId: UUID(), jobId: UUID())
+            XCTFail("Expected HTTP read of v2 candidate to fail closed")
+        } catch {
+            XCTAssertEqual(error as? SolveContractError, .unsupportedCandidateSchema)
+            XCTAssertEqual(PrimarySolveViewModel.message(for: error), "solve.error.unsupported")
         }
     }
     func testTypedLifecycleUsesExactPathsMethodsAndIdempotencyKeys() async throws {
@@ -78,6 +108,9 @@ final class PrimarySolveContractTests: XCTestCase {
             XCTAssertTrue(decision.uncertainty.contains("EXPLANATION_STEPS_UNCHECKED"))
             XCTAssertFalse(decision.status.titleKey.isEmpty)
             XCTAssertFalse(decision.recovery.titleKey.isEmpty)
+            if decision.status != .verified {
+                XCTAssertNotEqual(decision.statusSymbolName, "checkmark.shield")
+            }
         }
     }
     func testVerificationTransportIsReadOnlyAndMissingDecisionFieldFailsClosed() async throws {
@@ -127,6 +160,152 @@ final class PrimarySolveContractTests: XCTestCase {
             var mixed = base; mixed["unchecked"] = ["DOMAIN_CONSTRAINT_CHECK"]
             XCTAssertThrowsError(try JSONDecoder().decode(VerificationDecisionSnapshot.self,
                 from: JSONSerialization.data(withJSONObject: mixed)).validated(for: job))
+        }
+    }
+    func testCompleteVerificationSemanticsMatrixAndEvidencePresentationMapper() throws {
+        let job = try FixturePrimarySolveAPI.decode(state: .generatedUnverified)
+        for scenario in FixturePrimarySolveAPI.supportedVerificationScenarios.sorted() {
+            let decision = try FixturePrimarySolveAPI.decisionFixture(scenario).validated(for: job)
+            let presentation = decision.evidencePresentation
+            XCTAssertTrue(presentation.hasExpandableEvidence)
+            XCTAssertTrue(presentation.uncertaintyKeys.contains("verification.stepsUnchecked"))
+            XCTAssertEqual(presentation.checkedMethodKeys, decision.checked.map(\.titleKey))
+            XCTAssertEqual(presentation.uncheckedMethodKeys, decision.unchecked.map(\.titleKey))
+            XCTAssertEqual(presentation.contradictedMethodKeys, decision.contradictions.map(\.titleKey))
+            XCTAssertEqual(presentation.reasonKeys, decision.typedReasons.map(\.titleKey))
+            XCTAssertEqual(presentation.recoveryKey, decision.recovery.titleKey)
+            if decision.status == .verified {
+                XCTAssertEqual(presentation.statusSymbolName, "checkmark.shield")
+                XCTAssertEqual(presentation.severity, .verified)
+                XCTAssertFalse(presentation.hasConflict)
+                if decision.scope.calculusMethod != nil {
+                    XCTAssertEqual(presentation.statusTitleKey, "verification.scopedStatus")
+                    XCTAssertEqual(presentation.summaryKey, "verification.summary.SCOPED_VERIFIED")
+                } else {
+                    XCTAssertEqual(presentation.statusTitleKey, "verification.status.VERIFIED")
+                    XCTAssertEqual(presentation.summaryKey, "verification.summary.VERIFIED")
+                }
+            } else {
+                XCTAssertNotEqual(presentation.statusSymbolName, "checkmark.shield")
+                XCTAssertNotEqual(presentation.severity, .verified)
+            }
+        }
+
+        let secondaryAgreement = try FixturePrimarySolveAPI.decisionFixture("SECONDARY_AGREEMENT").validated(for: job).evidencePresentation
+        XCTAssertTrue(secondaryAgreement.showsSecondaryAgreementNotice)
+        XCTAssertEqual(secondaryAgreement.severity, .neutral)
+
+        let numericUnproven = try FixturePrimarySolveAPI.decisionFixture("NUMERIC_SAMPLING_UNPROVEN").validated(for: job).evidencePresentation
+        XCTAssertTrue(numericUnproven.showsNumericSamplingNotice)
+        XCTAssertTrue(numericUnproven.showsSecondaryAgreementNotice)
+        XCTAssertEqual(numericUnproven.severity, .neutral)
+
+        for conflictScenario in ["CONTRADICTION", "EVIDENCE_CONFLICT", "SECONDARY_DISAGREEMENT"] {
+            let conflictPresentation = try FixturePrimarySolveAPI.decisionFixture(conflictScenario).validated(for: job).evidencePresentation
+            XCTAssertTrue(conflictPresentation.hasConflict)
+            XCTAssertEqual(conflictPresentation.severity, .warning)
+            XCTAssertEqual(conflictPresentation.conflictWarningKey, "verification.conflict")
+            XCTAssertEqual(conflictPresentation.summaryKey, "verification.summary.CONFLICT")
+            XCTAssertEqual(conflictPresentation.statusSymbolName, "exclamationmark.triangle")
+        }
+
+        let absent = VerificationEvidencePresentation.absent(unavailable: false)
+        XCTAssertFalse(absent.hasExpandableEvidence)
+        XCTAssertEqual(absent.statusIdentifier, "solve.unverified")
+        XCTAssertEqual(absent.scopeKey, "verification.absent")
+        XCTAssertEqual(absent.summaryKey, "verification.summary.ABSENT")
+
+        let unavailable = VerificationEvidencePresentation.absent(unavailable: true)
+        XCTAssertEqual(unavailable.scopeKey, "verification.unavailable")
+        XCTAssertEqual(unavailable.summaryKey, "verification.summary.UNAVAILABLE")
+
+        let invalid = VerificationEvidencePresentation.absent(unavailable: true, invalidContract: true)
+        XCTAssertEqual(invalid.scopeKey, "verification.invalid")
+        XCTAssertEqual(invalid.summaryKey, "verification.summary.INVALID")
+        XCTAssertEqual(invalid.severity, .warning)
+    }
+    func testInvalidStatusReasonContradictionAndMetadataCombinationsFailClosed() throws {
+        let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+            .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+        let folder = root.appendingPathComponent("packages/test-fixtures/verification/decision-v1")
+        let job = try FixturePrimarySolveAPI.decode(state: .generatedUnverified)
+        let verifiedBase = try XCTUnwrap(JSONSerialization.jsonObject(
+            with: Data(contentsOf: folder.appendingPathComponent("verified.json"))) as? [String: Any])
+        let partialBase = try XCTUnwrap(JSONSerialization.jsonObject(
+            with: Data(contentsOf: folder.appendingPathComponent("partial.json"))) as? [String: Any])
+        let unverifiedBase = try XCTUnwrap(JSONSerialization.jsonObject(
+            with: Data(contentsOf: folder.appendingPathComponent("unverified.json"))) as? [String: Any])
+
+        var verifiedWithMissingProof = verifiedBase
+        verifiedWithMissingProof["reasons"] = ["REQUIRED_CLAIM_PROVEN", "MISSING_PROOF"]
+        var verifiedWithBadCorrelation = verifiedBase
+        verifiedWithBadCorrelation["correlationId"] = "invalid space"
+        var verifiedWithBadTimestamp = verifiedBase
+        verifiedWithBadTimestamp["createdAt"] = "not-a-timestamp"
+        var partialWithContradictionReason = partialBase
+        partialWithContradictionReason["reasons"] = ["SUBSET_PROVEN", "DETERMINISTIC_CONTRADICTION"]
+        var partialWithoutSubsetProven = partialBase
+        partialWithoutSubsetProven["reasons"] = ["COMPLETENESS_UNCHECKED"]
+        var unverifiedWithContradictionButNoMethod = unverifiedBase
+        unverifiedWithContradictionButNoMethod["reasons"] = ["DETERMINISTIC_CONTRADICTION", "MISSING_PROOF"]
+        var unverifiedWithSecondaryDisagreementButNoUncertainty = unverifiedBase
+        unverifiedWithSecondaryDisagreementButNoUncertainty["reasons"] = ["SECONDARY_DISAGREEMENT", "MISSING_PROOF"]
+        var unverifiedWithRequiredProven = unverifiedBase
+        unverifiedWithRequiredProven["reasons"] = ["REQUIRED_CLAIM_PROVEN", "MISSING_PROOF"]
+        var unverifiedReleaseDisabledWithoutUncertainty = unverifiedBase
+        unverifiedReleaseDisabledWithoutUncertainty["reasons"] = ["RELEASE_DISABLED"]
+        unverifiedReleaseDisabledWithoutUncertainty["recovery"] = "RELEASE_BLOCKED"
+
+        for invalidJSON in [
+            verifiedWithMissingProof,
+            verifiedWithBadCorrelation,
+            verifiedWithBadTimestamp,
+            partialWithContradictionReason,
+            partialWithoutSubsetProven,
+            unverifiedWithContradictionButNoMethod,
+            unverifiedWithSecondaryDisagreementButNoUncertainty,
+            unverifiedWithRequiredProven,
+            unverifiedReleaseDisabledWithoutUncertainty
+        ] {
+            let data = try JSONSerialization.data(withJSONObject: invalidJSON)
+            XCTAssertThrowsError(try JSONDecoder().decode(VerificationDecisionSnapshot.self, from: data).validated(for: job))
+        }
+    }
+    func testAllVerificationEnumsHaveCompleteEnglishAndTurkishLocalizationEntries() throws {
+        let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+            .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+        let catalogURL = root.appendingPathComponent("apps/ios/VerifiedAI/Resources/Localizable.xcstrings")
+        let catalog = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(contentsOf: catalogURL)) as? [String: Any])
+        let strings = try XCTUnwrap(catalog["strings"] as? [String: Any])
+
+        let requiredKeys = VerificationDecisionSnapshot.Status.allCases.map(\.titleKey)
+            + VerificationDecisionSnapshot.Scope.allCases.map(\.titleKey)
+            + VerificationDecisionSnapshot.Reason.allCases.map(\.titleKey)
+            + VerificationDecisionSnapshot.Uncertainty.allCases.map(\.titleKey)
+            + VerificationDecisionSnapshot.Recovery.allCases.map(\.titleKey)
+            + VerificationDecisionSnapshot.Method.allCases.map(\.titleKey)
+            + [
+                "verification.scopedStatus", "verification.conflict", "verification.checked",
+                "verification.unchecked", "verification.stepsUnchecked", "verification.absent",
+                "verification.unavailable", "verification.invalid", "verification.refresh",
+                "verification.agreement", "verification.numericLimitation",
+                "verification.evidence.show", "verification.evidence.hide", "verification.evidence.hint",
+                "verification.reasons", "verification.limitations", "verification.contradictions",
+                "verification.summary.VERIFIED", "verification.summary.SCOPED_VERIFIED",
+                "verification.summary.PARTIALLY_VERIFIED", "verification.summary.UNVERIFIED",
+                "verification.summary.CONFLICT", "verification.summary.ABSENT",
+                "verification.summary.UNAVAILABLE", "verification.summary.INVALID"
+            ]
+
+        for key in requiredKeys {
+            let entry = try XCTUnwrap(strings[key] as? [String: Any], "Missing localization key: \(key)")
+            let localizations = try XCTUnwrap(entry["localizations"] as? [String: Any], "Missing localizations for \(key)")
+            for locale in ["en", "tr"] {
+                let localeObj = try XCTUnwrap(localizations[locale] as? [String: Any], "Missing \(locale) for \(key)")
+                let unit = try XCTUnwrap(localeObj["stringUnit"] as? [String: Any])
+                let value = try XCTUnwrap(unit["value"] as? String)
+                XCTAssertFalse(value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, "Blank \(locale) translation for \(key)")
+            }
         }
     }
     private func client(_ transport: SolveContractSession) -> PrimarySolveAPI {

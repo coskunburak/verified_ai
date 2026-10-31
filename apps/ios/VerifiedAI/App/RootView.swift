@@ -193,7 +193,8 @@ struct RootView: View {
                 isSolveFixture: dependencies.solveFixture,
                 makeSolveModel: dependencies.solveEnabled ? { sessionId in
                     PrimarySolveViewModel(userId: userId, sessionId: sessionId, service: dependencies.primarySolveAPI,
-                        recovery: dependencies.solveRecovery, network: dependencies.solveFlowNetworkMonitor, isFixture: dependencies.solveFixture)
+                        recovery: dependencies.solveRecovery, network: dependencies.solveFlowNetworkMonitor,
+                        isFixture: dependencies.solveFixture, logger: dependencies.logger)
                 } : nil,
                 reviewViewModel: dependencies.solveFixture ? nil : problemReviewViewModel
             )

@@ -39,8 +39,14 @@ final class PrimarySolveUITests: XCTestCase {
         requireExists(row, in: app, timeout: 6, phase: "history session ready")
         tapVisible(row, in: app)
         let entry = app.buttons["history.solve"]
+        if !entry.waitForExistence(timeout: 2), row.exists {
+            tapVisible(row, in: app)
+        }
         requireExists(entry, in: app, timeout: 4, phase: "history solve entry ready")
         tapVisible(entry, in: app)
+        if !app.buttons["solve.close"].waitForExistence(timeout: 2), entry.exists && entry.isHittable {
+            tapVisible(entry, in: app)
+        }
     }
     private func start(_ app: XCUIApplication) {
         let button = app.buttons["solve.start"]
@@ -91,11 +97,41 @@ final class PrimarySolveUITests: XCTestCase {
                 timeout: 15, phase: "server verdict rendered separately from generation")
             XCTAssertTrue(app.descendants(matching: .any)["solve.fixture"].exists)
             XCTAssertTrue(app.descendants(matching: .any)["solve.status.GENERATED_UNVERIFIED"].exists)
+            XCTAssertTrue(app.descendants(matching: .any)["solve.answer"].exists)
+            XCTAssertTrue(app.descendants(matching: .any)["solve.method"].exists)
+            XCTAssertTrue(app.descendants(matching: .any)["verification.summary"].exists)
             if scenario == "CONTRADICTION" {
                 requireExists(app.descendants(matching: .any)["verification.conflict"], in: app,
                     timeout: 3, phase: "contradiction warning accessible")
+                XCTAssertTrue(app.descendants(matching: .any)["verification.contradictions.section"].exists)
             }
         }
+    }
+    func testVerificationEvidenceProgressiveDisclosureAndDegradedLookupRemainHonest() {
+        let partialApp = launch("PARTIALLY_VERIFIED"); openSolve(partialApp); start(partialApp)
+        requireExists(partialApp.descendants(matching: .any)["verification.status.PARTIALLY_VERIFIED"], in: partialApp,
+            timeout: 15, phase: "partially verified header visible")
+        XCTAssertFalse(partialApp.descendants(matching: .any)["verification.status.VERIFIED"].exists)
+        let toggle = partialApp.buttons["verification.evidence.toggle"]
+        requireExists(toggle, in: partialApp, timeout: 4, phase: "evidence disclosure toggle visible")
+        XCTAssertFalse(partialApp.descendants(matching: .any)["verification.evidence.content"].exists)
+        tapVisible(toggle, in: partialApp)
+        requireExists(partialApp.descendants(matching: .any)["verification.evidence.content"], in: partialApp,
+            timeout: 4, phase: "evidence expanded")
+        XCTAssertTrue(partialApp.descendants(matching: .any)["verification.checked.section"].exists)
+        XCTAssertTrue(partialApp.descendants(matching: .any)["verification.unchecked.section"].exists)
+        XCTAssertTrue(partialApp.descendants(matching: .any)["verification.reasons.section"].exists)
+        XCTAssertTrue(partialApp.descendants(matching: .any)["verification.limitations.section"].exists)
+        tapVisible(toggle, in: partialApp)
+        XCTAssertFalse(partialApp.descendants(matching: .any)["verification.evidence.content"].exists)
+
+        let unavailableApp = launch("VERIFICATION_UNAVAILABLE"); openSolve(unavailableApp); start(unavailableApp)
+        requireExists(unavailableApp.descendants(matching: .any)["solve.unverified"], in: unavailableApp,
+            timeout: 15, phase: "unavailable verification preserves candidate as unverified")
+        XCTAssertTrue(unavailableApp.descendants(matching: .any)["solve.answer"].exists)
+        XCTAssertTrue(unavailableApp.descendants(matching: .any)["verification.unavailable"].exists)
+        XCTAssertTrue(unavailableApp.buttons["verification.refresh"].exists)
+        XCTAssertFalse(unavailableApp.descendants(matching: .any)["verification.status.VERIFIED"].exists)
     }
     func testHistoryQueuedRunningUnverifiedStepsAndReopen() {
         // Acknowledgements drive the synthetic server, never the ViewModel snapshot. The real poll
@@ -107,15 +143,20 @@ final class PrimarySolveUITests: XCTestCase {
         tapVisible(app.scrollViews.buttons["solve.fixture.advance.RUNNING"], in: app)
         requireExists(app.descendants(matching: .any)["solve.unverified"], in: app, timeout: 8, phase: "unverified candidate rendered")
         XCTAssertTrue(app.descendants(matching: .any)["solve.answer"].exists)
+        XCTAssertTrue(app.descendants(matching: .any)["solve.method"].exists)
         XCTAssertTrue(app.descendants(matching: .any)["solve.fixture"].exists)
         for order in 1...2 {
             let step = app.descendants(matching: .any)["solve.step.\(order)"]
             for _ in 0..<6 { if step.exists { break }; app.swipeUp() }
             requireExists(step, in: app, timeout: 4, phase: "solution step \(order) rendered")
+            XCTAssertTrue(app.descendants(matching: .any)["solve.step.\(order).category"].exists)
         }
         tapVisible(app.buttons["solve.close"], in: app)
         requireExists(app.buttons["history.solve"], in: app, timeout: 4, phase: "history detail restored after close")
         tapVisible(app.buttons["history.solve"], in: app)
+        if !app.buttons["solve.close"].waitForExistence(timeout: 2), app.buttons["history.solve"].exists && app.buttons["history.solve"].isHittable {
+            tapVisible(app.buttons["history.solve"], in: app)
+        }
         requireExists(app.descendants(matching: .any)["solve.unverified"], in: app, timeout: 4, phase: "persisted candidate reopened")
         XCTAssertFalse(app.buttons["solve.start"].exists)
     }
@@ -137,6 +178,7 @@ final class PrimarySolveUITests: XCTestCase {
         XCTAssertTrue(app.descendants(matching: .any)["solve.status.REVIEW_REQUIRED"].waitForExistence(timeout: 10))
         app.swipeUp()
         XCTAssertTrue(app.otherElements["solve.uncertainty"].exists || app.descendants(matching: .any)["solve.uncertainty"].exists)
+        XCTAssertTrue(app.buttons["solve.review"].exists)
     }
     func testRetryRequiresUserAction() {
         let app = launch("RETRYABLE_FAILURE"); openSolve(app); start(app)
@@ -148,6 +190,7 @@ final class PrimarySolveUITests: XCTestCase {
         let app = launch("STALE"); openSolve(app); start(app)
         XCTAssertTrue(app.descendants(matching: .any)["solve.status.STALE"].waitForExistence(timeout: 10))
         XCTAssertFalse(app.descendants(matching: .any)["solve.answer"].exists)
+        XCTAssertTrue(app.buttons["solve.review"].exists)
         app.terminate()
         let unknown = launch("OUTCOME_UNKNOWN"); openSolve(unknown); start(unknown)
         XCTAssertTrue(unknown.descendants(matching: .any)["solve.status.OUTCOME_UNKNOWN"].waitForExistence(timeout: 10))
@@ -169,6 +212,7 @@ final class PrimarySolveUITests: XCTestCase {
         let app = launch(extra: ["-AppleLanguages", "(tr)", "-AppleLocale", "tr_TR", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"])
         openSolve(app); start(app)
         XCTAssertTrue(app.descendants(matching: .any)["solve.unverified"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.descendants(matching: .any)["solve.method"].exists)
         XCTAssertTrue(app.buttons["solve.close"].isHittable)
         // VoiceOver order, Reduce Motion and long wrapping additionally require the owner manual gate.
     }

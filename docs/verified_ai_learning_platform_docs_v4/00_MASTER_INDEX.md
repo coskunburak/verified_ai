@@ -395,3 +395,19 @@ production rollout DISABLED. No agent tests, commit, push or deployment.
 
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.12_IMPLEMENTATION_MAP.md` — synthetic dataset, scoped evaluation, immutable release evidence and CI ownership.
 - `sprints/phase05_ai_solving_and_verification_core/SPRINT_5.12_EXECUTION_REPORT.md` — OWNER_ACCEPTANCE_PASSED for local scope in run 20261031-121345-aTjFqW (A–J PASS, exit 0); external production blockers remain.
+
+- `sprints/phase05_ai_solving_and_verification_core/PHASE_05_CLOSURE_REVIEW.md` — Phase 5 paid deferral, verified hosted CI, remaining free manual/external gates and next-phase handoff.
+
+Phase 5 closure checklist now reconciles all sprint result records and distinguishes
+accepted navigation/accessibility and calculus integration from still-missing manual,
+branch-enforcement and independent-release evidence. See the closure review above.
+
+## Sprint 6.1 production solution results handoff
+
+- `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.1_IMPLEMENTATION_MAP.md` — typed solution results state, mathematical presentation, candidate version guard, and recovery ownership.
+- `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.1_EXECUTION_REPORT.md` — `OWNER_ACCEPTANCE_PASSED` for local scope in run `20261031-152301-cKUveC` (Gates A–D `PASS`, 129 iOS tests and 9 backend/evaluation suites `PASS`, exit 0).
+
+## Sprint 6.2 verification transparency and evidence UX handoff
+
+- `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.2_IMPLEMENTATION_MAP.md` — deterministic evidence presentation mapper, progressive-disclosure verification UX, and full reason/uncertainty/recovery localization.
+- `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.2_EXECUTION_REPORT.md` — `OWNER_ACCEPTANCE_PASSED` for local scope in run `20261031-184154-aBdvps` (Gates A–D `PASS`, 134 iOS tests and 9 backend/evaluation suites `PASS`, exit 0).

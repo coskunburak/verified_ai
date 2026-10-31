@@ -61,3 +61,13 @@ The phase exit review must include:
 - migration/rollback readiness;
 - next-phase dependency statement.
 <!-- PHASE_PRODUCTION_V3:END -->
+
+## Sprint 6.1 handoff
+
+- `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.1_IMPLEMENTATION_MAP.md` — iOS solution results hierarchy, typed screen phase, candidate schema-version guard, and lifecycle ownership.
+- `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.1_EXECUTION_REPORT.md` — `OWNER_ACCEPTANCE_PASSED` for local scope in run `20261031-152301-cKUveC` (Gates A–D `PASS`, 129 iOS tests and 9 backend/evaluation suites `PASS`, exit 0).
+
+## Sprint 6.2 handoff
+
+- `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.2_IMPLEMENTATION_MAP.md` — deterministic `VerificationEvidencePresentation`, progressive-disclosure evidence UX, reason/uncertainty/recovery catalog coverage, and read-only verification refresh.
+- `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.2_EXECUTION_REPORT.md` — `OWNER_ACCEPTANCE_PASSED` for local scope in run `20261031-184154-aBdvps` (Gates A–D `PASS`, 134 iOS tests and 9 backend/evaluation suites `PASS`, exit 0).
