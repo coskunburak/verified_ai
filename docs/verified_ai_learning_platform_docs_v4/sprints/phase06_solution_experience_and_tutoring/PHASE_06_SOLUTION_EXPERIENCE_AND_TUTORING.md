@@ -11,13 +11,17 @@ This phase groups the production delivery units required for **Solution Experien
 - All durable schema changes use reviewed Flyway migrations.
 - All AI behavior changes require traceable prompt/model versions.
 ## Sprint sequence
-- `SPRINT_6.1` — **Production Solution Results Experience** — Deliver final answer, steps, method, state restoration, error recovery, and readable mathematical rendering without overwhelming the learner.
-- `SPRINT_6.2` — **Verification Transparency and Evidence UX** — Expose what was and was not verified, why a result has its status, and when the system requires caution.
+- `SPRINT_6.1` — **Production Solution Results Experience** — Deliver final answer, steps, method, state restoration, error recovery, and readable mathematical rendering without overwhelming the learner (Local Acceptance Passed).
+- `SPRINT_6.2` — **Verification Transparency and Evidence UX** — Expose what was and was not verified, why a result has its status, and when the system requires caution (Local Acceptance Passed).
+- `SPRINT_6.2B` — **Live Cloud AI Provider Integration & Spending Guard Activation** — Wire managed cloud APIs (`Gemini 2.5 Flash` OCR/Normalize + `GPT-4.1-mini` Solve + `o4-mini` Escalation) behind existing ports; de-promote `vLLM` `Qwen3.5-4B` per `adr/ADR-008_MANAGED_CLOUD_API_ROUTING_AND_QWEN_4B_DE_PROMOTION.md` and `sprints/02_FOCUSED_COMMERCIAL_WEDGE_SPRINT_PROGRAM.md`.
+- `SPRINT_6.2C` — **Canonical Solution Set Algebra, Extraneous Root Elimination & Domain Constraint Guard** — Implement `canonical_v2` (`FiniteSet`, `Interval`, `DomainConstraintGuard`) per `adr/ADR-009_CANONICAL_SOLUTION_SET_ALGEBRA_AND_DOMAIN_GUARD.md` and `sprints/02_FOCUSED_COMMERCIAL_WEDGE_SPRINT_PROGRAM.md`.
+- `SPRINT_6.2D` — **Native iOS 2D Mathematical Rendering & Sub-Expression Diff Highlighting** — Integrate `SwiftMath` CoreGraphics 2D LaTeX rendering and token diffs per `adr/ADR-010_NATIVE_2D_MATH_RENDERING_AND_STEP_DIFF_HIGHLIGHTING.md` and `sprints/02_FOCUSED_COMMERCIAL_WEDGE_SPRINT_PROGRAM.md`.
 - `SPRINT_6.3` — **Explanation Depth, Beginner-to-Deep Modes, and Personalization** — Support concise, standard, deep, and beginner explanations without changing mathematical truth.
 - `SPRINT_6.4` — **Tutor Session Domain and Conversation Persistence** — Create persistent, resumable tutoring sessions linked to problem, skill, learner state, and safety policy.
 - `SPRINT_6.5` — **Socratic Tutor Behavior and Pedagogical State Machine** — Make Tutor Mode guide the learner with questions instead of immediately revealing answers whenever the selected policy requires productive struggle.
 - `SPRINT_6.6` — **Progressive Hint System and Hint Cost Semantics** — Introduce structured hint levels, track hint use as a mastery signal, and prevent accidental full-answer leakage.
-- `SPRINT_6.7` — **Analyze My Work: User Solution Capture and Step-Level Comparison** — Allow handwritten or typed learner work to be compared against verified reasoning and identify the first meaningful divergence.
+- `SPRINT_6.7A` — **Analyze My Work: Handwritten Attempt Verification & First Wrong Step Pinpointing** — Fast-track handwritten attempt line-by-line verification, domain checks, and `CounterexampleEngine` per `sprints/02_FOCUSED_COMMERCIAL_WEDGE_SPRINT_PROGRAM.md`.
+- `SPRINT_6.7B` — **Counterfactual Twin Problem Generator & Socratic Progressive Hint Ladder** — SymPy-verified twin question generator (`F04`) and 3-tier hint ladder (`F09`) per `sprints/02_FOCUSED_COMMERCIAL_WEDGE_SPRINT_PROGRAM.md`.
 - `SPRINT_6.8` — **Alternative Solution Methods and Method Comparison** — Offer legitimate alternate methods and explain tradeoffs without fabricating unnecessary variants.
 - `SPRINT_6.9` — **Interactive Mathematical Visualizations and Concept Explanations** — Add graph/geometry/number-line visual tools when they improve understanding and remain deterministic or clearly labeled.
 - `SPRINT_6.10` — **Solution/Tutor Accessibility, Localization, Performance, and UX Polish** — Make the core learning experience production-ready across Dynamic Type, VoiceOver, localization, reduced motion, weak networks, and older supported devices.

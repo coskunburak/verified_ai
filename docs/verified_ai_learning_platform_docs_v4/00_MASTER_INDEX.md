@@ -291,6 +291,7 @@ ADR-005/006/007 and documents 57–64 are mandatory reading for any AI model, in
 ## Sprint execution standard and v3 changelog
 
 - `sprints/01_SPRINT_EXECUTION_STANDARD.md` — mandatory structure and evidence requirements for every production sprint.
+- `sprints/02_FOCUSED_COMMERCIAL_WEDGE_SPRINT_PROGRAM.md` — master production execution specification for Sprints 6.2B–11.9A bridging Sprint 6.2 to the 30-Day Go/No-Go TestFlight Beta Gate.
 - `DOCUMENTATION_V3_CHANGELOG.md` — summary of the hybrid-AI, cost-engineering and Phase 13 documentation revision.
 - `DOCUMENTATION_V5_CHANGELOG.md` — summary of the program-governance, V1 coverage and traceability revision.
 <!-- SPRINT_STANDARD_V3:END -->

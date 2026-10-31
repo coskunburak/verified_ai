@@ -27,6 +27,7 @@ Canonical planning references:
 - `quality/69_REQUIREMENTS_TRACEABILITY_MATRIX.md` maps requirements to source documents, phases, evidence, and telemetry.
 - `operations/70_RELEASE_TRAINS_AND_BACKLOG_PROMOTION.md` defines release trains and backlog promotion states.
 - `operations/71_TECHNICAL_DEBT_AND_MAINTENANCE_REGISTER.md` tracks accepted non-blocking maintenance debt.
+- `sprints/02_FOCUSED_COMMERCIAL_WEDGE_SPRINT_PROGRAM.md` defines the master production execution program for Sprints 6.2B–11.9A (the 30-Day Go/No-Go Commercial Wedge).
 
 ## Planning principles
 
@@ -134,13 +135,17 @@ Phase overview: `sprints/phase05_ai_solving_and_verification_core/PHASE_05_AI_SO
 
 Phase overview: `sprints/phase06_solution_experience_and_tutoring/PHASE_06_SOLUTION_EXPERIENCE_AND_TUTORING.md`
 
-- `Sprint 6.1` — **Production Solution Results Experience** — `phase06_solution_experience_and_tutoring/SPRINT_6.1_PRODUCTION_SOLUTION_RESULTS_EXPERIENCE.md`
-- `Sprint 6.2` — **Verification Transparency and Evidence UX** — `phase06_solution_experience_and_tutoring/SPRINT_6.2_VERIFICATION_TRANSPARENCY_AND_EVIDENCE_UX.md`
+- `Sprint 6.1` — **Production Solution Results Experience** — `phase06_solution_experience_and_tutoring/SPRINT_6.1_PRODUCTION_SOLUTION_RESULTS_EXPERIENCE.md` (Local Acceptance Passed)
+- `Sprint 6.2` — **Verification Transparency and Evidence UX** — `phase06_solution_experience_and_tutoring/SPRINT_6.2_VERIFICATION_TRANSPARENCY_AND_EVIDENCE_UX.md` (Local Acceptance Passed)
+- `Sprint 6.2B` — **Live Cloud AI Provider Integration & Spending Guard Activation** — Managed `Gemini 2.5 Flash` OCR + `GPT-4.1-mini` / `o4-mini` routing; de-promoting `vLLM` `Qwen3.5-4B` per `adr/ADR-008_MANAGED_CLOUD_API_ROUTING_AND_QWEN_4B_DE_PROMOTION.md` and `sprints/02_FOCUSED_COMMERCIAL_WEDGE_SPRINT_PROGRAM.md`.
+- `Sprint 6.2C` — **Canonical Solution Set Algebra, Extraneous Root Elimination & Domain Constraint Guard** — `canonical_v2` `FiniteSet`, `Interval`, `DomainConstraintGuard` per `adr/ADR-009_CANONICAL_SOLUTION_SET_ALGEBRA_AND_DOMAIN_GUARD.md` and `sprints/02_FOCUSED_COMMERCIAL_WEDGE_SPRINT_PROGRAM.md`.
+- `Sprint 6.2D` — **Native iOS 2D Mathematical Rendering & Sub-Expression Diff Highlighting** — Native `SwiftMath` CoreGraphics layout replacing monospaced text per `adr/ADR-010_NATIVE_2D_MATH_RENDERING_AND_STEP_DIFF_HIGHLIGHTING.md` and `sprints/02_FOCUSED_COMMERCIAL_WEDGE_SPRINT_PROGRAM.md`.
 - `Sprint 6.3` — **Explanation Depth, Beginner-to-Deep Modes, and Personalization** — `phase06_solution_experience_and_tutoring/SPRINT_6.3_EXPLANATION_DEPTH_BEGINNER_TO_DEEP_MODES_AND_PERSONALIZATION.md`
 - `Sprint 6.4` — **Tutor Session Domain and Conversation Persistence** — `phase06_solution_experience_and_tutoring/SPRINT_6.4_TUTOR_SESSION_DOMAIN_AND_CONVERSATION_PERSISTENCE.md`
 - `Sprint 6.5` — **Socratic Tutor Behavior and Pedagogical State Machine** — `phase06_solution_experience_and_tutoring/SPRINT_6.5_SOCRATIC_TUTOR_BEHAVIOR_AND_PEDAGOGICAL_STATE_MACHINE.md`
 - `Sprint 6.6` — **Progressive Hint System and Hint Cost Semantics** — `phase06_solution_experience_and_tutoring/SPRINT_6.6_PROGRESSIVE_HINT_SYSTEM_AND_HINT_COST_SEMANTICS.md`
-- `Sprint 6.7` — **Analyze My Work: User Solution Capture and Step-Level Comparison** — `phase06_solution_experience_and_tutoring/SPRINT_6.7_ANALYZE_MY_WORK_USER_SOLUTION_CAPTURE_AND_STEP_LEVEL_COMPARISON.md`
+- `Sprint 6.7A` — **Analyze My Work: Handwritten Attempt Verification & First Wrong Step Pinpointing** — Fast-tracked signature differentiator: line-by-line SymPy step equivalence + `CounterexampleEngine` per `sprints/02_FOCUSED_COMMERCIAL_WEDGE_SPRINT_PROGRAM.md`.
+- `Sprint 6.7B` — **Counterfactual Twin Problem Generator & Socratic Progressive Hint Ladder** — SymPy-verified twin problem generation (`F04`) and 3-stage hint ladder (`F09`) per `sprints/02_FOCUSED_COMMERCIAL_WEDGE_SPRINT_PROGRAM.md`.
 - `Sprint 6.8` — **Alternative Solution Methods and Method Comparison** — `phase06_solution_experience_and_tutoring/SPRINT_6.8_ALTERNATIVE_SOLUTION_METHODS_AND_METHOD_COMPARISON.md`
 - `Sprint 6.9` — **Interactive Mathematical Visualizations and Concept Explanations** — `phase06_solution_experience_and_tutoring/SPRINT_6.9_INTERACTIVE_MATHEMATICAL_VISUALIZATIONS_AND_CONCEPT_EXPLANATIONS.md`
 - `Sprint 6.10` — **Solution/Tutor Accessibility, Localization, Performance, and UX Polish** — `phase06_solution_experience_and_tutoring/SPRINT_6.10_SOLUTION_TUTOR_ACCESSIBILITY_LOCALIZATION_PERFORMANCE_AND_UX_POLISH.md`
@@ -149,6 +154,7 @@ Phase overview: `sprints/phase06_solution_experience_and_tutoring/PHASE_06_SOLUT
 
 Phase overview: `sprints/phase07_attempt_mistake_and_mastery_intelligence/PHASE_07_ATTEMPT_MISTAKE_AND_MASTERY_INTELLIGENCE.md`
 
+- `Sprint 7.0A` — **Personal Mistake Passport and Deterministic Half-Life Decay Engine** — Fast-tracked `Mistake Passport` (`F05`), 17 YKS & Calculus `MistakeCode` catalog, and BKT-Lite + Half-Life Decay engine per `sprints/02_FOCUSED_COMMERCIAL_WEDGE_SPRINT_PROGRAM.md` and `learning/79_PEDAGOGICAL_DIAGNOSIS_HANDWRITING_UX_AND_RETENTION_ENGINE.md`.
 - `Sprint 7.1` — **Attempt Domain and Learner Answer Submission** — `phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.1_ATTEMPT_DOMAIN_AND_LEARNER_ANSWER_SUBMISSION.md`
 - `Sprint 7.2` — **Attempt Step Extraction and Structured Work Representation** — `phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.2_ATTEMPT_STEP_EXTRACTION_AND_STRUCTURED_WORK_REPRESENTATION.md`
 - `Sprint 7.3` — **Attempt Evaluation and Step-Level Correctness** — `phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.3_ATTEMPT_EVALUATION_AND_STEP_LEVEL_CORRECTNESS.md`
@@ -217,6 +223,7 @@ Phase overview: `sprints/phase11_production_hardening_beta_and_launch/PHASE_11_P
 - `Sprint 11.6` — **Failure Injection, AI Provider Outage, and Chaos Scenarios** — `phase11_production_hardening_beta_and_launch/SPRINT_11.6_FAILURE_INJECTION_AI_PROVIDER_OUTAGE_AND_CHAOS_SCENARIOS.md`
 - `Sprint 11.7` — **Incident Response, Alerting, Runbooks, and Operational Readiness** — `phase11_production_hardening_beta_and_launch/SPRINT_11.7_INCIDENT_RESPONSE_ALERTING_RUNBOOKS_AND_OPERATIONAL_READINESS.md`
 - `Sprint 11.8` — **Backup, Point-in-Time Recovery, and Disaster Recovery Test** — `phase11_production_hardening_beta_and_launch/SPRINT_11.8_BACKUP_POINT_IN_TIME_RECOVERY_AND_DISASTER_RECOVERY_TEST.md`
+- `Sprint 11.9A` — **50-Student Closed TestFlight Beta and 30-Day Go/No-Go Gate** — Fast-tracked closed beta, 150-case `verified-ai-eval-v2` benchmark, and objective Go/No-Go evaluation per `sprints/02_FOCUSED_COMMERCIAL_WEDGE_SPRINT_PROGRAM.md` and `adr/ADR-011_FOCUSED_V1_COMMERCIAL_LAUNCH_GATE_BEFORE_PHASE_08_13.md`.
 - `Sprint 11.9` — **Closed TestFlight Beta and Structured Feedback Program** — `phase11_production_hardening_beta_and_launch/SPRINT_11.9_CLOSED_TESTFLIGHT_BETA_AND_STRUCTURED_FEEDBACK_PROGRAM.md`
 - `Sprint 11.10` — **Beta Iteration, Bug Burn-Down, and Release Candidate Freeze** — `phase11_production_hardening_beta_and_launch/SPRINT_11.10_BETA_ITERATION_BUG_BURN_DOWN_AND_RELEASE_CANDIDATE_FREEZE.md`
 - `Sprint 11.11` — **App Store Submission, Privacy Manifest, Metadata, and Launch Readiness** — `phase11_production_hardening_beta_and_launch/SPRINT_11.11_APP_STORE_SUBMISSION_PRIVACY_MANIFEST_METADATA_AND_LAUNCH_READINESS.md`
