@@ -33,10 +33,20 @@ enum MathPresentation {
 }
 
 struct MathematicalExpressionView: View {
+    enum Style {
+        case prominent
+        case step
+    }
+
     let statement: MathStatement
+    var style: Style = .step
+
     var body: some View {
         Text(verbatim: MathPresentation.statement(statement))
-            .font(.title3.monospaced())
+            .font(style == .prominent ? .title2.monospaced().weight(.semibold) : .title3.monospaced())
+            .foregroundStyle(ColorTokens.textPrimary)
+            .lineSpacing(4)
+            .multilineTextAlignment(.leading)
             .textSelection(.enabled)
             .fixedSize(horizontal: false, vertical: true)
             .frame(maxWidth: .infinity, alignment: .leading)

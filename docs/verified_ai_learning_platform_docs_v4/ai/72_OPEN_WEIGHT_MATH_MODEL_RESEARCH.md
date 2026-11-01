@@ -63,3 +63,11 @@ Status is OWNER_SELECTED_RESEARCH_CANDIDATE, not QUALITY_APPROVED_PRODUCTION_MOD
 [Decision and sources](../sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_QWEN_MODEL_DECISION.md).
 The isolated vLLM 0.17.1 path uses a BF16 reference; Q4/INT4 remains blocked pending exact artifact,
 hardware/runtime compatibility and paired quality evidence. No real inference or weight download has run.
+
+## V6 Production Audit Reconciliation (2026-10-31)
+
+Per `adr/ADR-008_MANAGED_CLOUD_API_ROUTING_AND_QWEN_4B_DE_PROMOTION.md` and `ai/77_PRODUCTION_MATH_MODEL_BENCHMARK_AND_BUILD_VS_BUY_STRATEGY.md`:
+
+- **Production V1 De-Promotion of `Qwen/Qwen3.5-4B` (`vLLM`):** Technical and TCO audit confirmed that a 4B dense model is mathematically and structurally insufficient as a primary solver for nested `CanonicalMathDocument` schemas and Turkish YKS (`TYT`/`AYT`) word problems, and dedicated 24/7 GPU hosting is 2.2x–10x more expensive than managed cloud APIs at `<10,000` paid learners.
+- **Approved Production V1 Cloud Stack:** `Gemini 2.5 Flash` (`R1` Multimodal OCR/Normalization), `GPT-4.1-mini` (`R2` Primary Structured Solver & `R4` Grounded Tutor), and verifier-triggered `OpenAI o4-mini` (`R3` Escalation Solver).
+- **Role of Open-Weight Models:** `VllmSolveProviderAdapter` (`Qwen/Qwen3.5-4B`) is retained strictly for offline/local contract testing, while `Qwen3-8B` / `Qwen3-30B-A3B` and `Qwen2.5-VL-7B` remain Phase 13 candidates gated by the 6 quantitative trigger criteria in `ai/77_PRODUCTION_MATH_MODEL_BENCHMARK_AND_BUILD_VS_BUY_STRATEGY.md`.

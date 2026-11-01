@@ -86,3 +86,10 @@ metrics remain unavailable. Rejected raw payloads are not retained, so exact sch
 be unavailable; report a lower bound rather than inventing results.
 [Protocol and commands](../sprints/phase05_ai_solving_and_verification_core/SPRINT_5.4_REAL_MODEL_OWNER_RUNBOOK.md).
 The proposed quality thresholds require one explicit owner-approved version before promotion.
+
+## V6 Evaluation Benchmark Expansion (`verified-ai-eval-v2` — 2026-10-31)
+
+`ai/77_PRODUCTION_MATH_MODEL_BENCHMARK_AND_BUILD_VS_BUY_STRATEGY.md` expands this plan into the canonical 500-case, 10-slice, 4-axis benchmark specification (`verified-ai-eval-v2`):
+
+- **10 Stratified Slices (50 cases each = 500 cases):** Arithmetic/Pre-Algebra, Polynomial Algebra, Single & Multi-Root (`FiniteSet`) Equations, Domain Restriction / Extraneous Root Traps (`SLICE_04`), Inequalities & Intervals, Turkish TYT Contextual Word Problems, AYT Functions/Trigonometry/Logarithms, Calculus (Limits/Derivatives/Integrals), Student Handwritten Mistakes (`Analyze My Work` `SLICE_09`), and Ambiguous/Unsupported Refusals.
+- **4 Independent Evaluation Axes:** Axis 1 (Multimodal OCR & AST Normalization `>=92%`), Axis 2 (Primary & Escalated Solver `VERIFIED` Yield `>=88%`, Schema Validity `>=99.2%`), Axis 3 (`Analyze My Work` First Wrong Step Index Accuracy `>=85%`), and Axis 4 (Deterministic Verifier Safety — **Zero False-`VERIFIED` Tolerance `0.000`**).

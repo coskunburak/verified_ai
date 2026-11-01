@@ -63,3 +63,16 @@ The phase exit review must include:
 - migration/rollback readiness;
 - next-phase dependency statement.
 <!-- PHASE_PRODUCTION_V3:END -->
+
+<!-- PHASE_PRODUCTION_V6:START -->
+# Phase Production Execution Contract v6 (Two-Stage Beta & Commercial App Store Launch Gate)
+
+## 1. Stage 1 — Day-30 Focused Wedge TestFlight Cohort (`SPRINT_11.9A`)
+Executed immediately after `SPRINT_6.2B`..`7.0A` (`sprints/02_FOCUSED_COMMERCIAL_WEDGE_SPRINT_PROGRAM.md` and `adr/ADR-011_FOCUSED_V1_COMMERCIAL_LAUNCH_GATE_BEFORE_PHASE_08_13.md`):
+- **150-Case Core Golden Benchmark Gate (`verified-ai-eval-v2` Subset):** Must pass with **`0.0%` false `VERIFIED` rate**, **`>= 85.0%` verified solve rate**, **`100.0%` extraneous-root trap detection**, **`>= 85.0%` first-wrong-step localization recall**, P50 latency `<= 4.5s`, and mean solve cost `<= $0.0075`.
+- **50-Student Real Learner Cohort:** 35 Turkish YKS (`TYT`/`AYT`) students + 15 University Calculus 101 students testing real phone photos and handwritten notebooks for 14 days.
+- **Objective Go / No-Go Threshold:** `>= 30%` Week-2 active learner retention (`15+` of 50 learners) and `>= 40%` voluntary adoption of `Analyze My Work`.
+
+## 2. Stage 2 — Full 500-Case Benchmark & Public App Store Launch (`SPRINT_11.1`–`11.10`)
+- Expands `verified-ai-eval-v2` to the full **500-case stratified suite** (`ai/73_MATH_MODEL_EVALUATION_PLAN.md`) and completes App Store Review package, StoreKit 2 live subscription activation, disaster recovery drill, and launch runbooks.
+<!-- PHASE_PRODUCTION_V6:END -->

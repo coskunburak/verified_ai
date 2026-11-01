@@ -61,3 +61,18 @@ The phase exit review must include:
 - migration/rollback readiness;
 - next-phase dependency statement.
 <!-- PHASE_PRODUCTION_V3:END -->
+
+<!-- PHASE_PRODUCTION_V6:START -->
+# Phase Production Execution Contract v6 (Spaced Mistake Repair Queue & Prerequisite Root-Cause Backtracker)
+
+## 1. Entry Gate (`ADR-011`)
+- Phase 8 execution is strictly gated on passing the **30-Day Focused Commercial Wedge (`Sprint 11.9A`)** with `>= 30%` Week-2 retention across the 50-student TestFlight cohort.
+
+## 2. Signature Capabilities & Mathematical Logic (`learning/79_PEDAGOGICAL_DIAGNOSIS_HANDWRITING_UX_AND_RETENTION_ENGINE.md`)
+- **Spaced-Repetition Mistake Repair Queue (`SPRINT_8.3` / `F05`):**
+  - Driven directly by `learner_skill_mastery.next_review_due_at` and `half_life_days` (`V026`). When effective retention $P_{\text{eff}}(t) = 0.10 + (P(L_n) - 0.10)\cdot 2^{-\Delta t / H_n}$ drops below `0.70`, the skill is automatically queued into the learner's **Daily 5-Minute Trap & Mistake Repair Session**.
+- **Prerequisite Root-Cause Backtracker (`SPRINT_8.2` / `F26`):**
+  - When a student fails a composite topic (e.g., AYT Derivative Maxima/Minima or Definite Integrals) twice due to an underlying foundational weakness (e.g., sign table analysis of quadratic inequalities or rational exponent rules), the planner dynamically inserts a 2-question foundational micro-drill before returning to the advanced topic.
+- **Zero-Token Deterministic Planning:**
+  - Study plan generation, daily queue ranking, and spaced review scheduling must be **100% deterministic Java domain logic** (`0` LLM tokens per plan refresh). LLMs are invoked only when generating new `SymPy`-verified practice or twin items that are not already in the verified item bank.
+<!-- PHASE_PRODUCTION_V6:END -->

@@ -266,6 +266,7 @@ private struct ProblemSessionRecoveryDetailView: View {
                         PrimarySolveView(viewModel: makeSolveModel(detail.problemSessionId), reviewProblem: {
                             if let reviewViewModel { reviewViewModel.reset(); path = [.review] } else { path = [] }
                         })
+                        .id(detail.problemSessionId)
                     }
                 case .review:
                     if let reviewViewModel {

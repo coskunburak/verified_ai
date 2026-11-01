@@ -22,11 +22,13 @@ final class PrimarySolveViewModelTests: XCTestCase {
         service.decision = FixturePrimarySolveAPI.decisionFixture("VERIFIED")
         let vm = model(); vm.resume(); await settle { vm.verification != nil && !vm.busy }
         XCTAssertEqual(vm.verification?.status, .verified); XCTAssertFalse(vm.canRetry)
+        XCTAssertEqual(vm.screenPhase, .job(.generatedUnverified))
         XCTAssertTrue(service.keys.isEmpty); XCTAssertTrue(service.retryKeys.isEmpty)
         network.isReachable = false; vm.refresh()
         XCTAssertNil(vm.verification)
+        XCTAssertEqual(vm.screenPhase, .degraded("solve.error.offline"))
         network.isReachable = true; vm.resume(); await settle { vm.verification != nil && !vm.busy }
-        vm.suspend(); XCTAssertNil(vm.verification)
+        vm.suspend(); XCTAssertNil(vm.verification); XCTAssertEqual(vm.screenPhase, .checkingExisting)
     }
     func testLocalSolveFlowReachesVerificationWhenHostNetworkIsOffline() async throws {
         let suite = "PrimarySolveNetwork-" + UUID().uuidString
@@ -73,10 +75,37 @@ final class PrimarySolveViewModelTests: XCTestCase {
         service.failDecision = true
         let vm = model(); vm.resume(); await settle { vm.verificationUnavailable && !vm.busy }
         XCTAssertNil(vm.verification); XCTAssertNotNil(vm.visibleCandidate); XCTAssertFalse(vm.canRetry)
+        XCTAssertFalse(vm.verificationContractInvalid)
+        XCTAssertEqual(vm.verificationPresentation.scopeKey, "verification.unavailable")
+        vm.suspend()
+    }
+    func testMalformedVerificationDecisionFailsClosedWithoutErasingCandidateAndRefreshVerificationIsReadOnly() async throws {
+        service.currentJob = try FixturePrimarySolveAPI.decode(state: .generatedUnverified)
+        service.malformedDecision = true
+        let vm = model(); vm.resume(); await settle { vm.verificationUnavailable && !vm.busy }
+        XCTAssertNil(vm.verification)
+        XCTAssertTrue(vm.verificationContractInvalid)
+        XCTAssertNotNil(vm.visibleCandidate)
+        XCTAssertEqual(vm.verificationPresentation.scopeKey, "verification.invalid")
+        XCTAssertEqual(vm.verificationPresentation.summaryKey, "verification.summary.INVALID")
+        XCTAssertEqual(vm.verificationPresentation.severity, .warning)
+        XCTAssertTrue(vm.canRefreshVerification)
+
+        service.malformedDecision = false
+        service.decision = FixturePrimarySolveAPI.decisionFixture("PARTIALLY_VERIFIED")
+        vm.refreshVerification()
+        await settle { vm.verification != nil && !vm.busy }
+        XCTAssertEqual(vm.verification?.status, .partiallyVerified)
+        XCTAssertFalse(vm.verificationUnavailable)
+        XCTAssertFalse(vm.verificationContractInvalid)
+        XCTAssertEqual(vm.verificationPresentation.severity, .caution)
+        XCTAssertEqual(service.keys.count, 0)
+        XCTAssertEqual(service.retryKeys.count, 0)
         vm.suspend()
     }
     func testQueuedRunningGeneratedStopsPollingAndRepeatedTapDoesNotDuplicate() async throws {
         let vm = model(fast: true); vm.resume(); await settle { vm.canStart }
+        XCTAssertEqual(vm.screenPhase, .readyToStart)
         vm.start(); vm.start()
         await settle { vm.snapshot?.state == .generatedUnverified && !vm.busy }
         XCTAssertEqual(service.keys.count, 1); XCTAssertEqual(service.readStates, [.running, .generatedUnverified])
@@ -91,6 +120,7 @@ final class PrimarySolveViewModelTests: XCTestCase {
         XCTAssertNotNil(store.marker); let key = try XCTUnwrap(store.marker?.key)
         first.suspend()
         let second = model(fast: true); second.resume(); await settle { second.canRecover }
+        XCTAssertEqual(second.screenPhase, .recoveryPending(SolveRecoveryMarker(key: key, retryOf: nil, jobId: nil)))
         service.failStart = false; second.recoverRequest()
         await settle { second.snapshot?.state == .generatedUnverified && !second.busy }
         XCTAssertEqual(service.keys, [key, key]); XCTAssertNil(store.marker); second.suspend()
@@ -104,9 +134,13 @@ final class PrimarySolveViewModelTests: XCTestCase {
         XCTAssertEqual(service.keys.count, 0); XCTAssertEqual(service.cancels, 0); vm.suspend()
     }
     func testOfflineDoesNotSubmitAndUncertainOutcomeNeverRetries() async throws {
+        let marker = SolveRecoveryMarker(key: "solve_persisted_offline", retryOf: nil, jobId: nil)
+        store.marker = marker
         network.isReachable = false
         let vm = model(); vm.resume(); vm.start(); await Task.yield()
         XCTAssertEqual(vm.errorKey, "solve.error.offline"); XCTAssertTrue(service.keys.isEmpty)
+        XCTAssertEqual(vm.pending, marker); XCTAssertEqual(store.marker, marker)
+        store.marker = nil
         network.isReachable = true; service.currentJob = try FixturePrimarySolveAPI.decode(state: .outcomeUnknown)
         vm.resume(); await settle { vm.snapshot?.state == .outcomeUnknown }
         vm.retry(); await Task.yield(); XCTAssertTrue(service.retryKeys.isEmpty); XCTAssertTrue(service.readStates.isEmpty)
@@ -129,8 +163,45 @@ final class PrimarySolveViewModelTests: XCTestCase {
         service.currentJob = try FixturePrimarySolveAPI.decode(state: .reviewRequired)
         let vm = model(); vm.resume(); await settle { vm.visibleCandidate != nil }
         XCTAssertFalse(vm.visibleCandidate!.ambiguities.isEmpty)
+        XCTAssertTrue(vm.needsProblemReview)
         service.currentJob = try FixturePrimarySolveAPI.decode(state: .stale)
         vm.refresh(); await settle { vm.snapshot?.state == .stale }; XCTAssertNil(vm.visibleCandidate)
+        XCTAssertTrue(vm.needsProblemReview)
+        vm.suspend()
+    }
+    func testUnsupportedCandidateVersionAndPollingLineageMismatchFailClosed() async throws {
+        let suite = "PrimarySolveUnsupportedV2-" + UUID().uuidString
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let fixture = FixturePrimarySolveAPI(scenario: "UNSUPPORTED_CANDIDATE_V2", defaults: defaults, reset: true)
+        let vm = PrimarySolveViewModel(userId: user, sessionId: FixturePrimarySolveAPI.sessionId,
+            service: fixture, recovery: store, network: network, isFixture: true, sleep: { _ in await Task.yield() })
+        vm.resume(); await settle { vm.canStart }
+        vm.start(); await settle { vm.errorKey != nil && !vm.busy }
+        XCTAssertEqual(vm.errorKey, "solve.error.unsupported")
+        XCTAssertNil(vm.snapshot); XCTAssertNil(vm.visibleCandidate); XCTAssertNil(vm.verification)
+        XCTAssertFalse(vm.canStart); XCTAssertFalse(vm.canRetry); XCTAssertTrue(vm.needsProblemReview)
+        vm.suspend()
+
+        service.currentJob = try FixturePrimarySolveAPI.decode(state: .queued)
+        service.mutateReadLineage = true
+        let lineageVM = model(fast: true)
+        lineageVM.resume(); await settle { lineageVM.errorKey != nil && !lineageVM.busy }
+        XCTAssertEqual(lineageVM.errorKey, "solve.error.contract")
+        XCTAssertNil(lineageVM.snapshot); XCTAssertNil(lineageVM.visibleCandidate)
+        lineageVM.suspend()
+    }
+    func testVerificationContradictionExposesProblemReviewAndJobChangeClearsVerdict() async throws {
+        let firstJob = try FixturePrimarySolveAPI.decode(state: .generatedUnverified)
+        service.currentJob = firstJob
+        service.decision = FixturePrimarySolveAPI.decisionFixture("CONTRADICTION")
+        let vm = model(); vm.resume(); await settle { vm.verification != nil && !vm.busy }
+        XCTAssertTrue(vm.verification?.hasConflict == true)
+        XCTAssertTrue(vm.needsProblemReview)
+        service.currentJob = try FixturePrimarySolveAPI.decode(state: .retryableFailure)
+        service.decision = nil
+        vm.refresh(); await settle { vm.snapshot?.state == .retryableFailure && !vm.busy }
+        XCTAssertNil(vm.verification)
         vm.suspend()
     }
     func testPollingPausesAtBoundAndDismissCancelsFurtherReads() async throws {
@@ -219,17 +290,18 @@ final class PrimarySolveViewModelTests: XCTestCase {
 @MainActor
 private final class SolveServiceDouble: PrimarySolveServicing {
     var decision: VerificationDecisionSnapshot?
-    var delayDecision = false, failDecision = false
+    var delayDecision = false, failDecision = false, malformedDecision = false
     var decisionContinuation: CheckedContinuation<Void, Never>?
     func verification(sessionId: UUID, jobId: UUID) async throws -> VerificationDecisionSnapshot? {
         if delayDecision { await withCheckedContinuation { decisionContinuation = $0 } }
+        if malformedDecision { throw SolveContractError.invalidResponse }
         if failDecision { throw NetworkError.transport("offline") }
         return decision
     }
     var currentJob: SolveJobSnapshot?
     var keys: [String] = [], retryKeys: [String] = []
     var readStates: [SolveState] = []
-    var failStart = false, alwaysRunning = false, cancels = 0
+    var failStart = false, alwaysRunning = false, mutateReadLineage = false, cancels = 0
     func current(sessionId: UUID) async throws -> SolveJobSnapshot? { currentJob }
     func start(sessionId: UUID, key: String) async throws -> SolveJobSnapshot {
         keys.append(key)
@@ -237,6 +309,12 @@ private final class SolveServiceDouble: PrimarySolveServicing {
         currentJob = try FixturePrimarySolveAPI.decode(state: .queued); return currentJob!
     }
     func read(sessionId: UUID, jobId: UUID) async throws -> SolveJobSnapshot {
+        if mutateReadLineage {
+            let raw = FixturePrimarySolveAPI.data(state: .running, jobId: jobId)
+            var json = try JSONSerialization.jsonObject(with: raw) as! [String: Any]
+            json["problemParseRevision"] = 2
+            return try JSONDecoder().decode(SolveJobSnapshot.self, from: JSONSerialization.data(withJSONObject: json))
+        }
         let state: SolveState = alwaysRunning || readStates.isEmpty ? .running : .generatedUnverified
         readStates.append(state); currentJob = try FixturePrimarySolveAPI.decode(state: state, jobId: jobId); return currentJob!
     }

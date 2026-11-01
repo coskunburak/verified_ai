@@ -36,6 +36,7 @@ Phase 1-13 is the initial production program. It is broad enough to reach Produc
 | Platform-ready | Program 1 Phase 2 complete. | Executable foundation exists, but users/accounts are not complete. |
 | Authenticated commercial shell | Program 1 complete. | Required before user-owned learning/product data grows. |
 | Core solving beta | Program 2 materially complete. | Narrow math scope is acceptable; false certainty is not. |
+| Focused Commercial Wedge Beta | Program 2 (with Sprints 6.2B–6.2D, 6.7A–6.7B) + Sprint 7.0A + Sprint 11.9A | Validates the core 30-day commercial wedge with 50 real learners on TestFlight before broad Phase 8–13 expansion per `adr/ADR-011_FOCUSED_V1_COMMERCIAL_LAUNCH_GATE_BEFORE_PHASE_08_13.md` and `sprints/02_FOCUSED_COMMERCIAL_WEDGE_SPRINT_PROGRAM.md`. |
 | Learning intelligence beta | Program 3 materially complete. | Mistakes/mastery/adaptive decisions become product differentiators. |
 | Production V1 | Programs 0-4 complete with accepted exceptions only. | Commercial iOS-first release. |
 | V1.5/V2 | Program 5 work promoted through evidence. | New breadth follows the same source-of-truth and quality gates. |
