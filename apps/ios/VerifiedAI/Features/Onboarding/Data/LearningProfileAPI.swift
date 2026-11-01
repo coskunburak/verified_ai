@@ -3,6 +3,7 @@ import Foundation
 protocol LearningProfileServicing: Sendable {
     func currentProfile() async throws -> LearningProfile
     func saveProfile(_ draft: LearningProfileDraft, completeOnboarding: Bool) async throws -> LearningProfile
+    func saveExplanationDepth(_ depth: ExplanationDepth, expectedVersion: Int64) async throws -> LearningProfile
 }
 
 final class LearningProfileAPI: LearningProfileServicing, @unchecked Sendable {
@@ -20,6 +21,15 @@ final class LearningProfileAPI: LearningProfileServicing, @unchecked Sendable {
         return try response.body.profile()
     }
 
+    func saveExplanationDepth(_ depth: ExplanationDepth, expectedVersion: Int64) async throws -> LearningProfile {
+        let body = try JSONEncoder().encode(ExplanationDepthPatch(depth: depth, expectedVersion: expectedVersion))
+        let response: HTTPResponse<LearningProfileWireResponse> = try await apiClient.send(
+            HTTPRequest(endpoint: Endpoint(path: "/api/v1/me/learning-profile", method: .patch),
+                        body: body, allowsAuthRefreshRetry: false)
+        )
+        return try response.body.profile()
+    }
+
     func saveProfile(_ draft: LearningProfileDraft, completeOnboarding: Bool) async throws -> LearningProfile {
         let body = try encoder.encode(UpdateLearningProfileWireRequest(draft: draft, completeOnboarding: completeOnboarding))
         let response: HTTPResponse<LearningProfileWireResponse> = try await apiClient.send(
@@ -30,6 +40,17 @@ final class LearningProfileAPI: LearningProfileServicing, @unchecked Sendable {
             )
         )
         return try response.body.profile()
+    }
+}
+
+/// Omitting every unrelated field preserves server partial-PATCH semantics.
+struct ExplanationDepthPatch: Encodable {
+    let explanationDepth: ExplanationDepth
+    let expectedVersion: Int64
+
+    init(depth: ExplanationDepth, expectedVersion: Int64) {
+        self.explanationDepth = depth
+        self.expectedVersion = expectedVersion
     }
 }
 
@@ -114,3 +135,36 @@ private struct LearningProfileWireResponse: Decodable, Sendable {
         return formatter.date(from: value)
     }
 }
+
+#if DEBUG
+/// Synthetic UI transport; only injected by the existing authenticated solve-fixture gate.
+actor FixtureLearningProfileAPI: LearningProfileServicing {
+    private var depth: ExplanationDepth = .standard
+    private var version: Int64 = 1
+    private let failsSave: Bool
+
+    init(failsSave: Bool = false) { self.failsSave = failsSave }
+
+    func currentProfile() async throws -> LearningProfile { profile() }
+    func saveProfile(_ draft: LearningProfileDraft, completeOnboarding: Bool) async throws -> LearningProfile {
+        try await saveExplanationDepth(draft.explanationDepth, expectedVersion: draft.expectedVersion ?? version)
+    }
+    func saveExplanationDepth(_ depth: ExplanationDepth, expectedVersion: Int64) async throws -> LearningProfile {
+        if failsSave { throw NetworkError.transport("synthetic_offline") }
+        guard expectedVersion == version else {
+            throw NetworkError.server(problem: ProblemDetails(type: "fixture", title: "Conflict", status: 409,
+                code: "OPTIMISTIC_CONFLICT", traceId: nil, details: nil))
+        }
+        self.depth = depth
+        version += 1
+        return profile()
+    }
+    private func profile() -> LearningProfile {
+        LearningProfile(exists: true, id: UUID(uuidString: "00000000-0000-0000-0000-0000000000B1")!,
+            userId: UUID(uuidString: "00000000-0000-0000-0000-0000000000A1")!, educationLevel: .highSchool,
+            preferredLanguage: "en", explanationDepth: depth, dailyStudyMinutes: 25,
+            timezone: "Europe/Istanbul", goalContext: "Synthetic fixture", onboardingStatus: .completed,
+            version: version, createdAt: nil, updatedAt: nil)
+    }
+}
+#endif

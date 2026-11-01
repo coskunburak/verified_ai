@@ -26,9 +26,10 @@ final class PrimarySolveUITests: XCTestCase {
         }
         application?.terminate()
         let app = XCUIApplication()
+        let locale = extra.contains("-AppleLanguages") ? [] : ["-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
         app.launchArguments = ["--ui-testing", "--ui-testing-authenticated", "--solve-fixture",
             "--solve-fixture-scope=" + fixtureScope, "--solve-scenario=" + scenario]
-            + (reset ? ["--solve-reset"] : []) + extra
+            + (reset ? ["--solve-reset"] : []) + locale + extra
         application = app
         phase("launch \(scenario), reset=\(reset)")
         app.launch()
@@ -52,6 +53,19 @@ final class PrimarySolveUITests: XCTestCase {
         let button = app.buttons["solve.start"]
         requireExists(button, in: app, timeout: 4, phase: "authoritative current lookup allows start")
         tapVisible(button, in: app)
+        let consumed = NSPredicate(format: "exists == false")
+        let firstDelivery = XCTNSPredicateExpectation(predicate: consumed, object: button)
+        if XCTWaiter.wait(for: [firstDelivery], timeout: 2) == .completed { return }
+        // A cold navigation transition can expose a hittable button yet swallow the tap.
+        // Re-deliver only while the authoritative ready screen and enabled start remain.
+        // Never tap again after a queued/running/result/error state replaces that screen.
+        if app.staticTexts["solve.ready"].exists && button.exists && button.isEnabled {
+            tapVisible(button, in: app)
+        }
+        let confirmedDelivery = XCTNSPredicateExpectation(predicate: consumed, object: button)
+        let delivered = XCTWaiter.wait(for: [confirmedDelivery], timeout: 4) == .completed
+        if !delivered { captureDiagnostics(app, reason: "start tap did not leave authoritative ready state") }
+        XCTAssertTrue(delivered, "Start must leave the ready screen before awaiting a solver result")
     }
     private func tapVisible(_ element: XCUIElement, in app: XCUIApplication,
                             file: StaticString = #filePath, line: UInt = #line) {
@@ -208,12 +222,90 @@ final class PrimarySolveUITests: XCTestCase {
         XCTAssertTrue(app.descendants(matching: .any)["solve.error"].waitForExistence(timeout: 10))
         XCTAssertFalse(app.descendants(matching: .any)["solve.answer"].exists)
     }
+    private func selectMode(_ mode: String, in app: XCUIApplication) {
+        let button = app.buttons["explanation.mode." + mode]
+        let scroll = app.scrollViews["solve.scroll"]
+        requireExists(scroll, in: app, timeout: 4, phase: "solution scroll available for mode selection")
+        for _ in 0..<20 {
+            if button.exists && button.isHittable { break }
+            // Search forward for undiscovered content. Scroll back only when the known
+            // control lies above the viewport; an app-wide downward swipe can dismiss a sheet.
+            if button.exists && button.frame.midY < scroll.frame.minY {
+                scroll.swipeDown()
+            } else {
+                scroll.swipeUp()
+            }
+        }
+        tapVisible(button, in: app)
+        XCTAssertTrue(button.isSelected)
+    }
+
+    func testAllExplanationModesDiscloseOriginalContentAndRestoreSavedPreference() {
+        let app = launch("PARTIALLY_VERIFIED"); openSolve(app); start(app)
+        requireExists(app.descendants(matching: .any)["verification.status.PARTIALLY_VERIFIED"], in: app,
+            timeout: 15, phase: "candidate ready for explanation modes")
+        selectMode("QUICK", in: app)
+        XCTAssertTrue(app.staticTexts["explanation.condensed"].exists)
+        XCTAssertFalse(app.descendants(matching: .any)["solve.step.1"].exists)
+        tapVisible(app.buttons["explanation.steps.toggle"], in: app)
+        XCTAssertTrue(app.descendants(matching: .any)["solve.step.1"].exists)
+        selectMode("STANDARD", in: app)
+        XCTAssertTrue(app.staticTexts["explanation.content.1"].exists)
+        selectMode("DEEP", in: app)
+        XCTAssertTrue(app.descendants(matching: .any)["explanation.dependencies.2"].exists)
+        selectMode("BEGINNER", in: app)
+        XCTAssertTrue(app.staticTexts["explanation.prerequisite"].exists)
+        XCTAssertFalse(app.staticTexts["explanation.content.1"].exists)
+        tapVisible(app.buttons["explanation.disclosure.1"], in: app)
+        requireExists(app.staticTexts["explanation.content.1"], in: app, timeout: 4, phase: "beginner explanation expanded")
+        XCTAssertEqual(app.buttons["explanation.disclosure.1"].value as? String, "Expanded")
+        tapVisible(app.buttons["explanation.disclosure.1"], in: app)
+        XCTAssertFalse(app.staticTexts["explanation.content.1"].exists)
+        XCTAssertEqual(app.buttons["explanation.disclosure.1"].value as? String, "Collapsed")
+        tapVisible(app.buttons["explanation.disclosure.1"], in: app)
+        requireExists(app.staticTexts["explanation.content.1"], in: app, timeout: 4, phase: "beginner explanation reopened")
+        XCTAssertTrue(app.descendants(matching: .any)["verification.status.PARTIALLY_VERIFIED"].exists)
+        XCTAssertTrue(app.buttons["verification.evidence.toggle"].exists)
+        XCTAssertFalse(app.buttons["solve.start"].exists)
+        let saved = NSPredicate(format: "label == %@", "Using your saved preference.")
+        expectation(for: saved, evaluatedWith: app.staticTexts["explanation.preference.status"])
+        waitForExpectations(timeout: 4)
+        tapVisible(app.buttons["solve.close"], in: app)
+        tapVisible(app.buttons["history.solve"], in: app)
+        requireExists(app.buttons["explanation.mode.BEGINNER"], in: app, timeout: 5, phase: "saved mode reopened")
+        XCTAssertTrue(app.buttons["explanation.mode.BEGINNER"].isSelected)
+    }
+
+    func testPreferenceFailureIsVisibleAndConflictWarningSurvivesEveryMode() {
+        let app = launch("CONTRADICTION", extra: ["--profile-save-failure"])
+        openSolve(app); start(app)
+        requireExists(app.descendants(matching: .any)["verification.conflict"], in: app,
+            timeout: 15, phase: "contradiction available")
+        for mode in ["QUICK", "DEEP", "BEGINNER", "STANDARD"] {
+            selectMode(mode, in: app)
+            XCTAssertTrue(app.descendants(matching: .any)["verification.conflict"].exists)
+            XCTAssertTrue(app.descendants(matching: .any)["verification.status.UNVERIFIED"].exists)
+            XCTAssertFalse(app.descendants(matching: .any)["verification.status.VERIFIED"].exists)
+        }
+        XCTAssertTrue(app.buttons["explanation.preference.reload"].waitForExistence(timeout: 4))
+        XCTAssertTrue(app.staticTexts["explanation.preference.status"].label.contains("temporary"))
+        tapVisible(app.buttons["explanation.preference.reload"], in: app)
+        // Reload is read-only; the final temporary Standard selection matches the stored profile.
+        let saved = NSPredicate(format: "label == %@", "Using your saved preference.")
+        expectation(for: saved, evaluatedWith: app.staticTexts["explanation.preference.status"])
+        waitForExpectations(timeout: 4)
+    }
+
     func testTurkishLargeTextKeepsNoticeAndControlsAccessible() {
         let app = launch(extra: ["-AppleLanguages", "(tr)", "-AppleLocale", "tr_TR", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"])
         openSolve(app); start(app)
         XCTAssertTrue(app.descendants(matching: .any)["solve.unverified"].waitForExistence(timeout: 10))
         XCTAssertTrue(app.descendants(matching: .any)["solve.method"].exists)
         XCTAssertTrue(app.buttons["solve.close"].isHittable)
+        selectMode("BEGINNER", in: app)
+        XCTAssertEqual(app.buttons["explanation.mode.BEGINNER"].label, "Başlangıç")
+        XCTAssertEqual(app.buttons["explanation.mode.BEGINNER"].value as? String, "Seçili")
+        XCTAssertTrue(app.staticTexts["explanation.prerequisite"].exists)
         // VoiceOver order, Reduce Motion and long wrapping additionally require the owner manual gate.
     }
 }

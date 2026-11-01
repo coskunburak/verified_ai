@@ -31,7 +31,7 @@ struct RootView: View {
         ))
         _onboardingViewModel = State(initialValue: OnboardingViewModel(
             learningProfileAPI: dependencies.learningProfileAPI,
-            networkMonitor: dependencies.networkMonitor,
+            networkMonitor: dependencies.solveFlowNetworkMonitor,
             logger: dependencies.logger
         ))
         _accountSettingsViewModel = State(initialValue: AccountSettingsViewModel(
@@ -158,9 +158,10 @@ struct RootView: View {
         .task(id: session.sessionId) {
             accountSettingsViewModel.reset()
             dependencies.storeKitTransactionObserver.start()
-            await onboardingViewModel.bootstrap()
+            await onboardingViewModel.bootstrap(userId: session.userId)
         }
-        .onChange(of: onboardingViewModel.state) { _, state in
+        .onChange(of: onboardingViewModel.state) { previous, state in
+            if case .ready = previous { return }
             if case .ready = state {
                 Task {
                     await entitlementViewModel.bootstrap()
@@ -194,7 +195,7 @@ struct RootView: View {
                 makeSolveModel: dependencies.solveEnabled ? { sessionId in
                     PrimarySolveViewModel(userId: userId, sessionId: sessionId, service: dependencies.primarySolveAPI,
                         recovery: dependencies.solveRecovery, network: dependencies.solveFlowNetworkMonitor,
-                        isFixture: dependencies.solveFixture, logger: dependencies.logger)
+                        isFixture: dependencies.solveFixture, profileModel: onboardingViewModel, logger: dependencies.logger)
                 } : nil,
                 reviewViewModel: dependencies.solveFixture ? nil : problemReviewViewModel
             )

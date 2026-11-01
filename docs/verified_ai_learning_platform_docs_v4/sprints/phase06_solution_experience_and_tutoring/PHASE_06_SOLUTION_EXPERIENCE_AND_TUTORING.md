@@ -97,3 +97,9 @@ Per `sprints/02_FOCUSED_COMMERCIAL_WEDGE_SPRINT_PROGRAM.md`, Phase 6 is split in
 - All iOS deliverables must reside under `apps/ios/VerifiedAI/Features/...` (reconciling legacy `apps/ios/VerifiedLearning/...` paths).
 - All `student_attempts` and `student_attempt_steps` rows (`V025`) enforce `training_eligible = false` by default and are exported/erased via `StudentAttemptPrivacyLifecycleContributor`.
 <!-- PHASE_PRODUCTION_V6:END -->
+
+## Sprint 6.3 local development handoff — owner scheduling exception
+
+- `SPRINT_6.3_IMPLEMENTATION_MAP.md` — existing profile ownership, deterministic four-mode projection, invariants and V6 scheduling exception.
+- `SPRINT_6.3_EXECUTION_REPORT.md` — `LOCAL_ACCEPTANCE_PASSED` in owner run `20261101-172742-BCuatU`: 154 iOS and 85 backend tests passed, zero failures/skips; Gates A–D passed.
+- This local Track B implementation does not complete Track A prerequisites, Phase 6 exit criteria, hosted CI or production gates.

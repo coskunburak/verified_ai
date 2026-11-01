@@ -9,6 +9,8 @@ struct PrimarySolveView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var isEvidenceExpanded = false
     @State private var isDetailsExpanded = false
+    @State private var showsAllSteps = false
+    @State private var expandedExplanationIDs: Set<String> = []
 
     var body: some View {
         ScrollView {
@@ -43,6 +45,7 @@ struct PrimarySolveView: View {
             }
             .padding(SpacingTokens.lg)
         }
+        .accessibilityIdentifier("solve.scroll")
         .background(ColorTokens.background)
         .foregroundStyle(ColorTokens.textPrimary)
         .navigationTitle("solve.title")
@@ -70,6 +73,12 @@ struct PrimarySolveView: View {
         }
         .onChange(of: viewModel.snapshot?.jobId) { _, _ in
             isEvidenceExpanded = false
+            resetExplanationDisclosure()
+        }
+        .onChange(of: viewModel.explanationDepth) { _, mode in
+            resetExplanationDisclosure()
+            UIAccessibility.post(notification: .announcement,
+                argument: NSLocalizedString(mode.title, comment: "Active explanation mode"))
         }
         .onChange(of: viewModel.verification?.id) { _, _ in
             isEvidenceExpanded = false
@@ -136,6 +145,7 @@ struct PrimarySolveView: View {
                 }
             case .readyToStart:
                 Text("solve.ready").font(.title2.weight(.semibold))
+                    .accessibilityIdentifier("solve.ready")
                 if viewModel.busy {
                     ProgressView()
                         .tint(ColorTokens.action)
@@ -209,35 +219,7 @@ struct PrimarySolveView: View {
             .accessibilityIdentifier("solve.uncertainty")
         }
 
-        Text("solve.steps").font(.title2.weight(.semibold))
-        ForEach(candidate.steps) { step in
-            VStack(alignment: .leading, spacing: SpacingTokens.md) {
-                HStack(alignment: .firstTextBaseline) {
-                    Text("solve.step \(step.order)").font(.headline)
-                    Spacer()
-                    Text(LocalizedStringKey(step.category.titleKey))
-                        .font(TypographyTokens.caption.weight(.semibold))
-                        .foregroundStyle(ColorTokens.textSecondary)
-                        .padding(.horizontal, SpacingTokens.sm)
-                        .padding(.vertical, SpacingTokens.xs)
-                        .background(ColorTokens.surfaceElevated)
-                        .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.small))
-                        .accessibilityIdentifier("solve.step.\(step.order).category")
-                }
-                MathematicalExpressionView(statement: step.claim, style: .step)
-                Text(verbatim: step.explanation)
-                    .fixedSize(horizontal: false, vertical: true)
-                if let numbers = candidate.dependencyNumbers(for: step) {
-                    Text("solve.depends \(numbers)")
-                        .font(.caption)
-                        .foregroundStyle(ColorTokens.textSecondary)
-                }
-            }
-            .solvePanel()
-            .accessibilityElement(children: .contain)
-            .accessibilityIdentifier("solve.step.\(step.order)")
-        }
-
+        // Source-reference limitations remain outside every condensed/disclosed sequence.
         if candidate.hasSourceReferences {
             Text("solve.referencesUnavailable")
                 .font(.callout)
@@ -245,6 +227,14 @@ struct PrimarySolveView: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .solvePanel()
                 .accessibilityIdentifier("solve.referencesUnavailable")
+        }
+
+        if let explanation = viewModel.explanationPresentation {
+            explanationControls(explanation)
+            Text("solve.steps").font(.title2.weight(.semibold))
+            ForEach(showsAllSteps ? candidate.steps : explanation.visibleSteps) { step in
+                explanationStep(step, presentation: explanation)
+            }
         }
 
         if let job = viewModel.snapshot {
@@ -262,6 +252,131 @@ struct PrimarySolveView: View {
             .solvePanel()
             .accessibilityIdentifier("solve.details")
         }
+    }
+
+    private func resetExplanationDisclosure() {
+        showsAllSteps = false
+        expandedExplanationIDs.removeAll()
+    }
+
+    private func explanationControls(_ presentation: ExplanationPresentation) -> some View {
+        VStack(alignment: .leading, spacing: SpacingTokens.sm) {
+            Text("Explanation depth").font(.headline)
+            // Vertical choices keep localized labels usable at accessibility text sizes.
+            ForEach(ExplanationDepth.allCases) { mode in
+                Button { viewModel.selectExplanationDepth(mode) } label: {
+                    Label(LocalizedStringKey(mode.title), systemImage: mode == presentation.mode ? "largecircle.fill.circle" : "circle")
+                        .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(ColorTokens.action)
+                .accessibilityAddTraits(mode == presentation.mode ? .isSelected : [])
+                .accessibilityValue(LocalizedStringKey(mode == presentation.mode ? "explanation.selected" : "explanation.notSelected"))
+                .accessibilityIdentifier("explanation.mode.\(mode.rawValue)")
+            }
+            Text(LocalizedStringKey(viewModel.explanationPreferenceStatus.messageKey))
+                .font(TypographyTokens.caption)
+                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityIdentifier("explanation.preference.status")
+            if viewModel.explanationPreferenceStatus.canReload {
+                action("explanation.preference.reload", id: "explanation.preference.reload") { viewModel.reloadExplanationPreference() }
+            }
+            if viewModel.explanationPreferenceStatus == .unsaved {
+                action("explanation.preference.save", id: "explanation.preference.save") { viewModel.saveExplanationPreference() }
+            }
+            Text(LocalizedStringKey(presentation.availabilityKey))
+                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityIdentifier("explanation.availability")
+            if presentation.mode == .beginner {
+                Text(LocalizedStringKey(presentation.prerequisiteKey ?? "explanation.term.unavailable"))
+                    .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityIdentifier("explanation.prerequisite")
+            }
+            if presentation.omittedStepCount > 0 {
+                if !showsAllSteps {
+                    Text("explanation.condensed \(presentation.omittedStepCount)")
+                        .fixedSize(horizontal: false, vertical: true)
+                        .accessibilityIdentifier("explanation.condensed")
+                }
+                action(showsAllSteps ? "explanation.steps.hide" : "explanation.steps.show", id: "explanation.steps.toggle") {
+                    showsAllSteps.toggle()
+                }
+            }
+        }
+        .solvePanel()
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("explanation.selector")
+    }
+
+    private func explanationStep(_ step: SolutionStep, presentation: ExplanationPresentation) -> some View {
+        VStack(alignment: .leading, spacing: SpacingTokens.md) {
+            HStack(alignment: .firstTextBaseline) {
+                Text("solve.step \(step.order)").font(.headline)
+                Spacer()
+                Text(LocalizedStringKey(step.category.titleKey))
+                    .font(TypographyTokens.caption.weight(.semibold))
+                    .foregroundStyle(ColorTokens.textSecondary)
+                    .padding(.horizontal, SpacingTokens.sm)
+                    .padding(.vertical, SpacingTokens.xs)
+                    .background(ColorTokens.surfaceElevated)
+                    .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.small))
+                    .accessibilityIdentifier("solve.step.\(step.order).category")
+            }
+            MathematicalExpressionView(statement: step.claim, style: .step)
+            if presentation.usesIndividualDisclosure {
+                let expanded = expandedExplanationIDs.contains(step.id)
+                // Keep the control and content as siblings: DisclosureGroup can propagate
+                // its accessibility identifier over the expanded content's own identifier.
+                Button {
+                    if expanded { expandedExplanationIDs.remove(step.id) }
+                    else { expandedExplanationIDs.insert(step.id) }
+                } label: {
+                    HStack(spacing: SpacingTokens.sm) {
+                        Text("explanation.step.show \(step.order)")
+                        Spacer()
+                        Image(systemName: expanded ? "chevron.up" : "chevron.down")
+                            .accessibilityHidden(true)
+                    }
+                    .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(ColorTokens.action)
+                .accessibilityValue(LocalizedStringKey(expanded ? "explanation.expanded" : "explanation.collapsed"))
+                .accessibilityIdentifier("explanation.disclosure.\(step.order)")
+                if expanded {
+                    Text(verbatim: step.explanation)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .accessibilityIdentifier("explanation.content.\(step.order)")
+                }
+            } else {
+                Text(verbatim: step.explanation)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityIdentifier("explanation.content.\(step.order)")
+            }
+            if let numbers = presentation.candidate.dependencyNumbers(for: step) {
+                Text("solve.depends \(numbers)")
+                    .font(.caption)
+                    .foregroundStyle(ColorTokens.textSecondary)
+            }
+            if presentation.mode == .deep {
+                VStack(alignment: .leading, spacing: SpacingTokens.sm) {
+                    Text("explanation.dependencies").font(.subheadline.weight(.semibold))
+                    let dependencies = presentation.dependencies(for: step)
+                    if dependencies.isEmpty { Text("explanation.dependencies.none") }
+                    ForEach(dependencies) { dependency in
+                        Text("solve.step \(dependency.order)").font(.caption)
+                        MathematicalExpressionView(statement: dependency.claim)
+                    }
+                }
+                .accessibilityElement(children: .contain)
+                .accessibilityIdentifier("explanation.dependencies.\(step.order)")
+            }
+        }
+        .solvePanel()
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("solve.step.\(step.order)")
     }
 
     @ViewBuilder private func verificationPrimarySection(_ presentation: VerificationEvidencePresentation) -> some View {
