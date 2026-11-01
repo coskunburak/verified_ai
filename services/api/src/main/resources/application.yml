@@ -75,6 +75,25 @@ app:
     secondary-fixture-enabled: false
     vllm-solver:
       enabled: false
+    gemini:
+      enabled: ${AI_GEMINI_ENABLED:false}
+      endpoint: ${AI_GEMINI_ENDPOINT:https://generativelanguage.googleapis.com}
+      model: ${AI_GEMINI_MODEL:gemini-2.5-flash}
+      api-key: ${GEMINI_API_KEY:}
+      evaluation-approval: ${AI_GEMINI_EVALUATION_APPROVAL:unapproved}
+      limits:
+        context-tokens: 1048576
+        max-input-tokens: 32768
+        max-output-tokens: 8192
+        max-request-bytes: 131072
+        max-response-bytes: 262144
+        connect-timeout: 2s
+        response-timeout: 30s
+        max-concurrency: 4
+      accounting:
+        pricing-version: gemini-2.5-flash-2026-v1
+        billing-semantics: PREPAID_CAPACITY_FIXED_ALLOCATION
+        attempt-allocation-micros: 200
     routing:
       health-max-age: 30s
       eligibility: []
@@ -200,10 +219,10 @@ app:
       products: []
   problem-assets:
     bucket: ${PROBLEM_ASSETS_BUCKET:verified-ai-problem-assets-local}
-    endpoint: ${PROBLEM_ASSETS_S3_ENDPOINT:}
+    endpoint: ${PROBLEM_ASSETS_S3_ENDPOINT:http://localhost:9000}
     region: ${PROBLEM_ASSETS_S3_REGION:us-east-1}
-    access-key: ${PROBLEM_ASSETS_S3_ACCESS_KEY:}
-    secret-key: ${PROBLEM_ASSETS_S3_SECRET_KEY:}
+    access-key: ${PROBLEM_ASSETS_S3_ACCESS_KEY:minio_local}
+    secret-key: ${PROBLEM_ASSETS_S3_SECRET_KEY:minio_local_password_change_me}
     path-style-access: ${PROBLEM_ASSETS_S3_PATH_STYLE:true}
     presign-ttl: ${PROBLEM_ASSETS_PRESIGN_TTL:PT15M}
     max-size-bytes: ${PROBLEM_ASSETS_MAX_SIZE_BYTES:20971520}

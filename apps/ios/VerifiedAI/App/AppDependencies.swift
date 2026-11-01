@@ -85,7 +85,7 @@ struct AppDependencies {
         #if DEBUG
         let arguments = ProcessInfo.processInfo.arguments
         solveFixture = environment == .development && arguments.contains("--solve-fixture") && arguments.contains("--ui-testing-authenticated")
-        solveEnabled = environment == .development && (arguments.contains("--enable-primary-solve") || solveFixture)
+        solveEnabled = environment == .development
         if solveFixture {
             if let scopeArgument = arguments.first(where: { $0.hasPrefix("--solve-fixture-scope=") }),
                let scope = UUID(uuidString: String(scopeArgument.dropFirst("--solve-fixture-scope=".count))) {

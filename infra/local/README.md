@@ -85,8 +85,30 @@ The Maven property selects the image explicitly. `make test-api` now depends on
 `make test-minio-image` and passes that property; Backend CI builds and selects the
 same image. The owner also verified `make test-minio-image` (0.7s, cached);
 hosted CI and the integrated `make test-api` wrapper have not yet been executed. Direct
-Maven commands must pass the property as shown above. Compose still uses its original
-image and requires a separate local-stack recovery. Do not retag this build as an official MinIO image.
+Maven commands must pass the property as shown above. Compose now builds the same pinned source as a separately named local development
+image, verified-ai/minio-local:2024-07-16-3535197, instead of pulling the unavailable upstream tag. Do not retag this build as an official MinIO image.
 This old source/toolchain is only for local regression recovery. A maintained
 storage/test dependency strategy remains required before production use.
 
+
+
+## Compose MinIO pull recovery — 2026-10-31
+
+Compose builds MinIO from minio-test/Dockerfile with the existing pinned upstream
+source commit. Its separate local image name avoids impersonating an upstream binary.
+The scratch runtime has no shell or mc, so a statically compiled Go probe checks
+/minio/health/ready with a two-second timeout and requires HTTP 200. It needs no
+credentials. The S3 test fixture also receives this probe but its entrypoint is unchanged.
+
+Owner execution (not run by the agent):
+
+```sh
+cd ~/Desktop/ai_verification_tutor
+docker compose up -d --build --wait postgres redis minio math-verifier
+docker compose ps
+```
+
+Build requires network access to the Go builder, pinned source and dependencies; no
+paid provider is invoked. Do not repeat down -v for this recovery: it removes local
+PostgreSQL and MinIO volumes. This local readiness/build change awaits owner validation.
+It is not a production storage maintenance or security upgrade.

@@ -1,0 +1,30 @@
+# Enforced system-level requirements for OpenAI Codex (macOS Root Enforced)
+# Path: /etc/codex/requirements.toml
+# Install:
+#   sudo mkdir -p /etc/codex
+#   sudo cp infra/security/agent-templates/codex.requirements.toml /etc/codex/requirements.toml
+#   sudo chown root:wheel /etc/codex/requirements.toml
+#   sudo chmod 644 /etc/codex/requirements.toml
+#   sudo rm -rf "/Library/Application Support/Codex"
+#
+# These requirements are enforced by the Codex binary and CANNOT be overridden by
+# user configs (~/.codex/config.toml), project configs (.codex/config.toml), or CLI flags.
+
+allowed_sandbox_modes = ["read-only", "workspace-write"]
+allowed_approval_policies = ["on-request"]
+allow_login_shell = false
+
+[permissions.filesystem]
+deny_read = [
+    "~/.ssh",
+    "~/.aws",
+    "~/.gnupg",
+    "~/.codex",
+    "~/.claude",
+    "~/.gemini",
+    "**/.env",
+    "**/.env.*",
+    "**/*.pem",
+    "**/*.key",
+    "**/*.p12"
+]

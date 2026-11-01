@@ -1,0 +1,68 @@
+# OpenAI Codex Project-Level Configuration (.codex/config.toml)
+# Schema verified against codex-cli 0.154.0
+#
+# IMPORTANT SECURITY NOTICE:
+# This project-level file provides default configuration for Codex sessions started in this repository.
+# Because it resides in the workspace, it is a configuration layer, NOT an immutable host security boundary.
+# True system-level policy enforcement requires /etc/codex/requirements.toml (root-owned)
+# or execution inside the isolated development container (scripts/dev/run_isolated_agent.sh).
+
+model = "o3"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+default_permissions = "verified_ai_isolated"
+allow_login_shell = false
+
+[sandbox_workspace_write]
+network_access = false
+
+[permissions.verified_ai_isolated]
+extends = ":workspace"
+
+[permissions.verified_ai_isolated.filesystem]
+glob_scan_max_depth = 4
+"~/.ssh" = "deny"
+"~/.aws" = "deny"
+"~/.gnupg" = "deny"
+"~/.codex" = "deny"
+"~/.claude" = "deny"
+"~/.gemini" = "deny"
+
+[permissions.verified_ai_isolated.filesystem.":project_roots"]
+".env" = "deny"
+".env.*" = "deny"
+"**/.env" = "deny"
+"**/.env.*" = "deny"
+"**/*.pem" = "deny"
+"**/*.key" = "deny"
+"**/*.p12" = "deny"
+
+[shell_environment_policy]
+inherit = "none"
+include_only = [
+    "PATH",
+    "HOME",
+    "USER",
+    "SHELL",
+    "TERM",
+    "LANG",
+    "LC_ALL",
+    "JAVA_HOME",
+    "TMPDIR",
+    "APP_ENV"
+]
+exclude = [
+    "*KEY*",
+    "*SECRET*",
+    "*TOKEN*",
+    "*PASSWORD*",
+    "*CREDENTIAL*",
+    "*AUTH*",
+    "OPENAI_*",
+    "ANTHROPIC_*",
+    "GEMINI_*",
+    "AWS_*",
+    "GITHUB_*",
+    "APPLE_*",
+    "MATH_VERIFIER_INTERNAL_TOKEN"
+]

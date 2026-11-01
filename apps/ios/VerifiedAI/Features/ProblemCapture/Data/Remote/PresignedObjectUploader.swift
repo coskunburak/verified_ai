@@ -13,7 +13,17 @@ final class URLSessionPresignedObjectUploader: PresignedObjectUploading, @unchec
         requiredHeaders: [String: String],
         progress: @escaping @Sendable (Double) -> Void
     ) async throws {
-        var request = URLRequest(url: uploadURL)
+        var targetURL = uploadURL
+        #if !targetEnvironment(simulator)
+        if let host = uploadURL.host, host == "localhost" || host == "127.0.0.1" {
+            var components = URLComponents(url: uploadURL, resolvingAgainstBaseURL: false)
+            components?.host = "192.168.1.126"
+            if let resolved = components?.url {
+                targetURL = resolved
+            }
+        }
+        #endif
+        var request = URLRequest(url: targetURL)
         request.httpMethod = "PUT"
         for (header, value) in requiredHeaders {
             request.setValue(value, forHTTPHeaderField: header)

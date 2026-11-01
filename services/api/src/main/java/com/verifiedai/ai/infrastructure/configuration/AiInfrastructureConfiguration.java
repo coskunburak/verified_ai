@@ -21,14 +21,20 @@ import org.springframework.core.io.ResourceLoader;
     AiRouteRegistryProperties.class,
     AiRoutingProperties.class,
     AiBudgetProperties.class,
-    VllmSolverProperties.class
+    VllmSolverProperties.class,
+    GeminiProviderProperties.class
 })
 class AiInfrastructureConfiguration {
 
     @Bean
     com.verifiedai.ai.application.AiProviderHealth aiProviderHealth(
-        org.springframework.beans.factory.ObjectProvider<com.verifiedai.ai.infrastructure.provider.VllmSolveProviderAdapter> vllm) {
+        org.springframework.beans.factory.ObjectProvider<com.verifiedai.ai.infrastructure.provider.VllmSolveProviderAdapter> vllm,
+        org.springframework.beans.factory.ObjectProvider<com.verifiedai.ai.infrastructure.provider.GeminiAiProviderAdapter> gemini) {
         return target -> {
+            var g = gemini.getIfAvailable();
+            if (g != null && com.verifiedai.ai.infrastructure.configuration.GeminiProviderProperties.PROVIDER.equals(target.provider())) {
+                return g.health(target);
+            }
             var adapter = vllm.getIfAvailable();
             return adapter == null ? com.verifiedai.ai.application.AiProviderHealth.unknown().snapshot(target)
                 : adapter.health(target);

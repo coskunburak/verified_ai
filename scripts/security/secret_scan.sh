@@ -16,9 +16,12 @@ matches="$(rg -n --hidden \
   --glob '!**/.venv/**' \
   --glob '!**/__pycache__/**' \
   --glob '!**/DerivedData/**' \
-  -e 'AKIA[0-9A-Z]{16}' \
+  --glob '!**/*.bak' \
+  -e '(A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}' \
   -e 'AIza[0-9A-Za-z_-]{35}' \
   -e 'sk-[A-Za-z0-9_-]{20,}' \
+  -e 'sk-ant-[A-Za-z0-9_-]{20,}' \
+  -e '(ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9_]{36,}' \
   -e '-----BEGIN [A-Z ]*PRIVATE KEY-----' \
   -e '(^|[^A-Za-z])(API_KEY|SECRET|PASSWORD|TOKEN)[[:space:]]*=[[:space:]]*[^[:space:]#]+' \
   .)" || scan_status=$?
@@ -40,7 +43,21 @@ fi
 
 if [[ -n "$matches" ]]; then
   printf "potential secret matches found:\n" >&2
-  printf "%s\n" "$matches" | tee "$tmp_file" >&2
+  # Mask output using pure bash builtins to prevent credential leaking in CI logs or terminal history
+  redacted_matches=""
+  while IFS= read -r match_line; do
+    if [[ -n "$match_line" ]]; then
+      prefix="${match_line%%:*}"
+      rest="${match_line#*:}"
+      line_num="${rest%%:*}"
+      if [[ -n "$prefix" && -n "$line_num" && "$prefix" != "$match_line" ]]; then
+        redacted_matches+="${prefix}:${line_num}: [POTENTIAL_SECRET_DETECTED_REDACTED]"$'\n'
+      else
+        redacted_matches+="${match_line}"$'\n'
+      fi
+    fi
+  done <<< "$matches"
+  printf "%s" "$redacted_matches" | tee "$tmp_file" >&2
   exit 1
 fi
 

@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json.schemastore.org/claude-settings.json",
+  "sandbox": {
+    "enabled": true,
+    "failIfUnavailable": true,
+    "allowUnsandboxedCommands": false,
+    "filesystem": {
+      "denyRead": [
+        ".env",
+        ".env.*",
+        "**/*.pem",
+        "**/*.key",
+        "**/*.p12",
+        "**/.ssh/**",
+        "**/.aws/**",
+        "**/.gnupg/**",
+        "**/.codex/**",
+        "**/.claude/**",
+        "**/.gemini/**"
+      ],
+      "denyWrite": [
+        ".git/hooks/**",
+        ".github/workflows/**",
+        "**/.codex/**",
+        "**/.claude/**",
+        "**/.gemini/**"
+      ]
+    },
+    "credentials": {
+      "files": [
+        ".env",
+        ".env.*",
+        "Secrets.xcconfig",
+        "owner.env",
+        "id_rsa",
+        "id_ed25519"
+      ],
+      "envVars": [
+        "ANTHROPIC_API_KEY",
+        "OPENAI_API_KEY",
+        "GEMINI_API_KEY",
+        "AWS_ACCESS_KEY_ID",
+        "AWS_SECRET_ACCESS_KEY",
+        "GITHUB_TOKEN",
+        "APPLE_KEY",
+        "MATH_VERIFIER_INTERNAL_TOKEN",
+        "ACCESS_TOKEN_PRIVATE_KEY_PEM"
+      ]
+    }
+  },
+  "permissions": {
+    "deny": {
+      "read": [
+        ".env*",
+        "**/*.pem",
+        "**/*.key",
+        "**/.ssh/**",
+        "**/.aws/**"
+      ],
+      "command": [
+        "curl *",
+        "wget *",
+        "nc *",
+        "ssh *",
+        "sudo *",
+        "su *",
+        "security *"
+      ]
+    }
+  }
+}
