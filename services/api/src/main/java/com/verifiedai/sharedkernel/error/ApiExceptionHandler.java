@@ -43,7 +43,9 @@ class ApiExceptionHandler {
         return ResponseEntity.status(exception.status()).body(response);
     }
 
-    @ExceptionHandler({MethodArgumentNotValidException.class, HttpMessageNotReadableException.class})
+    @ExceptionHandler({MethodArgumentNotValidException.class, HttpMessageNotReadableException.class,
+        org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class,
+        org.springframework.web.bind.MissingServletRequestParameterException.class})
     ResponseEntity<ProblemDetailsResponse> handleValidation(Exception exception) {
         ProblemDetailsResponse response = new ProblemDetailsResponse(
             "https://errors.verified-ai-learning.example/request-validation-failed",

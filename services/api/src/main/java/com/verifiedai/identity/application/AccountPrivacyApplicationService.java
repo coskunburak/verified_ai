@@ -163,6 +163,8 @@ public class AccountPrivacyApplicationService {
         for (AccountDataLifecycleContributor contributor : lifecycleContributors) {
             contributor.deleteUserData(userId, now);
         }
+        // Completed exports also contain personal learning transcripts.
+        jdbcTemplate.update("delete from data_exports where user_id = ?", userId);
         user.markDeleted(now);
         recordPrivacyEvent(userId, "ACCOUNT_DELETED", "USER_CONFIRMED");
         metrics.deletionCompleted();

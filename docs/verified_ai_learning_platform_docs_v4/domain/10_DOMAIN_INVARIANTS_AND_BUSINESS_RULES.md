@@ -147,3 +147,12 @@ This is a highest-precedence document.
 - Retrying evaluation with a key reuses one matching decision; changed scope rejects. No automatic paid escalation exists.
 - Calculus composition requires its tagged evidence variant and full source interval, approach and restriction matching; generic evidence cannot substitute.
 - Calculus VERIFIED retains OPEN_INTERVAL, ANTIDERIVATIVE_REPRESENTATIVE or PUNCTURED_NEIGHBORHOOD scope; it never implies endpoints, an entire antiderivative family, or explanation steps. Production promotion remains disabled.
+
+## Sprint 6.4 tutoring persistence invariants
+
+- Creation derives exact current source and ownership through the problem module; source identity never rewrites history.
+- Only ACTIVE/current sessions accept new learner messages. CLOSED/stale history remains readable.
+- Committed retries return existing messages even after close/source change; conflicting payloads fail.
+- Owner/problem transaction locks serialize sequence, capacity, retries and account lifecycle. Database constraints enforce lineage/ownership.
+- Stored text is untrusted, never system policy, verification or training eligibility. No assistant write route exists.
+- Minimal learner snapshot contains profile version/preference/language; unavailable mastery is explicit.

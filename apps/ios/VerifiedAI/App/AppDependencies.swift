@@ -20,6 +20,15 @@ struct AppDependencies {
     let problemReviewAPI: ProblemReviewServicing
     let problemSessionHistoryAPI: ProblemSessionHistoryServicing
     let problemSessionCache: ProblemSessionCaching
+    let tutorPending = TutorPendingStore()
+    var tutorAPI: TutorServicing {
+        #if DEBUG
+        if solveFixture && ProcessInfo.processInfo.arguments.contains("--tutor-fixture") {
+            return FixtureTutorAPI(failFirst: ProcessInfo.processInfo.arguments.contains("--tutor-send-failure"))
+        }
+        #endif
+        return TutorAPI(client: apiClient)
+    }
     let primarySolveAPI: PrimarySolveServicing
     let solveRecovery: SolveRecoveryStoring
     let solveEnabled: Bool

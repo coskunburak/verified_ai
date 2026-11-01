@@ -7,6 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B64000000000000000000008 /* TutorUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64000000000000000000008 /* TutorUITests.swift */; };
+		B64000000000000000000007 /* TutorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64000000000000000000007 /* TutorTests.swift */; };
+		B64000000000000000000006 /* TutorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64000000000000000000006 /* TutorView.swift */; };
+		B64000000000000000000005 /* TutorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64000000000000000000005 /* TutorViewModel.swift */; };
+		B64000000000000000000004 /* FixtureTutorAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64000000000000000000004 /* FixtureTutorAPI.swift */; };
+		B64000000000000000000003 /* TutorPendingStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64000000000000000000003 /* TutorPendingStore.swift */; };
+		B64000000000000000000002 /* TutorAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64000000000000000000002 /* TutorAPI.swift */; };
+		B64000000000000000000001 /* TutorSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64000000000000000000001 /* TutorSession.swift */; };
 		B63000000000000000000002 /* ExplanationPresentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63000000000000000000002 /* ExplanationPresentationTests.swift */; };
 		B63000000000000000000001 /* ExplanationPresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63000000000000000000001 /* ExplanationPresentation.swift */; };
 		B54000000000000000000001 /* SolutionCandidate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A54000000000000000000001 /* SolutionCandidate.swift */; };
@@ -142,6 +150,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A64000000000000000000008 /* TutorUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAIUITests/TutorUITests.swift; sourceTree = SOURCE_ROOT; };
+		A64000000000000000000007 /* TutorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Tutor/TutorTests.swift; sourceTree = SOURCE_ROOT; };
+		A64000000000000000000006 /* TutorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Tutor/Presentation/TutorView.swift; sourceTree = SOURCE_ROOT; };
+		A64000000000000000000005 /* TutorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Tutor/Presentation/TutorViewModel.swift; sourceTree = SOURCE_ROOT; };
+		A64000000000000000000004 /* FixtureTutorAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Tutor/Data/FixtureTutorAPI.swift; sourceTree = SOURCE_ROOT; };
+		A64000000000000000000003 /* TutorPendingStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Tutor/Data/TutorPendingStore.swift; sourceTree = SOURCE_ROOT; };
+		A64000000000000000000002 /* TutorAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Tutor/Data/TutorAPI.swift; sourceTree = SOURCE_ROOT; };
+		A64000000000000000000001 /* TutorSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Tutor/Domain/TutorSession.swift; sourceTree = SOURCE_ROOT; };
 		A63000000000000000000002 /* ExplanationPresentationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/ProblemSolving/ExplanationPresentationTests.swift; sourceTree = SOURCE_ROOT; };
 		A63000000000000000000001 /* ExplanationPresentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/ProblemSolving/Domain/Model/ExplanationPresentation.swift; sourceTree = SOURCE_ROOT; };
 		A54000000000000000000001 /* SolutionCandidate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/ProblemSolving/Domain/Model/SolutionCandidate.swift; sourceTree = SOURCE_ROOT; };
@@ -358,6 +374,7 @@
 		700000000000000000000006 /* VerifiedAIUITests */ = {
 			isa = PBXGroup;
 			children = (
+				A64000000000000000000008 /* TutorUITests.swift */,
 				A5400000000000000000000D /* PrimarySolveUITests.swift */,
 				200000000000000000000025 /* VerifiedAIUITests.swift */,
 			);
@@ -861,6 +878,12 @@
 			isa = PBXGroup;
 			children = (
 				A54000000000000000000001 /* SolutionCandidate.swift */,
+				A64000000000000000000001 /* TutorSession.swift */,
+				A64000000000000000000002 /* TutorAPI.swift */,
+				A64000000000000000000003 /* TutorPendingStore.swift */,
+				A64000000000000000000004 /* FixtureTutorAPI.swift */,
+				A64000000000000000000005 /* TutorViewModel.swift */,
+				A64000000000000000000006 /* TutorView.swift */,
 				A63000000000000000000001 /* ExplanationPresentation.swift */,
 				A54000000000000000000002 /* PrimarySolveServicing.swift */,
 				A54000000000000000000003 /* PrimarySolveAPI.swift */,
@@ -878,6 +901,7 @@
 			children = (
 				A54000000000000000000009 /* PrimarySolveContractTests.swift */,
 				A5400000000000000000000A /* MathPresentationTests.swift */,
+				A64000000000000000000007 /* TutorTests.swift */,
 				A63000000000000000000002 /* ExplanationPresentationTests.swift */,
 				A5400000000000000000000B /* PrimarySolveViewModelTests.swift */,
 				A5400000000000000000000C /* SolveRecoveryStoreTests.swift */,
@@ -1017,6 +1041,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				B54000000000000000000001 /* SolutionCandidate.swift in Sources */,
+				B64000000000000000000001 /* TutorSession.swift in Sources */,
+				B64000000000000000000002 /* TutorAPI.swift in Sources */,
+				B64000000000000000000003 /* TutorPendingStore.swift in Sources */,
+				B64000000000000000000004 /* FixtureTutorAPI.swift in Sources */,
+				B64000000000000000000005 /* TutorViewModel.swift in Sources */,
+				B64000000000000000000006 /* TutorView.swift in Sources */,
 				B63000000000000000000001 /* ExplanationPresentation.swift in Sources */,
 				B54000000000000000000002 /* PrimarySolveServicing.swift in Sources */,
 				B54000000000000000000003 /* PrimarySolveAPI.swift in Sources */,
@@ -1115,6 +1145,7 @@
 			files = (
 				B54000000000000000000009 /* PrimarySolveContractTests.swift in Sources */,
 				B5400000000000000000000A /* MathPresentationTests.swift in Sources */,
+				B64000000000000000000007 /* TutorTests.swift in Sources */,
 				B63000000000000000000002 /* ExplanationPresentationTests.swift in Sources */,
 				B5400000000000000000000B /* PrimarySolveViewModelTests.swift in Sources */,
 				B5400000000000000000000C /* SolveRecoveryStoreTests.swift in Sources */,
@@ -1140,6 +1171,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B64000000000000000000008 /* TutorUITests.swift in Sources */,
 				B5400000000000000000000D /* PrimarySolveUITests.swift in Sources */,
 				100000000000000000000025 /* VerifiedAIUITests.swift in Sources */,
 			);

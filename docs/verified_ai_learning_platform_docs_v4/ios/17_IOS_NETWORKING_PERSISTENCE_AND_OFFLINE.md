@@ -103,3 +103,12 @@ view-model polls classification with bounded backoff and treats
 backend-owned semantic outcomes. The client never invents skill IDs,
 difficulty, confidence, or taxonomy labels while offline or during retry.
 <!-- HYBRID_AI_STRATEGY_V3:END -->
+
+## Sprint 6.4 tutor recovery
+
+Tutor APIClient models reload server-authoritative sessions and ordered messages. An atomic protected,
+backup-excluded pending operation file stores only the unresolved create/send key, target and bounded
+original content; it is not a transcript store. Retry preserves key/payload across relaunch and removes
+the marker only after acknowledgement or definitive rejection. Account/logout cleanup removes pending
+data. Active owner, authentication session, task cancellation and presentation generation guard results.
+Offline presentation cannot create confirmed messages. Tutor replies/hints are explicitly unavailable.

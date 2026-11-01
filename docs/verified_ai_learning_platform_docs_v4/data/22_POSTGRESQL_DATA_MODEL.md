@@ -668,3 +668,11 @@ owner/session/solution/time index and independently validate freshness; there is
 status column on solving or evidence. Decisions retain the original policy version and
 creation timestamp, with no raw text or private reasoning. V001–V022 remain unchanged.
 Rollback disables arbitration and retains V023/history; do not downgrade or drop the table.
+
+## Sprint 6.4 additive local schema
+
+V027 creates tutor_sessions and tutor_messages. Composite canonical-source and message-parent FKs
+enforce owner/lineage. Unique session sequence and scoped retry keys enforce durable ordered retries.
+Account/problem/source deletion cascades. Session and message schemas, status, learner role and
+training_eligible=false are constrained. V001–V023 are unchanged. V024–V026 are reserved; fresh disposable
+databases only until the complete ordered upgrade is reconciled. Never enable out-of-order implicitly.

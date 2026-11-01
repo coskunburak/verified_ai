@@ -4,6 +4,239 @@ info:
   version: 0.1.0
 
 paths:
+  /api/v1/problem-sessions/{sessionId}/tutor-sessions:
+    post:
+      operationId: "createTutorSession"
+      tags: ["Tutoring"]
+      security:
+        -
+          bearerAuth: []
+      summary: "Create ACTIVE session for current owned source. Empty body only; a key replays the same historical session even after source changes. No inference, verifier or premium debit."
+      parameters:
+        -
+          name: "sessionId"
+          in: "path"
+          required: true
+          schema: {"type": "string", "format": "uuid"}
+        -
+          name: "Idempotency-Key"
+          in: "header"
+          required: true
+          schema: {"type": "string", "pattern": "^[A-Za-z0-9_-]{8,128}$", "minLength": 8, "maxLength": 128}
+      responses:
+        "200":
+          description: "Committed result or durable replay; server correlation ID is returned through the existing platform contract."
+          content:
+            application/json:
+              schema: {"$ref": "#/components/schemas/TutorSession"}
+        "400": {"$ref": "#/components/responses/TutorFailure"}
+        "401": {"$ref": "#/components/responses/TutorFailure"}
+        "403": {"$ref": "#/components/responses/TutorFailure"}
+        "404": {"$ref": "#/components/responses/TutorFailure"}
+        "409": {"$ref": "#/components/responses/TutorFailure"}
+        "413": {"$ref": "#/components/responses/TutorFailure"}
+        "422": {"$ref": "#/components/responses/TutorFailure"}
+        "429": {"$ref": "#/components/responses/TutorFailure"}
+        "503": {"$ref": "#/components/responses/TutorFailure"}
+    get:
+      operationId: "listTutorSessions"
+      tags: ["Tutoring"]
+      security:
+        -
+          bearerAuth: []
+      summary: "List owned sessions ordered by createdAt then id; advance offset by returned count; fewer than limit means end."
+      parameters:
+        -
+          name: "sessionId"
+          in: "path"
+          required: true
+          schema: {"type": "string", "format": "uuid"}
+        -
+          name: "offset"
+          in: "query"
+          required: false
+          schema: {"type": "integer", "minimum": 0, "maximum": 30, "default": 0}
+        -
+          name: "limit"
+          in: "query"
+          required: false
+          schema: {"type": "integer", "minimum": 1, "maximum": 50, "default": 30}
+      responses:
+        "200":
+          description: "Committed result or durable replay; server correlation ID is returned through the existing platform contract."
+          content:
+            application/json:
+              schema:
+                type: "array"
+                maxItems: 50
+                items: {"$ref": "#/components/schemas/TutorSession"}
+        "400": {"$ref": "#/components/responses/TutorFailure"}
+        "401": {"$ref": "#/components/responses/TutorFailure"}
+        "403": {"$ref": "#/components/responses/TutorFailure"}
+        "404": {"$ref": "#/components/responses/TutorFailure"}
+        "409": {"$ref": "#/components/responses/TutorFailure"}
+        "413": {"$ref": "#/components/responses/TutorFailure"}
+        "422": {"$ref": "#/components/responses/TutorFailure"}
+        "429": {"$ref": "#/components/responses/TutorFailure"}
+        "503": {"$ref": "#/components/responses/TutorFailure"}
+  /api/v1/problem-sessions/{sessionId}/tutor-sessions/{tutorSessionId}:
+    get:
+      operationId: "readTutorSession"
+      tags: ["Tutoring"]
+      security:
+        -
+          bearerAuth: []
+      summary: "Resume by reading historical session and derived currentness; does not reopen CLOSED sessions."
+      parameters:
+        -
+          name: "sessionId"
+          in: "path"
+          required: true
+          schema: {"type": "string", "format": "uuid"}
+        -
+          name: "tutorSessionId"
+          in: "path"
+          required: true
+          schema: {"type": "string", "format": "uuid"}
+      responses:
+        "200":
+          description: "Committed result or durable replay; server correlation ID is returned through the existing platform contract."
+          content:
+            application/json:
+              schema: {"$ref": "#/components/schemas/TutorSession"}
+        "400": {"$ref": "#/components/responses/TutorFailure"}
+        "401": {"$ref": "#/components/responses/TutorFailure"}
+        "403": {"$ref": "#/components/responses/TutorFailure"}
+        "404": {"$ref": "#/components/responses/TutorFailure"}
+        "409": {"$ref": "#/components/responses/TutorFailure"}
+        "413": {"$ref": "#/components/responses/TutorFailure"}
+        "422": {"$ref": "#/components/responses/TutorFailure"}
+        "429": {"$ref": "#/components/responses/TutorFailure"}
+        "503": {"$ref": "#/components/responses/TutorFailure"}
+  /api/v1/problem-sessions/{sessionId}/tutor-sessions/{tutorSessionId}/messages:
+    get:
+      operationId: "listTutorMessages"
+      tags: ["Tutoring"]
+      security:
+        -
+          bearerAuth: []
+      summary: "Ordered history with exclusive sequence cursor; next after is last sequenceNumber. Empty page means end."
+      parameters:
+        -
+          name: "sessionId"
+          in: "path"
+          required: true
+          schema: {"type": "string", "format": "uuid"}
+        -
+          name: "tutorSessionId"
+          in: "path"
+          required: true
+          schema: {"type": "string", "format": "uuid"}
+        -
+          name: "after"
+          in: "query"
+          required: false
+          schema: {"type": "integer", "minimum": 0, "default": 0}
+        -
+          name: "limit"
+          in: "query"
+          required: false
+          schema: {"type": "integer", "minimum": 1, "maximum": 50, "default": 50}
+      responses:
+        "200":
+          description: "Committed result or durable replay; server correlation ID is returned through the existing platform contract."
+          content:
+            application/json:
+              schema:
+                type: "array"
+                maxItems: 50
+                items: {"$ref": "#/components/schemas/TutorMessage"}
+        "400": {"$ref": "#/components/responses/TutorFailure"}
+        "401": {"$ref": "#/components/responses/TutorFailure"}
+        "403": {"$ref": "#/components/responses/TutorFailure"}
+        "404": {"$ref": "#/components/responses/TutorFailure"}
+        "409": {"$ref": "#/components/responses/TutorFailure"}
+        "413": {"$ref": "#/components/responses/TutorFailure"}
+        "422": {"$ref": "#/components/responses/TutorFailure"}
+        "429": {"$ref": "#/components/responses/TutorFailure"}
+        "503": {"$ref": "#/components/responses/TutorFailure"}
+    post:
+      operationId: "appendTutorMessage"
+      tags: ["Tutoring"]
+      security:
+        -
+          bearerAuth: []
+      summary: "Append learner content only. Same key and exact content returns committed message even when now CLOSED/stale; different content conflicts. Maximum 100 messages/session. Request body maximum 16384 bytes including chunked input."
+      parameters:
+        -
+          name: "sessionId"
+          in: "path"
+          required: true
+          schema: {"type": "string", "format": "uuid"}
+        -
+          name: "tutorSessionId"
+          in: "path"
+          required: true
+          schema: {"type": "string", "format": "uuid"}
+        -
+          name: "Idempotency-Key"
+          in: "header"
+          required: true
+          schema: {"type": "string", "pattern": "^[A-Za-z0-9_-]{8,128}$", "minLength": 8, "maxLength": 128}
+      responses:
+        "200":
+          description: "Committed result or durable replay; server correlation ID is returned through the existing platform contract."
+          content:
+            application/json:
+              schema: {"$ref": "#/components/schemas/TutorMessage"}
+        "400": {"$ref": "#/components/responses/TutorFailure"}
+        "401": {"$ref": "#/components/responses/TutorFailure"}
+        "403": {"$ref": "#/components/responses/TutorFailure"}
+        "404": {"$ref": "#/components/responses/TutorFailure"}
+        "409": {"$ref": "#/components/responses/TutorFailure"}
+        "413": {"$ref": "#/components/responses/TutorFailure"}
+        "422": {"$ref": "#/components/responses/TutorFailure"}
+        "429": {"$ref": "#/components/responses/TutorFailure"}
+        "503": {"$ref": "#/components/responses/TutorFailure"}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {"$ref": "#/components/schemas/TutorAppendRequest"}
+  /api/v1/problem-sessions/{sessionId}/tutor-sessions/{tutorSessionId}/close:
+    post:
+      operationId: "closeTutorSession"
+      tags: ["Tutoring"]
+      security:
+        -
+          bearerAuth: []
+      summary: "Idempotent ACTIVE to CLOSED transition; empty body only. Repeated closes preserve version; no reopening."
+      parameters:
+        -
+          name: "sessionId"
+          in: "path"
+          required: true
+          schema: {"type": "string", "format": "uuid"}
+        -
+          name: "tutorSessionId"
+          in: "path"
+          required: true
+          schema: {"type": "string", "format": "uuid"}
+      responses:
+        "200":
+          description: "Committed result or durable replay; server correlation ID is returned through the existing platform contract."
+          content:
+            application/json:
+              schema: {"$ref": "#/components/schemas/TutorSession"}
+        "400": {"$ref": "#/components/responses/TutorFailure"}
+        "401": {"$ref": "#/components/responses/TutorFailure"}
+        "403": {"$ref": "#/components/responses/TutorFailure"}
+        "404": {"$ref": "#/components/responses/TutorFailure"}
+        "409": {"$ref": "#/components/responses/TutorFailure"}
+        "413": {"$ref": "#/components/responses/TutorFailure"}
+        "422": {"$ref": "#/components/responses/TutorFailure"}
+        "429": {"$ref": "#/components/responses/TutorFailure"}
+        "503": {"$ref": "#/components/responses/TutorFailure"}
   /api/v1/problem-sessions/{sessionId}/solves/{jobId}/verification:
     get:
       summary: Read the current immutable verification decision without starting work
@@ -1851,7 +2084,69 @@ components:
       scheme: bearer
       bearerFormat: JWT
 
+  responses:
+    TutorFailure:
+      description: "Stable Problem Details: 400 REQUEST_VALIDATION_FAILED/IDEMPOTENCY_KEY_REQUIRED; 401 authentication; 403 ACCOUNT_NOT_ACTIVE; 404 TUTOR_NOT_FOUND/RESOURCE_FORBIDDEN (foreign and absent indistinguishable); 409 TUTOR_SOURCE_NOT_READY/TUTOR_SOURCE_STALE/TUTOR_SESSION_CLOSED/TUTOR_CAPACITY_EXCEEDED/IDEMPOTENCY_KEY_REUSED; 413 REQUEST_TOO_LARGE; 422 REQUEST_VALIDATION_FAILED; 429 RATE_LIMIT_EXCEEDED; 503 TEMPORARY_UNAVAILABLE. Existing correlation/trace identifiers apply. Retry only uncertain/temporary failures with the same key and payload."
+      content:
+        application/problem+json:
+          schema: {"$ref": "#/components/schemas/ProblemDetails"}
+
   schemas:
+    TutorSession:
+      type: "object"
+      additionalProperties: false
+      required: ["schemaVersion", "id", "problemSessionId", "canonicalId", "canonicalRevision", "parseId", "parseRevision", "primarySkillId", "contextSchemaVersion", "mastery", "safetyPolicyVersion", "status", "sourceCurrent", "messageCount", "version", "createdAt", "updatedAt", "trainingEligible"]
+      properties:
+        schemaVersion: {"type": "string", "enum": ["tutor-session-v1"]}
+        id: {"type": "string", "format": "uuid"}
+        problemSessionId: {"type": "string", "format": "uuid"}
+        canonicalId: {"type": "string", "format": "uuid"}
+        canonicalRevision: {"type": "integer", "minimum": 1}
+        parseId: {"type": "string", "format": "uuid"}
+        parseRevision: {"type": "integer", "minimum": 1}
+        primarySkillId:
+          type: "string"
+          maxLength: 128
+          description: "Canonical primary skill or NOT_AVAILABLE."
+        contextSchemaVersion: {"type": "string", "enum": ["tutor-context-v1"]}
+        profileVersion: {"type": ["integer", "null"]}
+        explanationDepth: {"type": ["string", "null"], "enum": ["QUICK", "STANDARD", "DEEP", "BEGINNER", null]}
+        language: {"type": ["string", "null"], "enum": ["en", "tr", null]}
+        mastery: {"type": "string", "enum": ["NOT_AVAILABLE"]}
+        safetyPolicyVersion: {"type": "string", "enum": ["learner-persistence-v1"]}
+        status: {"type": "string", "enum": ["ACTIVE", "CLOSED"]}
+        sourceCurrent: {"type": "boolean"}
+        messageCount: {"type": "integer", "minimum": 0, "maximum": 100}
+        version: {"type": "integer", "minimum": 0}
+        createdAt: {"type": "string", "format": "date-time"}
+        updatedAt: {"type": "string", "format": "date-time"}
+        trainingEligible: {"type": "boolean", "enum": [false]}
+    TutorMessage:
+      type: "object"
+      additionalProperties: false
+      required: ["schemaVersion", "id", "tutorSessionId", "role", "sequenceNumber", "content", "createdAt"]
+      properties:
+        schemaVersion: {"type": "string", "enum": ["tutor-message-v1"]}
+        id: {"type": "string", "format": "uuid"}
+        tutorSessionId: {"type": "string", "format": "uuid"}
+        role: {"type": "string", "enum": ["LEARNER"]}
+        sequenceNumber: {"type": "integer", "minimum": 1, "maximum": 100}
+        content:
+          type: "string"
+          minLength: 1
+          maxLength: 2000
+          description: "Maximum 8000 UTF-8 bytes. Nonblank; controls except tab/newline, formatting controls and unpaired surrogates rejected. Untrusted learner text."
+        createdAt: {"type": "string", "format": "date-time"}
+    TutorAppendRequest:
+      type: "object"
+      additionalProperties: false
+      required: ["content"]
+      properties:
+        content:
+          type: "string"
+          minLength: 1
+          maxLength: 2000
+          description: "Maximum 8000 UTF-8 bytes. Nonblank; controls except tab/newline, formatting controls and unpaired surrogates rejected. Untrusted learner text."
     PrimarySolveResponse:
       type: object
       additionalProperties: false

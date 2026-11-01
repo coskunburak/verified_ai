@@ -246,3 +246,12 @@ generic obligations are invalid. Scope refers to the selected source and immutab
 raw expressions, secondary payloads and internal owner identifiers remain excluded.
 The GET remains read-only; POST evaluates existing evidence without executing mathematics.
 Implementation and contract tests await owner validation; production flags remain disabled.
+
+## Sprint 6.4 tutor API
+
+The additive `/api/v1/problem-sessions/{sessionId}/tutor-sessions` family supports keyed POST creation,
+GET list/detail, sequence-paginated GET messages, keyed POST learner content and idempotent POST close.
+Only backend source/ownership/policy authority is accepted. JSON fields are exact; client role/user/source
+assertions reject. History is accessible after close/source change; new stale activity rejects. Foreign
+and absent objects share errors. See public-api.yaml and the Sprint 6.4 implementation map for schemas,
+resource ceilings, retry scope, stable Problem Details and migration restrictions.

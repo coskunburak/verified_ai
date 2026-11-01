@@ -209,3 +209,11 @@ Potential supporting aggregates/modules:
 
 Learner state must remain valid if the implementation route changes from external API to proprietary model.
 <!-- HYBRID_AI_STRATEGY_V3:END -->
+
+## Sprint 6.4 TutorSession and TutorMessage
+
+TutorSession is distinct from ProblemSession. It binds owner, exact canonical id/revision, selected
+parse id/revision, primary skill or NOT_AVAILABLE, minimal versioned profile context and safety policy.
+ACTIVE may close once to CLOSED; no reopen. Currentness is derived, history immutable. TutorMessage
+is learner-authored untrusted content with server role, owner, per-session sequence and durable retry
+identity. No assistant generation, mastery inference or mathematical verification authority is added.

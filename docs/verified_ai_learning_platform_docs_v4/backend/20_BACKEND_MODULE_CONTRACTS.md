@@ -163,3 +163,12 @@ CalculusEvidence/CalculusExecution contracts and verifies full source metadata e
 before arbitration. No HTTP/verifier/provider call occurs during composition or decision
 publication. Canonical reads precede owner locking, and current source/capability/run state
 is rechecked before publication. New real-worker and race regressions await owner execution.
+
+## Sprint 6.4 tutoring implementation
+
+Tutoring owns sessions/messages and consumes problem `tutor-source` and profile `tutor-context` named
+interfaces only. The problem facade owns selected-source readiness/lineage and account/problem locks.
+Tutoring JDBC touches its own tables. Privacy participates in existing AccountDataLifecycleContributor;
+identity deletes completed export snapshots during confirmed account deletion. No AI, verifier, billing
+debit or assistant generation dependency is added. Persistence access requires active ownership, not a
+premium inference entitlement. Detailed operations and limits are in the Sprint 6.4 implementation map.

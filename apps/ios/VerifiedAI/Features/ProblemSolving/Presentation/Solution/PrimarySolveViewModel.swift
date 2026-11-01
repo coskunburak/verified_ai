@@ -12,6 +12,7 @@ enum SolveScreenPhase: Equatable, Sendable {
 @MainActor
 @Observable
 final class PrimarySolveViewModel {
+    let tutorModel: TutorViewModel?
     let sessionId: UUID
     let isFixture: Bool
     private let userId: UUID
@@ -37,9 +38,10 @@ final class PrimarySolveViewModel {
     private var blockedMutation = false
 
     init(userId: UUID, sessionId: UUID, service: PrimarySolveServicing, recovery: SolveRecoveryStoring,
-         network: NetworkMonitoring, isFixture: Bool = false, profileModel: OnboardingViewModel? = nil,
+         network: NetworkMonitoring, tutorModel: TutorViewModel? = nil, isFixture: Bool = false, profileModel: OnboardingViewModel? = nil,
          logger: AppLogger = AppLogger(subsystem: "com.verifiedai.learning", category: "solving"),
          sleep: @escaping @Sendable (UInt64) async throws -> Void = { try await Task.sleep(nanoseconds: $0) }) {
+        self.tutorModel = tutorModel
         self.userId = userId; self.sessionId = sessionId; self.service = service
         self.recovery = recovery; self.network = network; self.isFixture = isFixture
         self.logger = logger; self.sleep = sleep

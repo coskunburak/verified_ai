@@ -103,3 +103,12 @@ Per `sprints/02_FOCUSED_COMMERCIAL_WEDGE_SPRINT_PROGRAM.md`, Phase 6 is split in
 - `SPRINT_6.3_IMPLEMENTATION_MAP.md` — existing profile ownership, deterministic four-mode projection, invariants and V6 scheduling exception.
 - `SPRINT_6.3_EXECUTION_REPORT.md` — `LOCAL_ACCEPTANCE_PASSED` in owner run `20261101-172742-BCuatU`: 154 iOS and 85 backend tests passed, zero failures/skips; Gates A–D passed.
 - This local Track B implementation does not complete Track A prerequisites, Phase 6 exit criteria, hosted CI or production gates.
+
+## Sprint 6.4 owner-directed local scheduling exception
+
+Tutor session/message persistence is implemented locally; `LOCAL_ACCEPTANCE_PASSED` in owner run
+`20261101-200102-8qY6k7`: 166 iOS and 117 backend tests passed, zero failures/skips; Gates A–D passed.
+This Track B exception does not authorize release or waive Track A/ADR-011.
+V027 is additive; V024–V026 remain reserved by the commercial-wedge program, including Sprint 7.0A.
+Only fresh disposable databases are permitted until ordered shared upgrades are reconciled.
+See `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.4_EXECUTION_REPORT.md`.

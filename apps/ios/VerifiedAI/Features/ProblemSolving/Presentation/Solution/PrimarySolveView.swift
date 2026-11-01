@@ -20,6 +20,10 @@ struct PrimarySolveView: View {
                         .font(.callout.weight(.semibold)).foregroundStyle(ColorTokens.warning)
                         .accessibilityIdentifier("solve.fixture")
                 }
+                if let tutor = viewModel.tutorModel {
+                    NavigationLink("tutor.title") { TutorView(viewModel: tutor) }
+                        .accessibilityIdentifier("tutor.open")
+                }
                 statusCard
                 #if DEBUG
                 if let state = viewModel.controlledFixtureState {

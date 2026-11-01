@@ -121,9 +121,10 @@ struct RootView: View {
                     .background(ColorTokens.background)
                     .navigationTitle("Verified AI")
             default:
-                entitledHomeContent(userId: session.userId)
+                entitledHomeContent(userId: session.userId, authSessionId: session.sessionId)
             }
         }
+        .id(session.sessionId)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button {
@@ -171,7 +172,7 @@ struct RootView: View {
     }
 
     @ViewBuilder
-    private func entitledHomeContent(userId: UUID) -> some View {
+    private func entitledHomeContent(userId: UUID, authSessionId: UUID) -> some View {
         switch entitlementViewModel.state {
         case .ready, .offline:
             HomePlaceholderView(
@@ -193,8 +194,16 @@ struct RootView: View {
                 manageAccount: { isAccountSettingsPresented = true },
                 isSolveFixture: dependencies.solveFixture,
                 makeSolveModel: dependencies.solveEnabled ? { sessionId in
-                    PrimarySolveViewModel(userId: userId, sessionId: sessionId, service: dependencies.primarySolveAPI,
+                    let tutorService = dependencies.tutorAPI
+                    return PrimarySolveViewModel(userId: userId, sessionId: sessionId, service: dependencies.primarySolveAPI,
                         recovery: dependencies.solveRecovery, network: dependencies.solveFlowNetworkMonitor,
+                        tutorModel: TutorViewModel(owner: userId, problem: sessionId, service: tutorService,
+                            store: dependencies.tutorPending, network: dependencies.solveFlowNetworkMonitor,
+                            ownsAccount: {
+                                await TutorAccountAuthorization.owns(owner: userId, sessionId: authSessionId,
+                                    service: tutorService, store: dependencies.authenticationSessionStore,
+                                    presentation: { signInViewModel.state })
+                            }),
                         isFixture: dependencies.solveFixture, profileModel: onboardingViewModel, logger: dependencies.logger)
                 } : nil,
                 reviewViewModel: dependencies.solveFixture ? nil : problemReviewViewModel
@@ -253,6 +262,7 @@ struct RootView: View {
     }
 
     private func resetAuthenticatedState() {
+        try? dependencies.tutorPending.clearAll()
         do { try dependencies.solveRecovery.clearAll() }
         catch { dependencies.logger.warning("solve.recovery_clear_failed") }
         try? dependencies.problemSessionCache.clear()

@@ -436,3 +436,8 @@ Following the comprehensive 2026-10-31 production architecture audit and competi
 - `learning/79_PEDAGOGICAL_DIAGNOSIS_HANDWRITING_UX_AND_RETENTION_ENGINE.md` — Cognitive learning architecture, `Analyze My Work` line-by-line handwritten mistake diagnosis, 28-code YKS (`TYT`/`AYT`) & Calculus mistake taxonomy, and deterministic BKT-Lite + Half-Life Decay mastery engine.
 - `roadmap/80_UNIT_ECONOMICS_30_DAY_LAUNCH_CONTRACT_AND_EXECUTION_ROADMAP.md` — Per-solve unit economics (`$0.00581/solve` ≈ `0.20 TL`), Turkey (`199.99 TL` / `349.99 TL`) & Global (`$9.99` / `$19.99`) pricing and gross margin models, 100-to-100,000 paid subscriber TCO projections, and the 30-Day Focused MVP Go/No-Go Contract.
 <!-- PRODUCTION_INTELLIGENCE_V6:END -->
+
+## Sprint 6.4 local implementation handoff
+
+- `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.4_IMPLEMENTATION_MAP.md` — owned tutor persistence, V027 ordering, API/privacy/iOS contracts and rollback.
+- `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.4_EXECUTION_REPORT.md` — `LOCAL_ACCEPTANCE_PASSED` in owner run `20261101-200102-8qY6k7`: 166 iOS and 117 backend tests passed, zero failures/skips; Gates A–D passed.

@@ -152,3 +152,14 @@ Account/source/solution deletion cascades through immutable runs into decisions.
 history mutation/deletion remains rejected. Rollout disablement never deletes history.
 No training eligibility or learner mastery update is introduced. New metrics use only
 bounded operation/status/reason/action labels; no student text or identifiers are labels.
+
+## Sprint 6.4 tutor transcripts
+
+Tutor sessions and learner messages are personal DERIVED_LEARNING data, not training data. Export
+contains all owned session context and ordered messages, excluding retry keys/hashes. A synchronous
+8 MB tutor-content ceiling fails the whole export with TUTOR_EXPORT_CAPACITY_EXCEEDED, never truncates.
+Recovery requires authenticated owner-assisted paginated export or a separately reviewed streaming
+export; do not require deletion to obtain an export. Account/source cascades erase tutor rows. Confirmed
+account deletion also erases completed data_exports snapshots containing copied transcripts. Existing
+backup expiry applies; no new retention exception. Pending iOS sends retain one bounded protected
+operation per owner/problem, excluded from backup and erased after acknowledgement/rejection/logout.
