@@ -22,6 +22,7 @@ def validate_codex_config(repo: Path) -> None:
 
     supported_top_level = {
         "model",
+        "model_reasoning_effort",
         "approval_policy",
         "sandbox_mode",
         "default_permissions",
