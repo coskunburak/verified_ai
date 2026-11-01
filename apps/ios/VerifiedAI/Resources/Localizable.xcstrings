@@ -1,2829 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-  "verification.scope.NONE": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "No mathematical claim has been verified."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Henüz hiçbir matematiksel iddia doğrulanmadı."
-        }
-      }
-    }
-  },
-  "verification.scope.CHECKED_METHOD_CLAIMS": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Only the listed mathematical checks are verified; the final answer is not fully verified."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Yalnızca listelenen matematiksel kontroller doğrulandı; sonucun tamamı doğrulanmadı."
-        }
-      }
-    }
-  },
-  "verification.scope.FINAL_ANSWER": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Verification covers the final answer only. Explanation steps have not been verified."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Doğrulama yalnızca sonucu kapsar. Açıklama adımları doğrulanmadı."
-        }
-      }
-    }
-  },
-  "verification.scope.OPEN_INTERVAL": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "The derivative identity is verified only on the open interval specified by the source. Endpoints and explanation steps are not verified."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Türev özdeşliği yalnızca kaynakta belirtilen açık aralıkta doğrulandı. Uç noktalar ve açıklama adımları doğrulanmadı."
-        }
-      }
-    }
-  },
-  "verification.scope.ANTIDERIVATIVE_REPRESENTATIVE": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "One antiderivative representative is verified on the source interval. This does not verify the full family, a definite integral, or explanation steps."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Kaynak aralığında tek bir antitürev temsilcisi doğrulandı. Tüm çözüm ailesi, belirli integral veya açıklama adımları doğrulanmadı."
-        }
-      }
-    }
-  },
-  "verification.scope.PUNCTURED_NEIGHBORHOOD": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "The finite limit is verified only at the source target and specified one-sided or two-sided approach. The value at the target and explanation steps are not verified."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Sonlu limit yalnızca kaynakta belirtilen hedef ve tek ya da çift taraflı yaklaşım için doğrulandı. Hedef noktadaki değer ve açıklama adımları doğrulanmadı."
-        }
-      }
-    }
-  },
-  "verification.scopedStatus": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Scoped claim verified"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Belirtilen kapsamda doğrulandı"
-        }
-      }
-    }
-  },
-  "verification.status.VERIFIED": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Final answer verified"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Sonuç doğrulandı"
-        }
-      }
-    }
-  },
-  "verification.status.PARTIALLY_VERIFIED": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Partially verified"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Kısmen doğrulandı"
-        }
-      }
-    }
-  },
-  "verification.status.UNVERIFIED": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Not verified — this does not mean incorrect"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Doğrulanamadı — bu, yanlış olduğu anlamına gelmez"
-        }
-      }
-    }
-  },
-  "verification.finalScope": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Verification applies only to the stated answer and checked claims."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Doğrulama yalnızca belirtilen sonuca ve kontrol edilen iddialara uygulanır."
-        }
-      }
-    }
-  },
-  "verification.conflict": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Conflicting evidence requires review."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Çelişen kanıtların incelenmesi gerekiyor."
-        }
-      }
-    }
-  },
-  "verification.checked": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Checked claims"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Kontrol edilen iddialar"
-        }
-      }
-    }
-  },
-  "verification.unchecked": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Not established"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Kanıtlanmayanlar"
-        }
-      }
-    }
-  },
-  "verification.stepsUnchecked": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Explanation steps have not been verified."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Açıklama adımları doğrulanmadı."
-        }
-      }
-    }
-  },
-  "verification.absent": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "No verification decision is available."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Henüz bir doğrulama kararı yok."
-        }
-      }
-    }
-  },
-  "verification.unavailable": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Verification status could not be refreshed. Refresh when connected."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Doğrulama durumu alınamadı. Bağlantı sağlandığında yenileyin."
-        }
-      }
-    }
-  },
-  "verification.recovery.NONE": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "No further check required for this scope."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Bu kapsam için ek kontrol gerekmiyor."
-        }
-      }
-    }
-  },
-  "verification.recovery.REVIEW_SOURCE": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Review the problem and its assumptions."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Soruyu ve varsayımlarını inceleyin."
-        }
-      }
-    }
-  },
-  "verification.recovery.REVIEW_CONTRADICTION": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Review the mathematical contradiction before continuing."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Devam etmeden önce matematiksel çelişkiyi inceleyin."
-        }
-      }
-    }
-  },
-  "verification.recovery.RECONCILE_SOLVERS": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Independent results need reconciliation."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Bağımsız sonuçların uzlaştırılması gerekiyor."
-        }
-      }
-    }
-  },
-  "verification.recovery.FRESH_CALCULATION": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "The source changed; a fresh calculation is needed."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Kaynak değişti; yeniden hesaplama gerekiyor."
-        }
-      }
-    }
-  },
-  "verification.recovery.ADDITIONAL_EVIDENCE": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "More mathematical evidence is needed."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Ek matematiksel kanıt gerekiyor."
-        }
-      }
-    }
-  },
-  "verification.recovery.UNSUPPORTED_CAPABILITY": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "The required verification is not supported."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Gerekli doğrulama desteklenmiyor."
-        }
-      }
-    }
-  },
-  "verification.recovery.RETRY_VERIFICATION": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "A bounded verification retry may help; no retry runs automatically."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Sınırlı bir doğrulama tekrarı yardımcı olabilir; otomatik tekrar yapılmaz."
-        }
-      }
-    }
-  },
-  "verification.recovery.RETRY_LIMIT": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "The verification retry window or attempt limit was reached."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Doğrulama tekrar süresi veya deneme sınırına ulaşıldı."
-        }
-      }
-    }
-  },
-  "verification.recovery.BUDGET_BLOCKED": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Additional work is blocked by the usage budget."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Ek işlem kullanım bütçesi nedeniyle engellendi."
-        }
-      }
-    }
-  },
-  "verification.recovery.RATE_LIMITED": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Wait before requesting another verification."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Yeni doğrulama istemeden önce bekleyin."
-        }
-      }
-    }
-  },
-  "verification.recovery.RELEASE_BLOCKED": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Verification release approval is pending."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Doğrulamanın kullanıma açılması için onay bekleniyor."
-        }
-      }
-    }
-  },
-  "verification.recovery.INVALID_INPUT": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "The verification evidence needs review."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Doğrulama kanıtı incelenmeli."
-        }
-      }
-    }
-  },
-  "verification.method.ARITHMETIC_EVALUATION": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Exact arithmetic"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Kesin aritmetik"
-        }
-      }
-    }
-  },
-  "verification.method.SYMBOLIC_EQUIVALENCE": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Symbolic equivalence"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Sembolik eşdeğerlik"
-        }
-      }
-    }
-  },
-  "verification.method.EQUATION_SUBSTITUTION": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Root validity"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Kök geçerliliği"
-        }
-      }
-    }
-  },
-  "verification.method.DOMAIN_CONSTRAINT_CHECK": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Domain preservation"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Tanım kümesinin korunması"
-        }
-      }
-    }
-  },
-  "verification.method.SOLUTION_SET_COMPLETENESS": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Complete solution set"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Çözüm kümesinin tamlığı"
-        }
-      }
-    }
-  },
-  "verification.method.NUMERIC_SAMPLING": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Numerical diagnostics"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Sayısal tanı"
-        }
-      }
-    }
-  },
-  "verification.method.DERIVATIVE_BACKCHECK": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Derivative check"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Türev kontrolü"
-        }
-      }
-    }
-  },
-  "verification.method.INTEGRAL_DIFFERENTIATION_BACKCHECK": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Antiderivative check"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "İlkel fonksiyon kontrolü"
-        }
-      }
-    }
-  },
-  "verification.method.FINITE_LIMIT": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Finite limit check"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Sonlu limit kontrolü"
-        }
-      }
-    }
-  },
-  "verification.generation": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "AI-generated solution. Its verification scope is shown below."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Yapay zekâ tarafından üretilen çözüm. Doğrulama kapsamı aşağıda gösterilir."
-        }
-      }
-    }
-  },
-  "verification.uncertainty.DOMAIN_UNRESOLVED": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Domain preservation is not fully established."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Tanım kümesinin korunması tam olarak kanıtlanmadı."
-        }
-      }
-    }
-  },
-  "verification.uncertainty.COMPLETENESS_UNRESOLVED": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "The complete solution set has not been established."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Çözüm kümesinin tamlığı kanıtlanmadı."
-        }
-      }
-    }
-  },
-  "verification.uncertainty.MISSING_MATHEMATICAL_PROOF": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Required mathematical proof is missing."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Gerekli matematiksel kanıt eksik."
-        }
-      }
-    }
-  },
-  "verification.uncertainty.SECONDARY_CONFLICT": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Independent solver evidence remains unresolved."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Bağımsız çözücü kanıtları henüz uzlaştırılmadı."
-        }
-      }
-    }
-  },
-  "verification.uncertainty.EXECUTION_UNAVAILABLE": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "A verification service failure is not a mathematical contradiction."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Doğrulama hizmeti hatası matematiksel çelişki değildir."
-        }
-      }
-    }
-  },
-  "verification.uncertainty.RELEASE_NOT_ACCEPTED": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "This verification policy has not been approved for release."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Bu doğrulama politikası kullanıma açılmak üzere onaylanmadı."
-        }
-      }
-    }
-  },
-  "verification.agreement": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Independent answers matched; agreement alone is not mathematical proof."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Bağımsız cevaplar eşleşti; yalnızca uyuşmaları matematiksel kanıt değildir."
-        }
-      }
-    }
-  },
-  "verification.numericLimitation": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Numerical sampling provides supporting observations only and is not a formal mathematical proof."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Sayısal örnekleme yalnızca destekleyici gözlem sunar; biçimsel matematiksel kanıt değildir."
-        }
-      }
-    }
-  },
-  "verification.invalid": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Verification evidence could not be validated safely and is not shown."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Doğrulama kanıtı güvenli biçimde doğrulanamadı ve gösterilmiyor."
-        }
-      }
-    }
-  },
-  "verification.refresh": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Refresh verification status"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Doğrulama durumunu yenile"
-        }
-      }
-    }
-  },
-  "verification.evidence.show": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Show verification evidence"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Doğrulama kanıtlarını göster"
-        }
-      }
-    }
-  },
-  "verification.evidence.hide": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Hide verification evidence"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Doğrulama kanıtlarını gizle"
-        }
-      }
-    }
-  },
-  "verification.evidence.hint": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Expands or collapses checked methods, unchecked obligations, decision reasons, and proof limitations."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Kontrol edilen yöntemleri, kanıtlanmayan yükümlülükleri, karar nedenlerini ve kanıt sınırlarını açar veya kapatır."
-        }
-      }
-    }
-  },
-  "verification.reasons": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Why this status was assigned"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Bu durumun atanma nedeni"
-        }
-      }
-    }
-  },
-  "verification.limitations": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Scope and proof limitations"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Kapsam ve kanıt sınırları"
-        }
-      }
-    }
-  },
-  "verification.contradictions": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Checks that contradicted the proposed answer"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Önerilen cevapla çelişen kontroller"
-        }
-      }
-    }
-  },
-  "verification.summary.VERIFIED": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "All required deterministic checks for the final answer passed. Individual explanation steps are not verified."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Sonuç için gereken tüm deterministik kontroller geçti. Açıklama adımları tek tek doğrulanmadı."
-        }
-      }
-    }
-  },
-  "verification.summary.SCOPED_VERIFIED": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "The calculus claim is verified only within the narrow mathematical scope above. Endpoints, full families, and explanation steps are not verified."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Kalkülüs iddiası yalnızca yukarıdaki dar matematiksel kapsamda doğrulandı. Uç noktalar, tüm çözüm ailesi ve açıklama adımları doğrulanmadı."
-        }
-      }
-    }
-  },
-  "verification.summary.PARTIALLY_VERIFIED": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Some mathematical claims passed deterministic checks, but required obligations remain unchecked."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Bazı matematiksel iddialar deterministik kontrollerden geçti ancak gerekli bazı yükümlülükler henüz kanıtlanmadı."
-        }
-      }
-    }
-  },
-  "verification.summary.UNVERIFIED": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Mathematical correctness has not been established. Unverified means unproven, not necessarily wrong."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Matematiksel doğruluk henüz kanıtlanmadı. Doğrulanamadı ifadesi kanıtlanmadığını gösterir; kesinlikle yanlış olduğu anlamına gelmez."
-        }
-      }
-    }
-  },
-  "verification.summary.CONFLICT": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Deterministic checks or independent solver signals detected a conflict that requires caution before trusting this answer."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Deterministik kontroller veya bağımsız çözücü sinyalleri, bu cevaba güvenmeden önce dikkat gerektiren bir çelişki tespit etti."
-        }
-      }
-    }
-  },
-  "verification.summary.ABSENT": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Only the AI-generated candidate is available right now. Treat the proposed answer and steps as unverified."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Şu anda yalnızca yapay zekâ tarafından üretilen aday mevcut. Önerilen cevabı ve adımları doğrulanmamış olarak değerlendirin."
-        }
-      }
-    }
-  },
-  "verification.summary.UNAVAILABLE": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "The generated solution is shown below, but its verification decision could not be loaded right now."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Üretilen çözüm aşağıda gösteriliyor ancak doğrulama kararı şu anda yüklenemedi."
-        }
-      }
-    }
-  },
-  "verification.summary.INVALID": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "The server returned verification data that failed safety validation, so the answer remains unverified."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Sunucudan gelen doğrulama verisi güvenlik doğrulamasından geçemediği için cevap doğrulanmamış olarak tutuluyor."
-        }
-      }
-    }
-  },
-  "verification.reason.INVALID_EVIDENCE": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Verification evidence could not be validated against the problem requirements."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Doğrulama kanıtı problem gereksinimlerine göre doğrulanamadı."
-        }
-      }
-    }
-  },
-  "verification.reason.STALE_LINEAGE": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "The problem or solution changed after the verification evidence was recorded."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Doğrulama kanıtı kaydedildikten sonra problem veya çözüm değişti."
-        }
-      }
-    }
-  },
-  "verification.reason.REVIEW_REQUIRED": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Source assumptions or ambiguities require your review before verification can complete."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Doğrulamanın tamamlanabilmesi için kaynak varsayımların veya belirsizliklerin incelenmesi gerekiyor."
-        }
-      }
-    }
-  },
-  "verification.reason.COMPOSITE_UNAVAILABLE": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Combined verification evidence is not available for this solution."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Bu çözüm için birleşik doğrulama kanıtı mevcut değil."
-        }
-      }
-    }
-  },
-  "verification.reason.SOURCE_SCOPE_UNRESOLVED": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "The problem domain or source restrictions could not be fully resolved."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Problem tanım kümesi veya kaynak kısıtları tam olarak çözümlenemedi."
-        }
-      }
-    }
-  },
-  "verification.reason.DETERMINISTIC_CONTRADICTION": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "A deterministic mathematical check disproved the proposed answer."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Deterministik bir matematiksel kontrol önerilen cevabın yanlış olduğunu gösterdi."
-        }
-      }
-    }
-  },
-  "verification.reason.EVIDENCE_CONFLICT": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Verification checks produced conflicting mathematical evidence."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Doğrulama kontrolleri birbiriyle çelişen matematiksel kanıtlar üretti."
-        }
-      }
-    }
-  },
-  "verification.reason.SECONDARY_DISAGREEMENT": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "An independent solver reached a different answer."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Bağımsız bir çözücü farklı bir sonuca ulaştı."
-        }
-      }
-    }
-  },
-  "verification.reason.SECONDARY_ASSUMPTIONS": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Independent solver comparison relied on incompatible problem assumptions."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Bağımsız çözücü karşılaştırması uyumsuz problem varsayımlarına dayandı."
-        }
-      }
-    }
-  },
-  "verification.reason.SECONDARY_INVALID": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Independent solver corroboration is incomplete or inconclusive."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Bağımsız çözücü doğrulaması eksik veya sonuçsuz kaldı."
-        }
-      }
-    }
-  },
-  "verification.reason.SECONDARY_STALE": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Independent solver evidence belongs to an older problem revision."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Bağımsız çözücü kanıtı daha eski bir problem revizyonuna ait."
-        }
-      }
-    }
-  },
-  "verification.reason.CAPABILITY_UNAVAILABLE": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "A required mathematical verification method is not available for this problem type."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Gerekli bir matematiksel doğrulama yöntemi bu problem türü için kullanılamıyor."
-        }
-      }
-    }
-  },
-  "verification.reason.DOMAIN_UNCHECKED": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Domain constraints and restrictions have not been fully checked."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Tanım kümesi kısıtları tam olarak kontrol edilmedi."
-        }
-      }
-    }
-  },
-  "verification.reason.COMPLETENESS_UNCHECKED": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Whether all valid solutions were found has not been checked."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Tüm geçerli çözümlerin bulunup bulunmadığı kontrol edilmedi."
-        }
-      }
-    }
-  },
-  "verification.reason.EXECUTION_FAILURE": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "A verification check could not finish due to a technical execution failure."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Teknik bir yürütme hatası nedeniyle doğrulama kontrolü tamamlanamadı."
-        }
-      }
-    }
-  },
-  "verification.reason.MISSING_PROOF": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Complete deterministic proof for the final answer is not established."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Sonuç için tam deterministik kanıt oluşturulamadı."
-        }
-      }
-    }
-  },
-  "verification.reason.RELEASE_DISABLED": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Deterministic checks ran, but this verification capability is not yet enabled for release."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Deterministik kontroller çalıştı ancak bu doğrulama yeteneği henüz kullanıma açılmadı."
-        }
-      }
-    }
-  },
-  "verification.reason.SUBSET_PROVEN": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "A subset of required mathematical checks passed, while other obligations remain unchecked."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Gerekli matematiksel kontrollerin bir kısmı geçti ancak diğer yükümlülükler kanıtlanmadı."
-        }
-      }
-    }
-  },
-  "verification.reason.REQUIRED_CLAIM_PROVEN": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "All required deterministic checks for the stated scope passed."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Belirtilen kapsam için gereken tüm deterministik kontroller geçti."
-        }
-      }
-    }
-  },
-  "verification.reason.SECONDARY_AGREEMENT": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "An independent solver produced a matching answer (corroboration only, not formal proof)."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Bağımsız bir çözücü eşleşen bir sonuç üretti (yalnızca destekleyici teyittir, biçimsel kanıt değildir)."
-        }
-      }
-    }
-  },
-  "solve.title": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Solution"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Çözüm"
-        }
-      }
-    }
-  },
-  "solve.start": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Solve Problem"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Problemi Çöz"
-        }
-      }
-    }
-  },
-  "solve.close": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Back to Session"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Oturuma Dön"
-        }
-      }
-    }
-  },
-  "solve.fixture": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Development fixture · Not real model inference"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Geliştirme örneği · Gerçek model çıkarımı değildir"
-        }
-      }
-    }
-  },
-  "solve.progress": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Solution in progress"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Çözüm sürüyor"
-        }
-      }
-    }
-  },
-  "solve.ready": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Ready to request a solution"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Çözüm isteği göndermeye hazır"
-        }
-      }
-    }
-  },
-  "solve.loading": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Checking existing solution"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Mevcut çözüm kontrol ediliyor"
-        }
-      }
-    }
-  },
-  "solve.pending": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "A request may already have reached the server. Recover it with the same request identity."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "İstek sunucuya ulaşmış olabilir. Aynı istek kimliğiyle kurtarın."
-        }
-      }
-    }
-  },
-  "solve.pollPaused": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Automatic status checks paused. Refresh to check this job again."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Otomatik durum takibi duraklatıldı. Bu işi yeniden kontrol etmek için durumu yenileyin."
-        }
-      }
-    }
-  },
-  "solve.unverified": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "AI-generated solution — mathematical correctness has not been independently verified."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Yapay zekâ tarafından oluşturulan çözüm. Matematiksel doğruluğu henüz bağımsız olarak doğrulanmadı."
-        }
-      }
-    }
-  },
-    "solve.proposedAnswer": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Proposed answer"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Önerilen cevap"
-        }
-      }
-    }
-  },
-  "solve.methodLabel": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Method:"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Yöntem:"
-        }
-      }
-    }
-  },
-  "solve.attempt %lld": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Attempt %lld of 3"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Deneme %lld / 3"
-        }
-      }
-    }
-  },
-  "solve.recover.title": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Request recovery available"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "İstek kurtarma kullanılabilir"
-        }
-      }
-    }
-  },
-  "solve.status.degraded": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Action required"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "İşlem gerekiyor"
-        }
-      }
-    }
-  },
-  "solve.step.category.RESTATE": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Restate"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Yeniden ifade"
-        }
-      }
-    }
-  },
-  "solve.step.category.TRANSFORM": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Transform"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Dönüşüm"
-        }
-      }
-    }
-  },
-  "solve.step.category.CONCLUDE": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Conclude"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Sonuç"
-        }
-      }
-    }
-  },
-  "solve.uncertainty": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Needs your attention"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Dikkat gerektiren noktalar"
-        }
-      }
-    }
-  },
-  "solve.steps": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Solution steps"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Çözüm adımları"
-        }
-      }
-    }
-  },
-  "solve.step %lld": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Step %lld"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Adım %lld"
-        }
-      }
-    }
-  },
-  "solve.depends %@": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Uses steps: %@"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Kullanılan adımlar: %@"
-        }
-      }
-    }
-  },
-  "solve.referencesUnavailable": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "This candidate references source assumptions or restrictions. Their text is unavailable in this response; review the original problem."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Bu aday kaynak varsayımlarına veya kısıtlarına başvuruyor. Metinleri bu yanıtta bulunmuyor; özgün problemi inceleyin."
-        }
-      }
-    }
-  },
-  "solve.details": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Generation details"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Üretim bilgileri"
-        }
-      }
-    }
-  },
-  "solve.metadataNotice": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Model and prompt information is not evidence of mathematical correctness."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Model ve istem bilgisi matematiksel doğruluk kanıtı değildir."
-        }
-      }
-    }
-  },
-  "solve.retry": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Retry solve"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Çözümü yeniden iste"
-        }
-      }
-    }
-  },
-  "solve.recover": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Recover same request"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Aynı isteği kurtar"
-        }
-      }
-    }
-  },
-  "solve.refresh": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Refresh status"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Durumu yenile"
-        }
-      }
-    }
-  },
-  "solve.cancel": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Cancel request"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "İsteği iptal et"
-        }
-      }
-    }
-  },
-  "solve.review": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Review problem"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Problemi gözden geçir"
-        }
-      }
-    }
-  },
-  "solve.continueSession": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Continue to problem session"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Problem oturumuna devam et"
-        }
-      }
-    }
-  },
-  "solve.error.offline": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Connection unavailable. Reconnect and refresh; no new solve was requested."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Bağlantı yok. Bağlanıp durumu yenileyin; yeni çözüm istenmedi."
-        }
-      }
-    }
-  },
-  "solve.error.contract": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "The response or recovery record could not be read safely. Refresh status before taking another action."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Yanıt veya kurtarma kaydı güvenle okunamadı. Başka bir işlemden önce durumu yenileyin."
-        }
-      }
-    }
-  },
-  "solve.error.disabled": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Solving is not enabled in this environment yet."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Bu ortamda çözüm özelliği henüz etkin değil."
-        }
-      }
-    }
-  },
-  "solve.error.source": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "The problem needs review or preparation before solving."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Çözümden önce problemin incelenmesi veya hazırlanması gerekiyor."
-        }
-      }
-    }
-  },
-  "solve.error.conflict": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "The request conflicts with an existing job or changed source. Refresh status; do not submit a new request."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "İstek mevcut işle veya değişen kaynakla çakışıyor. Durumu yenileyin; yeni istek göndermeyin."
-        }
-      }
-    }
-  },
-  "solve.error.limit": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "The allowed solve attempts have been used."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "İzin verilen çözüm denemeleri kullanıldı."
-        }
-      }
-    }
-  },
-  "solve.error.unsupported": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "This problem is not supported yet."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Bu problem henüz desteklenmiyor."
-        }
-      }
-    }
-  },
-  "solve.error.auth": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Your session needs authentication. Sign in again to recover the existing job."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Oturumunuzun kimlik doğrulaması gerekiyor. Mevcut işi kurtarmak için yeniden giriş yapın."
-        }
-      }
-    }
-  },
-  "solve.error.access": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Server access policy does not allow this solve."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Sunucunun erişim politikası bu çözüme izin vermiyor."
-        }
-      }
-    }
-  },
-  "solve.error.server": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "The request could not be completed. Refresh the existing status before trying again."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "İstek tamamlanamadı. Yeniden denemeden önce mevcut durumu yenileyin."
-        }
-      }
-    }
-  },
-  "solve.error.connection": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "The connection was interrupted or timed out. The request may have reached the server; refresh or recover the same request."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Bağlantı kesildi veya zaman aşımına uğradı. İstek sunucuya ulaşmış olabilir; durumu yenileyin veya aynı isteği kurtarın."
-        }
-      }
-    }
-  },
-  "solve.method.ARITHMETIC": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Arithmetic"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Aritmetik"
-        }
-      }
-    }
-  },
-  "solve.method.ALGEBRAIC_TRANSFORMATION": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Algebraic transformation"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Cebirsel dönüşüm"
-        }
-      }
-    }
-  },
-  "solve.method.ISOLATE_VARIABLE": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Isolate the variable"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Değişkeni yalnız bırakma"
-        }
-      }
-    }
-  },
-  "solve.method.INEQUALITY_TRANSFORMATION": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Inequality transformation"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Eşitsizlik dönüşümü"
-        }
-      }
-    }
-  },
-  "solve.state.QUEUED": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Solution requested"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Çözüm istendi"
-        }
-      }
-    }
-  },
-  "solve.detail.QUEUED": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Your request is waiting to be processed."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "İsteğiniz işleme alınmayı bekliyor."
-        }
-      }
-    }
-  },
-  "solve.state.RUNNING": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Preparing solution"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Çözüm hazırlanıyor"
-        }
-      }
-    }
-  },
-  "solve.detail.RUNNING": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "The server is generating a candidate solution."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Sunucu bir çözüm adayı oluşturuyor."
-        }
-      }
-    }
-  },
-  "solve.state.GENERATED_UNVERIFIED": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "AI-generated answer"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Yapay zekâ tarafından üretilen cevap"
-        }
-      }
-    }
-  },
-  "solve.detail.GENERATED_UNVERIFIED": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Independent mathematical verification is pending."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Bağımsız matematiksel doğrulama bekleniyor."
-        }
-      }
-    }
-  },
-  "solve.state.REVIEW_REQUIRED": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Review required"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "İnceleme gerekiyor"
-        }
-      }
-    }
-  },
-  "solve.detail.REVIEW_REQUIRED": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Read the uncertainties before using this proposed answer."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Önerilen cevabı kullanmadan önce belirsizlikleri inceleyin."
-        }
-      }
-    }
-  },
-  "solve.state.RETRYABLE_FAILURE": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Solution could not be generated"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Çözüm oluşturulamadı"
-        }
-      }
-    }
-  },
-  "solve.detail.RETRYABLE_FAILURE": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "A new attempt is available only within server retry policy."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Yeni deneme yalnız sunucunun yeniden deneme politikası kapsamında yapılabilir."
-        }
-      }
-    }
-  },
-  "solve.state.TERMINAL_FAILURE": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Solution stopped"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Çözüm durduruldu"
-        }
-      }
-    }
-  },
-  "solve.detail.TERMINAL_FAILURE": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "This job cannot be retried. Return to the problem session."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Bu iş yeniden denenemez. Problem oturumuna dönün."
-        }
-      }
-    }
-  },
-  "solve.state.POLICY_BLOCKED": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Solution unavailable"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Çözüm kullanılamıyor"
-        }
-      }
-    }
-  },
-  "solve.detail.POLICY_BLOCKED": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Server policy currently prevents this solve."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Sunucu politikası şu anda bu çözümü engelliyor."
-        }
-      }
-    }
-  },
-  "solve.state.UNSUPPORTED": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Unsupported problem"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Desteklenmeyen problem"
-        }
-      }
-    }
-  },
-  "solve.detail.UNSUPPORTED": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "This mathematical scope is not supported yet."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Bu matematik kapsamı henüz desteklenmiyor."
-        }
-      }
-    }
-  },
-  "solve.state.STALE": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Source changed"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Kaynak değişti"
-        }
-      }
-    }
-  },
-  "solve.detail.STALE": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "The selected problem changed. The previous answer is hidden; review the current source."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Seçili problem değişti. Önceki cevap gizlendi; güncel kaynağı inceleyin."
-        }
-      }
-    }
-  },
-  "solve.state.CANCELLED": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Request cancelled"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "İstek iptal edildi"
-        }
-      }
-    }
-  },
-  "solve.detail.CANCELLED": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "The server recorded cancellation. This does not guarantee external processing or billing stopped."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Sunucu iptali kaydetti. Bu, dış işlemin veya ücretlendirmenin durduğunu garanti etmez."
-        }
-      }
-    }
-  },
-  "solve.state.OUTCOME_UNKNOWN": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Outcome uncertain"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Sonuç belirsiz"
-        }
-      }
-    }
-  },
-  "solve.detail.OUTCOME_UNKNOWN": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Refresh this job to reconcile its outcome. Do not start another solve automatically."
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Sonucu öğrenmek için bu işin durumunu yenileyin. Otomatik olarak yeni çözüm başlatmayın."
-        }
-      }
-    }
-  },
-  "solve.math.open": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "open parenthesis"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "parantez aç"
-        }
-      }
-    }
-  },
-  "solve.math.close": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "close parenthesis"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "parantez kapat"
-        }
-      }
-    }
-  },
-  "solve.math.NEGATE": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "negative"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "eksi"
-        }
-      }
-    }
-  },
-  "solve.math.ADD": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "plus"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "artı"
-        }
-      }
-    }
-  },
-  "solve.math.SUBTRACT": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "minus"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "eksi"
-        }
-      }
-    }
-  },
-  "solve.math.MULTIPLY": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "times"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "çarpı"
-        }
-      }
-    }
-  },
-  "solve.math.DIVIDE": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "divided by"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "bölü"
-        }
-      }
-    }
-  },
-  "solve.math.POWER": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "to the power of"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "üssü"
-        }
-      }
-    }
-  },
-  "solve.math.SQRT": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "square root"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "karekök"
-        }
-      }
-    }
-  },
-  "solve.math.SIN": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "sine"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "sinüs"
-        }
-      }
-    }
-  },
-  "solve.math.COS": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "cosine"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "kosinüs"
-        }
-      }
-    }
-  },
-  "solve.math.TAN": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "tangent"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "tanjant"
-        }
-      }
-    }
-  },
-  "solve.math.LOG": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "logarithm"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "logaritma"
-        }
-      }
-    }
-  },
-  "solve.math.EXP": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "exponential"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "üstel"
-        }
-      }
-    }
-  },
-  "solve.math.EQUALS": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "equals"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "eşittir"
-        }
-      }
-    }
-  },
-  "solve.math.LESS_THAN": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "less than"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "küçüktür"
-        }
-      }
-    }
-  },
-  "solve.math.LESS_THAN_OR_EQUAL": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "less than or equal to"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "küçük eşittir"
-        }
-      }
-    }
-  },
-  "solve.math.GREATER_THAN": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "greater than"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "büyüktür"
-        }
-      }
-    }
-  },
-  "solve.math.GREATER_THAN_OR_EQUAL": {
-    "extractionState": "manual",
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "greater than or equal to"
-        }
-      },
-      "tr": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "büyük eşittir"
-        }
-      }
-    }
-  },
     "%@ · %@" : {
       "localizations" : {
         "en" : {
@@ -2877,6 +54,9 @@
 
     },
     "Adjust crop" : {
+
+    },
+    "Advance synthetic job" : {
 
     },
     "Asset %@ is available for the next ingestion step." : {
@@ -3229,6 +409,1485 @@
     "Sign Out" : {
 
     },
+    "solve.attempt %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Attempt %lld of 3"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deneme %lld / 3"
+          }
+        }
+      }
+    },
+    "solve.cancel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel request"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İsteği iptal et"
+          }
+        }
+      }
+    },
+    "solve.close" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Back to Session"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oturuma Dön"
+          }
+        }
+      }
+    },
+    "solve.continueSession" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue to problem session"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Problem oturumuna devam et"
+          }
+        }
+      }
+    },
+    "solve.depends %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uses steps: %@"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kullanılan adımlar: %@"
+          }
+        }
+      }
+    },
+    "solve.detail.CANCELLED" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The server recorded cancellation. This does not guarantee external processing or billing stopped."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sunucu iptali kaydetti. Bu, dış işlemin veya ücretlendirmenin durduğunu garanti etmez."
+          }
+        }
+      }
+    },
+    "solve.detail.GENERATED_UNVERIFIED" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Independent mathematical verification is pending."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bağımsız matematiksel doğrulama bekleniyor."
+          }
+        }
+      }
+    },
+    "solve.detail.OUTCOME_UNKNOWN" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Refresh this job to reconcile its outcome. Do not start another solve automatically."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sonucu öğrenmek için bu işin durumunu yenileyin. Otomatik olarak yeni çözüm başlatmayın."
+          }
+        }
+      }
+    },
+    "solve.detail.POLICY_BLOCKED" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server policy currently prevents this solve."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sunucu politikası şu anda bu çözümü engelliyor."
+          }
+        }
+      }
+    },
+    "solve.detail.QUEUED" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your request is waiting to be processed."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İsteğiniz işleme alınmayı bekliyor."
+          }
+        }
+      }
+    },
+    "solve.detail.RETRYABLE_FAILURE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A new attempt is available only within server retry policy."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yeni deneme yalnız sunucunun yeniden deneme politikası kapsamında yapılabilir."
+          }
+        }
+      }
+    },
+    "solve.detail.REVIEW_REQUIRED" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Read the uncertainties before using this proposed answer."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Önerilen cevabı kullanmadan önce belirsizlikleri inceleyin."
+          }
+        }
+      }
+    },
+    "solve.detail.RUNNING" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The server is generating a candidate solution."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sunucu bir çözüm adayı oluşturuyor."
+          }
+        }
+      }
+    },
+    "solve.detail.STALE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The selected problem changed. The previous answer is hidden; review the current source."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seçili problem değişti. Önceki cevap gizlendi; güncel kaynağı inceleyin."
+          }
+        }
+      }
+    },
+    "solve.detail.TERMINAL_FAILURE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This job cannot be retried. Return to the problem session."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu iş yeniden denenemez. Problem oturumuna dönün."
+          }
+        }
+      }
+    },
+    "solve.detail.UNSUPPORTED" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This mathematical scope is not supported yet."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu matematik kapsamı henüz desteklenmiyor."
+          }
+        }
+      }
+    },
+    "solve.details" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Generation details"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Üretim bilgileri"
+          }
+        }
+      }
+    },
+    "solve.error.access" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server access policy does not allow this solve."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sunucunun erişim politikası bu çözüme izin vermiyor."
+          }
+        }
+      }
+    },
+    "solve.error.auth" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your session needs authentication. Sign in again to recover the existing job."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oturumunuzun kimlik doğrulaması gerekiyor. Mevcut işi kurtarmak için yeniden giriş yapın."
+          }
+        }
+      }
+    },
+    "solve.error.conflict" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The request conflicts with an existing job or changed source. Refresh status; do not submit a new request."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İstek mevcut işle veya değişen kaynakla çakışıyor. Durumu yenileyin; yeni istek göndermeyin."
+          }
+        }
+      }
+    },
+    "solve.error.connection" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The connection was interrupted or timed out. The request may have reached the server; refresh or recover the same request."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bağlantı kesildi veya zaman aşımına uğradı. İstek sunucuya ulaşmış olabilir; durumu yenileyin veya aynı isteği kurtarın."
+          }
+        }
+      }
+    },
+    "solve.error.contract" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The response or recovery record could not be read safely. Refresh status before taking another action."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yanıt veya kurtarma kaydı güvenle okunamadı. Başka bir işlemden önce durumu yenileyin."
+          }
+        }
+      }
+    },
+    "solve.error.disabled" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solving is not enabled in this environment yet."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu ortamda çözüm özelliği henüz etkin değil."
+          }
+        }
+      }
+    },
+    "solve.error.limit" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The allowed solve attempts have been used."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İzin verilen çözüm denemeleri kullanıldı."
+          }
+        }
+      }
+    },
+    "solve.error.offline" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connection unavailable. Reconnect and refresh; no new solve was requested."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bağlantı yok. Bağlanıp durumu yenileyin; yeni çözüm istenmedi."
+          }
+        }
+      }
+    },
+    "solve.error.server" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The request could not be completed. Refresh the existing status before trying again."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İstek tamamlanamadı. Yeniden denemeden önce mevcut durumu yenileyin."
+          }
+        }
+      }
+    },
+    "solve.error.source" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The problem needs review or preparation before solving."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çözümden önce problemin incelenmesi veya hazırlanması gerekiyor."
+          }
+        }
+      }
+    },
+    "solve.error.unsupported" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This problem is not supported yet."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu problem henüz desteklenmiyor."
+          }
+        }
+      }
+    },
+    "solve.fixture" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Development fixture · Not real model inference"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geliştirme örneği · Gerçek model çıkarımı değildir"
+          }
+        }
+      }
+    },
+    "solve.loading" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Checking existing solution"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mevcut çözüm kontrol ediliyor"
+          }
+        }
+      }
+    },
+    "solve.math.ADD" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "plus"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "artı"
+          }
+        }
+      }
+    },
+    "solve.math.close" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "close parenthesis"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "parantez kapat"
+          }
+        }
+      }
+    },
+    "solve.math.COS" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "cosine"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "kosinüs"
+          }
+        }
+      }
+    },
+    "solve.math.DIVIDE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "divided by"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "bölü"
+          }
+        }
+      }
+    },
+    "solve.math.EQUALS" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "equals"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "eşittir"
+          }
+        }
+      }
+    },
+    "solve.math.EXP" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "exponential"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "üstel"
+          }
+        }
+      }
+    },
+    "solve.math.GREATER_THAN" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "greater than"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "büyüktür"
+          }
+        }
+      }
+    },
+    "solve.math.GREATER_THAN_OR_EQUAL" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "greater than or equal to"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "büyük eşittir"
+          }
+        }
+      }
+    },
+    "solve.math.LESS_THAN" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "less than"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "küçüktür"
+          }
+        }
+      }
+    },
+    "solve.math.LESS_THAN_OR_EQUAL" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "less than or equal to"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "küçük eşittir"
+          }
+        }
+      }
+    },
+    "solve.math.LOG" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "logarithm"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "logaritma"
+          }
+        }
+      }
+    },
+    "solve.math.MULTIPLY" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "times"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "çarpı"
+          }
+        }
+      }
+    },
+    "solve.math.NEGATE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "negative"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "eksi"
+          }
+        }
+      }
+    },
+    "solve.math.open" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "open parenthesis"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "parantez aç"
+          }
+        }
+      }
+    },
+    "solve.math.POWER" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "to the power of"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "üssü"
+          }
+        }
+      }
+    },
+    "solve.math.SIN" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "sine"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "sinüs"
+          }
+        }
+      }
+    },
+    "solve.math.SQRT" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "square root"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "karekök"
+          }
+        }
+      }
+    },
+    "solve.math.SUBTRACT" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "minus"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "eksi"
+          }
+        }
+      }
+    },
+    "solve.math.TAN" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "tangent"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "tanjant"
+          }
+        }
+      }
+    },
+    "solve.metadataNotice" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Model and prompt information is not evidence of mathematical correctness."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Model ve istem bilgisi matematiksel doğruluk kanıtı değildir."
+          }
+        }
+      }
+    },
+    "solve.method.ALGEBRAIC_TRANSFORMATION" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Algebraic transformation"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cebirsel dönüşüm"
+          }
+        }
+      }
+    },
+    "solve.method.ARITHMETIC" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arithmetic"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aritmetik"
+          }
+        }
+      }
+    },
+    "solve.method.INEQUALITY_TRANSFORMATION" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inequality transformation"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eşitsizlik dönüşümü"
+          }
+        }
+      }
+    },
+    "solve.method.ISOLATE_VARIABLE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Isolate the variable"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Değişkeni yalnız bırakma"
+          }
+        }
+      }
+    },
+    "solve.methodLabel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Method:"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yöntem:"
+          }
+        }
+      }
+    },
+    "solve.pending" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A request may already have reached the server. Recover it with the same request identity."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İstek sunucuya ulaşmış olabilir. Aynı istek kimliğiyle kurtarın."
+          }
+        }
+      }
+    },
+    "solve.pollPaused" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automatic status checks paused. Refresh to check this job again."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Otomatik durum takibi duraklatıldı. Bu işi yeniden kontrol etmek için durumu yenileyin."
+          }
+        }
+      }
+    },
+    "solve.progress" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solution in progress"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çözüm sürüyor"
+          }
+        }
+      }
+    },
+    "solve.proposedAnswer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Proposed answer"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Önerilen cevap"
+          }
+        }
+      }
+    },
+    "solve.ready" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ready to request a solution"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çözüm isteği göndermeye hazır"
+          }
+        }
+      }
+    },
+    "solve.recover" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recover same request"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aynı isteği kurtar"
+          }
+        }
+      }
+    },
+    "solve.recover.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Request recovery available"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İstek kurtarma kullanılabilir"
+          }
+        }
+      }
+    },
+    "solve.referencesUnavailable" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This candidate references source assumptions or restrictions. Their text is unavailable in this response; review the original problem."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu aday kaynak varsayımlarına veya kısıtlarına başvuruyor. Metinleri bu yanıtta bulunmuyor; özgün problemi inceleyin."
+          }
+        }
+      }
+    },
+    "solve.refresh" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Refresh status"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Durumu yenile"
+          }
+        }
+      }
+    },
+    "solve.retry" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retry solve"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çözümü yeniden iste"
+          }
+        }
+      }
+    },
+    "solve.review" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review problem"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Problemi gözden geçir"
+          }
+        }
+      }
+    },
+    "solve.start" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solve Problem"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Problemi Çöz"
+          }
+        }
+      }
+    },
+    "solve.state.CANCELLED" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Request cancelled"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İstek iptal edildi"
+          }
+        }
+      }
+    },
+    "solve.state.GENERATED_UNVERIFIED" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI-generated answer"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yapay zekâ tarafından üretilen cevap"
+          }
+        }
+      }
+    },
+    "solve.state.OUTCOME_UNKNOWN" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Outcome uncertain"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sonuç belirsiz"
+          }
+        }
+      }
+    },
+    "solve.state.POLICY_BLOCKED" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solution unavailable"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çözüm kullanılamıyor"
+          }
+        }
+      }
+    },
+    "solve.state.QUEUED" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solution requested"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çözüm istendi"
+          }
+        }
+      }
+    },
+    "solve.state.RETRYABLE_FAILURE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solution could not be generated"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çözüm oluşturulamadı"
+          }
+        }
+      }
+    },
+    "solve.state.REVIEW_REQUIRED" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review required"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İnceleme gerekiyor"
+          }
+        }
+      }
+    },
+    "solve.state.RUNNING" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preparing solution"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çözüm hazırlanıyor"
+          }
+        }
+      }
+    },
+    "solve.state.STALE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Source changed"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kaynak değişti"
+          }
+        }
+      }
+    },
+    "solve.state.TERMINAL_FAILURE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solution stopped"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çözüm durduruldu"
+          }
+        }
+      }
+    },
+    "solve.state.UNSUPPORTED" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unsupported problem"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desteklenmeyen problem"
+          }
+        }
+      }
+    },
+    "solve.status.degraded" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Action required"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İşlem gerekiyor"
+          }
+        }
+      }
+    },
+    "solve.step %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Step %lld"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adım %lld"
+          }
+        }
+      }
+    },
+    "solve.step.category.CONCLUDE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conclude"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sonuç"
+          }
+        }
+      }
+    },
+    "solve.step.category.RESTATE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restate"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yeniden ifade"
+          }
+        }
+      }
+    },
+    "solve.step.category.TRANSFORM" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transform"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dönüşüm"
+          }
+        }
+      }
+    },
+    "solve.steps" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solution steps"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çözüm adımları"
+          }
+        }
+      }
+    },
+    "solve.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solution"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çözüm"
+          }
+        }
+      }
+    },
+    "solve.uncertainty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Needs your attention"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dikkat gerektiren noktalar"
+          }
+        }
+      }
+    },
+    "solve.unverified" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI-generated solution — mathematical correctness has not been independently verified."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yapay zekâ tarafından oluşturulan çözüm. Matematiksel doğruluğu henüz bağımsız olarak doğrulanmadı."
+          }
+        }
+      }
+    },
     "Source text" : {
 
     },
@@ -3324,6 +1983,1425 @@
     },
     "Verification preparation finished" : {
 
+    },
+    "verification.absent" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No verification decision is available."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Henüz bir doğrulama kararı yok."
+          }
+        }
+      }
+    },
+    "verification.agreement" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Independent answers matched; agreement alone is not mathematical proof."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bağımsız cevaplar eşleşti; yalnızca uyuşmaları matematiksel kanıt değildir."
+          }
+        }
+      }
+    },
+    "verification.checked" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Checked claims"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kontrol edilen iddialar"
+          }
+        }
+      }
+    },
+    "verification.conflict" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conflicting evidence requires review."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çelişen kanıtların incelenmesi gerekiyor."
+          }
+        }
+      }
+    },
+    "verification.contradictions" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Checks that contradicted the proposed answer"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Önerilen cevapla çelişen kontroller"
+          }
+        }
+      }
+    },
+    "verification.evidence.hide" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hide verification evidence"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doğrulama kanıtlarını gizle"
+          }
+        }
+      }
+    },
+    "verification.evidence.hint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Expands or collapses checked methods, unchecked obligations, decision reasons, and proof limitations."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kontrol edilen yöntemleri, kanıtlanmayan yükümlülükleri, karar nedenlerini ve kanıt sınırlarını açar veya kapatır."
+          }
+        }
+      }
+    },
+    "verification.evidence.show" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show verification evidence"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doğrulama kanıtlarını göster"
+          }
+        }
+      }
+    },
+    "verification.finalScope" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verification applies only to the stated answer and checked claims."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doğrulama yalnızca belirtilen sonuca ve kontrol edilen iddialara uygulanır."
+          }
+        }
+      }
+    },
+    "verification.generation" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI-generated solution. Its verification scope is shown below."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yapay zekâ tarafından üretilen çözüm. Doğrulama kapsamı aşağıda gösterilir."
+          }
+        }
+      }
+    },
+    "verification.invalid" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verification evidence could not be validated safely and is not shown."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doğrulama kanıtı güvenli biçimde doğrulanamadı ve gösterilmiyor."
+          }
+        }
+      }
+    },
+    "verification.limitations" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scope and proof limitations"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kapsam ve kanıt sınırları"
+          }
+        }
+      }
+    },
+    "verification.method.ARITHMETIC_EVALUATION" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exact arithmetic"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kesin aritmetik"
+          }
+        }
+      }
+    },
+    "verification.method.DERIVATIVE_BACKCHECK" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Derivative check"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Türev kontrolü"
+          }
+        }
+      }
+    },
+    "verification.method.DOMAIN_CONSTRAINT_CHECK" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Domain preservation"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tanım kümesinin korunması"
+          }
+        }
+      }
+    },
+    "verification.method.EQUATION_SUBSTITUTION" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Root validity"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kök geçerliliği"
+          }
+        }
+      }
+    },
+    "verification.method.FINITE_LIMIT" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Finite limit check"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sonlu limit kontrolü"
+          }
+        }
+      }
+    },
+    "verification.method.INTEGRAL_DIFFERENTIATION_BACKCHECK" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Antiderivative check"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İlkel fonksiyon kontrolü"
+          }
+        }
+      }
+    },
+    "verification.method.NUMERIC_SAMPLING" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Numerical diagnostics"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sayısal tanı"
+          }
+        }
+      }
+    },
+    "verification.method.SOLUTION_SET_COMPLETENESS" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Complete solution set"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çözüm kümesinin tamlığı"
+          }
+        }
+      }
+    },
+    "verification.method.SYMBOLIC_EQUIVALENCE" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Symbolic equivalence"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sembolik eşdeğerlik"
+          }
+        }
+      }
+    },
+    "verification.numericLimitation" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Numerical sampling provides supporting observations only and is not a formal mathematical proof."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sayısal örnekleme yalnızca destekleyici gözlem sunar; biçimsel matematiksel kanıt değildir."
+          }
+        }
+      }
+    },
+    "verification.reason.CAPABILITY_UNAVAILABLE" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A required mathematical verification method is not available for this problem type."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gerekli bir matematiksel doğrulama yöntemi bu problem türü için kullanılamıyor."
+          }
+        }
+      }
+    },
+    "verification.reason.COMPLETENESS_UNCHECKED" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Whether all valid solutions were found has not been checked."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tüm geçerli çözümlerin bulunup bulunmadığı kontrol edilmedi."
+          }
+        }
+      }
+    },
+    "verification.reason.COMPOSITE_UNAVAILABLE" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Combined verification evidence is not available for this solution."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu çözüm için birleşik doğrulama kanıtı mevcut değil."
+          }
+        }
+      }
+    },
+    "verification.reason.DETERMINISTIC_CONTRADICTION" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A deterministic mathematical check disproved the proposed answer."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deterministik bir matematiksel kontrol önerilen cevabın yanlış olduğunu gösterdi."
+          }
+        }
+      }
+    },
+    "verification.reason.DOMAIN_UNCHECKED" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Domain constraints and restrictions have not been fully checked."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tanım kümesi kısıtları tam olarak kontrol edilmedi."
+          }
+        }
+      }
+    },
+    "verification.reason.EVIDENCE_CONFLICT" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verification checks produced conflicting mathematical evidence."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doğrulama kontrolleri birbiriyle çelişen matematiksel kanıtlar üretti."
+          }
+        }
+      }
+    },
+    "verification.reason.EXECUTION_FAILURE" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A verification check could not finish due to a technical execution failure."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Teknik bir yürütme hatası nedeniyle doğrulama kontrolü tamamlanamadı."
+          }
+        }
+      }
+    },
+    "verification.reason.INVALID_EVIDENCE" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verification evidence could not be validated against the problem requirements."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doğrulama kanıtı problem gereksinimlerine göre doğrulanamadı."
+          }
+        }
+      }
+    },
+    "verification.reason.MISSING_PROOF" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Complete deterministic proof for the final answer is not established."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sonuç için tam deterministik kanıt oluşturulamadı."
+          }
+        }
+      }
+    },
+    "verification.reason.RELEASE_DISABLED" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deterministic checks ran, but this verification capability is not yet enabled for release."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deterministik kontroller çalıştı ancak bu doğrulama yeteneği henüz kullanıma açılmadı."
+          }
+        }
+      }
+    },
+    "verification.reason.REQUIRED_CLAIM_PROVEN" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All required deterministic checks for the stated scope passed."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Belirtilen kapsam için gereken tüm deterministik kontroller geçti."
+          }
+        }
+      }
+    },
+    "verification.reason.REVIEW_REQUIRED" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Source assumptions or ambiguities require your review before verification can complete."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doğrulamanın tamamlanabilmesi için kaynak varsayımların veya belirsizliklerin incelenmesi gerekiyor."
+          }
+        }
+      }
+    },
+    "verification.reason.SECONDARY_AGREEMENT" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An independent solver produced a matching answer (corroboration only, not formal proof)."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bağımsız bir çözücü eşleşen bir sonuç üretti (yalnızca destekleyici teyittir, biçimsel kanıt değildir)."
+          }
+        }
+      }
+    },
+    "verification.reason.SECONDARY_ASSUMPTIONS" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Independent solver comparison relied on incompatible problem assumptions."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bağımsız çözücü karşılaştırması uyumsuz problem varsayımlarına dayandı."
+          }
+        }
+      }
+    },
+    "verification.reason.SECONDARY_DISAGREEMENT" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An independent solver reached a different answer."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bağımsız bir çözücü farklı bir sonuca ulaştı."
+          }
+        }
+      }
+    },
+    "verification.reason.SECONDARY_INVALID" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Independent solver corroboration is incomplete or inconclusive."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bağımsız çözücü doğrulaması eksik veya sonuçsuz kaldı."
+          }
+        }
+      }
+    },
+    "verification.reason.SECONDARY_STALE" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Independent solver evidence belongs to an older problem revision."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bağımsız çözücü kanıtı daha eski bir problem revizyonuna ait."
+          }
+        }
+      }
+    },
+    "verification.reason.SOURCE_SCOPE_UNRESOLVED" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The problem domain or source restrictions could not be fully resolved."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Problem tanım kümesi veya kaynak kısıtları tam olarak çözümlenemedi."
+          }
+        }
+      }
+    },
+    "verification.reason.STALE_LINEAGE" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The problem or solution changed after the verification evidence was recorded."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doğrulama kanıtı kaydedildikten sonra problem veya çözüm değişti."
+          }
+        }
+      }
+    },
+    "verification.reason.SUBSET_PROVEN" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A subset of required mathematical checks passed, while other obligations remain unchecked."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gerekli matematiksel kontrollerin bir kısmı geçti ancak diğer yükümlülükler kanıtlanmadı."
+          }
+        }
+      }
+    },
+    "verification.reasons" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Why this status was assigned"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu durumun atanma nedeni"
+          }
+        }
+      }
+    },
+    "verification.recovery.ADDITIONAL_EVIDENCE" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "More mathematical evidence is needed."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ek matematiksel kanıt gerekiyor."
+          }
+        }
+      }
+    },
+    "verification.recovery.BUDGET_BLOCKED" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Additional work is blocked by the usage budget."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ek işlem kullanım bütçesi nedeniyle engellendi."
+          }
+        }
+      }
+    },
+    "verification.recovery.FRESH_CALCULATION" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The source changed; a fresh calculation is needed."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kaynak değişti; yeniden hesaplama gerekiyor."
+          }
+        }
+      }
+    },
+    "verification.recovery.INVALID_INPUT" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The verification evidence needs review."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doğrulama kanıtı incelenmeli."
+          }
+        }
+      }
+    },
+    "verification.recovery.NONE" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No further check required for this scope."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu kapsam için ek kontrol gerekmiyor."
+          }
+        }
+      }
+    },
+    "verification.recovery.RATE_LIMITED" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wait before requesting another verification."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yeni doğrulama istemeden önce bekleyin."
+          }
+        }
+      }
+    },
+    "verification.recovery.RECONCILE_SOLVERS" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Independent results need reconciliation."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bağımsız sonuçların uzlaştırılması gerekiyor."
+          }
+        }
+      }
+    },
+    "verification.recovery.RELEASE_BLOCKED" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verification release approval is pending."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doğrulamanın kullanıma açılması için onay bekleniyor."
+          }
+        }
+      }
+    },
+    "verification.recovery.RETRY_LIMIT" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The verification retry window or attempt limit was reached."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doğrulama tekrar süresi veya deneme sınırına ulaşıldı."
+          }
+        }
+      }
+    },
+    "verification.recovery.RETRY_VERIFICATION" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A bounded verification retry may help; no retry runs automatically."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sınırlı bir doğrulama tekrarı yardımcı olabilir; otomatik tekrar yapılmaz."
+          }
+        }
+      }
+    },
+    "verification.recovery.REVIEW_CONTRADICTION" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review the mathematical contradiction before continuing."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Devam etmeden önce matematiksel çelişkiyi inceleyin."
+          }
+        }
+      }
+    },
+    "verification.recovery.REVIEW_SOURCE" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review the problem and its assumptions."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Soruyu ve varsayımlarını inceleyin."
+          }
+        }
+      }
+    },
+    "verification.recovery.UNSUPPORTED_CAPABILITY" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The required verification is not supported."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gerekli doğrulama desteklenmiyor."
+          }
+        }
+      }
+    },
+    "verification.refresh" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Refresh verification status"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doğrulama durumunu yenile"
+          }
+        }
+      }
+    },
+    "verification.scope.ANTIDERIVATIVE_REPRESENTATIVE" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "One antiderivative representative is verified on the source interval. This does not verify the full family, a definite integral, or explanation steps."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kaynak aralığında tek bir antitürev temsilcisi doğrulandı. Tüm çözüm ailesi, belirli integral veya açıklama adımları doğrulanmadı."
+          }
+        }
+      }
+    },
+    "verification.scope.CHECKED_METHOD_CLAIMS" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Only the listed mathematical checks are verified; the final answer is not fully verified."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yalnızca listelenen matematiksel kontroller doğrulandı; sonucun tamamı doğrulanmadı."
+          }
+        }
+      }
+    },
+    "verification.scope.FINAL_ANSWER" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verification covers the final answer only. Explanation steps have not been verified."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doğrulama yalnızca sonucu kapsar. Açıklama adımları doğrulanmadı."
+          }
+        }
+      }
+    },
+    "verification.scope.NONE" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No mathematical claim has been verified."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Henüz hiçbir matematiksel iddia doğrulanmadı."
+          }
+        }
+      }
+    },
+    "verification.scope.OPEN_INTERVAL" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The derivative identity is verified only on the open interval specified by the source. Endpoints and explanation steps are not verified."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Türev özdeşliği yalnızca kaynakta belirtilen açık aralıkta doğrulandı. Uç noktalar ve açıklama adımları doğrulanmadı."
+          }
+        }
+      }
+    },
+    "verification.scope.PUNCTURED_NEIGHBORHOOD" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The finite limit is verified only at the source target and specified one-sided or two-sided approach. The value at the target and explanation steps are not verified."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sonlu limit yalnızca kaynakta belirtilen hedef ve tek ya da çift taraflı yaklaşım için doğrulandı. Hedef noktadaki değer ve açıklama adımları doğrulanmadı."
+          }
+        }
+      }
+    },
+    "verification.scopedStatus" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scoped claim verified"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Belirtilen kapsamda doğrulandı"
+          }
+        }
+      }
+    },
+    "verification.status.PARTIALLY_VERIFIED" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Partially verified"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kısmen doğrulandı"
+          }
+        }
+      }
+    },
+    "verification.status.UNVERIFIED" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not verified — this does not mean incorrect"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doğrulanamadı — bu, yanlış olduğu anlamına gelmez"
+          }
+        }
+      }
+    },
+    "verification.status.VERIFIED" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Final answer verified"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sonuç doğrulandı"
+          }
+        }
+      }
+    },
+    "verification.stepsUnchecked" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Explanation steps have not been verified."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Açıklama adımları doğrulanmadı."
+          }
+        }
+      }
+    },
+    "verification.summary.ABSENT" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Only the AI-generated candidate is available right now. Treat the proposed answer and steps as unverified."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Şu anda yalnızca yapay zekâ tarafından üretilen aday mevcut. Önerilen cevabı ve adımları doğrulanmamış olarak değerlendirin."
+          }
+        }
+      }
+    },
+    "verification.summary.CONFLICT" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deterministic checks or independent solver signals detected a conflict that requires caution before trusting this answer."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deterministik kontroller veya bağımsız çözücü sinyalleri, bu cevaba güvenmeden önce dikkat gerektiren bir çelişki tespit etti."
+          }
+        }
+      }
+    },
+    "verification.summary.INVALID" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The server returned verification data that failed safety validation, so the answer remains unverified."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sunucudan gelen doğrulama verisi güvenlik doğrulamasından geçemediği için cevap doğrulanmamış olarak tutuluyor."
+          }
+        }
+      }
+    },
+    "verification.summary.PARTIALLY_VERIFIED" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Some mathematical claims passed deterministic checks, but required obligations remain unchecked."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bazı matematiksel iddialar deterministik kontrollerden geçti ancak gerekli bazı yükümlülükler henüz kanıtlanmadı."
+          }
+        }
+      }
+    },
+    "verification.summary.SCOPED_VERIFIED" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The calculus claim is verified only within the narrow mathematical scope above. Endpoints, full families, and explanation steps are not verified."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kalkülüs iddiası yalnızca yukarıdaki dar matematiksel kapsamda doğrulandı. Uç noktalar, tüm çözüm ailesi ve açıklama adımları doğrulanmadı."
+          }
+        }
+      }
+    },
+    "verification.summary.UNAVAILABLE" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The generated solution is shown below, but its verification decision could not be loaded right now."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Üretilen çözüm aşağıda gösteriliyor ancak doğrulama kararı şu anda yüklenemedi."
+          }
+        }
+      }
+    },
+    "verification.summary.UNVERIFIED" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mathematical correctness has not been established. Unverified means unproven, not necessarily wrong."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Matematiksel doğruluk henüz kanıtlanmadı. Doğrulanamadı ifadesi kanıtlanmadığını gösterir; kesinlikle yanlış olduğu anlamına gelmez."
+          }
+        }
+      }
+    },
+    "verification.summary.VERIFIED" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All required deterministic checks for the final answer passed. Individual explanation steps are not verified."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sonuç için gereken tüm deterministik kontroller geçti. Açıklama adımları tek tek doğrulanmadı."
+          }
+        }
+      }
+    },
+    "verification.unavailable" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verification status could not be refreshed. Refresh when connected."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doğrulama durumu alınamadı. Bağlantı sağlandığında yenileyin."
+          }
+        }
+      }
+    },
+    "verification.uncertainty.COMPLETENESS_UNRESOLVED" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The complete solution set has not been established."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çözüm kümesinin tamlığı kanıtlanmadı."
+          }
+        }
+      }
+    },
+    "verification.uncertainty.DOMAIN_UNRESOLVED" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Domain preservation is not fully established."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tanım kümesinin korunması tam olarak kanıtlanmadı."
+          }
+        }
+      }
+    },
+    "verification.uncertainty.EXECUTION_UNAVAILABLE" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A verification service failure is not a mathematical contradiction."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doğrulama hizmeti hatası matematiksel çelişki değildir."
+          }
+        }
+      }
+    },
+    "verification.uncertainty.MISSING_MATHEMATICAL_PROOF" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Required mathematical proof is missing."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gerekli matematiksel kanıt eksik."
+          }
+        }
+      }
+    },
+    "verification.uncertainty.RELEASE_NOT_ACCEPTED" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This verification policy has not been approved for release."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu doğrulama politikası kullanıma açılmak üzere onaylanmadı."
+          }
+        }
+      }
+    },
+    "verification.uncertainty.SECONDARY_CONFLICT" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Independent solver evidence remains unresolved."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bağımsız çözücü kanıtları henüz uzlaştırılmadı."
+          }
+        }
+      }
+    },
+    "verification.unchecked" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not established"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kanıtlanmayanlar"
+          }
+        }
+      }
     },
     "Verified AI" : {
 

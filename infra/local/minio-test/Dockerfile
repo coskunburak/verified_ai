@@ -1,6 +1,8 @@
 # Local integration-test fixture only; not a production storage image.
 FROM golang:1.22.5-bookworm AS build
 ENV GOTOOLCHAIN=local
+COPY healthcheck.go /healthcheck/main.go
+RUN mkdir -p /out && CGO_ENABLED=0 go build -trimpath -o /out/minio-healthcheck /healthcheck/main.go
 WORKDIR /src
 # Pin both the original release tag and its commit; fail if the tag moves.
 RUN git init . \
@@ -19,6 +21,7 @@ LABEL org.opencontainers.image.source="https://github.com/minio/minio" \
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY --from=build /src/LICENSE /licenses/minio/LICENSE
 COPY --from=build /out/minio /minio
+COPY --from=build /out/minio-healthcheck /minio-healthcheck
 COPY --from=build --chown=10001:10001 /out/data /data
 COPY --from=build /out/tmp /tmp
 ENV HOME=/tmp

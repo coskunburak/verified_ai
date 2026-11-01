@@ -1,0 +1,33 @@
+{
+  "deny": {
+    "read": [
+      ".env*",
+      "**/*.pem",
+      "**/*.key",
+      "**/*.p12",
+      "**/.ssh/**",
+      "**/.aws/**",
+      "**/.gnupg/**",
+      "**/.codex/**",
+      "**/.claude/**",
+      "**/.gemini/**"
+    ],
+    "write": [
+      ".git/hooks/**",
+      ".github/workflows/**",
+      ".codex/**",
+      ".claude/**",
+      ".agents/**"
+    ],
+    "command": [
+      "curl *",
+      "wget *",
+      "nc *",
+      "ssh *",
+      "sudo *",
+      "su *",
+      "security *",
+      "launchctl *"
+    ]
+  }
+}

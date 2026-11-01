@@ -11,9 +11,27 @@
 *.pem
 *.p12
 *.mobileprovision
+*.key
+*id_rsa*
+*id_ed25519*
+*.credentials
+service_account*.json
+google-credentials*.json
+client_secret*.json
 *.xcconfig
 !apps/ios/Config/*.xcconfig
 !apps/ios/Config/Secrets.xcconfig.example
+
+# AI Agent auth and token stores (policies remain tracked)
+.codex/auth*
+.codex/tokens*
+.codex/*.session
+.claude/auth*
+.claude/tokens*
+.claude/*.cookie
+.claude/*.db
+.gemini/tokens*
+.devcontainer/local-secrets/
 
 # IDE/user state
 .idea/

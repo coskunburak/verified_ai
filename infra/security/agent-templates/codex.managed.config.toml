@@ -1,0 +1,45 @@
+# Managed System Policy for OpenAI Codex (macOS Administrator Enforced)
+# Path: /Library/Application Support/Codex/config.toml
+# Ownership: sudo chown root:wheel "/Library/Application Support/Codex/config.toml" && sudo chmod 644 "/Library/Application Support/Codex/config.toml"
+#
+# This policy CANNOT be overridden or bypassed by user-level or project-level configurations.
+
+model = "o3"
+sandbox = "workspace-write"
+ask_for_approval = "on-request"
+
+[shell_environment_policy]
+# Prevent inheritance of developer environment variables containing secrets
+inherit = "none"
+
+allowlist = [
+    "PATH",
+    "HOME",
+    "USER",
+    "SHELL",
+    "TERM",
+    "LANG",
+    "LC_ALL",
+    "JAVA_HOME",
+    "TMPDIR",
+    "APP_ENV"
+]
+
+denylist = [
+    "*KEY*",
+    "*SECRET*",
+    "*TOKEN*",
+    "*PASSWORD*",
+    "*CREDENTIAL*",
+    "*AUTH*",
+    "OPENAI_*",
+    "ANTHROPIC_*",
+    "GEMINI_*",
+    "AWS_*",
+    "GITHUB_*",
+    "APPLE_*",
+    "MATH_VERIFIER_INTERNAL_TOKEN"
+]
+
+[sandbox_permissions]
+network = false

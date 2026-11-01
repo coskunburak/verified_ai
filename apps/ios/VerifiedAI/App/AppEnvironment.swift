@@ -15,13 +15,27 @@ enum AppEnvironment: String, CaseIterable, Equatable {
     }
 
     static func resolvedAPIBaseURL(configuredValue: String?, environment: AppEnvironment) -> URL {
-        if let configuredValue,
-           let configuredURL = URL(string: configuredValue),
+        let candidate = ProcessInfo.processInfo.environment["API_BASE_URL"] ?? configuredValue
+        #if !targetEnvironment(simulator)
+        if let candidate,
+           let configuredURL = URL(string: candidate),
+           configuredURL.scheme != nil,
+           let host = configuredURL.host,
+           !host.isEmpty,
+           host != "localhost",
+           host != "127.0.0.1" {
+            return configuredURL
+        }
+        return URL(string: "http://192.168.1.126:8080")!
+        #else
+        if let candidate,
+           let configuredURL = URL(string: candidate),
            configuredURL.scheme != nil,
            configuredURL.host != nil {
             return configuredURL
         }
         return environment.apiBaseURL
+        #endif
     }
 
     static func apiBaseURL(bundle: Bundle = .main, environment: AppEnvironment) -> URL {
@@ -34,7 +48,11 @@ enum AppEnvironment: String, CaseIterable, Equatable {
     var apiBaseURL: URL {
         switch self {
         case .development:
+            #if !targetEnvironment(simulator)
+            return URL(string: "http://192.168.1.126:8080")!
+            #else
             return URL(string: "http://localhost:8080")!
+            #endif
         case .staging:
             return URL(string: "https://staging-api.verified-ai-learning.example")!
         case .production:

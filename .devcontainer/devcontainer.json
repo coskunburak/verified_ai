@@ -1,0 +1,30 @@
+{
+  "name": "VerifiedAI Isolated Agent Environment",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "."
+  },
+  "remoteUser": "developer",
+  "workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+  "runArgs": [
+    "--cap-drop=ALL",
+    "--security-opt=no-new-privileges:true",
+    "--pids-limit=256",
+    "--memory=4g",
+    "--cpus=4"
+  ],
+  "containerEnv": {
+    "APP_ENV": "local",
+    "API_PORT": "8080",
+    "MATH_VERIFIER_PORT": "8090",
+    "POSTGRES_HOST": "postgres",
+    "REDIS_HOST": "redis",
+    "MINIO_ENDPOINT": "http://minio:9000",
+    "MATH_VERIFIER_INTERNAL_TOKEN": "local_math_verifier_token_change_me"
+  },
+  "mounts": [
+    "type=tmpfs,destination=/tmp,tmpfs-size=256m,tmpfs-mode=1777",
+    "source=${localWorkspaceFolder}/.env.example,target=/workspace/.env,type=bind,readonly"
+  ]
+}

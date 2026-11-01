@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json.schemastore.org/claude-settings.json",
+  "_comment": "INSTALLATION: Place this file at ~/.claude/settings.json (chmod 600). DO NOT overwrite ~/.claude.json, which holds application state and auth credentials.",
+  "sandbox": {
+    "enabled": true,
+    "failIfUnavailable": true,
+    "allowUnsandboxedCommands": false,
+    "filesystem": {
+      "denyRead": [
+        "~/.ssh/**",
+        "~/.aws/**",
+        "~/.gnupg/**",
+        "~/.codex/**",
+        "~/.claude/**",
+        "~/.gemini/**",
+        "**/.env*",
+        "**/*.pem",
+        "**/*.key"
+      ],
+      "denyWrite": [
+        "~/.ssh/**",
+        "~/.aws/**",
+        "~/.zshrc",
+        "~/.bash_profile",
+        "~/.bashrc"
+      ]
+    },
+    "credentials": {
+      "files": [
+        ".env",
+        ".env.*",
+        "Secrets.xcconfig",
+        "owner.env"
+      ],
+      "envVars": [
+        "ANTHROPIC_API_KEY",
+        "OPENAI_API_KEY",
+        "GEMINI_API_KEY",
+        "AWS_ACCESS_KEY_ID",
+        "AWS_SECRET_ACCESS_KEY",
+        "GITHUB_TOKEN",
+        "APPLE_KEY",
+        "MATH_VERIFIER_INTERNAL_TOKEN"
+      ]
+    }
+  },
+  "permissions": {
+    "deny": {
+      "command": [
+        "security *",
+        "sudo *",
+        "su *",
+        "launchctl *"
+      ]
+    }
+  }
+}
