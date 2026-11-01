@@ -93,6 +93,38 @@ final class LearningProfileControllerTest extends PostgresIntegrationTestSupport
         return identityApplicationService.signInWithApple(new AppleSignInCommand(subject, "unused-code", "nonce"));
     }
 
+    @Test
+    void depthOnlyPatchUsesExistingAuthenticatedContractAndPreservesProfile() throws Exception {
+        AuthSessionResult session = signIn("synthetic-depth-owner");
+        HttpResponse<String> created = patch(session, """
+            {"educationLevel":"UNIVERSITY","preferredLanguage":"tr","explanationDepth":"STANDARD",
+             "dailyStudyMinutes":40,"timezone":"Europe/Istanbul","goalContext":"Synthetic goal","completeOnboarding":true}
+            """);
+        assertThat(created.statusCode()).isEqualTo(200);
+        HttpResponse<String> saved = patch(session, """
+            {"explanationDepth":"BEGINNER","expectedVersion":0}
+            """);
+        assertThat(saved.statusCode()).isEqualTo(200);
+        assertThat(saved.body()).contains("\"explanationDepth\":\"BEGINNER\"", "\"preferredLanguage\":\"tr\"",
+            "\"educationLevel\":\"UNIVERSITY\"", "\"dailyStudyMinutes\":40", "\"timezone\":\"Europe/Istanbul\"",
+            "\"goalContext\":\"Synthetic goal\"", "\"onboardingStatus\":\"COMPLETED\"");
+        assertThat(patch(session, "{\"explanationDepth\":\"DEEP\",\"expectedVersion\":0}").statusCode()).isEqualTo(409);
+        assertThat(patch(session, "{\"explanationDepth\":\"INVENTED\",\"expectedVersion\":1}").statusCode()).isEqualTo(422);
+        AuthSessionResult other = signIn("synthetic-other-owner");
+        HttpResponse<String> otherProfile = httpClient.send(authorized(other, "/api/v1/me/learning-profile").GET().build(),
+            HttpResponse.BodyHandlers.ofString());
+        assertThat(otherProfile.body()).contains("\"exists\":false");
+        HttpResponse<String> unauthenticated = httpClient.send(HttpRequest.newBuilder(uri("/api/v1/me/learning-profile"))
+            .header("Content-Type", "application/json").method("PATCH", HttpRequest.BodyPublishers.ofString("{\"explanationDepth\":\"QUICK\"}"))
+            .build(), HttpResponse.BodyHandlers.ofString());
+        assertThat(unauthenticated.statusCode()).isEqualTo(401);
+    }
+
+    private HttpResponse<String> patch(AuthSessionResult session, String body) throws Exception {
+        return httpClient.send(authorized(session, "/api/v1/me/learning-profile").header("Content-Type", "application/json")
+            .method("PATCH", HttpRequest.BodyPublishers.ofString(body)).build(), HttpResponse.BodyHandlers.ofString());
+    }
+
     private HttpRequest.Builder authorized(AuthSessionResult session, String path) {
         return HttpRequest.newBuilder(uri(path))
             .header("Authorization", "Bearer " + session.accessToken())

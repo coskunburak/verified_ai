@@ -132,6 +132,52 @@ final class LearningProfileApplicationServiceTest extends PostgresIntegrationTes
         );
     }
 
+    @Test
+    void depthOnlyPatchPreservesEveryUnrelatedFieldAndRejectsStaleVersion() {
+        UUID userId = insertUser();
+        LearningProfileResult original = learningProfileApplicationService.updateCurrent(userId, completeCommand(null, "HIGH_SCHOOL", 30));
+        LearningProfileResult current = original;
+        for (String depth : new String[] {"BEGINNER", "QUICK", "DEEP", "STANDARD"}) {
+            current = learningProfileApplicationService.updateCurrent(userId,
+                new UpdateLearningProfileCommand(null, null, depth, null, null, null, false, current.version()));
+            assertThat(current.explanationDepth()).isEqualTo(depth);
+            assertThat(current.educationLevel()).isEqualTo(original.educationLevel());
+            assertThat(current.preferredLanguage()).isEqualTo(original.preferredLanguage());
+            assertThat(current.dailyStudyMinutes()).isEqualTo(original.dailyStudyMinutes());
+            assertThat(current.timezone()).isEqualTo(original.timezone());
+            assertThat(current.goalContext()).isEqualTo(original.goalContext());
+            assertThat(current.onboardingStatus()).isEqualTo(original.onboardingStatus());
+            assertThat(current.id()).isEqualTo(original.id());
+            assertThat(current.userId()).isEqualTo(userId);
+        }
+        assertThatThrownBy(() -> learningProfileApplicationService.updateCurrent(userId,
+            new UpdateLearningProfileCommand(null, null, "DEEP", null, null, null, false, original.version())))
+            .isInstanceOf(ApiProblemException.class)
+            .extracting(error -> ((ApiProblemException) error).code()).isEqualTo(ApiErrorCode.OPTIMISTIC_CONFLICT);
+        assertThat(learningProfileApplicationService.getCurrent(userId).explanationDepth()).isEqualTo("STANDARD");
+    }
+
+    @Test
+    void depthOnlyPatchCannotMutateAnotherProfileOrInactiveAccountAndIsDeletedByLifecycle() {
+        UUID userId = insertUser(), otherUser = insertUser();
+        LearningProfileResult original = learningProfileApplicationService.updateCurrent(userId, completeCommand(null, "HIGH_SCHOOL", 30));
+        learningProfileApplicationService.updateCurrent(otherUser, completeCommand(null, "UNIVERSITY", 45));
+        learningProfileApplicationService.updateCurrent(userId,
+            new UpdateLearningProfileCommand(null, null, "BEGINNER", null, null, null, false, original.version()));
+        assertThat(learningProfileApplicationService.getCurrent(otherUser).explanationDepth()).isEqualTo("STANDARD");
+        jdbcTemplate.update("update users set status='DELETION_REQUESTED' where id=?", userId);
+        assertThatThrownBy(() -> learningProfileApplicationService.updateCurrent(userId,
+            new UpdateLearningProfileCommand(null, null, "DEEP", null, null, null, false, 1L)))
+            .isInstanceOf(ApiProblemException.class)
+            .extracting(error -> ((ApiProblemException) error).code()).isEqualTo(ApiErrorCode.ACCOUNT_NOT_ACTIVE);
+        lifecycle.deleteUserData(userId, Instant.parse("2026-11-01T00:00:00Z"));
+        assertThat(countWhere("learning_profiles", "user_id = '" + userId + "'")).isZero();
+        assertThat(learningProfileApplicationService.getCurrent(otherUser).exists()).isTrue();
+    }
+
+    @Autowired
+    LearningProfileLifecycleContributor lifecycle;
+
     private UUID insertUser() {
         UUID userId = UUID.randomUUID();
         Instant now = Instant.parse("2026-08-08T00:00:00Z");

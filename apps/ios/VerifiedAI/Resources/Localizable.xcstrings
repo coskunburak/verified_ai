@@ -1,6 +1,566 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "explanation.expanded" : {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Expanded"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Açık"
+          }
+        }
+      }
+    },
+    "explanation.collapsed" : {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Collapsed"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kapalı"
+          }
+        }
+      }
+    },
+    "Beginner" : {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beginner"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Başlangıç"
+          }
+        }
+      }
+    },
+    "Quick" : {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quick"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kısa"
+          }
+        }
+      }
+    },
+    "Standard" : {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Standard"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Standart"
+          }
+        }
+      }
+    },
+    "Deep" : {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deep"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Derin"
+          }
+        }
+      }
+    },
+    "explanation.selected" : {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selected"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seçili"
+          }
+        }
+      }
+    },
+    "explanation.notSelected" : {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not selected"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seçili değil"
+          }
+        }
+      }
+    },
+    "explanation.availability.QUICK" : {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quick starts with the final step. The original sequence remains available; a condensed view is not a complete proof."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kısa mod son adımla başlar. Özgün adım dizisine erişebilirsiniz; özet görünüm tam bir ispat değildir."
+          }
+        }
+      }
+    },
+    "explanation.availability.STANDARD" : {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All original steps and explanations are shown in order."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tüm özgün adımlar ve açıklamalar sırasıyla gösterilir."
+          }
+        }
+      }
+    },
+    "explanation.availability.DEEP" : {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All available steps and their stated dependencies are shown. Additional conceptual derivations are not available for this solution. Dependencies describe the candidate, not verified proof."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mevcut tüm adımlar ve belirtilen bağımlılıkları gösterilir. Bu çözüm için ek kavramsal türetimler mevcut değildir. Bağımlılıklar çözüm adayını tanımlar; doğrulanmış ispat değildir."
+          }
+        }
+      }
+    },
+    "explanation.availability.BEGINNER" : {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Read each claim, then open its explanation at your own pace. Vocabulary notes are learning aids, not verification evidence."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Her matematiksel ifadeyi okuyun, ardından açıklamasını kendi hızınızda açın. Terim notları öğrenme desteğidir; doğrulama kanıtı değildir."
+          }
+        }
+      }
+    },
+    "explanation.term.expression" : {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An arithmetic expression combines numbers and operations. Parentheses show grouping. Evaluating means finding its value where the operations are defined."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aritmetik ifade, sayıları ve işlemleri bir araya getirir. Parantezler gruplamayı gösterir. Değerini hesaplamak, işlemlerin tanımlı olduğu koşullarda ifadenin değerini bulmaktır."
+          }
+        }
+      }
+    },
+    "explanation.term.equation" : {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An equation states that two expressions are equal. A variable represents a value. A solution must satisfy both the original equation and its domain restrictions."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Denklem, iki ifadenin eşit olduğunu belirtir. Değişken bir değeri temsil eder. Çözüm, hem özgün denklemi hem de tanım kümesi kısıtlarını sağlamalıdır."
+          }
+        }
+      }
+    },
+    "explanation.term.unavailable" : {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No supplemental vocabulary note is available for this context. The original claims and explanations remain available."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu bağlam için ek terim notu mevcut değildir. Özgün matematiksel ifadelere ve açıklamalara erişebilirsiniz."
+          }
+        }
+      }
+    },
+    "explanation.condensed %lld" : {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Condensed view omits %lld intermediate step(s). Show all steps to inspect the original sequence."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Özet görünümde %lld ara adım gizlenir. Özgün diziyi incelemek için tüm adımları gösterin."
+          }
+        }
+      }
+    },
+    "explanation.steps.show" : {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show all original steps"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tüm özgün adımları göster"
+          }
+        }
+      }
+    },
+    "explanation.steps.hide" : {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Return to condensed steps"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Özet adımlara dön"
+          }
+        }
+      }
+    },
+    "explanation.step.show %lld" : {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Explanation for step %lld"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld. adımın açıklaması"
+          }
+        }
+      }
+    },
+    "explanation.dependencies" : {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Referenced earlier claims"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Başvurulan önceki ifadeler"
+          }
+        }
+      }
+    },
+    "explanation.dependencies.none" : {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No earlier step dependency is recorded."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Önceki bir adıma bağımlılık kaydedilmemiş."
+          }
+        }
+      }
+    },
+    "explanation.preference.fallback" : {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Using Standard until a saved preference is available."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kayıtlı tercih kullanılabilir olana kadar Standart kullanılıyor."
+          }
+        }
+      }
+    },
+    "explanation.preference.loading" : {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loading saved preference. Any temporary selection is not saved yet."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kayıtlı tercih yükleniyor. Geçici seçim henüz kaydedilmedi."
+          }
+        }
+      }
+    },
+    "explanation.preference.saving" : {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saving preference. The visible selection is temporary until confirmed."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tercih kaydediliyor. Görünen seçim onaylanana kadar geçicidir."
+          }
+        }
+      }
+    },
+    "explanation.preference.saved" : {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Using your saved preference."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kayıtlı tercihiniz kullanılıyor."
+          }
+        }
+      }
+    },
+    "explanation.preference.unsaved" : {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Profile reloaded. Your visible selection is temporary; save it to use it next time."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Profil yeniden yüklendi. Görünen seçim geçicidir; sonraki kullanım için kaydedin."
+          }
+        }
+      }
+    },
+    "explanation.preference.error.offline" : {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Offline: your selection is temporary. Reconnect and reload the profile before saving."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çevrimdışı: seçiminiz geçicidir. Kaydetmeden önce bağlanıp profili yeniden yükleyin."
+          }
+        }
+      }
+    },
+    "explanation.preference.error.network" : {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save or load could not be confirmed. Your selection is temporary. Reload the profile before saving again."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kayıt veya yükleme onaylanamadı. Seçiminiz geçicidir. Yeniden kaydetmeden önce profili yükleyin."
+          }
+        }
+      }
+    },
+    "explanation.preference.error.conflict" : {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The profile changed on another device. Your selection is temporary. Reload, review, then save if you still want it."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Profil başka bir cihazda değişti. Seçiminiz geçicidir. Yeniden yükleyip inceleyin, ardından isterseniz kaydedin."
+          }
+        }
+      }
+    },
+    "explanation.preference.error.validation" : {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This preference was not accepted. Your selection is temporary. Reload the profile and choose again."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu tercih kabul edilmedi. Seçiminiz geçicidir. Profili yeniden yükleyip tekrar seçin."
+          }
+        }
+      }
+    },
+    "explanation.preference.error.auth" : {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your selection is temporary. Sign in again to save preferences."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seçiminiz geçicidir. Tercihleri kaydetmek için yeniden oturum açın."
+          }
+        }
+      }
+    },
+    "explanation.preference.error.forbidden" : {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This account cannot save preferences. Your selection is temporary. Return to Account settings."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu hesap tercihleri kaydedemiyor. Seçiminiz geçicidir. Hesap ayarlarına dönün."
+          }
+        }
+      }
+    },
+    "explanation.preference.error.unavailable" : {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A valid profile is unavailable. Your selection is temporary. Reload your profile before saving."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geçerli profil kullanılamıyor. Seçiminiz geçicidir. Kaydetmeden önce profilinizi yeniden yükleyin."
+          }
+        }
+      }
+    },
+    "explanation.preference.reload" : {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reload saved preference"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kayıtlı tercihi yeniden yükle"
+          }
+        }
+      }
+    },
+    "explanation.preference.save" : {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save this selection"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu seçimi kaydet"
+          }
+        }
+      }
+    },
     "%@ · %@" : {
       "localizations" : {
         "en" : {
@@ -193,7 +753,20 @@
 
     },
     "Explanation depth" : {
-
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Explanation depth"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Açıklama düzeyi"
+          }
+        }
+      }
     },
     "Export Data" : {
 

@@ -7,7 +7,7 @@ struct AppDependencies {
     let authenticationSessionStore: AuthenticationSessionStore
     let authenticationAPI: AuthenticationAPI
     let accountPrivacyAPI: AccountPrivacyAPI
-    let learningProfileAPI: LearningProfileAPI
+    let learningProfileAPI: LearningProfileServicing
     let entitlementAPI: EntitlementAPI
     let appleBillingAPI: AppleBillingAPI
     let storeProductRepository: StoreProductRepository
@@ -61,7 +61,7 @@ struct AppDependencies {
         )
         let authenticationAPI = AuthenticationAPI(apiClient: apiClient)
         let accountPrivacyAPI = AccountPrivacyAPI(apiClient: apiClient)
-        let learningProfileAPI = LearningProfileAPI(apiClient: apiClient)
+        var learningProfileAPI: LearningProfileServicing = LearningProfileAPI(apiClient: apiClient)
         let entitlementAPI = EntitlementAPI(apiClient: apiClient)
         let appleBillingAPI = AppleBillingAPI(apiClient: apiClient)
         let storeProductRepository = StoreKitProductRepository()
@@ -87,6 +87,7 @@ struct AppDependencies {
         solveFixture = environment == .development && arguments.contains("--solve-fixture") && arguments.contains("--ui-testing-authenticated")
         solveEnabled = environment == .development
         if solveFixture {
+            learningProfileAPI = FixtureLearningProfileAPI(failsSave: arguments.contains("--profile-save-failure"))
             if let scopeArgument = arguments.first(where: { $0.hasPrefix("--solve-fixture-scope=") }),
                let scope = UUID(uuidString: String(scopeArgument.dropFirst("--solve-fixture-scope=".count))) {
                 solveFixtureScope += "-" + scope.uuidString

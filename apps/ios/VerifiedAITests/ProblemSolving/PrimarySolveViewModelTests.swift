@@ -17,6 +17,45 @@ final class PrimarySolveViewModelTests: XCTestCase {
         for _ in 0..<200 { if predicate() { return }; await Task.yield() }
         XCTFail("Expected bounded asynchronous transition")
     }
+    func testExplanationModeSwitchesPreserveVerdictsAndNeverCallSolveOrVerification() async throws {
+        let profileService = FixtureLearningProfileAPI()
+        let profile = OnboardingViewModel(learningProfileAPI: profileService, networkMonitor: network,
+            logger: AppLogger(subsystem: "com.verifiedai.tests", category: "explanation"))
+        let fixtureUser = UUID(uuidString: "00000000-0000-0000-0000-0000000000A1")!
+        await profile.bootstrap(userId: fixtureUser)
+        for scenario in ["UNVERIFIED", "PARTIALLY_VERIFIED", "CONTRADICTION", "VERIFIED"] {
+            service.currentJob = try FixturePrimarySolveAPI.decode(state: .generatedUnverified)
+            service.decision = FixturePrimarySolveAPI.decisionFixture(scenario)
+            let vm = PrimarySolveViewModel(userId: fixtureUser, sessionId: session, service: service,
+                recovery: store, network: network, profileModel: profile)
+            vm.resume()
+            // A prior offline selection requires a separate profile GET on reopening.
+            // Wait for both independent reads before testing intentional persisted changes.
+            await settle { vm.loaded && !vm.busy && vm.explanationPreferenceStatus == .saved }
+            let candidate = try XCTUnwrap(vm.visibleCandidate)
+            let verdict = try XCTUnwrap(vm.verification)
+            let evidence = vm.verificationPresentation
+            let reads = service.verificationRequests, currentReads = service.currentRequests
+            for mode in ExplanationDepth.allCases {
+                vm.selectExplanationDepth(mode)
+                await settle { vm.explanationPreferenceStatus == .saved }
+                XCTAssertEqual(vm.explanationDepth, mode)
+                XCTAssertEqual(vm.visibleCandidate, candidate)
+                XCTAssertEqual(vm.verification, verdict)
+                XCTAssertEqual(vm.verificationPresentation, evidence)
+            }
+            network.isReachable = false
+            vm.selectExplanationDepth(.quick)
+            XCTAssertEqual(vm.explanationPreferenceStatus, .failed(.offline))
+            XCTAssertEqual(vm.visibleCandidate, candidate)
+            XCTAssertEqual(vm.verification, verdict)
+            XCTAssertEqual(service.verificationRequests, reads)
+            XCTAssertEqual(service.currentRequests, currentReads)
+            XCTAssertTrue(service.keys.isEmpty); XCTAssertTrue(service.retryKeys.isEmpty)
+            XCTAssertTrue(service.readStates.isEmpty); XCTAssertEqual(service.cancels, 0)
+            vm.suspend(); network.isReachable = true
+        }
+    }
     func testVerificationClearsOnOfflineSuspendAndNeverEnablesSolveRetry() async throws {
         service.currentJob = try FixturePrimarySolveAPI.decode(state: .generatedUnverified)
         service.decision = FixturePrimarySolveAPI.decisionFixture("VERIFIED")
@@ -289,10 +328,12 @@ final class PrimarySolveViewModelTests: XCTestCase {
 
 @MainActor
 private final class SolveServiceDouble: PrimarySolveServicing {
+    var verificationRequests = 0, currentRequests = 0
     var decision: VerificationDecisionSnapshot?
     var delayDecision = false, failDecision = false, malformedDecision = false
     var decisionContinuation: CheckedContinuation<Void, Never>?
     func verification(sessionId: UUID, jobId: UUID) async throws -> VerificationDecisionSnapshot? {
+        verificationRequests += 1
         if delayDecision { await withCheckedContinuation { decisionContinuation = $0 } }
         if malformedDecision { throw SolveContractError.invalidResponse }
         if failDecision { throw NetworkError.transport("offline") }
@@ -302,7 +343,7 @@ private final class SolveServiceDouble: PrimarySolveServicing {
     var keys: [String] = [], retryKeys: [String] = []
     var readStates: [SolveState] = []
     var failStart = false, alwaysRunning = false, mutateReadLineage = false, cancels = 0
-    func current(sessionId: UUID) async throws -> SolveJobSnapshot? { currentJob }
+    func current(sessionId: UUID) async throws -> SolveJobSnapshot? { currentRequests += 1; return currentJob }
     func start(sessionId: UUID, key: String) async throws -> SolveJobSnapshot {
         keys.append(key)
         if failStart { throw NetworkError.transport("timeout") }

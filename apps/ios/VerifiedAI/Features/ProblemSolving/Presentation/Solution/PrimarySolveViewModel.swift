@@ -19,6 +19,8 @@ final class PrimarySolveViewModel {
     private let recovery: SolveRecoveryStoring
     private let network: NetworkMonitoring
     private let logger: AppLogger
+    private let profileModel: OnboardingViewModel?
+    private let explanationOwner = UUID()
     private let sleep: @Sendable (UInt64) async throws -> Void
     @ObservationIgnored private var task: Task<Void, Never>?
     private var generation = 0
@@ -35,13 +37,32 @@ final class PrimarySolveViewModel {
     private var blockedMutation = false
 
     init(userId: UUID, sessionId: UUID, service: PrimarySolveServicing, recovery: SolveRecoveryStoring,
-         network: NetworkMonitoring, isFixture: Bool = false,
+         network: NetworkMonitoring, isFixture: Bool = false, profileModel: OnboardingViewModel? = nil,
          logger: AppLogger = AppLogger(subsystem: "com.verifiedai.learning", category: "solving"),
          sleep: @escaping @Sendable (UInt64) async throws -> Void = { try await Task.sleep(nanoseconds: $0) }) {
         self.userId = userId; self.sessionId = sessionId; self.service = service
         self.recovery = recovery; self.network = network; self.isFixture = isFixture
         self.logger = logger; self.sleep = sleep
+        self.profileModel = profileModel
     }
+
+    private var explanationProfile: OnboardingViewModel? {
+        guard let profileModel, profileModel.ownsExplanationPresentation(owner: explanationOwner, userId: userId) else { return nil }
+        return profileModel
+    }
+    var explanationDepth: ExplanationDepth { explanationProfile?.explanationDepth ?? .standard }
+    var explanationPreferenceStatus: ExplanationPreferenceStatus {
+        explanationProfile?.explanationPreferenceStatus ?? .fallback
+    }
+    var explanationPresentation: ExplanationPresentation? {
+        visibleCandidate.map { ExplanationPresentation(candidate: $0, mode: explanationDepth) }
+    }
+    func selectExplanationDepth(_ depth: ExplanationDepth) {
+        guard active else { return }
+        profileModel?.selectExplanationDepth(depth, owner: explanationOwner)
+    }
+    func reloadExplanationPreference() { profileModel?.reloadExplanationPreference(owner: explanationOwner) }
+    func saveExplanationPreference() { profileModel?.saveExplanationPreference(owner: explanationOwner) }
 
     var screenPhase: SolveScreenPhase {
         if let state = snapshot?.state { return .job(state) }
@@ -86,9 +107,11 @@ final class PrimarySolveViewModel {
 
     func resume() {
         active = true
+        profileModel?.beginExplanationPresentation(owner: explanationOwner, userId: userId)
         refresh()
     }
     func suspend() {
+        profileModel?.endExplanationPresentation(owner: explanationOwner)
         active = false; generation += 1; task?.cancel(); task = nil; busy = false
         // Never display a cached candidate or verification verdict after a background/source/account transition.
         snapshot = nil; verification = nil; verificationUnavailable = false; verificationContractInvalid = false; loaded = false

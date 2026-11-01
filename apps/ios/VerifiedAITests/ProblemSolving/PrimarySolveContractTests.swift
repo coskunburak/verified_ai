@@ -4,6 +4,38 @@ import XCTest
 
 @MainActor
 final class PrimarySolveContractTests: XCTestCase {
+    func testExplanationPreferenceUsesOnlyExistingProfilePatchAndDoesNotReplayAuthFailure() async throws {
+        let response = Data("""
+        {"exists":true,"id":"00000000-0000-0000-0000-0000000000B1",
+         "userId":"00000000-0000-0000-0000-0000000000A1","educationLevel":"HIGH_SCHOOL",
+         "preferredLanguage":"tr","explanationDepth":"DEEP","dailyStudyMinutes":25,
+         "timezone":"Europe/Istanbul","goalContext":"Synthetic fixture","onboardingStatus":"COMPLETED","version":8}
+        """.utf8)
+        let transport = SolveContractSession(responses: [response])
+        let api = LearningProfileAPI(apiClient: APIClient(baseURL: URL(string: "https://example.invalid")!,
+            session: transport, authTokenProvider: InMemorySecureStorage(), correlationContext: CorrelationContext()))
+        let saved = try await api.saveExplanationDepth(.deep, expectedVersion: 7)
+        XCTAssertEqual(saved.explanationDepth, .deep)
+        let requests = await transport.requests
+        XCTAssertEqual(requests.count, 1)
+        XCTAssertEqual(requests[0].url?.path, "/api/v1/me/learning-profile")
+        XCTAssertEqual(requests[0].httpMethod, "PATCH")
+        let payload = try JSONSerialization.jsonObject(with: XCTUnwrap(requests[0].httpBody)) as! [String: Any]
+        XCTAssertEqual(Set(payload.keys), ["explanationDepth", "expectedVersion"])
+        XCTAssertEqual(payload["explanationDepth"] as? String, "DEEP")
+        XCTAssertEqual(payload["expectedVersion"] as? Int, 7)
+
+        let expired = SolveContractSession(responses: [Data("""
+        {"type":"fixture","title":"Synthetic expiry","status":401,"code":"AUTH_TOKEN_EXPIRED"}
+        """.utf8)], status: 401)
+        let expiredAPI = LearningProfileAPI(apiClient: APIClient(baseURL: URL(string: "https://example.invalid")!,
+            session: expired, authTokenProvider: InMemorySecureStorage(), correlationContext: CorrelationContext()))
+        do { _ = try await expiredAPI.saveExplanationDepth(.quick, expectedVersion: 7); XCTFail("Expected auth error") }
+        catch { XCTAssertEqual(ExplanationPreferenceError.from(error), .auth) }
+        let expiredRequests = await expired.requests
+        XCTAssertEqual(expiredRequests.count, 1)
+    }
+
     func testAllLifecycleStatesDecodeAndOnlyCandidateStatesExposeAnswers() throws {
         for state in SolveState.allCases {
             let job = try FixturePrimarySolveAPI.decode(state: state)
