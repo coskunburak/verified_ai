@@ -24,6 +24,7 @@ public class TutorSessionLifecycleContributor implements AccountDataLifecycleCon
         var transcripts=sessions.stream().map(s->Map.of(
             "session",sessionMap(s),
             "messages",store.messages(owner,s.id(),0,TutorPolicy.MAX_MESSAGES).stream().map(this::messageMap).toList(),
+            "hints",store.hints(owner,s.id()).stream().map(this::hintMap).toList(),
             "turns",store.turns(owner,s.id(),0,TutorPolicy.MAX_MESSAGES).stream().map(this::turnMap).toList()
         )).toList();
         return Map.of("schemaVersion","tutor-export-v1","trainingEligible",false,"sessions",transcripts);
@@ -53,6 +54,19 @@ public class TutorSessionLifecycleContributor implements AccountDataLifecycleCon
         m.put("createdAt",s.createdAt()==null?null:s.createdAt().toString());
         m.put("updatedAt",s.updatedAt()==null?null:s.updatedAt().toString());
         m.put("trainingEligible",s.trainingEligible());
+        return m;
+    }
+
+    private Map<String,Object> hintMap(com.verifiedai.tutoring.domain.TutorHint h) {
+        Map<String,Object> m=new LinkedHashMap<>();
+        m.put("schemaVersion",h.schemaVersion()); m.put("id",h.id()); m.put("tutorSessionId",h.tutorSessionId());
+        m.put("sequenceNumber",h.sequenceNumber()); m.put("level",h.level().name()); m.put("content",h.content());
+        m.put("language",h.language()); m.put("policyVersion",h.policyVersion()); m.put("costPolicyVersion",h.costPolicyVersion());
+        m.put("assistance",h.assistance().name()); m.put("masteryEvidence",h.masteryEvidence());
+        m.put("inference",h.inference()); m.put("commercial",h.commercial()); m.put("previousPhase",h.previousPhase().name());
+        m.put("phase",h.progress().phase().name()); m.put("turnCount",h.progress().turnCount());
+        m.put("unproductiveCount",h.progress().unproductiveCount()); m.put("referenceStatus",h.referenceStatus());
+        m.put("uncertain",h.uncertain()); m.put("createdAt",h.createdAt().toString()); m.put("trainingEligible",false);
         return m;
     }
 

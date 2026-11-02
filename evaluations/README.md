@@ -58,3 +58,18 @@ This local baseline mechanism never creates a Java production authorization.
 Run the single owner acceptance entry point documented in the Sprint 5.12 execution
 report. Generated artifacts belong in .generated; local reports must remain private
 until reviewed. CI uploads only named synthetic reports and retains them for 14 days.
+
+## Sprint 6.6 tutoring evidence
+
+Owner run 20261102-214452-cv4eye9f reconciled both versioned synthetic datasets: 20 cases in
+`golden-datasets/tutoring/socratic-policy-v1.json` and 18 in
+`golden-datasets/tutoring/progressive-hints-v1.json`. Inputs/E/D passed, exit 0;
+status TARGETED_RECONCILIATION_PASSED. Dataset digests, outcomes and required integration cases
+were checked against the prior owner run plus the focused HTTP repair. No provider was invoked.
+
+The datasets are non-training synthetic policy regression evidence, not live model/expert teaching
+quality. Full current-source acceptance remains pending, hosted CI unverified and production
+unauthorized. Existing golden datasets/baselines are unchanged. Full and E/D-only entry points:
+`scripts/quality/sprint_6_6_owner_acceptance.sh` and `scripts/quality/sprint_6_6_reconcile_evidence.sh`
+from the repository root. The latter reads existing evidence and does not rerun tests/evaluations.
+See the [execution report](../docs/verified_ai_learning_platform_docs_v4/sprints/phase06_solution_experience_and_tutoring/SPRINT_6.6_EXECUTION_REPORT.md).

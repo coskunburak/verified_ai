@@ -71,5 +71,25 @@ ADVANCE_ONE_STEP is reserved for trusted step evidence and cannot be reached by 
 COMPLETED means reflection complete. A disputed result stops and points to the existing source/evidence
 screen; the tutor honestly says no recheck was started. Start a new session after review when ready.
 
-The provider capability remains disabled. Hint ladders/economics remain Sprint 6.6. Synthetic structural
-regression is separate from expert-labelled teaching quality, which is NOT_EVALUATED and release-blocking.
+The provider capability remains disabled. At the Sprint 6.5 baseline, structured hint ladders/economics
+were deferred; the completed bounded Sprint 6.6 implementation is described below. Synthetic structural
+regression remains separate from expert-labelled teaching quality, which is NOT_EVALUATED and release-blocking.
+
+## Sprint 6.6 implemented hint boundary
+
+`progressive-hints-v1` supports canonical-v1, one-variable `a*x+b=c` with integer a=2..99,
+b=1..999 and c=1..999, no constraints/assumptions/restrictions. UNKNOWN domain is not upgraded to REAL
+or verified; the content only proposes inverse operations that remain to be performed by the learner.
+Other structures return unavailable. The six EN/TR templates are selected by a typed structural family,
+never by student instructions, source prose or unvalidated model output. H3 asks the learner to subtract
+the constant on both sides without doing the division or printing a computed intermediate/final answer.
+
+Each durable hint moves the existing Socratic progress to OFFER_MINIMAL_SUPPORT, preserves unproductiveCount,
+and consumes one interaction. Hints stop at terminal phases or the reserved final pause interaction.
+Review, reflection and ordinary turns continue through the same state machine. Legacy SMALL_HINT intent
+retains its existing generic Socratic nudge meaning; the dedicated level-expecting hint operation owns
+structured problem-specific assistance and never interprets a text request as reveal authorization.
+
+REVEAL has its own confirmed command and UI. No tutor-authorized verified answer reader exists locally;
+it returns TUTOR_REVEAL_UNAVAILABLE without evidence or debit. This limitation is explicit, not a fourth
+hint or a simulated success. Both tutoring flags default false; live pedagogy quality remains unevaluated.

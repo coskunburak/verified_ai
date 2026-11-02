@@ -37,5 +37,8 @@ public class TutorSourceAccess {
             throw ex;
         }
     }
+    public TutorHintSource.Family hintFamily(UUID owner, UUID problem) {
+        return TutorHintSource.family(source.current(owner, problem));
+    }
     public record Snapshot(UUID canonicalId, int canonicalRevision, UUID parseId, int parseRevision, String primarySkillId) {}
 }

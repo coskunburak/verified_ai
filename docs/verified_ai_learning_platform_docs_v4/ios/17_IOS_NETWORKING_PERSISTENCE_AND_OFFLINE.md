@@ -112,3 +112,13 @@ original content; it is not a transcript store. Retry preserves key/payload acro
 the marker only after acknowledgement or definitive rejection. Account/logout cleanup removes pending
 data. Active owner, authentication session, task cancellation and presentation generation guard results.
 Offline presentation cannot create confirmed messages. Tutor replies/hints are explicitly unavailable.
+
+## Sprint 6.6 hint recovery
+
+TutorServicing/API/ViewModel use server-returned nextLevel/availability. Existing protected pending markers
+add hint/reveal kinds and an expected hint level, preserving legacy append/turn decoding. Lost acknowledgement
+retains the exact operation key and level; duplicate taps, offline creation and account-invalid responses
+are blocked. A restart reloads server history and any unresolved marker before permitting new work.
+New EN/TR controls distinguish H1/H2/H3 from a confirmed reveal request, display exhaustion/unavailability,
+and retain composer drafts during hints. Accessibility focus/announcements and 44-point controls introduce
+no animation. Real-device/VoiceOver review remains owner-operated. No new Swift file needs registration.

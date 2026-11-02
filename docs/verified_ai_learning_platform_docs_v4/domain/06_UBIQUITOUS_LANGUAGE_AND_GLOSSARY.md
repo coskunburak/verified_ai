@@ -244,3 +244,11 @@ not a product verification verdict.
 
 **Numerical diagnostic** — bounded approximate comparisons under an explicit sampling and
 stability policy. Agreement and mismatch are neither exact proof nor exact disproof.
+
+## Progressive hint vocabulary (Sprint 6.6)
+
+H1 is a conceptual cue; H2 identifies the method/rule; H3 asks for one first action.
+REVEAL is a separate explicit request, never the next ordinary hint. Assistance classification
+NONE/CONCEPTUAL/METHOD/FIRST_STEP/EXPLICIT_REVEAL is versioned pedagogical evidence, not a score,
+verified independent answer, inference charge or subscription debit. Only issued H1–H3 records
+exist in this release; NONE is absence of use and EXPLICIT_REVEAL is reserved for authorized disclosure.

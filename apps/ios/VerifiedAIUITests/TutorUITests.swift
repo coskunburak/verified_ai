@@ -138,4 +138,43 @@ final class TutorUITests: XCTestCase {
         XCTAssertFalse(app.staticTexts["tutor.error"].exists)
     }
 
+    func testProgressiveHintsRemainSeparateFromConfirmedRevealAndResume() {
+        let app = open()
+        for level in ["H1","H2","H3"] {
+            tap(app.buttons["tutor.hints.request"], app)
+            let row = app.descendants(matching: .any).matching(identifier: "tutor.hint." + level).firstMatch
+            XCTAssertTrue(row.waitForExistence(timeout: 5))
+            XCTAssertFalse(row.label.contains("x = 4")); XCTAssertFalse(row.label.contains("x=4"))
+        }
+        XCTAssertFalse(app.buttons["tutor.hints.request"].exists)
+        XCTAssertTrue(app.staticTexts["tutor.hints.status"].label.contains("hidden"))
+        tap(app.buttons["tutor.reveal.request"], app)
+        tap(app.buttons["Cancel"], app)
+        XCTAssertFalse(app.staticTexts["tutor.error"].exists)
+        tap(app.buttons["tutor.reveal.request"], app)
+        tap(app.buttons["Confirm answer request"], app)
+        XCTAssertTrue(app.staticTexts["tutor.error"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["tutor.error"].label.contains("verified reference"))
+        tap(app.buttons["tutor.retry"], app)
+        XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "tutor.hint.H3").firstMatch.exists)
+        XCTAssertFalse(app.staticTexts["tutor.error"].exists)
+    }
+    func testLostHintAcknowledgementRecoversWithoutDuplicate() {
+        let app = open(failure: true)
+        tap(app.buttons["tutor.hints.request"], app)
+        XCTAssertTrue(app.staticTexts["tutor.error"].waitForExistence(timeout: 5))
+        tap(app.buttons["tutor.retry"], app)
+        XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "tutor.hint.H1").firstMatch.waitForExistence(timeout: 5))
+        XCTAssertEqual(app.descendants(matching: .any).matching(identifier: "tutor.hint.H1").count, 1)
+        XCTAssertFalse(app.descendants(matching: .any).matching(identifier: "tutor.hint.H2").firstMatch.exists)
+    }
+    func testTurkishHintAccessibilityAndNoEarlyAnswer() {
+        let app = open(turkish: true)
+        XCTAssertTrue(app.buttons["tutor.hints.request"].label.contains("İpucu"))
+        tap(app.buttons["tutor.hints.request"], app)
+        let row = app.descendants(matching: .any).matching(identifier: "tutor.hint.H1").firstMatch
+        XCTAssertTrue(row.waitForExistence(timeout: 5)); XCTAssertTrue(row.label.contains("Bilinmeyeni"))
+        XCTAssertFalse(row.label.contains("x=4")); XCTAssertFalse(app.buttons["tutor.reveal.request"].label.isEmpty)
+    }
+
 }

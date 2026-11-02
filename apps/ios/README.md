@@ -261,3 +261,13 @@ other required checks. A rerun of the old commit does not validate this change.
 After owner-local PASS, provide a commit/PR handoff and await explicit publication
 authorization. The owner performs the merge after CI acceptance.
 
+## Current Tutor delivery — Sprint 6.6
+
+Progressive hint controls, server-owned next action/history, protected pending recovery and EN/TR
+accessibility copy are implemented. All 185 iOS cases passed in owner run 20261102-211111-8b8qag.
+Owner E/D reconciliation 20261102-214452-cv4eye9f records TARGETED_RECONCILIATION_PASSED across that
+run and a focused backend repair; no subsequent iOS source changed. Full current-source acceptance
+is still pending and hosted CI is NOT_VERIFIED. Manual physical-device/VoiceOver review is outstanding.
+Reveal is explicitly confirmed but returns unavailable without an authorized verified reference.
+See the [current Sprint 6.6 report](../../docs/verified_ai_learning_platform_docs_v4/sprints/phase06_solution_experience_and_tutoring/SPRINT_6.6_EXECUTION_REPORT.md).
+Earlier PR #30 records above are historical and do not describe the latest Sprint 6.6 local evidence.

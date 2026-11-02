@@ -169,3 +169,14 @@ This is a highest-precedence document.
 - Disputes stop in NEEDS_REVIEW with source/evidence review guidance; no reverification is claimed.
 - No prompt/provider output can enter this deterministic path. TUTOR AI route remains disabled.
 - New turns are blocked when closed, stale, terminal or disabled; committed owned history stays readable.
+
+## Sprint 6.6 hint invariants
+
+- H1 → H2 → H3 is server-owned and source-scoped; each requested level must match the next durable level.
+- H3 cannot authorize answer reveal. Explicit intent still requires a trusted verified-reference contract.
+- Hints share Socratic phase and interaction budget; they never judge a learner step or assign mastery.
+- Committed retries return the original versioned artifact; rejected/pending operations create no assistance evidence.
+- Pedagogical assistance, actual inference usage and commercial debits are distinct. This deterministic
+  implementation dispatches no model and invents no debit. Opening tutoring/accessibility creates no assistance.
+- Only reviewed source-applicable templates publish; unsupported syntax, generation and references fail closed.
+- Ownership, account → source lock order, history export, deletion cascades and trainingEligible=false remain mandatory.

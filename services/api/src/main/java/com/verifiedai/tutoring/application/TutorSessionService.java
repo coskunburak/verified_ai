@@ -28,6 +28,8 @@ public class TutorSessionService {
     private final int sessionLimit, messageLimit;
     @Value("${verifiedai.tutoring.socratic-enabled:false}")
     private boolean socraticEnabled;
+    @Value("${verifiedai.tutoring.hints-enabled:false}")
+    private boolean hintsEnabled;
 
     public TutorSessionService(TutorSourceAccess sources, TutorLearnerContext contexts, TutorStore store, Clock clock,
         RateLimiter limiter, MeterRegistry metrics, @Value("${verifiedai.tutoring.max-sessions:30}") int sessionLimit,
@@ -73,6 +75,7 @@ public class TutorSessionService {
     public TutorMessage append(UUID owner, UUID problem, UUID id, String key, String content) {
         return operation("append",owner,problem,()-> {
             var session=owned(owner,problem,id); TutorPolicy.key(key); TutorPolicy.content(content);
+            rejectHintKey(owner,id,key);
             var replay=store.replay(owner,id,key);
             if(replay.isPresent()) {
                 if(store.turnForMessage(owner,id,replay.get().id()).isPresent() || !replay.get().content().equals(content)) throw TutorPolicy.failure(ApiErrorCode.IDEMPOTENCY_KEY_REUSED,HttpStatus.CONFLICT);
@@ -95,6 +98,7 @@ public class TutorSessionService {
             var session=owned(owner,problem,id); TutorPolicy.key(key); TutorPolicy.content(content);
             var intent=requestedIntent == null || requestedIntent == SocraticPolicy.Intent.UNKNOWN
                 ? SocraticPolicy.classify(content) : requestedIntent;
+            rejectHintKey(owner,id,key);
             var replay=store.replay(owner,id,key);
             if(replay.isPresent()) {
                 var existing=store.turnForMessage(owner,id,replay.get().id());
@@ -122,6 +126,62 @@ public class TutorSessionService {
                 "outcome",turn.outcome().name()).increment();
             count("deterministic_reply"); return turn;
         });
+    }
+    @Transactional(timeout=5)
+    public TutorHint.History hints(UUID owner, UUID problem, UUID id) {
+        return operation("hint_history",owner,problem,()-> {
+            var session=current(owner,owned(owner,problem,id));
+            var history=store.hints(owner,id); var progress=store.progress(owner,id);
+            var level=history.isEmpty() ? null : history.getLast().level();
+            boolean supported=session.sourceCurrent() && sources.hintFamily(owner,problem)
+                == com.verifiedai.problem.application.tutoring.TutorHintSource.Family.TWO_STEP_LINEAR;
+            var availability=HintPolicy.availability(session,progress,level,socraticEnabled && hintsEnabled,supported);
+            if(availability==HintPolicy.Availability.AVAILABLE && session.messageCount()+store.replyCount(owner,id)>=messageLimit)
+                availability=HintPolicy.Availability.STOPPED;
+            return new TutorHint.History("tutor-hint-history-v1",id,history,level,
+                availability==HintPolicy.Availability.AVAILABLE ? HintPolicy.next(level) : null,
+                availability,progress,"UNAVAILABLE");
+        });
+    }
+    @Transactional(timeout=5)
+    public TutorHint requestHint(UUID owner, UUID problem, UUID id, String key, HintPolicy.Level level) {
+        return operation("hint",owner,problem,()-> {
+            var session=owned(owner,problem,id); TutorPolicy.key(key); count("hint_requested");
+            var replay=store.hintReplay(owner,id,key);
+            if(replay.isPresent()) {
+                if(replay.get().level()!=level) throw TutorPolicy.failure(ApiErrorCode.IDEMPOTENCY_KEY_REUSED,HttpStatus.CONFLICT);
+                count("hint_replay"); return replay.get();
+            }
+            if(store.replay(owner,id,key).isPresent()) throw TutorPolicy.failure(ApiErrorCode.IDEMPOTENCY_KEY_REUSED,HttpStatus.CONFLICT);
+            TutorPolicy.append(session.status(),current(owner,session).sourceCurrent(),session.messageCount()+store.replyCount(owner,id),messageLimit);
+            var history=store.hints(owner,id); var previous=store.progress(owner,id);
+            var next=HintPolicy.advance(previous,history.isEmpty() ? null : history.getLast().level(),level);
+            if(!socraticEnabled || !hintsEnabled || sources.hintFamily(owner,problem)
+                != com.verifiedai.problem.application.tutoring.TutorHintSource.Family.TWO_STEP_LINEAR)
+                throw new ApiProblemException(HttpStatus.SERVICE_UNAVAILABLE,ApiErrorCode.TUTOR_CAPABILITY_UNAVAILABLE,
+                    "Hints unavailable for this source",true,"REVIEW");
+            // PostgreSQL TIMESTAMPTZ retains microseconds: first response and durable replay must match exactly.
+            var hint=TutorHint.create(id,level,"tr".equals(session.language()) ? "tr" : "en",previous,next,
+                clock.instant().truncatedTo(java.time.temporal.ChronoUnit.MICROS));
+            store.insertHint(owner,key,hint);
+            metrics.counter("tutor.hint.delivered","level",level.name()).increment();
+            count("hint_delivered"); return hint;
+        });
+    }
+    @Transactional(timeout=5)
+    public void reveal(UUID owner, UUID problem, UUID id, String key, boolean confirmed) {
+        operation("reveal",owner,problem,()-> {
+            var session=owned(owner,problem,id); TutorPolicy.key(key); count("reveal_requested");
+            rejectHintKey(owner,id,key);
+            if(store.replay(owner,id,key).isPresent()) throw TutorPolicy.failure(ApiErrorCode.IDEMPOTENCY_KEY_REUSED,HttpStatus.CONFLICT);
+            TutorPolicy.append(session.status(),current(owner,session).sourceCurrent(),session.messageCount()+store.replyCount(owner,id),messageLimit);
+            if(store.progress(owner,id).phase().terminal()) throw TutorPolicy.failure(ApiErrorCode.TUTOR_PEDAGOGY_STOPPED,HttpStatus.CONFLICT);
+            HintPolicy.requireReveal(confirmed);
+            return null;
+        });
+    }
+    private void rejectHintKey(UUID owner,UUID id,String key) {
+        if(store.hintReplay(owner,id,key).isPresent()) throw TutorPolicy.failure(ApiErrorCode.IDEMPOTENCY_KEY_REUSED,HttpStatus.CONFLICT);
     }
     public TutorSession close(UUID owner, UUID problem, UUID id) {
         return operation("close",owner,problem,()-> {

@@ -53,4 +53,21 @@ final class TutorAPI: TutorServicing, @unchecked Sendable {
         return try r.body.validated(session: session)
     }
 
+    func hints(problem: UUID, session: UUID) async throws -> TutorHintHistory {
+        let r: HTTPResponse<TutorHintHistory> = try await client.send(HTTPRequest(endpoint: Endpoint(path: path(problem, session) + "/hints"), timeout: 15))
+        return try r.body.validated(session: session)
+    }
+    func requestHint(problem: UUID, session: UUID, key: String, level: TutorHintLevel) async throws -> TutorHint {
+        let body = try JSONEncoder().encode(["level": level.rawValue])
+        let r: HTTPResponse<TutorHint> = try await client.send(HTTPRequest(endpoint: Endpoint(path: path(problem, session) + "/hints", method: .post), body: body, idempotencyKey: key, timeout: 15))
+        guard r.body.level == level else { throw NetworkError.invalidResponse }
+        return try r.body.validated(session: session)
+    }
+    func reveal(problem: UUID, session: UUID, key: String) async throws {
+        let body = try JSONEncoder().encode(["confirmed": true])
+        // No authorized answer contract exists yet. Any unexpected success must fail closed.
+        let _: HTTPResponse<TutorHint> = try await client.send(HTTPRequest(endpoint: Endpoint(path: path(problem, session) + "/reveal", method: .post), body: body, idempotencyKey: key, timeout: 15))
+        throw NetworkError.invalidResponse
+    }
+
 }

@@ -31,3 +31,13 @@ owned by solving; independent owner-only schema fixtures live in `evaluations/fi
 Sprint 5.8 adds verification-execution.schema.json and verification-execution-result.schema.json.
 They define scoped method execution and evidence only; existing canonical/verifier-input versions are unchanged.
 Shared exact mathematical cases live under packages/test-fixtures/verification/execution-v1/.
+
+## Sprint 6.6 hint artifact
+
+`tutor-hint-v1.schema.json` defines the additive public hint artifact: level, sequence, policy/cost
+versions, assistance-only evidence, NO_DEBIT, no-inference classification and explicit uncertainty.
+Existing released schemas are unchanged. Exact EN/TR template and structural applicability checks
+also run in domain code; schema validity alone is not mathematical safety.
+Owner targeted reconciliation 20261102-214452-cv4eye9f passed the 18-case hint synthetic evidence
+and related integration cases across prior/focused runs. Full current-source acceptance remains
+pending; successful answer reveal and production rollout are unavailable.

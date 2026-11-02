@@ -152,3 +152,22 @@ fixtures, Python/iOS malformed-scope contracts and a calculus scope UI test. The
 script requires the new suite and named integration cases. All closure checks are
 NOT_RUN_BY_AGENT / PENDING_OWNER_VALIDATION. Earlier generic A–H owner passes do not cover
 these changes. CAP-VERIFY-002 stays Partial; hosted CI and production release remain pending.
+
+## Sprint 6.6 tutoring contribution — completed bounded slice
+
+Owner evidence status: TARGETED_RECONCILIATION_PASSED, run 20261102-214452-cv4eye9f (inputs/E/D PASS).
+The scope is prior full run 20261102-211111-8b8qag plus one focused HTTP repair retest; 185 iOS and
+218 backend cases are covered with none unresolved. Existing requirement meanings are unchanged.
+
+| Invariant/contribution | Source/test ownership | Recorded evidence and remaining scope |
+|---|---|---|
+| Hint progression, bounded disclosure, separate reveal | HintPolicyTest, HintSourceTest, HintEvaluationTest; learning/34 | H1–H3 and 18 synthetic hint cases reconciled; successful verified reveal/broader math unavailable |
+| No false independent mastery or invented debit | HintPolicyTest, ProgressiveHintIntegrationTest; learning/31 | ASSISTANCE_ONLY, NO_DEBIT, zero inference; no mastery-score changes |
+| Durable source/owner/idempotency boundary | ProgressiveHintIntegrationTest, TutorSessionControllerTest | Races/replay/staleness/HTTP 422 repair covered; V029 local evidence reconciled |
+| Personal-data export/deletion and training exclusion | ProgressiveHintIntegrationTest, TutorPrivacyCapacityTest; data/23 | Complete bounded hint export, cascades and trainingEligible=false covered |
+| Policy evaluation contribution to REQ-EVAL-001 | HintEvaluationTest, SocraticEvaluationTest; ai/28 | 20 Socratic + 18 hint synthetic cases reconciled; live/expert quality NOT_EVALUATED |
+
+The local deterministic scope is complete for review. Full current-source acceptance remains pending;
+hosted CI is unverified, shared upgrades blocked and production unauthorized. Exact evidence and file
+ownership: `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.6_EXECUTION_REPORT.md` and
+`sprints/phase06_solution_experience_and_tutoring/SPRINT_6.6_FILE_MANIFEST.md`.

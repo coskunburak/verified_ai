@@ -71,6 +71,40 @@ public class TutorSessionController {
         @RequestParam(defaultValue="0") long after,@RequestParam(defaultValue="50") int limit) {
         return service.turns(AuthenticatedUser.from(jwt).userId(),problemId,id,after,limit);
     }
+    // Validate these additive commands after transport decoding so semantic rejections keep 422.
+    // Throwing from a Jackson creator wraps the domain error as HttpMessageNotReadableException (400).
+    public record HintRequest(HintPolicy.Level level) {
+        public static HintRequest parse(Map<String,Object> body) {
+            if(body==null || body.size()!=1 || !(body.get("level") instanceof String)) invalid();
+            try { return new HintRequest(HintPolicy.Level.valueOf((String)body.get("level"))); }
+            catch(IllegalArgumentException ex) { invalid(); return null; }
+        }
+    }
+    public record RevealRequest(boolean confirmed) {
+        public static RevealRequest parse(Map<String,Object> body) {
+            if(body==null || body.size()!=1 || !Boolean.TRUE.equals(body.get("confirmed"))) invalid();
+            return new RevealRequest(true);
+        }
+    }
+    private static void invalid() {
+        throw TutorPolicy.failure(ApiErrorCode.REQUEST_VALIDATION_FAILED,HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+    @GetMapping("/{id}/hints")
+    public TutorHint.History hints(@AuthenticationPrincipal Jwt jwt,@PathVariable UUID problemId,@PathVariable UUID id) {
+        return service.hints(AuthenticatedUser.from(jwt).userId(),problemId,id);
+    }
+    @PostMapping("/{id}/hints")
+    public TutorHint hint(@AuthenticationPrincipal Jwt jwt,@PathVariable UUID problemId,@PathVariable UUID id,
+        @RequestHeader(value="Idempotency-Key",required=false) String key,@RequestBody Map<String,Object> body) {
+        var request=HintRequest.parse(body);
+        return service.requestHint(AuthenticatedUser.from(jwt).userId(),problemId,id,key,request.level());
+    }
+    @PostMapping("/{id}/reveal")
+    public void reveal(@AuthenticationPrincipal Jwt jwt,@PathVariable UUID problemId,@PathVariable UUID id,
+        @RequestHeader(value="Idempotency-Key",required=false) String key,@RequestBody Map<String,Object> body) {
+        var request=RevealRequest.parse(body);
+        service.reveal(AuthenticatedUser.from(jwt).userId(),problemId,id,key,request.confirmed());
+    }
     @PostMapping("/{id}/close")
     public TutorSession close(@AuthenticationPrincipal Jwt jwt,@PathVariable UUID problemId,@PathVariable UUID id,
         @RequestBody(required=false) Map<String,Object> body) {

@@ -182,3 +182,12 @@ New turn operations use the existing active owner → problem locks with a five-
 learner append, local response and phase update commit together. There is no external pending worker.
 Same-key replay is the recovery contract. Legacy messages stay learner-only. Source staleness and
 closure prevent new work while history/replay remain readable. Feature flag defaults disabled.
+
+## Sprint 6.6 hint boundary
+
+Problem's existing `tutor-source` interface adds TutorHintSource structural family classification.
+Only TWO_STEP_LINEAR/UNSUPPORTED leaves that boundary; no canonical source text or answer enters Tutor.
+Tutor owns HintPolicy, TutorHint and V029 storage. Progress reads merge turn/hint snapshots by shared
+interaction count under the existing account → problem lock. Deterministic publication and storage are
+atomic, with five-second request transactions and no external calls. Billing, mastery and AI routing
+remain unchanged. A future authorized answer reader is a separate contract/release prerequisite.

@@ -19,7 +19,7 @@ This phase groups the production delivery units required for **Solution Experien
 - `SPRINT_6.3` — **Explanation Depth, Beginner-to-Deep Modes, and Personalization** — Support concise, standard, deep, and beginner explanations without changing mathematical truth.
 - `SPRINT_6.4` — **Tutor Session Domain and Conversation Persistence** — Create persistent, resumable tutoring sessions linked to problem, skill, learner state, and safety policy.
 - `SPRINT_6.5` — **Socratic Tutor Behavior and Pedagogical State Machine** — Make Tutor Mode guide the learner with questions instead of immediately revealing answers whenever the selected policy requires productive struggle.
-- `SPRINT_6.6` — **Progressive Hint System and Hint Cost Semantics** — Introduce structured hint levels, track hint use as a mastery signal, and prevent accidental full-answer leakage.
+- `SPRINT_6.6` — **Progressive Hint System and Hint Cost Semantics** — Introduce structured hint levels, track hint use as a mastery signal, and prevent accidental full-answer leakage. Bounded local implementation complete; `TARGETED_RECONCILIATION_PASSED` (owner run `20261102-214452-cv4eye9f`).
 - `SPRINT_6.7A` — **Analyze My Work: Handwritten Attempt Verification & First Wrong Step Pinpointing** — Fast-track handwritten attempt line-by-line verification, domain checks, and `CounterexampleEngine` per `sprints/02_FOCUSED_COMMERCIAL_WEDGE_SPRINT_PROGRAM.md`.
 - `SPRINT_6.7B` — **Counterfactual Twin Problem Generator & Socratic Progressive Hint Ladder** — SymPy-verified twin question generator (`F04`) and 3-tier hint ladder (`F09`) per `sprints/02_FOCUSED_COMMERCIAL_WEDGE_SPRINT_PROGRAM.md`.
 - `SPRINT_6.8` — **Alternative Solution Methods and Method Comparison** — Offer legitimate alternate methods and explain tradeoffs without fabricating unnecessary variants.
@@ -123,3 +123,16 @@ See `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.5_IMPLEMENTATION_
 Live tutor generation/trusted step assessment/expert teaching quality remain unavailable. TUTOR routing
 and deterministic rollout default disabled. This local scope does not waive ADR-011 or shared migration,
 hosted CI, staging and production gates. Sprint 6.6 hint ladders/economics remain separate.
+
+## Sprint 6.6 completed local slice — owner-directed scope
+
+`TARGETED_RECONCILIATION_PASSED`, run `20261102-214452-cv4eye9f`, inputs/E/D PASS.
+Bounded deterministic hints, durable assistance semantics, V029, strict APIs, iOS recovery and
+owner evidence reconciliation are complete. Owner coverage: 185 iOS, 217 prior backend passes +
+one repaired focused pass (218 across runs); 20+18 synthetic cases reconciled, none unresolved.
+
+This does not complete the whole Phase 6 or authorize production. Full current-source acceptance
+is `PENDING_FULL_CURRENT_SOURCE_RUN`; hosted CI `NOT_VERIFIED`; shared upgrades `BLOCKED`.
+Explicit reveal remains unavailable without an authorized verified-reference reader. Broader math,
+live/expert quality and ADR-011/TestFlight gates remain open. Flags default false. See Sprint 6.6
+execution report for exact scope, run history and evidence. No agent tests/builds/migrations or push.

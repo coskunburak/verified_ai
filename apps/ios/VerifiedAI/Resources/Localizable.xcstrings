@@ -1,6 +1,363 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "tutor.hints.synthetic": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Synthetic hint example: 2x + 3 = 11. No backend or AI provider is used."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sentetik ipucu örneği: 2x + 3 = 11. Backend veya yapay zekâ sağlayıcısı kullanılmaz."
+          }
+        }
+      }
+    },
+    "tutor.hints.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Progressive hints"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aşamalı ipuçları"
+          }
+        }
+      }
+    },
+    "tutor.hints.assistance": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hints record assistance, not independent mastery."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İpuçları yardım kullanımını kaydeder; bağımsız ustalık göstermez."
+          }
+        }
+      }
+    },
+    "tutor.hint.NONE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No hint used"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Henüz ipucu kullanılmadı"
+          }
+        }
+      }
+    },
+    "tutor.hint.H1": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "H1 · Conceptual cue"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "H1 · Kavramsal ipucu"
+          }
+        }
+      }
+    },
+    "tutor.hint.H2": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "H2 · Method or rule"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "H2 · Yöntem veya kural"
+          }
+        }
+      }
+    },
+    "tutor.hint.H3": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "H3 · First step"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "H3 · İlk adım"
+          }
+        }
+      }
+    },
+    "tutor.hints.request": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Request hint"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İpucu iste"
+          }
+        }
+      }
+    },
+    "tutor.hints.AVAILABLE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A hint is available."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İpucu kullanılabilir."
+          }
+        }
+      }
+    },
+    "tutor.hints.EXHAUSTED": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All three hints used. The answer is still hidden."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Üç ipucu da kullanıldı. Cevap hâlâ gizli."
+          }
+        }
+      }
+    },
+    "tutor.hints.CLOSED": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This session is closed. Hint history remains available."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu oturum kapalı. İpucu geçmişi okunabilir."
+          }
+        }
+      }
+    },
+    "tutor.hints.STALE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The source changed. Start a new session for hints."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaynak değişti. İpuçları için yeni oturum başlat."
+          }
+        }
+      }
+    },
+    "tutor.hints.STOPPED": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guidance has stopped. Review the source before a new session."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rehberlik durdu. Yeni oturumdan önce kaynağı incele."
+          }
+        }
+      }
+    },
+    "tutor.hints.UNAVAILABLE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hints are unavailable for this source."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu kaynak için ipuçları kullanılamıyor."
+          }
+        }
+      }
+    },
+    "tutor.hints.conflict": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hint progress changed. Refresh before requesting again."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İpucu ilerlemesi değişti. Yeniden istemeden önce yenile."
+          }
+        }
+      }
+    },
+    "tutor.hints.delivered": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New hint available."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yeni ipucu hazır."
+          }
+        }
+      }
+    },
+    "tutor.reveal.request": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Request answer reveal"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cevabı açmayı iste"
+          }
+        }
+      }
+    },
+    "tutor.reveal.confirmation": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Request the answer? This is separate from hints and requires a verified reference."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cevap istensin mi? Bu işlem ipuçlarından ayrıdır ve doğrulanmış kaynak gerektirir."
+          }
+        }
+      }
+    },
+    "tutor.reveal.confirm": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Confirm answer request"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cevap isteğini onayla"
+          }
+        }
+      }
+    },
+    "tutor.reveal.cancel": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vazgeç"
+          }
+        }
+      }
+    },
+    "tutor.reveal.unavailable": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Answer reveal is unavailable: an authorized verified reference is not available. Review the solution evidence screen."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cevap açılamıyor: yetkilendirilmiş doğrulanmış kaynak yok. Çözüm kanıtları ekranını incele."
+          }
+        }
+      }
+    },
     "tutor.goalPrompt" : {
       "extractionState": "manual",
       "localizations": {

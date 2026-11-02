@@ -18,7 +18,7 @@ public final class VersionedJsonContract {
         catch (java.io.IOException e) { throw new IllegalArgumentException("Invalid versioned JSON"); }
     }
     public static JsonNode validate(String name, String json) {
-        if (!Set.of("problem-parse-v2", "canonical-problem-v2", "solution-candidate-v2", "tutor-turn-v1").contains(name)) invalid();
+        if (!Set.of("problem-parse-v2", "canonical-problem-v2", "solution-candidate-v2", "tutor-turn-v1", "tutor-hint-v1").contains(name)) invalid();
         var document = parse(json);
         var schema = SCHEMAS.computeIfAbsent(name, key -> {
             try (var stream = VersionedJsonContract.class.getResourceAsStream("/schemas/" + key + ".schema.json")) {

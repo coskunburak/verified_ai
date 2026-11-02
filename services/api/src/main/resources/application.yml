@@ -265,4 +265,5 @@ logging:
 # Deterministic local Socratic policy only; this never enables the AI TUTOR capability.
 verifiedai:
   tutoring:
+    hints-enabled: ${TUTOR_HINTS_ENABLED:false}
     socratic-enabled: ${TUTOR_SOCRATIC_ENABLED:false}

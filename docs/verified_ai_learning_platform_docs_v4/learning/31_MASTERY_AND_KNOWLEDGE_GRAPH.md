@@ -76,3 +76,11 @@ Production V1 should use an explainable deterministic mastery policy before intr
 
 A future predictor may recommend/update evidence weights only under explicit validation; it cannot erase historical attempts or make opaque irreversible mastery changes.
 <!-- HYBRID_AI_STRATEGY_V3:END -->
+
+## Sprint 6.6 assistance evidence contract
+
+`hint-assistance-v1` records CONCEPTUAL, METHOD or FIRST_STEP with exact source/session, artifact,
+policy version and server order. Its masteryEvidence is ASSISTANCE_ONLY: a future authorized mastery
+policy may consume it as assistance context, never as independent correctness or automatic positive credit.
+Tutor performs no score/confidence writes and defines no numeric penalties. Opening Tutor, changing depth
+or using accessibility does not generate hint evidence. Denied reveal/unsupported hints do not count as use.

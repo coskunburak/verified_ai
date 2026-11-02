@@ -1,6 +1,9 @@
 package com.verifiedai.sharedkernel.error;
 
 public enum ApiErrorCode {
+    TUTOR_HINT_LEVEL_BLOCKED,
+    TUTOR_HINT_INVALID,
+    TUTOR_REVEAL_UNAVAILABLE,
     TUTOR_CAPABILITY_UNAVAILABLE,
     TUTOR_PEDAGOGY_STOPPED,
     TUTOR_ILLEGAL_TRANSITION,

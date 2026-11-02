@@ -54,6 +54,9 @@ protocol TutorServicing: Sendable {
     func append(problem: UUID, session: UUID, key: String, content: String) async throws -> TutorMessage
     func turns(problem: UUID, session: UUID, after: Int) async throws -> [TutorTurn]
     func submitTurn(problem: UUID, session: UUID, key: String, content: String, intent: TutorIntent) async throws -> TutorTurn
+    func hints(problem: UUID, session: UUID) async throws -> TutorHintHistory
+    func requestHint(problem: UUID, session: UUID, key: String, level: TutorHintLevel) async throws -> TutorHint
+    func reveal(problem: UUID, session: UUID, key: String) async throws
     func close(problem: UUID, session: UUID) async throws -> TutorSession
 }
 
@@ -124,6 +127,78 @@ struct TutorTurn: Codable, Equatable, Identifiable, Sendable {
               (0...3).contains(progress.unproductiveCount), !previousPhase.terminal,
               !content.isEmpty, content.unicodeScalars.count <= 2000, content.utf8.count <= 8000,
               TutorTimestamp.parse(createdAt) != nil else { throw NetworkError.invalidResponse }
+        return self
+    }
+}
+
+// The server chooses nextLevel; these enums only validate and render the wire contract.
+enum TutorHintLevel: String, Codable, CaseIterable, Sendable { case h1 = "H1", h2 = "H2", h3 = "H3"
+    var localizationKey: String { "tutor.hint." + rawValue }
+}
+enum TutorHintAvailability: String, Codable, Sendable {
+    case available = "AVAILABLE", exhausted = "EXHAUSTED", closed = "CLOSED", stale = "STALE", stopped = "STOPPED", unavailable = "UNAVAILABLE"
+    var localizationKey: String { "tutor.hints." + rawValue }
+}
+struct TutorHint: Codable, Equatable, Identifiable, Sendable {
+    let schemaVersion: String
+    let id: UUID
+    let tutorSessionId: UUID
+    let sequenceNumber: Int
+    let level: TutorHintLevel
+    let content: String
+    let language: String
+    let policyVersion: String
+    let costPolicyVersion: String
+    let assistance: String
+    let masteryEvidence: String
+    let inference: String
+    let commercial: String
+    let previousPhase: TutorPhase
+    let progress: TutorProgress
+    let referenceStatus: String
+    let uncertain: Bool
+    let createdAt: String
+    let trainingEligible: Bool
+    func validated(session: UUID) throws -> Self {
+        let expected: [TutorHintLevel: (Int, String)] = [.h1: (1,"CONCEPTUAL"), .h2: (2,"METHOD"), .h3: (3,"FIRST_STEP")]
+        guard schemaVersion == "tutor-hint-v1", tutorSessionId == session,
+              policyVersion == "progressive-hints-v1", costPolicyVersion == "hint-assistance-v1",
+              sequenceNumber == expected[level]?.0, assistance == expected[level]?.1,
+              masteryEvidence == "ASSISTANCE_ONLY", inference == "DETERMINISTIC_NO_INFERENCE", commercial == "NO_DEBIT",
+              !previousPhase.terminal, progress.phase == .minimalSupport, (1...11).contains(progress.turnCount),
+              (0...2).contains(progress.unproductiveCount), ["en","tr"].contains(language),
+              referenceStatus == "UNAVAILABLE", uncertain, !trainingEligible, !content.isEmpty,
+              content.unicodeScalars.count <= 2000, content.utf8.count <= 8000,
+              TutorTimestamp.parse(createdAt) != nil else { throw NetworkError.invalidResponse }
+        return self
+    }
+}
+struct TutorHintHistory: Codable, Equatable, Sendable {
+    let schemaVersion: String
+    let tutorSessionId: UUID
+    let hints: [TutorHint]
+    let currentLevel: TutorHintLevel?
+    let nextLevel: TutorHintLevel?
+    let availability: TutorHintAvailability
+    let progress: TutorProgress
+    let revealAvailability: String
+    func validated(session: UUID) throws -> Self {
+        guard schemaVersion == "tutor-hint-history-v1", tutorSessionId == session, hints.count <= 3,
+              hints.map(\.sequenceNumber) == Array(1..<(hints.count + 1)),
+              Set(hints.map(\.id)).count == hints.count, currentLevel == hints.last?.level,
+              (availability == .available) == (nextLevel != nil), revealAvailability == "UNAVAILABLE",
+              (0...12).contains(progress.turnCount), (0...3).contains(progress.unproductiveCount),
+              progress.turnCount >= (hints.last?.progress.turnCount ?? 0) else { throw NetworkError.invalidResponse }
+        var previousOrder = 0
+        for hint in hints {
+            _ = try hint.validated(session: session)
+            guard hint.progress.turnCount > previousOrder else { throw NetworkError.invalidResponse }
+            previousOrder = hint.progress.turnCount
+        }
+        // Reject an inconsistent wire snapshot; UI still requests only the server-returned nextLevel.
+        if let nextLevel {
+            guard hints.count < 3, nextLevel == TutorHintLevel.allCases[hints.count], !progress.phase.terminal else { throw NetworkError.invalidResponse }
+        }
         return self
     }
 }

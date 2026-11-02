@@ -28,6 +28,14 @@ public final class SocraticPolicy {
     public record Decision(Progress progress, Action action, Outcome outcome) {}
     private SocraticPolicy() {}
 
+    /** Hints share the existing interaction budget and phase authority, without judging an attempt. */
+    public static Progress offerHint(Progress previous) {
+        if (previous.phase().terminal() || previous.turnCount() >= MAX_TURNS - 1)
+            throw TutorPolicy.failure(ApiErrorCode.TUTOR_PEDAGOGY_STOPPED, HttpStatus.CONFLICT);
+        requireTransition(previous.phase(), Phase.OFFER_MINIMAL_SUPPORT, Evidence.UNKNOWN);
+        return new Progress(Phase.OFFER_MINIMAL_SUPPORT, previous.unproductiveCount(), previous.turnCount() + 1);
+    }
+
     public static Decision decide(Progress previous, Intent intent, Evidence evidence) {
         Objects.requireNonNull(intent); Objects.requireNonNull(evidence);
         if (previous.phase().terminal()) throw TutorPolicy.failure(ApiErrorCode.TUTOR_PEDAGOGY_STOPPED, HttpStatus.CONFLICT);

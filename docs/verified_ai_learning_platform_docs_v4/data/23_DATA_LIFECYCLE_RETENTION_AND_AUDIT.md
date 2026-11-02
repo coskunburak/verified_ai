@@ -172,3 +172,12 @@ state, version and uncertainty) without retry keys or hidden reasoning. The exis
 now measures both learner messages and tutor replies; exceeding it fails the entire export explicitly.
 Deletion reaches tutor_turns through parent message/session/source cascades. No provider copy exists in
 this no-inference slice. Existing backup expiry and completed-export deletion rules continue to apply.
+
+## Sprint 6.6 hint privacy
+
+Hint content and assistance are DERIVED_LEARNING, never training-eligible by default. Existing Tutor
+lifecycle export includes every bounded hint with policy, cost classification, uncertainty and phase;
+retry keys are excluded. The same fail-closed 8 MB export ceiling includes hint bytes and never silently
+truncates. Owned session/source/account cascades erase rows. iOS pending markers contain only operation,
+level, session and retry identity; they use the existing protected, backup-excluded account-scoped store.
+No raw content/identifiers enter metrics, ordinary errors or provider requests.

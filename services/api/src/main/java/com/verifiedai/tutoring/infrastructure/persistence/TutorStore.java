@@ -67,11 +67,47 @@ public class TutorStore {
             this::turn, owner, session, after, limit);
     }
     public SocraticPolicy.Progress progress(UUID owner, UUID session) {
-        return jdbc.query("select * from tutor_turns where user_id=? and tutor_session_id=? order by learner_sequence_number desc limit 1",
-            this::turn, owner, session).stream().findFirst().map(TutorTurn::progress).orElseGet(SocraticPolicy.Progress::initial);
+        return jdbc.query("""
+            select phase,unproductive_count,turn_count from (
+              select phase,unproductive_count,turn_count from tutor_turns where user_id=? and tutor_session_id=?
+              union all select phase,unproductive_count,turn_count from tutor_hints where user_id=? and tutor_session_id=?
+            ) progress order by turn_count desc limit 1
+            """, (r,n)->new SocraticPolicy.Progress(SocraticPolicy.Phase.valueOf(r.getString("phase")),
+                r.getInt("unproductive_count"),r.getInt("turn_count")),owner,session,owner,session)
+            .stream().findFirst().orElseGet(SocraticPolicy.Progress::initial);
     }
+    public List<TutorHint> hints(UUID owner, UUID session) {
+        return jdbc.query("select * from tutor_hints where user_id=? and tutor_session_id=? order by sequence_number",this::hint,owner,session);
+    }
+    public Optional<TutorHint> hintReplay(UUID owner, UUID session, String key) {
+        return jdbc.query("select * from tutor_hints where user_id=? and tutor_session_id=? and idempotency_key=?",this::hint,owner,session,key).stream().findFirst();
+    }
+    public void insertHint(UUID owner, String key, TutorHint h) {
+        HintPolicy.validatePublication(h.level(),h.language(),h.content());
+        jdbc.update("""
+            insert into tutor_hints(id,user_id,tutor_session_id,idempotency_key,schema_version,policy_version,cost_policy_version,
+                sequence_number,level,assistance,content,language,previous_phase,phase,unproductive_count,turn_count,
+                mastery_evidence,inference,commercial,reference_status,uncertain,created_at,training_eligible)
+            values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,false)
+            """,h.id(),owner,h.tutorSessionId(),key,h.schemaVersion(),h.policyVersion(),h.costPolicyVersion(),h.sequenceNumber(),
+            h.level().name(),h.assistance().name(),h.content(),h.language(),h.previousPhase().name(),h.progress().phase().name(),
+            h.progress().unproductiveCount(),h.progress().turnCount(),h.masteryEvidence(),h.inference(),h.commercial(),h.referenceStatus(),
+            h.uncertain(),Timestamp.from(h.createdAt()));
+        jdbc.update("update tutor_sessions set version=version+1,updated_at=? where id=? and user_id=?",
+            Timestamp.from(h.createdAt()),h.tutorSessionId(),owner);
+    }
+    private TutorHint hint(ResultSet r,int n) throws SQLException {
+        return new TutorHint(r.getString("schema_version"),r.getObject("id",UUID.class),r.getObject("tutor_session_id",UUID.class),
+            r.getInt("sequence_number"),HintPolicy.Level.valueOf(r.getString("level")),r.getString("content"),r.getString("language"),
+            r.getString("policy_version"),r.getString("cost_policy_version"),HintPolicy.Assistance.valueOf(r.getString("assistance")),
+            r.getString("mastery_evidence"),r.getString("inference"),r.getString("commercial"),
+            SocraticPolicy.Phase.valueOf(r.getString("previous_phase")),
+            new SocraticPolicy.Progress(SocraticPolicy.Phase.valueOf(r.getString("phase")),r.getInt("unproductive_count"),r.getInt("turn_count")),
+            r.getString("reference_status"),r.getBoolean("uncertain"),r.getTimestamp("created_at").toInstant(),r.getBoolean("training_eligible"));
+    }
+
     public long replyCount(UUID owner, UUID session) {
-        return jdbc.queryForObject("select count(*) from tutor_turns where user_id=? and tutor_session_id=?", Long.class, owner, session);
+        return jdbc.queryForObject("select (select count(*) from tutor_turns where user_id=? and tutor_session_id=?) + (select count(*) from tutor_hints where user_id=? and tutor_session_id=?)", Long.class, owner, session, owner, session);
     }
     public void insertTurn(UUID owner, TutorTurn t) {
         jdbc.update("""
@@ -99,7 +135,7 @@ public class TutorStore {
             Timestamp.from(now),owner,id);
     }
     public long exportBytes(UUID owner) {
-        return jdbc.queryForObject("select coalesce(sum(bytes),0) from (select octet_length(content) as bytes from tutor_messages where user_id=? union all select octet_length(content) from tutor_turns where user_id=?) contents",Long.class,owner,owner);
+        return jdbc.queryForObject("select coalesce(sum(bytes),0) from (select octet_length(content) as bytes from tutor_messages where user_id=? union all select octet_length(content) from tutor_turns where user_id=? union all select octet_length(content) from tutor_hints where user_id=?) contents",Long.class,owner,owner,owner);
     }
     public List<TutorSession> exportSessions(UUID owner) {
         return jdbc.query("select * from tutor_sessions where user_id=? order by created_at,id",this::session,owner);

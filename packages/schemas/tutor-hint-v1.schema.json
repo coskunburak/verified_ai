@@ -1,0 +1,222 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.verified-ai-learning.example/tutor-hint-v1",
+  "title": "Reviewed deterministic hint and assistance evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "tutorSessionId",
+    "sequenceNumber",
+    "level",
+    "content",
+    "language",
+    "policyVersion",
+    "costPolicyVersion",
+    "assistance",
+    "masteryEvidence",
+    "inference",
+    "commercial",
+    "previousPhase",
+    "progress",
+    "referenceStatus",
+    "uncertain",
+    "createdAt",
+    "trainingEligible"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "enum": [
+        "tutor-hint-v1"
+      ]
+    },
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "tutorSessionId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "sequenceNumber": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 3
+    },
+    "level": {
+      "type": "string",
+      "enum": [
+        "H1",
+        "H2",
+        "H3"
+      ]
+    },
+    "content": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "language": {
+      "type": "string",
+      "enum": [
+        "en",
+        "tr"
+      ]
+    },
+    "policyVersion": {
+      "type": "string",
+      "enum": [
+        "progressive-hints-v1"
+      ]
+    },
+    "costPolicyVersion": {
+      "type": "string",
+      "enum": [
+        "hint-assistance-v1"
+      ]
+    },
+    "assistance": {
+      "type": "string",
+      "enum": [
+        "CONCEPTUAL",
+        "METHOD",
+        "FIRST_STEP"
+      ]
+    },
+    "masteryEvidence": {
+      "type": "string",
+      "enum": [
+        "ASSISTANCE_ONLY"
+      ]
+    },
+    "inference": {
+      "type": "string",
+      "enum": [
+        "DETERMINISTIC_NO_INFERENCE"
+      ]
+    },
+    "commercial": {
+      "type": "string",
+      "enum": [
+        "NO_DEBIT"
+      ]
+    },
+    "previousPhase": {
+      "type": "string",
+      "enum": [
+        "CLARIFY_GOAL",
+        "ELICIT_CONCEPT",
+        "EVALUATE_LEARNER_STEP",
+        "OFFER_MINIMAL_SUPPORT",
+        "ADVANCE_ONE_STEP",
+        "SUMMARIZE_CONCEPT"
+      ]
+    },
+    "progress": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "phase",
+        "unproductiveCount",
+        "turnCount"
+      ],
+      "properties": {
+        "phase": {
+          "type": "string",
+          "enum": [
+            "OFFER_MINIMAL_SUPPORT"
+          ]
+        },
+        "unproductiveCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "turnCount": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 11
+        }
+      }
+    },
+    "referenceStatus": {
+      "type": "string",
+      "enum": [
+        "UNAVAILABLE"
+      ]
+    },
+    "uncertain": {
+      "type": "boolean",
+      "const": true
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "level": {
+            "const": "H1"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "sequenceNumber": {
+            "const": 1
+          },
+          "assistance": {
+            "const": "CONCEPTUAL"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "level": {
+            "const": "H2"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "sequenceNumber": {
+            "const": 2
+          },
+          "assistance": {
+            "const": "METHOD"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "level": {
+            "const": "H3"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "sequenceNumber": {
+            "const": 3
+          },
+          "assistance": {
+            "const": "FIRST_STEP"
+          }
+        }
+      }
+    }
+  ]
+}

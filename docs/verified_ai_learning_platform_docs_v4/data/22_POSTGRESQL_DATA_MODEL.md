@@ -690,3 +690,18 @@ V027 stays immutable and learner-only; its message_count retains its meaning. Th
 100 combined learner messages + tutor replies, and at most twelve tutor turns per session. V028 adds a
 parent lineage unique constraint but rewrites no historical data. Fresh and synthetic V027 upgrade tests
 are owner-operated; shared rollout remains BLOCKED pending reserved V024–V026 ordering reconciliation.
+
+## Sprint 6.6 progressive hints (V029)
+
+`tutor_hints` is owned by tutoring. Composite (session,user) FK binds the immutable session source;
+unique session/level, sequence, interaction count and retry key prevent duplicate durable evidence.
+Checks bind H1/H2/H3 to sequence and assistance, versions, bounded text, language, Socratic phase/counts,
+NO_DEBIT, DETERMINISTIC_NO_INFERENCE, ASSISTANCE_ONLY and training_eligible=false. The owner/session/
+sequence index serves history/export. Session/source/account deletion cascades. Historical source identity
+is exported through its parent session and is never rebound on current source edits.
+
+New hints also count toward the 100-record combined transcript bound; learner-only message_count remains
+unchanged. Progress merges hint and turn snapshots by their monotonic shared turn_count, serialized by
+account/problem locks. V027/V028 and released schemas retain original bytes. V024–V026 remain reserved;
+V029 is for fresh disposable local databases and synthetic V028-forward evidence only until ordering and
+shared upgrade approval exist. No out-of-order execution or schema-history rewrite is permitted.

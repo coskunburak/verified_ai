@@ -16,7 +16,7 @@ import org.springframework.context.annotation.*;
 import org.springframework.jdbc.core.JdbcTemplate;
 import static org.assertj.core.api.Assertions.*;
 
-@org.springframework.test.context.TestPropertySource(properties="verifiedai.tutoring.socratic-enabled=true")
+@org.springframework.test.context.TestPropertySource(properties={"verifiedai.tutoring.socratic-enabled=true","verifiedai.tutoring.hints-enabled=true"})
 @Import({TutorSessionControllerTest.AuthConfig.class, com.verifiedai.tutoring.integration.TutorTestRateLimitConfiguration.class})
 class TutorSessionControllerTest extends PostgresIntegrationTestSupport {
     @Value("${local.server.port}") int port;
@@ -30,7 +30,7 @@ class TutorSessionControllerTest extends PostgresIntegrationTestSupport {
     @BeforeEach void setup() {
         owner=identity.signInWithApple(new AppleSignInCommand(UUID.randomUUID().toString(),"synthetic-code","nonce"));
         var f=new SolverSourceFixture(jdbc);
-        problem=f.insertSupportedParse(owner.userId(),SolverSourceFixture.equationParseJson("x + 1 = 2"),1);
+        problem=f.insertSupportedParse(owner.userId(),SolverSourceFixture.equationParseJson("2*x + 3 = 11"),1);
         canonical.canonicalize(owner.userId(),problem);
     }
     HttpResponse<String> request(String token,String method,String suffix,String key,String body) throws Exception {
@@ -45,6 +45,68 @@ class TutorSessionControllerTest extends PostgresIntegrationTestSupport {
         assertThat(response.statusCode()).isEqualTo(200);
         assertThat(response.body()).contains("tutor-session-v1","learner-persistence-v1","NOT_AVAILABLE").doesNotContain("create-request");
         return json.readTree(response.body()).path("id").asText();
+    }
+    @Test void hintContractProgressionReplayAndRevealAreStrict() throws Exception {
+        var id=create(); var path="/"+id+"/hints";
+        var first=request(owner.accessToken(),"POST",path,"hint-http-key","{\"level\":\"H1\"}");
+        assertThat(first.statusCode()).isEqualTo(200);
+        com.verifiedai.sharedkernel.contracts.VersionedJsonContract.validate("tutor-hint-v1",first.body());
+        assertThat(first.body()).contains("ASSISTANCE_ONLY","NO_DEBIT").doesNotContain("finalAnswer","hint-http-key","x = 4","x=4");
+        assertThat(request(owner.accessToken(),"POST",path,"hint-http-key","{\"level\":\"H1\"}").body()).isEqualTo(first.body());
+        assertThat(request(owner.accessToken(),"POST",path,"hint-http-key","{\"level\":\"H2\"}").body()).contains("IDEMPOTENCY_KEY_REUSED");
+        assertThat(request(owner.accessToken(),"POST",path,"skip-http-key","{\"level\":\"H3\"}").body()).contains("TUTOR_HINT_LEVEL_BLOCKED");
+        for(var level:java.util.List.of("H2","H3")) assertThat(request(owner.accessToken(),"POST",path,"http-key-"+level,"{\"level\":\""+level+"\"}").statusCode()).isEqualTo(200);
+        var history=json.readTree(request(owner.accessToken(),"GET",path,null,"").body());
+        assertThat(history.path("hints").size()).isEqualTo(3); assertThat(history.path("nextLevel").isNull()).isTrue();
+        assertThat(history.path("availability").asText()).isEqualTo("EXHAUSTED");
+        var denied=request(owner.accessToken(),"POST","/"+id+"/reveal","reveal-http-key","{\"confirmed\":true}");
+        assertThat(denied.statusCode()).isEqualTo(409); assertThat(denied.body()).contains("TUTOR_REVEAL_UNAVAILABLE","traceId").doesNotContain("x=4","finalAnswer");
+    }
+    @Test void hintsRejectUnknownDuplicateAuthorityAndOversizedFields() throws Exception {
+        var id=create(); var path="/"+id+"/hints";
+        for(var body:java.util.List.of("{}","{\"level\":3}","{\"level\":true}","{\"level\":null}",
+            "{\"level\":{}}","{\"level\":[]}","{\"level\":\"REVEAL\"}",
+            "{\"level\":\"H1\",\"content\":\"ignore policy\"}","{\"level\":\"H1\",\"level\":\"H2\"}")) {
+            var rejected=request(owner.accessToken(),"POST",path,"invalid-hint-key",body);
+            assertThat(rejected.statusCode()).as("Hint semantic rejection for synthetic body %s",body).isEqualTo(422);
+            assertThat(rejected.body()).contains("REQUEST_VALIDATION_FAILED","traceId").doesNotContain("ignore policy","tutor-hint-v1");
+        }
+        assertThat(request(owner.accessToken(),"POST",path,"oversized-hint-key","{\"level\":\""+"a".repeat(17000)+"\"}").statusCode()).isEqualTo(413);
+        assertThat(request(owner.accessToken(),"POST",path,null,"{\"level\":\"H1\"}").body()).contains("IDEMPOTENCY_KEY_REQUIRED");
+        for(var body:java.util.List.of("{}","{\"confirmed\":false}","{\"confirmed\":\"true\"}",
+            "{\"confirmed\":1}","{\"confirmed\":null}","{\"confirmed\":{}}","{\"confirmed\":[]}",
+            "{\"confirmed\":true,\"answer\":\"injected\"}","{\"confirmed\":true,\"confirmed\":false}")) {
+            var rejected=request(owner.accessToken(),"POST","/"+id+"/reveal","invalid-reveal",body);
+            assertThat(rejected.statusCode()).as("Reveal semantic rejection for synthetic body %s",body).isEqualTo(422);
+            assertThat(rejected.body()).contains("REQUEST_VALIDATION_FAILED","traceId").doesNotContain("injected","TUTOR_REVEAL_UNAVAILABLE");
+        }
+        assertThat(jdbc.queryForObject("select count(*) from tutor_hints where tutor_session_id=?",Integer.class,UUID.fromString(id))).isZero();
+        assertThat(request(owner.accessToken(),"GET",path,null,"").body()).contains("CLARIFY_GOAL");
+    }
+    @Test void hintRoutesRequireAuthenticationAndObjectOwnership() throws Exception {
+        var id=create();var other=identity.signInWithApple(new AppleSignInCommand(UUID.randomUUID().toString(),"synthetic-code","nonce"));
+        for(var suffix:java.util.List.of("/hints","/reveal")) {
+            String body=suffix.equals("/hints") ? "{\"level\":\"H1\"}" : "{\"confirmed\":true}";
+            assertThat(request(null,"POST","/"+id+suffix,"owner-http-key",body).statusCode()).isEqualTo(401);
+            assertThat(request(other.accessToken(),"POST","/"+id+suffix,"owner-http-key",body).statusCode()).isEqualTo(404);
+            assertThat(request(owner.accessToken(),"POST","/"+UUID.randomUUID()+suffix,"owner-http-key",body).statusCode()).isEqualTo(404);
+        }
+        assertThat(request(other.accessToken(),"GET","/"+id+"/hints",null,"").statusCode()).isEqualTo(404);
+    }
+    @Test void hintHistoryRemainsAvailableAfterCloseAndStaleness() throws Exception {
+        var id=create(); var path="/"+id+"/hints";
+        var first=request(owner.accessToken(),"POST",path,"durable-http-key","{\"level\":\"H1\"}");
+        request(owner.accessToken(),"POST","/"+id+"/close",null,"{}");
+        jdbc.update("update problem_sessions set current_parse_id=null where id=?",problem);
+        assertThat(request(owner.accessToken(),"GET",path,null,"").body()).contains("H1","CLOSED");
+        assertThat(request(owner.accessToken(),"POST",path,"durable-http-key","{\"level\":\"H1\"}").body()).isEqualTo(first.body());
+        assertThat(request(owner.accessToken(),"POST",path,"new-http-hint","{\"level\":\"H2\"}").body()).contains("TUTOR_SESSION_CLOSED");
+    }
+    @Test void hintRequestFloodingReturnsRateLimitInsteadOfSuccess() throws Exception {
+        var id=create(); HttpResponse<String> response=null;
+        for(int i=0;i<122;i++) response=request(owner.accessToken(),"POST","/"+id+"/hints","flood-hint-key","{\"level\":\"H1\"}");
+        assertThat(response.statusCode()).isEqualTo(429); assertThat(response.body()).contains("RATE_LIMIT_EXCEEDED").doesNotContain("tutor-hint-v1");
+        assertThat(jdbc.queryForObject("select count(*) from tutor_hints where user_id=?",Integer.class,owner.userId())).isEqualTo(1);
     }
     @Test void authenticationAndObjectAuthorizationAreRequired() throws Exception {
         assertThat(request(null,"GET","",null,"").statusCode()).isEqualTo(401);

@@ -4,6 +4,102 @@ info:
   version: 0.1.0
 
 paths:
+  /api/v1/problem-sessions/{sessionId}/tutor-sessions/{tutorSessionId}/hints:
+    parameters:
+      - {name: sessionId, in: path, required: true, schema: {type: string, format: uuid}}
+      - {name: tutorSessionId, in: path, required: true, schema: {type: string, format: uuid}}
+    get:
+      operationId: readTutorHints
+      security: [{bearerAuth: []}]
+      summary: Complete bounded hint history and server-authorized next action
+      description: Historical owned records remain readable after close, source change or feature disable. At most three hints. No inference, quota or mastery mutation. Shared 120 requests/account/minute limiter and X-Request-Id correlation.
+      responses:
+        '200':
+          description: Server state; null nextLevel means no hint action is currently permitted
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/TutorHintHistory'}
+        '401': {$ref: '#/components/responses/TutorFailure'}
+        '403': {$ref: '#/components/responses/TutorFailure'}
+        '404': {$ref: '#/components/responses/TutorFailure'}
+        '429': {$ref: '#/components/responses/TutorFailure'}
+        '503': {$ref: '#/components/responses/TutorFailure'}
+    post:
+      operationId: requestTutorHint
+      security: [{bearerAuth: []}]
+      summary: Commit exactly one progressive hint for the current owned source
+      description: >-
+        HintPolicy progressive-hints-v1 permits H1 then H2 then H3; repeated or concurrent distinct keys
+        cannot skip levels. A same-key same-level replay returns its original committed artifact even
+        after close/stale/disable. Changed level or reuse across messages/turns/hints conflicts.
+        Explicit requested level is an expectation, never authority. Source-scoped deterministic
+        two-step linear equation templates only; no final answer fields, model invocation or premium debit.
+        Unsupported sources and disabled flags return TUTOR_CAPABILITY_UNAVAILABLE with no committed use.
+        Body maximum 16384 bytes; exact keys/types and duplicate-field rejection. Shared fail-closed
+        120/account/minute rate limit, X-Request-Id correlation and five-second transaction timeout.
+        A transport/storage failure retries the same key; pending acknowledgement never advances state.
+      parameters:
+        - {name: Idempotency-Key, in: header, required: true, schema: {type: string, minLength: 8, maxLength: 128, pattern: '^[A-Za-z0-9_-]+$'}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {type: object, additionalProperties: false, required: [level], properties: {level: {type: string, enum: [H1, H2, H3]}}}
+      responses:
+        '200':
+          description: Durable hint or exact replay; assistance evidence only, never independent success
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/TutorHint'}
+        '400': {$ref: '#/components/responses/TutorFailure'}
+        '401': {$ref: '#/components/responses/TutorFailure'}
+        '403': {$ref: '#/components/responses/TutorFailure'}
+        '404': {$ref: '#/components/responses/TutorFailure'}
+        '409':
+          description: TUTOR_HINT_LEVEL_BLOCKED, TUTOR_SESSION_CLOSED, TUTOR_SOURCE_STALE, TUTOR_PEDAGOGY_STOPPED, TUTOR_CAPACITY_EXCEEDED or IDEMPOTENCY_KEY_REUSED
+          content:
+            application/problem+json:
+              schema: {$ref: '#/components/schemas/ProblemDetails'}
+        '413': {$ref: '#/components/responses/TutorFailure'}
+        '422': {$ref: '#/components/responses/TutorFailure'}
+        '429': {$ref: '#/components/responses/TutorFailure'}
+        '503': {$ref: '#/components/responses/TutorFailure'}
+  /api/v1/problem-sessions/{sessionId}/tutor-sessions/{tutorSessionId}/reveal:
+    parameters:
+      - {name: sessionId, in: path, required: true, schema: {type: string, format: uuid}}
+      - {name: tutorSessionId, in: path, required: true, schema: {type: string, format: uuid}}
+    post:
+      operationId: requestTutorAnswerReveal
+      security: [{bearerAuth: []}]
+      summary: Explicit confirmed answer request, separate from the hint ladder
+      description: >-
+        This version has no tutor-authorized verified-reference reader and always denies with
+        TUTOR_REVEAL_UNAVAILABLE (409) after owner/source/lifecycle checks. No answer, evidence,
+        quota or mastery mutation. H3 never invokes this operation. Intent alone does not authorize
+        disclosure. Stable same-key retries are safe; no durable successful operation exists.
+        Exact boolean confirmation required; maximum 16384 bytes, 120/account/minute and existing
+        X-Request-Id correlation. Production reveal requires a separately versioned verified-source contract.
+      parameters:
+        - {name: Idempotency-Key, in: header, required: true, schema: {type: string, minLength: 8, maxLength: 128, pattern: '^[A-Za-z0-9_-]+$'}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {type: object, additionalProperties: false, required: [confirmed], properties: {confirmed: {type: boolean, const: true}}}
+      responses:
+        '400': {$ref: '#/components/responses/TutorFailure'}
+        '401': {$ref: '#/components/responses/TutorFailure'}
+        '403': {$ref: '#/components/responses/TutorFailure'}
+        '404': {$ref: '#/components/responses/TutorFailure'}
+        '409':
+          description: TUTOR_REVEAL_UNAVAILABLE or source/lifecycle/idempotency conflict; no answer returned
+          content:
+            application/problem+json:
+              schema: {$ref: '#/components/schemas/ProblemDetails'}
+        '413': {$ref: '#/components/responses/TutorFailure'}
+        '422': {$ref: '#/components/responses/TutorFailure'}
+        '429': {$ref: '#/components/responses/TutorFailure'}
+        '503': {$ref: '#/components/responses/TutorFailure'}
   /api/v1/problem-sessions/{sessionId}/tutor-sessions/{tutorSessionId}/turns:
     parameters:
       - {name: sessionId, in: path, required: true, schema: {type: string, format: uuid}}
@@ -2161,6 +2257,335 @@ components:
           schema: {"$ref": "#/components/schemas/ProblemDetails"}
 
   schemas:
+    TutorHint: {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "id",
+        "tutorSessionId",
+        "sequenceNumber",
+        "level",
+        "content",
+        "language",
+        "policyVersion",
+        "costPolicyVersion",
+        "assistance",
+        "masteryEvidence",
+        "inference",
+        "commercial",
+        "previousPhase",
+        "progress",
+        "referenceStatus",
+        "uncertain",
+        "createdAt",
+        "trainingEligible"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "string",
+          "enum": [
+            "tutor-hint-v1"
+          ]
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "tutorSessionId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "sequenceNumber": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3
+        },
+        "level": {
+          "type": "string",
+          "enum": [
+            "H1",
+            "H2",
+            "H3"
+          ]
+        },
+        "content": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "language": {
+          "type": "string",
+          "enum": [
+            "en",
+            "tr"
+          ]
+        },
+        "policyVersion": {
+          "type": "string",
+          "enum": [
+            "progressive-hints-v1"
+          ]
+        },
+        "costPolicyVersion": {
+          "type": "string",
+          "enum": [
+            "hint-assistance-v1"
+          ]
+        },
+        "assistance": {
+          "type": "string",
+          "enum": [
+            "CONCEPTUAL",
+            "METHOD",
+            "FIRST_STEP"
+          ]
+        },
+        "masteryEvidence": {
+          "type": "string",
+          "enum": [
+            "ASSISTANCE_ONLY"
+          ]
+        },
+        "inference": {
+          "type": "string",
+          "enum": [
+            "DETERMINISTIC_NO_INFERENCE"
+          ]
+        },
+        "commercial": {
+          "type": "string",
+          "enum": [
+            "NO_DEBIT"
+          ]
+        },
+        "previousPhase": {
+          "type": "string",
+          "enum": [
+            "CLARIFY_GOAL",
+            "ELICIT_CONCEPT",
+            "EVALUATE_LEARNER_STEP",
+            "OFFER_MINIMAL_SUPPORT",
+            "ADVANCE_ONE_STEP",
+            "SUMMARIZE_CONCEPT"
+          ]
+        },
+        "progress": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "phase",
+            "unproductiveCount",
+            "turnCount"
+          ],
+          "properties": {
+            "phase": {
+              "type": "string",
+              "enum": [
+                "OFFER_MINIMAL_SUPPORT"
+              ]
+            },
+            "unproductiveCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2
+            },
+            "turnCount": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 11
+            }
+          }
+        },
+        "referenceStatus": {
+          "type": "string",
+          "enum": [
+            "UNAVAILABLE"
+          ]
+        },
+        "uncertain": {
+          "type": "boolean",
+          "const": true
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "trainingEligible": {
+          "type": "boolean",
+          "const": false
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "level": {
+                "const": "H1"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "sequenceNumber": {
+                "const": 1
+              },
+              "assistance": {
+                "const": "CONCEPTUAL"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "level": {
+                "const": "H2"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "sequenceNumber": {
+                "const": 2
+              },
+              "assistance": {
+                "const": "METHOD"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "level": {
+                "const": "H3"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "sequenceNumber": {
+                "const": 3
+              },
+              "assistance": {
+                "const": "FIRST_STEP"
+              }
+            }
+          }
+        }
+      ]
+    }
+    TutorHintHistory: {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "tutorSessionId",
+        "hints",
+        "currentLevel",
+        "nextLevel",
+        "availability",
+        "progress",
+        "revealAvailability"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "string",
+          "enum": [
+            "tutor-hint-history-v1"
+          ]
+        },
+        "tutorSessionId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "hints": {
+          "type": "array",
+          "maxItems": 3,
+          "items": {
+            "$ref": "#/components/schemas/TutorHint"
+          }
+        },
+        "currentLevel": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "H1",
+            "H2",
+            "H3",
+            null
+          ]
+        },
+        "nextLevel": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "H1",
+            "H2",
+            "H3",
+            null
+          ]
+        },
+        "availability": {
+          "type": "string",
+          "enum": [
+            "AVAILABLE",
+            "EXHAUSTED",
+            "CLOSED",
+            "STALE",
+            "STOPPED",
+            "UNAVAILABLE"
+          ]
+        },
+        "progress": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "phase",
+            "unproductiveCount",
+            "turnCount"
+          ],
+          "properties": {
+            "phase": {
+              "type": "string",
+              "enum": [
+                "CLARIFY_GOAL",
+                "ELICIT_CONCEPT",
+                "EVALUATE_LEARNER_STEP",
+                "OFFER_MINIMAL_SUPPORT",
+                "ADVANCE_ONE_STEP",
+                "SUMMARIZE_CONCEPT",
+                "COMPLETED",
+                "PAUSED",
+                "NEEDS_REVIEW",
+                "UNAVAILABLE"
+              ]
+            },
+            "unproductiveCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 3
+            },
+            "turnCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 12
+            }
+          }
+        },
+        "revealAvailability": {
+          "type": "string",
+          "enum": [
+            "UNAVAILABLE"
+          ]
+        }
+      }
+    }
     TutorTurn: {
       "type": "object",
       "additionalProperties": false,

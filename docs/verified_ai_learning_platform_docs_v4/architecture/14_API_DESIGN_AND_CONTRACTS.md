@@ -272,3 +272,18 @@ ascending order, limit 1–50. Existing six operations/DTOs are preserved, and `
 The 120/account/minute fail-closed limiter and correlation/error infrastructure are shared. New server
 transactions have a five-second timeout; iOS turn requests use a fifteen-second network timeout and
 persist uncertain retries. Detailed payloads and failure statuses are in public-api.yaml.
+
+## Sprint 6.6 hint operations
+
+GET/POST `/{tutorSessionId}/hints` and POST `/{tutorSessionId}/reveal` extend the existing Tutor hierarchy.
+`tutor-hint-v1` is an exact public allowlist; `tutor-hint-history-v1` returns all zero-to-three artifacts,
+current/next level, current Socratic progress and availability. Next level is null whenever unavailable.
+POST hints accepts only an enumerated level and required Idempotency-Key; replay requires the same level.
+Changed payload or reuse across learner messages, turns and hints yields IDEMPOTENCY_KEY_REUSED.
+Two distinct concurrent H1 keys cannot advance to H2. Committed replay survives close/stale/disable.
+
+Confirmed reveal accepts exactly boolean confirmed=true, but returns TUTOR_REVEAL_UNAVAILABLE until an
+authorized verified-reference contract exists. No success response or hidden answer field is advertised.
+The existing authentication, ownership, 16 KB body bound, strict duplicate-field parsing, 120/account/minute
+limiter, Problem Details/trace correlation and safe storage failures apply. No inference or billing call.
+Existing endpoints and schemas remain backward compatible; the updated iOS feature requires these new APIs.
