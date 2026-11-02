@@ -172,3 +172,13 @@ Tutoring JDBC touches its own tables. Privacy participates in existing AccountDa
 identity deletes completed export snapshots during confirmed account deletion. No AI, verifier, billing
 debit or assistant generation dependency is added. Persistence access requires active ownership, not a
 premium inference entitlement. Detailed operations and limits are in the Sprint 6.4 implementation map.
+
+## Sprint 6.5 deterministic tutoring
+
+Tutoring additionally owns SocraticPolicy, TutorTurn and additive tutor_turns persistence. Existing
+problem/profile named interfaces remain sufficient because this slice makes no mathematical assessment.
+The AI gateway/registry/adapter is unchanged: TUTOR stays disabled. No direct inference or verifier call.
+New turn operations use the existing active owner → problem locks with a five-second transaction timeout;
+learner append, local response and phase update commit together. There is no external pending worker.
+Same-key replay is the recovery contract. Legacy messages stay learner-only. Source staleness and
+closure prevent new work while history/replay remain readable. Feature flag defaults disabled.

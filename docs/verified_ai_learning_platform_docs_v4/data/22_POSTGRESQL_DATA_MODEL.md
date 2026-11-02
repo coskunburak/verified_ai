@@ -676,3 +676,17 @@ enforce owner/lineage. Unique session sequence and scoped retry keys enforce dur
 Account/problem/source deletion cascades. Session and message schemas, status, learner role and
 training_eligible=false are constrained. V001–V023 are unchanged. V024–V026 are reserved; fresh disposable
 databases only until the complete ordered upgrade is reconciled. Never enable out-of-order implicitly.
+
+## Sprint 6.5 Socratic turn storage (V028)
+
+`tutor_turns` belongs to tutoring and stores immutable deterministic TUTOR reply identity, parent learner
+message/sequence, before/after phase, intent, action/outcome, counters, language, policy/schema version,
+uncertainty and provenance. `created_at` is the atomic local completion timestamp; no external job exists.
+Composite FK binds parent message, user, session and sequence. Unique parent/reply identities enforce
+at-most-one committed reply. Parent/source/account deletion cascades. No retry key duplication, reference
+solution, raw model context, hidden reasoning, mastery or verified assessment is stored.
+
+V027 stays immutable and learner-only; its message_count retains its meaning. The application enforces
+100 combined learner messages + tutor replies, and at most twelve tutor turns per session. V028 adds a
+parent lineage unique constraint but rewrites no historical data. Fresh and synthetic V027 upgrade tests
+are owner-operated; shared rollout remains BLOCKED pending reserved V024–V026 ordering reconciliation.

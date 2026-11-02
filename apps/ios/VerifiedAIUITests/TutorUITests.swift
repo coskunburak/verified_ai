@@ -11,10 +11,10 @@ final class TutorUITests: XCTestCase {
         XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 6), .completed,
                        "Control must be enabled and hittable before input: \(element.identifier)")
     }
-    private func open(failure: Bool = false, turkish: Bool = false) -> XCUIApplication {
+    private func open(failure: Bool = false, turkish: Bool = false, unavailable: Bool = false) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["--ui-testing", "--ui-testing-authenticated", "--solve-fixture", "--tutor-fixture", "--solve-reset",
-            "--solve-fixture-scope=" + UUID().uuidString, "-AppleLanguages", turkish ? "(tr)" : "(en)"] + (failure ? ["--tutor-send-failure"] : [])
+            "--solve-fixture-scope=" + UUID().uuidString, "-AppleLanguages", turkish ? "(tr)" : "(en)"] + (failure ? ["--tutor-send-failure"] : []) + (unavailable ? ["--tutor-unavailable"] : [])
         app.launch()
         addTeardownBlock { [self] in
             if (testRun?.failureCount ?? 0) > 0 {
@@ -39,13 +39,20 @@ final class TutorUITests: XCTestCase {
     }
     private func tap(_ element: XCUIElement, _ app: XCUIApplication) {
         XCTAssertTrue(element.waitForExistence(timeout: 6))
-        for _ in 0..<5 { if element.isHittable { break }; app.swipeUp() }
+        for _ in 0..<5 {
+            if element.isHittable { break }
+            let conversation = app.scrollViews["tutor.conversation"]
+            if conversation.exists { conversation.swipeUp() } else { app.swipeUp() }
+        }
         waitForReady(element); element.tap()
     }
     private func send(_ text: String, _ app: XCUIApplication) {
         let field = app.textFields["tutor.composer"].exists ? app.textFields["tutor.composer"] : app.textViews["tutor.composer"]
         XCTAssertTrue(field.waitForExistence(timeout: 4)); waitForReady(field); field.tap(); field.typeText(text)
         tap(app.buttons["tutor.send"], app)
+        let keyboardDismissed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: app.keyboards.firstMatch)
+        XCTAssertEqual(XCTWaiter.wait(for: [keyboardDismissed], timeout: 5), .completed,
+                       "Sending must dismiss the keyboard so conversation and recovery controls remain reachable")
     }
     private func message(_ sequence: Int, in app: XCUIApplication) -> XCUIElement {
         // SwiftUI may expose a combined text group as StaticText rather than Other.
@@ -67,11 +74,20 @@ final class TutorUITests: XCTestCase {
         send("Synthetic second", app)
         requireMessage(2, content: "Synthetic second", in: app)
         XCTAssertLessThan(message(1, in: app).frame.minY, message(2, in: app).frame.minY)
+        let conversation = app.scrollViews["tutor.conversation"]
+        let intent = app.descendants(matching: .any).matching(identifier: "tutor.intent").firstMatch
+        XCTAssertLessThanOrEqual(conversation.frame.maxY, intent.frame.minY,
+                                 "The transcript viewport must end above the composer controls")
         tap(app.buttons["tutor.retry"], app)
         requireMessage(1, content: "Synthetic first", in: app)
         tap(app.buttons["tutor.close"], app)
         XCTAssertTrue(app.staticTexts["tutor.closed"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["tutor.closed"].isHittable,
+                      "Confirmed closure must remain visible without scrolling back through the transcript")
         XCTAssertFalse(app.buttons["tutor.send"].isEnabled)
+        tap(app.buttons["tutor.retry"], app)
+        XCTAssertTrue(app.staticTexts["tutor.closed"].waitForExistence(timeout: 5),
+                      "Refreshing must preserve the acknowledged closed session")
     }
     func testRecoverableSendFailureReplaysWithoutDuplicate() {
         let app = open(failure: true)
@@ -87,4 +103,39 @@ final class TutorUITests: XCTestCase {
         XCTAssertFalse(app.buttons["tutor.send"].label.isEmpty)
         XCTAssertTrue(app.buttons["tutor.close"].isEnabled)
     }
+    func testSocraticReplyHasSpeakerAndUncertaintyAndResumes() {
+        let app = open()
+        send("Synthetic reasoning step", app)
+        let reply = app.descendants(matching: .any).matching(identifier: "tutor.reply.1").firstMatch
+        XCTAssertTrue(reply.waitForExistence(timeout: 5))
+        XCTAssertTrue(reply.label.contains("Tutor")); XCTAssertTrue(reply.label.contains("concept or rule"))
+        XCTAssertTrue(app.staticTexts["tutor.uncertain"].exists)
+        XCTAssertTrue(app.staticTexts["tutor.phase"].exists)
+        tap(app.buttons["tutor.retry"], app)
+        XCTAssertTrue(reply.waitForExistence(timeout: 5))
+        XCTAssertEqual(app.descendants(matching: .any).matching(identifier: "tutor.reply.1").count, 1)
+    }
+    func testTurkishSocraticCopyAndAccessibleIntent() {
+        let app = open(turkish: true)
+        send("Sentetik soru", app)
+        let reply = app.descendants(matching: .any).matching(identifier: "tutor.reply.1").firstMatch
+        XCTAssertTrue(reply.waitForExistence(timeout: 5))
+        XCTAssertTrue(reply.label.contains("Rehber")); XCTAssertTrue(reply.label.contains("kavram"))
+        XCTAssertTrue(app.staticTexts["tutor.uncertain"].label.contains("bilinmiyor"))
+        XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "tutor.intent").firstMatch.exists)
+    }
+
+    func testUnavailableTutorKeepsDraftAndOffersRecoveryWithoutLoadingForever() {
+        let app = open(unavailable: true)
+        send("Synthetic unavailable draft", app)
+        XCTAssertTrue(app.staticTexts["tutor.error"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["tutor.error"].label.contains("unavailable"))
+        XCTAssertFalse(app.descendants(matching: .any).matching(identifier: "tutor.loading").firstMatch.exists)
+        XCTAssertFalse(app.descendants(matching: .any).matching(identifier: "tutor.reply.1").firstMatch.exists)
+        let composer = app.textFields["tutor.composer"].exists ? app.textFields["tutor.composer"] : app.textViews["tutor.composer"]
+        XCTAssertEqual(composer.value as? String, "Synthetic unavailable draft")
+        tap(app.buttons["tutor.retry"], app)
+        XCTAssertFalse(app.staticTexts["tutor.error"].exists)
+    }
+
 }

@@ -41,6 +41,36 @@ public class TutorSessionController {
             throw TutorPolicy.failure(ApiErrorCode.REQUEST_VALIDATION_FAILED,HttpStatus.UNPROCESSABLE_ENTITY);
         return service.append(AuthenticatedUser.from(jwt).userId(),problemId,id,key,(String)body.get("content"));
     }
+    /** Strict typed request; no scalar coercion, unknown field or client authority. */
+    public record TurnRequest(String content, SocraticPolicy.Intent intent) {
+        @com.fasterxml.jackson.annotation.JsonCreator(mode=com.fasterxml.jackson.annotation.JsonCreator.Mode.DELEGATING)
+        public static TurnRequest parse(Map<String,Object> body) {
+            // Transport-neutral values: Spring Boot 4 uses Jackson 3, while the bounded
+            // internal JSON/schema validator deliberately uses Jackson 2.
+            if(body==null || !(body.get("content") instanceof String)) invalidTurn();
+            if(!Set.of("content","intent").containsAll(body.keySet())) invalidTurn();
+            SocraticPolicy.Intent intent=SocraticPolicy.Intent.UNKNOWN;
+            if(body.containsKey("intent")) {
+                if(!(body.get("intent") instanceof String)) invalidTurn();
+                try { intent=SocraticPolicy.Intent.valueOf((String)body.get("intent")); }
+                catch(IllegalArgumentException ex) { invalidTurn(); }
+            }
+            return new TurnRequest((String)body.get("content"),intent);
+        }
+        private static void invalidTurn() {
+            throw TutorPolicy.failure(ApiErrorCode.REQUEST_VALIDATION_FAILED,HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+    }
+    @PostMapping("/{id}/turns")
+    public TutorTurn turn(@AuthenticationPrincipal Jwt jwt,@PathVariable UUID problemId,@PathVariable UUID id,
+        @RequestHeader(value="Idempotency-Key",required=false) String key,@RequestBody TurnRequest body) {
+        return service.submitTurn(AuthenticatedUser.from(jwt).userId(),problemId,id,key,body.content(),body.intent());
+    }
+    @GetMapping("/{id}/turns")
+    public List<TutorTurn> turns(@AuthenticationPrincipal Jwt jwt,@PathVariable UUID problemId,@PathVariable UUID id,
+        @RequestParam(defaultValue="0") long after,@RequestParam(defaultValue="50") int limit) {
+        return service.turns(AuthenticatedUser.from(jwt).userId(),problemId,id,after,limit);
+    }
     @PostMapping("/{id}/close")
     public TutorSession close(@AuthenticationPrincipal Jwt jwt,@PathVariable UUID problemId,@PathVariable UUID id,
         @RequestBody(required=false) Map<String,Object> body) {

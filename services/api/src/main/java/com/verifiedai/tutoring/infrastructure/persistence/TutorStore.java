@@ -58,12 +58,48 @@ public class TutorStore {
             Timestamp.from(now),session.id(),owner);
         return message;
     }
+    public Optional<TutorTurn> turnForMessage(UUID owner, UUID session, UUID message) {
+        return jdbc.query("select * from tutor_turns where user_id=? and tutor_session_id=? and learner_message_id=?",
+            this::turn, owner, session, message).stream().findFirst();
+    }
+    public List<TutorTurn> turns(UUID owner, UUID session, long after, int limit) {
+        return jdbc.query("select * from tutor_turns where user_id=? and tutor_session_id=? and learner_sequence_number>? order by learner_sequence_number limit ?",
+            this::turn, owner, session, after, limit);
+    }
+    public SocraticPolicy.Progress progress(UUID owner, UUID session) {
+        return jdbc.query("select * from tutor_turns where user_id=? and tutor_session_id=? order by learner_sequence_number desc limit 1",
+            this::turn, owner, session).stream().findFirst().map(TutorTurn::progress).orElseGet(SocraticPolicy.Progress::initial);
+    }
+    public long replyCount(UUID owner, UUID session) {
+        return jdbc.queryForObject("select count(*) from tutor_turns where user_id=? and tutor_session_id=?", Long.class, owner, session);
+    }
+    public void insertTurn(UUID owner, TutorTurn t) {
+        jdbc.update("""
+            insert into tutor_turns(id,user_id,tutor_session_id,learner_message_id,learner_sequence_number,reply_id,
+                role,schema_version,policy_version,previous_phase,phase,unproductive_count,turn_count,intent,action,
+                outcome,content,language,correctness,reference_status,uncertain,provenance,created_at,training_eligible)
+            values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,false)
+            """, t.id(),owner,t.tutorSessionId(),t.learnerMessageId(),t.learnerSequenceNumber(),t.replyId(),t.role(),
+            t.schemaVersion(),t.policyVersion(),t.previousPhase().name(),t.progress().phase().name(),
+            t.progress().unproductiveCount(),t.progress().turnCount(),t.intent().name(),t.action().name(),t.outcome().name(),
+            t.content(),t.language(),t.correctness(),t.referenceStatus(),t.uncertain(),t.provenance(),Timestamp.from(t.createdAt()));
+    }
+    private TutorTurn turn(ResultSet r, int n) throws SQLException {
+        return new TutorTurn(r.getString("schema_version"),r.getObject("id",UUID.class),r.getObject("tutor_session_id",UUID.class),
+            r.getObject("learner_message_id",UUID.class),r.getLong("learner_sequence_number"),r.getObject("reply_id",UUID.class),
+            r.getString("role"),r.getString("content"),r.getString("language"),r.getString("policy_version"),
+            SocraticPolicy.Phase.valueOf(r.getString("previous_phase")),
+            new SocraticPolicy.Progress(SocraticPolicy.Phase.valueOf(r.getString("phase")),r.getInt("unproductive_count"),r.getInt("turn_count")),
+            SocraticPolicy.Intent.valueOf(r.getString("intent")),SocraticPolicy.Action.valueOf(r.getString("action")),
+            SocraticPolicy.Outcome.valueOf(r.getString("outcome")),r.getString("correctness"),r.getString("reference_status"),
+            r.getBoolean("uncertain"),r.getString("provenance"),r.getTimestamp("created_at").toInstant(),false);
+    }
     public void close(UUID owner, UUID id, Instant now) {
         jdbc.update("update tutor_sessions set status='CLOSED',version=version+1,updated_at=? where user_id=? and id=? and status='ACTIVE'",
             Timestamp.from(now),owner,id);
     }
     public long exportBytes(UUID owner) {
-        return jdbc.queryForObject("select coalesce(sum(octet_length(content)),0) from tutor_messages where user_id=?",Long.class,owner);
+        return jdbc.queryForObject("select coalesce(sum(bytes),0) from (select octet_length(content) as bytes from tutor_messages where user_id=? union all select octet_length(content) from tutor_turns where user_id=?) contents",Long.class,owner,owner);
     }
     public List<TutorSession> exportSessions(UUID owner) {
         return jdbc.query("select * from tutor_sessions where user_id=? order by created_at,id",this::session,owner);

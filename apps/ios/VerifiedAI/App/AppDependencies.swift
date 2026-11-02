@@ -24,7 +24,8 @@ struct AppDependencies {
     var tutorAPI: TutorServicing {
         #if DEBUG
         if solveFixture && ProcessInfo.processInfo.arguments.contains("--tutor-fixture") {
-            return FixtureTutorAPI(failFirst: ProcessInfo.processInfo.arguments.contains("--tutor-send-failure"))
+            return FixtureTutorAPI(failFirst: ProcessInfo.processInfo.arguments.contains("--tutor-send-failure"),
+                available: !ProcessInfo.processInfo.arguments.contains("--tutor-unavailable"))
         }
         #endif
         return TutorAPI(client: apiClient)

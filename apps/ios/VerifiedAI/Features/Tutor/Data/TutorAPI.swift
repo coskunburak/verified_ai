@@ -23,7 +23,7 @@ final class TutorAPI: TutorServicing, @unchecked Sendable {
         return try r.body.validated(problem: problem)
     }
     func messages(problem: UUID, session: UUID, after: Int) async throws -> [TutorMessage] {
-        let r: HTTPResponse<[TutorMessage]> = try await client.send(HTTPRequest(endpoint: Endpoint(path: path(problem, session) + "/messages", queryItems: [URLQueryItem(name: "after", value: String(after)), URLQueryItem(name: "limit", value: "50")])))
+        let r: HTTPResponse<[TutorMessage]> = try await client.send(HTTPRequest(endpoint: Endpoint(path: path(problem, session) + "/messages", queryItems: [URLQueryItem(name: "after", value: String(after)), URLQueryItem(name: "limit", value: "50")]), timeout: 15))
         guard r.body.count <= 50 else { throw NetworkError.invalidResponse }
         var expected = after + 1
         return try r.body.map {
@@ -37,4 +37,20 @@ final class TutorAPI: TutorServicing, @unchecked Sendable {
         let r: HTTPResponse<TutorMessage> = try await client.send(HTTPRequest(endpoint: Endpoint(path: path(problem, session) + "/messages", method: .post), body: body, idempotencyKey: key))
         return try r.body.validated(session: session)
     }
+    func turns(problem: UUID, session: UUID, after: Int) async throws -> [TutorTurn] {
+        let r: HTTPResponse<[TutorTurn]> = try await client.send(HTTPRequest(endpoint: Endpoint(path: path(problem, session) + "/turns", queryItems: [URLQueryItem(name: "after", value: String(after)), URLQueryItem(name: "limit", value: "50")]), timeout: 15))
+        guard r.body.count <= 12 else { throw NetworkError.invalidResponse }
+        var previous = after
+        return try r.body.map {
+            guard $0.learnerSequenceNumber > previous else { throw NetworkError.invalidResponse }
+            previous = $0.learnerSequenceNumber
+            return try $0.validated(session: session)
+        }
+    }
+    func submitTurn(problem: UUID, session: UUID, key: String, content: String, intent: TutorIntent) async throws -> TutorTurn {
+        let body = try JSONEncoder().encode(["content": content, "intent": intent.rawValue])
+        let r: HTTPResponse<TutorTurn> = try await client.send(HTTPRequest(endpoint: Endpoint(path: path(problem, session) + "/turns", method: .post), body: body, idempotencyKey: key, timeout: 15))
+        return try r.body.validated(session: session)
+    }
+
 }

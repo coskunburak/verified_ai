@@ -4,6 +4,75 @@ info:
   version: 0.1.0
 
 paths:
+  /api/v1/problem-sessions/{sessionId}/tutor-sessions/{tutorSessionId}/turns:
+    parameters:
+      - {name: sessionId, in: path, required: true, schema: {type: string, format: uuid}}
+      - {name: tutorSessionId, in: path, required: true, schema: {type: string, format: uuid}}
+    post:
+      operationId: submitSocraticTutorTurn
+      security: [{bearerAuth: []}]
+      summary: Submit one learner contribution and atomically persist deterministic guidance
+      description: >-
+        Local rule-based policy only; AI TUTOR remains disabled. Requires active owned current source.
+        A single local transaction commits the learner message and TUTOR reply or neither. No pending
+        server job or external dispatch exists. Retry the exact content and intent using the same key.
+        A committed retry is readable after close, staleness or feature disable; a changed payload or
+        key reused across legacy append and turn operations yields IDEMPOTENCY_KEY_REUSED (409).
+        UNKNOWN intent permits conservative exact-phrase classification, never correctness assessment.
+        Terminal pedagogical states require a new session. Twelve turns maximum, 100 combined learner
+        messages and tutor replies; messageCount continues to count only v1 learner messages.
+        Body maximum 16384 bytes; content maximum 8000 UTF-8 bytes / 2000 Unicode code points.
+        Uses the existing fail-closed 120 requests/account/minute limit and correlation infrastructure.
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema: {type: string, minLength: 8, maxLength: 128, pattern: '^[A-Za-z0-9_-]+$'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/TutorTurnRequest'}
+      responses:
+        '200':
+          description: Committed reply or exact replay; correctness remains UNKNOWN
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/TutorTurn'}
+        '400': {$ref: '#/components/responses/TutorFailure'}
+        '401': {$ref: '#/components/responses/TutorFailure'}
+        '404': {$ref: '#/components/responses/TutorFailure'}
+        '409':
+          description: TUTOR_SESSION_CLOSED, TUTOR_SOURCE_STALE, TUTOR_CAPACITY_EXCEEDED, TUTOR_PEDAGOGY_STOPPED or IDEMPOTENCY_KEY_REUSED
+          content:
+            application/problem+json:
+              schema: {$ref: '#/components/schemas/ProblemDetails'}
+        '413': {$ref: '#/components/responses/TutorFailure'}
+        '422': {$ref: '#/components/responses/TutorFailure'}
+        '429': {$ref: '#/components/responses/TutorFailure'}
+        '503':
+          description: TUTOR_CAPABILITY_UNAVAILABLE (definitive non-commit) or TEMPORARY_UNAVAILABLE (retry same key)
+          content:
+            application/problem+json:
+              schema: {$ref: '#/components/schemas/ProblemDetails'}
+    get:
+      operationId: listSocraticTutorTurns
+      security: [{bearerAuth: []}]
+      summary: Read owned historical replies, including closed or stale sessions
+      parameters:
+        - {name: after, in: query, schema: {type: integer, minimum: 0, default: 0}, description: Exclusive parent learner sequence; gaps for legacy messages are expected}
+        - {name: limit, in: query, schema: {type: integer, minimum: 1, maximum: 50, default: 50}}
+      responses:
+        '200':
+          description: Ascending learnerSequenceNumber; empty page marks end, at most twelve replies per session
+          content:
+            application/json:
+              schema: {type: array, maxItems: 12, items: {$ref: '#/components/schemas/TutorTurn'}}
+        '400': {$ref: '#/components/responses/TutorFailure'}
+        '401': {$ref: '#/components/responses/TutorFailure'}
+        '404': {$ref: '#/components/responses/TutorFailure'}
+        '429': {$ref: '#/components/responses/TutorFailure'}
+        '503': {$ref: '#/components/responses/TutorFailure'}
   /api/v1/problem-sessions/{sessionId}/tutor-sessions:
     post:
       operationId: "createTutorSession"
@@ -2092,6 +2161,235 @@ components:
           schema: {"$ref": "#/components/schemas/ProblemDetails"}
 
   schemas:
+    TutorTurn: {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "id",
+        "tutorSessionId",
+        "learnerMessageId",
+        "learnerSequenceNumber",
+        "replyId",
+        "role",
+        "content",
+        "language",
+        "policyVersion",
+        "previousPhase",
+        "progress",
+        "intent",
+        "action",
+        "outcome",
+        "correctness",
+        "referenceStatus",
+        "uncertain",
+        "provenance",
+        "createdAt",
+        "trainingEligible"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "string",
+          "enum": [
+            "tutor-turn-v1"
+          ]
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "tutorSessionId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "learnerMessageId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "learnerSequenceNumber": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "replyId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "TUTOR"
+          ]
+        },
+        "content": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "language": {
+          "type": "string",
+          "enum": [
+            "en",
+            "tr"
+          ]
+        },
+        "policyVersion": {
+          "type": "string",
+          "enum": [
+            "socratic-policy-v1"
+          ]
+        },
+        "previousPhase": {
+          "type": "string",
+          "enum": [
+            "CLARIFY_GOAL",
+            "ELICIT_CONCEPT",
+            "EVALUATE_LEARNER_STEP",
+            "OFFER_MINIMAL_SUPPORT",
+            "ADVANCE_ONE_STEP",
+            "SUMMARIZE_CONCEPT"
+          ]
+        },
+        "progress": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "phase",
+            "unproductiveCount",
+            "turnCount"
+          ],
+          "properties": {
+            "phase": {
+              "type": "string",
+              "enum": [
+                "CLARIFY_GOAL",
+                "ELICIT_CONCEPT",
+                "EVALUATE_LEARNER_STEP",
+                "OFFER_MINIMAL_SUPPORT",
+                "ADVANCE_ONE_STEP",
+                "SUMMARIZE_CONCEPT",
+                "COMPLETED",
+                "PAUSED",
+                "NEEDS_REVIEW",
+                "UNAVAILABLE"
+              ]
+            },
+            "unproductiveCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 3
+            },
+            "turnCount": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 12
+            }
+          }
+        },
+        "intent": {
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "ATTEMPT_STEP",
+            "EXPLAIN_CONCEPT",
+            "SMALL_HINT",
+            "REVEAL_ANSWER",
+            "CONFUSED",
+            "CHALLENGE",
+            "OFF_TOPIC",
+            "SUMMARIZE"
+          ]
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "ASK_GOAL",
+            "ASK_CONCEPT",
+            "ASK_STEP",
+            "CONCEPTUAL_NUDGE",
+            "ADVANCE",
+            "REFLECT",
+            "FINISH",
+            "PAUSE",
+            "REQUEST_REVIEW",
+            "CAPABILITY_UNAVAILABLE"
+          ]
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "GUIDANCE",
+            "PAUSED",
+            "NEEDS_REVIEW",
+            "COMPLETED",
+            "UNAVAILABLE"
+          ]
+        },
+        "correctness": {
+          "type": "string",
+          "enum": [
+            "UNKNOWN"
+          ]
+        },
+        "referenceStatus": {
+          "type": "string",
+          "enum": [
+            "UNAVAILABLE"
+          ]
+        },
+        "uncertain": {
+          "type": "boolean",
+          "enum": [
+            true
+          ]
+        },
+        "provenance": {
+          "type": "string",
+          "enum": [
+            "DETERMINISTIC_POLICY"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "trainingEligible": {
+          "type": "boolean",
+          "enum": [
+            false
+          ]
+        }
+      }
+    }
+    TutorTurnRequest: {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "content"
+      ],
+      "properties": {
+        "content": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "intent": {
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "ATTEMPT_STEP",
+            "EXPLAIN_CONCEPT",
+            "SMALL_HINT",
+            "REVEAL_ANSWER",
+            "CONFUSED",
+            "CHALLENGE",
+            "OFF_TOPIC",
+            "SUMMARIZE"
+          ],
+          "default": "UNKNOWN"
+        }
+      }
+    }
     TutorSession:
       type: "object"
       additionalProperties: false

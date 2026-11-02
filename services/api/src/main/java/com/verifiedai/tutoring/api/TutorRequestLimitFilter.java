@@ -25,6 +25,13 @@ public class TutorRequestLimitFilter extends OncePerRequestFilter {
         if(bytes.length>16_384) {
             resolver.resolveException(request,response,null,TutorPolicy.failure(ApiErrorCode.REQUEST_TOO_LARGE,HttpStatus.PAYLOAD_TOO_LARGE)); return;
         }
+        if(request.getRequestURI().endsWith("/turns")) {
+            try {
+                com.verifiedai.sharedkernel.contracts.VersionedJsonContract.parse(new String(bytes,java.nio.charset.StandardCharsets.UTF_8));
+            } catch(IllegalArgumentException ex) {
+                resolver.resolveException(request,response,null,TutorPolicy.failure(ApiErrorCode.REQUEST_VALIDATION_FAILED,HttpStatus.UNPROCESSABLE_ENTITY)); return;
+            }
+        }
         chain.doFilter(new HttpServletRequestWrapper(request) {
             @Override public ServletInputStream getInputStream() {
                 var input=new ByteArrayInputStream(bytes);

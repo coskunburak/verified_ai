@@ -156,3 +156,16 @@ This is a highest-precedence document.
 - Owner/problem transaction locks serialize sequence, capacity, retries and account lifecycle. Database constraints enforce lineage/ownership.
 - Stored text is untrusted, never system policy, verification or training eligibility. No assistant write route exists.
 - Minimal learner snapshot contains profile version/preference/language; unavailable mastery is explicit.
+
+## Sprint 6.5 Socratic invariants
+
+- Pedagogical phase is separate from ACTIVE/CLOSED lifecycle. Only tutoring owns its transitions.
+- A learner intent is a request, not correctness evidence. Current application evidence is always UNKNOWN;
+  no source text, reference answer, plausible learner step or model label authorizes mathematical advancement.
+- Conceptual reflection completion is not mathematical correctness, solution completion or mastery.
+- Learner message + deterministic reply + progress commit atomically; retry generates nothing new.
+- Existing messageCount remains learner-only. Combined learner/reply capacity is 100, with two slots
+  reserved for a new turn; twelve turns and three unproductive interactions bound the activity.
+- Disputes stop in NEEDS_REVIEW with source/evidence review guidance; no reverification is claimed.
+- No prompt/provider output can enter this deterministic path. TUTOR AI route remains disabled.
+- New turns are blocked when closed, stale, terminal or disabled; committed owned history stays readable.

@@ -20,19 +20,22 @@ final class TutorViewModel {
     private(set) var messages: [TutorMessage] = []
     private(set) var pending: TutorPending?
     private(set) var errorKey: String?
+    private(set) var turns: [TutorTurn] = []
+    var selectedIntent: TutorIntent = .unknown
+    var phase: TutorPhase { turns.last?.progress.phase ?? .clarifyGoal }
     var draft = ""
     init(owner: UUID, problem: UUID, service: TutorServicing, store: TutorPendingStore,
          network: NetworkMonitoring, ownsAccount: @escaping @MainActor () async -> Bool) {
         self.owner = owner; self.problem = problem; self.service = service; self.store = store
         self.network = network; self.ownsAccount = ownsAccount
     }
-    var canSend: Bool { active && loaded && !busy && !blocked && pending == nil && errorKey == nil && session?.status == .active && session?.sourceCurrent == true && !draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && draft.unicodeScalars.count <= 2000 && draft.utf8.count <= 8000 }
+    var canSend: Bool { active && loaded && !phase.terminal && !busy && !blocked && pending == nil && errorKey == nil && session?.status == .active && session?.sourceCurrent == true && !draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && draft.unicodeScalars.count <= 2000 && draft.utf8.count <= 8000 }
     func resume() {
         active = true
         refresh()
     }
     func suspend() { active = false; generation += 1; task?.cancel(); task = nil; busy = false }
-    func invalidate() { suspend(); blocked = true; errorKey = "tutor.authorization"; session = nil; sessions = []; messages = []; draft = ""; pending = nil }
+    func invalidate() { suspend(); blocked = true; errorKey = "tutor.authorization"; session = nil; sessions = []; messages = []; turns = []; draft = ""; pending = nil }
     func refresh() {
         run {
             self.pending = try self.store.load(owner: self.owner, problem: self.problem)
@@ -57,7 +60,7 @@ final class TutorViewModel {
     func send() {
         guard canSend, let session else { return }
         run {
-            let operation = TutorPending(key: UUID().uuidString, session: session.id, content: self.draft)
+            let operation = TutorPending(key: UUID().uuidString, session: session.id, content: self.draft, kind: .turn, intent: self.selectedIntent)
             try self.store.save(operation, owner: self.owner, problem: self.problem)
             self.pending = operation
             try await self.resolve(operation)
@@ -75,14 +78,18 @@ final class TutorViewModel {
     private func resolve(_ operation: TutorPending) async throws {
         let id: UUID
         if let session = operation.session, let content = operation.content {
-            _ = try await service.append(problem: problem, session: session, key: operation.key, content: content)
+            if operation.kind == .turn {
+                _ = try await service.submitTurn(problem: problem, session: session, key: operation.key, content: content, intent: operation.intent ?? .unknown)
+            } else {
+                _ = try await service.append(problem: problem, session: session, key: operation.key, content: content)
+            }
             id = session
         } else {
             id = try await service.create(problem: problem, key: operation.key).id
         }
         guard await validAccount() else { return }
         try store.remove(owner: owner, problem: problem)
-        pending = nil; draft = ""
+        pending = nil; draft = ""; selectedIntent = .unknown
         try await reload(id)
         loaded = true
     }
@@ -94,8 +101,10 @@ final class TutorViewModel {
             guard !page.isEmpty, history.count + page.count <= 100 else { throw NetworkError.invalidResponse }
             history += page
         }
+        let replies = try await service.turns(problem: problem, session: id, after: 0)
+        guard replies.allSatisfy({ reply in history.contains { $0.id == reply.learnerMessageId && $0.sequenceNumber == reply.learnerSequenceNumber } }) else { throw NetworkError.invalidResponse }
         guard await validAccount() else { return }
-        session = snapshot; messages = history
+        session = snapshot; messages = history; turns = replies
     }
     private func validAccount() async -> Bool {
         let expected = generation
@@ -118,12 +127,14 @@ final class TutorViewModel {
             catch {
                 guard active, !Task.isCancelled, generation == expected, await validAccount() else { return }
                 if case NetworkError.server(let problem) = error {
-                    if [400,409,413,422].contains(problem.status), let rejected = pending {
+                    if ([400,409,413,422].contains(problem.status) || problem.code == "TUTOR_CAPABILITY_UNAVAILABLE"), let rejected = pending {
                         // A definitive rejection acknowledges non-commit; uncertain transport errors keep the operation.
                         do { try store.remove(owner: owner, problem: self.problem); pending = nil; draft = rejected.content ?? "" }
                         catch { blocked = true }
                     }
                     if [401,403,404].contains(problem.status) { blocked = true; errorKey = "tutor.authorization" }
+                    else if problem.code == "TUTOR_CAPABILITY_UNAVAILABLE" { errorKey = "tutor.unavailable" }
+                    else if problem.code == "TUTOR_PEDAGOGY_STOPPED" { errorKey = "tutor.stopped" }
                     else if problem.code == "TUTOR_SOURCE_STALE" { errorKey = "tutor.stale" }
                     else if problem.code == "TUTOR_SESSION_CLOSED" { errorKey = "tutor.closed" }
                     else if [400,409,413,422].contains(problem.status) { errorKey = "tutor.rejected" }

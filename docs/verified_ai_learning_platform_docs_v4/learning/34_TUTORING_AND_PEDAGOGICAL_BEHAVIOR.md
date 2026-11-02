@@ -60,3 +60,16 @@ Tutor conversations should use bounded context summaries and capability-specific
 
 A future proprietary tutor model is not an early optimization target because open-ended pedagogy is harder to evaluate than bounded classification/ranking tasks.
 <!-- HYBRID_AI_STRATEGY_V3:END -->
+
+## Sprint 6.5 implemented boundary
+
+`socratic-policy-v1` implements goal/concept/step elicitation, one minimal conceptual nudge, reflection,
+review and bounded pause. It emits EN/TR templates labelled DETERMINISTIC_POLICY and explicit uncertainty.
+It does not read or assess problem mathematics, estimate mastery, reveal answers or run a verifier.
+The initial goal question is shown in the existing Tutor screen; subsequent replies are durable turns.
+ADVANCE_ONE_STEP is reserved for trusted step evidence and cannot be reached by current application code.
+COMPLETED means reflection complete. A disputed result stops and points to the existing source/evidence
+screen; the tutor honestly says no recheck was started. Start a new session after review when ready.
+
+The provider capability remains disabled. Hint ladders/economics remain Sprint 6.6. Synthetic structural
+regression is separate from expert-labelled teaching quality, which is NOT_EVALUATED and release-blocking.

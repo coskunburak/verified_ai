@@ -26,6 +26,9 @@ public class TutorSessionService {
     private final RateLimiter limiter;
     private final MeterRegistry metrics;
     private final int sessionLimit, messageLimit;
+    @Value("${verifiedai.tutoring.socratic-enabled:false}")
+    private boolean socraticEnabled;
+
     public TutorSessionService(TutorSourceAccess sources, TutorLearnerContext contexts, TutorStore store, Clock clock,
         RateLimiter limiter, MeterRegistry metrics, @Value("${verifiedai.tutoring.max-sessions:30}") int sessionLimit,
         @Value("${verifiedai.tutoring.max-messages:100}") int messageLimit) {
@@ -72,11 +75,52 @@ public class TutorSessionService {
             var session=owned(owner,problem,id); TutorPolicy.key(key); TutorPolicy.content(content);
             var replay=store.replay(owner,id,key);
             if(replay.isPresent()) {
-                if(!replay.get().content().equals(content)) throw TutorPolicy.failure(ApiErrorCode.IDEMPOTENCY_KEY_REUSED,HttpStatus.CONFLICT);
+                if(store.turnForMessage(owner,id,replay.get().id()).isPresent() || !replay.get().content().equals(content)) throw TutorPolicy.failure(ApiErrorCode.IDEMPOTENCY_KEY_REUSED,HttpStatus.CONFLICT);
                 count("replay"); return replay.get();
             }
-            TutorPolicy.append(session.status(),current(owner,session).sourceCurrent(),session.messageCount(),messageLimit);
+            TutorPolicy.append(session.status(),current(owner,session).sourceCurrent(),session.messageCount()+store.replyCount(owner,id),messageLimit);
             var message=store.append(owner,session,key,content,clock.instant()); count("message_accepted"); return message;
+        });
+    }
+    @Transactional(timeout=5)
+    public List<TutorTurn> turns(UUID owner, UUID problem, UUID id, long after, int limit) {
+        return operation("turn_history",owner,problem,()-> {
+            owned(owner,problem,id); TutorPolicy.page(after,limit);
+            return store.turns(owner,id,after,limit);
+        });
+    }
+    @Transactional(timeout=5)
+    public TutorTurn submitTurn(UUID owner, UUID problem, UUID id, String key, String content, SocraticPolicy.Intent requestedIntent) {
+        return operation("turn",owner,problem,()-> {
+            var session=owned(owner,problem,id); TutorPolicy.key(key); TutorPolicy.content(content);
+            var intent=requestedIntent == null || requestedIntent == SocraticPolicy.Intent.UNKNOWN
+                ? SocraticPolicy.classify(content) : requestedIntent;
+            var replay=store.replay(owner,id,key);
+            if(replay.isPresent()) {
+                var existing=store.turnForMessage(owner,id,replay.get().id());
+                if(!replay.get().content().equals(content) || existing.isEmpty() || existing.get().intent()!=intent)
+                    throw TutorPolicy.failure(ApiErrorCode.IDEMPOTENCY_KEY_REUSED,HttpStatus.CONFLICT);
+                count("turn_replay"); return existing.get();
+            }
+            if(!socraticEnabled) {
+                count("provider_disabled");
+                throw new ApiProblemException(HttpStatus.SERVICE_UNAVAILABLE,ApiErrorCode.TUTOR_CAPABILITY_UNAVAILABLE,
+                    "Socratic guidance is unavailable",true,"RETRY");
+            }
+            // Two free transcript slots are required; messageCount itself keeps its v1 learner-only meaning.
+            TutorPolicy.append(session.status(),current(owner,session).sourceCurrent(),
+                session.messageCount()+store.replyCount(owner,id)+1,messageLimit);
+            var previous=store.progress(owner,id);
+            // No trusted step-evidence contract exists: never infer correctness from a reference or learner text.
+            var decision=SocraticPolicy.decide(previous,intent,SocraticPolicy.Evidence.UNKNOWN);
+            String language="tr".equals(session.language()) ? "tr" : "en";
+            var now=clock.instant();
+            var learner=store.append(owner,session,key,content,now);
+            var turn=TutorTurn.create(learner,previous,intent,decision,language,now);
+            store.insertTurn(owner,turn);
+            metrics.counter("tutor.transition","phase",turn.progress().phase().name(),"action",turn.action().name(),
+                "outcome",turn.outcome().name()).increment();
+            count("deterministic_reply"); return turn;
         });
     }
     public TutorSession close(UUID owner, UUID problem, UUID id) {

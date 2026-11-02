@@ -7,6 +7,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 
 REQUIRED_CONTRACTS = {
+    "packages/schemas/tutor-turn-v1.schema.json": ["tutor-turn-v1", "socratic-policy-v1", "DETERMINISTIC_POLICY", "UNKNOWN"],
     "packages/schemas/solver-evaluation-case.schema.json": ["solver-evaluation-case-v1", "NOT_ELIGIBLE", "independentReview"],
     "packages/schemas/solver-evaluation-report.schema.json": ["solver-evaluation-report-v1", "productionPromotion", "reportSha256"],
     "packages/schemas/solver-release-authorization.schema.json": ["solver-release-authorization-v1", "REAL_PROVIDER_AND_PROTECTED_HOLDOUT", "sha256"],

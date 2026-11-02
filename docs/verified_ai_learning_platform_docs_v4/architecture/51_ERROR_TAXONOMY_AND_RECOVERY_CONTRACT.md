@@ -143,3 +143,13 @@ runs and a five-minute window; it is never an authorization to dispatch or bill 
 Rate/budget classification exists in the pure recovery policy; no new paid escalation path
 is wired. Existing solver budget/entitlement rules remain the sole authority for inference.
 Expired retry advice is suppressed from the current projection; immutable history stays.
+
+## Sprint 6.5 tutor errors
+
+- `TUTOR_CAPABILITY_UNAVAILABLE` / 503: deterministic guidance disabled; definitive non-commit. Keep the
+  draft and retry later. It never activates AI routing or silently appends a persistence-only message.
+- `TUTOR_PEDAGOGY_STOPPED` / 409: phase is terminal (paused, review, reflection complete); inspect source
+  and solution evidence and explicitly start another session. It never silently reopens a session.
+- `TUTOR_ILLEGAL_TRANSITION` / 409: server policy rejects unsupported progression; no durable turn.
+- Existing closed/stale/capacity/validation/ownership/idempotency errors retain their meanings.
+  `TEMPORARY_UNAVAILABLE` remains an uncertain retry with the same operation key and payload.

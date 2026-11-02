@@ -441,3 +441,11 @@ Following the comprehensive 2026-10-31 production architecture audit and competi
 
 - `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.4_IMPLEMENTATION_MAP.md` — owned tutor persistence, V027 ordering, API/privacy/iOS contracts and rollback.
 - `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.4_EXECUTION_REPORT.md` — `LOCAL_ACCEPTANCE_PASSED` in owner run `20261101-200102-8qY6k7`: 166 iOS and 117 backend tests passed, zero failures/skips; Gates A–D passed.
+
+## Sprint 6.5 — bounded Socratic guidance
+
+- `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.5_IMPLEMENTATION_MAP.md` — policy/turn ownership,
+  API and V028 compatibility, deterministic no-inference boundary, recovery and rollback.
+- `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.5_EXECUTION_REPORT.md` —
+  `LOCAL_ACCEPTANCE_PASSED` in owner run `20261102-113306-4u8mzd`: 176 iOS, 189 backend tests and
+  20 synthetic cases passed; live AI/expert pedagogy NOT_EVALUATED; production BLOCKED.

@@ -4,6 +4,10 @@ struct TutorPending: Codable, Equatable {
     let key: String
     let session: UUID?
     let content: String?
+    // Missing kind identifies a Sprint 6.4 append; never replay it through the new turn endpoint.
+    enum Kind: String, Codable { case turn }
+    var kind: Kind? = nil
+    var intent: TutorIntent? = nil
 }
 /// One bounded uncertain operation per owner/problem. Never an authoritative transcript.
 /// Atomic, data protected, excluded from backup; removed after acknowledgement or logout.
@@ -22,7 +26,8 @@ final class TutorPendingStore {
         let pending = try JSONDecoder().decode(TutorPending.self, from: data)
         guard pending.key.range(of: #"^[A-Za-z0-9_-]{8,128}$"#, options: .regularExpression) != nil,
               (pending.session == nil) == (pending.content == nil),
-              (pending.content?.utf8.count ?? 0) <= 8000 else { throw NetworkError.invalidResponse }
+              (pending.content?.utf8.count ?? 0) <= 8000,
+              pending.kind == nil || (pending.session != nil && pending.intent != nil) else { throw NetworkError.invalidResponse }
         return pending
     }
     func save(_ pending: TutorPending, owner: UUID, problem: UUID) throws {

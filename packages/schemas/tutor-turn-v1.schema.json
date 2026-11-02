@@ -1,0 +1,203 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.verified-ai-learning.example/tutor-turn-v1",
+  "title": "Deterministic Socratic tutor turn (not model output)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "tutorSessionId",
+    "learnerMessageId",
+    "learnerSequenceNumber",
+    "replyId",
+    "role",
+    "content",
+    "language",
+    "policyVersion",
+    "previousPhase",
+    "progress",
+    "intent",
+    "action",
+    "outcome",
+    "correctness",
+    "referenceStatus",
+    "uncertain",
+    "provenance",
+    "createdAt",
+    "trainingEligible"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "enum": [
+        "tutor-turn-v1"
+      ]
+    },
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "tutorSessionId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "learnerMessageId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "learnerSequenceNumber": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    },
+    "replyId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "TUTOR"
+      ]
+    },
+    "content": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "language": {
+      "type": "string",
+      "enum": [
+        "en",
+        "tr"
+      ]
+    },
+    "policyVersion": {
+      "type": "string",
+      "enum": [
+        "socratic-policy-v1"
+      ]
+    },
+    "previousPhase": {
+      "type": "string",
+      "enum": [
+        "CLARIFY_GOAL",
+        "ELICIT_CONCEPT",
+        "EVALUATE_LEARNER_STEP",
+        "OFFER_MINIMAL_SUPPORT",
+        "ADVANCE_ONE_STEP",
+        "SUMMARIZE_CONCEPT"
+      ]
+    },
+    "progress": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "phase",
+        "unproductiveCount",
+        "turnCount"
+      ],
+      "properties": {
+        "phase": {
+          "type": "string",
+          "enum": [
+            "CLARIFY_GOAL",
+            "ELICIT_CONCEPT",
+            "EVALUATE_LEARNER_STEP",
+            "OFFER_MINIMAL_SUPPORT",
+            "ADVANCE_ONE_STEP",
+            "SUMMARIZE_CONCEPT",
+            "COMPLETED",
+            "PAUSED",
+            "NEEDS_REVIEW",
+            "UNAVAILABLE"
+          ]
+        },
+        "unproductiveCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "turnCount": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 12
+        }
+      }
+    },
+    "intent": {
+      "type": "string",
+      "enum": [
+        "UNKNOWN",
+        "ATTEMPT_STEP",
+        "EXPLAIN_CONCEPT",
+        "SMALL_HINT",
+        "REVEAL_ANSWER",
+        "CONFUSED",
+        "CHALLENGE",
+        "OFF_TOPIC",
+        "SUMMARIZE"
+      ]
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "ASK_GOAL",
+        "ASK_CONCEPT",
+        "ASK_STEP",
+        "CONCEPTUAL_NUDGE",
+        "ADVANCE",
+        "REFLECT",
+        "FINISH",
+        "PAUSE",
+        "REQUEST_REVIEW",
+        "CAPABILITY_UNAVAILABLE"
+      ]
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "GUIDANCE",
+        "PAUSED",
+        "NEEDS_REVIEW",
+        "COMPLETED",
+        "UNAVAILABLE"
+      ]
+    },
+    "correctness": {
+      "type": "string",
+      "enum": [
+        "UNKNOWN"
+      ]
+    },
+    "referenceStatus": {
+      "type": "string",
+      "enum": [
+        "UNAVAILABLE"
+      ]
+    },
+    "uncertain": {
+      "type": "boolean",
+      "enum": [
+        true
+      ]
+    },
+    "provenance": {
+      "type": "string",
+      "enum": [
+        "DETERMINISTIC_POLICY"
+      ]
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "enum": [
+        false
+      ]
+    }
+  }
+}

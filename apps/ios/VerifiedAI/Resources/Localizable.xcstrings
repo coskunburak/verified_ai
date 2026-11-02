@@ -1,6 +1,483 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "tutor.goalPrompt" : {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What are you trying to find in this problem?"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Soruda neyi bulmak istiyorsun?"
+          }
+        }
+      }
+    },
+    "tutor.socraticNotice" : {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your messages are saved. Guided questions use a limited, rule-based tutor; live AI and mathematical assessment are unavailable."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mesajlarınız kaydedilir. Sorular sınırlı, kural tabanlı bir rehberden gelir; canlı yapay zekâ ve matematiksel değerlendirme kullanılamıyor."
+          }
+        }
+      }
+    },
+    "tutor.speaker" : {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tutor"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rehber"
+          }
+        }
+      }
+    },
+    "tutor.deterministic" : {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rule-based guidance"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kural tabanlı yönlendirme"
+          }
+        }
+      }
+    },
+    "tutor.uncertain" : {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Step correctness is unknown. No mastery assessment."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adımın doğruluğu bilinmiyor. Ustalık değerlendirmesi yapılmadı."
+          }
+        }
+      }
+    },
+    "tutor.responsePending" : {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saving your turn and waiting for guidance…"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yanıtınız kaydediliyor, yönlendirme bekleniyor…"
+          }
+        }
+      }
+    },
+    "tutor.unavailable" : {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guided tutoring is unavailable. Your draft is kept; retry later."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Soru ile yönlendirme kullanılamıyor. Taslağınız korundu; daha sonra tekrar deneyin."
+          }
+        }
+      }
+    },
+    "tutor.stopped" : {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This activity has stopped. Review the solution and source, or start a new session."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu etkinlik durdu. Çözümü ve kaynağı gözden geçirin veya yeni oturum başlatın."
+          }
+        }
+      }
+    },
+    "tutor.intent" : {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What would help?"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nasıl yardımcı olalım?"
+          }
+        }
+      }
+    },
+    "tutor.phase.CLARIFY_GOAL" : {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clarify your goal"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hedefini belirle"
+          }
+        }
+      }
+    },
+    "tutor.phase.ELICIT_CONCEPT" : {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose a concept"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kavram seç"
+          }
+        }
+      }
+    },
+    "tutor.phase.EVALUATE_LEARNER_STEP" : {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Discuss one step"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bir adımı tartış"
+          }
+        }
+      }
+    },
+    "tutor.phase.OFFER_MINIMAL_SUPPORT" : {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A conceptual nudge"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kavramsal destek"
+          }
+        }
+      }
+    },
+    "tutor.phase.ADVANCE_ONE_STEP" : {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Next step"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sonraki adım"
+          }
+        }
+      }
+    },
+    "tutor.phase.SUMMARIZE_CONCEPT" : {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reflect on the concept"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kavramı özetle"
+          }
+        }
+      }
+    },
+    "tutor.phase.COMPLETED" : {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reflection complete"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yansıtma tamamlandı"
+          }
+        }
+      }
+    },
+    "tutor.phase.PAUSED" : {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Activity paused"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Etkinlik duraklatıldı"
+          }
+        }
+      }
+    },
+    "tutor.phase.NEEDS_REVIEW" : {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Review needed"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İnceleme gerekli"
+          }
+        }
+      }
+    },
+    "tutor.phase.UNAVAILABLE" : {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tutor unavailable"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rehber kullanılamıyor"
+          }
+        }
+      }
+    },
+    "tutor.intent.UNKNOWN" : {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Share a thought"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Düşüncemi paylaşmak"
+          }
+        }
+      }
+    },
+    "tutor.intent.ATTEMPT_STEP" : {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Propose a step"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bir adım önermek"
+          }
+        }
+      }
+    },
+    "tutor.intent.EXPLAIN_CONCEPT" : {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Discuss a concept"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kavramı tartışmak"
+          }
+        }
+      }
+    },
+    "tutor.intent.SMALL_HINT" : {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ask for a small nudge"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Küçük destek istemek"
+          }
+        }
+      }
+    },
+    "tutor.intent.REVEAL_ANSWER" : {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ask about the answer"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cevabı sormak"
+          }
+        }
+      }
+    },
+    "tutor.intent.CONFUSED" : {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I am confused"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kafam karıştı"
+          }
+        }
+      }
+    },
+    "tutor.intent.CHALLENGE" : {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Challenge the result"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sonuca itiraz etmek"
+          }
+        }
+      }
+    },
+    "tutor.intent.OFF_TOPIC" : {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Something else"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Başka bir konu"
+          }
+        }
+      }
+    },
+    "tutor.intent.SUMMARIZE" : {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reflect and summarize"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Düşünüp özetlemek"
+          }
+        }
+      }
+    },
+
     "tutor.title": {
       "extractionState": "manual",
       "localizations": {

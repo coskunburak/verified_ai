@@ -261,3 +261,8 @@ app:
 logging:
   level:
     root: ${LOG_LEVEL:INFO}
+
+# Deterministic local Socratic policy only; this never enables the AI TUTOR capability.
+verifiedai:
+  tutoring:
+    socratic-enabled: ${TUTOR_SOCRATIC_ENABLED:false}

@@ -5,6 +5,7 @@ import com.verifiedai.sharedkernel.error.ApiErrorCode;
 import com.verifiedai.tutoring.domain.TutorMessage;
 import com.verifiedai.tutoring.domain.TutorPolicy;
 import com.verifiedai.tutoring.domain.TutorSession;
+import com.verifiedai.tutoring.domain.TutorTurn;
 import com.verifiedai.tutoring.infrastructure.persistence.TutorStore;
 import java.time.Instant;
 import java.util.*;
@@ -22,7 +23,8 @@ public class TutorSessionLifecycleContributor implements AccountDataLifecycleCon
         var sessions=store.exportSessions(owner);
         var transcripts=sessions.stream().map(s->Map.of(
             "session",sessionMap(s),
-            "messages",store.messages(owner,s.id(),0,TutorPolicy.MAX_MESSAGES).stream().map(this::messageMap).toList()
+            "messages",store.messages(owner,s.id(),0,TutorPolicy.MAX_MESSAGES).stream().map(this::messageMap).toList(),
+            "turns",store.turns(owner,s.id(),0,TutorPolicy.MAX_MESSAGES).stream().map(this::turnMap).toList()
         )).toList();
         return Map.of("schemaVersion","tutor-export-v1","trainingEligible",false,"sessions",transcripts);
     }
@@ -51,6 +53,20 @@ public class TutorSessionLifecycleContributor implements AccountDataLifecycleCon
         m.put("createdAt",s.createdAt()==null?null:s.createdAt().toString());
         m.put("updatedAt",s.updatedAt()==null?null:s.updatedAt().toString());
         m.put("trainingEligible",s.trainingEligible());
+        return m;
+    }
+
+    private Map<String,Object> turnMap(TutorTurn t) {
+        Map<String,Object> m=new LinkedHashMap<>();
+        m.put("schemaVersion",t.schemaVersion()); m.put("id",t.id()); m.put("tutorSessionId",t.tutorSessionId());
+        m.put("learnerMessageId",t.learnerMessageId()); m.put("learnerSequenceNumber",t.learnerSequenceNumber());
+        m.put("replyId",t.replyId()); m.put("role",t.role()); m.put("content",t.content()); m.put("language",t.language());
+        m.put("policyVersion",t.policyVersion()); m.put("previousPhase",t.previousPhase().name());
+        m.put("phase",t.progress().phase().name()); m.put("turnCount",t.progress().turnCount());
+        m.put("unproductiveCount",t.progress().unproductiveCount()); m.put("intent",t.intent().name());
+        m.put("action",t.action().name()); m.put("outcome",t.outcome().name()); m.put("correctness",t.correctness());
+        m.put("referenceStatus",t.referenceStatus()); m.put("uncertain",t.uncertain()); m.put("provenance",t.provenance());
+        m.put("createdAt",t.createdAt().toString()); m.put("trainingEligible",false);
         return m;
     }
 

@@ -79,6 +79,7 @@ final class APIClient {
         }
 
         var urlRequest = URLRequest(url: url)
+        urlRequest.timeoutInterval = request.timeout
         urlRequest.httpMethod = request.endpoint.method.rawValue
         urlRequest.httpBody = request.body
         urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")

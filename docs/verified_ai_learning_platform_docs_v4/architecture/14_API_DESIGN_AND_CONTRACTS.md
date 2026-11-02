@@ -255,3 +255,20 @@ Only backend source/ownership/policy authority is accepted. JSON fields are exac
 assertions reject. History is accessible after close/source change; new stale activity rejects. Foreign
 and absent objects share errors. See public-api.yaml and the Sprint 6.4 implementation map for schemas,
 resource ceilings, retry scope, stable Problem Details and migration restrictions.
+
+## Sprint 6.5 Socratic turn contract
+
+Add POST/GET `/api/v1/problem-sessions/{sessionId}/tutor-sessions/{tutorSessionId}/turns`.
+POST accepts a bounded content string and optional enumerated intent (default UNKNOWN), with required
+Idempotency-Key. Unknown/duplicate fields, scalar coercion and authority fields are rejected. It returns
+`tutor-turn-v1` with parent learner identity/sequence, TUTOR reply, phase/action/outcome, version and
+explicit uncertainty. HTTP 200 means atomic local persistence, not mathematical assessment or AI success.
+No async server job exists. Uncertain transport acknowledgement must replay the same key/content/intent.
+Committed replay survives close/staleness/disable. Cross-operation key reuse conflicts.
+
+GET is owned historical paging by exclusive learner sequence (gaps are expected for legacy messages),
+ascending order, limit 1–50. Existing six operations/DTOs are preserved, and `/messages` stays LEARNER-only.
+`messageCount` still counts learner records; new total-capacity checks count both message and reply rows.
+The 120/account/minute fail-closed limiter and correlation/error infrastructure are shared. New server
+transactions have a five-second timeout; iOS turn requests use a fifteen-second network timeout and
+persist uncertain retries. Detailed payloads and failure statuses are in public-api.yaml.

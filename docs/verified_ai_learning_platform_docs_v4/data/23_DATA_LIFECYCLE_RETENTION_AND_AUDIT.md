@@ -163,3 +163,12 @@ export; do not require deletion to obtain an export. Account/source cascades era
 account deletion also erases completed data_exports snapshots containing copied transcripts. Existing
 backup expiry applies; no new retention exception. Pending iOS sends retain one bounded protected
 operation per owner/problem, excluded from backup and erased after acknowledgement/rejection/logout.
+
+## Sprint 6.5 tutor replies
+
+Tutor replies, pedagogical state and learner intent are DERIVED_LEARNING, retained with the owned tutor
+history; trainingEligible remains false. Account export adds complete visible turn records (including
+state, version and uncertainty) without retry keys or hidden reasoning. The existing 8 MB content bound
+now measures both learner messages and tutor replies; exceeding it fails the entire export explicitly.
+Deletion reaches tutor_turns through parent message/session/source cascades. No provider copy exists in
+this no-inference slice. Existing backup expiry and completed-export deletion rules continue to apply.

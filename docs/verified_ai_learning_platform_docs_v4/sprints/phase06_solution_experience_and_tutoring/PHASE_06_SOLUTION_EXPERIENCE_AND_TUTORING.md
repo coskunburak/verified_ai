@@ -112,3 +112,14 @@ This Track B exception does not authorize release or waive Track A/ADR-011.
 V027 is additive; V024–V026 remain reserved by the commercial-wedge program, including Sprint 7.0A.
 Only fresh disposable databases are permitted until ordered shared upgrades are reconciled.
 See `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.4_EXECUTION_REPORT.md`.
+
+## Sprint 6.5 owner-directed local implementation
+
+Status `LOCAL_ACCEPTANCE_PASSED` in owner run `20261102-113306-4u8mzd`: 176 iOS tests,
+189 backend tests and 20 synthetic policy cases passed, with zero failures/skips. Bounded deterministic
+Socratic guidance, server-owned progress, additive turn persistence/API and iOS recovery are locally accepted.
+See `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.5_IMPLEMENTATION_MAP.md` and
+`sprints/phase06_solution_experience_and_tutoring/SPRINT_6.5_EXECUTION_REPORT.md`.
+Live tutor generation/trusted step assessment/expert teaching quality remain unavailable. TUTOR routing
+and deterministic rollout default disabled. This local scope does not waive ADR-011 or shared migration,
+hosted CI, staging and production gates. Sprint 6.6 hint ladders/economics remain separate.

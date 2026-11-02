@@ -127,6 +127,97 @@ final class TutorTests: XCTestCase {
         let body = try JSONSerialization.jsonObject(with: XCTUnwrap(requests[0].httpBody)) as! [String: String]
         XCTAssertEqual(body, ["content":"Synthetic"])
     }
+    func testSocraticTurnRestoresSpeakerPhaseAndUncertaintyAfterLostAcknowledgement() async throws {
+        let api = FixtureTutorAPI(failFirst: true), pending = store(), owner = UUID(), problem = UUID()
+        let model = TutorViewModel(owner: owner, problem: problem, service: api, store: pending, network: TutorTestNetwork(), ownsAccount: { true })
+        model.resume(); await settle(model); model.start(); await settle(model)
+        model.draft = "Synthetic step"; model.selectedIntent = .attemptStep; model.send(); await settle(model)
+        XCTAssertEqual(model.pending?.kind, .turn)
+        XCTAssertEqual(model.pending?.intent, .attemptStep)
+        model.suspend()
+        let restored = TutorViewModel(owner: owner, problem: problem, service: api, store: pending, network: TutorTestNetwork(), ownsAccount: { true })
+        restored.resume(); await settle(restored); restored.retry(); await settle(restored)
+        XCTAssertEqual(restored.messages.count, 1); XCTAssertEqual(restored.turns.count, 1)
+        let turn = try XCTUnwrap(restored.turns.first)
+        XCTAssertEqual(turn.role, "TUTOR"); XCTAssertTrue(turn.uncertain)
+        XCTAssertEqual(turn.correctness, "UNKNOWN"); XCTAssertEqual(turn.referenceStatus, "UNAVAILABLE")
+        XCTAssertEqual(turn.learnerMessageId, restored.messages.first?.id)
+        XCTAssertEqual(restored.phase, .elicitConcept); XCTAssertFalse(restored.busy)
+    }
+    func testUnavailablePolicyKeepsDraftAndStopsLoading() async {
+        let model = TutorViewModel(owner: UUID(), problem: UUID(), service: FixtureTutorAPI(available: false), store: store(), network: TutorTestNetwork(), ownsAccount: { true })
+        model.resume(); await settle(model); model.start(); await settle(model)
+        model.draft = "Synthetic question"; model.send(); await settle(model)
+        XCTAssertEqual(model.errorKey, "tutor.unavailable"); XCTAssertFalse(model.busy)
+        XCTAssertNil(model.pending); XCTAssertEqual(model.draft, "Synthetic question")
+        XCTAssertTrue(model.turns.isEmpty); XCTAssertTrue(model.messages.isEmpty)
+    }
+    func testLegacyPendingAppendIsNeverReinterpretedAsSocraticTurn() async throws {
+        let api = FixtureTutorAPI(), pending = store(), owner = UUID(), problem = UUID()
+        let session = try await api.create(problem: problem, key: "legacy-session")
+        try pending.save(TutorPending(key: "legacy-message", session: session.id, content: "Old pending text"), owner: owner, problem: problem)
+        let model = TutorViewModel(owner: owner, problem: problem, service: api, store: pending, network: TutorTestNetwork(), ownsAccount: { true })
+        model.resume(); await settle(model); model.retry(); await settle(model)
+        XCTAssertEqual(model.messages.count, 1); XCTAssertTrue(model.turns.isEmpty)
+        XCTAssertNil(model.pending)
+    }
+    func testChallengeStopsFurtherSubmissionAndPreservesReviewHistory() async {
+        let model = TutorViewModel(owner: UUID(), problem: UUID(), service: FixtureTutorAPI(), store: store(), network: TutorTestNetwork(), ownsAccount: { true })
+        model.resume(); await settle(model); model.start(); await settle(model)
+        model.draft = "Synthetic challenge"; model.selectedIntent = .challenge; model.send(); await settle(model)
+        XCTAssertEqual(model.phase, .needsReview)
+        model.draft = "Try again"; XCTAssertFalse(model.canSend)
+        model.refresh(); await settle(model); XCTAssertEqual(model.phase, .needsReview)
+    }
+    func testSocraticHistorySurvivesStaleSourceAndClose() async throws {
+        let api = FixtureTutorAPI(), problem = UUID()
+        let model = TutorViewModel(owner: UUID(), problem: problem, service: api, store: store(), network: TutorTestNetwork(), ownsAccount: { true })
+        model.resume(); await settle(model); model.start(); await settle(model)
+        model.draft = "Synthetic step"; model.send(); await settle(model)
+        let replyID = try XCTUnwrap(model.turns.first?.replyId)
+        await api.markStale(); model.refresh(); await settle(model)
+        XCTAssertEqual(model.session?.sourceCurrent, false); XCTAssertEqual(model.turns.first?.replyId, replyID)
+        model.draft = "Another step"; XCTAssertFalse(model.canSend)
+        model.close(); await settle(model)
+        XCTAssertEqual(model.session?.status, .closed); XCTAssertEqual(model.turns.first?.replyId, replyID)
+    }
+    func testTurnWireContractAndSchemaAuthorityGuards() async throws {
+        let fixture = FixtureTutorAPI(), problem = UUID()
+        let session = try await fixture.create(problem: problem, key: "fixture-create")
+        let expected = try await fixture.submitTurn(problem: problem, session: session.id, key: "fixture-turn", content: "Synthetic", intent: .unknown)
+        let data = try JSONEncoder().encode(expected)
+        let transport = TutorTestTransport(data: data)
+        let api = TutorAPI(client: APIClient(baseURL: URL(string: "https://example.invalid")!, session: transport, authTokenProvider: InMemorySecureStorage(), correlationContext: CorrelationContext()))
+        let reply = try await api.submitTurn(problem: problem, session: session.id, key: "durable-key", content: "Synthetic", intent: .unknown)
+        XCTAssertEqual(reply, expected)
+        let captured = await transport.lastRequest()
+        let request = try XCTUnwrap(captured)
+        XCTAssertTrue(request.url!.path.hasSuffix("/turns")); XCTAssertEqual(request.httpMethod, "POST")
+        XCTAssertEqual(request.timeoutInterval, 15)
+        XCTAssertEqual(request.value(forHTTPHeaderField: "Idempotency-Key"), "durable-key")
+        let body = try JSONSerialization.jsonObject(with: XCTUnwrap(request.httpBody)) as! [String: String]
+        XCTAssertEqual(body, ["content": "Synthetic", "intent": "UNKNOWN"])
+        for field in ["schemaVersion", "role", "correctness", "referenceStatus", "provenance", "policyVersion"] {
+            var invalid = try JSONSerialization.jsonObject(with: data) as! [String: Any]
+            invalid[field] = "FORGED"
+            let decoded = try JSONDecoder().decode(TutorTurn.self, from: JSONSerialization.data(withJSONObject: invalid))
+            XCTAssertThrowsError(try decoded.validated(session: session.id))
+        }
+    }
+    func testPendingResponseCannotPublishAcrossLogoutOrCancellation() async throws {
+        let delayed = DelayedTutorTestAPI(), pending = store()
+        var owns = true
+        let model = TutorViewModel(owner: UUID(), problem: UUID(), service: delayed, store: pending, network: TutorTestNetwork(), ownsAccount: { owns })
+        model.resume(); await settle(model); model.start(); await settle(model)
+        model.draft = "Synthetic pending"; model.send()
+        for _ in 0..<200 { if await delayed.waiting { break }; await Task.yield() }
+        let waiting = await delayed.waiting
+        XCTAssertTrue(waiting); XCTAssertTrue(model.busy); XCTAssertNotNil(model.pending)
+        owns = false; model.invalidate()
+        await delayed.release()
+        for _ in 0..<20 { await Task.yield() }
+        XCTAssertTrue(model.turns.isEmpty); XCTAssertNil(model.session); XCTAssertFalse(model.busy)
+    }
     func testAssistantAndFutureSchemasAreRejected() throws {
         let session = UUID()
         let message = TutorMessage(schemaVersion: "tutor-message-v1", id: UUID(), tutorSessionId: session, role: "ASSISTANT", sequenceNumber: 1, content: "Synthetic", createdAt: Date().ISO8601Format())
@@ -140,8 +231,28 @@ private actor TutorTestTransport: HTTPSession {
     let data: Data
     var requests: [URLRequest] = []
     init(data: Data) { self.data = data }
+    func lastRequest() -> URLRequest? { requests.last }
     func data(for request: URLRequest) async throws -> (Data, URLResponse) {
         requests.append(request)
         return (data, HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!)
+    }
+}
+
+private actor DelayedTutorTestAPI: TutorServicing {
+    private let base = FixtureTutorAPI()
+    private var continuation: CheckedContinuation<Void, Never>?
+    var waiting: Bool { continuation != nil }
+    func release() { continuation?.resume(); continuation = nil }
+    func list(problem: UUID) async throws -> [TutorSession] { try await base.list(problem: problem) }
+    func create(problem: UUID, key: String) async throws -> TutorSession { try await base.create(problem: problem, key: key) }
+    func read(problem: UUID, session: UUID) async throws -> TutorSession { try await base.read(problem: problem, session: session) }
+    func messages(problem: UUID, session: UUID, after: Int) async throws -> [TutorMessage] { try await base.messages(problem: problem, session: session, after: after) }
+    func append(problem: UUID, session: UUID, key: String, content: String) async throws -> TutorMessage { try await base.append(problem: problem, session: session, key: key, content: content) }
+    func close(problem: UUID, session: UUID) async throws -> TutorSession { try await base.close(problem: problem, session: session) }
+    func turns(problem: UUID, session: UUID, after: Int) async throws -> [TutorTurn] { try await base.turns(problem: problem, session: session, after: after) }
+    func submitTurn(problem: UUID, session: UUID, key: String, content: String, intent: TutorIntent) async throws -> TutorTurn {
+        let result = try await base.submitTurn(problem: problem, session: session, key: key, content: content, intent: intent)
+        await withCheckedContinuation { continuation = $0 }
+        return result
     }
 }
