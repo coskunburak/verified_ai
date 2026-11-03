@@ -20,6 +20,16 @@ struct AppDependencies {
     let problemReviewAPI: ProblemReviewServicing
     let problemSessionHistoryAPI: ProblemSessionHistoryServicing
     let problemSessionCache: ProblemSessionCaching
+    let attemptPending: AttemptAnalysisPendingStore
+    var attemptAPI: AttemptAnalysisServicing {
+        #if DEBUG
+        if solveFixture && ProcessInfo.processInfo.arguments.contains("--attempt-fixture") {
+            return FixtureAttemptAnalysisAPI(loseAcknowledgement: ProcessInfo.processInfo.arguments.contains("--attempt-lost-ack"),
+                enabled: !ProcessInfo.processInfo.arguments.contains("--attempt-disabled"))
+        }
+        #endif
+        return AttemptAnalysisAPI(client: apiClient)
+    }
     let tutorPending = TutorPendingStore()
     var tutorAPI: TutorServicing {
         #if DEBUG
@@ -92,6 +102,7 @@ struct AppDependencies {
         var solveEnabled = false
         var solveFixture = false
         var solveFixtureScope = "synthetic-fixture"
+        var attemptPending = AttemptAnalysisPendingStore()
         #if DEBUG
         let arguments = ProcessInfo.processInfo.arguments
         solveFixture = environment == .development && arguments.contains("--solve-fixture") && arguments.contains("--ui-testing-authenticated")
@@ -101,6 +112,17 @@ struct AppDependencies {
             if let scopeArgument = arguments.first(where: { $0.hasPrefix("--solve-fixture-scope=") }),
                let scope = UUID(uuidString: String(scopeArgument.dropFirst("--solve-fixture-scope=".count))) {
                 solveFixtureScope += "-" + scope.uuidString
+            }
+            // Synthetic accounts/session IDs repeat between UI tests. Their protected
+            // drafts and retry keys must share the solve fixture's isolated scope,
+            // never the real account store or another test's persisted learner work.
+            let attemptDirectory = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+                .appendingPathComponent("AttemptFixtures", isDirectory: true)
+                .appendingPathComponent(solveFixtureScope, isDirectory: true)
+            attemptPending = AttemptAnalysisPendingStore(directory: attemptDirectory)
+            if arguments.contains("--solve-reset") {
+                do { try attemptPending.clearAll() }
+                catch { preconditionFailure("Synthetic attempt fixture persistence could not be reset") }
             }
             let scenario = arguments.first(where: { $0.hasPrefix("--solve-scenario=") })?.components(separatedBy: "=").last ?? "GENERATED_UNVERIFIED"
             guard let defaults = UserDefaults(suiteName: "com.verifiedai." + solveFixtureScope) else {
@@ -151,6 +173,7 @@ struct AppDependencies {
             problemReviewAPI: problemReviewAPI,
             problemSessionHistoryAPI: problemSessionHistoryAPI,
             problemSessionCache: problemSessionCache,
+            attemptPending: attemptPending,
             primarySolveAPI: primarySolveAPI,
             solveRecovery: solveRecovery,
             solveEnabled: solveEnabled,

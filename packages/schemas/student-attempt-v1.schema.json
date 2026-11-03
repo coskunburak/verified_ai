@@ -1,0 +1,345 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "student-attempt-v1"
+    },
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "problemSessionId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "canonicalId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "canonicalRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "parseId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "parseRevision": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "canonicalId",
+        "canonicalRevision",
+        "parseId",
+        "parseRevision"
+      ]
+    },
+    "sourceType": {
+      "const": "MANUAL"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "SUBMITTED",
+        "ANALYZED",
+        "STALE_SOURCE"
+      ]
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "index": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 12
+          },
+          "content": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "normalizedStatement": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 12000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "index",
+          "content",
+          "normalizedStatement"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 12
+    },
+    "analysis": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "schemaVersion": {
+              "const": "attempt-analysis-v1"
+            },
+            "verifierVersion": {
+              "const": "bounded-attempt-v1"
+            },
+            "taxonomyVersion": {
+              "const": "attempt-taxonomy-v1"
+            },
+            "executionId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "correlationId": {
+              "type": "string",
+              "maxLength": 64
+            },
+            "outcome": {
+              "type": "string",
+              "enum": [
+                "INCOMPLETE_VALID_SO_FAR",
+                "STEP_ERROR_FOUND",
+                "NEEDS_REVIEW"
+              ]
+            },
+            "firstWrongStepIndex": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 12
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "domain": {
+              "type": "string",
+              "enum": [
+                "REAL_POLYNOMIAL",
+                "UNSUPPORTED"
+              ]
+            },
+            "steps": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "index": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 12
+                  },
+                  "verdict": {
+                    "type": "string",
+                    "enum": [
+                      "VALID_EQUIVALENT",
+                      "FIRST_WRONG_STEP",
+                      "UNCERTAIN",
+                      "NOT_ASSESSED"
+                    ]
+                  },
+                  "reasonCode": {
+                    "type": "string",
+                    "enum": [
+                      "EXACT_IDENTITY",
+                      "SAME_SOLUTION_SET",
+                      "NON_EQUIVALENT",
+                      "UNSUPPORTED_MATH",
+                      "EARLIER_DIVERGENCE",
+                      "EARLIER_UNCERTAINTY",
+                      "TIMEOUT",
+                      "RESOURCE_FAILURE",
+                      "WORKER_FAILURE",
+                      "ADMISSION_LIMIT",
+                      "DISABLED",
+                      "INVALID_RESPONSE"
+                    ]
+                  },
+                  "mistakeCode": {
+                    "anyOf": [
+                      {
+                        "const": "ALG_TRANSFORMATION_INVALID"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "counterexampleStatus": {
+                    "type": "string",
+                    "enum": [
+                      "AVAILABLE",
+                      "COUNTEREXAMPLE_UNAVAILABLE",
+                      "NOT_APPLICABLE"
+                    ]
+                  },
+                  "counterexample": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "schemaVersion": {
+                            "const": "attempt-witness-v1"
+                          },
+                          "witnessType": {
+                            "type": "string",
+                            "enum": [
+                              "EXPRESSION_VALUES",
+                              "EQUATION_TRUTH"
+                            ]
+                          },
+                          "variableValues": {
+                            "type": "object",
+                            "maxProperties": 1,
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "numerator": {
+                                  "type": "string",
+                                  "pattern": "^-?(0|[1-9][0-9]*)$",
+                                  "maxLength": 320
+                                },
+                                "denominator": {
+                                  "type": "string",
+                                  "pattern": "^[1-9][0-9]*$",
+                                  "maxLength": 320
+                                }
+                              },
+                              "required": [
+                                "numerator",
+                                "denominator"
+                              ]
+                            }
+                          },
+                          "previousStepEvaluation": {
+                            "type": "string",
+                            "maxLength": 650
+                          },
+                          "submittedStepEvaluation": {
+                            "type": "string",
+                            "maxLength": 650
+                          },
+                          "claimRefuted": {
+                            "type": "string",
+                            "enum": [
+                              "EXPRESSION_IDENTITY",
+                              "EQUATION_EQUIVALENCE"
+                            ]
+                          },
+                          "domainSatisfied": {
+                            "const": true
+                          },
+                          "verifierVersion": {
+                            "const": "bounded-attempt-v1"
+                          },
+                          "explanationCode": {
+                            "type": "string",
+                            "enum": [
+                              "UNEQUAL_VALUES",
+                              "DIFFERENT_TRUTH"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "schemaVersion",
+                          "witnessType",
+                          "variableValues",
+                          "previousStepEvaluation",
+                          "submittedStepEvaluation",
+                          "claimRefuted",
+                          "domainSatisfied",
+                          "verifierVersion",
+                          "explanationCode"
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "index",
+                  "verdict",
+                  "reasonCode",
+                  "mistakeCode",
+                  "counterexampleStatus",
+                  "counterexample"
+                ]
+              },
+              "minItems": 1,
+              "maxItems": 12
+            }
+          },
+          "required": [
+            "schemaVersion",
+            "verifierVersion",
+            "taxonomyVersion",
+            "executionId",
+            "correlationId",
+            "outcome",
+            "firstWrongStepIndex",
+            "domain",
+            "steps"
+          ],
+          "$schema": "https://json-schema.org/draft/2020-12/schema"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "trainingEligible": {
+      "const": false
+    },
+    "normalizationVersion": {
+      "const": "manual-canonical-v1"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "id",
+    "problemSessionId",
+    "source",
+    "sourceType",
+    "status",
+    "steps",
+    "analysis",
+    "createdAt",
+    "updatedAt",
+    "trainingEligible",
+    "normalizationVersion"
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

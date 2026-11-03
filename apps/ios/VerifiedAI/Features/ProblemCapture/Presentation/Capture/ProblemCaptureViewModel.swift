@@ -2,6 +2,7 @@ import Foundation
 import Observation
 import SwiftUI
 import UniformTypeIdentifiers
+import UIKit
 
 @MainActor
 @Observable
@@ -236,8 +237,29 @@ final class ProblemCaptureViewModel {
         message = nil
     }
 
+    func rotateClockwise() async {
+        guard let asset = state.currentAsset, let image = UIImage(contentsOfFile: asset.localURL.path) else { return }
+        let requestID = UUID(); activeRequestID = requestID
+        state = .processingLocalAsset
+        let size = CGSize(width: image.size.height, height: image.size.width)
+        let format = UIGraphicsImageRendererFormat(); format.scale = 1
+        let rotated = UIGraphicsImageRenderer(size: size, format: format).image { context in
+            context.cgContext.translateBy(x: size.width / 2, y: size.height / 2)
+            context.cgContext.rotate(by: .pi / 2)
+            image.draw(in: CGRect(x: -image.size.width / 2, y: -image.size.height / 2, width: image.size.width, height: image.size.height))
+        }
+        guard let data = rotated.jpegData(compressionQuality: 0.95) else {
+            state = .recoverableFailure(.corruptAsset, previousAsset: asset); return
+        }
+        do {
+            let replacement = try await assetStore.storeImageData(data, source: asset.source, declaredUTType: UTType.jpeg.identifier)
+            await finishProcessing(replacement, previousAsset: asset, requestID: requestID,
+                successEvent: "problem_capture.rotated", failureEvent: "problem_capture.rotation_failed")
+        } catch { await applyProcessingFailure(error, previousAsset: asset, requestID: requestID, eventName: "problem_capture.rotation_failed") }
+    }
+
     func accept() {
-        guard let asset = state.currentAsset else {
+        guard let asset = state.currentAsset, asset.qualityAssessment.canContinue else {
             return
         }
         activeRequestID = nil

@@ -196,3 +196,12 @@ Provider/model routing is a backend concern. This preserves remote route changes
 ## V4 canonical hierarchy alignment
 
 For exhaustive per-feature filenames, Core platform subtrees, test mirrors, and placement rules, `quality/56_COMPLETE_PRODUCTION_REPOSITORY_FILE_HIERARCHY.md` is authoritative. This document governs iOS architectural intent; the exhaustive hierarchy governs exact repository placement. `quality/66_FILE_PLACEMENT_OWNERSHIP_AND_DEPENDENCY_MATRIX.md` resolves ambiguous placements.
+
+## Sprint 6.7 Analyze My Work
+
+Features/AttemptAnalysis owns typed API/domain, protected drafts/pending requests, native Vision extraction,
+per-line photo review, editor, first-error semantic diff, proof card, verified twin/method views and passport.
+Root/PrimarySolve compose existing capture/upload/recognition and Tutor navigation. SwiftMath 1.7.3 is exactly
+pinned for native 2D math; only typed AST can produce LaTeX, with existing spoken-math and text fallback.
+No client grades answers or invents evidence. EN/TR text, Dynamic Type and account-generation fences apply.
+New files are registered in existing Xcode targets. Build/device/VoiceOver and dependency resolution are owner-pending.

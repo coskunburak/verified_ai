@@ -73,3 +73,7 @@ unauthorized. Existing golden datasets/baselines are unchanged. Full and E/D-onl
 `scripts/quality/sprint_6_6_owner_acceptance.sh` and `scripts/quality/sprint_6_6_reconcile_evidence.sh`
 from the repository root. The latter reads existing evidence and does not rerun tests/evaluations.
 See the [execution report](../docs/verified_ai_learning_platform_docs_v4/sprints/phase06_solution_experience_and_tutoring/SPRINT_6.6_EXECUTION_REPORT.md).
+
+## Sprint 6.7 product integration
+
+Legacy manual-polynomial-v1 remains the 30-case synthetic typed fixture; golden evaluation passed in owner product runs. New Python product tests cover all 17 diagnoses, domain guards, 17×5 twin variants and verified methods; targeted repairs resolved all identified test failures. No real handwriting accuracy, 85% recall or latency claim is made; owner runner preserves source-specific evidence and reports Linux release checks separately.

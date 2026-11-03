@@ -136,3 +136,14 @@ is `PENDING_FULL_CURRENT_SOURCE_RUN`; hosted CI `NOT_VERIFIED`; shared upgrades 
 Explicit reveal remains unavailable without an authorized verified-reference reader. Broader math,
 live/expert quality and ADR-011/TestFlight gates remain open. Flags default false. See Sprint 6.6
 execution report for exact scope, run history and evidence. No agent tests/builds/migrations or push.
+
+## Sprint 6.7 product integration — targeted repair passed
+
+Bounded real-set/domain source, native/gateway photo review, all 17 bounded diagnoses, native semantic diff,
+verified twins/methods, mastery/passport and private persistence are integrated in source. V030–V032 form the
+forward migration path; earlier V024–V026 design numbers are not inserted into applied history.
+Owner acceptance status: TARGETED_REPAIR_PASSED (owner runs `20261103-233019-8g1dlw`, `20261104-000339-IzxY36`,
+`20261104-002119-IQLWzE`; `unresolvedFailures=[]`). Full current-source rerun remains PENDING_OWNER.
+Runtime activation defaults false; Linux release checks remain separately pending; production remains NOT_AUTHORIZED.
+See SPRINT_6.7_IMPLEMENTATION_MAP.md, SPRINT_6.7_EXECUTION_REPORT.md and SPRINT_6.7_FILE_MANIFEST.md
+for supported scope, evidence ledger and exact source inventory.

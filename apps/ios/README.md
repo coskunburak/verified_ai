@@ -271,3 +271,7 @@ is still pending and hosted CI is NOT_VERIFIED. Manual physical-device/VoiceOver
 Reveal is explicitly confirmed but returns unavailable without an authorized verified reference.
 See the [current Sprint 6.6 report](../../docs/verified_ai_learning_platform_docs_v4/sprints/phase06_solution_experience_and_tutoring/SPRINT_6.6_EXECUTION_REPORT.md).
 Earlier PR #30 records above are historical and do not describe the latest Sprint 6.6 local evidence.
+
+## Sprint 6.7 product integration
+
+Features/AttemptAnalysis composes camera/photo/crop/rotation/quality, native Vision and optional existing gateway recognition, image/per-line review, protected drafts/editor, results/native semantic diff, twins/methods/history and mastery/passport. SwiftMath exact 1.7.3 supplies native 2D rendering with spoken math. Owner package resolution and targeted UI tests passed (`testManualWrongStepAndCounterexample` and `testTurkishLostAcknowledgementRecovery`); physical device/VoiceOver acceptance pending; real handwriting coverage NOT_EVALUATED.

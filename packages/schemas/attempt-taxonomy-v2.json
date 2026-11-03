@@ -1,0 +1,128 @@
+{
+  "version": "attempt-taxonomy-v2",
+  "listedSpecificCodeCount": 17,
+  "specificCodes": [
+    {
+      "code": "ALG_SIGN_FLIP_DISTRIBUTE",
+      "status": "IMPLEMENTED_BOUNDED",
+      "evidenceGate": "EXACT_DISPROOF_AND_STRUCTURAL_PATTERN",
+      "explanationKey": "attempt.mistake.ALG_SIGN_FLIP_DISTRIBUTE",
+      "negativeCase": "Identical/equivalent source must not produce a diagnosis; near matches fall back to INVALID_TRANSFORMATION."
+    },
+    {
+      "code": "ALG_FRESHMAN_DREAM_POWER",
+      "status": "IMPLEMENTED_BOUNDED",
+      "evidenceGate": "EXACT_DISPROOF_AND_STRUCTURAL_PATTERN",
+      "explanationKey": "attempt.mistake.ALG_FRESHMAN_DREAM_POWER",
+      "negativeCase": "Identical/equivalent source must not produce a diagnosis; near matches fall back to INVALID_TRANSFORMATION."
+    },
+    {
+      "code": "ALG_FRACTION_ADD_DENOM",
+      "status": "IMPLEMENTED_BOUNDED",
+      "evidenceGate": "EXACT_DISPROOF_AND_STRUCTURAL_PATTERN",
+      "explanationKey": "attempt.mistake.ALG_FRACTION_ADD_DENOM",
+      "negativeCase": "Identical/equivalent source must not produce a diagnosis; near matches fall back to INVALID_TRANSFORMATION."
+    },
+    {
+      "code": "ALG_ROOT_LOST_BY_DIVISION",
+      "status": "IMPLEMENTED_BOUNDED",
+      "evidenceGate": "EXACT_DISPROOF_AND_STRUCTURAL_PATTERN",
+      "explanationKey": "attempt.mistake.ALG_ROOT_LOST_BY_DIVISION",
+      "negativeCase": "Identical/equivalent source must not produce a diagnosis; near matches fall back to INVALID_TRANSFORMATION."
+    },
+    {
+      "code": "DOM_EXTRANEOUS_ROOT_DENOM",
+      "status": "IMPLEMENTED_BOUNDED",
+      "evidenceGate": "EXACT_DISPROOF_AND_STRUCTURAL_PATTERN",
+      "explanationKey": "attempt.mistake.DOM_EXTRANEOUS_ROOT_DENOM",
+      "negativeCase": "Identical/equivalent source must not produce a diagnosis; near matches fall back to INVALID_TRANSFORMATION."
+    },
+    {
+      "code": "DOM_EVEN_ROOT_NEGATIVE",
+      "status": "IMPLEMENTED_BOUNDED",
+      "evidenceGate": "EXACT_DISPROOF_AND_STRUCTURAL_PATTERN",
+      "explanationKey": "attempt.mistake.DOM_EVEN_ROOT_NEGATIVE",
+      "negativeCase": "Identical/equivalent source must not produce a diagnosis; near matches fall back to INVALID_TRANSFORMATION."
+    },
+    {
+      "code": "DOM_LOG_NON_POSITIVE",
+      "status": "IMPLEMENTED_BOUNDED",
+      "evidenceGate": "EXACT_DISPROOF_AND_STRUCTURAL_PATTERN",
+      "explanationKey": "attempt.mistake.DOM_LOG_NON_POSITIVE",
+      "negativeCase": "Identical/equivalent source must not produce a diagnosis; near matches fall back to INVALID_TRANSFORMATION."
+    },
+    {
+      "code": "INEQ_NEGATIVE_MULT_NO_FLIP",
+      "status": "IMPLEMENTED_BOUNDED",
+      "evidenceGate": "EXACT_DISPROOF_AND_STRUCTURAL_PATTERN",
+      "explanationKey": "attempt.mistake.INEQ_NEGATIVE_MULT_NO_FLIP",
+      "negativeCase": "Identical/equivalent source must not produce a diagnosis; near matches fall back to INVALID_TRANSFORMATION."
+    },
+    {
+      "code": "INEQ_CROSS_MULT_VARIABLE",
+      "status": "IMPLEMENTED_BOUNDED",
+      "evidenceGate": "EXACT_DISPROOF_AND_STRUCTURAL_PATTERN",
+      "explanationKey": "attempt.mistake.INEQ_CROSS_MULT_VARIABLE",
+      "negativeCase": "Identical/equivalent source must not produce a diagnosis; near matches fall back to INVALID_TRANSFORMATION."
+    },
+    {
+      "code": "ABS_SINGLE_BRANCH_ONLY",
+      "status": "IMPLEMENTED_BOUNDED",
+      "evidenceGate": "EXACT_DISPROOF_AND_STRUCTURAL_PATTERN",
+      "explanationKey": "attempt.mistake.ABS_SINGLE_BRANCH_ONLY",
+      "negativeCase": "Identical/equivalent source must not produce a diagnosis; near matches fall back to INVALID_TRANSFORMATION."
+    },
+    {
+      "code": "FUNC_COMPOSITION_ORDER",
+      "status": "IMPLEMENTED_BOUNDED",
+      "evidenceGate": "EXACT_DISPROOF_AND_STRUCTURAL_PATTERN",
+      "explanationKey": "attempt.mistake.FUNC_COMPOSITION_ORDER",
+      "negativeCase": "Identical/equivalent source must not produce a diagnosis; near matches fall back to INVALID_TRANSFORMATION."
+    },
+    {
+      "code": "TRIG_PERIOD_OMITTED",
+      "status": "IMPLEMENTED_BOUNDED",
+      "evidenceGate": "EXACT_DISPROOF_AND_STRUCTURAL_PATTERN",
+      "explanationKey": "attempt.mistake.TRIG_PERIOD_OMITTED",
+      "negativeCase": "Identical/equivalent source must not produce a diagnosis; near matches fall back to INVALID_TRANSFORMATION."
+    },
+    {
+      "code": "CALC_LIMIT_INDETERMINATE_SUB",
+      "status": "IMPLEMENTED_BOUNDED",
+      "evidenceGate": "EXACT_DISPROOF_AND_STRUCTURAL_PATTERN",
+      "explanationKey": "attempt.mistake.CALC_LIMIT_INDETERMINATE_SUB",
+      "negativeCase": "Identical/equivalent source must not produce a diagnosis; near matches fall back to INVALID_TRANSFORMATION."
+    },
+    {
+      "code": "CALC_CHAIN_RULE_OMITTED",
+      "status": "IMPLEMENTED_BOUNDED",
+      "evidenceGate": "EXACT_DISPROOF_AND_STRUCTURAL_PATTERN",
+      "explanationKey": "attempt.mistake.CALC_CHAIN_RULE_OMITTED",
+      "negativeCase": "Identical/equivalent source must not produce a diagnosis; near matches fall back to INVALID_TRANSFORMATION."
+    },
+    {
+      "code": "CALC_PRODUCT_QUOTIENT_NAIVE",
+      "status": "IMPLEMENTED_BOUNDED",
+      "evidenceGate": "EXACT_DISPROOF_AND_STRUCTURAL_PATTERN",
+      "explanationKey": "attempt.mistake.CALC_PRODUCT_QUOTIENT_NAIVE",
+      "negativeCase": "Identical/equivalent source must not produce a diagnosis; near matches fall back to INVALID_TRANSFORMATION."
+    },
+    {
+      "code": "CALC_INTEGRAL_BOUNDS_SWAPPED",
+      "status": "IMPLEMENTED_BOUNDED",
+      "evidenceGate": "EXACT_DISPROOF_AND_STRUCTURAL_PATTERN",
+      "explanationKey": "attempt.mistake.CALC_INTEGRAL_BOUNDS_SWAPPED",
+      "negativeCase": "Identical/equivalent source must not produce a diagnosis; near matches fall back to INVALID_TRANSFORMATION."
+    },
+    {
+      "code": "WORD_VARIABLE_MISASSIGNMENT",
+      "status": "IMPLEMENTED_BOUNDED",
+      "evidenceGate": "EXACT_DISPROOF_AND_STRUCTURAL_PATTERN",
+      "explanationKey": "attempt.mistake.WORD_VARIABLE_MISASSIGNMENT",
+      "negativeCase": "Identical/equivalent source must not produce a diagnosis; near matches fall back to INVALID_TRANSFORMATION."
+    }
+  ],
+  "generic": "INVALID_TRANSFORMATION",
+  "legacyGeneric": "ALG_TRANSFORMATION_INVALID",
+  "ownerValidation": "NOT_EXECUTED"
+}

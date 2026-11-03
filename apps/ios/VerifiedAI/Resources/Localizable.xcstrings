@@ -1,6 +1,2265 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "attempt.keyboard.done": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Done"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bitti"
+          }
+        }
+      }
+    },
+    "attempt.truth.true": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "true"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "doğru"
+          }
+        }
+      }
+    },
+    "attempt.truth.false": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "false"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "yanlış"
+          }
+        }
+      }
+    },
+    "attempt.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Analyze My Work"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çözümümü Kontrol Et"
+          }
+        }
+      }
+    },
+    "attempt.scope": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter one statement per line. Confirm the real-number scope when appropriate. Unsupported or ambiguous mathematics remains uncertain."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Her satıra bir matematiksel ifade gir. Uygunsa reel sayı kapsamını onayla. Desteklenmeyen veya belirsiz matematik için kesin hüküm verilmez."
+          }
+        }
+      }
+    },
+    "attempt.handwriting.unavailable": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Handwriting extraction is unavailable. Enter your steps below."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El yazısı okuma kullanılamıyor. Adımlarınızı aşağıya girin."
+          }
+        }
+      }
+    },
+    "attempt.unavailable": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Analysis is disabled until local acceptance and migration prerequisites are ready. Your work is preserved."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yerel kabul ve veri geçişi önkoşulları tamamlanana kadar analiz kapalıdır. Çalışmanız korunur."
+          }
+        }
+      }
+    },
+    "attempt.editor.help": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "One step per line, up to 12 lines. Use * for multiplication and parentheses for grouping. Unsupported notation needs review."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Her satıra bir adım, en fazla 12 satır. Çarpma için * ve gruplama için parantez kullanın. Desteklenmeyen gösterimler inceleme gerektirir."
+          }
+        }
+      }
+    },
+    "attempt.editor.label": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your mathematical steps"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Matematik çözüm adımlarınız"
+          }
+        }
+      }
+    },
+    "attempt.submit": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Analyze steps"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adımları analiz et"
+          }
+        }
+      }
+    },
+    "attempt.loading": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Analyzing your steps"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adımlarınız analiz ediliyor"
+          }
+        }
+      }
+    },
+    "attempt.refresh": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Refresh source and history"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaynağı ve geçmişi yenile"
+          }
+        }
+      }
+    },
+    "attempt.retry.button": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retry saved submission"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaydedilen gönderimi yeniden dene"
+          }
+        }
+      }
+    },
+    "attempt.retry": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not complete the request. Your steps are preserved. Retry the same submission."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İstek tamamlanamadı. Adımlarınız korunuyor. Aynı gönderimi yeniden deneyin."
+          }
+        }
+      }
+    },
+    "attempt.pending": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Work saved; analysis is pending. Retry without creating another attempt."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çalışma kaydedildi; analiz bekliyor. Yeni deneme oluşturmadan yeniden deneyin."
+          }
+        }
+      }
+    },
+    "attempt.authorization": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your account changed. Reopen this screen from the current account."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hesabınız değişti. Bu ekranı geçerli hesabınızdan yeniden açın."
+          }
+        }
+      }
+    },
+    "attempt.storage": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not safely save retry information. Your text remains on this screen."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yeniden deneme bilgisi güvenle kaydedilemedi. Metniniz bu ekranda korunuyor."
+          }
+        }
+      }
+    },
+    "attempt.review": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Review your source and input limits, then refresh before submitting again."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaynağı ve giriş sınırlarını gözden geçirin; yeniden göndermeden önce yenileyin."
+          }
+        }
+      }
+    },
+    "attempt.stale": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The problem changed during analysis. This saved work has not been judged against the new problem."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Analiz sırasında soru değişti. Kaydedilen bu çalışma yeni soruya göre değerlendirilmedi."
+          }
+        }
+      }
+    },
+    "attempt.history": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open saved attempt"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaydedilen denemeyi aç"
+          }
+        }
+      }
+    },
+    "attempt.verdict.VALID_EQUIVALENT": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Equivalent transformation proven"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eşdeğer dönüşüm kanıtlandı"
+          }
+        }
+      }
+    },
+    "attempt.verdict.FIRST_WRONG_STEP": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "First proven invalid transformation"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İlk kanıtlanmış geçersiz dönüşüm"
+          }
+        }
+      }
+    },
+    "attempt.verdict.UNCERTAIN": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Needs review — insufficient evidence"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İnceleme gerekli — kanıt yetersiz"
+          }
+        }
+      }
+    },
+    "attempt.verdict.NOT_ASSESSED": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not assessed after an earlier divergence or uncertainty"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Önceki ayrışma veya belirsizlik nedeniyle değerlendirilmedi"
+          }
+        }
+      }
+    },
+    "attempt.outcome.INCOMPLETE_VALID_SO_FAR": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Valid progress so far; completion not assessed"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Şu ana kadar geçerli ilerleme; tamamlanma değerlendirilmedi"
+          }
+        }
+      }
+    },
+    "attempt.outcome.STEP_ERROR_FOUND": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A non-equivalent transformation was proven"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eşdeğer olmayan bir dönüşüm kanıtlandı"
+          }
+        }
+      }
+    },
+    "attempt.outcome.NEEDS_REVIEW": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Some mathematics could not be established"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bazı matematiksel adımlar doğrulanamadı"
+          }
+        }
+      }
+    },
+    "attempt.domain.REAL_POLYNOMIAL": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scope: real polynomials; functions, variable denominators and restricted domains are not supported."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kapsam: gerçek sayılı polinomlar; fonksiyonlar, değişken paydalar ve kısıtlı tanım kümeleri desteklenmiyor."
+          }
+        }
+      }
+    },
+    "attempt.domain.UNSUPPORTED": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The mathematical domain or structure is unsupported. No error is attributed."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Matematiksel tanım kümesi veya yapı desteklenmiyor. Hata atfedilmedi."
+          }
+        }
+      }
+    },
+    "attempt.mistake.ALG_TRANSFORMATION_INVALID": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This step does not preserve the preceding mathematical claim. The evidence does not establish a specific misconception."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu adım önceki matematiksel iddiayı korumuyor. Kanıt, belirli bir kavram yanılgısını ortaya koymuyor."
+          }
+        }
+      }
+    },
+    "attempt.counterexample.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exact counterexample"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kesin karşı örnek"
+          }
+        }
+      }
+    },
+    "attempt.counterexample.unavailable": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Symbolic disproof is available, but no counterexample was found within the search budget."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sembolik çürütme var; ancak arama bütçesinde bir karşı örnek bulunamadı."
+          }
+        }
+      }
+    },
+    "attempt.witness.DIFFERENT_TRUTH": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "At this value, one equation is true and the other is false."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu değerde denklemlerden biri doğru, diğeri yanlıştır."
+          }
+        }
+      }
+    },
+    "attempt.witness.UNEQUAL_VALUES": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "At this value, the two expressions have different exact values."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu değerde iki ifadenin kesin değerleri farklıdır."
+          }
+        }
+      }
+    },
+    "attempt.counterexample.previous %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Previous statement: %@"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Önceki ifade: %@"
+          }
+        }
+      }
+    },
+    "attempt.counterexample.submitted %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Submitted statement: %@"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gönderilen ifade: %@"
+          }
+        }
+      }
+    },
+    "attempt.photo.open": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scan my work"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çözümümün fotoğrafını çek"
+          }
+        }
+      }
+    },
+    "attempt.photo.gateway": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use enhanced recognition (upload photo)"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gelişmiş tanıma kullan (fotoğraf yüklenir)"
+          }
+        }
+      }
+    },
+    "attempt.photo.use": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Read solution steps"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çözüm satırlarını oku"
+          }
+        }
+      }
+    },
+    "attempt.photo.rotate": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rotate clockwise"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saat yönünde döndür"
+          }
+        }
+      }
+    },
+    "attempt.ocr.extracting": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reading solution lines…"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çözüm satırları okunuyor…"
+          }
+        }
+      }
+    },
+    "attempt.ocr.review": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Review recognized lines"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Okunan satırları kontrol et"
+          }
+        }
+      }
+    },
+    "attempt.ocr.review.help": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check every symbol, exponent and fraction against your photo. Recognition can miss mathematical layout. Correct each line and confirm it before analysis."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Her sembolü, üssü ve kesri fotoğrafınla karşılaştır. Tanıma, matematiksel yerleşimi yanlış okuyabilir. Analizden önce her satırı düzelt ve onayla."
+          }
+        }
+      }
+    },
+    "attempt.ocr.lowConfidence": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Low recognition confidence. Review carefully."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tanıma güveni düşük. Dikkatlice kontrol et."
+          }
+        }
+      }
+    },
+    "attempt.ocr.lineConfirmed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I checked this line"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu satırı kontrol ettim"
+          }
+        }
+      }
+    },
+    "attempt.ocr.confirm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use reviewed lines"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kontrol ettiğim satırları kullan"
+          }
+        }
+      }
+    },
+    "attempt.ocr.cancel": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vazgeç"
+          }
+        }
+      }
+    },
+    "attempt.ocr.failed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The image could not be read safely. Retake a clearer photo or enter the steps manually."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Görüntü güvenle okunamadı. Daha net bir fotoğraf çek veya adımları elle gir."
+          }
+        }
+      }
+    },
+    "attempt.domain.confirmReal": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This task is in the real numbers"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu soru reel sayılar kapsamında"
+          }
+        }
+      }
+    },
+    "attempt.domain.REAL_DOMAIN": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exact analysis within the stated real domain"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Belirtilen reel tanım kümesinde kesin analiz"
+          }
+        }
+      }
+    },
+    "attempt.twin.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Practice a similar question"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Benzer bir soruyla pekiştir"
+          }
+        }
+      }
+    },
+    "attempt.twin.timer": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%d seconds left in your practice target"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alıştırma hedefinde %d saniye kaldı"
+          }
+        }
+      }
+    },
+    "attempt.twin.timerHelp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The 60-second target is optional. Time does not affect correctness."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "60 saniye isteğe bağlı bir hedef. Süre, cevabın doğruluğunu etkilemez."
+          }
+        }
+      }
+    },
+    "attempt.twin.answer": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check my answer"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cevabımı kontrol et"
+          }
+        }
+      }
+    },
+    "attempt.twin.correct": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verified correct answer"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Doğrulanmış doğru cevap"
+          }
+        }
+      }
+    },
+    "attempt.twin.incorrect": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This answer is incorrect. Compare with the verified answer."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu cevap yanlış. Doğrulanmış cevapla karşılaştır."
+          }
+        }
+      }
+    },
+    "attempt.twin.close": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close and resume later"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kapat ve sonra devam et"
+          }
+        }
+      }
+    },
+    "attempt.twin.history": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Practice history"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alıştırma geçmişi"
+          }
+        }
+      }
+    },
+    "attempt.twin.OPEN": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continue practice"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alıştırmaya devam et"
+          }
+        }
+      }
+    },
+    "attempt.twin.COMPLETED": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Completed practice"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tamamlanan alıştırma"
+          }
+        }
+      }
+    },
+    "attempt.math.expression": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mathematical expression"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Matematiksel ifade"
+          }
+        }
+      }
+    },
+    "attempt.methods.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compare verified methods"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Doğrulanmış yöntemleri karşılaştır"
+          }
+        }
+      }
+    },
+    "attempt.methods.mine": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "My method"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Benim yöntemim"
+          }
+        }
+      }
+    },
+    "attempt.methods.compact": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show the concise result"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kısa sonucu göster"
+          }
+        }
+      }
+    },
+    "attempt.methods.verified": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Each transformation preserves the solution under the source conditions."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Her dönüşüm, kaynağın koşulları altında çözümü korur."
+          }
+        }
+      }
+    },
+    "attempt.method.FACTORING": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Factoring"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çarpanlara ayırma"
+          }
+        }
+      }
+    },
+    "attempt.method.COMPLETING_SQUARE": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Completing the square"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tam kareye tamamlama"
+          }
+        }
+      }
+    },
+    "attempt.method.QUADRATIC_FORMULA": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quadratic formula"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İkinci derece denklem formülü"
+          }
+        }
+      }
+    },
+    "attempt.method.SYMBOLIC_SIMPLIFICATION": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Symbolic simplification"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sembolik sadeleştirme"
+          }
+        }
+      }
+    },
+    "attempt.learning.unavailable": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This learning action is unavailable for the current source or connection. Retry or choose another supported attempt."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu öğrenme işlemi mevcut kaynak veya bağlantı için kullanılamıyor. Tekrar dene veya desteklenen başka bir deneme seç."
+          }
+        }
+      }
+    },
+    "attempt.learning.refresh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Refresh practice and learning history"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alıştırma ve öğrenme geçmişini yenile"
+          }
+        }
+      }
+    },
+    "attempt.passport.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mistake Passport"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hata Pasaportu"
+          }
+        }
+      }
+    },
+    "attempt.passport.empty": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No eligible mistake evidence yet."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Henüz uygun hata kanıtı yok."
+          }
+        }
+      }
+    },
+    "attempt.mastery.score": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Evidence-based skill estimate"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kanıta dayalı beceri tahmini"
+          }
+        }
+      }
+    },
+    "attempt.mastery.evidence": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%d verified observations; estimate at last assessment"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%d doğrulanmış gözlem; son değerlendirmedeki tahmin"
+          }
+        }
+      }
+    },
+    "attempt.mistake.INVALID_TRANSFORMATION": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This transformation changes the mathematical claim. A more specific mistake pattern was not proved."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu dönüşüm matematiksel iddiayı değiştiriyor. Daha özel bir hata örüntüsü kanıtlanamadı."
+          }
+        }
+      }
+    },
+    "attempt.mistake.ALG_SIGN_FLIP_DISTRIBUTE": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A minus sign must change both signs inside the parentheses. Distribute it to each term."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Parantezin önündeki eksi içerideki her terimin işaretini değiştirmeli. Eksiyi her terime dağıt."
+          }
+        }
+      }
+    },
+    "attempt.mistake.ALG_FRESHMAN_DREAM_POWER": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Squaring a sum requires the cross term: (a+b)²=a²+2ab+b²."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Toplamın karesinde çapraz terim de gerekir: (a+b)²=a²+2ab+b²."
+          }
+        }
+      }
+    },
+    "attempt.mistake.ALG_FRACTION_ADD_DENOM": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fractions need a common denominator. Adding the denominators changes the value."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kesirleri toplamak için ortak payda gerekir. Paydaları toplamak değeri değiştirir."
+          }
+        }
+      }
+    },
+    "attempt.mistake.ALG_ROOT_LOST_BY_DIVISION": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dividing by a variable factor removed a valid zero of that factor. Check its zero case separately."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Değişkenli çarpana bölmek, o çarpanın geçerli bir sıfırını kaybettirdi. Sıfır olduğu durumu ayrı incele."
+          }
+        }
+      }
+    },
+    "attempt.mistake.DOM_EXTRANEOUS_ROOT_DENOM": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The transformed equation admits a value that makes an original denominator zero. Check candidates in the original equation."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yeni denklem, özgün paydasını sıfır yapan bir değeri kabul ediyor. Aday kökleri özgün denklemde kontrol et."
+          }
+        }
+      }
+    },
+    "attempt.mistake.DOM_EVEN_ROOT_NEGATIVE": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A principal real square root cannot equal a negative value. Squaring introduced an invalid root."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Asal reel karekök negatif olamaz. Karesini almak geçersiz bir kök ekledi."
+          }
+        }
+      }
+    },
+    "attempt.mistake.DOM_LOG_NON_POSITIVE": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The new roots include a nonpositive logarithm argument. A real logarithm needs a positive argument."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yeni köklerden biri logaritmanın içini sıfır veya negatif yapıyor. Reel logaritmanın içi pozitif olmalı."
+          }
+        }
+      }
+    },
+    "attempt.mistake.INEQ_NEGATIVE_MULT_NO_FLIP": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Multiplication or division by a negative constant reverses the inequality."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Negatif bir sabitle çarpma veya bölme eşitsizliğin yönünü değiştirir."
+          }
+        }
+      }
+    },
+    "attempt.mistake.INEQ_CROSS_MULT_VARIABLE": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cross multiplication by a variable denominator needs separate positive and negative cases."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Değişkenli paydayla çapraz çarpmadan önce pozitif ve negatif durumları ayrı incele."
+          }
+        }
+      }
+    },
+    "attempt.mistake.ABS_SINGLE_BRANCH_ONLY": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The absolute-value equation has another branch. Check both signs before selecting roots."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mutlak değer denkleminin başka bir dalı da var. Kökleri seçmeden önce iki işareti de kontrol et."
+          }
+        }
+      }
+    },
+    "attempt.mistake.FUNC_COMPOSITION_ORDER": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The order of these functions changed. Evaluate the inner function first."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu fonksiyonların sırası değişti. Önce içteki fonksiyonu uygula."
+          }
+        }
+      }
+    },
+    "attempt.mistake.TRIG_PERIOD_OMITTED": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A periodic root inside the stated interval was omitted. Include every allowed period."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Belirtilen aralıkta periyodik bir kök eksik. İzin verilen bütün periyotları dikkate al."
+          }
+        }
+      }
+    },
+    "attempt.mistake.CALC_LIMIT_INDETERMINATE_SUB": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "0/0 is indeterminate, not zero. Simplify on a punctured neighborhood before taking the limit."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "0/0 sıfır değil, belirsiz biçimdir. Limiti almadan önce noktanın delinmiş komşuluğunda sadeleştir."
+          }
+        }
+      }
+    },
+    "attempt.mistake.CALC_CHAIN_RULE_OMITTED": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The derivative of the inner function is missing. Multiply by that derivative."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İç fonksiyonun türevi eksik. Onun türeviyle de çarp."
+          }
+        }
+      }
+    },
+    "attempt.mistake.CALC_PRODUCT_QUOTIENT_NAIVE": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Derivatives cannot simply be multiplied or divided. Apply the product or quotient rule."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Türevler doğrudan çarpılamaz veya bölünemez. Çarpım ya da bölüm kuralını uygula."
+          }
+        }
+      }
+    },
+    "attempt.mistake.CALC_INTEGRAL_BOUNDS_SWAPPED": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reversing the integration bounds changes the sign of the integral."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İntegral sınırlarını ters çevirmek integralin işaretini değiştirir."
+          }
+        }
+      }
+    },
+    "attempt.mistake.WORD_VARIABLE_MISASSIGNMENT": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The assigned quantity conflicts with the explicit variable definition. Match the variable to the stated quantity and unit."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Atanan nicelik, değişkenin açık tanımıyla uyuşmuyor. Değişkeni belirtilen nicelik ve birimle eşleştir."
+          }
+        }
+      }
+    },
+    "attempt.math.PI": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "pi"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "pi"
+          }
+        }
+      }
+    },
+    "attempt.math.POSITIVE_INFINITY": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "positive infinity"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "artı sonsuz"
+          }
+        }
+      }
+    },
+    "attempt.math.NEGATIVE_INFINITY": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "negative infinity"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "eksi sonsuz"
+          }
+        }
+      }
+    },
+    "attempt.math.EQUALS": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "equals"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "eşittir"
+          }
+        }
+      }
+    },
+    "attempt.math.NOT_EQUALS": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "does not equal"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "eşit değildir"
+          }
+        }
+      }
+    },
+    "attempt.math.LESS_THAN": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "less than"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "küçüktür"
+          }
+        }
+      }
+    },
+    "attempt.math.LESS_THAN_OR_EQUAL": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "less than or equal to"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "küçük veya eşittir"
+          }
+        }
+      }
+    },
+    "attempt.math.GREATER_THAN": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "greater than"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "büyüktür"
+          }
+        }
+      }
+    },
+    "attempt.math.GREATER_THAN_OR_EQUAL": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "greater than or equal to"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "büyük veya eşittir"
+          }
+        }
+      }
+    },
+    "attempt.math.MEMBER_OF": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "belongs to"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "kümesinin elemanıdır"
+          }
+        }
+      }
+    },
+    "attempt.math.NEGATE": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "negative"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "eksi"
+          }
+        }
+      }
+    },
+    "attempt.math.OPEN": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "open parentheses"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "parantez aç"
+          }
+        }
+      }
+    },
+    "attempt.math.CLOSE": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "close parentheses"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "parantez kapat"
+          }
+        }
+      }
+    },
+    "attempt.math.ADD": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "plus"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "artı"
+          }
+        }
+      }
+    },
+    "attempt.math.SUBTRACT": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "minus"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "eksi"
+          }
+        }
+      }
+    },
+    "attempt.math.MULTIPLY": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "times"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "çarpı"
+          }
+        }
+      }
+    },
+    "attempt.math.DIVIDE": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "divided by"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "bölü"
+          }
+        }
+      }
+    },
+    "attempt.math.POWER": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "to the power of"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "üzeri"
+          }
+        }
+      }
+    },
+    "attempt.math.SQRT": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "square root"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "karekök"
+          }
+        }
+      }
+    },
+    "attempt.math.ABS": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "absolute value"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "mutlak değer"
+          }
+        }
+      }
+    },
+    "attempt.math.SIN": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "sine"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "sinüs"
+          }
+        }
+      }
+    },
+    "attempt.math.COS": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "cosine"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "kosinüs"
+          }
+        }
+      }
+    },
+    "attempt.math.TAN": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "tangent"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "tanjant"
+          }
+        }
+      }
+    },
+    "attempt.math.LOG": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "logarithm"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "logaritma"
+          }
+        }
+      }
+    },
+    "attempt.math.EXP": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "exponential"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "üstel fonksiyon"
+          }
+        }
+      }
+    },
+    "attempt.math.DIFF": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "derivative of"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "türevi"
+          }
+        }
+      }
+    },
+    "attempt.math.LIMIT": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "two-sided limit of, at"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iki taraflı limit, yaklaşım noktası"
+          }
+        }
+      }
+    },
+    "attempt.math.INTEGRAL": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "definite integral of, lower and upper bounds"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "belirli integral, alt ve üst sınırlar"
+          }
+        }
+      }
+    },
+    "attempt.math.TOTAL": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "total cost from unit price and item count"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "birim fiyat ve adet üzerinden toplam tutar"
+          }
+        }
+      }
+    },
+    "attempt.math.FINITE_SET": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "finite set"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "sonlu küme"
+          }
+        }
+      }
+    },
+    "attempt.math.UNION": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "union"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "birleşim"
+          }
+        }
+      }
+    },
+    "attempt.math.INTERSECTION": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "intersection"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "kesişim"
+          }
+        }
+      }
+    },
+    "attempt.math.EMPTY_SET": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "empty set"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "boş küme"
+          }
+        }
+      }
+    },
+    "attempt.math.REALS": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "real numbers"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "reel sayılar"
+          }
+        }
+      }
+    },
+    "attempt.math.INTERVAL": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "interval"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "aralık"
+          }
+        }
+      }
+    },
+    "attempt.math.LEFT_OPEN": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "left endpoint excluded"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "sol uç dahil değil"
+          }
+        }
+      }
+    },
+    "attempt.math.RIGHT_OPEN": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "right endpoint excluded"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "sağ uç dahil değil"
+          }
+        }
+      }
+    },
+    "attempt.math.LEFT_CLOSED": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "left endpoint included"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "sol uç dahil"
+          }
+        }
+      }
+    },
+    "attempt.math.RIGHT_CLOSED": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "right endpoint included"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "sağ uç dahil"
+          }
+        }
+      }
+    },
+    "attempt.math.PIECEWISE": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "piecewise function"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "parçalı fonksiyon"
+          }
+        }
+      }
+    },
+    "attempt.math.OTHERWISE": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "otherwise"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "diğer durumlarda"
+          }
+        }
+      }
+    },
+    "attempt.domain.natural": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Natural domain of the original problem"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Özgün sorunun doğal tanım kümesi"
+          }
+        }
+      }
+    },
+    "attempt.domain.reviewed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Real-number scope confirmed by you."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reel sayı kapsamı senin onayınla kullanıldı."
+          }
+        }
+      }
+    },
+    "attempt.ocr.sourceImage": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Captured work for comparison"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Karşılaştırma için çekilen çözüm"
+          }
+        }
+      }
+    },
+    "attempt.payloadTooLarge": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This reviewed work is too large. Use fewer or shorter lines."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İncelenen çözüm çok uzun. Daha az veya daha kısa satır kullanın."
+          }
+        }
+      }
+    },
+    "attempt.mastery.confidence": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Evidence confidence: %d%%"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kanıt güven düzeyi: %%%d"
+          }
+        }
+      }
+    },
     "tutor.hints.synthetic": {
       "extractionState": "manual",
       "localizations": {

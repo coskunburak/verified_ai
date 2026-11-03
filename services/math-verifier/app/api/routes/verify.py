@@ -113,3 +113,62 @@ def execute_numeric(payload: NumericRequest, request: Request) -> NumericResult:
     result = executor.execute(payload) if get_settings().numeric_enabled else executor.failure(payload, "DISABLED")
     record_numeric(result.status, result.reasonCode, (time.monotonic() - started) * 1000)
     return result
+
+
+from app.api.schemas.attempt import AttemptRequest, AttemptResult
+
+
+@router.post("/attempt", response_model=AttemptResult, dependencies=[Depends(require_internal_auth)])
+def execute_attempt(payload: AttemptRequest, request: Request) -> AttemptResult:
+    import time
+    from app.config import get_settings
+    from app.domain.errors import VerificationError
+    from app.observability.metrics import record_attempt
+    from app.policies.process_executor import executor
+
+    supplied = request.headers.get("X-Request-Id")
+    if supplied is not None and supplied != payload.correlationId:
+        raise VerificationError("VERIFIER_CORRELATION_MISMATCH", "Execution correlation mismatch", 422)
+    request.state.correlation_id = payload.correlationId
+    start = time.monotonic()
+    result = executor.execute(payload) if get_settings().attempt_enabled else executor.failure(payload, "DISABLED")
+    record_attempt(result, (time.monotonic()-start)*1000)
+    return result
+
+
+from app.api.schemas.attempt_v2 import Request as AttemptV2Request, Result as AttemptV2Result
+
+
+@router.post("/attempt-v2", response_model=AttemptV2Result, dependencies=[Depends(require_internal_auth)])
+def execute_attempt_v2(payload: AttemptV2Request, request: Request) -> AttemptV2Result:
+    from app.config import get_settings
+    from app.domain.errors import VerificationError
+    from app.policies.process_executor import executor
+    supplied = request.headers.get("X-Request-Id")
+    if supplied != payload.correlationId:
+        raise VerificationError("VERIFIER_CORRELATION_MISMATCH", "Execution correlation mismatch", 422)
+    request.state.correlation_id = payload.correlationId
+    import time
+    from app.observability.metrics import record_attempt
+    started=time.monotonic()
+    result=executor.execute(payload) if get_settings().attempt_enabled else executor.failure(payload, "DISABLED")
+    record_attempt(result,(time.monotonic()-started)*1000)
+    return result
+
+
+from app.api.schemas.attempt_learning import Request as LearningRequest, Result as LearningResult
+
+@router.post("/attempt-learning", response_model=LearningResult, dependencies=[Depends(require_internal_auth)])
+def execute_attempt_learning(payload: LearningRequest, request: Request) -> LearningResult:
+    from app.config import get_settings
+    from app.domain.errors import VerificationError
+    from app.policies.process_executor import executor
+    if request.headers.get("X-Request-Id") != payload.correlationId:
+        raise VerificationError("VERIFIER_CORRELATION_MISMATCH", "Execution correlation mismatch", 422)
+    request.state.correlation_id = payload.correlationId
+    import time
+    from app.observability.metrics import record_attempt_learning
+    started=time.monotonic()
+    result=executor.execute(payload) if get_settings().attempt_enabled else executor.failure(payload,"DISABLED")
+    record_attempt_learning(result,(time.monotonic()-started)*1000)
+    return result

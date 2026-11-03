@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "attempt-context-v2-response.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "canonicalId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "canonicalRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "parseId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "parseRevision": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "canonicalId",
+        "canonicalRevision",
+        "parseId",
+        "parseRevision"
+      ]
+    },
+    "originalStatement": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 12000
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "enabled": {
+      "type": "boolean"
+    },
+    "handwriting": {
+      "enum": [
+        "UNAVAILABLE",
+        "NATIVE_REVIEW",
+        "NATIVE_REVIEW_AND_GATEWAY"
+      ]
+    },
+    "twinDrill": {
+      "enum": [
+        "UNAVAILABLE",
+        "VERIFIED_TEMPLATES"
+      ]
+    },
+    "methodComparison": {
+      "enum": [
+        "UNAVAILABLE",
+        "VERIFIED_METHODS"
+      ]
+    },
+    "schemaVersion": {
+      "const": "attempt-context-v2"
+    }
+  },
+  "required": [
+    "source",
+    "originalStatement",
+    "enabled",
+    "handwriting",
+    "twinDrill",
+    "methodComparison",
+    "schemaVersion"
+  ]
+}

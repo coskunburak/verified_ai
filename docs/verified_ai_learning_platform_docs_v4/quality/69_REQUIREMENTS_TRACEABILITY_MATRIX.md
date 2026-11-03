@@ -171,3 +171,17 @@ The local deterministic scope is complete for review. Full current-source accept
 hosted CI is unverified, shared upgrades blocked and production unauthorized. Exact evidence and file
 ownership: `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.6_EXECUTION_REPORT.md` and
 `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.6_FILE_MANIFEST.md`.
+
+## Sprint 6.7 authored traceability
+
+| Requirement | Current execution source | Acceptance |
+|---|---|---|
+| REQ-ATTEMPT-001/002, CAP-ATT-001 | Manual/photo review, domain-safe v2 verification, exact witness, semantic diff | PENDING_OWNER; real handwriting NOT_EVALUATED |
+| CAP-MIS-001 | 17 bounded structural classifiers after disproof + generic fallback | New synthetic tests NOT_EXECUTED |
+| F01–F03 | Native capture/review, first-error prefix, 2D evidence/path highlighting | Device/VoiceOver pending |
+| F04 | 17 independently checked twin template families, durable first answer/history | Owner worker/API/UI pending |
+| F15 | Factoring/completing-square/quadratic-formula and bounded symbolic methods | No 30-second timing claim |
+| Mastery/passport/privacy | Unique evidence, assistance/decay, export/deletion/training=false | Owner transaction tests pending |
+| Migration integration | Active forward V030–V032 | Disposable chain PENDING_OWNER; shared NOT_AUTHORIZED |
+
+Historical targeted repairs remain PASS for the earlier source only. Source existence is not runtime acceptance.

@@ -466,3 +466,12 @@ Full current-source acceptance: `PENDING_FULL_CURRENT_SOURCE_RUN` (cross-run sco
 source snapshot). Hosted CI `NOT_VERIFIED`; shared upgrades `BLOCKED`; production `NOT_AUTHORIZED`.
 Only bounded two-step linear hints are implemented; successful reveal and live/expert pedagogy
 remain unavailable. No agent execution of tests/builds/evaluations, commit or push.
+
+## Sprint 6.7 — bounded product integration, targeted repair passed
+
+- `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.7_IMPLEMENTATION_MAP.md` — real-set domain, OCR/review, 17 diagnoses, native semantic diff, verified twins/methods, mastery/passport and limits.
+- `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.7_EXECUTION_REPORT.md` — TARGETED_REPAIR_PASSED (owner runs `20261103-233019-8g1dlw`, `20261104-000339-IzxY36`, `20261104-002119-IQLWzE`; unresolvedFailures=[]). Full current-source rerun PENDING_OWNER.
+- `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.7_FILE_MANIFEST.md` — exact created/modified source inventory (148 files: 103 created, 45 modified).
+
+Active forward V030–V032 replace the earlier staged-only implementation boundary without altering V024–V029.
+Production and shared upgrades remain NOT_AUTHORIZED; Linux release validation and live handwriting coverage remain pending.

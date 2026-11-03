@@ -195,8 +195,21 @@ struct RootView: View {
                 isSolveFixture: dependencies.solveFixture,
                 makeSolveModel: dependencies.solveEnabled ? { sessionId in
                     let tutorService = dependencies.tutorAPI
+                    let attemptService = dependencies.attemptAPI
                     return PrimarySolveViewModel(userId: userId, sessionId: sessionId, service: dependencies.primarySolveAPI,
                         recovery: dependencies.solveRecovery, network: dependencies.solveFlowNetworkMonitor,
+                        attemptModel: AnalyzeMyWorkViewModel(owner: userId, problem: sessionId, service: attemptService,
+                            store: dependencies.attemptPending, capture: AttemptCaptureDependencies(capture: problemCaptureViewModel, upload: problemAssetUploadViewModel, review: problemReviewViewModel, camera: dependencies.problemCameraClient), learningAPI: dependencies.solveFixture ? nil : AttemptLearningAPI(client: dependencies.apiClient), ownsAccount: {
+                                guard case .authenticated(let current) = signInViewModel.state,
+                                      current.userId == userId, current.sessionId == authSessionId else { return false }
+                                #if DEBUG
+                                if attemptService is FixtureAttemptAnalysisAPI { return true }
+                                #endif
+                                let stored = try? await dependencies.authenticationSessionStore.loadSession()
+                                guard case .authenticated(let latest) = signInViewModel.state else { return false }
+                                return stored?.userId == userId && stored?.sessionId == authSessionId
+                                    && latest.userId == userId && latest.sessionId == authSessionId
+                            }),
                         tutorModel: TutorViewModel(owner: userId, problem: sessionId, service: tutorService,
                             store: dependencies.tutorPending, network: dependencies.solveFlowNetworkMonitor,
                             ownsAccount: {
@@ -262,6 +275,7 @@ struct RootView: View {
     }
 
     private func resetAuthenticatedState() {
+        try? dependencies.attemptPending.clearAll()
         try? dependencies.tutorPending.clearAll()
         do { try dependencies.solveRecovery.clearAll() }
         catch { dependencies.logger.warning("solve.recovery_clear_failed") }

@@ -107,3 +107,13 @@ Burada $P_{\text{base}} = 0.15$ taban aşinalık seviyesidir.
    - Bir adımdan diğerine geçerken değişen terimler mavi/mor vurguyla, `Analyze My Work` modunda yakalanan ilk hatalı terim ise kırmızı vurgu + altında **Somut Karşı-Örnek Kartı (`F03`)** ile gösterilir.
 3. **Erişilebilirlik (VoiceOver):**
    - Mevcut `accessibilityMathematicallySpoken` Türkçe ve İngilizce sesli okuma sözlüğü 2D görünümün üst katmanında aynen korunur.
+
+## Sprint 6.7 implementation reconciliation (2026-11-03)
+
+The preceding commercial targets are not measured results. Current source implements native simple-image OCR,
+photo comparison and per-line review, optional existing gateway recognition, real-set domain proof, 17 specific
+evidence-gated diagnoses, native semantic diff, deterministic verified twins, bounded alternative methods and
+private mastery/passport. UNKNOWN domain requires explicit reviewed REAL scope; no silent assumption is allowed.
+General handwriting/provider coverage, OCR confidence calibration, 85% recall, latency and expert pedagogy remain
+NOT_EVALUATED. New execution status is NOT_EXECUTED / PENDING_OWNER; default-off flags do not imply release approval.
+See the Sprint 6.7 implementation map for every execution path, bounded math scope and remaining runtime dependencies.

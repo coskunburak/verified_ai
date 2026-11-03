@@ -1,0 +1,2159 @@
+{
+  "version": "manual-polynomial-v1",
+  "synthetic": true,
+  "handwriting": false,
+  "algorithm": "bounded-attempt-v1",
+  "cases": [
+    {
+      "id": "scaled-equation",
+      "request": {
+        "schemaVersion": "attempt-verification-v1",
+        "executionId": "00000000-0000-0000-0000-000000006701",
+        "correlationId": "synthetic-attempt",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "BINARY",
+            "operator": "ADD",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "1"
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "3"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "steps": [
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "BINARY",
+                "operator": "ADD",
+                "left": {
+                  "kind": "BINARY",
+                  "operator": "MULTIPLY",
+                  "left": {
+                    "kind": "NUMBER",
+                    "numericType": "INTEGER",
+                    "value": "2"
+                  },
+                  "right": {
+                    "kind": "VARIABLE",
+                    "symbol": "x"
+                  }
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "numericType": "INTEGER",
+                  "value": "2"
+                }
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "6"
+              }
+            }
+          },
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "2"
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "INCOMPLETE_VALID_SO_FAR",
+        "firstWrongStepIndex": null
+      }
+    },
+    {
+      "id": "alternative-linear",
+      "request": {
+        "schemaVersion": "attempt-verification-v1",
+        "executionId": "00000000-0000-0000-0000-000000006701",
+        "correlationId": "synthetic-attempt",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "BINARY",
+            "operator": "ADD",
+            "left": {
+              "kind": "BINARY",
+              "operator": "MULTIPLY",
+              "left": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "2"
+              },
+              "right": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              }
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "3"
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "11"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "steps": [
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "BINARY",
+                "operator": "ADD",
+                "left": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                },
+                "right": {
+                  "kind": "BINARY",
+                  "operator": "DIVIDE",
+                  "left": {
+                    "kind": "NUMBER",
+                    "numericType": "INTEGER",
+                    "value": "3"
+                  },
+                  "right": {
+                    "kind": "NUMBER",
+                    "numericType": "INTEGER",
+                    "value": "2"
+                  }
+                }
+              },
+              "right": {
+                "kind": "BINARY",
+                "operator": "DIVIDE",
+                "left": {
+                  "kind": "NUMBER",
+                  "numericType": "INTEGER",
+                  "value": "11"
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "numericType": "INTEGER",
+                  "value": "2"
+                }
+              }
+            }
+          },
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "4"
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "INCOMPLETE_VALID_SO_FAR",
+        "firstWrongStepIndex": null
+      }
+    },
+    {
+      "id": "sign-distribution",
+      "request": {
+        "schemaVersion": "attempt-verification-v1",
+        "executionId": "00000000-0000-0000-0000-000000006701",
+        "correlationId": "synthetic-attempt",
+        "original": {
+          "kind": "EXPRESSION",
+          "expression": {
+            "kind": "BINARY",
+            "operator": "SUBTRACT",
+            "left": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "0"
+            },
+            "right": {
+              "kind": "BINARY",
+              "operator": "SUBTRACT",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "4"
+              }
+            }
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "steps": [
+          {
+            "statement": {
+              "kind": "EXPRESSION",
+              "expression": {
+                "kind": "BINARY",
+                "operator": "SUBTRACT",
+                "left": {
+                  "kind": "BINARY",
+                  "operator": "SUBTRACT",
+                  "left": {
+                    "kind": "NUMBER",
+                    "numericType": "INTEGER",
+                    "value": "0"
+                  },
+                  "right": {
+                    "kind": "VARIABLE",
+                    "symbol": "x"
+                  }
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "numericType": "INTEGER",
+                  "value": "4"
+                }
+              }
+            }
+          },
+          {
+            "statement": {
+              "kind": "EXPRESSION",
+              "expression": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "0"
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "STEP_ERROR_FOUND",
+        "firstWrongStepIndex": 1
+      }
+    },
+    {
+      "id": "square-expansion",
+      "request": {
+        "schemaVersion": "attempt-verification-v1",
+        "executionId": "00000000-0000-0000-0000-000000006701",
+        "correlationId": "synthetic-attempt",
+        "original": {
+          "kind": "EXPRESSION",
+          "expression": {
+            "kind": "BINARY",
+            "operator": "POWER",
+            "left": {
+              "kind": "BINARY",
+              "operator": "ADD",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "1"
+              }
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "2"
+            }
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "steps": [
+          {
+            "statement": {
+              "kind": "EXPRESSION",
+              "expression": {
+                "kind": "BINARY",
+                "operator": "ADD",
+                "left": {
+                  "kind": "BINARY",
+                  "operator": "POWER",
+                  "left": {
+                    "kind": "VARIABLE",
+                    "symbol": "x"
+                  },
+                  "right": {
+                    "kind": "NUMBER",
+                    "numericType": "INTEGER",
+                    "value": "2"
+                  }
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "numericType": "INTEGER",
+                  "value": "1"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "STEP_ERROR_FOUND",
+        "firstWrongStepIndex": 1
+      }
+    },
+    {
+      "id": "square-correct",
+      "request": {
+        "schemaVersion": "attempt-verification-v1",
+        "executionId": "00000000-0000-0000-0000-000000006701",
+        "correlationId": "synthetic-attempt",
+        "original": {
+          "kind": "EXPRESSION",
+          "expression": {
+            "kind": "BINARY",
+            "operator": "POWER",
+            "left": {
+              "kind": "BINARY",
+              "operator": "ADD",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "1"
+              }
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "2"
+            }
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "steps": [
+          {
+            "statement": {
+              "kind": "EXPRESSION",
+              "expression": {
+                "kind": "BINARY",
+                "operator": "ADD",
+                "left": {
+                  "kind": "BINARY",
+                  "operator": "ADD",
+                  "left": {
+                    "kind": "BINARY",
+                    "operator": "POWER",
+                    "left": {
+                      "kind": "VARIABLE",
+                      "symbol": "x"
+                    },
+                    "right": {
+                      "kind": "NUMBER",
+                      "numericType": "INTEGER",
+                      "value": "2"
+                    }
+                  },
+                  "right": {
+                    "kind": "BINARY",
+                    "operator": "MULTIPLY",
+                    "left": {
+                      "kind": "NUMBER",
+                      "numericType": "INTEGER",
+                      "value": "2"
+                    },
+                    "right": {
+                      "kind": "VARIABLE",
+                      "symbol": "x"
+                    }
+                  }
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "numericType": "INTEGER",
+                  "value": "1"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "INCOMPLETE_VALID_SO_FAR",
+        "firstWrongStepIndex": null
+      }
+    },
+    {
+      "id": "fraction-addition",
+      "request": {
+        "schemaVersion": "attempt-verification-v1",
+        "executionId": "00000000-0000-0000-0000-000000006701",
+        "correlationId": "synthetic-attempt",
+        "original": {
+          "kind": "EXPRESSION",
+          "expression": {
+            "kind": "BINARY",
+            "operator": "ADD",
+            "left": {
+              "kind": "BINARY",
+              "operator": "DIVIDE",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "2"
+              }
+            },
+            "right": {
+              "kind": "BINARY",
+              "operator": "DIVIDE",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "3"
+              }
+            }
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "steps": [
+          {
+            "statement": {
+              "kind": "EXPRESSION",
+              "expression": {
+                "kind": "BINARY",
+                "operator": "DIVIDE",
+                "left": {
+                  "kind": "BINARY",
+                  "operator": "ADD",
+                  "left": {
+                    "kind": "VARIABLE",
+                    "symbol": "x"
+                  },
+                  "right": {
+                    "kind": "VARIABLE",
+                    "symbol": "x"
+                  }
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "numericType": "INTEGER",
+                  "value": "5"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "STEP_ERROR_FOUND",
+        "firstWrongStepIndex": 1
+      }
+    },
+    {
+      "id": "fraction-correct",
+      "request": {
+        "schemaVersion": "attempt-verification-v1",
+        "executionId": "00000000-0000-0000-0000-000000006701",
+        "correlationId": "synthetic-attempt",
+        "original": {
+          "kind": "EXPRESSION",
+          "expression": {
+            "kind": "BINARY",
+            "operator": "ADD",
+            "left": {
+              "kind": "BINARY",
+              "operator": "DIVIDE",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "2"
+              }
+            },
+            "right": {
+              "kind": "BINARY",
+              "operator": "DIVIDE",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "3"
+              }
+            }
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "steps": [
+          {
+            "statement": {
+              "kind": "EXPRESSION",
+              "expression": {
+                "kind": "BINARY",
+                "operator": "DIVIDE",
+                "left": {
+                  "kind": "BINARY",
+                  "operator": "MULTIPLY",
+                  "left": {
+                    "kind": "NUMBER",
+                    "numericType": "INTEGER",
+                    "value": "5"
+                  },
+                  "right": {
+                    "kind": "VARIABLE",
+                    "symbol": "x"
+                  }
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "numericType": "INTEGER",
+                  "value": "6"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "INCOMPLETE_VALID_SO_FAR",
+        "firstWrongStepIndex": null
+      }
+    },
+    {
+      "id": "root-lost",
+      "request": {
+        "schemaVersion": "attempt-verification-v1",
+        "executionId": "00000000-0000-0000-0000-000000006701",
+        "correlationId": "synthetic-attempt",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "BINARY",
+            "operator": "POWER",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "2"
+            }
+          },
+          "right": {
+            "kind": "BINARY",
+            "operator": "MULTIPLY",
+            "left": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "3"
+            },
+            "right": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            }
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "steps": [
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "3"
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "STEP_ERROR_FOUND",
+        "firstWrongStepIndex": 1
+      }
+    },
+    {
+      "id": "extraneous-root",
+      "request": {
+        "schemaVersion": "attempt-verification-v1",
+        "executionId": "00000000-0000-0000-0000-000000006701",
+        "correlationId": "synthetic-attempt",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "3"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "steps": [
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "BINARY",
+                "operator": "POWER",
+                "left": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "numericType": "INTEGER",
+                  "value": "2"
+                }
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "9"
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "STEP_ERROR_FOUND",
+        "firstWrongStepIndex": 1
+      }
+    },
+    {
+      "id": "quadratic-alternative",
+      "request": {
+        "schemaVersion": "attempt-verification-v1",
+        "executionId": "00000000-0000-0000-0000-000000006701",
+        "correlationId": "synthetic-attempt",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "BINARY",
+            "operator": "SUBTRACT",
+            "left": {
+              "kind": "BINARY",
+              "operator": "ADD",
+              "left": {
+                "kind": "BINARY",
+                "operator": "POWER",
+                "left": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "numericType": "INTEGER",
+                  "value": "2"
+                }
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "6"
+              }
+            },
+            "right": {
+              "kind": "BINARY",
+              "operator": "MULTIPLY",
+              "left": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "5"
+              },
+              "right": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              }
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "0"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "steps": [
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "BINARY",
+                "operator": "MULTIPLY",
+                "left": {
+                  "kind": "BINARY",
+                  "operator": "SUBTRACT",
+                  "left": {
+                    "kind": "VARIABLE",
+                    "symbol": "x"
+                  },
+                  "right": {
+                    "kind": "NUMBER",
+                    "numericType": "INTEGER",
+                    "value": "2"
+                  }
+                },
+                "right": {
+                  "kind": "BINARY",
+                  "operator": "SUBTRACT",
+                  "left": {
+                    "kind": "VARIABLE",
+                    "symbol": "x"
+                  },
+                  "right": {
+                    "kind": "NUMBER",
+                    "numericType": "INTEGER",
+                    "value": "3"
+                  }
+                }
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "0"
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "INCOMPLETE_VALID_SO_FAR",
+        "firstWrongStepIndex": null
+      }
+    },
+    {
+      "id": "denominator-hole",
+      "request": {
+        "schemaVersion": "attempt-verification-v1",
+        "executionId": "00000000-0000-0000-0000-000000006701",
+        "correlationId": "synthetic-attempt",
+        "original": {
+          "kind": "EXPRESSION",
+          "expression": {
+            "kind": "BINARY",
+            "operator": "DIVIDE",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            }
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "steps": [
+          {
+            "statement": {
+              "kind": "EXPRESSION",
+              "expression": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "1"
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "NEEDS_REVIEW",
+        "firstWrongStepIndex": null
+      }
+    },
+    {
+      "id": "introduced-denominator",
+      "request": {
+        "schemaVersion": "attempt-verification-v1",
+        "executionId": "00000000-0000-0000-0000-000000006701",
+        "correlationId": "synthetic-attempt",
+        "original": {
+          "kind": "EXPRESSION",
+          "expression": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "1"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "steps": [
+          {
+            "statement": {
+              "kind": "EXPRESSION",
+              "expression": {
+                "kind": "BINARY",
+                "operator": "DIVIDE",
+                "left": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                },
+                "right": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                }
+              }
+            }
+          },
+          {
+            "statement": {
+              "kind": "EXPRESSION",
+              "expression": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "5"
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "NEEDS_REVIEW",
+        "firstWrongStepIndex": null
+      }
+    },
+    {
+      "id": "radical-negative",
+      "request": {
+        "schemaVersion": "attempt-verification-v1",
+        "executionId": "00000000-0000-0000-0000-000000006701",
+        "correlationId": "synthetic-attempt",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "FUNCTION",
+            "function": "SQRT",
+            "args": [
+              {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              }
+            ]
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "-2"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "steps": [
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "4"
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "NEEDS_REVIEW",
+        "firstWrongStepIndex": null
+      }
+    },
+    {
+      "id": "log-domain",
+      "request": {
+        "schemaVersion": "attempt-verification-v1",
+        "executionId": "00000000-0000-0000-0000-000000006701",
+        "correlationId": "synthetic-attempt",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "FUNCTION",
+            "function": "LOG",
+            "args": [
+              {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              }
+            ]
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "0"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "steps": [
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "-1"
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "NEEDS_REVIEW",
+        "firstWrongStepIndex": null
+      }
+    },
+    {
+      "id": "absolute-unavailable",
+      "request": {
+        "schemaVersion": "attempt-verification-v1",
+        "executionId": "00000000-0000-0000-0000-000000006701",
+        "correlationId": "synthetic-attempt",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "2"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "steps": [
+          {
+            "statement": null
+          },
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "3"
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "NEEDS_REVIEW",
+        "firstWrongStepIndex": null
+      }
+    },
+    {
+      "id": "inequality-unavailable",
+      "request": {
+        "schemaVersion": "attempt-verification-v1",
+        "executionId": "00000000-0000-0000-0000-000000006701",
+        "correlationId": "synthetic-attempt",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "2"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "steps": [
+          {
+            "statement": null
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "NEEDS_REVIEW",
+        "firstWrongStepIndex": null
+      }
+    },
+    {
+      "id": "unknown-first-no-later-accusation",
+      "request": {
+        "schemaVersion": "attempt-verification-v1",
+        "executionId": "00000000-0000-0000-0000-000000006701",
+        "correlationId": "synthetic-attempt",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "2"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "steps": [
+          {
+            "statement": null
+          },
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "100"
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "NEEDS_REVIEW",
+        "firstWrongStepIndex": null
+      }
+    },
+    {
+      "id": "one-based-second-wrong",
+      "request": {
+        "schemaVersion": "attempt-verification-v1",
+        "executionId": "00000000-0000-0000-0000-000000006701",
+        "correlationId": "synthetic-attempt",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "BINARY",
+            "operator": "ADD",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "1"
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "3"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "steps": [
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "2"
+              }
+            }
+          },
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "3"
+              }
+            }
+          },
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "4"
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "STEP_ERROR_FOUND",
+        "firstWrongStepIndex": 2
+      }
+    },
+    {
+      "id": "empty-sets-equivalent",
+      "request": {
+        "schemaVersion": "attempt-verification-v1",
+        "executionId": "00000000-0000-0000-0000-000000006701",
+        "correlationId": "synthetic-attempt",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "BINARY",
+            "operator": "ADD",
+            "left": {
+              "kind": "BINARY",
+              "operator": "POWER",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "2"
+              }
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "1"
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "0"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "steps": [
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "1"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "0"
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "INCOMPLETE_VALID_SO_FAR",
+        "firstWrongStepIndex": null
+      }
+    },
+    {
+      "id": "all-real-equivalent",
+      "request": {
+        "schemaVersion": "attempt-verification-v1",
+        "executionId": "00000000-0000-0000-0000-000000006701",
+        "correlationId": "synthetic-attempt",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "steps": [
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "2"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "2"
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "INCOMPLETE_VALID_SO_FAR",
+        "firstWrongStepIndex": null
+      }
+    },
+    {
+      "id": "empty-v-all",
+      "request": {
+        "schemaVersion": "attempt-verification-v1",
+        "executionId": "00000000-0000-0000-0000-000000006701",
+        "correlationId": "synthetic-attempt",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "1"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "0"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "steps": [
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "STEP_ERROR_FOUND",
+        "firstWrongStepIndex": 1
+      }
+    },
+    {
+      "id": "irrational-roots-unavailable",
+      "request": {
+        "schemaVersion": "attempt-verification-v1",
+        "executionId": "00000000-0000-0000-0000-000000006701",
+        "correlationId": "synthetic-attempt",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "BINARY",
+            "operator": "POWER",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "2"
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "2"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "steps": [
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "1"
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "NEEDS_REVIEW",
+        "firstWrongStepIndex": null
+      }
+    },
+    {
+      "id": "mixed-semantics",
+      "request": {
+        "schemaVersion": "attempt-verification-v1",
+        "executionId": "00000000-0000-0000-0000-000000006701",
+        "correlationId": "synthetic-attempt",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "2"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "steps": [
+          {
+            "statement": {
+              "kind": "EXPRESSION",
+              "expression": {
+                "kind": "BINARY",
+                "operator": "SUBTRACT",
+                "left": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "numericType": "INTEGER",
+                  "value": "2"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "NEEDS_REVIEW",
+        "firstWrongStepIndex": null
+      }
+    },
+    {
+      "id": "negative-power-unavailable",
+      "request": {
+        "schemaVersion": "attempt-verification-v1",
+        "executionId": "00000000-0000-0000-0000-000000006701",
+        "correlationId": "synthetic-attempt",
+        "original": {
+          "kind": "EXPRESSION",
+          "expression": {
+            "kind": "BINARY",
+            "operator": "POWER",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "-1"
+            }
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "steps": [
+          {
+            "statement": {
+              "kind": "EXPRESSION",
+              "expression": {
+                "kind": "BINARY",
+                "operator": "DIVIDE",
+                "left": {
+                  "kind": "NUMBER",
+                  "numericType": "INTEGER",
+                  "value": "1"
+                },
+                "right": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "NEEDS_REVIEW",
+        "firstWrongStepIndex": null
+      }
+    },
+    {
+      "id": "zero-power-domain",
+      "request": {
+        "schemaVersion": "attempt-verification-v1",
+        "executionId": "00000000-0000-0000-0000-000000006701",
+        "correlationId": "synthetic-attempt",
+        "original": {
+          "kind": "EXPRESSION",
+          "expression": {
+            "kind": "BINARY",
+            "operator": "POWER",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "0"
+            }
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "steps": [
+          {
+            "statement": {
+              "kind": "EXPRESSION",
+              "expression": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "1"
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "NEEDS_REVIEW",
+        "firstWrongStepIndex": null
+      }
+    },
+    {
+      "id": "constant-correct",
+      "request": {
+        "schemaVersion": "attempt-verification-v1",
+        "executionId": "00000000-0000-0000-0000-000000006701",
+        "correlationId": "synthetic-attempt",
+        "original": {
+          "kind": "EXPRESSION",
+          "expression": {
+            "kind": "BINARY",
+            "operator": "ADD",
+            "left": {
+              "kind": "BINARY",
+              "operator": "DIVIDE",
+              "left": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "1"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "2"
+              }
+            },
+            "right": {
+              "kind": "BINARY",
+              "operator": "DIVIDE",
+              "left": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "1"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "3"
+              }
+            }
+          }
+        },
+        "variables": [],
+        "restrictions": [],
+        "steps": [
+          {
+            "statement": {
+              "kind": "EXPRESSION",
+              "expression": {
+                "kind": "BINARY",
+                "operator": "DIVIDE",
+                "left": {
+                  "kind": "NUMBER",
+                  "numericType": "INTEGER",
+                  "value": "5"
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "numericType": "INTEGER",
+                  "value": "6"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "INCOMPLETE_VALID_SO_FAR",
+        "firstWrongStepIndex": null
+      }
+    },
+    {
+      "id": "constant-wrong",
+      "request": {
+        "schemaVersion": "attempt-verification-v1",
+        "executionId": "00000000-0000-0000-0000-000000006701",
+        "correlationId": "synthetic-attempt",
+        "original": {
+          "kind": "EXPRESSION",
+          "expression": {
+            "kind": "BINARY",
+            "operator": "ADD",
+            "left": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "1"
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "2"
+            }
+          }
+        },
+        "variables": [],
+        "restrictions": [],
+        "steps": [
+          {
+            "statement": {
+              "kind": "EXPRESSION",
+              "expression": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "4"
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "STEP_ERROR_FOUND",
+        "firstWrongStepIndex": 1
+      }
+    },
+    {
+      "id": "rational-root-witness",
+      "request": {
+        "schemaVersion": "attempt-verification-v1",
+        "executionId": "00000000-0000-0000-0000-000000006701",
+        "correlationId": "synthetic-attempt",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "BINARY",
+            "operator": "MULTIPLY",
+            "left": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "100"
+            },
+            "right": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "7"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "steps": [
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "BINARY",
+                "operator": "MULTIPLY",
+                "left": {
+                  "kind": "NUMBER",
+                  "numericType": "INTEGER",
+                  "value": "100"
+                },
+                "right": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                }
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "9"
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "STEP_ERROR_FOUND",
+        "firstWrongStepIndex": 1
+      }
+    },
+    {
+      "id": "unchanged-incomplete",
+      "request": {
+        "schemaVersion": "attempt-verification-v1",
+        "executionId": "00000000-0000-0000-0000-000000006701",
+        "correlationId": "synthetic-attempt",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "BINARY",
+            "operator": "ADD",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "1"
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "3"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "steps": [
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "BINARY",
+                "operator": "ADD",
+                "left": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "numericType": "INTEGER",
+                  "value": "1"
+                }
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "3"
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "INCOMPLETE_VALID_SO_FAR",
+        "firstWrongStepIndex": null
+      }
+    },
+    {
+      "id": "bounded-witness-unavailable",
+      "request": {
+        "schemaVersion": "attempt-verification-v1",
+        "executionId": "00000000-0000-0000-0000-000000006701",
+        "correlationId": "synthetic-attempt",
+        "original": {
+          "kind": "EXPRESSION",
+          "expression": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "0"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "steps": [
+          {
+            "statement": {
+              "kind": "EXPRESSION",
+              "expression": {
+                "kind": "BINARY",
+                "operator": "MULTIPLY",
+                "left": {
+                  "kind": "BINARY",
+                  "operator": "MULTIPLY",
+                  "left": {
+                    "kind": "BINARY",
+                    "operator": "MULTIPLY",
+                    "left": {
+                      "kind": "BINARY",
+                      "operator": "MULTIPLY",
+                      "left": {
+                        "kind": "BINARY",
+                        "operator": "MULTIPLY",
+                        "left": {
+                          "kind": "BINARY",
+                          "operator": "MULTIPLY",
+                          "left": {
+                            "kind": "BINARY",
+                            "operator": "MULTIPLY",
+                            "left": {
+                              "kind": "BINARY",
+                              "operator": "MULTIPLY",
+                              "left": {
+                                "kind": "BINARY",
+                                "operator": "MULTIPLY",
+                                "left": {
+                                  "kind": "BINARY",
+                                  "operator": "MULTIPLY",
+                                  "left": {
+                                    "kind": "BINARY",
+                                    "operator": "MULTIPLY",
+                                    "left": {
+                                      "kind": "NUMBER",
+                                      "numericType": "INTEGER",
+                                      "value": "1"
+                                    },
+                                    "right": {
+                                      "kind": "BINARY",
+                                      "operator": "SUBTRACT",
+                                      "left": {
+                                        "kind": "VARIABLE",
+                                        "symbol": "x"
+                                      },
+                                      "right": {
+                                        "kind": "NUMBER",
+                                        "numericType": "INTEGER",
+                                        "value": "0"
+                                      }
+                                    }
+                                  },
+                                  "right": {
+                                    "kind": "BINARY",
+                                    "operator": "SUBTRACT",
+                                    "left": {
+                                      "kind": "VARIABLE",
+                                      "symbol": "x"
+                                    },
+                                    "right": {
+                                      "kind": "NUMBER",
+                                      "numericType": "INTEGER",
+                                      "value": "1"
+                                    }
+                                  }
+                                },
+                                "right": {
+                                  "kind": "BINARY",
+                                  "operator": "SUBTRACT",
+                                  "left": {
+                                    "kind": "VARIABLE",
+                                    "symbol": "x"
+                                  },
+                                  "right": {
+                                    "kind": "NUMBER",
+                                    "numericType": "INTEGER",
+                                    "value": "-1"
+                                  }
+                                }
+                              },
+                              "right": {
+                                "kind": "BINARY",
+                                "operator": "SUBTRACT",
+                                "left": {
+                                  "kind": "VARIABLE",
+                                  "symbol": "x"
+                                },
+                                "right": {
+                                  "kind": "NUMBER",
+                                  "numericType": "INTEGER",
+                                  "value": "2"
+                                }
+                              }
+                            },
+                            "right": {
+                              "kind": "BINARY",
+                              "operator": "SUBTRACT",
+                              "left": {
+                                "kind": "VARIABLE",
+                                "symbol": "x"
+                              },
+                              "right": {
+                                "kind": "NUMBER",
+                                "numericType": "INTEGER",
+                                "value": "-2"
+                              }
+                            }
+                          },
+                          "right": {
+                            "kind": "BINARY",
+                            "operator": "SUBTRACT",
+                            "left": {
+                              "kind": "VARIABLE",
+                              "symbol": "x"
+                            },
+                            "right": {
+                              "kind": "NUMBER",
+                              "numericType": "INTEGER",
+                              "value": "3"
+                            }
+                          }
+                        },
+                        "right": {
+                          "kind": "BINARY",
+                          "operator": "SUBTRACT",
+                          "left": {
+                            "kind": "VARIABLE",
+                            "symbol": "x"
+                          },
+                          "right": {
+                            "kind": "NUMBER",
+                            "numericType": "INTEGER",
+                            "value": "-3"
+                          }
+                        }
+                      },
+                      "right": {
+                        "kind": "BINARY",
+                        "operator": "SUBTRACT",
+                        "left": {
+                          "kind": "VARIABLE",
+                          "symbol": "x"
+                        },
+                        "right": {
+                          "kind": "NUMBER",
+                          "numericType": "INTEGER",
+                          "value": "4"
+                        }
+                      }
+                    },
+                    "right": {
+                      "kind": "BINARY",
+                      "operator": "SUBTRACT",
+                      "left": {
+                        "kind": "VARIABLE",
+                        "symbol": "x"
+                      },
+                      "right": {
+                        "kind": "NUMBER",
+                        "numericType": "INTEGER",
+                        "value": "-4"
+                      }
+                    }
+                  },
+                  "right": {
+                    "kind": "BINARY",
+                    "operator": "SUBTRACT",
+                    "left": {
+                      "kind": "VARIABLE",
+                      "symbol": "x"
+                    },
+                    "right": {
+                      "kind": "BINARY",
+                      "operator": "DIVIDE",
+                      "left": {
+                        "kind": "NUMBER",
+                        "numericType": "INTEGER",
+                        "value": "1"
+                      },
+                      "right": {
+                        "kind": "NUMBER",
+                        "numericType": "INTEGER",
+                        "value": "2"
+                      }
+                    }
+                  }
+                },
+                "right": {
+                  "kind": "BINARY",
+                  "operator": "SUBTRACT",
+                  "left": {
+                    "kind": "VARIABLE",
+                    "symbol": "x"
+                  },
+                  "right": {
+                    "kind": "BINARY",
+                    "operator": "DIVIDE",
+                    "left": {
+                      "kind": "NUMBER",
+                      "numericType": "INTEGER",
+                      "value": "-1"
+                    },
+                    "right": {
+                      "kind": "NUMBER",
+                      "numericType": "INTEGER",
+                      "value": "2"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "STEP_ERROR_FOUND",
+        "firstWrongStepIndex": 1
+      }
+    }
+  ]
+}

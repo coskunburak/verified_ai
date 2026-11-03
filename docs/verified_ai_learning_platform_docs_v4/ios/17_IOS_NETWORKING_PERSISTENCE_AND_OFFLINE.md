@@ -122,3 +122,12 @@ are blocked. A restart reloads server history and any unresolved marker before p
 New EN/TR controls distinguish H1/H2/H3 from a confirmed reveal request, display exhaustion/unavailability,
 and retain composer drafts during hints. Accessibility focus/announcements and 44-point controls introduce
 no animation. Real-device/VoiceOver review remains owner-operated. No new Swift file needs registration.
+
+## Sprint 6.7 pending attempts and learning recovery
+
+AttemptAnalysisPendingStore saves exact source/text/key before POST and separate reviewed drafts, atomically with
+complete file protection/backup exclusion and account/problem isolation. Both writes and reads have encoded size
+bounds. Lost acknowledgement/cancellation preserves pending identity; definitive rejection preserves draft text.
+Generation/current-account checks fence every async result. Native capture previews remain memory-only. Server
+learning history recovers committed drills on reopen; first-answer replay cannot duplicate mastery. Logout clears
+local pending/drafts and learning state. Offline correctness is never inferred; verified artifacts come from server.

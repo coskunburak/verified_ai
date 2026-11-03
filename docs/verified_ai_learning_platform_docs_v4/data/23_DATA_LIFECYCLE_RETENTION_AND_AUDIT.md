@@ -181,3 +181,13 @@ retry keys are excluded. The same fail-closed 8 MB export ceiling includes hint 
 truncates. Owned session/source/account cascades erase rows. iOS pending markers contain only operation,
 level, session and retry identity; they use the existing protected, backup-excluded account-scoped store.
 No raw content/identifiers enter metrics, ordinary errors or provider requests.
+
+## Sprint 6.7 private attempt and learning lifecycle
+
+StudentAttemptPrivacyLifecycleContributor exports reviewed learner text, normalization, versioned analysis,
+review provenance, drills/methods and mastery/passport evidence. Internal retry keys, request hashes and verifier
+request copies are excluded. Deletion removes only owned learning rows/attempts/steps under the account lock;
+independently owned source problems are preserved. Gateway media uses the existing asset lifecycle; native review
+thumbnails are memory-only and cleared on confirmation/cancel/account invalidation. All learning tables enforce
+training_eligible=false. Protected backup-excluded iOS drafts and exact pending keys survive relaunch and clear
+on logout. Existing export expiration/backup retention remain; no immediate purge of backups is claimed.

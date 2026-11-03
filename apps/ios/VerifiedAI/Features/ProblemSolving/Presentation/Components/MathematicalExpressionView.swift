@@ -41,15 +41,36 @@ struct MathematicalExpressionView: View {
     let statement: MathStatement
     var style: Style = .step
 
+    @ScaledMetric(relativeTo: .title3) private var pointSize = 22
     var body: some View {
-        Text(verbatim: MathPresentation.statement(statement))
-            .font(style == .prominent ? .title2.monospaced().weight(.semibold) : .title3.monospaced())
-            .foregroundStyle(ColorTokens.textPrimary)
-            .lineSpacing(4)
-            .multilineTextAlignment(.leading)
-            .textSelection(.enabled)
-            .fixedSize(horizontal: false, vertical: true)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .accessibilityLabel(Text(verbatim: MathPresentation.statement(statement, spoken: true)))
+        ScrollView(.horizontal) {
+            NativeMathLabel(latex: latex(statement), fallback: MathPresentation.statement(statement), pointSize: pointSize)
+                .fixedSize().padding(.vertical, 4)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(verbatim: MathPresentation.statement(statement, spoken: true)))
+    }
+    private func latex(_ statement: MathStatement) -> String {
+        switch statement {
+        case .expression(let n): return latex(n)
+        case .relation(let op, let a, let b):
+            let relation: String
+            switch op { case .equal: relation = "="; case .less: relation = "<"; case .lessEqual: relation = "\\leq"; case .greater: relation = ">"; case .greaterEqual: relation = "\\geq" }
+            return latex(a) + relation + latex(b)
+        }
+    }
+    private func latex(_ n: MathExpression) -> String {
+        switch n {
+        case .number(let value, _): return value
+        case .variable(let symbol): return symbol.replacingOccurrences(of: "_", with: "\\_")
+        case .negate(let n): return "-\\left(" + latex(n) + "\\right)"
+        case .function(let f, let n): return f == .sqrt ? "\\sqrt{" + latex(n) + "}" : "\\" + f.rawValue.lowercased() + "\\left(" + latex(n) + "\\right)"
+        case .binary(let op, let a, let b):
+            switch op {
+            case .divide: return "\\frac{" + latex(a) + "}{" + latex(b) + "}"
+            case .power: return "{\\left(" + latex(a) + "\\right)}^{" + latex(b) + "}"
+            default: return "\\left(" + latex(a) + (op == .multiply ? "\\cdot " : op.symbol) + latex(b) + "\\right)"
+            }
+        }
     }
 }

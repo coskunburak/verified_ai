@@ -1,0 +1,187 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "student-attempt-response.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "student-attempt-v1"
+    },
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "problemSessionId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "canonicalId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "canonicalRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "parseId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "parseRevision": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "canonicalId",
+        "canonicalRevision",
+        "parseId",
+        "parseRevision"
+      ]
+    },
+    "sourceType": {
+      "const": "MANUAL"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "SUBMITTED",
+        "ANALYZED",
+        "STALE_SOURCE"
+      ]
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "index": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 12
+          },
+          "content": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "normalizedStatement": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 12000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "index",
+          "content",
+          "normalizedStatement"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 12
+    },
+    "analysis": {
+      "anyOf": [
+        {
+          "$ref": "attempt-analysis-v1.schema.json"
+        },
+        {
+          "$ref": "attempt-analysis-v2.schema.json"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "trainingEligible": {
+      "const": false
+    },
+    "normalizationVersion": {
+      "enum": [
+        "manual-canonical-v1",
+        "manual-canonical-v2"
+      ]
+    },
+    "captureReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "engine",
+        "rawLines",
+        "confirmed"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "attempt-capture-review-v1"
+        },
+        "engine": {
+          "enum": [
+            "NATIVE_VISION",
+            "GATEWAY_RECOGNITION"
+          ]
+        },
+        "rawLines": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 12,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "confirmed": {
+          "const": true
+        },
+        "assetSessionId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uuid"
+        },
+        "recognitionJobId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uuid"
+        }
+      }
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "id",
+    "problemSessionId",
+    "source",
+    "sourceType",
+    "status",
+    "steps",
+    "analysis",
+    "createdAt",
+    "updatedAt",
+    "trainingEligible",
+    "normalizationVersion"
+  ]
+}

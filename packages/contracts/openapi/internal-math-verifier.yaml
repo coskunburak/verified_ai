@@ -3,6 +3,67 @@ info:
   title: Verified AI Internal Math Verifier API
   version: 0.4.0
 paths:
+  /internal/v1/verify/attempt-v2:
+    post:
+      summary: Bounded isolated deterministic attempt-v2 execution
+      description: Default disabled. Shares process admission and resource limits. Unsupported mathematics returns uncertainty; no external provider calls.
+      security: [{internalToken: []}]
+      parameters:
+        - {name: X-Request-Id, in: header, required: true, schema: {type: string, maxLength: 64}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '../../schemas/attempt-verification-v2.schema.json'}
+      responses:
+        '200':
+          description: Versioned evidence bound to execution and correlation identity
+          content:
+            application/json:
+              schema: {$ref: '../../schemas/attempt-analysis-v2.schema.json'}
+        '401': {description: Internal authentication required}
+        '413': {description: Request byte limit}
+        '422': {description: Strict schema or correlation mismatch}
+  /internal/v1/verify/attempt-learning:
+    post:
+      summary: Bounded isolated deterministic attempt-learning execution
+      description: Default disabled. Shares process admission and resource limits. Unsupported mathematics returns uncertainty; no external provider calls.
+      security: [{internalToken: []}]
+      parameters:
+        - {name: X-Request-Id, in: header, required: true, schema: {type: string, maxLength: 64}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '../../schemas/attempt-learning-v1.schema.json'}
+      responses:
+        '200':
+          description: Versioned evidence bound to execution and correlation identity
+          content:
+            application/json:
+              schema: {$ref: '../../schemas/attempt-learning-result-v1.schema.json'}
+        '401': {description: Internal authentication required}
+        '413': {description: Request byte limit}
+        '422': {description: Strict schema or correlation mismatch}
+  /internal/v1/verify/attempt:
+    post:
+      summary: Bounded deterministic manual step analysis, one-based indices
+      description: Disabled by default; local/test only. Equivalence evidence is not aggregate VERIFIED or mastery. Stops at uncertainty or first disproof. No OCR or provider calls.
+      security: [{internalToken: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '../../schemas/attempt-verification-v1.schema.json'}
+      responses:
+        '200':
+          description: Versioned analysis or explicit uncertainty
+          content:
+            application/json:
+              schema: {$ref: '../../schemas/attempt-analysis-v1.schema.json'}
+        '401': {description: Internal authentication required}
+        '413': {description: Request byte limit}
+        '422': {description: Strict schema or correlation mismatch}
   /internal/v1/verify/numeric:
     post:
       summary: Bounded non-proof numerical diagnostics

@@ -104,3 +104,7 @@ unsupported functions in rational constraints and relation requests are not samp
 No raw expressions, points or seed digests enter telemetry. Existing exact and calculus
 contracts and flags are unchanged. See the Sprint 5.10 execution report for owner-only
 Linux, Java/Python and repository validation; the agent did not execute validation.
+
+## Sprint 6.7 product integration
+
+Authenticated attempt-v2 and attempt-learning implement bounded typed real sets/domain guards, 17 structural diagnoses after exact disproof, semantic diff, independently checked twins and alternate methods in the existing isolated worker. Legacy attempt v1 remains. No string eval, numerical agreement proof or provider call. Defaults off; test suite and targeted repairs passed in owner runs; production authorization and Linux resource enforcement are separate.

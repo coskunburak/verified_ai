@@ -1,0 +1,1324 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "attempt-learning-result-v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "attempt-learning-result-v1"
+    },
+    "verifierVersion": {
+      "const": "bounded-learning-v1"
+    },
+    "executionId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "correlationId": {
+      "type": "string",
+      "maxLength": 64
+    },
+    "action": {
+      "enum": [
+        "TWIN",
+        "METHODS"
+      ]
+    },
+    "status": {
+      "enum": [
+        "VERIFIED",
+        "UNSUPPORTED",
+        "UNAVAILABLE"
+      ]
+    },
+    "twin": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "templateVersion": {
+              "const": "verified-twin-v1"
+            },
+            "mistakeCode": {
+              "enum": [
+                "ALG_SIGN_FLIP_DISTRIBUTE",
+                "ALG_FRESHMAN_DREAM_POWER",
+                "ALG_FRACTION_ADD_DENOM",
+                "ALG_ROOT_LOST_BY_DIVISION",
+                "DOM_EXTRANEOUS_ROOT_DENOM",
+                "DOM_EVEN_ROOT_NEGATIVE",
+                "DOM_LOG_NON_POSITIVE",
+                "INEQ_NEGATIVE_MULT_NO_FLIP",
+                "INEQ_CROSS_MULT_VARIABLE",
+                "ABS_SINGLE_BRANCH_ONLY",
+                "FUNC_COMPOSITION_ORDER",
+                "TRIG_PERIOD_OMITTED",
+                "CALC_LIMIT_INDETERMINATE_SUB",
+                "CALC_CHAIN_RULE_OMITTED",
+                "CALC_PRODUCT_QUOTIENT_NAIVE",
+                "CALC_INTEGRAL_BOUNDS_SWAPPED",
+                "WORD_VARIABLE_MISASSIGNMENT"
+              ]
+            },
+            "problem": {
+              "$ref": "#/$defs/Statement"
+            },
+            "options": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Statement"
+              },
+              "minItems": 4,
+              "maxItems": 4
+            },
+            "correctOption": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 3
+            },
+            "explanationKey": {
+              "type": "string",
+              "maxLength": 96
+            },
+            "domainLabel": {
+              "type": "string",
+              "maxLength": 120
+            },
+            "difficulty": {
+              "const": "FOUNDATION"
+            }
+          },
+          "required": [
+            "templateVersion",
+            "mistakeCode",
+            "problem",
+            "options",
+            "correctOption",
+            "explanationKey",
+            "domainLabel",
+            "difficulty"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "methods": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "methodId": {
+            "enum": [
+              "FACTORING",
+              "COMPLETING_SQUARE",
+              "QUADRATIC_FORMULA",
+              "SYMBOLIC_SIMPLIFICATION"
+            ]
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/Statement"
+            },
+            "minItems": 1,
+            "maxItems": 4
+          },
+          "evidenceVersion": {
+            "const": "verified-method-v1"
+          }
+        },
+        "required": [
+          "methodId",
+          "steps",
+          "evidenceVersion"
+        ]
+      },
+      "minItems": 0,
+      "maxItems": 3
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "verifierVersion",
+    "executionId",
+    "correlationId",
+    "action",
+    "status",
+    "twin",
+    "methods"
+  ],
+  "$defs": {
+    "Node": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "value": {
+              "type": "string",
+              "maxLength": 64,
+              "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]+)?$"
+            },
+            "numericType": {
+              "enum": [
+                "INTEGER",
+                "DECIMAL",
+                "RATIONAL"
+              ]
+            },
+            "symbol": {
+              "type": "null"
+            },
+            "operator": {
+              "type": "null"
+            },
+            "function": {
+              "type": "null"
+            },
+            "operand": {
+              "type": "null"
+            },
+            "left": {
+              "type": "null"
+            },
+            "right": {
+              "type": "null"
+            },
+            "args": {
+              "type": "null"
+            },
+            "leftOpen": {
+              "type": "null"
+            },
+            "rightOpen": {
+              "type": "null"
+            },
+            "branches": {
+              "type": "null"
+            },
+            "kind": {
+              "const": "NUMBER"
+            },
+            "tokenRange": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "start": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 255
+                    },
+                    "end": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 256
+                    }
+                  },
+                  "required": [
+                    "start",
+                    "end"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "kind",
+            "value",
+            "numericType"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "value": {
+              "type": "null"
+            },
+            "numericType": {
+              "type": "null"
+            },
+            "symbol": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9_]{0,15}$"
+            },
+            "operator": {
+              "type": "null"
+            },
+            "function": {
+              "type": "null"
+            },
+            "operand": {
+              "type": "null"
+            },
+            "left": {
+              "type": "null"
+            },
+            "right": {
+              "type": "null"
+            },
+            "args": {
+              "type": "null"
+            },
+            "leftOpen": {
+              "type": "null"
+            },
+            "rightOpen": {
+              "type": "null"
+            },
+            "branches": {
+              "type": "null"
+            },
+            "kind": {
+              "const": "VARIABLE"
+            },
+            "tokenRange": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "start": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 255
+                    },
+                    "end": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 256
+                    }
+                  },
+                  "required": [
+                    "start",
+                    "end"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "kind",
+            "symbol"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "value": {
+              "enum": [
+                "PI",
+                "POSITIVE_INFINITY",
+                "NEGATIVE_INFINITY"
+              ]
+            },
+            "numericType": {
+              "type": "null"
+            },
+            "symbol": {
+              "type": "null"
+            },
+            "operator": {
+              "type": "null"
+            },
+            "function": {
+              "type": "null"
+            },
+            "operand": {
+              "type": "null"
+            },
+            "left": {
+              "type": "null"
+            },
+            "right": {
+              "type": "null"
+            },
+            "args": {
+              "type": "null"
+            },
+            "leftOpen": {
+              "type": "null"
+            },
+            "rightOpen": {
+              "type": "null"
+            },
+            "branches": {
+              "type": "null"
+            },
+            "kind": {
+              "const": "CONSTANT"
+            },
+            "tokenRange": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "start": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 255
+                    },
+                    "end": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 256
+                    }
+                  },
+                  "required": [
+                    "start",
+                    "end"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "value": {
+              "type": "null"
+            },
+            "numericType": {
+              "type": "null"
+            },
+            "symbol": {
+              "type": "null"
+            },
+            "operator": {
+              "const": "NEGATE"
+            },
+            "function": {
+              "type": "null"
+            },
+            "operand": {
+              "$ref": "#/$defs/Node"
+            },
+            "left": {
+              "type": "null"
+            },
+            "right": {
+              "type": "null"
+            },
+            "args": {
+              "type": "null"
+            },
+            "leftOpen": {
+              "type": "null"
+            },
+            "rightOpen": {
+              "type": "null"
+            },
+            "branches": {
+              "type": "null"
+            },
+            "kind": {
+              "const": "UNARY"
+            },
+            "tokenRange": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "start": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 255
+                    },
+                    "end": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 256
+                    }
+                  },
+                  "required": [
+                    "start",
+                    "end"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "kind",
+            "operator",
+            "operand"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "value": {
+              "type": "null"
+            },
+            "numericType": {
+              "type": "null"
+            },
+            "symbol": {
+              "type": "null"
+            },
+            "operator": {
+              "enum": [
+                "ADD",
+                "SUBTRACT",
+                "MULTIPLY",
+                "DIVIDE",
+                "POWER"
+              ]
+            },
+            "function": {
+              "type": "null"
+            },
+            "operand": {
+              "type": "null"
+            },
+            "left": {
+              "$ref": "#/$defs/Node"
+            },
+            "right": {
+              "$ref": "#/$defs/Node"
+            },
+            "args": {
+              "type": "null"
+            },
+            "leftOpen": {
+              "type": "null"
+            },
+            "rightOpen": {
+              "type": "null"
+            },
+            "branches": {
+              "type": "null"
+            },
+            "kind": {
+              "const": "BINARY"
+            },
+            "tokenRange": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "start": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 255
+                    },
+                    "end": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 256
+                    }
+                  },
+                  "required": [
+                    "start",
+                    "end"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "kind",
+            "operator",
+            "left",
+            "right"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "value": {
+              "type": "null"
+            },
+            "numericType": {
+              "type": "null"
+            },
+            "symbol": {
+              "type": "null"
+            },
+            "operator": {
+              "type": "null"
+            },
+            "function": {
+              "enum": [
+                "SQRT",
+                "ABS",
+                "SIN",
+                "COS",
+                "TAN",
+                "LOG",
+                "EXP",
+                "DIFF",
+                "LIMIT",
+                "INTEGRAL",
+                "TOTAL"
+              ]
+            },
+            "operand": {
+              "type": "null"
+            },
+            "left": {
+              "type": "null"
+            },
+            "right": {
+              "type": "null"
+            },
+            "args": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Node"
+              },
+              "minItems": 1,
+              "maxItems": 3
+            },
+            "leftOpen": {
+              "type": "null"
+            },
+            "rightOpen": {
+              "type": "null"
+            },
+            "branches": {
+              "type": "null"
+            },
+            "kind": {
+              "const": "FUNCTION"
+            },
+            "tokenRange": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "start": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 255
+                    },
+                    "end": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 256
+                    }
+                  },
+                  "required": [
+                    "start",
+                    "end"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "kind",
+            "function",
+            "args"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "value": {
+              "type": "null"
+            },
+            "numericType": {
+              "type": "null"
+            },
+            "symbol": {
+              "type": "null"
+            },
+            "operator": {
+              "type": "null"
+            },
+            "function": {
+              "type": "null"
+            },
+            "operand": {
+              "type": "null"
+            },
+            "left": {
+              "type": "null"
+            },
+            "right": {
+              "type": "null"
+            },
+            "args": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Node"
+              },
+              "minItems": 1,
+              "maxItems": 12
+            },
+            "leftOpen": {
+              "type": "null"
+            },
+            "rightOpen": {
+              "type": "null"
+            },
+            "branches": {
+              "type": "null"
+            },
+            "kind": {
+              "const": "FINITE_SET"
+            },
+            "tokenRange": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "start": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 255
+                    },
+                    "end": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 256
+                    }
+                  },
+                  "required": [
+                    "start",
+                    "end"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "kind",
+            "args"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "value": {
+              "type": "null"
+            },
+            "numericType": {
+              "type": "null"
+            },
+            "symbol": {
+              "type": "null"
+            },
+            "operator": {
+              "type": "null"
+            },
+            "function": {
+              "type": "null"
+            },
+            "operand": {
+              "type": "null"
+            },
+            "left": {
+              "type": "null"
+            },
+            "right": {
+              "type": "null"
+            },
+            "args": {
+              "type": "null"
+            },
+            "leftOpen": {
+              "type": "null"
+            },
+            "rightOpen": {
+              "type": "null"
+            },
+            "branches": {
+              "type": "null"
+            },
+            "kind": {
+              "const": "EMPTY_SET"
+            },
+            "tokenRange": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "start": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 255
+                    },
+                    "end": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 256
+                    }
+                  },
+                  "required": [
+                    "start",
+                    "end"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "value": {
+              "type": "null"
+            },
+            "numericType": {
+              "type": "null"
+            },
+            "symbol": {
+              "type": "null"
+            },
+            "operator": {
+              "type": "null"
+            },
+            "function": {
+              "type": "null"
+            },
+            "operand": {
+              "type": "null"
+            },
+            "left": {
+              "type": "null"
+            },
+            "right": {
+              "type": "null"
+            },
+            "args": {
+              "type": "null"
+            },
+            "leftOpen": {
+              "type": "null"
+            },
+            "rightOpen": {
+              "type": "null"
+            },
+            "branches": {
+              "type": "null"
+            },
+            "kind": {
+              "const": "REALS"
+            },
+            "tokenRange": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "start": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 255
+                    },
+                    "end": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 256
+                    }
+                  },
+                  "required": [
+                    "start",
+                    "end"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "value": {
+              "type": "null"
+            },
+            "numericType": {
+              "type": "null"
+            },
+            "symbol": {
+              "type": "null"
+            },
+            "operator": {
+              "type": "null"
+            },
+            "function": {
+              "type": "null"
+            },
+            "operand": {
+              "type": "null"
+            },
+            "left": {
+              "$ref": "#/$defs/Node"
+            },
+            "right": {
+              "$ref": "#/$defs/Node"
+            },
+            "args": {
+              "type": "null"
+            },
+            "leftOpen": {
+              "type": "boolean"
+            },
+            "rightOpen": {
+              "type": "boolean"
+            },
+            "branches": {
+              "type": "null"
+            },
+            "kind": {
+              "const": "INTERVAL"
+            },
+            "tokenRange": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "start": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 255
+                    },
+                    "end": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 256
+                    }
+                  },
+                  "required": [
+                    "start",
+                    "end"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "kind",
+            "left",
+            "right",
+            "leftOpen",
+            "rightOpen"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "value": {
+              "type": "null"
+            },
+            "numericType": {
+              "type": "null"
+            },
+            "symbol": {
+              "type": "null"
+            },
+            "operator": {
+              "type": "null"
+            },
+            "function": {
+              "type": "null"
+            },
+            "operand": {
+              "type": "null"
+            },
+            "left": {
+              "type": "null"
+            },
+            "right": {
+              "type": "null"
+            },
+            "args": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Node"
+              },
+              "minItems": 1,
+              "maxItems": 12
+            },
+            "leftOpen": {
+              "type": "null"
+            },
+            "rightOpen": {
+              "type": "null"
+            },
+            "branches": {
+              "type": "null"
+            },
+            "kind": {
+              "const": "UNION"
+            },
+            "tokenRange": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "start": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 255
+                    },
+                    "end": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 256
+                    }
+                  },
+                  "required": [
+                    "start",
+                    "end"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "kind",
+            "args"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "value": {
+              "type": "null"
+            },
+            "numericType": {
+              "type": "null"
+            },
+            "symbol": {
+              "type": "null"
+            },
+            "operator": {
+              "type": "null"
+            },
+            "function": {
+              "type": "null"
+            },
+            "operand": {
+              "type": "null"
+            },
+            "left": {
+              "type": "null"
+            },
+            "right": {
+              "type": "null"
+            },
+            "args": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Node"
+              },
+              "minItems": 1,
+              "maxItems": 12
+            },
+            "leftOpen": {
+              "type": "null"
+            },
+            "rightOpen": {
+              "type": "null"
+            },
+            "branches": {
+              "type": "null"
+            },
+            "kind": {
+              "const": "INTERSECTION"
+            },
+            "tokenRange": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "start": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 255
+                    },
+                    "end": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 256
+                    }
+                  },
+                  "required": [
+                    "start",
+                    "end"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "kind",
+            "args"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "value": {
+              "type": "null"
+            },
+            "numericType": {
+              "type": "null"
+            },
+            "symbol": {
+              "type": "null"
+            },
+            "operator": {
+              "type": "null"
+            },
+            "function": {
+              "type": "null"
+            },
+            "operand": {
+              "type": "null"
+            },
+            "left": {
+              "type": "null"
+            },
+            "right": {
+              "type": "null"
+            },
+            "args": {
+              "type": "null"
+            },
+            "leftOpen": {
+              "type": "null"
+            },
+            "rightOpen": {
+              "type": "null"
+            },
+            "branches": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "expression": {
+                    "$ref": "#/$defs/Node"
+                  },
+                  "condition": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/$defs/Statement"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "expression",
+                  "condition"
+                ]
+              },
+              "minItems": 1,
+              "maxItems": 6
+            },
+            "kind": {
+              "const": "PIECEWISE"
+            },
+            "tokenRange": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "start": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 255
+                    },
+                    "end": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 256
+                    }
+                  },
+                  "required": [
+                    "start",
+                    "end"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "kind",
+            "branches"
+          ]
+        }
+      ]
+    },
+    "Statement": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "EXPRESSION"
+            },
+            "expression": {
+              "$ref": "#/$defs/Node"
+            },
+            "relation": {
+              "type": "null"
+            },
+            "left": {
+              "type": "null"
+            },
+            "right": {
+              "type": "null"
+            }
+          },
+          "required": [
+            "kind",
+            "expression"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "RELATION"
+            },
+            "expression": {
+              "type": "null"
+            },
+            "relation": {
+              "enum": [
+                "EQUALS",
+                "NOT_EQUALS",
+                "LESS_THAN",
+                "LESS_THAN_OR_EQUAL",
+                "GREATER_THAN",
+                "GREATER_THAN_OR_EQUAL",
+                "MEMBER_OF"
+              ]
+            },
+            "left": {
+              "$ref": "#/$defs/Node"
+            },
+            "right": {
+              "$ref": "#/$defs/Node"
+            }
+          },
+          "required": [
+            "kind",
+            "relation",
+            "left",
+            "right"
+          ]
+        }
+      ]
+    },
+    "Restriction": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 96
+        },
+        "relation": {
+          "enum": [
+            "EQUALS",
+            "NOT_EQUALS",
+            "LESS_THAN",
+            "LESS_THAN_OR_EQUAL",
+            "GREATER_THAN",
+            "GREATER_THAN_OR_EQUAL"
+          ]
+        },
+        "left": {
+          "$ref": "#/$defs/Node"
+        },
+        "right": {
+          "$ref": "#/$defs/Node"
+        }
+      },
+      "required": [
+        "id",
+        "relation",
+        "left",
+        "right"
+      ]
+    }
+  }
+}

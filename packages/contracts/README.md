@@ -17,3 +17,7 @@ Owner evidence reconciliation 20261102-214452-cv4eye9f passed inputs/E/D with no
 the HTTP status regression passed its focused owner retest. This is TARGETED_RECONCILIATION_PASSED,
 not single-current-source full acceptance or production authorization. See the
 [Sprint 6.6 report](../../docs/verified_ai_learning_platform_docs_v4/sprints/phase06_solution_experience_and_tutoring/SPRINT_6.6_EXECUTION_REPORT.md).
+
+## Sprint 6.7 product integration
+
+Public attempt routes now include reviewed extraction, durable twins/answers/history, verified methods and mistake passport. Internal attempt-v2 and attempt-learning share the authenticated bounded worker. Versioned schema references, strict ownership and idempotency apply; contract checks and targeted test repairs passed in owner runs.

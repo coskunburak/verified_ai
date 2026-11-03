@@ -705,3 +705,13 @@ unchanged. Progress merges hint and turn snapshots by their monotonic shared tur
 account/problem locks. V027/V028 and released schemas retain original bytes. V024–V026 remain reserved;
 V029 is for fresh disposable local databases and synthetic V028-forward evidence only until ordering and
 shared upgrade approval exist. No out-of-order execution or schema-history rewrite is permitted.
+
+## Sprint 6.7 forward attempt and learning schema
+
+V030 activates student_attempts/student_attempt_steps in the next forward slot; staged V025 remains unchanged.
+V031 adds capture_review, counterfactual_twin_drills, attempt_verified_methods, learner_mistake_events and
+learner_skill_mastery. V032 extends the canonical version constraint with canonical-problem-v3. No insertion
+behind V027–V029, historical checksum edits, repair or out-of-order configuration. All source/owner FKs, private
+training exclusions, immutable evidence and first-completion guards are retained. Unique evidence keys prevent
+double mastery updates. Fresh Flyway/upgrade owner evidence is pending; manually staged shared databases require
+explicit reconciliation and fail closed instead of silent adoption. Shared migration remains NOT_AUTHORIZED.

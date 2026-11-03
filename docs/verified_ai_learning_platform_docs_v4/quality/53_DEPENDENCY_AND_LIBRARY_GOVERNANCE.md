@@ -44,3 +44,15 @@ Provider SDKs belong only in infrastructure adapter modules. If an SDK makes pro
 
 PyTorch/transformers/training frameworks must not enter production Spring/iOS dependency graphs merely for experiments. Future training and self-hosted inference dependencies live in isolated tool/service boundaries and require explicit approval.
 <!-- HYBRID_AI_STRATEGY_V3:END -->
+
+## Sprint 6.7 native math dependency
+
+SwiftMath is pinned with Xcode exactVersion 1.7.3, product SwiftMath, repository
+[upstream SwiftMath](https://github.com/mgriebling/SwiftMath), [pinned release](https://github.com/mgriebling/SwiftMath/releases/tag/1.7.3).
+It materially supplies native fractions/radicals/layout used by both existing typed math and attempt semantic diff.
+No raw user LaTeX enters the renderer: local typed AST conversion supplies bounded supported commands.
+Upstream package/API source was reviewed; the agent ran no package fetch/build or dependency scanner. The owner
+run 20261103-233019-8g1dlw resolved SwiftMath and produced Package.resolved at revision
+fa8244ed032f4a1ade4cb0571bf87d2f1a9fd2d7. The lockfile is preserved; shipped-revision auditing remains pending. MIT code notices and bundled font
+GUST/OFL notices must be retained in distribution. Package/license/security/device approval remains a release
+prerequisite; exact pinning alone is not a vulnerability or license-compliance attestation.

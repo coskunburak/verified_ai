@@ -29,3 +29,7 @@ Hint/reveal contracts, privacy, idempotency and rollback are in the
 Full current-source acceptance remains PENDING_FULL_CURRENT_SOURCE_RUN; shared upgrades BLOCKED;
 hosted CI NOT_VERIFIED; production NOT_AUTHORIZED. Both tutoring flags default false; TUTOR routing
 remains disabled. Successful verified reveal is unavailable. No live inference or hint debit is added.
+
+## Sprint 6.7 product integration
+
+Owner-scoped attempt and learning execution is authored with active forward Flyway V030–V032, preserving old migration bytes and source evidence. Domain confirmation/capture provenance, immutable artifacts, evidence-idempotent mastery and privacy use short account/source transactions. Modularity and attempt test suites passed in owner runs; analysis/vision/production-authorized flags default false. Full current-source acceptance pending; shared upgrades NOT_AUTHORIZED.

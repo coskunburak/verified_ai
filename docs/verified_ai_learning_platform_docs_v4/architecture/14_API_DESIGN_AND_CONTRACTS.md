@@ -287,3 +287,13 @@ authorized verified-reference contract exists. No success response or hidden ans
 The existing authentication, ownership, 16 KB body bound, strict duplicate-field parsing, 120/account/minute
 limiter, Problem Details/trace correlation and safe storage failures apply. No inference or billing call.
 Existing endpoints and schemas remain backward compatible; the updated iOS feature requires these new APIs.
+
+## Sprint 6.7 implemented attempt API boundary
+
+Owner-scoped /api/v1/problem-sessions/{id}/attempts provides submission/history/context, extraction review,
+/{attemptId}/counterfactual-twin creation/read/answer, /{attemptId}/alternative-methods, /drills and /mistake-passport.
+Internal /internal/v1/verify/attempt remains v1; /attempt-v2 and /attempt-learning share bounded authenticated workers.
+Submission v2 adds optional real-domain confirmation/capture review; clients never supply verdicts or correct answers.
+Context v2 exposes actual enabled capabilities; student-attempt-v1 envelope admits versioned analysis v1/v2 through
+student-attempt-response. Stable idempotency, ownership/freshness and first-answer transaction guards apply.
+New contracts are listed in the Sprint 6.7 implementation map. Feature flags default off; owner acceptance pending.

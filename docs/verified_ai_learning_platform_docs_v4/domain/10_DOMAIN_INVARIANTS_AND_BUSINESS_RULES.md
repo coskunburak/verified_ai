@@ -180,3 +180,17 @@ This is a highest-precedence document.
   implementation dispatches no model and invents no debit. Opening tutoring/accessibility creates no assistance.
 - Only reviewed source-applicable templates publish; unsupported syntax, generation and references fail closed.
 - Ownership, account → source lock order, history export, deletion cascades and trainingEligible=false remain mandatory.
+
+## Sprint 6.7 attempt evidence invariants
+
+- Manual learner text, normalization, deterministic evidence and pedagogical copy remain separate; no fabricated OCR confidence.
+- Exact current source identity is supplied for concurrency control and reauthorized through problem ownership before save/publication.
+- One-based first-error attribution requires a proven prefix. Stop at uncertainty; downstream lines are NOT_ASSESSED.
+- Equations compare solution sets/truth, expressions compare exact identity; arbitrary side-value differences never refute equation equivalence.
+- UNKNOWN domains are not REAL. A recorded explicit learner confirmation may establish a reviewed REAL task; unresolved/unsupported mathematics yields NEEDS_REVIEW, not accusation or VERIFIED.
+- Generic non-equivalence cannot establish a specific misconception, mastery change or final solution completion.
+- SUBMITTED can transition once to ANALYZED or STALE_SOURCE. Same-key replay preserves exact source/text; terminal evidence is immutable.
+- Account locks surround short persistence operations, never verifier HTTP. Publication rechecks ownership and freshness.
+- Rollout disable preserves history/export/deletion; trainingEligible=false is enforced for attempts, steps and all learning evidence.
+- Specific diagnoses require structural cause evidence after independent disproof. Unique attempt/drill events prevent duplicate mastery updates.
+- OCR text always requires learner review; confidence never proves mathematical correctness. Open drills never publish their answer.

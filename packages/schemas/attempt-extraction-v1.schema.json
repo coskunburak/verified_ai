@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "attempt-extraction-v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "attempt-extraction-v1"
+    },
+    "assetSessionId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "recognitionJobId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "status": {
+      "const": "REVIEW_REQUIRED"
+    },
+    "provider": {
+      "type": "string",
+      "maxLength": 96
+    },
+    "model": {
+      "type": "string",
+      "maxLength": 96
+    },
+    "upstreamSchemaVersion": {
+      "type": "string",
+      "maxLength": 96
+    },
+    "promptVersion": {
+      "type": "string",
+      "maxLength": 96
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "index": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 12
+          },
+          "rawTranscription": {
+            "type": "string",
+            "maxLength": 256
+          },
+          "normalizedStatement": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 12000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "latex": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2048
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "boundingBox": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "x": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "y": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "width": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "height": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "required": [
+              "x",
+              "y",
+              "width",
+              "height"
+            ]
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reviewRequired": {
+            "const": true
+          }
+        },
+        "required": [
+          "index",
+          "rawTranscription",
+          "normalizedStatement",
+          "latex",
+          "boundingBox",
+          "confidence",
+          "reviewRequired"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 12
+    },
+    "trainingEligible": {
+      "const": false
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "assetSessionId",
+    "recognitionJobId",
+    "status",
+    "provider",
+    "model",
+    "upstreamSchemaVersion",
+    "promptVersion",
+    "steps",
+    "trainingEligible"
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "canonicalId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "canonicalRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "parseId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "parseRevision": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "canonicalId",
+        "canonicalRevision",
+        "parseId",
+        "parseRevision"
+      ]
+    },
+    "originalStatement": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 12000
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "enabled": {
+      "type": "boolean"
+    },
+    "handwriting": {
+      "const": "UNAVAILABLE"
+    },
+    "twinDrill": {
+      "const": "UNAVAILABLE"
+    },
+    "methodComparison": {
+      "const": "UNAVAILABLE"
+    },
+    "schemaVersion": {
+      "const": "attempt-context-v1"
+    }
+  },
+  "required": [
+    "source",
+    "originalStatement",
+    "enabled",
+    "handwriting",
+    "twinDrill",
+    "methodComparison",
+    "schemaVersion"
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

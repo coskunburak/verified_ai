@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "step-diff-v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "step-diff-v1"
+    },
+    "originalStepId": {
+      "type": "string",
+      "maxLength": 96
+    },
+    "submittedStepId": {
+      "type": "string",
+      "maxLength": 96
+    },
+    "changedExpressionPath": {
+      "type": "string",
+      "maxLength": 160,
+      "pattern": "^/[A-Za-z0-9_/]*$"
+    },
+    "originalTokenRange": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "start": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 255
+            },
+            "end": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 256
+            }
+          },
+          "required": [
+            "start",
+            "end"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "submittedTokenRange": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "start": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 255
+            },
+            "end": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 256
+            }
+          },
+          "required": [
+            "start",
+            "end"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "diffCategory": {
+      "const": "PROVEN_TRANSFORMATION"
+    },
+    "supportingEvidenceId": {
+      "type": "string",
+      "maxLength": 96
+    },
+    "confidence": {
+      "enum": [
+        "EXACT_STRUCTURAL",
+        "STEP_ONLY"
+      ]
+    },
+    "displayFallback": {
+      "enum": [
+        "SUBEXPRESSION",
+        "STEP_LEVEL"
+      ]
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "originalStepId",
+    "submittedStepId",
+    "changedExpressionPath",
+    "originalTokenRange",
+    "submittedTokenRange",
+    "diffCategory",
+    "supportingEvidenceId",
+    "confidence",
+    "displayFallback"
+  ]
+}

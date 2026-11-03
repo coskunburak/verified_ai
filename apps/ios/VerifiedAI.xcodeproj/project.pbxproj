@@ -7,6 +7,25 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B67900000000000000000006 /* CounterfactualTwinSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A67900000000000000000006 /* CounterfactualTwinSheetView.swift */; };
+		B67900000000000000000005 /* AttemptLearningViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A67900000000000000000005 /* AttemptLearningViewModel.swift */; };
+		B67900000000000000000004 /* AttemptLearningAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A67900000000000000000004 /* AttemptLearningAPI.swift */; };
+		B67900000000000000000003 /* AttemptMathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A67900000000000000000003 /* AttemptMathView.swift */; };
+		B67900000000000000000002 /* AttemptStepReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A67900000000000000000002 /* AttemptStepReviewView.swift */; };
+		B67900000000000000000001 /* NativeAttemptExtraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A67900000000000000000001 /* NativeAttemptExtraction.swift */; };
+		B67800000000000000000001 /* SwiftMath in Frameworks */ = {isa = PBXBuildFile; productRef = C67800000000000000000001 /* SwiftMath */; };
+		B6700000000000000000000C /* AttemptAnalysisUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6700000000000000000000C /* AttemptAnalysisUITests.swift */; };
+		B6700000000000000000000B /* AttemptAnalysisTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6700000000000000000000B /* AttemptAnalysisTests.swift */; };
+		B6700000000000000000000A /* FirstWrongStepDiffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6700000000000000000000A /* FirstWrongStepDiffView.swift */; };
+		B67000000000000000000009 /* CounterexampleProofCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A67000000000000000000009 /* CounterexampleProofCardView.swift */; };
+		B67000000000000000000008 /* AttemptStepEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A67000000000000000000008 /* AttemptStepEditorView.swift */; };
+		B67000000000000000000007 /* AttemptAnalysisResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A67000000000000000000007 /* AttemptAnalysisResultsView.swift */; };
+		B67000000000000000000006 /* AnalyzeMyWorkViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A67000000000000000000006 /* AnalyzeMyWorkViewModel.swift */; };
+		B67000000000000000000005 /* AnalyzeMyWorkCaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A67000000000000000000005 /* AnalyzeMyWorkCaptureView.swift */; };
+		B67000000000000000000004 /* AttemptAnalysisModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A67000000000000000000004 /* AttemptAnalysisModels.swift */; };
+		B67000000000000000000003 /* FixtureAttemptAnalysisAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A67000000000000000000003 /* FixtureAttemptAnalysisAPI.swift */; };
+		B67000000000000000000002 /* AttemptAnalysisPendingStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A67000000000000000000002 /* AttemptAnalysisPendingStore.swift */; };
+		B67000000000000000000001 /* AttemptAnalysisAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A67000000000000000000001 /* AttemptAnalysisAPI.swift */; };
 		B64000000000000000000008 /* TutorUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64000000000000000000008 /* TutorUITests.swift */; };
 		B64000000000000000000007 /* TutorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64000000000000000000007 /* TutorTests.swift */; };
 		B64000000000000000000006 /* TutorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64000000000000000000006 /* TutorView.swift */; };
@@ -150,6 +169,24 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A67900000000000000000006 /* CounterfactualTwinSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/AttemptAnalysis/Presentation/CounterfactualTwinSheetView.swift; sourceTree = SOURCE_ROOT; };
+		A67900000000000000000005 /* AttemptLearningViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/AttemptAnalysis/Presentation/AttemptLearningViewModel.swift; sourceTree = SOURCE_ROOT; };
+		A67900000000000000000004 /* AttemptLearningAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/AttemptAnalysis/Data/AttemptLearningAPI.swift; sourceTree = SOURCE_ROOT; };
+		A67900000000000000000003 /* AttemptMathView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/AttemptAnalysis/Presentation/AttemptMathView.swift; sourceTree = SOURCE_ROOT; };
+		A67900000000000000000002 /* AttemptStepReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/AttemptAnalysis/Presentation/AttemptStepReviewView.swift; sourceTree = SOURCE_ROOT; };
+		A67900000000000000000001 /* NativeAttemptExtraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/AttemptAnalysis/Data/NativeAttemptExtraction.swift; sourceTree = SOURCE_ROOT; };
+		A6700000000000000000000C /* AttemptAnalysisUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAIUITests/AttemptAnalysisUITests.swift; sourceTree = SOURCE_ROOT; };
+		A6700000000000000000000B /* AttemptAnalysisTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/AttemptAnalysis/AttemptAnalysisTests.swift; sourceTree = SOURCE_ROOT; };
+		A6700000000000000000000A /* FirstWrongStepDiffView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/AttemptAnalysis/Presentation/FirstWrongStepDiffView.swift; sourceTree = SOURCE_ROOT; };
+		A67000000000000000000009 /* CounterexampleProofCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/AttemptAnalysis/Presentation/CounterexampleProofCardView.swift; sourceTree = SOURCE_ROOT; };
+		A67000000000000000000008 /* AttemptStepEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/AttemptAnalysis/Presentation/AttemptStepEditorView.swift; sourceTree = SOURCE_ROOT; };
+		A67000000000000000000007 /* AttemptAnalysisResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/AttemptAnalysis/Presentation/AttemptAnalysisResultsView.swift; sourceTree = SOURCE_ROOT; };
+		A67000000000000000000006 /* AnalyzeMyWorkViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/AttemptAnalysis/Presentation/AnalyzeMyWorkViewModel.swift; sourceTree = SOURCE_ROOT; };
+		A67000000000000000000005 /* AnalyzeMyWorkCaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/AttemptAnalysis/Presentation/AnalyzeMyWorkCaptureView.swift; sourceTree = SOURCE_ROOT; };
+		A67000000000000000000004 /* AttemptAnalysisModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/AttemptAnalysis/Domain/AttemptAnalysisModels.swift; sourceTree = SOURCE_ROOT; };
+		A67000000000000000000003 /* FixtureAttemptAnalysisAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/AttemptAnalysis/Data/FixtureAttemptAnalysisAPI.swift; sourceTree = SOURCE_ROOT; };
+		A67000000000000000000002 /* AttemptAnalysisPendingStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/AttemptAnalysis/Data/AttemptAnalysisPendingStore.swift; sourceTree = SOURCE_ROOT; };
+		A67000000000000000000001 /* AttemptAnalysisAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/AttemptAnalysis/Data/AttemptAnalysisAPI.swift; sourceTree = SOURCE_ROOT; };
 		A64000000000000000000008 /* TutorUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAIUITests/TutorUITests.swift; sourceTree = SOURCE_ROOT; };
 		A64000000000000000000007 /* TutorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Tutor/TutorTests.swift; sourceTree = SOURCE_ROOT; };
 		A64000000000000000000006 /* TutorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Tutor/Presentation/TutorView.swift; sourceTree = SOURCE_ROOT; };
@@ -288,6 +325,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B67800000000000000000001 /* SwiftMath in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -374,6 +412,7 @@
 		700000000000000000000006 /* VerifiedAIUITests */ = {
 			isa = PBXGroup;
 			children = (
+				A6700000000000000000000C /* AttemptAnalysisUITests.swift */,
 				A64000000000000000000008 /* TutorUITests.swift */,
 				A5400000000000000000000D /* PrimarySolveUITests.swift */,
 				200000000000000000000025 /* VerifiedAIUITests.swift */,
@@ -878,6 +917,22 @@
 			isa = PBXGroup;
 			children = (
 				A54000000000000000000001 /* SolutionCandidate.swift */,
+				A67900000000000000000001 /* NativeAttemptExtraction.swift */,
+				A67900000000000000000002 /* AttemptStepReviewView.swift */,
+				A67900000000000000000003 /* AttemptMathView.swift */,
+				A67900000000000000000004 /* AttemptLearningAPI.swift */,
+				A67900000000000000000005 /* AttemptLearningViewModel.swift */,
+				A67900000000000000000006 /* CounterfactualTwinSheetView.swift */,
+				A67000000000000000000001 /* AttemptAnalysisAPI.swift */,
+				A67000000000000000000002 /* AttemptAnalysisPendingStore.swift */,
+				A67000000000000000000003 /* FixtureAttemptAnalysisAPI.swift */,
+				A67000000000000000000004 /* AttemptAnalysisModels.swift */,
+				A67000000000000000000005 /* AnalyzeMyWorkCaptureView.swift */,
+				A67000000000000000000006 /* AnalyzeMyWorkViewModel.swift */,
+				A67000000000000000000007 /* AttemptAnalysisResultsView.swift */,
+				A67000000000000000000008 /* AttemptStepEditorView.swift */,
+				A67000000000000000000009 /* CounterexampleProofCardView.swift */,
+				A6700000000000000000000A /* FirstWrongStepDiffView.swift */,
 				A64000000000000000000001 /* TutorSession.swift */,
 				A64000000000000000000002 /* TutorAPI.swift */,
 				A64000000000000000000003 /* TutorPendingStore.swift */,
@@ -901,6 +956,7 @@
 			children = (
 				A54000000000000000000009 /* PrimarySolveContractTests.swift */,
 				A5400000000000000000000A /* MathPresentationTests.swift */,
+				A6700000000000000000000B /* AttemptAnalysisTests.swift */,
 				A64000000000000000000007 /* TutorTests.swift */,
 				A63000000000000000000002 /* ExplanationPresentationTests.swift */,
 				A5400000000000000000000B /* PrimarySolveViewModelTests.swift */,
@@ -924,6 +980,7 @@
 			);
 			dependencies = (
 			);
+			packageProductDependencies = (C67800000000000000000001 /* SwiftMath */);
 			name = VerifiedAI;
 			productName = VerifiedAI;
 			productReference = 200000000000000000000026 /* VerifiedAI.app */;
@@ -1000,6 +1057,7 @@
 			productRefGroup = 700000000000000000000002 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
+			packageReferences = (D67800000000000000000001 /* SwiftMath */);
 			targets = (
 				500000000000000000000001 /* VerifiedAI */,
 				500000000000000000000002 /* VerifiedAITests */,
@@ -1041,6 +1099,22 @@
 			buildActionMask = 2147483647;
 			files = (
 				B54000000000000000000001 /* SolutionCandidate.swift in Sources */,
+				B67900000000000000000001 /* NativeAttemptExtraction.swift in Sources */,
+				B67900000000000000000002 /* AttemptStepReviewView.swift in Sources */,
+				B67900000000000000000003 /* AttemptMathView.swift in Sources */,
+				B67900000000000000000004 /* AttemptLearningAPI.swift in Sources */,
+				B67900000000000000000005 /* AttemptLearningViewModel.swift in Sources */,
+				B67900000000000000000006 /* CounterfactualTwinSheetView.swift in Sources */,
+				B67000000000000000000001 /* AttemptAnalysisAPI.swift in Sources */,
+				B67000000000000000000002 /* AttemptAnalysisPendingStore.swift in Sources */,
+				B67000000000000000000003 /* FixtureAttemptAnalysisAPI.swift in Sources */,
+				B67000000000000000000004 /* AttemptAnalysisModels.swift in Sources */,
+				B67000000000000000000005 /* AnalyzeMyWorkCaptureView.swift in Sources */,
+				B67000000000000000000006 /* AnalyzeMyWorkViewModel.swift in Sources */,
+				B67000000000000000000007 /* AttemptAnalysisResultsView.swift in Sources */,
+				B67000000000000000000008 /* AttemptStepEditorView.swift in Sources */,
+				B67000000000000000000009 /* CounterexampleProofCardView.swift in Sources */,
+				B6700000000000000000000A /* FirstWrongStepDiffView.swift in Sources */,
 				B64000000000000000000001 /* TutorSession.swift in Sources */,
 				B64000000000000000000002 /* TutorAPI.swift in Sources */,
 				B64000000000000000000003 /* TutorPendingStore.swift in Sources */,
@@ -1145,6 +1219,7 @@
 			files = (
 				B54000000000000000000009 /* PrimarySolveContractTests.swift in Sources */,
 				B5400000000000000000000A /* MathPresentationTests.swift in Sources */,
+				B6700000000000000000000B /* AttemptAnalysisTests.swift in Sources */,
 				B64000000000000000000007 /* TutorTests.swift in Sources */,
 				B63000000000000000000002 /* ExplanationPresentationTests.swift in Sources */,
 				B5400000000000000000000B /* PrimarySolveViewModelTests.swift in Sources */,
@@ -1171,6 +1246,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B6700000000000000000000C /* AttemptAnalysisUITests.swift in Sources */,
 				B64000000000000000000008 /* TutorUITests.swift in Sources */,
 				B5400000000000000000000D /* PrimarySolveUITests.swift in Sources */,
 				100000000000000000000025 /* VerifiedAIUITests.swift in Sources */,
@@ -1192,6 +1268,12 @@
 		};
 /* End PBXTargetDependency section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+        D67800000000000000000001 /* SwiftMath */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/mgriebling/SwiftMath.git"; requirement = {kind = exactVersion; version = 1.7.3; }; };
+/* End XCRemoteSwiftPackageReference section */
+/* Begin XCSwiftPackageProductDependency section */
+        C67800000000000000000001 /* SwiftMath */ = {isa = XCSwiftPackageProductDependency; package = D67800000000000000000001 /* SwiftMath */; productName = SwiftMath; };
+/* End XCSwiftPackageProductDependency section */
 /* Begin XCBuildConfiguration section */
 		900000000000000000000005 /* Debug */ = {
 			isa = XCBuildConfiguration;

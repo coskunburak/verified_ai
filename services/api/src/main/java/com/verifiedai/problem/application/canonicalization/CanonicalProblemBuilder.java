@@ -82,6 +82,48 @@ public final class CanonicalProblemBuilder {
         return new CanonicalizationDocuments(canonicalProblem, verifierInput, display);
     }
 
+    static boolean usesSetCanonical(ProblemParseJpaEntity parse) {
+        if(!"problem-parse-v1".equals(parse.schemaVersion())) return false;
+        // Inspect only mathematical expressions, not arbitrary OCR/display metadata. Keep syntax
+        // already admitted by legacy canonicalization on its existing immutable schema path.
+        try {
+            var document=new ObjectMapper().readTree(parse.normalizedProblemJson());
+            for(var expression:document.path("expressions")) {
+                String text=expression.path("normalizedText").asText();
+                if(text.matches("(?si).*(?:abs|total|diff|limit|integral|piecewise|Interval|Union|Intersection)\\s*\\(.*") || text.contains(" in ")) return true;
+            }
+            return false;
+        } catch(java.io.IOException exception) { return false; }
+    }
+    JsonNode buildSetCanonical(ProblemParseJpaEntity parse) {
+        var accepted=parseNormalizedProblem(parse); requireSupportedParse(parse,accepted);
+        if(parse.reviewRequired() || accepted.path("reviewRequired").asBoolean(true) || accepted.path("expressions").size()!=1
+            || accepted.path("assumptions").size()!=0) throw new CanonicalizationException(CanonicalizationFailure.UNSUPPORTED_PARSE,"Review the exact source and assumptions first");
+        try {
+            var symbols=declaredSymbols(accepted);
+            var original=objectMapper.readTree(new AttemptMathParserV2(symbols).parse(accepted.path("expressions").get(0).path("normalizedText").asText()));
+            var root=objectMapper.createObjectNode().put("schemaVersion","canonical-problem-v3").put("normalizerVersion","real-set-source-v1");
+            root.putObject("sourceParse").put("problemParseId",parse.id().toString()).put("problemParseRevision",parse.revision())
+                .put("problemParseSchemaVersion",parse.schemaVersion()).put("source",parse.source());
+            root.set("problemType",accepted.path("problemType")); root.set("taskType",accepted.path("taskType"));
+            root.set("original",original);
+            var vars=root.putArray("variables");
+            for(var v:variables(accepted)) vars.addObject().put("symbol",v.symbol()).put("role",v.role()).put("domain",v.domain());
+            var restrictions=root.putArray("restrictions");
+            for(var constraint:accepted.path("constraints")) {
+                if(!constraint.path("explicit").asBoolean(false)) throw new IllegalArgumentException("Explicit constraints only");
+                var statement=objectMapper.readTree(new AttemptMathParserV2(symbols).parse(constraint.path("normalizedText").asText()));
+                if(!statement.path("kind").asText().equals("RELATION")) throw new IllegalArgumentException("Constraint must be explicit");
+                var r=restrictions.addObject().put("id",constraint.path("id").asText()).put("relation",statement.path("relation").asText());
+                r.set("left",statement.path("left")); r.set("right",statement.path("right"));
+            }
+            var d=root.putObject("display").put("normalizedText",accepted.path("expressions").get(0).path("normalizedText").asText())
+                .put("sourceConstraintCount",restrictions.size()).put("derivedRestrictionCount",0).put("reviewRequired",false);
+            d.putNull("displayLatex"); var names=d.putArray("variables"); symbols.forEach(names::add);
+            return com.verifiedai.sharedkernel.contracts.VersionedJsonContract.validate("canonical-problem-v3",root.toString());
+        } catch(Exception ex) { throw new CanonicalizationException(CanonicalizationFailure.UNSUPPORTED_EXPRESSION,"Unsupported bounded real-set source"); }
+    }
+
     JsonNode buildCalculus(ProblemParseJpaEntity parse) {
         try {
             var admitted = com.verifiedai.problem.application.solving.CalculusSourceDocument.parse(parse.normalizedProblemJson());

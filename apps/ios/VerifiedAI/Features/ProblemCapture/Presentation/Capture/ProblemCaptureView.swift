@@ -10,6 +10,8 @@ struct ProblemCaptureView: View {
     @Bindable var problemReviewViewModel: ProblemReviewViewModel
     let cameraClient: ProblemCameraClient
     let onDismiss: () -> Void
+    var onRecognizedWork: ((RecognizedProblemReference) async -> Void)? = nil
+    var onLocalAcceptance: ((AcceptedCapturedAsset) async -> Void)? = nil
     var onContinueToSession: ((UUID) -> Void)? = nil
 
     @Environment(\.openURL) private var openURL
@@ -117,7 +119,10 @@ struct ProblemCaptureView: View {
         case .editingCrop(let asset):
             CropAdjustmentView(asset: asset, viewModel: viewModel)
         case .readyForHandoff(let acceptedAsset):
-            acceptedView(acceptedAsset)
+            if let onLocalAcceptance {
+                ProgressView("attempt.ocr.extracting")
+                    .task(id: acceptedAsset.localIdentifier) { await onLocalAcceptance(acceptedAsset) }
+            } else { acceptedView(acceptedAsset) }
         case .recoverableFailure(let failure, let previousAsset):
             failureView(failure, previousAsset: previousAsset)
         case .terminalFailure(let failure):
@@ -270,14 +275,17 @@ struct ProblemCaptureView: View {
                     .buttonStyle(.bordered)
                     .accessibilityIdentifier("problemCapture.review.editCrop")
 
+                    Button("attempt.photo.rotate") { Task { await viewModel.rotateClockwise() } }
+                        .disabled(viewModel.isBusy || asset.kind != .image)
                     Button {
                         viewModel.accept()
                     } label: {
-                        Label("Use This Problem", systemImage: "checkmark.circle")
+                        Label(onLocalAcceptance == nil ? "Use This Problem" : "attempt.photo.use", systemImage: "checkmark.circle")
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.borderedProminent)
                     .accessibilityIdentifier("problemCapture.review.accept")
+                    .disabled(!asset.qualityAssessment.canContinue)
 
                     HStack(spacing: SpacingTokens.md) {
                         Button {
@@ -478,7 +486,7 @@ struct ProblemCaptureView: View {
                     .font(TypographyTokens.body)
                     .foregroundStyle(ColorTokens.textSecondary)
                 Button {
-                    Task { await uploadViewModel.startParse(reference) }
+                    Task { if let onRecognizedWork { await onRecognizedWork(reference) } else { await uploadViewModel.startParse(reference) } }
                 } label: {
                     Label("Understand Problem", systemImage: "function")
                         .frame(maxWidth: .infinity)
@@ -500,7 +508,7 @@ struct ProblemCaptureView: View {
                     .font(TypographyTokens.body)
                     .foregroundStyle(ColorTokens.textSecondary)
                 Button {
-                    Task { await uploadViewModel.startParse(reference) }
+                    Task { if let onRecognizedWork { await onRecognizedWork(reference) } else { await uploadViewModel.startParse(reference) } }
                 } label: {
                     Label("Understand Problem", systemImage: "function")
                         .frame(maxWidth: .infinity)

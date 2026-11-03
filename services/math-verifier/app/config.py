@@ -12,6 +12,7 @@ class Settings:
     execution_enabled: bool = False
     calculus_enabled: bool = False
     numeric_enabled: bool = False
+    attempt_enabled: bool = False
     expression_max_length: int = 256
     operation_timeout_ms: int = 750
 
@@ -30,12 +31,19 @@ def get_settings() -> Settings:
         raise ValueError("Calculus requires source-backed canonical integration before production release")
     if enabled and environment not in {"local", "test"} and not sys.platform.startswith("linux"):
         raise ValueError("Production execution requires Linux process resource limits")
+    attempt = os.getenv("MATH_VERIFIER_ATTEMPT_ENABLED", "false").lower() == "true"
+    if attempt and environment not in {"local", "test"}:
+        if os.getenv("MATH_VERIFIER_ATTEMPT_PRODUCTION_AUTHORIZED", "false").lower() != "true":
+            raise ValueError("Attempt production authorization is pending")
+        if not sys.platform.startswith("linux"):
+            raise ValueError("Attempt production execution requires Linux process resource limits")
     return Settings(
         environment=environment,
         internal_token=token,
         execution_enabled=enabled,
         calculus_enabled=calculus,
         numeric_enabled=numeric,
+        attempt_enabled=attempt,
         expression_max_length=int(os.getenv("MATH_VERIFIER_EXPRESSION_MAX_LENGTH", "256")),
         operation_timeout_ms=int(os.getenv("MATH_VERIFIER_TIMEOUT_MS", "750")),
     )

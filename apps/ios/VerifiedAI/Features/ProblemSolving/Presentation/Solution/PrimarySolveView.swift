@@ -24,6 +24,10 @@ struct PrimarySolveView: View {
                     NavigationLink("tutor.title") { TutorView(viewModel: tutor) }
                         .accessibilityIdentifier("tutor.open")
                 }
+                if let attempt = viewModel.attemptModel {
+                    NavigationLink("attempt.title") { AnalyzeMyWorkCaptureView(viewModel: attempt, tutor: viewModel.tutorModel) }
+                        .accessibilityIdentifier("attempt.open")
+                }
                 statusCard
                 #if DEBUG
                 if let state = viewModel.controlledFixtureState {

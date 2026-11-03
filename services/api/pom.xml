@@ -22,6 +22,7 @@
     <maven.compiler.release>21</maven.compiler.release>
     <spring-modulith.version>2.0.0</spring-modulith.version>
     <testcontainers.version>1.21.3</testcontainers.version>
+    <surefire.reportsDirectory>${project.build.directory}/surefire-reports</surefire.reportsDirectory>
   </properties>
 
   <dependencyManagement>
@@ -147,6 +148,13 @@
       </resource>
     </resources>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <reportsDirectory>${surefire.reportsDirectory}</reportsDirectory>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>

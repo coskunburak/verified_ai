@@ -228,3 +228,15 @@ Cross-counter arithmetic and request binding are additionally checked by both ty
 A mathematical-input SHA-256 seed is internal only; neither points nor content hashes are
 new telemetry or durable records. Composite source feasibility uses bounded exact affine
 restrictions; unsupported nonlinear feasibility does not become complete coverage.
+
+## Sprint 6.7 bounded real-set attempt semantics
+
+Legacy canonical-problem-v1 and calculus canonical-problem-v2 retain their contracts. New canonical-problem-v3
+stores reviewed typed sets/functions without rewriting old evidence. attempt-verification-v2 supports explicit
+REAL or recorded learner-confirmed REAL scope, one variable, concrete FiniteSet/Interval/Union/Intersection,
+EmptySet/Reals and bounded Piecewise. Natural-domain checks precede simplification and exclude denominator zeros,
+invalid radicals/logs and tangent poles. Complete solution sets prove relations; exact identities prove expressions.
+Unknown/implicit sets, multivariate or unresolved domains stop assessment. Differentiation, finite two-sided limits,
+proper polynomial definite integrals and finite trigonometric scopes are bounded; total(price,count) is an explicit
+word-model operation. No general prose, improper integral or numeric-agreement proof is claimed. See the Sprint 6.7
+implementation map for grammar/limits and legacy compatibility. Source authored; runtime verification PENDING_OWNER.

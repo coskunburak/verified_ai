@@ -48,3 +48,23 @@ def record_numeric(status, reason, elapsed_ms):
     with _execution_lock:
         _execution_counts[("NUMERIC_SAMPLING", status, reason)] += 1
         _execution_ms["NUMERIC_SAMPLING"] += max(0, elapsed_ms)
+
+
+def record_attempt(result, elapsed_ms):
+    from app.api.schemas.attempt import Reason as AttemptReason
+    if result.outcome not in {"INCOMPLETE_VALID_SO_FAR", "STEP_ERROR_FOUND", "NEEDS_REVIEW"}:
+        raise ValueError("Unbounded attempt outcome")
+    reason = result.steps[0].reasonCode
+    if reason not in (*get_args(AttemptReason), "UNKNOWN_DOMAIN", "UNDEFINED_SOURCE"):
+        raise ValueError("Unbounded attempt reason")
+    with _execution_lock:
+        _execution_counts[("ATTEMPT", result.outcome, reason)] += 1
+        _execution_ms["ATTEMPT"] += max(0, elapsed_ms)
+
+
+def record_attempt_learning(result, elapsed_ms):
+    if result.action not in {'TWIN','METHODS'} or result.status not in {'VERIFIED','UNSUPPORTED','UNAVAILABLE'}:
+        raise ValueError('Unbounded learning metric label')
+    with _execution_lock:
+        _execution_counts[('ATTEMPT_'+result.action,result.status,'ARTIFACT')] += 1
+        _execution_ms['ATTEMPT_'+result.action] += max(0,elapsed_ms)

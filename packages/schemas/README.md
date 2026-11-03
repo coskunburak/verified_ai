@@ -41,3 +41,7 @@ also run in domain code; schema validity alone is not mathematical safety.
 Owner targeted reconciliation 20261102-214452-cv4eye9f passed the 18-case hint synthetic evidence
 and related integration cases across prior/focused runs. Full current-source acceptance remains
 pending; successful answer reveal and production rollout are unavailable.
+
+## Sprint 6.7 product integration
+
+New attempt v2, canonical-problem-v3, semantic diff, learning/twin/passport/extraction and compatibility response schemas are authored. Legacy v1 schemas remain unchanged. Seventeen bounded diagnoses are listed in attempt-taxonomy-v2; contract validation and targeted repair execution passed in owner runs.

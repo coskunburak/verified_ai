@@ -9,6 +9,9 @@ import threading
 import time
 from dataclasses import dataclass
 
+from app.api.schemas.attempt_learning import Request as LearningRequest, Result as LearningResult, unavailable as learning_unavailable
+from app.api.schemas.attempt_v2 import Request as AttemptV2Request, Result as AttemptV2Result, unavailable as attempt_v2_unavailable
+from app.api.schemas.attempt import AttemptRequest, AttemptResult, unavailable as attempt_unavailable
 from app.api.schemas.calculus import CalculusRequest, CalculusResult
 from app.api.schemas.execution import ExecutionRequest, ExecutionResult
 from app.api.schemas.numeric import NumericRequest, NumericResult, parse_result, unavailable
@@ -45,7 +48,16 @@ def apply_resource_limits(budget):
 def _worker(connection, payload, budget):
     try:
         apply_resource_limits(budget)
-        if json.loads(payload).get("schemaVersion") == "numeric-diagnostic-v1":
+        if json.loads(payload).get("schemaVersion") == "attempt-learning-v1":
+            from app.verifiers.attempt_learning import execute
+            response = execute(LearningRequest.model_validate_json(payload))
+        elif json.loads(payload).get("schemaVersion") == "attempt-verification-v2":
+            from app.attempt_verification_v2 import execute
+            response = execute(AttemptV2Request.model_validate_json(payload))
+        elif json.loads(payload).get("schemaVersion") == "attempt-verification-v1":
+            from app.attempt_verification import execute
+            response = execute(AttemptRequest.model_validate_json(payload))
+        elif json.loads(payload).get("schemaVersion") == "numeric-diagnostic-v1":
             from app.verifiers.numeric_sampling import execute
             response = execute(NumericRequest.model_validate_json(payload))
         elif json.loads(payload).get("schemaVersion") == "calculus-execution-v1":
@@ -79,6 +91,12 @@ class ProcessExecutor:
 
     @staticmethod
     def failure(request, reason):
+        if isinstance(request, LearningRequest):
+            return learning_unavailable(request)
+        if isinstance(request, AttemptV2Request):
+            return attempt_v2_unavailable(request, reason)
+        if isinstance(request, AttemptRequest):
+            return attempt_unavailable(request, reason)
         if isinstance(request, NumericRequest):
             return unavailable(request, "EXECUTION_FAILED", reason)
         if isinstance(request, CalculusRequest):
@@ -92,7 +110,7 @@ class ProcessExecutor:
                                method=request.method, outcome="EXECUTION_FAILED", reasonCode=reason,
                                restrictionIds=[r.id for r in request.restrictions])
 
-    def execute(self, request: ExecutionRequest | CalculusRequest | NumericRequest) -> ExecutionResult | CalculusResult | NumericResult:
+    def execute(self, request: ExecutionRequest | CalculusRequest | NumericRequest | AttemptRequest | AttemptV2Request | LearningRequest) -> ExecutionResult | CalculusResult | NumericResult | AttemptResult | AttemptV2Result | LearningResult:
         if not self._slots.acquire(blocking=False):
             return self.failure(request, "ADMISSION_LIMIT")
         receive = send = process = None
@@ -113,6 +131,19 @@ class ProcessExecutor:
                 return self.failure(request, "WORKER_FAILURE")
             if data in {b"RESOURCE_FAILURE", b"WORKER_FAILURE"}:
                 return self.failure(request, data.decode("ascii"))
+            if isinstance(request, LearningRequest):
+                try: return LearningResult.model_validate_json(data).validate_for(request)
+                except ValueError: return self.failure(request, "INVALID_RESPONSE")
+            if isinstance(request, AttemptV2Request):
+                try:
+                    return AttemptV2Result.model_validate_json(data).validate_for(request)
+                except ValueError:
+                    return self.failure(request, "INVALID_RESPONSE")
+            if isinstance(request, AttemptRequest):
+                try:
+                    return AttemptResult.model_validate_json(data).validate_for(request)
+                except ValueError:
+                    return self.failure(request, "INVALID_RESPONSE")
             if isinstance(request, NumericRequest):
                 try:
                     return parse_result(data, request)

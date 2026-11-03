@@ -4,6 +4,244 @@ info:
   version: 0.1.0
 
 paths:
+  /api/v1/problem-sessions/{sessionId}/attempts/{attemptId}/counterfactual-twin:
+    parameters:
+      - {name: sessionId, in: path, required: true, schema: {type: string, format: uuid}}
+      - {name: attemptId, in: path, required: true, schema: {type: string, format: uuid}}
+    post:
+      security: [{bearerAuth: []}]
+      summary: Create or resume one independently verified twin per attempt
+      parameters:
+        - {name: Idempotency-Key, in: header, required: true, schema: {type: string, pattern: "^[A-Za-z0-9_-]{8,128}$"}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {type: object, additionalProperties: false}
+      responses:
+        "200":
+          description: Owned authoritative result; trainingEligible is false
+          content:
+            application/json:
+              schema: {$ref: '../../schemas/counterfactual-twin-v1.schema.json'}
+        "401": {description: Authentication required}
+        "404": {description: Owned resource unavailable}
+        "409": {description: Source or idempotency conflict}
+        "413": {description: Request exceeds 16 KiB}
+        "422": {description: Invalid strict request}
+        "429": {description: Account rate limit}
+        "503": {description: Feature disabled or verified artifact unavailable}
+    get:
+      security: [{bearerAuth: []}]
+      summary: Resume the durable twin including completion after a lost acknowledgement
+      responses:
+        "200":
+          description: Answer withheld until completion
+          content:
+            application/json:
+              schema: {$ref: "../../schemas/counterfactual-twin-v1.schema.json"}
+        "401": {description: Authentication required}
+        "404": {description: Owned twin unavailable}
+  /api/v1/problem-sessions/{sessionId}/attempts/{attemptId}/counterfactual-twin/answer:
+    parameters:
+      - {name: sessionId, in: path, required: true, schema: {type: string, format: uuid}}
+      - {name: attemptId, in: path, required: true, schema: {type: string, format: uuid}}
+    post:
+      security: [{bearerAuth: []}]
+      summary: Commit the first answer and idempotent learning evidence
+      parameters:
+        - {name: Idempotency-Key, in: header, required: true, schema: {type: string, pattern: "^[A-Za-z0-9_-]{8,128}$"}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {type: object, additionalProperties: false, required: [selectedOption], properties: {selectedOption: {type: integer, minimum: 0, maximum: 3}}}
+      responses:
+        "200":
+          description: Owned authoritative result; trainingEligible is false
+          content:
+            application/json:
+              schema: {$ref: '../../schemas/counterfactual-twin-v1.schema.json'}
+        "401": {description: Authentication required}
+        "404": {description: Owned resource unavailable}
+        "409": {description: Source or idempotency conflict}
+        "413": {description: Request exceeds 16 KiB}
+        "422": {description: Invalid strict request}
+        "429": {description: Account rate limit}
+        "503": {description: Feature disabled or verified artifact unavailable}
+  /api/v1/problem-sessions/{sessionId}/attempts/{attemptId}/alternative-methods:
+    parameters:
+      - {name: sessionId, in: path, required: true, schema: {type: string, format: uuid}}
+      - {name: attemptId, in: path, required: true, schema: {type: string, format: uuid}}
+    post:
+      security: [{bearerAuth: []}]
+      summary: Create or replay independently verified alternative methods
+      parameters:
+        - {name: Idempotency-Key, in: header, required: true, schema: {type: string, pattern: "^[A-Za-z0-9_-]{8,128}$"}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {type: object, additionalProperties: false}
+      responses:
+        "200":
+          description: Owned authoritative result; trainingEligible is false
+          content:
+            application/json:
+              schema: {$ref: '../../schemas/attempt-learning-result-v1.schema.json'}
+        "401": {description: Authentication required}
+        "404": {description: Owned resource unavailable}
+        "409": {description: Source or idempotency conflict}
+        "413": {description: Request exceeds 16 KiB}
+        "422": {description: Invalid strict request}
+        "429": {description: Account rate limit}
+        "503": {description: Feature disabled or verified artifact unavailable}
+  /api/v1/problem-sessions/{sessionId}/attempts/drills:
+    parameters:
+      - {name: sessionId, in: path, required: true, schema: {type: string, format: uuid}}
+    get:
+      security: [{bearerAuth: []}]
+      summary: Read durable practice history
+      responses:
+        "200":
+          description: Owned authoritative result; trainingEligible is false
+          content:
+            application/json:
+              schema: {type: array, maxItems: 30, items: {$ref: '../../schemas/counterfactual-twin-v1.schema.json'}}
+        "401": {description: Authentication required}
+        "404": {description: Owned resource unavailable}
+        "409": {description: Source or idempotency conflict}
+        "413": {description: Request exceeds 16 KiB}
+        "422": {description: Invalid strict request}
+        "429": {description: Account rate limit}
+        "503": {description: Feature disabled or verified artifact unavailable}
+  /api/v1/problem-sessions/{sessionId}/attempts/mistake-passport:
+    parameters:
+      - {name: sessionId, in: path, required: true, schema: {type: string, format: uuid}}
+    get:
+      security: [{bearerAuth: []}]
+      summary: Read eligible mistake events and versioned skill estimates
+      responses:
+        "200":
+          description: Owned authoritative result; trainingEligible is false
+          content:
+            application/json:
+              schema: {$ref: '../../schemas/mistake-passport-v1.schema.json'}
+        "401": {description: Authentication required}
+        "404": {description: Owned resource unavailable}
+        "409": {description: Source or idempotency conflict}
+        "413": {description: Request exceeds 16 KiB}
+        "422": {description: Invalid strict request}
+        "429": {description: Account rate limit}
+        "503": {description: Feature disabled or verified artifact unavailable}
+  /api/v1/problem-sessions/{sessionId}/attempts/extractions:
+    parameters:
+      - {name: sessionId, in: path, required: true, schema: {type: string, format: uuid}}
+    post:
+      security: [{bearerAuth: []}]
+      summary: Adapt owned gateway recognition evidence into review-required solution lines
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {type: object, additionalProperties: false, required: [assetSessionId], properties: {assetSessionId: {type: string, format: uuid}}}
+      responses:
+        "200":
+          description: Owned authoritative result; trainingEligible is false
+          content:
+            application/json:
+              schema: {$ref: '../../schemas/attempt-extraction-v1.schema.json'}
+        "401": {description: Authentication required}
+        "404": {description: Owned resource unavailable}
+        "409": {description: Source or idempotency conflict}
+        "413": {description: Request exceeds 16 KiB}
+        "422": {description: Invalid strict request}
+        "429": {description: Account rate limit}
+        "503": {description: Feature disabled or verified artifact unavailable}
+  /api/v1/problem-sessions/{sessionId}/attempts:
+    parameters:
+      - {name: sessionId, in: path, required: true, schema: {type: string, format: uuid}}
+    get:
+      security: [{bearerAuth: []}]
+      summary: Read owned attempt collection
+      responses:
+        '200':
+          description: Owned bounded history or current source context; GET never executes analysis
+          content:
+            application/json:
+              schema: {type: array, maxItems: 30, items: {$ref: '../../schemas/student-attempt-response.schema.json'}}
+        '401': {$ref: '#/components/responses/TutorFailure'}
+        '403': {$ref: '#/components/responses/TutorFailure'}
+        '404': {$ref: '#/components/responses/TutorFailure'}
+        '429': {$ref: '#/components/responses/TutorFailure'}
+        '503': {$ref: '#/components/responses/TutorFailure'}
+    post:
+      security: [{bearerAuth: []}]
+      summary: Save immutable manual work and analyze against the exact current source
+      description: >-
+        One-based step indices. At most 12 lines, 256 UTF-16 units and 1024 UTF-8 bytes each,
+        16 KiB total body, 30 attempts/account and 60 requests/account/minute.
+        Same owner/session/key and identical source, text, real-scope attestation and capture provenance replay the original attempt; changed payload returns 409.
+        SUBMITTED is durable and retryable with the same key. No locks span verifier execution.
+        ANALYZED and STALE_SOURCE are immutable terminal states. Rollback preserves history.
+        Live handwriting, twins and method comparison unavailable. Staged V025 blocks ordinary submission.
+      parameters:
+        - {name: Idempotency-Key, in: header, required: true, schema: {type: string, pattern: '^[A-Za-z0-9_-]{8,128}$'}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '../../schemas/attempt-submission-v2.schema.json'}
+      responses:
+        '200':
+          description: Durable analysis or SUBMITTED awaiting same-key retry; no aggregate VERIFIED claim
+          content:
+            application/json:
+              schema: {$ref: '../../schemas/student-attempt-response.schema.json'}
+        '400': {$ref: '#/components/responses/TutorFailure'}
+        '401': {$ref: '#/components/responses/TutorFailure'}
+        '403': {$ref: '#/components/responses/TutorFailure'}
+        '404': {$ref: '#/components/responses/TutorFailure'}
+        '409': {$ref: '#/components/responses/TutorFailure'}
+        '413': {$ref: '#/components/responses/TutorFailure'}
+        '422': {$ref: '#/components/responses/TutorFailure'}
+        '429': {$ref: '#/components/responses/TutorFailure'}
+        '503': {$ref: '#/components/responses/TutorFailure'}
+  /api/v1/problem-sessions/{sessionId}/attempts/context:
+    parameters:
+      - {name: sessionId, in: path, required: true, schema: {type: string, format: uuid}}
+    get:
+      security: [{bearerAuth: []}]
+      summary: Read owned attempt context
+      responses:
+        '200':
+          description: Owned bounded history or current source context; GET never executes analysis
+          content:
+            application/json:
+              schema: {$ref: '../../schemas/attempt-context-v2-response.schema.json'}
+        '401': {$ref: '#/components/responses/TutorFailure'}
+        '403': {$ref: '#/components/responses/TutorFailure'}
+        '404': {$ref: '#/components/responses/TutorFailure'}
+        '429': {$ref: '#/components/responses/TutorFailure'}
+        '503': {$ref: '#/components/responses/TutorFailure'}
+  /api/v1/problem-sessions/{sessionId}/attempts/{attemptId}:
+    parameters:
+      - {name: sessionId, in: path, required: true, schema: {type: string, format: uuid}}
+      - {name: attemptId, in: path, required: true, schema: {type: string, format: uuid}}
+    get:
+      security: [{bearerAuth: []}]
+      summary: Read owned attempt detail
+      responses:
+        '200':
+          description: Owned bounded history or current source context; GET never executes analysis
+          content:
+            application/json:
+              schema: {$ref: '../../schemas/student-attempt-response.schema.json'}
+        '401': {$ref: '#/components/responses/TutorFailure'}
+        '403': {$ref: '#/components/responses/TutorFailure'}
+        '404': {$ref: '#/components/responses/TutorFailure'}
+        '429': {$ref: '#/components/responses/TutorFailure'}
+        '503': {$ref: '#/components/responses/TutorFailure'}
   /api/v1/problem-sessions/{sessionId}/tutor-sessions/{tutorSessionId}/hints:
     parameters:
       - {name: sessionId, in: path, required: true, schema: {type: string, format: uuid}}

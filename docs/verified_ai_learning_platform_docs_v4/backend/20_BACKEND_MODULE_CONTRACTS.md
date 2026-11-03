@@ -191,3 +191,13 @@ Tutor owns HintPolicy, TutorHint and V029 storage. Progress reads merge turn/hin
 interaction count under the existing account → problem lock. Deterministic publication and storage are
 atomic, with five-second request transactions and no external calls. Billing, mastery and AI routing
 remain unchanged. A future authorized answer reader is a separate contract/release prerequisite.
+
+## Sprint 6.7 attempt ownership
+
+Attempt owns immutable attempts, twin/method artifacts, learning events/mastery and privacy contribution. Problem
+publishes ManualStepNormalizer/AttemptExtractionReader/AttemptSourceDocument through its attempt interface;
+SolveSourceAccess owns account/session locks and source revisions. Tutoring publishes a read-only assistance reader;
+existing HintPolicy/SocraticPolicy remain sole hint/progression owners. AttemptLearningService prepares owned work
+in short transactions, calls the bounded verifier outside locks, then rechecks source and publishes atomically.
+A source change marks analysis stale; learning artifacts are not published against stale sources. Committed drill
+history/completion remains recoverable. No provider, billing or hint authority is duplicated.

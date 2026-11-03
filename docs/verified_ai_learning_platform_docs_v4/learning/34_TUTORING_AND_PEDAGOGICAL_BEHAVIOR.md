@@ -93,3 +93,11 @@ structured problem-specific assistance and never interprets a text request as re
 REVEAL has its own confirmed command and UI. No tutor-authorized verified answer reader exists locally;
 it returns TUTOR_REVEAL_UNAVAILABLE without evidence or debit. This limitation is explicit, not a fourth
 hint or a simulated success. Both tutoring flags default false; live pedagogy quality remains unevaluated.
+
+## Sprint 6.7 reuse boundary
+
+Analyze My Work reuses existing Tutor navigation and H1/H2/H3 behavior; it does not duplicate hint generation or
+advance Socratic state from attempt correctness. A read-only published assistance interface reports actual delivered
+hints for the source problem. Twin completion weights assisted and independent evidence differently, with the
+existing account/source lock order. Verified method views show bounded alternate derivations and learner work;
+no measured exam-speed or universal shortcut guarantee is made. All product execution is owner-pending.

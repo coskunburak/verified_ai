@@ -149,6 +149,13 @@ public class CanonicalProblemApplicationService {
         UUID problemSessionId,
         ProblemParseJpaEntity parse
     ) {
+        if(CanonicalProblemBuilder.usesSetCanonical(parse)) {
+            var doc=canonicalProblemBuilder.buildSetCanonical(parse);
+            var entity=new CanonicalProblemJpaEntity(UUID.randomUUID(),userId,problemSessionId,parse.id(),parse.revision(),
+                canonicalRepository.maxCanonicalRevision(problemSessionId)+1,"canonical-problem-v3","canonical-problem-v3",
+                doc.path("problemType").asText(),doc.path("taskType").asText(),doc.toString(),doc.toString(),doc.path("display").toString(),clock.instant());
+            return resultFor(canonicalRepository.saveAndFlush(entity));
+        }
         if ("problem-parse-v2".equals(parse.schemaVersion())) {
             var doc = canonicalProblemBuilder.buildCalculus(parse);
             var entity = new CanonicalProblemJpaEntity(UUID.randomUUID(), userId, problemSessionId, parse.id(),
@@ -179,6 +186,7 @@ public class CanonicalProblemApplicationService {
     }
 
     private static String schemaFor(ProblemParseJpaEntity parse) {
+        if(CanonicalProblemBuilder.usesSetCanonical(parse)) return "canonical-problem-v3";
         return "problem-parse-v2".equals(parse.schemaVersion()) ? "canonical-problem-v2" : CanonicalProblemBuilder.CANONICAL_SCHEMA_VERSION;
     }
 

@@ -1,0 +1,103 @@
+{
+  "version": "attempt-taxonomy-v1",
+  "listedSpecificCodeCount": 17,
+  "claimedCountCorrection": "The roadmap says 18; the canonical table lists 17. No eighteenth specific misconception is invented.",
+  "specificCodes": [
+    {
+      "code": "ALG_SIGN_FLIP_DISTRIBUTE",
+      "status": "NOT_IMPLEMENTED",
+      "behavior": "NEEDS_REVIEW_OR_GENERIC_EVIDENCED_FAILURE"
+    },
+    {
+      "code": "ALG_FRESHMAN_DREAM_POWER",
+      "status": "NOT_IMPLEMENTED",
+      "behavior": "NEEDS_REVIEW_OR_GENERIC_EVIDENCED_FAILURE"
+    },
+    {
+      "code": "ALG_FRACTION_ADD_DENOM",
+      "status": "NOT_IMPLEMENTED",
+      "behavior": "NEEDS_REVIEW_OR_GENERIC_EVIDENCED_FAILURE"
+    },
+    {
+      "code": "ALG_ROOT_LOST_BY_DIVISION",
+      "status": "NOT_IMPLEMENTED",
+      "behavior": "NEEDS_REVIEW_OR_GENERIC_EVIDENCED_FAILURE"
+    },
+    {
+      "code": "DOM_EXTRANEOUS_ROOT_DENOM",
+      "status": "NOT_IMPLEMENTED",
+      "behavior": "NEEDS_REVIEW_OR_GENERIC_EVIDENCED_FAILURE"
+    },
+    {
+      "code": "DOM_EVEN_ROOT_NEGATIVE",
+      "status": "NOT_IMPLEMENTED",
+      "behavior": "NEEDS_REVIEW_OR_GENERIC_EVIDENCED_FAILURE"
+    },
+    {
+      "code": "DOM_LOG_NON_POSITIVE",
+      "status": "NOT_IMPLEMENTED",
+      "behavior": "NEEDS_REVIEW_OR_GENERIC_EVIDENCED_FAILURE"
+    },
+    {
+      "code": "INEQ_NEGATIVE_MULT_NO_FLIP",
+      "status": "NOT_IMPLEMENTED",
+      "behavior": "NEEDS_REVIEW_OR_GENERIC_EVIDENCED_FAILURE"
+    },
+    {
+      "code": "INEQ_CROSS_MULT_VARIABLE",
+      "status": "NOT_IMPLEMENTED",
+      "behavior": "NEEDS_REVIEW_OR_GENERIC_EVIDENCED_FAILURE"
+    },
+    {
+      "code": "ABS_SINGLE_BRANCH_ONLY",
+      "status": "NOT_IMPLEMENTED",
+      "behavior": "NEEDS_REVIEW_OR_GENERIC_EVIDENCED_FAILURE"
+    },
+    {
+      "code": "FUNC_COMPOSITION_ORDER",
+      "status": "NOT_IMPLEMENTED",
+      "behavior": "NEEDS_REVIEW_OR_GENERIC_EVIDENCED_FAILURE"
+    },
+    {
+      "code": "TRIG_PERIOD_OMITTED",
+      "status": "NOT_IMPLEMENTED",
+      "behavior": "NEEDS_REVIEW_OR_GENERIC_EVIDENCED_FAILURE"
+    },
+    {
+      "code": "CALC_LIMIT_INDETERMINATE_SUB",
+      "status": "NOT_IMPLEMENTED",
+      "behavior": "NEEDS_REVIEW_OR_GENERIC_EVIDENCED_FAILURE"
+    },
+    {
+      "code": "CALC_CHAIN_RULE_OMITTED",
+      "status": "NOT_IMPLEMENTED",
+      "behavior": "NEEDS_REVIEW_OR_GENERIC_EVIDENCED_FAILURE"
+    },
+    {
+      "code": "CALC_PRODUCT_QUOTIENT_NAIVE",
+      "status": "NOT_IMPLEMENTED",
+      "behavior": "NEEDS_REVIEW_OR_GENERIC_EVIDENCED_FAILURE"
+    },
+    {
+      "code": "CALC_INTEGRAL_BOUNDS_SWAPPED",
+      "status": "NOT_IMPLEMENTED",
+      "behavior": "NEEDS_REVIEW_OR_GENERIC_EVIDENCED_FAILURE"
+    },
+    {
+      "code": "WORD_VARIABLE_MISASSIGNMENT",
+      "status": "NOT_IMPLEMENTED",
+      "behavior": "NEEDS_REVIEW_OR_GENERIC_EVIDENCED_FAILURE"
+    }
+  ],
+  "supported": [
+    {
+      "code": "ALG_TRANSFORMATION_INVALID",
+      "predicate": "Exact polynomial coefficient nonidentity or unequal complete bounded real root sets. This does not infer the learner operation or misconception.",
+      "evidenceRule": "All preceding steps proven; source and candidate are total polynomials on real domain.",
+      "explanationKey": "attempt.mistake.ALG_TRANSFORMATION_INVALID",
+      "positiveFixture": "sign-distribution",
+      "negativeFixture": "scaled-equation",
+      "uncertainFixture": "denominator-hole"
+    }
+  ]
+}

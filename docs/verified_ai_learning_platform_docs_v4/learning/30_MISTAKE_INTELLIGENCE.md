@@ -89,3 +89,12 @@ V1 may use external AI plus deterministic policies for mistake classification. T
 
 User corrections are valuable labels but are not automatic ground truth or training-eligible data.
 <!-- HYBRID_AI_STRATEGY_V3:END -->
+
+## Sprint 6.7 versioned detection boundary
+
+attempt-taxonomy-v2 contains the 17 listed specific codes (the prose count of 18 was inconsistent). Each has a
+bounded structural classifier after deterministic disproof; otherwise INVALID_TRANSFORMATION. Legacy v1 generic
+ALG_TRANSFORMATION_INVALID remains readable. Unknown/uncertain work produces no diagnosis/mastery event.
+Specific disproof and independently verified twin completion generate unique private evidence; assistance-aware
+BKT-lite-v1 updates decay toward 0.15 and expose confidence/count/timestamps. Generic errors cannot infer a skill.
+Training eligibility remains false. All new execution/accuracy evidence is PENDING_OWNER, not measured performance.
