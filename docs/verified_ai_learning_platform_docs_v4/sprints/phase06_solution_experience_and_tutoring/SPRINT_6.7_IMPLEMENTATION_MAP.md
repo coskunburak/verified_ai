@@ -113,3 +113,11 @@ only failing Python/Java/iOS cases and failed gates. A build/setup failure befor
 suite, since no test passed there; missing partial evidence never silently broadens selection. Golden evaluation is
 not repeated on a targeted repair after it passed. Linux-only resource evidence remains a separate release gate,
 `PLATFORM_SPECIFIC_VALIDATION_PENDING` on macOS. Historical owner PASS is never relabeled current acceptance.
+
+
+## Sprint 6.8 source-state note (2026-11-04)
+
+The Sprint 6.8 author inspected clean `main` at `fd7e0c3aae1a4b8154e71d628bd1a9bd47688fc9`.
+The source/baseline paragraphs above describe the historical 6.7 work, not the current workspace.
+The additive v2 method comparison keeps v1 stored evidence intact; its acceptance is separate.
+No historical 6.7 execution result or fingerprint is changed by this note.

@@ -10,6 +10,7 @@ import time
 from dataclasses import dataclass
 
 from app.api.schemas.attempt_learning import Request as LearningRequest, Result as LearningResult, unavailable as learning_unavailable
+from app.api.schemas.method_comparison import Request as ComparisonRequest, Result as ComparisonResult, unavailable as comparison_unavailable
 from app.api.schemas.attempt_v2 import Request as AttemptV2Request, Result as AttemptV2Result, unavailable as attempt_v2_unavailable
 from app.api.schemas.attempt import AttemptRequest, AttemptResult, unavailable as attempt_unavailable
 from app.api.schemas.calculus import CalculusRequest, CalculusResult
@@ -48,7 +49,10 @@ def apply_resource_limits(budget):
 def _worker(connection, payload, budget):
     try:
         apply_resource_limits(budget)
-        if json.loads(payload).get("schemaVersion") == "attempt-learning-v1":
+        if json.loads(payload).get("schemaVersion") == "method-comparison-v2":
+            from app.verifiers.attempt_learning import execute_comparison
+            response = execute_comparison(ComparisonRequest.model_validate_json(payload))
+        elif json.loads(payload).get("schemaVersion") == "attempt-learning-v1":
             from app.verifiers.attempt_learning import execute
             response = execute(LearningRequest.model_validate_json(payload))
         elif json.loads(payload).get("schemaVersion") == "attempt-verification-v2":
@@ -91,6 +95,8 @@ class ProcessExecutor:
 
     @staticmethod
     def failure(request, reason):
+        if isinstance(request, ComparisonRequest):
+            return comparison_unavailable(request, reason)
         if isinstance(request, LearningRequest):
             return learning_unavailable(request)
         if isinstance(request, AttemptV2Request):
@@ -110,7 +116,7 @@ class ProcessExecutor:
                                method=request.method, outcome="EXECUTION_FAILED", reasonCode=reason,
                                restrictionIds=[r.id for r in request.restrictions])
 
-    def execute(self, request: ExecutionRequest | CalculusRequest | NumericRequest | AttemptRequest | AttemptV2Request | LearningRequest) -> ExecutionResult | CalculusResult | NumericResult | AttemptResult | AttemptV2Result | LearningResult:
+    def execute(self, request: ExecutionRequest | CalculusRequest | NumericRequest | AttemptRequest | AttemptV2Request | LearningRequest | ComparisonRequest) -> ExecutionResult | CalculusResult | NumericResult | AttemptResult | AttemptV2Result | LearningResult | ComparisonResult:
         if not self._slots.acquire(blocking=False):
             return self.failure(request, "ADMISSION_LIMIT")
         receive = send = process = None
@@ -131,6 +137,9 @@ class ProcessExecutor:
                 return self.failure(request, "WORKER_FAILURE")
             if data in {b"RESOURCE_FAILURE", b"WORKER_FAILURE"}:
                 return self.failure(request, data.decode("ascii"))
+            if isinstance(request, ComparisonRequest):
+                try: return ComparisonResult.model_validate_json(data).validate_for(request)
+                except ValueError: return self.failure(request, "INVALID_RESPONSE")
             if isinstance(request, LearningRequest):
                 try: return LearningResult.model_validate_json(data).validate_for(request)
                 except ValueError: return self.failure(request, "INVALID_RESPONSE")

@@ -17,7 +17,7 @@ public class AttemptRequestLimitFilter extends OncePerRequestFilter {
     private final HandlerExceptionResolver resolver;
     public AttemptRequestLimitFilter(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) { this.resolver=resolver; }
     @Override protected boolean shouldNotFilter(HttpServletRequest request) {
-        return !"POST".equals(request.getMethod()) || !request.getRequestURI().matches("/api/v1/problem-sessions/[^/]+/attempts(?:/.*)?");
+        return !"POST".equals(request.getMethod()) || !request.getRequestURI().matches("/api/v1/problem-sessions/[^/]+/(?:attempts(?:/.*)?|alternative-methods)");
     }
     @Override protected void doFilterInternal(HttpServletRequest request,HttpServletResponse response,FilterChain chain)
         throws IOException,ServletException {

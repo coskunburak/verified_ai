@@ -27,7 +27,7 @@ final class AnalyzeMyWorkViewModel {
     private(set) var errorKey: String?
     var draft = ""
     init(owner: UUID, problem: UUID, service: AttemptAnalysisServicing, store: AttemptAnalysisPendingStore,
-         capture: AttemptCaptureDependencies? = nil, learningAPI: AttemptLearningAPI? = nil, ownsAccount: @escaping @MainActor () async -> Bool) {
+         capture: AttemptCaptureDependencies? = nil, learningAPI: (any AttemptLearningServicing)? = nil, ownsAccount: @escaping @MainActor () async -> Bool) {
         self.learning = learningAPI.map { AttemptLearningViewModel(api: $0, owner: owner, problem: problem, ownsAccount: ownsAccount) }
         self.capture = capture; self.owner = owner; self.problem = problem; self.service = service; self.store = store; self.ownsAccount = ownsAccount
     }

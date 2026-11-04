@@ -91,7 +91,7 @@ Per `sprints/02_FOCUSED_COMMERCIAL_WEDGE_SPRINT_PROGRAM.md`, Phase 6 is split in
 - **`F04` Counterfactual Twin Problem Generator:** Generates a `SymPy`-verified 60-second twin question isolating the exact mistake code (`primaryMistakeCode`) detected in `Analyze My Work`.
 - **`F08` YKS "Yeni Nesil" Story-to-Algebra Visual Bridge (`SPRINT_6.8`/`6.9`):** Maps each highlighted Turkish phrase in a contextual word problem directly to its algebraic variable/constraint before solving.
 - **`F09` & `F12` Domain Trap Radar & Calculus Pedantic Guard (`SPRINT_6.2C`):** Automatically flags denominator zeros, negative even radicals, non-positive logarithm arguments, missing `+ C` constants, and `\sqrt{x^2} = |x|` traps.
-- **`F15` Exam-Speed Shortcut vs. Rigorous Method Toggle (`SPRINT_6.7B`/`6.8`):** Offers both the full guaranteed step-by-step derivation and the 30-second ÖSYM exam-speed shortcut.
+- **`F15` Exam-Speed Shortcut vs. Rigorous Method Toggle (`SPRINT_6.7B`/`6.8`):** Offers full and compact presentations of the same verified method, retaining source conditions and complete outcomes. Displayed step counts are deterministic heuristics; no 30-second, fastest-method or ÖSYM timing advantage is claimed.
 
 ## 3. Canonical Path & Privacy Invariants
 - All iOS deliverables must reside under `apps/ios/VerifiedAI/Features/...` (reconciling legacy `apps/ios/VerifiedLearning/...` paths).
@@ -147,3 +147,17 @@ Owner acceptance status: TARGETED_REPAIR_PASSED (owner runs `20261103-233019-8g1
 Runtime activation defaults false; Linux release checks remain separately pending; production remains NOT_AUTHORIZED.
 See SPRINT_6.7_IMPLEMENTATION_MAP.md, SPRINT_6.7_EXECUTION_REPORT.md and SPRINT_6.7_FILE_MANIFEST.md
 for supported scope, evidence ledger and exact source inventory.
+
+## Sprint 6.8 alternative solution methods and method comparison — owner acceptance passed
+
+Status: `LOCAL_ACCEPTANCE_PASSED` in owner run `20261104-152542-vwl6JJ` (exit code 0; Prerequisites + Gates A–F + Cleanup all PASS).
+Evidence: `.generated/sprint-6-8-owner/20261104-152542-vwl6JJ/summary.json`.
+Source fingerprint: `d244ef9106fe8b96967e3ef510a5ab71bed5af8e799ab9a46ae3f87a31d84c34`.
+
+Delivered capabilities:
+- 8 deterministic mathematical method families: factoring, completing the square, quadratic formula, symbolic simplification, polynomial expansion, direct algebra, rational equation clearing with domain hole preservation, and absolute value case splitting.
+- Ephemeral versioned v2 comparison contracts (`method-comparison-v2`, `method-comparison-result-v2`, `method-comparison-public-v2`) without artificial student attempt generation or durable data writes.
+- Source-bound and attempt-bound backend routes with BOLA authorization, cancellation fences, and short transactional locks.
+- iOS `AlternativeMethodComparisonView` with method picker, compact/full toggle, pedagogical metadata (prerequisites, advantages, limitations, complexity), and 100% English and Turkish localization (83 string units).
+- Comprehensive test coverage: 563 Python verifier tests, 18 golden method cases, 110 Spring Boot backend tests, 213 iOS XCTest cases, and zero unresolved failures.
+See SPRINT_6.8_IMPLEMENTATION_MAP.md, SPRINT_6.8_EXECUTION_REPORT.md, and SPRINT_6.8_FUNCTIONAL_COMPLETION_MATRIX.md for full delivery artifacts.

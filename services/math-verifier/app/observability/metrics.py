@@ -63,7 +63,7 @@ def record_attempt(result, elapsed_ms):
 
 
 def record_attempt_learning(result, elapsed_ms):
-    if result.action not in {'TWIN','METHODS'} or result.status not in {'VERIFIED','UNSUPPORTED','UNAVAILABLE'}:
+    if result.action not in {'TWIN','METHODS'} or result.status not in {'VERIFIED','UNSUPPORTED','UNAVAILABLE','NO_ALTERNATIVE'}:
         raise ValueError('Unbounded learning metric label')
     with _execution_lock:
         _execution_counts[('ATTEMPT_'+result.action,result.status,'ARTIFACT')] += 1

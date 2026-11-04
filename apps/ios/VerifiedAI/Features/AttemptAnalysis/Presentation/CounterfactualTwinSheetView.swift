@@ -46,28 +46,6 @@ struct CounterfactualTwinSheetView: View {
     }
 }
 
-struct AlternativeMethodComparisonView: View {
-    let attempt: StudentAttempt
-    let evidence: AttemptAlternativeMethods
-    @State private var compact = false
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Toggle("attempt.methods.compact", isOn: $compact)
-            Text("attempt.methods.mine").font(.headline)
-            ForEach(attempt.steps) { Text(verbatim: $0.content) }
-            ForEach(evidence.methods) { method in
-                Text(LocalizedStringKey("attempt.method." + method.methodId)).font(.headline)
-                ForEach(Array(method.steps.enumerated()), id: \.offset) { index, step in
-                    if !compact || index == method.steps.count - 1 {
-                        AttemptMathView(json: String(data: (try? JSONEncoder().encode(step)) ?? Data(), encoding: .utf8) ?? "", fallback: NSLocalizedString("attempt.math.expression", comment: "Math expression"))
-                    }
-                }
-                Label("attempt.methods.verified", systemImage: "checkmark.shield")
-            }
-        }
-    }
-}
-
 struct AttemptLearningPanel: View {
     @Bindable var model: AttemptLearningViewModel
     let attempt: StudentAttempt
@@ -77,10 +55,10 @@ struct AttemptLearningPanel: View {
             if attempt.analysis?.firstWrongStepIndex != nil {
                 Button("attempt.twin.title") { model.create(attempt: attempt.id) }.disabled(model.busy)
             }
-            Button("attempt.methods.title") { model.alternatives(attempt: attempt.id) }.disabled(model.busy)
-            if let methods = model.methods[attempt.id] { AlternativeMethodComparisonView(attempt: attempt, evidence: methods) }
+            Button("attempt.methods.title") { model.alternatives(attempt: attempt) }.disabled(model.busy)
+            if let methods = model.methods[attempt.id] { AlternativeMethodComparisonView(attempt: attempt, evidence: methods.evidence) }
             if model.busy { ProgressView() }
-            if model.error { Text("attempt.learning.unavailable") }
+            if model.error { Text(LocalizedStringKey(model.methodErrorKey ?? "attempt.learning.unavailable")) }
             Button("attempt.learning.refresh") { model.refresh() }.disabled(model.busy)
             if !model.drills.isEmpty {
                 Text("attempt.twin.history").font(.headline)

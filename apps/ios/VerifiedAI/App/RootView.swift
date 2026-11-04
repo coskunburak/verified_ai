@@ -199,7 +199,7 @@ struct RootView: View {
                     return PrimarySolveViewModel(userId: userId, sessionId: sessionId, service: dependencies.primarySolveAPI,
                         recovery: dependencies.solveRecovery, network: dependencies.solveFlowNetworkMonitor,
                         attemptModel: AnalyzeMyWorkViewModel(owner: userId, problem: sessionId, service: attemptService,
-                            store: dependencies.attemptPending, capture: AttemptCaptureDependencies(capture: problemCaptureViewModel, upload: problemAssetUploadViewModel, review: problemReviewViewModel, camera: dependencies.problemCameraClient), learningAPI: dependencies.solveFixture ? nil : AttemptLearningAPI(client: dependencies.apiClient), ownsAccount: {
+                            store: dependencies.attemptPending, capture: AttemptCaptureDependencies(capture: problemCaptureViewModel, upload: problemAssetUploadViewModel, review: problemReviewViewModel, camera: dependencies.problemCameraClient), learningAPI: dependencies.attemptLearningAPI, ownsAccount: {
                                 guard case .authenticated(let current) = signInViewModel.state,
                                       current.userId == userId, current.sessionId == authSessionId else { return false }
                                 #if DEBUG

@@ -297,3 +297,20 @@ Submission v2 adds optional real-domain confirmation/capture review; clients nev
 Context v2 exposes actual enabled capabilities; student-attempt-v1 envelope admits versioned analysis v1/v2 through
 student-attempt-response. Stable idempotency, ownership/freshness and first-answer transaction guards apply.
 New contracts are listed in the Sprint 6.7 implementation map. Feature flags default off; owner acceptance pending.
+
+
+### Sprint 6.8 versioned method comparison
+
+The existing attempt alternative-method POST retains the empty-body v1 contract. A body with
+`schemaVersion=method-comparison-v2` selects `method-comparison-public-v2`. The additional
+`POST /api/v1/problem-sessions/{sessionId}/alternative-methods` accepts the version and an exact
+`AttemptSourceIdentity` obtained from attempts/context; it never creates an attempt.
+
+Both routes reuse AttemptLearningService and the internal token-authenticated attempt-learning route.
+The internal union adds method-comparison-v2 / method-comparison-result-v2. Strict bundled schemas
+validate nested typed math and metadata. Public v2 includes exact source lineage and
+CURRENT_AT_PUBLICATION freshness; historical v1 semantics are unchanged. No v2 durable cache/table:
+replays recompute deterministically, under 30 learning calls/account/minute and existing process admission.
+Unknown authority fields reject. Source change returns 409; worker/disabled failures return 503;
+UNSUPPORTED and NO_ALTERNATIVE return typed 200 outcomes with zero verified cards. No global solver
+or learner verdict changes. See Sprint 6.8 implementation map for proof bounds and owner gates.

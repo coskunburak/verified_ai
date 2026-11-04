@@ -35,13 +35,19 @@ paths:
         required: true
         content:
           application/json:
-            schema: {$ref: '../../schemas/attempt-learning-v1.schema.json'}
+            schema:
+              oneOf:
+                - {$ref: '../../schemas/attempt-learning-v1.schema.json'}
+                - {$ref: '../../schemas/method-comparison-v2.schema.json'}
       responses:
         '200':
           description: Versioned evidence bound to execution and correlation identity
           content:
             application/json:
-              schema: {$ref: '../../schemas/attempt-learning-result-v1.schema.json'}
+              schema:
+                oneOf:
+                  - {$ref: '../../schemas/attempt-learning-result-v1.schema.json'}
+                  - {$ref: '../../schemas/method-comparison-result-v2.schema.json'}
         '401': {description: Internal authentication required}
         '413': {description: Request byte limit}
         '422': {description: Strict schema or correlation mismatch}

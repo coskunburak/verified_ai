@@ -157,9 +157,10 @@ def execute_attempt_v2(payload: AttemptV2Request, request: Request) -> AttemptV2
 
 
 from app.api.schemas.attempt_learning import Request as LearningRequest, Result as LearningResult
+from app.api.schemas.method_comparison import Request as ComparisonRequest, Result as ComparisonResult
 
-@router.post("/attempt-learning", response_model=LearningResult, dependencies=[Depends(require_internal_auth)])
-def execute_attempt_learning(payload: LearningRequest, request: Request) -> LearningResult:
+@router.post("/attempt-learning", response_model=LearningResult | ComparisonResult, dependencies=[Depends(require_internal_auth)])
+def execute_attempt_learning(payload: LearningRequest | ComparisonRequest, request: Request) -> LearningResult | ComparisonResult:
     from app.config import get_settings
     from app.domain.errors import VerificationError
     from app.policies.process_executor import executor

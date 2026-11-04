@@ -146,3 +146,188 @@ def execute(request):
         return Result(executionId=request.executionId,correlationId=request.correlationId,action=request.action,status='VERIFIED',twin=artifact,methods=alternatives).validate_for(request)
     except (ValueError,TypeError,NotImplementedError,ZeroDivisionError):
         return Result(executionId=request.executionId,correlationId=request.correlationId,action=request.action,status='UNSUPPORTED')
+
+
+def _method_structure(statement):
+    """Ignore annotations/nulls and commutative order, not mathematical operations.
+
+    Expanding/factoring every candidate here would erase the derivation distinction.
+    The common normalized source and final outcome are removed separately.
+    """
+    def normalize(v):
+        if isinstance(v,dict):
+            v={k:normalize(c) for k,c in v.items() if c is not None and k!='tokenRange'}
+            if v.get('operator') in {'ADD','MULTIPLY'}:
+                v['left'],v['right']=sorted([v['left'],v['right']],key=repr)
+            if v.get('kind')=='FINITE_SET': v['args']=sorted(v['args'],key=repr)
+            return v
+        if isinstance(v,list): return [normalize(c) for c in v]
+        return v
+    return repr(normalize(statement.model_dump()))
+
+
+def _polynomial_syntax(node):
+    # Do not allow cancellation to turn unsupported functions/rational-domain traps
+    # into an apparently ordinary polynomial. Constant rational division is allowed.
+    if node.kind in {'NUMBER','VARIABLE'}: return
+    if node.kind=='UNARY': return _polynomial_syntax(node.operand)
+    if node.kind!='BINARY': raise Unsupported('polynomial vocabulary only')
+    _polynomial_syntax(node.left); _polynomial_syntax(node.right)
+    if node.operator=='POWER':
+        if node.right.kind!='NUMBER' or node.right.value not in {'0','1','2','3','4'}: raise Unsupported('bounded degree')
+    if node.operator=='DIVIDE':
+        def variable_in(n):
+            return n.kind=='VARIABLE' or any(variable_in(v) for v in (n.left,n.right,n.operand) if v is not None)
+        if variable_in(node.right): raise Unsupported('variable denominator')
+
+
+def _set_ast(values):
+    """Exact bounded set serialization, including source-domain holes and identities."""
+    values=concrete(values)
+    if values==s.S.Reals: return Node(kind='REALS')
+    if values==s.S.EmptySet: return Node(kind='EMPTY_SET')
+    if isinstance(values,s.FiniteSet): return Node(kind='FINITE_SET',args=[ast(v) for v in sorted(values,key=s.default_sort_key)])
+    if isinstance(values,s.Interval):
+        def endpoint(v):
+            if v in (s.oo,-s.oo): return Node(kind='CONSTANT',value='POSITIVE_INFINITY' if v==s.oo else 'NEGATIVE_INFINITY')
+            return ast(v)
+        return Node(kind='INTERVAL',left=endpoint(values.start),right=endpoint(values.end),leftOpen=bool(values.left_open),rightOpen=bool(values.right_open))
+    if isinstance(values,(s.Union,s.Intersection)):
+        return Node(kind='UNION' if isinstance(values,s.Union) else 'INTERSECTION',args=[_set_ast(v) for v in values.args])
+    raise Unsupported('set presentation')
+
+
+def _rational_syntax(node):
+    if node.kind in {'NUMBER','VARIABLE'}: return
+    if node.kind=='UNARY': return _rational_syntax(node.operand)
+    if node.kind!='BINARY': raise Unsupported('rational vocabulary')
+    _rational_syntax(node.left); _rational_syntax(node.right)
+    if node.operator=='POWER' and (node.right.kind!='NUMBER' or node.right.value not in {'0','1','2','3','4'}):
+        raise Unsupported('bounded power')
+
+
+def _rational_poly(value,x,degree):
+    poly=s.Poly(value,x)
+    if poly.degree()>degree or any(c.is_Rational is not True for c in poly.all_coeffs()): raise Unsupported('bounded rational polynomial')
+    return poly
+
+
+def comparison_methods(request):
+    from app.api.schemas.method_comparison import Method as MethodV2, Comparison, POLICY
+    source=request.source
+    if source.domainBasis=='UNRESOLVED' or len(source.variables)!=1 or source.variables[0].symbol!='x' or source.variables[0].domain!='REAL':
+        raise Unsupported('known real single variable required')
+    original=source.original
+    guard=DomainConstraintGuard(s.Symbol('x',real=True)); restrictions=s.S.Reals
+    for r in source.restrictions:
+        _polynomial_syntax(r.left); _polynomial_syntax(r.right)
+        _,allowed,_=guard.statement(eq(r.left,r.right,r.relation)); restrictions=concrete(restrictions.intersect(allowed))
+    if restrictions==s.S.EmptySet: raise Unsupported('infeasible assumptions')
+    # Compute the natural domain BEFORE cancellation and outside source restrictions.
+    absolute=None
+    if original.kind=='EXPRESSION': _polynomial_syntax(original.expression)
+    elif original.relation=='EQUALS':
+        for side,other in ((original.left,original.right),(original.right,original.left)):
+            if side.kind=='FUNCTION' and side.function=='ABS':
+                _polynomial_syntax(side.args[0]); _polynomial_syntax(other)
+                inside,_=guard.expression(side.args[0]); target,_=guard.expression(other)
+                _rational_poly(inside,guard.x,1)
+                if target.free_symbols or target.is_Rational is not True: raise Unsupported('constant absolute target')
+                absolute=(inside,target)
+                break
+        if absolute is None: _rational_syntax(original.left); _rational_syntax(original.right)
+    else: raise Unsupported('equation/expression only')
+    _,source_solutions,domain=guard.statement(original)
+    scope=concrete(restrictions.intersect(domain))
+    if scope==s.S.EmptySet: raise Unsupported('empty source domain')
+    guard.scope=scope
+    candidates=[]
+    if original.kind=='RELATION':
+        # Independent source solution set, never a collection of merely valid roots.
+        solution=eq(variable(),_set_ast(concrete(source_solutions.intersect(restrictions))),'MEMBER_OF')
+        if absolute is not None:
+            inside,target=absolute
+            from app.api.schemas.attempt_v2 import Branch
+            cases=Node(kind='PIECEWISE',branches=[
+                Branch(expression=ast(inside),condition=eq(ast(inside),num(0),'GREATER_THAN_OR_EQUAL')),
+                Branch(expression=ast(-inside),condition=None)])
+            candidates.append(('ABSOLUTE_CASES',[eq(cases,ast(target)),solution],['SPLIT_ABSOLUTE_CASES','COMPLETE_REAL_SET'],'ABSOLUTE_AFFINE','SPLIT_ABSOLUTE_CASES'))
+        else:
+            left,_=guard.expression(original.left); right,_=guard.expression(original.right)
+            numerator,denominator=s.fraction(s.together(left-right))
+            _rational_poly(denominator,guard.x,4)
+            poly=_rational_poly(numerator,guard.x,2)
+            normalized=eq(ast(poly.as_expr()),num(0))
+            rational=domain!=s.S.Reals or denominator.has(guard.x)
+            if rational:
+                # Every displayed equation is scoped by the visible original domain.
+                # Independently prove the final set against the original WITHOUT narrowing.
+                reduced=eq(ast(s.factor(poly.as_expr())),num(0))
+                candidates.append(('RATIONAL_CLEARING',[normalized,reduced,solution],['CLEAR_DENOMINATORS','ZERO_PRODUCT','COMPLETE_REAL_SET'],'RATIONAL_EQUATION','PRESERVE_DOMAIN_HOLES'))
+            elif poly.degree()!=2:
+                steps=[normalized]
+                if poly.degree()==1:
+                    a,b=poly.all_coeffs(); steps.append(eq(variable(),ast(-b/a)))
+                steps.append(solution)
+                candidates.append(('DIRECT_ALGEBRA',steps,['NORMALIZE_ZERO']+(['ISOLATE_VARIABLE'] if poly.degree()==1 else [])+['COMPLETE_REAL_SET'],
+                    'RATIONAL_LINEAR' if poly.degree()==1 else 'CONSTANT_EQUATION','ISOLATE_LINEAR' if poly.degree()==1 else 'RESOLVE_CONSTANT'))
+            else:
+                a,b,c=poly.all_coeffs(); discriminant=b*b-4*a*c
+                roots=concrete(s.solveset(poly.as_expr(),guard.x,domain=s.S.Reals))
+                if roots!=s.S.EmptySet and not isinstance(roots,s.FiniteSet): raise Unsupported('finite roots')
+                if roots!=s.S.EmptySet:
+                    ordered=sorted(roots,key=s.default_sort_key)
+                    first=binary('SUBTRACT',variable(),ast(ordered[0])); second=binary('SUBTRACT',variable(),ast(ordered[-1]))
+                    factored=eq(binary('MULTIPLY',ast(a),binary('MULTIPLY',first,second)),num(0))
+                    # Irrational roots are valid, but discovering them by factoring is not
+                    # a useful independent alternative to the formula/square derivation.
+                    if all(v.is_Rational for v in roots):
+                        candidates.append(('FACTORING',[normalized,factored,solution],['NORMALIZE_ZERO','ZERO_PRODUCT','COMPLETE_REAL_SET'],'RATIONAL_QUADRATIC',
+                            'REPEATED_ROOT_STRUCTURE' if discriminant==0 else 'FACTORABLE_OVER_RATIONALS'))
+                square=eq(binary('POWER',ast(guard.x+b/(2*a)),num(2)),ast(discriminant/(4*a*a)))
+                candidates.append(('COMPLETING_SQUARE',[normalized,square,solution],['NORMALIZE_ZERO','SQUARE_IDENTITY','COMPLETE_REAL_SET'],'RATIONAL_QUADRATIC',
+                    'NEGATIVE_DISCRIMINANT' if discriminant<0 else 'DIRECT_SQUARE' if b==0 else 'VERTEX_FORM'))
+                if discriminant>=0:
+                    radical=fn('SQRT',ast(discriminant)); denominator=ast(2*a)
+                    formula=members(binary('DIVIDE',binary('ADD',ast(-b),radical),denominator),binary('DIVIDE',binary('SUBTRACT',ast(-b),radical),denominator))
+                    candidates.append(('QUADRATIC_FORMULA',[normalized,formula,solution],['NORMALIZE_ZERO','DISCRIMINANT_FORMULA','COMPLETE_REAL_SET'],'RATIONAL_QUADRATIC',
+                        'EXACT_RADICAL_FORMULA' if s.sqrt(discriminant).is_Rational is not True else 'EQUALLY_VALID'))
+    else:
+        value,_=guard.expression(original.expression); _rational_poly(value,guard.x,4)
+        for identity,transformed,reason,recommendation in [
+            ('SYMBOLIC_SIMPLIFICATION',s.factor(value),'EXACT_SIMPLIFICATION','EXPOSE_FACTORS'),
+            ('POLYNOMIAL_EXPANSION',s.expand(value),'EXPAND_COLLECT','COLLECT_TERMS')]:
+            if s.srepr(value)==s.srepr(transformed): continue
+            candidates.append((identity,[expr(ast(transformed))],[reason],'RATIONAL_POLYNOMIAL',recommendation))
+    published=[]; seen=set()
+    for identity,steps,reasons,applicability,recommendation in candidates:
+        previous=original; kept=[]; why=[]
+        for step,reason in zip(steps,reasons):
+            if _method_structure(previous)==_method_structure(step): continue
+            if not compare(guard,previous,step,scope)[0]: raise Unsupported('transition proof')
+            kept.append(step); why.append(reason); previous=step
+        if not kept: continue
+        # No hidden domain narrowing can justify a missing or extraneous final root.
+        if not compare(guard,original,kept[-1],restrictions)[0]: raise Unsupported('complete source outcome')
+        signature=tuple(s.srepr(guard.statement(v)[0]) for v in kept) if identity in {'FACTORING','COMPLETING_SQUARE'} else tuple(_method_structure(v) for v in kept)
+        if signature in seen: continue
+        seen.add(signature)
+        reason,prerequisite,advantage,limitation,level=POLICY[identity]
+        published.append(MethodV2(methodId=identity,steps=kept,stepReasons=why,
+            outcomeStatus='COMPLETE_SOLUTION_SET' if original.kind=='RELATION' else 'EXPRESSION_IDENTITY',
+            comparison=Comparison(applicability=applicability,reasonCode=reason,prerequisite=prerequisite,advantage=advantage,limitation=limitation,
+                domainCautions=['REAL_DOMAIN']+(['SOURCE_RESTRICTIONS'] if source.restrictions else [])+(['NATURAL_DOMAIN_EXCLUSIONS'] if domain!=s.S.Reals else []),
+                structuralStepCount=len(kept),compactStepIndices=list(range(max(0,len(kept)-2),len(kept))),manipulationLevel=level,recommendation=recommendation)))
+    return published,_set_ast(domain)
+
+
+def execute_comparison(request):
+    from app.api.schemas.method_comparison import Result as ComparisonResult
+    try:
+        alternatives,domain=comparison_methods(request)
+        return ComparisonResult(executionId=request.executionId,correlationId=request.correlationId,source=request.source,
+            status='VERIFIED' if alternatives else 'NO_ALTERNATIVE',reasonCode='EXACT_METHODS' if alternatives else 'NO_DISTINCT_DERIVATION',
+            methods=alternatives,naturalDomain=domain).validate_for(request)
+    except (ValueError,TypeError,NotImplementedError,ZeroDivisionError,s.PolynomialError):
+        return ComparisonResult(executionId=request.executionId,correlationId=request.correlationId,source=request.source,
+            status='UNSUPPORTED',reasonCode='UNSUPPORTED_SOURCE')

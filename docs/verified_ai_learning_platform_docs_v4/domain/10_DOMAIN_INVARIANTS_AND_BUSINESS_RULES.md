@@ -194,3 +194,12 @@ This is a highest-precedence document.
 - Rollout disable preserves history/export/deletion; trainingEligible=false is enforced for attempts, steps and all learning evidence.
 - Specific diagnoses require structural cause evidence after independent disproof. Unique attempt/drill events prevent duplicate mastery updates.
 - OCR text always requires learner review; confidence never proves mathematical correctness. Open drills never publish their answer.
+
+
+## Alternative method comparison invariants (Sprint 6.8)
+
+- `method-comparison-result-v2` verifies generated source transformations and complete outcomes only. It never promotes an attempt, solver candidate, mastery record or aggregate verification.
+- Full and compact presentations share the same complete result, original domain and source restrictions. Counts describe structural display steps, not human speed.
+- Unknown real scope, unproven transformations and unencodable outcomes produce no verified cards. Negative-discriminant quadratics use the square argument without a non-real radical AST.
+- Factoring and repeated-root square forms normalize to one derivation when their transformation trees agree. Card counts are never padded.
+- v2 comparisons are ephemeral source projections: exact owner/parse/canonical identity before and after unlocked bounded execution; deterministic recomputation on retry. v1 stored methods remain immutable historical evidence.

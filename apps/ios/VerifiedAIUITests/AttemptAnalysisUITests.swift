@@ -3,6 +3,47 @@ import XCTest
 final class AttemptAnalysisUITests: XCTestCase {
     func testManualWrongStepAndCounterexample() { run(turkish: false, lostAck: false) }
     func testTurkishLostAcknowledgementRecovery() { run(turkish: true, lostAck: true) }
+    func testMethodComparisonEnglishSelectionAndCompact() { methods(turkish: false, flags: []) }
+    func testMethodComparisonTurkishRetry() { methods(turkish: true, flags: ["--methods-fail-first"]) }
+    func testMethodComparisonUnsupportedAndSingle() {
+        methods(turkish: false, flags: ["--methods-unsupported"])
+        methods(turkish: false, flags: ["--methods-single"])
+        methods(turkish: false, flags: ["--methods-empty"])
+    }
+    private func methods(turkish: Bool, flags: [String]) {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--ui-testing", "--ui-testing-authenticated", "--solve-fixture", "--attempt-fixture", "--methods-fixture", "--solve-reset",
+            "--solve-fixture-scope=" + UUID().uuidString, "-AppleLanguages", turkish ? "(tr)" : "(en)"] + flags
+        app.launch(); defer { app.terminate() }
+        tap(app.buttons["history.session.00000000-0000-0000-0000-000000005401"], app)
+        tap(app.buttons["history.solve"], app); tap(app.buttons["attempt.methods.open"], app)
+        if flags.contains("--methods-fail-first") { tap(app.buttons["attempt.methods.retry"], app) }
+        let scope = app.staticTexts["attempt.methods.scope"]
+        XCTAssertTrue(scope.waitForExistence(timeout: 6))
+        XCTAssertTrue(scope.label.contains(turkish ? "bağımsız" : "independently"))
+        if flags.contains("--methods-unsupported") || flags.contains("--methods-empty") {
+            XCTAssertTrue(app.descendants(matching: .any)["attempt.methods.empty"].exists)
+            XCTAssertFalse(app.descendants(matching: .any)["attempt.methods.evidence"].exists)
+            return
+        }
+        let picker = app.descendants(matching: .any)["attempt.methods.select"].firstMatch
+        XCTAssertTrue(picker.exists)
+        if !flags.contains("--methods-single") {
+            tap(picker, app)
+            let title = turkish ? "İkinci derece denklem formülü" : "Quadratic formula"
+            tap(app.buttons[title], app)
+        }
+        let toggle = app.switches["attempt.methods.compact"]
+        if !toggle.isHittable { app.swipeUp() }
+        XCTAssertTrue(toggle.waitForExistence(timeout: 3)); toggle.tap()
+        for _ in 0..<6 {
+            if app.descendants(matching: .any)["attempt.methods.evidence"].isHittable { break }
+            app.swipeUp()
+        }
+        XCTAssertTrue(app.descendants(matching: .any)["attempt.methods.evidence"].exists)
+        XCTAssertFalse(app.staticTexts["VERIFIED"].exists)
+    }
     private func run(turkish: Bool, lostAck: Bool) {
         continueAfterFailure = false
         let app = XCUIApplication()

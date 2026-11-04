@@ -69,6 +69,34 @@ paths:
         "422": {description: Invalid strict request}
         "429": {description: Account rate limit}
         "503": {description: Feature disabled or verified artifact unavailable}
+  /api/v1/problem-sessions/{sessionId}/alternative-methods:
+    parameters:
+      - {name: sessionId, in: path, required: true, schema: {type: string, format: uuid}}
+    post:
+      security: [{bearerAuth: []}]
+      summary: Compare verified methods directly from the selected canonical source
+      description: No attempt is created. Source identity is obtained from attempts/context. Ownership and freshness are checked before and after bounded worker execution. No durable cache; repeated requests recompute the same versioned projection. Idempotency-Key validates request syntax but creates no mutation ledger. Thirty learning requests per account per minute and shared worker admission bounds apply. Unsupported and no-alternative outcomes carry no verified cards; worker failures use 503. CURRENT_AT_PUBLICATION is not a future freshness guarantee.
+      parameters:
+        - {name: Idempotency-Key, in: header, required: true, schema: {type: string, pattern: "^[A-Za-z0-9_-]{8,128}$"}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '../../schemas/method-comparison-source-v2.schema.json'}
+      responses:
+        "200":
+          description: Exact source-bound projection; no solver or learner verification promotion
+          content:
+            application/json:
+              schema: {$ref: '../../schemas/method-comparison-public-v2.schema.json'}
+        "401": {description: Authentication required}
+        "403": {description: Account inactive}
+        "404": {description: Owned resource unavailable}
+        "409": {description: Source stale or not ready}
+        "413": {description: Request exceeds 16 KiB}
+        "422": {description: Malformed request or unknown authority fields}
+        "429": {description: Account rate limit}
+        "503": {description: Disabled feature or verifier unavailable}
   /api/v1/problem-sessions/{sessionId}/attempts/{attemptId}/alternative-methods:
     parameters:
       - {name: sessionId, in: path, required: true, schema: {type: string, format: uuid}}
@@ -76,19 +104,30 @@ paths:
     post:
       security: [{bearerAuth: []}]
       summary: Create or replay independently verified alternative methods
+      description: Empty body retains durable v1. Versioned v2 body requests an ephemeral comparison bound to the current attempt source; no student verdict is inferred. Replays recompute deterministically under the same version and source.
       parameters:
         - {name: Idempotency-Key, in: header, required: true, schema: {type: string, pattern: "^[A-Za-z0-9_-]{8,128}$"}}
       requestBody:
         required: true
         content:
           application/json:
-            schema: {type: object, additionalProperties: false}
+            schema:
+              oneOf:
+                - {type: object, additionalProperties: false}
+                - type: object
+                  additionalProperties: false
+                  required: [schemaVersion]
+                  properties:
+                    schemaVersion: {const: method-comparison-v2}
       responses:
         "200":
           description: Owned authoritative result; trainingEligible is false
           content:
             application/json:
-              schema: {$ref: '../../schemas/attempt-learning-result-v1.schema.json'}
+              schema:
+                oneOf:
+                  - {$ref: '../../schemas/attempt-learning-result-v1.schema.json'}
+                  - {$ref: '../../schemas/method-comparison-public-v2.schema.json'}
         "401": {description: Authentication required}
         "404": {description: Owned resource unavailable}
         "409": {description: Source or idempotency conflict}

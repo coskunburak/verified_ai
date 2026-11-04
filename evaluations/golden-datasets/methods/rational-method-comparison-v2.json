@@ -1,0 +1,1060 @@
+{
+  "schemaVersion": "method-comparison-golden-v2",
+  "synthetic": true,
+  "policyVersion": "method-comparison-policy-v2",
+  "cases": [
+    {
+      "id": "two-integer",
+      "source": {
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "BINARY",
+            "operator": "ADD",
+            "left": {
+              "kind": "BINARY",
+              "operator": "ADD",
+              "left": {
+                "kind": "BINARY",
+                "operator": "MULTIPLY",
+                "left": {
+                  "kind": "NUMBER",
+                  "value": "1",
+                  "numericType": "INTEGER"
+                },
+                "right": {
+                  "kind": "BINARY",
+                  "operator": "POWER",
+                  "left": {
+                    "kind": "VARIABLE",
+                    "symbol": "x"
+                  },
+                  "right": {
+                    "kind": "NUMBER",
+                    "value": "2",
+                    "numericType": "INTEGER"
+                  }
+                }
+              },
+              "right": {
+                "kind": "BINARY",
+                "operator": "MULTIPLY",
+                "left": {
+                  "kind": "NUMBER",
+                  "value": "-5",
+                  "numericType": "INTEGER"
+                },
+                "right": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                }
+              }
+            },
+            "right": {
+              "kind": "NUMBER",
+              "value": "6",
+              "numericType": "INTEGER"
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "value": "0",
+            "numericType": "INTEGER"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT"
+      },
+      "status": "VERIFIED",
+      "roots": [
+        "2",
+        "3"
+      ]
+    },
+    {
+      "id": "repeated",
+      "source": {
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "BINARY",
+            "operator": "ADD",
+            "left": {
+              "kind": "BINARY",
+              "operator": "ADD",
+              "left": {
+                "kind": "BINARY",
+                "operator": "MULTIPLY",
+                "left": {
+                  "kind": "NUMBER",
+                  "value": "1",
+                  "numericType": "INTEGER"
+                },
+                "right": {
+                  "kind": "BINARY",
+                  "operator": "POWER",
+                  "left": {
+                    "kind": "VARIABLE",
+                    "symbol": "x"
+                  },
+                  "right": {
+                    "kind": "NUMBER",
+                    "value": "2",
+                    "numericType": "INTEGER"
+                  }
+                }
+              },
+              "right": {
+                "kind": "BINARY",
+                "operator": "MULTIPLY",
+                "left": {
+                  "kind": "NUMBER",
+                  "value": "-4",
+                  "numericType": "INTEGER"
+                },
+                "right": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                }
+              }
+            },
+            "right": {
+              "kind": "NUMBER",
+              "value": "4",
+              "numericType": "INTEGER"
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "value": "0",
+            "numericType": "INTEGER"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT"
+      },
+      "status": "VERIFIED",
+      "roots": [
+        "2"
+      ]
+    },
+    {
+      "id": "negative",
+      "source": {
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "BINARY",
+            "operator": "ADD",
+            "left": {
+              "kind": "BINARY",
+              "operator": "ADD",
+              "left": {
+                "kind": "BINARY",
+                "operator": "MULTIPLY",
+                "left": {
+                  "kind": "NUMBER",
+                  "value": "1",
+                  "numericType": "INTEGER"
+                },
+                "right": {
+                  "kind": "BINARY",
+                  "operator": "POWER",
+                  "left": {
+                    "kind": "VARIABLE",
+                    "symbol": "x"
+                  },
+                  "right": {
+                    "kind": "NUMBER",
+                    "value": "2",
+                    "numericType": "INTEGER"
+                  }
+                }
+              },
+              "right": {
+                "kind": "BINARY",
+                "operator": "MULTIPLY",
+                "left": {
+                  "kind": "NUMBER",
+                  "value": "0",
+                  "numericType": "INTEGER"
+                },
+                "right": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                }
+              }
+            },
+            "right": {
+              "kind": "NUMBER",
+              "value": "1",
+              "numericType": "INTEGER"
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "value": "0",
+            "numericType": "INTEGER"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT"
+      },
+      "status": "VERIFIED",
+      "roots": []
+    },
+    {
+      "id": "radical",
+      "source": {
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "BINARY",
+            "operator": "ADD",
+            "left": {
+              "kind": "BINARY",
+              "operator": "ADD",
+              "left": {
+                "kind": "BINARY",
+                "operator": "MULTIPLY",
+                "left": {
+                  "kind": "NUMBER",
+                  "value": "1",
+                  "numericType": "INTEGER"
+                },
+                "right": {
+                  "kind": "BINARY",
+                  "operator": "POWER",
+                  "left": {
+                    "kind": "VARIABLE",
+                    "symbol": "x"
+                  },
+                  "right": {
+                    "kind": "NUMBER",
+                    "value": "2",
+                    "numericType": "INTEGER"
+                  }
+                }
+              },
+              "right": {
+                "kind": "BINARY",
+                "operator": "MULTIPLY",
+                "left": {
+                  "kind": "NUMBER",
+                  "value": "0",
+                  "numericType": "INTEGER"
+                },
+                "right": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                }
+              }
+            },
+            "right": {
+              "kind": "NUMBER",
+              "value": "-2",
+              "numericType": "INTEGER"
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "value": "0",
+            "numericType": "INTEGER"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT"
+      },
+      "status": "VERIFIED",
+      "roots": [
+        "-sqrt(2)",
+        "sqrt(2)"
+      ]
+    },
+    {
+      "id": "rational",
+      "source": {
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "BINARY",
+            "operator": "ADD",
+            "left": {
+              "kind": "BINARY",
+              "operator": "ADD",
+              "left": {
+                "kind": "BINARY",
+                "operator": "MULTIPLY",
+                "left": {
+                  "kind": "NUMBER",
+                  "value": "2",
+                  "numericType": "INTEGER"
+                },
+                "right": {
+                  "kind": "BINARY",
+                  "operator": "POWER",
+                  "left": {
+                    "kind": "VARIABLE",
+                    "symbol": "x"
+                  },
+                  "right": {
+                    "kind": "NUMBER",
+                    "value": "2",
+                    "numericType": "INTEGER"
+                  }
+                }
+              },
+              "right": {
+                "kind": "BINARY",
+                "operator": "MULTIPLY",
+                "left": {
+                  "kind": "NUMBER",
+                  "value": "-3",
+                  "numericType": "INTEGER"
+                },
+                "right": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                }
+              }
+            },
+            "right": {
+              "kind": "NUMBER",
+              "value": "1",
+              "numericType": "INTEGER"
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "value": "0",
+            "numericType": "INTEGER"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT"
+      },
+      "status": "VERIFIED",
+      "roots": [
+        "1/2",
+        "1"
+      ]
+    },
+    {
+      "id": "negative-leading",
+      "source": {
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "BINARY",
+            "operator": "ADD",
+            "left": {
+              "kind": "BINARY",
+              "operator": "ADD",
+              "left": {
+                "kind": "BINARY",
+                "operator": "MULTIPLY",
+                "left": {
+                  "kind": "NUMBER",
+                  "value": "-1",
+                  "numericType": "INTEGER"
+                },
+                "right": {
+                  "kind": "BINARY",
+                  "operator": "POWER",
+                  "left": {
+                    "kind": "VARIABLE",
+                    "symbol": "x"
+                  },
+                  "right": {
+                    "kind": "NUMBER",
+                    "value": "2",
+                    "numericType": "INTEGER"
+                  }
+                }
+              },
+              "right": {
+                "kind": "BINARY",
+                "operator": "MULTIPLY",
+                "left": {
+                  "kind": "NUMBER",
+                  "value": "5",
+                  "numericType": "INTEGER"
+                },
+                "right": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                }
+              }
+            },
+            "right": {
+              "kind": "NUMBER",
+              "value": "-6",
+              "numericType": "INTEGER"
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "value": "0",
+            "numericType": "INTEGER"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT"
+      },
+      "status": "VERIFIED",
+      "roots": [
+        "2",
+        "3"
+      ]
+    },
+    {
+      "id": "degenerate",
+      "source": {
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "BINARY",
+            "operator": "ADD",
+            "left": {
+              "kind": "BINARY",
+              "operator": "ADD",
+              "left": {
+                "kind": "BINARY",
+                "operator": "MULTIPLY",
+                "left": {
+                  "kind": "NUMBER",
+                  "value": "0",
+                  "numericType": "INTEGER"
+                },
+                "right": {
+                  "kind": "BINARY",
+                  "operator": "POWER",
+                  "left": {
+                    "kind": "VARIABLE",
+                    "symbol": "x"
+                  },
+                  "right": {
+                    "kind": "NUMBER",
+                    "value": "2",
+                    "numericType": "INTEGER"
+                  }
+                }
+              },
+              "right": {
+                "kind": "BINARY",
+                "operator": "MULTIPLY",
+                "left": {
+                  "kind": "NUMBER",
+                  "value": "2",
+                  "numericType": "INTEGER"
+                },
+                "right": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                }
+              }
+            },
+            "right": {
+              "kind": "NUMBER",
+              "value": "-4",
+              "numericType": "INTEGER"
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "value": "0",
+            "numericType": "INTEGER"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT"
+      },
+      "status": "VERIFIED",
+      "roots": [
+        "2"
+      ],
+      "methodIds": [
+        "DIRECT_ALGEBRA"
+      ]
+    },
+    {
+      "id": "identity-equation",
+      "source": {
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT"
+      },
+      "status": "VERIFIED",
+      "methodIds": [
+        "DIRECT_ALGEBRA"
+      ]
+    },
+    {
+      "id": "denominator",
+      "source": {
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "BINARY",
+            "operator": "DIVIDE",
+            "left": {
+              "kind": "BINARY",
+              "operator": "SUBTRACT",
+              "left": {
+                "kind": "BINARY",
+                "operator": "POWER",
+                "left": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "value": "2",
+                  "numericType": "INTEGER"
+                }
+              },
+              "right": {
+                "kind": "NUMBER",
+                "value": "1",
+                "numericType": "INTEGER"
+              }
+            },
+            "right": {
+              "kind": "BINARY",
+              "operator": "SUBTRACT",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "value": "1",
+                "numericType": "INTEGER"
+              }
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "value": "2",
+            "numericType": "INTEGER"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT"
+      },
+      "status": "VERIFIED",
+      "roots": [],
+      "methodIds": [
+        "RATIONAL_CLEARING"
+      ]
+    },
+    {
+      "id": "squaring-trap",
+      "source": {
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "FUNCTION",
+            "function": "SQRT",
+            "args": [
+              {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              }
+            ]
+          },
+          "right": {
+            "kind": "NUMBER",
+            "value": "-2",
+            "numericType": "INTEGER"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT"
+      },
+      "status": "UNSUPPORTED"
+    },
+    {
+      "id": "transcendental",
+      "source": {
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "FUNCTION",
+            "function": "SIN",
+            "args": [
+              {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              }
+            ]
+          },
+          "right": {
+            "kind": "NUMBER",
+            "value": "0",
+            "numericType": "INTEGER"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT"
+      },
+      "status": "UNSUPPORTED"
+    },
+    {
+      "id": "zero-multiplier",
+      "source": {
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "BINARY",
+            "operator": "MULTIPLY",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "BINARY",
+              "operator": "SUBTRACT",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "value": "2",
+                "numericType": "INTEGER"
+              }
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "value": "0",
+            "numericType": "INTEGER"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT"
+      },
+      "status": "VERIFIED",
+      "roots": [
+        "0",
+        "2"
+      ]
+    },
+    {
+      "id": "expression-factoring",
+      "source": {
+        "original": {
+          "kind": "EXPRESSION",
+          "expression": {
+            "kind": "BINARY",
+            "operator": "SUBTRACT",
+            "left": {
+              "kind": "BINARY",
+              "operator": "POWER",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "value": "2",
+                "numericType": "INTEGER"
+              }
+            },
+            "right": {
+              "kind": "NUMBER",
+              "value": "4",
+              "numericType": "INTEGER"
+            }
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT"
+      },
+      "status": "VERIFIED",
+      "methodIds": [
+        "SYMBOLIC_SIMPLIFICATION"
+      ]
+    },
+    {
+      "id": "no-change",
+      "source": {
+        "original": {
+          "kind": "EXPRESSION",
+          "expression": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT"
+      },
+      "status": "NO_ALTERNATIVE"
+    },
+    {
+      "id": "unknown-domain",
+      "source": {
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "BINARY",
+            "operator": "ADD",
+            "left": {
+              "kind": "BINARY",
+              "operator": "ADD",
+              "left": {
+                "kind": "BINARY",
+                "operator": "MULTIPLY",
+                "left": {
+                  "kind": "NUMBER",
+                  "value": "1",
+                  "numericType": "INTEGER"
+                },
+                "right": {
+                  "kind": "BINARY",
+                  "operator": "POWER",
+                  "left": {
+                    "kind": "VARIABLE",
+                    "symbol": "x"
+                  },
+                  "right": {
+                    "kind": "NUMBER",
+                    "value": "2",
+                    "numericType": "INTEGER"
+                  }
+                }
+              },
+              "right": {
+                "kind": "BINARY",
+                "operator": "MULTIPLY",
+                "left": {
+                  "kind": "NUMBER",
+                  "value": "-5",
+                  "numericType": "INTEGER"
+                },
+                "right": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                }
+              }
+            },
+            "right": {
+              "kind": "NUMBER",
+              "value": "6",
+              "numericType": "INTEGER"
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "value": "0",
+            "numericType": "INTEGER"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "UNRESOLVED"
+      },
+      "status": "UNSUPPORTED"
+    },
+    {
+      "id": "restricted-roots",
+      "source": {
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "BINARY",
+            "operator": "ADD",
+            "left": {
+              "kind": "BINARY",
+              "operator": "ADD",
+              "left": {
+                "kind": "BINARY",
+                "operator": "MULTIPLY",
+                "left": {
+                  "kind": "NUMBER",
+                  "value": "1",
+                  "numericType": "INTEGER"
+                },
+                "right": {
+                  "kind": "BINARY",
+                  "operator": "POWER",
+                  "left": {
+                    "kind": "VARIABLE",
+                    "symbol": "x"
+                  },
+                  "right": {
+                    "kind": "NUMBER",
+                    "value": "2",
+                    "numericType": "INTEGER"
+                  }
+                }
+              },
+              "right": {
+                "kind": "BINARY",
+                "operator": "MULTIPLY",
+                "left": {
+                  "kind": "NUMBER",
+                  "value": "-5",
+                  "numericType": "INTEGER"
+                },
+                "right": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                }
+              }
+            },
+            "right": {
+              "kind": "NUMBER",
+              "value": "6",
+              "numericType": "INTEGER"
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "value": "0",
+            "numericType": "INTEGER"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [
+          {
+            "id": "exclude2",
+            "relation": "NOT_EQUALS",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "NUMBER",
+              "value": "2",
+              "numericType": "INTEGER"
+            }
+          }
+        ],
+        "domainBasis": "SOURCE_EXPLICIT"
+      },
+      "status": "VERIFIED",
+      "roots": [
+        "3"
+      ]
+    },
+    {
+      "id": "absolute-cases",
+      "source": {
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "FUNCTION",
+            "function": "ABS",
+            "args": [
+              {
+                "kind": "BINARY",
+                "operator": "SUBTRACT",
+                "left": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "value": "1",
+                  "numericType": "INTEGER"
+                }
+              }
+            ]
+          },
+          "right": {
+            "kind": "NUMBER",
+            "value": "3",
+            "numericType": "INTEGER"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT"
+      },
+      "status": "VERIFIED",
+      "roots": [
+        "-2",
+        "4"
+      ],
+      "methodIds": [
+        "ABSOLUTE_CASES"
+      ]
+    },
+    {
+      "id": "expression-expansion",
+      "source": {
+        "original": {
+          "kind": "EXPRESSION",
+          "expression": {
+            "kind": "BINARY",
+            "operator": "MULTIPLY",
+            "left": {
+              "kind": "BINARY",
+              "operator": "ADD",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "value": "2",
+                "numericType": "INTEGER"
+              }
+            },
+            "right": {
+              "kind": "BINARY",
+              "operator": "ADD",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "value": "3",
+                "numericType": "INTEGER"
+              }
+            }
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT"
+      },
+      "status": "VERIFIED",
+      "methodIds": [
+        "POLYNOMIAL_EXPANSION"
+      ]
+    }
+  ]
+}

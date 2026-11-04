@@ -59,6 +59,22 @@ class StudentAttemptControllerTest extends PostgresIntegrationTestSupport {
         assertThat(request(owner.accessToken(),"POST","/"+UUID.randomUUID()+"/counterfactual-twin/answer","{\"selectedOption\":1,\"correct\":true}").statusCode()).isEqualTo(422);
         assertThat(request(owner.accessToken(),"POST","/extractions","{\"assetSessionId\":\"bad\",\"provider\":\"forged\"}").statusCode()).isEqualTo(422);
     }
+    @Test void sourceComparisonAuthenticationAuthorityAndDefaultOff() throws Exception {
+        var other=identity.signInWithApple(new AppleSignInCommand(UUID.randomUUID().toString(),"synthetic-code","nonce"));
+        var source=new com.fasterxml.jackson.databind.ObjectMapper().readTree(request(owner.accessToken(),"GET","/context","").body()).path("source");
+        String body="{\"schemaVersion\":\"method-comparison-v2\",\"source\":"+source+"}";
+        assertThat(sourceRequest(null,body).statusCode()).isEqualTo(401);
+        assertThat(sourceRequest(other.accessToken(),body).statusCode()).isEqualTo(404);
+        assertThat(sourceRequest(owner.accessToken(),body).statusCode()).isEqualTo(503);
+        assertThat(sourceRequest(owner.accessToken(),"{\"schemaVersion\":\"method-comparison-v2\",\"source\":"+source+",\"verified\":true}").statusCode()).isEqualTo(422);
+        assertThat(sourceRequest(owner.accessToken(),"{\"payload\":\""+"x".repeat(17000)+"\"}").statusCode()).isEqualTo(413);
+    }
+    HttpResponse<String> sourceRequest(String token,String body) throws Exception {
+        var b=HttpRequest.newBuilder(URI.create("http://localhost:"+port+"/api/v1/problem-sessions/"+problem+"/alternative-methods"))
+            .header("Content-Type","application/json").header("Idempotency-Key","synthetic-comparison");
+        if(token!=null)b.header("Authorization","Bearer "+token);
+        return HttpClient.newHttpClient().send(b.POST(HttpRequest.BodyPublishers.ofString(body)).build(),HttpResponse.BodyHandlers.ofString());
+    }
     @TestConfiguration static class AuthConfig {
         // These HTTP tests exercise authorization/contracts, without an owner-managed Redis dependency.
         @Bean @Primary com.verifiedai.sharedkernel.ratelimit.RateLimiter rateLimiter() {

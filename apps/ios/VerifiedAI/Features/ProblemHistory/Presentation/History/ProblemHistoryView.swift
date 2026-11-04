@@ -243,6 +243,16 @@ private struct ProblemSessionRecoveryDetailView: View {
                     .buttonStyle(.borderedProminent)
                 } else if detail.nextAction == .readyForSolve && makeSolveModel == nil {
                     Text("solve.error.disabled").fixedSize(horizontal: false, vertical: true)
+                } else if detail.nextAction == .readyForSolve {
+                    // This action is local navigation, not an asynchronous workflow command.
+                    // Let the sheet's NavigationStack own the transition directly.
+                    NavigationLink(value: RecoveryDestination.solve) {
+                        Label("solve.start", systemImage: "arrow.right.circle")
+                            .frame(maxWidth: .infinity, minHeight: 44)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .accessibilityIdentifier("history.solve")
                 } else {
                     Button {
                         performAction()

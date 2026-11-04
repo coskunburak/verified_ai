@@ -28,6 +28,10 @@ struct PrimarySolveView: View {
                     NavigationLink("attempt.title") { AnalyzeMyWorkCaptureView(viewModel: attempt, tutor: viewModel.tutorModel) }
                         .accessibilityIdentifier("attempt.open")
                 }
+                if let learning = viewModel.attemptModel?.learning {
+                    NavigationLink("attempt.methods.title") { SourceMethodComparisonView(model: learning) }
+                        .accessibilityIdentifier("attempt.methods.open")
+                }
                 statusCard
                 #if DEBUG
                 if let state = viewModel.controlledFixtureState {

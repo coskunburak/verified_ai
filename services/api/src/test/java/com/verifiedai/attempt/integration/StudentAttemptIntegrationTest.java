@@ -168,7 +168,7 @@ class StudentAttemptIntegrationTest extends PostgresIntegrationTestSupport {
         var learningStore=new com.verifiedai.attempt.infrastructure.persistence.AttemptLearningRepository(jdbc);
         var learning=new AttemptLearningService(store,learningStore,sources,synthetic,codec,
             new com.verifiedai.tutoring.application.learning.TutorAssistanceReader(jdbc),transactions,Clock.systemUTC(),
-            (p,k)->RateLimitDecision.allow(),new SimpleMeterRegistry(),true);
+            (p,k)->RateLimitDecision.allow(),new SimpleMeterRegistry(),true,reader);
         var open=learning.create(owner,problem,attempt.id(),"create-twin-key");
         assertThat(open.correctOption()).isNull(); assertThat(open.explanationKey()).isNull(); assertThat(open.status()).isEqualTo("OPEN");
         assertThat(learning.create(owner,problem,attempt.id(),"create-twin-key").id()).isEqualTo(open.id());
@@ -186,6 +186,76 @@ class StudentAttemptIntegrationTest extends PostgresIntegrationTestSupport {
         assertThat(tx.execute(t->store.learningExport(owner)).toString()).doesNotContain("answer_key","answer-twin-key");
         tx.executeWithoutResult(t->{ sources.lockOwner(owner,problem); store.delete(owner); });
         assertThat(jdbc.queryForObject("select count(*) from counterfactual_twin_drills where user_id=?",Integer.class,owner)).isZero();
+    }
+
+    AttemptLearningService comparisonService(java.util.function.Consumer<UUID> during,boolean enabled) {
+        AttemptVerifierClient client=new AttemptVerifierClient() {
+            public AttemptAnalysisResult verify(UUID id,int count,String request) { return review().verify(id,count,request); }
+            public MethodComparisonEvidence comparison(UUID id,String request) {
+                assertThat(org.springframework.transaction.support.TransactionSynchronizationManager.isActualTransactionActive()).isFalse();
+                during.accept(id);
+                return new MethodComparisonEvidence("method-comparison-result-v2","bounded-methods-v2",id,id.toString(),
+                    "METHODS","UNSUPPORTED","UNSUPPORTED_SOURCE",codec.parse(request).path("source"),null,List.of());
+            }
+        };
+        return new AttemptLearningService(store,new com.verifiedai.attempt.infrastructure.persistence.AttemptLearningRepository(jdbc),
+            sources,client,codec,new com.verifiedai.tutoring.application.learning.TutorAssistanceReader(jdbc),transactions,
+            Clock.systemUTC(),(p,k)->RateLimitDecision.allow(),new SimpleMeterRegistry(),enabled,reader);
+    }
+    @Test void sourceComparisonReplaysWithoutAttemptsOrDurableArtifacts() {
+        var learning=comparisonService(id->{},true);
+        var first=learning.comparison(owner,problem,null,source,"comparison-key-one");
+        var replay=learning.comparison(owner,problem,null,source,"comparison-key-one");
+        assertThat(replay).isEqualTo(first);
+        assertThat(first.evidence().status()).isEqualTo("UNSUPPORTED");
+        assertThat(first.evidence().methods()).isEmpty(); assertThat(first.trainingEligible()).isFalse();
+        assertThat(store.history(owner,problem)).isEmpty();
+        assertThat(jdbc.queryForObject("select count(*) from attempt_verified_methods where user_id=?",Integer.class,owner)).isZero();
+    }
+    @Test void sourceComparisonRejectsStaleCrossOwnerAndDisabledRequests() {
+        var calls=new java.util.concurrent.atomic.AtomicInteger(); var learning=comparisonService(id->calls.incrementAndGet(),true);
+        assertThatThrownBy(()->learning.comparison(UUID.randomUUID(),problem,null,source,"comparison-owner")).isInstanceOf(ApiProblemException.class);
+        var stale=new AttemptSourceIdentity(source.canonicalId(),source.canonicalRevision()+1,source.parseId(),source.parseRevision());
+        assertThatThrownBy(()->learning.comparison(owner,problem,null,stale,"comparison-stale")).isInstanceOf(ApiProblemException.class);
+        assertThatThrownBy(()->comparisonService(id->calls.incrementAndGet(),false).comparison(owner,problem,null,source,"comparison-disabled")).isInstanceOf(ApiProblemException.class);
+        assertThat(calls.get()).isZero();
+    }
+    @Test void sourceComparisonReauthorizesAfterRevocationAndSourceChange() {
+        assertThatThrownBy(()->comparisonService(id->jdbc.update("update problem_sessions set current_parse_id=null where id=?",problem),true)
+            .comparison(owner,problem,null,source,"comparison-source")).isInstanceOf(ApiProblemException.class);
+    }
+    @Test void sourceComparisonReauthorizesAccountStatus() {
+        assertThatThrownBy(()->comparisonService(id->jdbc.update("delete from users where id=?",owner),true)
+            .comparison(owner,problem,null,source,"comparison-revoked")).isInstanceOf(ApiProblemException.class);
+    }
+    @Test void concurrentSourceComparisonsHaveStableIdentityAndNoWrites() throws Exception {
+        var barrier=new CyclicBarrier(2);
+        var learning=comparisonService(id->{try { barrier.await(5,TimeUnit.SECONDS); } catch(Exception ex) { throw new IllegalStateException(ex); }},true);
+        try(var executor=Executors.newFixedThreadPool(2)) {
+            var a=executor.submit(()->learning.comparison(owner,problem,null,source,"comparison-concurrent"));
+            var b=executor.submit(()->learning.comparison(owner,problem,null,source,"comparison-concurrent"));
+            assertThat(a.get(10,TimeUnit.SECONDS)).isEqualTo(b.get(10,TimeUnit.SECONDS));
+        }
+        assertThat(store.history(owner,problem)).isEmpty();
+    }
+
+    @Test void comparisonDoesNotOverwriteLegacyEvidenceAndPrivacyStillDeletesIt() {
+        var saved=service(review(),true).submit(owner,problem,"comparison-history",source,List.of("x=4"),true);
+        var learningStore=new com.verifiedai.attempt.infrastructure.persistence.AttemptLearningRepository(jdbc);
+        var original=codec.parse(store.request(owner,saved.id())).path("original");
+        var legacy=new AttemptLearningEvidence("attempt-learning-result-v1","bounded-learning-v1",saved.id(),saved.id().toString(),
+            "METHODS","VERIFIED",null,List.of(new AttemptLearningEvidence.Method("SYMBOLIC_SIMPLIFICATION",List.of(original),"verified-method-v1")));
+        var tx=new TransactionTemplate(transactions);
+        tx.executeWithoutResult(t->{sources.lockOwner(owner,problem);learningStore.saveMethods(owner,saved.id(),legacy,Instant.now());});
+        var comparison=comparisonService(id->{},true).comparison(owner,problem,saved.id(),source,"comparison-history-v2");
+        assertThat(comparison.attemptId()).isEqualTo(saved.id());
+        assertThat(learningStore.methods(owner,saved.id()).orElseThrow()).isEqualTo(legacy);
+        assertThatThrownBy(()->jdbc.update("update attempt_verified_methods set evidence='{}'::jsonb where attempt_id=?",saved.id()))
+            .isInstanceOf(org.springframework.dao.DataIntegrityViolationException.class);
+        var privacy=new StudentAttemptPrivacyLifecycleContributor(store);
+        assertThat(tx.execute(t->privacy.exportUserData(owner)).toString()).contains("verified-method-v1");
+        tx.executeWithoutResult(t->{sources.lockOwner(owner,problem);privacy.deleteUserData(owner,Instant.now());});
+        assertThat(learningStore.methods(owner,saved.id())).isEmpty();
     }
 
 }

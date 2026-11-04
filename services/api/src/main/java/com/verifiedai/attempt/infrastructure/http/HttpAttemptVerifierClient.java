@@ -74,6 +74,28 @@ public class HttpAttemptVerifierClient implements AttemptVerifierClient {
         catch(Exception ex) { throw new IllegalStateException("Verifier unavailable"); }
         finally { if(pending!=null && !pending.isDone()) pending.cancel(true); slots.release(); }
     }
+    public MethodComparisonEvidence comparison(UUID id,String request) {
+        if(!slots.tryAcquire()) throw new ComparisonFailure(ComparisonFailureReason.ADMISSION_LIMIT);
+        CompletableFuture<HttpResponse<byte[]>> pending=null;
+        try {
+            if(request.getBytes(java.nio.charset.StandardCharsets.UTF_8).length>65536) throw new IllegalArgumentException();
+            var http=HttpRequest.newBuilder(endpoint.resolve("/internal/v1/verify/attempt-learning")).timeout(Duration.ofSeconds(4))
+                .header("Content-Type","application/json").header("Accept","application/json")
+                .header("X-Internal-Token",token).header("X-Request-Id",id.toString())
+                .POST(HttpRequest.BodyPublishers.ofString(request)).build();
+            pending=client.sendAsync(http,info->new LimitedBody()); var response=pending.get(4500,TimeUnit.MILLISECONDS);
+            if(response.statusCode()!=200 || !response.headers().firstValue("Content-Type").orElse("").startsWith("application/json")) throw new ComparisonFailure(ComparisonFailureReason.WORKER_FAILURE);
+            String body=new String(response.body(),java.nio.charset.StandardCharsets.UTF_8);
+            com.verifiedai.sharedkernel.contracts.VersionedJsonContract.validate("method-comparison-result-v2",body);
+            var evidence=mapper.readValue(body,MethodComparisonEvidence.class);
+            evidence.validateFor(id,mapper.readTree(request).path("source")); return evidence;
+        } catch(ComparisonFailure ex) { throw ex; }
+        catch(TimeoutException ex) { throw new ComparisonFailure(ComparisonFailureReason.TIMEOUT); }
+        catch(InterruptedException ex) { Thread.currentThread().interrupt(); throw new ComparisonFailure(ComparisonFailureReason.WORKER_FAILURE); }
+        catch(ExecutionException ex) { throw new ComparisonFailure(ex.getCause() instanceof HttpTimeoutException ? ComparisonFailureReason.TIMEOUT : ComparisonFailureReason.WORKER_FAILURE); }
+        catch(Exception ex) { throw new ComparisonFailure(ComparisonFailureReason.INVALID_RESPONSE); }
+        finally { if(pending!=null && !pending.isDone()) pending.cancel(true); slots.release(); }
+    }
     private static final class LimitedBody implements HttpResponse.BodySubscriber<byte[]> {
         private final CompletableFuture<byte[]> body = new CompletableFuture<>();
         private final ByteArrayOutputStream bytes = new ByteArrayOutputStream();

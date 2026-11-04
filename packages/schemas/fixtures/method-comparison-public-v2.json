@@ -1,0 +1,409 @@
+{
+  "schemaVersion": "method-comparison-public-v2",
+  "problemId": "00000000-0000-0000-0000-000000000068",
+  "attemptId": null,
+  "source": {
+    "canonicalId": "00000000-0000-0000-0000-000000000068",
+    "canonicalRevision": 1,
+    "parseId": "00000000-0000-0000-0000-000000000068",
+    "parseRevision": 1
+  },
+  "freshness": "CURRENT_AT_PUBLICATION",
+  "trainingEligible": false,
+  "evidence": {
+    "schemaVersion": "method-comparison-result-v2",
+    "verifierVersion": "bounded-methods-v2",
+    "executionId": "00000000-0000-0000-0000-000000000068",
+    "correlationId": "00000000-0000-0000-0000-000000000068",
+    "action": "METHODS",
+    "status": "VERIFIED",
+    "reasonCode": "EXACT_METHODS",
+    "source": {
+      "original": {
+        "kind": "RELATION",
+        "relation": "EQUALS",
+        "left": {
+          "kind": "BINARY",
+          "operator": "ADD",
+          "left": {
+            "kind": "BINARY",
+            "operator": "SUBTRACT",
+            "left": {
+              "kind": "BINARY",
+              "operator": "POWER",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "value": "2",
+                "numericType": "INTEGER"
+              }
+            },
+            "right": {
+              "kind": "BINARY",
+              "operator": "MULTIPLY",
+              "left": {
+                "kind": "NUMBER",
+                "value": "5",
+                "numericType": "INTEGER"
+              },
+              "right": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              }
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "value": "6",
+            "numericType": "INTEGER"
+          }
+        },
+        "right": {
+          "kind": "NUMBER",
+          "value": "0",
+          "numericType": "INTEGER"
+        }
+      },
+      "variables": [
+        {
+          "symbol": "x",
+          "domain": "REAL"
+        }
+      ],
+      "restrictions": [],
+      "domainBasis": "SOURCE_EXPLICIT"
+    },
+    "naturalDomain": {
+      "kind": "REALS"
+    },
+    "methods": [
+      {
+        "methodId": "FACTORING",
+        "evidenceVersion": "verified-method-v2",
+        "steps": [
+          {
+            "kind": "RELATION",
+            "relation": "EQUALS",
+            "left": {
+              "kind": "BINARY",
+              "operator": "MULTIPLY",
+              "left": {
+                "kind": "BINARY",
+                "operator": "SUBTRACT",
+                "left": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "value": "2",
+                  "numericType": "INTEGER"
+                }
+              },
+              "right": {
+                "kind": "BINARY",
+                "operator": "SUBTRACT",
+                "left": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "value": "3",
+                  "numericType": "INTEGER"
+                }
+              }
+            },
+            "right": {
+              "kind": "NUMBER",
+              "value": "0",
+              "numericType": "INTEGER"
+            }
+          },
+          {
+            "kind": "RELATION",
+            "relation": "MEMBER_OF",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "FINITE_SET",
+              "args": [
+                {
+                  "kind": "NUMBER",
+                  "value": "2",
+                  "numericType": "INTEGER"
+                },
+                {
+                  "kind": "NUMBER",
+                  "value": "3",
+                  "numericType": "INTEGER"
+                }
+              ]
+            }
+          }
+        ],
+        "stepReasons": [
+          "ZERO_PRODUCT",
+          "COMPLETE_REAL_SET"
+        ],
+        "proofScope": "SOURCE_DOMAIN_COMPLETE_OUTCOME",
+        "transitionStatus": "EXACT_SYMBOLIC",
+        "outcomeStatus": "COMPLETE_SOLUTION_SET",
+        "comparison": {
+          "policyVersion": "method-comparison-policy-v3",
+          "presentationVersion": "method-presentation-v2",
+          "applicability": "RATIONAL_QUADRATIC",
+          "reasonCode": "ZERO_PRODUCT",
+          "prerequisite": "FACTORING",
+          "advantage": "VISIBLE_FACTORS",
+          "limitation": "FACTOR_DISCOVERY",
+          "domainCautions": [
+            "REAL_DOMAIN"
+          ],
+          "structuralStepCount": 2,
+          "compactStepIndices": [
+            0,
+            1
+          ],
+          "manipulationLevel": "LOW",
+          "recommendation": "FACTORABLE_OVER_RATIONALS"
+        }
+      },
+      {
+        "methodId": "COMPLETING_SQUARE",
+        "evidenceVersion": "verified-method-v2",
+        "steps": [
+          {
+            "kind": "RELATION",
+            "relation": "EQUALS",
+            "left": {
+              "kind": "BINARY",
+              "operator": "POWER",
+              "left": {
+                "kind": "BINARY",
+                "operator": "SUBTRACT",
+                "left": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                },
+                "right": {
+                  "kind": "BINARY",
+                  "operator": "DIVIDE",
+                  "left": {
+                    "kind": "NUMBER",
+                    "value": "5",
+                    "numericType": "INTEGER"
+                  },
+                  "right": {
+                    "kind": "NUMBER",
+                    "value": "2",
+                    "numericType": "INTEGER"
+                  }
+                }
+              },
+              "right": {
+                "kind": "NUMBER",
+                "value": "2",
+                "numericType": "INTEGER"
+              }
+            },
+            "right": {
+              "kind": "BINARY",
+              "operator": "DIVIDE",
+              "left": {
+                "kind": "NUMBER",
+                "value": "1",
+                "numericType": "INTEGER"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "value": "4",
+                "numericType": "INTEGER"
+              }
+            }
+          },
+          {
+            "kind": "RELATION",
+            "relation": "MEMBER_OF",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "FINITE_SET",
+              "args": [
+                {
+                  "kind": "NUMBER",
+                  "value": "2",
+                  "numericType": "INTEGER"
+                },
+                {
+                  "kind": "NUMBER",
+                  "value": "3",
+                  "numericType": "INTEGER"
+                }
+              ]
+            }
+          }
+        ],
+        "stepReasons": [
+          "SQUARE_IDENTITY",
+          "COMPLETE_REAL_SET"
+        ],
+        "proofScope": "SOURCE_DOMAIN_COMPLETE_OUTCOME",
+        "transitionStatus": "EXACT_SYMBOLIC",
+        "outcomeStatus": "COMPLETE_SOLUTION_SET",
+        "comparison": {
+          "policyVersion": "method-comparison-policy-v3",
+          "presentationVersion": "method-presentation-v2",
+          "applicability": "RATIONAL_QUADRATIC",
+          "reasonCode": "SQUARE_IDENTITY",
+          "prerequisite": "SQUARE_IDENTITIES",
+          "advantage": "VISIBLE_VERTEX",
+          "limitation": "FRACTION_ARITHMETIC",
+          "domainCautions": [
+            "REAL_DOMAIN"
+          ],
+          "structuralStepCount": 2,
+          "compactStepIndices": [
+            0,
+            1
+          ],
+          "manipulationLevel": "MODERATE",
+          "recommendation": "VERTEX_FORM"
+        }
+      },
+      {
+        "methodId": "QUADRATIC_FORMULA",
+        "evidenceVersion": "verified-method-v2",
+        "steps": [
+          {
+            "kind": "RELATION",
+            "relation": "MEMBER_OF",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "FINITE_SET",
+              "args": [
+                {
+                  "kind": "BINARY",
+                  "operator": "DIVIDE",
+                  "left": {
+                    "kind": "BINARY",
+                    "operator": "ADD",
+                    "left": {
+                      "kind": "NUMBER",
+                      "value": "5",
+                      "numericType": "INTEGER"
+                    },
+                    "right": {
+                      "kind": "FUNCTION",
+                      "function": "SQRT",
+                      "args": [
+                        {
+                          "kind": "NUMBER",
+                          "value": "1",
+                          "numericType": "INTEGER"
+                        }
+                      ]
+                    }
+                  },
+                  "right": {
+                    "kind": "NUMBER",
+                    "value": "2",
+                    "numericType": "INTEGER"
+                  }
+                },
+                {
+                  "kind": "BINARY",
+                  "operator": "DIVIDE",
+                  "left": {
+                    "kind": "BINARY",
+                    "operator": "SUBTRACT",
+                    "left": {
+                      "kind": "NUMBER",
+                      "value": "5",
+                      "numericType": "INTEGER"
+                    },
+                    "right": {
+                      "kind": "FUNCTION",
+                      "function": "SQRT",
+                      "args": [
+                        {
+                          "kind": "NUMBER",
+                          "value": "1",
+                          "numericType": "INTEGER"
+                        }
+                      ]
+                    }
+                  },
+                  "right": {
+                    "kind": "NUMBER",
+                    "value": "2",
+                    "numericType": "INTEGER"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "kind": "RELATION",
+            "relation": "MEMBER_OF",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "FINITE_SET",
+              "args": [
+                {
+                  "kind": "NUMBER",
+                  "value": "2",
+                  "numericType": "INTEGER"
+                },
+                {
+                  "kind": "NUMBER",
+                  "value": "3",
+                  "numericType": "INTEGER"
+                }
+              ]
+            }
+          }
+        ],
+        "stepReasons": [
+          "DISCRIMINANT_FORMULA",
+          "COMPLETE_REAL_SET"
+        ],
+        "proofScope": "SOURCE_DOMAIN_COMPLETE_OUTCOME",
+        "transitionStatus": "EXACT_SYMBOLIC",
+        "outcomeStatus": "COMPLETE_SOLUTION_SET",
+        "comparison": {
+          "policyVersion": "method-comparison-policy-v3",
+          "presentationVersion": "method-presentation-v2",
+          "applicability": "RATIONAL_QUADRATIC",
+          "reasonCode": "DISCRIMINANT_FORMULA",
+          "prerequisite": "QUADRATIC_FORMULA",
+          "advantage": "GENERAL_QUADRATIC",
+          "limitation": "FORMULA_SUBSTITUTION",
+          "domainCautions": [
+            "REAL_DOMAIN"
+          ],
+          "structuralStepCount": 2,
+          "compactStepIndices": [
+            0,
+            1
+          ],
+          "manipulationLevel": "MODERATE",
+          "recommendation": "EQUALLY_VALID"
+        }
+      }
+    ]
+  }
+}

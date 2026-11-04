@@ -20,6 +20,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 
 @Service
 public class AttemptLearningService {
+    private static final org.slf4j.Logger LOG=org.slf4j.LoggerFactory.getLogger(AttemptLearningService.class);
     private final StudentAttemptRepository attempts;
     private final AttemptLearningRepository store;
     private final SolveSourceAccess sources;
@@ -31,9 +32,11 @@ public class AttemptLearningService {
     private final RateLimiter limiter;
     private final MeterRegistry metrics;
     private final boolean enabled;
+    private final com.verifiedai.verification.application.VerificationSourceReader reader;
     public AttemptLearningService(StudentAttemptRepository attempts,AttemptLearningRepository store,SolveSourceAccess sources,
         AttemptVerifierClient verifier,CanonicalMathCodec codec,TutorAssistanceReader assistance,PlatformTransactionManager transactions,
-        Clock clock,RateLimiter limiter,MeterRegistry metrics,@Value("${verifiedai.attempt.enabled:false}") boolean enabled) {
+        Clock clock,RateLimiter limiter,MeterRegistry metrics,@Value("${verifiedai.attempt.enabled:false}") boolean enabled, com.verifiedai.verification.application.VerificationSourceReader reader) {
+        this.reader=reader;
         this.attempts=attempts; this.store=store; this.sources=sources; this.verifier=verifier; this.codec=codec; this.assistance=assistance;
         this.tx=new TransactionTemplate(transactions); tx.setTimeout(5); this.clock=clock; this.limiter=limiter; this.metrics=metrics; this.enabled=enabled;
     }
@@ -89,6 +92,111 @@ public class AttemptLearningService {
                 store.saveMethods(owner,attempt,evidence,clock.instant()); return evidence; });
         });
     }
+    public record PublicComparison(String schemaVersion,UUID problemId,UUID attemptId,AttemptSourceIdentity source,
+        String freshness,boolean trainingEligible,MethodComparisonEvidence evidence) { }
+    public PublicComparison comparison(UUID owner,UUID problem,UUID attempt,AttemptSourceIdentity expected,String key) {
+        long started=System.nanoTime(); String outcome="INTERNAL_ERROR";
+        try {
+            var result=compareOwned(owner,problem,attempt,expected,key); outcome=result.evidence().status(); return result;
+        } catch(ApiProblemException ex) { outcome=ex.code().name(); throw ex; }
+        finally {
+            metrics.counter("attempt.methods.requests","outcome",outcome).increment();
+            io.micrometer.core.instrument.Timer.builder("attempt.methods.request.duration").publishPercentileHistogram()
+                .serviceLevelObjectives(Duration.ofMillis(250),Duration.ofSeconds(1),Duration.ofSeconds(5))
+                .register(metrics).record(System.nanoTime()-started,java.util.concurrent.TimeUnit.NANOSECONDS);
+            LOG.info("method_comparison request={} outcome={} elapsed_ms={}",
+                com.verifiedai.sharedkernel.observability.CorrelationIds.current(),outcome,(System.nanoTime()-started)/1_000_000);
+        }
+    }
+    private PublicComparison compareOwned(UUID owner,UUID problem,UUID attempt,AttemptSourceIdentity expected,String key) {
+        key(key);
+        return operation(owner,()-> {
+            // Ephemeral deterministic projection: no write, cache, synthetic attempt or idempotency-key ledger.
+            record Prepared(AttemptSourceIdentity identity,JsonNode source,UUID execution,String request) { }
+            var prepared=tx.execute(t->{
+                var current=sources.current(owner,problem);
+                if(!enabled) throw unavailable();
+                var identity=identity(current);
+                JsonNode source;
+                if(attempt!=null) {
+                    var saved=owned(owner,problem,attempt,true);
+                    if(expected!=null && !expected.equals(saved.source())) throw stale();
+                    String stored=attempts.request(owner,attempt);
+                    if(stored==null) throw unavailable();
+                    var original=codec.parse(stored);
+                    if(!"attempt-verification-v2".equals(original.path("schemaVersion").asText())) throw unavailable();
+                    var selected=codec.object();
+                    for(String field:List.of("original","variables","restrictions","domainBasis")) selected.set(field,original.path(field));
+                    source=selected;
+                } else {
+                    if(expected==null || !identity.equals(expected)) throw stale();
+                    try { source=comparisonSource(current); }
+                    catch(IllegalArgumentException | com.verifiedai.verification.application.VerificationSourceReader.SourceRejected ex) { throw unavailable(); }
+                }
+                UUID execution=UUID.nameUUIDFromBytes(("method-comparison-policy-v3:"+owner+":"+problem+":"+identity+":"+attempt+":"+source)
+                    .getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                var request=codec.object().put("schemaVersion","method-comparison-v2").put("executionId",execution.toString())
+                    .put("correlationId",execution.toString()).put("action","METHODS");
+                request.set("source",source);
+                try { com.verifiedai.sharedkernel.contracts.VersionedJsonContract.validate("method-comparison-v2",request.toString()); }
+                catch(IllegalArgumentException ex) { throw unavailable(); }
+                return new Prepared(identity,source,execution,request.toString());
+            });
+            MethodComparisonEvidence evidence;
+            long started=System.nanoTime();
+            try {
+                evidence=verifier.comparison(prepared.execution(),prepared.request());
+                com.verifiedai.sharedkernel.contracts.VersionedJsonContract.validate("method-comparison-result-v2",codec.encode(evidence));
+                evidence.validateFor(prepared.execution(),prepared.source());
+            } catch(AttemptVerifierClient.ComparisonFailure ex) {
+                methodFailure(prepared.execution(),ex.reason().name()); throw unavailable();
+            } catch(IllegalArgumentException | IllegalStateException ex) {
+                methodFailure(prepared.execution(),"INVALID_RESPONSE"); throw unavailable();
+            }
+            finally { metrics.timer("attempt.methods.duration").record(System.nanoTime()-started,java.util.concurrent.TimeUnit.NANOSECONDS); }
+            metrics.counter("attempt.methods.outcome","status",evidence.status()).increment();
+            if("UNAVAILABLE".equals(evidence.status())) { methodFailure(prepared.execution(),evidence.reasonCode()); throw unavailable(); }
+            return tx.execute(t->{
+                if(!prepared.identity().equals(identity(sources.current(owner,problem)))) throw stale();
+                if(attempt!=null) owned(owner,problem,attempt,true);
+                return new PublicComparison("method-comparison-public-v2",problem,attempt,prepared.identity(),"CURRENT_AT_PUBLICATION",false,evidence);
+            });
+        });
+    }
+    private void methodFailure(UUID execution,String reason) {
+        metrics.counter("attempt.methods.failure","reason",reason).increment();
+        LOG.warn("method_comparison request={} execution={} reason={}",
+            com.verifiedai.sharedkernel.observability.CorrelationIds.current(),execution,reason);
+    }
+    private JsonNode comparisonSource(com.verifiedai.problem.application.solving.SolveSource current) {
+        var result=codec.object(); var variables=result.putArray("variables");
+        if("canonical-problem-v3".equals(codec.parse(current.canonicalJson()).path("schemaVersion").asText())) {
+            var root=com.verifiedai.problem.application.attempt.AttemptSourceDocument.read(current);
+            com.verifiedai.problem.application.attempt.AttemptSourceDocument.variables(root);
+            for(var v:root.path("variables")) variables.addObject().put("symbol",v.path("symbol").asText()).put("domain",v.path("domain").asText());
+            result.set("original",root.path("original")); result.set("restrictions",root.path("restrictions"));
+        } else {
+            var parsed=reader.readForExecution(current);
+            if(parsed.reviewRequired() || parsed.statements().size()!=1 || parsed.variables().size()!=1
+                || !parsed.assumptionIds().isEmpty() || parsed.calculus()!=null) throw unavailable();
+            result.set("original",codec.json(parsed.statements().getFirst()));
+            parsed.variables().forEach((v,d)->variables.addObject().put("symbol",v).put("domain",d.name()));
+            var restrictions=result.putArray("restrictions");
+            for(var r:parsed.restrictions()) {
+                if(parsed.derivedRestrictionIds().contains(r.id())) continue;
+                var item=restrictions.addObject().put("id",r.id()).put("relation",r.relation().name());
+                item.set("left",codec.json(r.left())); item.set("right",codec.json(r.right()));
+            }
+        }
+        boolean explicit=true;
+        for(var v:variables) explicit &= "REAL".equals(v.path("domain").asText());
+        result.put("domainBasis",explicit?"SOURCE_EXPLICIT":"UNRESOLVED");
+        return result;
+    }
+    private static AttemptSourceIdentity identity(com.verifiedai.problem.application.solving.SolveSource s) {
+        return new AttemptSourceIdentity(s.canonicalProblemId(),s.canonicalRevision(),s.problemParseId(),s.problemParseRevision());
+    }
+    private static ApiProblemException stale() { return AttemptAnalysisPolicy.error(ApiErrorCode.ATTEMPT_STALE_SOURCE,HttpStatus.CONFLICT); }
     public Map<String,Object> passport(UUID owner,UUID problem) {
         return operation(owner,()->tx.execute(t->{ sources.lockOwner(owner,problem); return store.passport(owner); }));
     }

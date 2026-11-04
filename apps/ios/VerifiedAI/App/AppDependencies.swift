@@ -30,6 +30,17 @@ struct AppDependencies {
         #endif
         return AttemptAnalysisAPI(client: apiClient)
     }
+    var attemptLearningAPI: (any AttemptLearningServicing)? {
+        #if DEBUG
+        let args = ProcessInfo.processInfo.arguments
+        if solveFixture && args.contains("--methods-fixture") {
+            return FixtureMethodComparisonAPI(failFirst: args.contains("--methods-fail-first"),
+                status: args.contains("--methods-unsupported") ? "UNSUPPORTED" : args.contains("--methods-empty") ? "NO_ALTERNATIVE" : "VERIFIED",
+                single: args.contains("--methods-single"))
+        }
+        #endif
+        return solveFixture ? nil : AttemptLearningAPI(client: apiClient)
+    }
     let tutorPending = TutorPendingStore()
     var tutorAPI: TutorServicing {
         #if DEBUG

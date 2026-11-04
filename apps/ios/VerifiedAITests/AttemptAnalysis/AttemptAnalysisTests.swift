@@ -205,3 +205,83 @@ final class AttemptProductContractTests: XCTestCase {
         XCTAssertNil(try reopened.loadDraft(owner: owner, problem: problem))
     }
 }
+
+
+@MainActor
+final class MethodComparisonTests: XCTestCase {
+    func testAllFamiliesRenderAndCompactKeepsOutcome() throws {
+        let f = try FixtureMethodComparisonAPI.fixture()
+        _ = try f.validated(problem: f.problemId, attempt: nil, expected: f.source)
+        XCTAssertEqual(Set(f.evidence.methods.map(\.id)), Set(["FACTORING", "COMPLETING_SQUARE", "QUADRATIC_FORMULA"]))
+        for method in f.evidence.methods {
+            XCTAssertEqual(method.indices(compact: true).last, method.steps.count - 1)
+            XCTAssertTrue(method.steps.allSatisfy { AttemptMathPresentation.latex($0) != nil })
+            XCTAssertTrue(method.steps.allSatisfy { !AttemptMathPresentation.spoken($0).isEmpty })
+        }
+    }
+    func testHistoricalV1AndMalformedV2() throws {
+        let legacy = Data(#"{"schemaVersion":"attempt-learning-result-v1","verifierVersion":"bounded-learning-v1","action":"METHODS","status":"VERIFIED","methods":[{"methodId":"SYMBOLIC_SIMPLIFICATION","evidenceVersion":"verified-method-v1","steps":[{"kind":"EXPRESSION","expression":{"kind":"VARIABLE","symbol":"x"}}]}]}"#.utf8)
+        let v1 = try JSONDecoder().decode(AttemptAlternativeMethods.self, from: legacy).validated()
+        XCTAssertEqual(v1.methods[0].indices(compact: true), [0])
+        var raw = try JSONSerialization.jsonObject(with: FixtureMethodComparisonAPI.fixtureData()) as! [String: Any]
+        raw["trainingEligible"] = true
+        let bad = try JSONDecoder().decode(MethodComparison.self, from: JSONSerialization.data(withJSONObject: raw))
+        XCTAssertThrowsError(try bad.validated(problem: bad.problemId, attempt: nil, expected: bad.source))
+    }
+    func testUnsupportedEmptyAndSingleMethodRemainTruthful() async throws {
+        let f = try FixtureMethodComparisonAPI.fixture()
+        for status in ["UNSUPPORTED", "NO_ALTERNATIVE"] {
+            let r = try await FixtureMethodComparisonAPI(status: status).comparison(problem: f.problemId, attempt: nil, source: f.source)
+            XCTAssertEqual(r.evidence.status, status); XCTAssertTrue(r.evidence.methods.isEmpty)
+        }
+        let one = try await FixtureMethodComparisonAPI(single: true).comparison(problem: f.problemId, attempt: nil, source: f.source)
+        XCTAssertEqual(one.evidence.methods.count, 1)
+    }
+    private func settle(_ model: AttemptLearningViewModel) async {
+        for _ in 0..<200 where model.busy { await Task.yield(); try? await Task.sleep(nanoseconds: 1_000_000) }
+        XCTAssertFalse(model.busy)
+    }
+    func testNetworkRetryAndDuplicateTapFence() async throws {
+        let f = try FixtureMethodComparisonAPI.fixture()
+        let model = AttemptLearningViewModel(api: FixtureMethodComparisonAPI(failFirst: true), owner: UUID(), problem: f.problemId, ownsAccount: { true })
+        model.sourceAlternatives(); model.sourceAlternatives()
+        await settle(model)
+        XCTAssertNil(model.sourceMethods); XCTAssertNotNil(model.methodErrorKey)
+        model.sourceAlternatives(); await settle(model)
+        XCTAssertNotNil(model.sourceMethods); XCTAssertNil(model.methodErrorKey)
+    }
+    func testAccountSwitchAndSuspensionDiscardDelayedResponses() async throws {
+        let f = try FixtureMethodComparisonAPI.fixture()
+        var owns = true
+        let model = AttemptLearningViewModel(api: FixtureMethodComparisonAPI(delay: 20_000_000), owner: UUID(), problem: f.problemId, ownsAccount: { owns })
+        model.sourceAlternatives(); await Task.yield(); owns = false
+        await settle(model); XCTAssertNil(model.sourceMethods)
+        owns = true; model.sourceAlternatives(); model.suspend()
+        try await Task.sleep(nanoseconds: 30_000_000)
+        XCTAssertNil(model.sourceMethods); XCTAssertFalse(model.busy)
+    }
+    func testEnglishAndTurkishComparisonCopyExists() throws {
+        for language in ["en", "tr"] {
+            let path = try XCTUnwrap(Bundle.main.path(forResource: language, ofType: "lproj"))
+            let bundle = try XCTUnwrap(Bundle(path: path))
+            for key in ["attempt.methods.scope", "attempt.methods.learnerSeparate", "attempt.methods.SOURCE_RESTRICTIONS", "attempt.methods.exactEvidence",
+                        "attempt.methods.NATURAL_DOMAIN_EXCLUSIONS", "attempt.methods.learnerInvalid", "attempt.methods.learnerVerified"] {
+                XCTAssertNotEqual(bundle.localizedString(forKey: key, value: nil, table: nil), key)
+            }
+        }
+    }
+    func testMethodComparisonFailureClassificationAndRecovery() {
+        XCTAssertEqual(MethodComparisonFailure.classify(NetworkError.transport("offline")), .network)
+        XCTAssertTrue(MethodComparisonFailure.network.recoverable)
+        XCTAssertEqual(MethodComparisonFailure.classify(NetworkError.httpStatus(409)), .stale)
+        XCTAssertTrue(MethodComparisonFailure.stale.recoverable)
+        XCTAssertEqual(MethodComparisonFailure.classify(NetworkError.httpStatus(429)), .rateLimit)
+        XCTAssertTrue(MethodComparisonFailure.rateLimit.recoverable)
+        XCTAssertEqual(MethodComparisonFailure.classify(NetworkError.httpStatus(503)), .unavailable)
+        XCTAssertTrue(MethodComparisonFailure.unavailable.recoverable)
+        XCTAssertEqual(MethodComparisonFailure.classify(NetworkError.httpStatus(401)), .authorization)
+        XCTAssertFalse(MethodComparisonFailure.authorization.recoverable)
+        XCTAssertEqual(MethodComparisonFailure.classify(NetworkError.httpStatus(422)), .request)
+        XCTAssertFalse(MethodComparisonFailure.request.recoverable)
+    }
+}

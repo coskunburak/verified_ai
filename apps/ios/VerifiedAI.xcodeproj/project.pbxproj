@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B68000000000000000000002 /* method-comparison-public-v2.json in Resources */ = {isa = PBXBuildFile; fileRef = A68000000000000000000002 /* method-comparison-public-v2.json */; };
+		B68000000000000000000001 /* AlternativeMethodComparisonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68000000000000000000001 /* AlternativeMethodComparisonView.swift */; };
 		B67900000000000000000006 /* CounterfactualTwinSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A67900000000000000000006 /* CounterfactualTwinSheetView.swift */; };
 		B67900000000000000000005 /* AttemptLearningViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A67900000000000000000005 /* AttemptLearningViewModel.swift */; };
 		B67900000000000000000004 /* AttemptLearningAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A67900000000000000000004 /* AttemptLearningAPI.swift */; };
@@ -169,6 +171,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A68000000000000000000002 /* method-comparison-public-v2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/method-comparison-public-v2.json; sourceTree = SOURCE_ROOT; };
+		A68000000000000000000001 /* AlternativeMethodComparisonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/AttemptAnalysis/Presentation/AlternativeMethodComparisonView.swift; sourceTree = SOURCE_ROOT; };
 		A67900000000000000000006 /* CounterfactualTwinSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/AttemptAnalysis/Presentation/CounterfactualTwinSheetView.swift; sourceTree = SOURCE_ROOT; };
 		A67900000000000000000005 /* AttemptLearningViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/AttemptAnalysis/Presentation/AttemptLearningViewModel.swift; sourceTree = SOURCE_ROOT; };
 		A67900000000000000000004 /* AttemptLearningAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/AttemptAnalysis/Data/AttemptLearningAPI.swift; sourceTree = SOURCE_ROOT; };
@@ -923,6 +927,8 @@
 				A67900000000000000000004 /* AttemptLearningAPI.swift */,
 				A67900000000000000000005 /* AttemptLearningViewModel.swift */,
 				A67900000000000000000006 /* CounterfactualTwinSheetView.swift */,
+				A68000000000000000000001 /* AlternativeMethodComparisonView.swift */,
+				A68000000000000000000002 /* method-comparison-public-v2.json */,
 				A67000000000000000000001 /* AttemptAnalysisAPI.swift */,
 				A67000000000000000000002 /* AttemptAnalysisPendingStore.swift */,
 				A67000000000000000000003 /* FixtureAttemptAnalysisAPI.swift */,
@@ -1071,6 +1077,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B68000000000000000000002 /* method-comparison-public-v2.json in Resources */,
 				10000000000000000000001E /* Localizable.xcstrings in Resources */,
 				10000000000000000000001F /* PrivacyInfo.xcprivacy in Resources */,
 				100000000000000000000020 /* Assets.xcassets in Resources */,
@@ -1105,6 +1112,7 @@
 				B67900000000000000000004 /* AttemptLearningAPI.swift in Sources */,
 				B67900000000000000000005 /* AttemptLearningViewModel.swift in Sources */,
 				B67900000000000000000006 /* CounterfactualTwinSheetView.swift in Sources */,
+				B68000000000000000000001 /* AlternativeMethodComparisonView.swift in Sources */,
 				B67000000000000000000001 /* AttemptAnalysisAPI.swift in Sources */,
 				B67000000000000000000002 /* AttemptAnalysisPendingStore.swift in Sources */,
 				B67000000000000000000003 /* FixtureAttemptAnalysisAPI.swift in Sources */,

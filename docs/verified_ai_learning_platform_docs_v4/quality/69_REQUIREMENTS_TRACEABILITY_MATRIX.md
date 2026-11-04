@@ -185,3 +185,13 @@ ownership: `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.6_EXECUTIO
 | Migration integration | Active forward V030–V032 | Disposable chain PENDING_OWNER; shared NOT_AUTHORIZED |
 
 Historical targeted repairs remain PASS for the earlier source only. Source existence is not runtime acceptance.
+
+
+### Sprint 6.8 authored source trace (pending owner execution)
+
+| Requirement | Source and authored evidence | Acceptance boundary |
+|---|---|---|
+| F15 full/compact comparison | `attempt_learning.py:comparison_methods`, `AlternativeMethodComparisonView.swift`, `test_method_comparison_v2.py`, MethodComparisonTests | Same complete result and domain warnings; no timing claims |
+| Method evidence / domain safety | method-comparison v2 schemas, MethodComparisonEvidence, rational-method-comparison-v2 golden dataset | Exact bounded real algebra only; no learner verification promotion |
+| Source-backed access / privacy | AttemptLearningService.comparison, StudentAttemptIntegrationTest, StudentAttemptControllerTest | Owner/source checked twice; no fabricated attempts, no new durable artifact |
+| Local release evidence | sprint_6_8_owner_acceptance.sh and sprint_6_8_evidence.py | NOT_EXECUTED by agent; skips block, full source changes invalidate historical coverage |
