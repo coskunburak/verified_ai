@@ -390,3 +390,19 @@ Attach or persist links/artifacts for:
 
 Codex must implement this sprint in small reviewable slices, re-reading the highest-precedence semantic documents before changing domain/API/data contracts. It must not “simplify” the architecture by moving rules into prompts, client code, provider SDK adapters, generic helpers, or ungoverned ML scripts.
 <!-- PRODUCTION_EXECUTION_V3:END -->
+
+## Sprint 7.1 source reconciliation — 2026-11-05
+
+Status: LOCAL_ACCEPTANCE_PASSED. Existing Sprint 6.7–6.8 attempt/learning delivery and commercial
+Sprint 7.0A targets are reused, not recreated. The actual package is com.verifiedai and the iOS product is VerifiedAI.
+V024–V026 are historical planned/reserved paths; V030–V032 are active and V033 is the additive next migration.
+
+Explicit final-answer capture is submission-v3 → student-attempt-v2 on the existing endpoint/aggregate. Zero to eleven
+intermediate lines and a bounded exact answer are durable unassessed evidence; saving cannot invoke an LLM/verifier or
+update mastery. Legacy step submissions keep existing analysis behavior. Updated GET clients opt into native versioned
+records with representationVersion=2; default v1 remains a safe unassessed display projection. No historical last step
+is inferred to have final-answer intent. Final-answer evaluation/extraction expansion remains future-sprint scope.
+
+Owner-only execution includes tests, builds, schema validation and migrations. All Gates A–G passed in full owner
+acceptance run 20261105-151510-r9cSGm. Full rollout remains subject to ADR-011 and the phase gate; no beta outcome,
+production activation or Phase 7.2 advancement is implied.

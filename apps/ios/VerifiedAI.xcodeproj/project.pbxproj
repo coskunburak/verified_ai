@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		B69000000000000000000006 /* math-visualization-public-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = A69000000000000000000006 /* math-visualization-public-v1.json */; };
+		B71000000000000000000001 /* student-attempt-v2.json in Resources */ = {isa = PBXBuildFile; fileRef = A71000000000000000000001 /* student-attempt-v2.json */; };
 		B69000000000000000000005 /* MathVisualizationUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A69000000000000000000005 /* MathVisualizationUITests.swift */; };
 		B69000000000000000000004 /* MathVisualizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A69000000000000000000004 /* MathVisualizationTests.swift */; };
 		B69000000000000000000003 /* MathVisualizationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A69000000000000000000003 /* MathVisualizationView.swift */; };
@@ -178,6 +179,7 @@
 
 /* Begin PBXFileReference section */
 		A69000000000000000000006 /* math-visualization-public-v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/math-visualization-public-v1.json; sourceTree = SOURCE_ROOT; };
+		A71000000000000000000001 /* student-attempt-v2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/student-attempt-v2.json; sourceTree = SOURCE_ROOT; };
 		A69000000000000000000005 /* MathVisualizationUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAIUITests/MathVisualizationUITests.swift; sourceTree = SOURCE_ROOT; };
 		A69000000000000000000004 /* MathVisualizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/ProblemSolving/MathVisualizationTests.swift; sourceTree = SOURCE_ROOT; };
 		A69000000000000000000003 /* MathVisualizationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/ProblemSolving/Presentation/Visualization/MathVisualizationView.swift; sourceTree = SOURCE_ROOT; };
@@ -945,6 +947,7 @@
 				A69000000000000000000004 /* MathVisualizationTests.swift */,
 				A69000000000000000000005 /* MathVisualizationUITests.swift */,
 				A69000000000000000000006 /* math-visualization-public-v1.json */,
+				A71000000000000000000001 /* student-attempt-v2.json */,
 				A68000000000000000000001 /* AlternativeMethodComparisonView.swift */,
 				A68000000000000000000002 /* method-comparison-public-v2.json */,
 				A67000000000000000000001 /* AttemptAnalysisAPI.swift */,
@@ -1096,6 +1099,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B69000000000000000000006 /* math-visualization-public-v1.json in Resources */,
+				B71000000000000000000001 /* student-attempt-v2.json in Resources */,
 				B68000000000000000000002 /* method-comparison-public-v2.json in Resources */,
 				10000000000000000000001E /* Localizable.xcstrings in Resources */,
 				10000000000000000000001F /* PrivacyInfo.xcprivacy in Resources */,

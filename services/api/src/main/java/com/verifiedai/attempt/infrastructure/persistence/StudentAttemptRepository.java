@@ -30,24 +30,24 @@ public class StudentAttemptRepository {
                     com.verifiedai.sharedkernel.error.ApiErrorCode.IDEMPOTENCY_KEY_REUSED,org.springframework.http.HttpStatus.CONFLICT);
                 return readRow(rs);
             },owner,problem,key);
-        return rows.stream().findFirst().map(s->withSteps(owner,s));
+        return rows.stream().findFirst();
     }
     public Optional<StudentAttempt> get(UUID owner,UUID problem,UUID id) {
         return jdbc.query("select * from student_attempts where user_id=? and problem_session_id=? and id=?",
-            (rs,n)->readRow(rs),owner,problem,id).stream().findFirst().map(s->withSteps(owner,s));
+            (rs,n)->readRow(rs),owner,problem,id).stream().findFirst();
     }
     public List<StudentAttempt> history(UUID owner,UUID problem) {
         return jdbc.query("select * from student_attempts where user_id=? and problem_session_id=? order by created_at,id",
-            (rs,n)->readRow(rs),owner,problem).stream().map(s->withSteps(owner,s)).toList();
+            (rs,n)->readRow(rs),owner,problem).stream().toList();
     }
     public int count(UUID owner) { return jdbc.queryForObject("select count(*) from student_attempts where user_id=?",Integer.class,owner); }
     public void insert(UUID owner,String key,String hash,StudentAttempt s,String request) {
         jdbc.update("""
             insert into student_attempts(id,user_id,problem_session_id,canonical_id,canonical_revision,parse_id,parse_revision,
-                source_type,schema_version,normalization_version,status,create_key,request_hash,verifier_request_jsonb,created_at,updated_at,capture_review)
-            values(?,?,?,?,?,?,?,'MANUAL','student-attempt-v1',?,'SUBMITTED',?,?,?::jsonb,?,?,?::jsonb)
+                source_type,schema_version,normalization_version,status,create_key,request_hash,verifier_request_jsonb,created_at,updated_at,capture_review,final_answer)
+            values(?,?,?,?,?,?,?,'MANUAL',?,?,'SUBMITTED',?,?,?::jsonb,?,?,?::jsonb,?)
             """,s.id(),owner,s.problemSessionId(),s.source().canonicalId(),s.source().canonicalRevision(),s.source().parseId(),
-            s.source().parseRevision(),s.normalizationVersion(),key,hash,request,Timestamp.from(s.createdAt()),Timestamp.from(s.updatedAt()),encodeReview(s.captureReview()));
+            s.source().parseRevision(),s.schemaVersion(),s.normalizationVersion(),key,hash,request,Timestamp.from(s.createdAt()),Timestamp.from(s.updatedAt()),encodeReview(s.captureReview()),s.finalAnswer());
         for(var step:s.steps()) jdbc.update("""
             insert into student_attempt_steps(id,attempt_id,user_id,step_index,content,normalized_statement)
             values(?,?,?,?,?,?::jsonb)
@@ -68,20 +68,17 @@ public class StudentAttemptRepository {
         if(count(owner)>30) throw AttemptAnalysisPolicy.error(com.verifiedai.sharedkernel.error.ApiErrorCode.ATTEMPT_CAPACITY_EXCEEDED,
             org.springframework.http.HttpStatus.CONFLICT);
         return jdbc.query("select * from student_attempts where user_id=? order by created_at,id",(rs,n)->readRow(rs),owner)
-            .stream().map(s->withSteps(owner,s)).toList();
+            .stream().toList();
     }
     public Map<String,Object> learningExport(UUID owner) { return learning.export(owner); }
     public void delete(UUID owner) { learning.delete(owner); jdbc.update("delete from student_attempts where user_id=?",owner); }
-    private StudentAttempt withSteps(UUID owner,StudentAttempt s) {
-        var steps=jdbc.query("select step_index,content,normalized_statement::text from student_attempt_steps where user_id=? and attempt_id=? order by step_index",
-            (rs,n)->new StudentAttemptStep(rs.getInt(1),rs.getString(2),rs.getString(3)),owner,s.id());
-        return new StudentAttempt(s.schemaVersion(),s.id(),s.problemSessionId(),s.source(),s.sourceType(),s.normalizationVersion(),s.status(),steps,s.analysis(),s.createdAt(),s.updatedAt(),false,s.captureReview());
-    }
     private StudentAttempt readRow(ResultSet rs) throws SQLException {
+        var steps=jdbc.query("select step_index,content,normalized_statement::text from student_attempt_steps where user_id=? and attempt_id=? order by step_index",
+            (row,n)->new StudentAttemptStep(row.getInt(1),row.getString(2),row.getString(3)),rs.getObject("user_id",UUID.class),rs.getObject("id",UUID.class));
         var source=new AttemptSourceIdentity(rs.getObject("canonical_id",UUID.class),rs.getInt("canonical_revision"),rs.getObject("parse_id",UUID.class),rs.getInt("parse_revision"));
         return new StudentAttempt(rs.getString("schema_version"),rs.getObject("id",UUID.class),rs.getObject("problem_session_id",UUID.class),source,
-            AttemptSourceType.MANUAL,rs.getString("normalization_version"),AttemptStatus.valueOf(rs.getString("status")),List.of(),decode(rs.getString("analysis_jsonb")),
-            rs.getTimestamp("created_at").toInstant(),rs.getTimestamp("updated_at").toInstant(),rs.getBoolean("training_eligible"),decodeReview(rs.getString("capture_review")));
+            AttemptSourceType.MANUAL,rs.getString("normalization_version"),AttemptStatus.valueOf(rs.getString("status")),steps,decode(rs.getString("analysis_jsonb")),
+            rs.getTimestamp("created_at").toInstant(),rs.getTimestamp("updated_at").toInstant(),rs.getBoolean("training_eligible"),decodeReview(rs.getString("capture_review")),rs.getString("final_answer"));
     }
     private String encodeReview(AttemptCaptureReview review) { try { return review==null?null:mapper.writeValueAsString(review); } catch(java.io.IOException ex) { throw new IllegalArgumentException("Invalid review"); } }
     private AttemptCaptureReview decodeReview(String json) { try { return json==null?null:mapper.readValue(json,AttemptCaptureReview.class); } catch(java.io.IOException ex) { throw new IllegalArgumentException("Invalid review"); } }

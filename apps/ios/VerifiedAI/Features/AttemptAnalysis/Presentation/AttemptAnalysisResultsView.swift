@@ -31,7 +31,17 @@ struct AttemptAnalysisResultsView: View {
                         }
                     }.padding().background(.quaternary, in: RoundedRectangle(cornerRadius: 12))
                 }
+            } else if attempt.finalAnswer != nil {
+                Label("attempt.answer.saved", systemImage: "tray.and.arrow.down")
+                    .accessibilityIdentifier("attempt.answer.saved")
             } else { Text("attempt.pending") }
+            if attempt.analysis == nil {
+                ForEach(attempt.steps) { step in Text(verbatim: step.content).font(.body.monospaced()).textSelection(.enabled) }
+            }
+            if let answer = attempt.finalAnswer {
+                Text("attempt.answer.label").font(.headline)
+                Text(verbatim: answer).textSelection(.enabled).accessibilityIdentifier("attempt.answer.original")
+            }
         }
         // An identifier on this non-accessibility container propagates to its children,
         // replacing the verdict and counterexample identifiers in SwiftUI's AX tree.

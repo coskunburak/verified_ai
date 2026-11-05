@@ -18,7 +18,7 @@ public final class VersionedJsonContract {
         catch (java.io.IOException e) { throw new IllegalArgumentException("Invalid versioned JSON"); }
     }
     public static JsonNode validate(String name, String json) {
-        if (!Set.of("math-visualization-context-v1", "math-visualization-request-v1", "math-visualization-source-v1", "math-visualization-result-v1", "math-visualization-public-v1", "method-comparison-v2", "method-comparison-result-v2", "method-comparison-source-v2", "method-comparison-public-v2", "canonical-problem-v3", "problem-parse-v2", "canonical-problem-v2", "solution-candidate-v2", "tutor-turn-v1", "tutor-hint-v1").contains(name)) invalid();
+        if (!Set.of("attempt-submission-v1", "attempt-submission-v2", "attempt-submission-v3", "math-visualization-context-v1", "math-visualization-request-v1", "math-visualization-source-v1", "math-visualization-result-v1", "math-visualization-public-v1", "method-comparison-v2", "method-comparison-result-v2", "method-comparison-source-v2", "method-comparison-public-v2", "canonical-problem-v3", "problem-parse-v2", "canonical-problem-v2", "solution-candidate-v2", "tutor-turn-v1", "tutor-hint-v1").contains(name)) invalid();
         var document = parse(json);
         var schema = SCHEMAS.computeIfAbsent(name, key -> {
             try (var stream = VersionedJsonContract.class.getResourceAsStream("/schemas/" + key + ".schema.json")) {
@@ -88,7 +88,7 @@ public final class VersionedJsonContract {
             String text = n.textValue();
             if (text.length() < s.path("minLength").asInt(0) || text.length() > s.path("maxLength").asInt(65536)) invalid();
             if (s.has("pattern") && !java.util.regex.Pattern.compile(s.path("pattern").asText()).matcher(text).find()) invalid();
-            if ("uuid".equals(s.path("format").asText()) && !UUID.fromString(text).toString().equals(text)) invalid();
+            if ("uuid".equals(s.path("format").asText()) && !UUID.fromString(text).toString().equalsIgnoreCase(text)) invalid();
         }
         if (n.isNumber()) {
             if (s.has("minimum") && n.decimalValue().compareTo(s.get("minimum").decimalValue()) < 0) invalid();

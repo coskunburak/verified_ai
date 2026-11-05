@@ -17,32 +17,27 @@ public class StudentAttemptController {
     @GetMapping("/context")
     public StudentAttemptOrchestrator.Context context(@AuthenticationPrincipal Jwt jwt,@PathVariable UUID problemId) { return service.context(AuthenticatedUser.from(jwt).userId(),problemId); }
     @GetMapping
-    public List<StudentAttempt> list(@AuthenticationPrincipal Jwt jwt,@PathVariable UUID problemId) { return service.list(AuthenticatedUser.from(jwt).userId(),problemId); }
+    public List<StudentAttempt> list(@AuthenticationPrincipal Jwt jwt,@PathVariable UUID problemId,
+        @RequestParam(defaultValue="1") int representationVersion) {
+        representation(representationVersion);
+        return service.list(AuthenticatedUser.from(jwt).userId(),problemId).stream()
+            .map(a->representationVersion==1?a.legacyRepresentation():a).toList();
+    }
     @GetMapping("/{id}")
-    public StudentAttempt read(@AuthenticationPrincipal Jwt jwt,@PathVariable UUID problemId,@PathVariable UUID id) { return service.read(AuthenticatedUser.from(jwt).userId(),problemId,id); }
+    public StudentAttempt read(@AuthenticationPrincipal Jwt jwt,@PathVariable UUID problemId,@PathVariable UUID id,
+        @RequestParam(defaultValue="1") int representationVersion) {
+        representation(representationVersion);
+        var attempt=service.read(AuthenticatedUser.from(jwt).userId(),problemId,id);
+        return representationVersion==1?attempt.legacyRepresentation():attempt;
+    }
+    private void representation(int version) {
+        if(version!=1 && version!=2) throw AttemptAnalysisPolicy.error(ApiErrorCode.REQUEST_VALIDATION_FAILED,HttpStatus.UNPROCESSABLE_ENTITY);
+    }
     @PostMapping
     public StudentAttempt submit(@AuthenticationPrincipal Jwt jwt,@PathVariable UUID problemId,
-        @RequestHeader(value="Idempotency-Key",required=false) String key,@RequestBody Map<String,Object> body) {
-        var command=Command.parse(body);
-        return service.submit(AuthenticatedUser.from(jwt).userId(),problemId,key,command.source(),command.steps(),command.realDomainConfirmed(),command.captureReview());
-    }
-    public record Command(AttemptSourceIdentity source,List<String> steps,boolean realDomainConfirmed,AttemptCaptureReview captureReview) {
-        public static Command parse(Map<String,Object> body) {
-            try {
-                if(!(body.keySet().containsAll(Set.of("source","steps")) && Set.of("source","steps","realDomainConfirmed","captureReview").containsAll(body.keySet()))
-                    || (body.containsKey("realDomainConfirmed") && !(body.get("realDomainConfirmed") instanceof Boolean)) || !(body.get("source") instanceof Map<?,?> source)
-                    || !source.keySet().equals(Set.of("canonicalId","canonicalRevision","parseId","parseRevision"))
-                    || !(source.get("canonicalId") instanceof String canonical) || !(source.get("parseId") instanceof String parse)
-                    || !(source.get("canonicalRevision") instanceof Integer revision) || !(source.get("parseRevision") instanceof Integer parseRevision)
-                    || !(body.get("steps") instanceof List<?> steps) || steps.stream().anyMatch(s->!(s instanceof String))) throw new IllegalArgumentException();
-                AttemptCaptureReview review=null;
-                if(body.containsKey("captureReview")) {
-                    if(!(body.get("captureReview") instanceof Map<?,?> capture) || !(capture.keySet().containsAll(Set.of("schemaVersion","engine","rawLines","confirmed")) && Set.of("schemaVersion","engine","rawLines","confirmed","assetSessionId","recognitionJobId").containsAll(capture.keySet()))) throw new IllegalArgumentException();
-                    review=new com.fasterxml.jackson.databind.ObjectMapper().disable(com.fasterxml.jackson.databind.MapperFeature.ALLOW_COERCION_OF_SCALARS)
-                        .convertValue(capture,AttemptCaptureReview.class);
-                }
-                return new Command(new AttemptSourceIdentity(UUID.fromString(canonical),revision,UUID.fromString(parse),parseRevision),steps.stream().map(String.class::cast).toList(),Boolean.TRUE.equals(body.get("realDomainConfirmed")),review);
-            } catch(IllegalArgumentException | NullPointerException ex) { throw AttemptAnalysisPolicy.error(ApiErrorCode.REQUEST_VALIDATION_FAILED,HttpStatus.UNPROCESSABLE_ENTITY); }
-        }
+        @RequestHeader(value="Idempotency-Key",required=false) String key,@RequestBody AttemptSubmissionRequest command) {
+        UUID owner=AuthenticatedUser.from(jwt).userId();
+        if(command.finalAnswer()!=null) return service.submitAnswer(owner,problemId,key,command.source(),command.steps(),command.finalAnswer());
+        return service.submit(owner,problemId,key,command.source(),command.steps(),Boolean.TRUE.equals(command.realDomainConfirmed()),command.captureReview());
     }
 }

@@ -715,3 +715,21 @@ behind V027–V029, historical checksum edits, repair or out-of-order configurat
 training exclusions, immutable evidence and first-completion guards are retained. Unique evidence keys prevent
 double mastery updates. Fresh Flyway/upgrade owner evidence is pending; manually staged shared databases require
 explicit reconciliation and fail closed instead of silent adoption. Shared migration remains NOT_AUTHORIZED.
+
+## Sprint 7.1 additive final-answer storage (V033)
+
+V033 adds nullable final_answer to student_attempts and permits schema_version=student-attempt-v2. The v1 branch
+requires null final_answer. The v2 branch requires bounded nonblank final text, null analysis/verifier request/capture
+review, and SUBMITTED or STALE_SOURCE. UTF-16 units are counted explicitly to agree with Java/Swift; UTF-8 byte limits
+remain enforced. Existing rows, request hashes, source lineage and prior migration bytes are not rewritten.
+
+The existing immutable-parent trigger additionally protects final_answer. Child insertions require the original
+parent INSERT transaction (xmin/current transaction identity) and SUBMITTED state. Direct child deletion is refused;
+parent/account/source cascades remain allowed. Deferred shape constraints on new inserts enforce contiguous 1-based
+steps and 1–12 legacy / 0–11 final-answer steps at commit. The additional step text check is NOT VALID for historical
+rows: it enforces future writes without retroactively rejecting or modifying previously stored evidence.
+No new access pattern/index, table, retention class or training permission is introduced. Existing owner/history
+index, composite owner/source foreign keys and owner/session/create_key uniqueness remain sufficient.
+Apply through ordinary owner-managed Flyway before the new binary; owner PostgreSQL tests cover fresh schema and
+V032 → V033 upgrade. Rollback disables submissions and retains this reader/schema; never drop evidence or repair
+historical checksums. An older binary cannot read final-answer records and is not an operational rollback target.

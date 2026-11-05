@@ -79,13 +79,13 @@ public class StudentAttemptOrchestrator {
         return submit(owner,problem,key,expected,lines,realDomainConfirmed,null);
     }
     public StudentAttempt submit(UUID owner,UUID problem,String key,AttemptSourceIdentity expected,List<String> lines,boolean realDomainConfirmed,AttemptCaptureReview captureReview) {
-        AttemptAnalysisPolicy.submission(key,lines);
-        if(expected==null) throw AttemptAnalysisPolicy.error(ApiErrorCode.REQUEST_VALIDATION_FAILED,HttpStatus.UNPROCESSABLE_ENTITY);
-        final List<String> content=List.copyOf(lines);
-        // Length-delimited JSON includes the expected source identity and exact untrimmed learner text.
-        if(captureReview!=null && captureReview.rawLines().size()!=content.size()) throw AttemptAnalysisPolicy.error(ApiErrorCode.REQUEST_VALIDATION_FAILED,HttpStatus.UNPROCESSABLE_ENTITY);
-        String hash=hash(codec.encode(captureReview!=null?List.of(expected,content,realDomainConfirmed,captureReview):realDomainConfirmed?List.of(expected,content,true):List.of(expected,content)));
         return operation(owner,()-> {
+            AttemptAnalysisPolicy.submission(key,lines);
+            if(expected==null) throw AttemptAnalysisPolicy.error(ApiErrorCode.REQUEST_VALIDATION_FAILED,HttpStatus.UNPROCESSABLE_ENTITY);
+            final List<String> content=List.copyOf(lines);
+            // Length-delimited JSON includes the expected source identity and exact untrimmed learner text.
+            if(captureReview!=null && captureReview.rawLines().size()!=content.size()) throw AttemptAnalysisPolicy.error(ApiErrorCode.REQUEST_VALIDATION_FAILED,HttpStatus.UNPROCESSABLE_ENTITY);
+            String hash=hash(codec.encode(captureReview!=null?List.of(expected,content,realDomainConfirmed,captureReview):realDomainConfirmed?List.of(expected,content,true):List.of(expected,content)));
             var prepared=tx.execute(s->{
                 sources.lockOwner(owner,problem);
                 if(!store.available()) throw unavailable();
@@ -166,21 +166,31 @@ public class StudentAttemptOrchestrator {
                 } catch(IllegalArgumentException | VerificationSourceReader.SourceRejected ignored) { normalized.clear(); }
                 if(normalized.isEmpty()) for(int i=0;i<content.size();i++) normalized.add(new StudentAttemptStep(i+1,content.get(i),null));
                 var attempt=new StudentAttempt("student-attempt-v1",id,problem,expected,AttemptSourceType.MANUAL,request!=null && request.contains("attempt-verification-v2")?"manual-canonical-v2":"manual-canonical-v1",AttemptStatus.SUBMITTED,normalized,null,now,now,false,captureReview);
-                store.insert(owner,key,hash,attempt,request); count("submitted"); return attempt;
+                store.insert(owner,key,hash,attempt,request); accepted(); return attempt;
             });
             if(prepared.status()!=AttemptStatus.SUBMITTED) return prepared;
-            if(!enabled) return prepared; // rollback preserves history and does not dispatch work
+            if(prepared.finalAnswer()!=null || !enabled) return prepared; // rollback preserves history and does not dispatch work
             String request=tx.execute(s->{ sources.lockOwner(owner,problem); owned(owner,problem,prepared.id()); return store.request(owner,prepared.id()); });
             // No transaction/owner/source lock spans this bounded internal HTTP call.
-            var result=verifier.verify(prepared.id(),prepared.steps().size(),request);
-            result.validateFor(prepared.id(),prepared.steps().size());
+            AttemptAnalysisResult result;
+            try {
+                result=verifier.verify(prepared.id(),prepared.steps().size(),request);
+                result.validateFor(prepared.id(),prepared.steps().size());
+            } catch(RuntimeException ex) {
+                // Acceptance is already durable. Reauthorize before returning a recoverable saved state.
+                count("recovery");
+                return tx.execute(s->{
+                    sources.lockOwner(owner,problem); var current=owned(owner,problem,prepared.id());
+                    if(current.status()==AttemptStatus.SUBMITTED && !fresh(owner,problem,current)) {
+                        store.stale(owner,current.id(),clock.instant()); count("stale_source");
+                    }
+                    return owned(owner,problem,current.id());
+                });
+            }
             return tx.execute(s->{
                 sources.lockOwner(owner,problem); var current=owned(owner,problem,prepared.id());
                 if(current.status()!=AttemptStatus.SUBMITTED) return current;
-                boolean fresh;
-                try { fresh=current.source().equals(identity(sources.current(owner,problem))); }
-                catch(ApiProblemException ex) { if(ex.code()!=ApiErrorCode.SOLVE_SOURCE_NOT_READY) throw ex; fresh=false; }
-                if(!fresh) { store.stale(owner,current.id(),clock.instant()); count("stale_source"); }
+                if(!fresh(owner,problem,current)) { store.stale(owner,current.id(),clock.instant()); count("stale_source"); }
                 else if(result.steps().stream().anyMatch(step->Set.of(AttemptAnalysisResult.Reason.TIMEOUT,
                     AttemptAnalysisResult.Reason.RESOURCE_FAILURE,AttemptAnalysisResult.Reason.WORKER_FAILURE,
                     AttemptAnalysisResult.Reason.ADMISSION_LIMIT,AttemptAnalysisResult.Reason.DISABLED,AttemptAnalysisResult.Reason.INVALID_RESPONSE).contains(step.reasonCode()))) {
@@ -195,6 +205,31 @@ public class StudentAttemptOrchestrator {
                     count(result.outcome().name());
                 }
                 return owned(owner,problem,current.id());
+            });
+        });
+    }
+    /** Capture-only v3: no normalization, verifier call or learning projection. */
+    public StudentAttempt submitAnswer(UUID owner,UUID problem,String key,AttemptSourceIdentity expected,List<String> lines,String finalAnswer) {
+        return operation(owner,()-> {
+            AttemptAnalysisPolicy.answerSubmission(key,lines,finalAnswer);
+            if(expected==null) throw AttemptAnalysisPolicy.error(ApiErrorCode.REQUEST_VALIDATION_FAILED,HttpStatus.UNPROCESSABLE_ENTITY);
+            var content=List.copyOf(lines);
+            String hash=hash(codec.encode(List.of("attempt-submission-v3",expected,content,finalAnswer)));
+            return tx.execute(s->{
+                sources.lockOwner(owner,problem);
+                if(!store.available()) throw unavailable();
+                var replay=store.replay(owner,problem,key,hash);
+                if(replay.isPresent()) { count("replay"); return replay.get(); }
+                if(!enabled) throw unavailable();
+                if(store.count(owner)>=30) throw AttemptAnalysisPolicy.error(ApiErrorCode.ATTEMPT_CAPACITY_EXCEEDED,HttpStatus.CONFLICT);
+                if(!expected.equals(identity(sources.current(owner,problem))))
+                    throw AttemptAnalysisPolicy.error(ApiErrorCode.ATTEMPT_STALE_SOURCE,HttpStatus.CONFLICT);
+                var steps=new ArrayList<StudentAttemptStep>();
+                for(int i=0;i<content.size();i++) steps.add(new StudentAttemptStep(i+1,content.get(i),null));
+                var now=clock.instant().truncatedTo(java.time.temporal.ChronoUnit.MICROS);
+                var attempt=new StudentAttempt("student-attempt-v2",UUID.randomUUID(),problem,expected,AttemptSourceType.MANUAL,
+                    "manual-canonical-v1",AttemptStatus.SUBMITTED,steps,null,now,now,false,null,finalAnswer);
+                store.insert(owner,key,hash,attempt,null); accepted(); return attempt;
             });
         });
     }
@@ -218,6 +253,10 @@ public class StudentAttemptOrchestrator {
         fraction.set("right",codec.object().put("kind","NUMBER").put("numericType","INTEGER").put("value",value.path("denominator").asText()));
         return fraction;
     }
+    private boolean fresh(UUID owner,UUID problem,StudentAttempt current) {
+        try { return current.source().equals(identity(sources.current(owner,problem))); }
+        catch(ApiProblemException ex) { if(ex.code()!=ApiErrorCode.SOLVE_SOURCE_NOT_READY) throw ex; return false; }
+    }
     private StudentAttempt owned(UUID owner,UUID problem,UUID id) {
         if(!store.available()) throw AttemptAnalysisPolicy.error(ApiErrorCode.ATTEMPT_NOT_FOUND,HttpStatus.NOT_FOUND);
         return store.get(owner,problem,id).orElseThrow(()->AttemptAnalysisPolicy.error(ApiErrorCode.ATTEMPT_NOT_FOUND,HttpStatus.NOT_FOUND));
@@ -230,10 +269,21 @@ public class StudentAttemptOrchestrator {
             if(!limiter.check(new RateLimitPolicy("attempt-requests",60,Duration.ofMinutes(1),true),owner.toString()).allowed())
                 throw AttemptAnalysisPolicy.error(ApiErrorCode.RATE_LIMIT_EXCEEDED,HttpStatus.TOO_MANY_REQUESTS);
             return action.get();
-        } catch(org.springframework.dao.DataAccessException ex) {
+        } catch(org.springframework.dao.DataAccessException | org.springframework.transaction.TransactionException ex) {
+            count("persistence_failure");
             throw AttemptAnalysisPolicy.error(ApiErrorCode.TEMPORARY_UNAVAILABLE,HttpStatus.SERVICE_UNAVAILABLE);
         } catch(ApiProblemException ex) { count(ex.code().name()); throw ex; }
-        finally { metrics.timer("attempt.request").record(System.nanoTime()-started,TimeUnit.NANOSECONDS); }
+        finally {
+            io.micrometer.core.instrument.Timer.builder("attempt.request").publishPercentileHistogram()
+                .serviceLevelObjectives(Duration.ofMillis(100),Duration.ofMillis(500),Duration.ofSeconds(2),Duration.ofSeconds(15))
+                .register(metrics).record(System.nanoTime()-started,TimeUnit.NANOSECONDS);
+        }
+    }
+    private void accepted() {
+        org.springframework.transaction.support.TransactionSynchronizationManager.registerSynchronization(
+            new org.springframework.transaction.support.TransactionSynchronization() {
+                @Override public void afterCommit() { count("submitted"); }
+            });
     }
     private void count(String outcome) { metrics.counter("attempt.outcome","outcome",outcome).increment(); }
     private String hash(String value) {

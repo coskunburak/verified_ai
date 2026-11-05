@@ -217,3 +217,12 @@ parse id/revision, primary skill or NOT_AVAILABLE, minimal versioned profile con
 ACTIVE may close once to CLOSED; no reopen. Currentness is derived, history immutable. TutorMessage
 is learner-authored untrusted content with server role, owner, per-session sequence and durable retry
 identity. No assistant generation, mastery inference or mathematical verification authority is added.
+
+## Sprint 7.1 attempt implementation reconciliation
+
+The existing `com.verifiedai.attempt.domain.StudentAttempt` remains the only aggregate. Its owner is held in the
+repository's user_id and checked through SolveSourceAccess, never accepted from client JSON. The immutable UUID,
+problem session, canonical/parse ID and revisions, source type, timestamps and training exclusion remain explicit.
+Student-attempt-v2 adds exact finalAnswer with zero to eleven separate intermediate StudentAttemptSteps. Original
+content is neither a reference Solution nor a normalized/proven mathematical claim. V3 submission deliberately
+leaves normalization and analysis null. Historical student-attempt-v1 and its analysis versions remain unchanged.

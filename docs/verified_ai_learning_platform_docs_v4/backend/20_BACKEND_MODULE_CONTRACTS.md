@@ -201,3 +201,11 @@ existing HintPolicy/SocraticPolicy remain sole hint/progression owners. AttemptL
 in short transactions, calls the bounded verifier outside locks, then rechecks source and publishes atomically.
 A source change marks analysis stale; learning artifacts are not published against stale sources. Committed drill
 history/completion remains recoverable. No provider, billing or hint authority is duplicated.
+
+## Sprint 7.1 ownership extension
+
+AttemptSubmissionRequest is a typed API command with strict bundled-schema decoding. StudentAttemptOrchestrator
+owns final-answer acceptance, exact source binding, capacity, idempotency and capture-only semantics; the controller
+only authenticates, routes and negotiates historical display. The same repository, source lock order and privacy
+contributor remain authoritative. No new aggregate/repository, model client or cross-module infrastructure access.
+The legacy verifier failure boundary returns reauthorized durable evidence; ordinary reads never re-evaluate it.

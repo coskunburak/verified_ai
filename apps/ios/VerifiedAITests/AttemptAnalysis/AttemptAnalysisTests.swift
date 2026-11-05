@@ -149,6 +149,104 @@ final class AttemptAnalysisTests: XCTestCase {
             XCTAssertThrowsError(try forged.validated(problem: problem), mutation)
         }
     }
+    func testAnswerOnlyIsSavedWithoutAssessmentAndDoesNotLeavePendingOrDraft() async throws {
+        let owner = UUID(), problem = UUID(), pending = store(), api = FixtureAttemptAnalysisAPI()
+        let model = AnalyzeMyWorkViewModel(owner: owner, problem: problem, service: api, store: pending, ownsAccount: { true })
+        model.resume(); await idle(model); model.answerMode = true; model.finalAnswer = "  x = 4  "
+        model.saveDraft(); XCTAssertTrue(model.canSubmit)
+        model.submit(); await idle(model)
+        let result = try XCTUnwrap(model.result)
+        XCTAssertEqual(result.finalAnswer, "  x = 4  "); XCTAssertEqual(result.status, .submitted)
+        XCTAssertTrue(result.steps.isEmpty); XCTAssertNil(result.analysis); XCTAssertNil(model.pending)
+        XCTAssertEqual(model.history.count, 1); XCTAssertNil(model.errorKey)
+        _ = try result.validated(problem: problem)
+        model.suspend(); XCTAssertNil(try pending.loadDraft(owner: owner, problem: problem))
+        let reopened = AnalyzeMyWorkViewModel(owner: owner, problem: problem, service: api, store: pending, ownsAccount: { true })
+        reopened.resume(); await idle(reopened)
+        XCTAssertEqual(reopened.history.first?.finalAnswer, "  x = 4  "); XCTAssertTrue(reopened.finalAnswer.isEmpty)
+    }
+    func testAnswerLostAcknowledgementReusesKeyAcrossRelaunch() async throws {
+        let owner = UUID(), problem = UUID(), pending = store(), api = FixtureAttemptAnalysisAPI(loseAcknowledgement: true)
+        let model = AnalyzeMyWorkViewModel(owner: owner, problem: problem, service: api, store: pending, ownsAccount: { true })
+        model.resume(); await idle(model); model.answerMode = true; model.finalAnswer = "4"; model.draft = "2*x=8"
+        model.submit(); await idle(model); let operation = try XCTUnwrap(model.pending); model.suspend()
+        let reopened = AnalyzeMyWorkViewModel(owner: owner, problem: problem, service: api, store: pending, ownsAccount: { true })
+        reopened.resume(); await idle(reopened); XCTAssertEqual(reopened.pending, operation)
+        XCTAssertTrue(reopened.answerMode); XCTAssertEqual(reopened.finalAnswer, "4")
+        reopened.retry(); await idle(reopened); XCTAssertNil(reopened.pending)
+        XCTAssertEqual(reopened.history.count, 1); XCTAssertNil(reopened.result?.analysis)
+    }
+    func testDraftSourceChangeRequiresReviewWithoutDiscardingOriginalText() async throws {
+        let owner = UUID(), problem = UUID(), pending = store()
+        let stale = AttemptSourceIdentity(canonicalId: UUID(), canonicalRevision: 1, parseId: UUID(), parseRevision: 1)
+        try pending.saveDraft(.init(text: "2*x=8", realDomainConfirmed: false, source: stale, finalAnswer: "4"), owner: owner, problem: problem)
+        let model = AnalyzeMyWorkViewModel(owner: owner, problem: problem, service: FixtureAttemptAnalysisAPI(), store: pending, ownsAccount: { true })
+        model.resume(); await idle(model)
+        XCTAssertTrue(model.draftNeedsReview); XCTAssertFalse(model.canSubmit); XCTAssertEqual(model.finalAnswer, "4")
+        model.confirmDraftSource(); XCTAssertTrue(model.canSubmit); XCTAssertFalse(model.draftNeedsReview)
+        XCTAssertEqual(try pending.loadDraft(owner: owner, problem: problem)?.source, model.context?.source)
+    }
+    func testAnswerVersionAndForgeryAreRejected() async throws {
+        let api = FixtureAttemptAnalysisAPI(), problem = UUID(), pending = store(), owner = UUID()
+        let source = try await api.context(problem: problem).source
+        let valid = AttemptSubmission(source: source, steps: [], schemaVersion: "attempt-submission-v3", finalAnswer: "4")
+        try pending.save(.init(key: "answer-pending-key", submission: valid), owner: owner, problem: problem)
+        XCTAssertEqual(try pending.load(owner: owner, problem: problem)?.submission, valid)
+        var invalid = valid; invalid.schemaVersion = nil
+        XCTAssertFalse(invalid.isValid)
+        invalid = valid; invalid.finalAnswer = String(repeating: "😀", count: 129); XCTAssertFalse(invalid.isValid)
+        let saved = try await api.submit(problem: problem, key: "answer-test-key", submission: valid)
+        var raw = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(saved)) as? [String: Any])
+        raw["schemaVersion"] = "student-attempt-v1"
+        let forged = try JSONDecoder().decode(StudentAttempt.self, from: JSONSerialization.data(withJSONObject: raw))
+        XCTAssertThrowsError(try forged.validated(problem: problem))
+    }
+    func testAccountSwitchClearsAnswerAndOwnerDraftCannotLeak() async throws {
+        let owner = UUID(), problem = UUID(), pending = store(); var authorized = true
+        let model = AnalyzeMyWorkViewModel(owner: owner, problem: problem, service: FixtureAttemptAnalysisAPI(), store: pending, ownsAccount: { authorized })
+        model.resume(); await idle(model); model.answerMode = true; model.finalAnswer = "4"; model.saveDraft()
+        XCTAssertNil(try pending.loadDraft(owner: UUID(), problem: problem))
+        authorized = false; model.submit(); await idle(model)
+        XCTAssertTrue(model.finalAnswer.isEmpty); XCTAssertNil(model.result); XCTAssertTrue(model.history.isEmpty)
+    }
+    func testRecoverableServerFailureRetainsAnswerAndExactKey() async throws {
+        let api = RetryableAnswerAPI()
+        let model = AnalyzeMyWorkViewModel(owner: UUID(), problem: UUID(), service: api, store: store(), ownsAccount: { true })
+        model.resume(); await idle(model); model.answerMode = true; model.finalAnswer = "4"
+        model.submit(); await idle(model)
+        let key = try XCTUnwrap(model.pending?.key)
+        XCTAssertEqual(model.pending?.submission.finalAnswer, "4"); XCTAssertNil(model.result)
+        model.retry(); await idle(model)
+        let keys = await api.keys
+        XCTAssertEqual(keys, [key, key]); XCTAssertNil(model.pending); XCTAssertEqual(model.result?.finalAnswer, "4")
+    }
+    func testDefinitiveAnswerRejectionRetainsSourceBoundDraft() async throws {
+        let owner = UUID(), problem = UUID(), pending = store()
+        let model = AnalyzeMyWorkViewModel(owner: owner, problem: problem, service: RetryableAnswerAPI(reject: true), store: pending, ownsAccount: { true })
+        model.resume(); await idle(model); let source = model.context?.source
+        model.answerMode = true; model.finalAnswer = " 4 "; model.draft = "2*x=8"
+        model.submit(); await idle(model)
+        XCTAssertNil(model.pending); XCTAssertNil(model.context)
+        let draft = try XCTUnwrap(pending.loadDraft(owner: owner, problem: problem))
+        XCTAssertEqual(draft.finalAnswer, " 4 "); XCTAssertEqual(draft.text, "2*x=8"); XCTAssertEqual(draft.source, source)
+    }
+    func testSharedFinalAnswerFixtureMatchesClientContract() throws {
+        let url = try XCTUnwrap(Bundle.main.url(forResource: "student-attempt-v2", withExtension: "json"))
+        let decoder = JSONDecoder(); decoder.dateDecodingStrategy = .iso8601
+        let value = try decoder.decode(StudentAttempt.self, from: Data(contentsOf: url))
+        _ = try value.validated(problem: value.problemSessionId)
+        XCTAssertEqual(value.finalAnswer, "  x = 4  "); XCTAssertNil(value.analysis); XCTAssertTrue(value.steps.isEmpty)
+    }
+    func testAnswerAndRecoveryEnglishTurkishCopyExists() throws {
+        for language in ["en", "tr"] {
+            let path = try XCTUnwrap(Bundle.main.path(forResource: language, ofType: "lproj"))
+            let bundle = try XCTUnwrap(Bundle(path: path))
+            for key in ["attempt.answer.saved", "attempt.answer.scope", "attempt.answer.review", "attempt.draft.sourceChanged", "attempt.draft.confirmSource"] {
+                XCTAssertNotEqual(bundle.localizedString(forKey: key, value: nil, table: nil), key)
+            }
+        }
+    }
+
 }
 
 private struct ContextConflictAttemptAPI: AttemptAnalysisServicing {
@@ -283,5 +381,22 @@ final class MethodComparisonTests: XCTestCase {
         XCTAssertFalse(MethodComparisonFailure.authorization.recoverable)
         XCTAssertEqual(MethodComparisonFailure.classify(NetworkError.httpStatus(422)), .request)
         XCTAssertFalse(MethodComparisonFailure.request.recoverable)
+    }
+}
+
+private actor RetryableAnswerAPI: AttemptAnalysisServicing {
+    private let backing = FixtureAttemptAnalysisAPI()
+    private let reject: Bool
+    private(set) var keys: [String] = []
+    init(reject: Bool = false) { self.reject = reject }
+    func context(problem: UUID) async throws -> AttemptContext { try await backing.context(problem: problem) }
+    func list(problem: UUID) async throws -> [StudentAttempt] { try await backing.list(problem: problem) }
+    func submit(problem: UUID, key: String, submission: AttemptSubmission) async throws -> StudentAttempt {
+        keys.append(key)
+        if keys.count == 1 || reject {
+            throw NetworkError.server(problem: ProblemDetails(type: "about:blank", title: "Synthetic failure", status: reject ? 409 : 503,
+                code: reject ? "ATTEMPT_STALE_SOURCE" : "TEMPORARY_UNAVAILABLE", traceId: nil, details: nil))
+        }
+        return try await backing.submit(problem: problem, key: key, submission: submission)
     }
 }

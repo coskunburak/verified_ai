@@ -39,4 +39,20 @@ class AttemptAnalysisPolicyTest {
         return new CounterexampleEvidence("attempt-witness-v1","EXPRESSION_VALUES",Map.of(),before,after,
             "EXPRESSION_IDENTITY",true,"bounded-attempt-v1","UNEQUAL_VALUES");
     }
+    @Test void aggregateRejectsForgedAssessmentTrainingAndOrder() {
+        var now=java.time.Instant.now(); var source=new AttemptSourceIdentity(UUID.randomUUID(),1,UUID.randomUUID(),1);
+        var id=UUID.randomUUID(); var problem=UUID.randomUUID();
+        var saved=new StudentAttempt("student-attempt-v2",id,problem,source,AttemptSourceType.MANUAL,"manual-canonical-v1",
+            AttemptStatus.SUBMITTED,List.of(),null,now,now,false,null," 4 ");
+        assertThat(saved.finalAnswer()).isEqualTo(" 4 "); assertThat(saved.legacyRepresentation().steps()).hasSize(1);
+        assertThatThrownBy(()->new StudentAttempt("student-attempt-v2",id,problem,source,AttemptSourceType.MANUAL,"manual-canonical-v1",
+            AttemptStatus.ANALYZED,List.of(),null,now,now,false,null,"4")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(()->new StudentAttempt("student-attempt-v2",id,problem,source,AttemptSourceType.MANUAL,"manual-canonical-v1",
+            AttemptStatus.SUBMITTED,List.of(),null,now,now,true,null,"4")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(()->new StudentAttempt("student-attempt-v1",id,problem,source,AttemptSourceType.MANUAL,"manual-canonical-v1",
+            AttemptStatus.SUBMITTED,List.of(new StudentAttemptStep(2,"x=4",null)),null,now,now,false)).isInstanceOf(IllegalArgumentException.class);
+        for(var terminal:List.of(AttemptStatus.ANALYZED,AttemptStatus.STALE_SOURCE))
+            for(var target:AttemptStatus.values()) assertThat(AttemptAnalysisPolicy.canTransition(terminal,target)).isFalse();
+    }
+
 }

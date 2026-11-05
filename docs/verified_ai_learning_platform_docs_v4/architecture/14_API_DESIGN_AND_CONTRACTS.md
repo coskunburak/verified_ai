@@ -318,3 +318,23 @@ or learner verdict changes. See Sprint 6.8 implementation map for proof bounds a
 ## Sprint 6.9 visualization boundary
 
 GET /api/v1/problem-sessions/{problemId}/visualizations/context and POST /api/v1/problem-sessions/{problemId}/visualizations provide an ephemeral source projection. Independent context/source/request/result/public v1 schemas bind source revisions, execution ID, viewport and kind. Request cap 16 KiB; worker response cap remains 16 KiB. HTTP 409 requires source reload, 429 rate recovery, 503 unavailable; unsupported mathematical scope returns an empty UNSUPPORTED result. No-store responses, JWT ownership and post-worker reauthorization apply.
+
+## Sprint 7.1 versioned answer capture and historical reads
+
+Existing POST /api/v1/problem-sessions/{sessionId}/attempts accepts unversioned submission v1/v2 unchanged,
+or explicit schemaVersion=attempt-submission-v3 with source, steps (0–11) and finalAnswer. The new typed decoder
+rejects unknown/nested authority fields, coercion, invalid UUIDs, duplicate keys, malformed UTF-8 and invalid text.
+The same 16 KiB body, 256 UTF-16 units / 1024 UTF-8 bytes per text, 30/account and 60 requests/minute limits apply.
+V3 returns student-attempt-v2 with separate finalAnswer, null analysis and SUBMITTED (saved, not awaiting an automatic job).
+No paid inference, mathematical normalization or verifier execution is necessary to save an answer.
+
+GET list/detail accepts representationVersion=2 for native versioned v1/v2 records. Default 1 preserves the older
+student-attempt-response contract, projecting the final answer as a last unassessed display line. Projection does
+not alter durable evidence. Updated clients request representation 2; deploy the backend/migration before clients.
+Existing context remains v2. Old clients can display new work without interpreting its final-answer role.
+
+Same owner/session/key and identical semantic payload replay after timeout, feature disable or source revision change;
+changed payload returns IDEMPOTENCY_KEY_REUSED/409. New stale submissions reject with ATTEMPT_STALE_SOURCE/409.
+Capacity is ATTEMPT_CAPACITY_EXCEEDED/409, rate limit 429, rollout/persistence unavailability 503. Body/key validation
+returns REQUEST_VALIDATION_FAILED/422; malformed path/query values return 400. Foreign objects remain 404 and inactive
+accounts 403. Only exact retries can recover a possibly committed request; GET never starts assessment.

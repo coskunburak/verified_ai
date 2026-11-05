@@ -17,8 +17,18 @@ actor FixtureAttemptAnalysisAPI: AttemptAnalysisServicing {
             guard existing.0 == submission, existing.1.problemSessionId == problem else { throw NetworkError.invalidResponse }
             return existing.1
         }
-        guard enabled, submission.source == source else { throw NetworkError.invalidResponse }
+        guard enabled, submission.source == source, submission.isValid else { throw NetworkError.invalidResponse }
         let id = UUID()
+        if let answer = submission.finalAnswer {
+            let now = Date()
+            let attempt = StudentAttempt(schemaVersion: "student-attempt-v2", id: id, problemSessionId: problem, source: source,
+                sourceType: "MANUAL", normalizationVersion: "manual-canonical-v1", status: .submitted,
+                steps: submission.steps.enumerated().map { .init(index: $0.offset + 1, content: $0.element, normalizedStatement: nil) },
+                analysis: nil, createdAt: now, updatedAt: now, trainingEligible: false, finalAnswer: answer)
+            committed[key] = (submission, attempt)
+            if loseAcknowledgement { loseAcknowledgement = false; throw URLError(.networkConnectionLost) }
+            return attempt
+        }
         let valid = submission.steps == ["x=4"]
         let wrong = submission.steps == ["x=5"]
         let proof = wrong ? AttemptCounterexample(schemaVersion: "attempt-witness-v1", witnessType: "EQUATION_TRUTH",

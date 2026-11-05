@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "student-attempt-v2.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "student-attempt-v2"
+    },
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "problemSessionId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "canonicalId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "canonicalRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "parseId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "parseRevision": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "canonicalId",
+        "canonicalRevision",
+        "parseId",
+        "parseRevision"
+      ]
+    },
+    "sourceType": {
+      "const": "MANUAL"
+    },
+    "status": {
+      "enum": [
+        "SUBMITTED",
+        "STALE_SOURCE"
+      ]
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "index": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 12
+          },
+          "content": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "normalizedStatement": {
+            "type": "null"
+          }
+        },
+        "required": [
+          "index",
+          "content",
+          "normalizedStatement"
+        ]
+      },
+      "minItems": 0,
+      "maxItems": 11
+    },
+    "analysis": {
+      "type": "null"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "trainingEligible": {
+      "const": false
+    },
+    "normalizationVersion": {
+      "enum": [
+        "manual-canonical-v1",
+        "manual-canonical-v2"
+      ]
+    },
+    "finalAnswer": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "description": "Exact learner-authored final answer; saved without assessment. UTF-16 <=256 and UTF-8 <=1024 bytes at runtime."
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "id",
+    "problemSessionId",
+    "source",
+    "sourceType",
+    "status",
+    "steps",
+    "analysis",
+    "createdAt",
+    "updatedAt",
+    "trainingEligible",
+    "normalizationVersion",
+    "finalAnswer"
+  ]
+}

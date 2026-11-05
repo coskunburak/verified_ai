@@ -243,12 +243,17 @@ paths:
     get:
       security: [{bearerAuth: []}]
       summary: Read owned attempt collection
+      parameters:
+        - {name: representationVersion, in: query, schema: {type: integer, enum: [1, 2], default: 1}}
+      description: Version 2 returns native v1/v2 records. Default version 1 projects a final answer as the last unassessed text line for older clients; this display projection is never persisted or evaluated.
       responses:
         '200':
           description: Owned bounded history or current source context; GET never executes analysis
           content:
             application/json:
-              schema: {type: array, maxItems: 30, items: {$ref: '../../schemas/student-attempt-response.schema.json'}}
+              schema: {type: array, maxItems: 30, items: {oneOf: [{$ref: '../../schemas/student-attempt-response.schema.json'}, {$ref: '../../schemas/student-attempt-v2.schema.json'}]}}
+        '400': {$ref: '#/components/responses/TutorFailure'}
+        '422': {$ref: '#/components/responses/TutorFailure'}
         '401': {$ref: '#/components/responses/TutorFailure'}
         '403': {$ref: '#/components/responses/TutorFailure'}
         '404': {$ref: '#/components/responses/TutorFailure'}
@@ -256,27 +261,40 @@ paths:
         '503': {$ref: '#/components/responses/TutorFailure'}
     post:
       security: [{bearerAuth: []}]
-      summary: Save immutable manual work and analyze against the exact current source
+      summary: Save immutable learner work with explicit final-answer or legacy step-analysis semantics
       description: >-
         One-based step indices. At most 12 lines, 256 UTF-16 units and 1024 UTF-8 bytes each,
         16 KiB total body, 30 attempts/account and 60 requests/account/minute.
         Same owner/session/key and identical source, text, real-scope attestation and capture provenance replay the original attempt; changed payload returns 409.
         SUBMITTED is durable and retryable with the same key. No locks span verifier execution.
         ANALYZED and STALE_SOURCE are immutable terminal states. Rollback preserves history.
-        Live handwriting, twins and method comparison unavailable. Staged V025 blocks ordinary submission.
+        Submission v3 explicitly stores finalAnswer plus zero to eleven intermediate steps, returning student-attempt-v2.
+        This capture-only path never calls a verifier, normalizes work or updates mastery. SUBMITTED here is a complete saved acknowledgement, not a pending assessment job.
+        Unversioned v1/v2 requests retain existing analysis and byte-for-byte hash semantics. V030–V033 are the active forward migrations.
+        ATTEMPT_STALE_SOURCE and IDEMPOTENCY_KEY_REUSED return 409; ATTEMPT_CAPACITY_EXCEEDED returns 409;
+        RATE_LIMIT_EXCEEDED returns 429; ATTEMPT_UNAVAILABLE and TEMPORARY_UNAVAILABLE return 503.
+        REQUEST_VALIDATION_FAILED returns 422 for invalid bodies/keys and 400 for malformed path/query values.
+        Foreign resources return 404; inactive accounts return 403. Repeat the exact key/payload after lost acknowledgement or transient failure.
+        Disabling rollout blocks new submissions while preserving owned reads, exports, deletion and committed replay.
       parameters:
         - {name: Idempotency-Key, in: header, required: true, schema: {type: string, pattern: '^[A-Za-z0-9_-]{8,128}$'}}
       requestBody:
         required: true
         content:
           application/json:
-            schema: {$ref: '../../schemas/attempt-submission-v2.schema.json'}
+            schema:
+              oneOf:
+                - {$ref: '../../schemas/attempt-submission-v2.schema.json'}
+                - {$ref: '../../schemas/attempt-submission-v3.schema.json'}
       responses:
         '200':
-          description: Durable analysis or SUBMITTED awaiting same-key retry; no aggregate VERIFIED claim
+          description: Durable v3 answer acknowledgement or legacy analysis/pending retry state; no aggregate VERIFIED claim
           content:
             application/json:
-              schema: {$ref: '../../schemas/student-attempt-response.schema.json'}
+              schema:
+                oneOf:
+                  - {$ref: '../../schemas/student-attempt-response.schema.json'}
+                  - {$ref: '../../schemas/student-attempt-v2.schema.json'}
         '400': {$ref: '#/components/responses/TutorFailure'}
         '401': {$ref: '#/components/responses/TutorFailure'}
         '403': {$ref: '#/components/responses/TutorFailure'}
@@ -298,6 +316,8 @@ paths:
           content:
             application/json:
               schema: {$ref: '../../schemas/attempt-context-v2-response.schema.json'}
+        '400': {$ref: '#/components/responses/TutorFailure'}
+        '422': {$ref: '#/components/responses/TutorFailure'}
         '401': {$ref: '#/components/responses/TutorFailure'}
         '403': {$ref: '#/components/responses/TutorFailure'}
         '404': {$ref: '#/components/responses/TutorFailure'}
@@ -310,12 +330,20 @@ paths:
     get:
       security: [{bearerAuth: []}]
       summary: Read owned attempt detail
+      parameters:
+        - {name: representationVersion, in: query, schema: {type: integer, enum: [1, 2], default: 1}}
+      description: Version 2 returns native v1/v2 records. Default version 1 projects a final answer as the last unassessed text line for older clients; this display projection is never persisted or evaluated.
       responses:
         '200':
           description: Owned bounded history or current source context; GET never executes analysis
           content:
             application/json:
-              schema: {$ref: '../../schemas/student-attempt-response.schema.json'}
+              schema:
+                oneOf:
+                  - {$ref: '../../schemas/student-attempt-response.schema.json'}
+                  - {$ref: '../../schemas/student-attempt-v2.schema.json'}
+        '400': {$ref: '#/components/responses/TutorFailure'}
+        '422': {$ref: '#/components/responses/TutorFailure'}
         '401': {$ref: '#/components/responses/TutorFailure'}
         '403': {$ref: '#/components/responses/TutorFailure'}
         '404': {$ref: '#/components/responses/TutorFailure'}

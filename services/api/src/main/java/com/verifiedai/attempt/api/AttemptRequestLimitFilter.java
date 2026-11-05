@@ -15,7 +15,8 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 @Component
 public class AttemptRequestLimitFilter extends OncePerRequestFilter {
     private final HandlerExceptionResolver resolver;
-    public AttemptRequestLimitFilter(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) { this.resolver=resolver; }
+    private final io.micrometer.core.instrument.MeterRegistry metrics;
+    public AttemptRequestLimitFilter(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver,io.micrometer.core.instrument.MeterRegistry metrics) { this.resolver=resolver; this.metrics=metrics; }
     @Override protected boolean shouldNotFilter(HttpServletRequest request) {
         return !"POST".equals(request.getMethod()) || !request.getRequestURI().matches("/api/v1/problem-sessions/[^/]+/(?:attempts(?:/.*)?|alternative-methods)");
     }
@@ -23,12 +24,19 @@ public class AttemptRequestLimitFilter extends OncePerRequestFilter {
         throws IOException,ServletException {
         byte[] bytes=request.getInputStream().readNBytes(16_385);
         if(bytes.length>16_384) {
+            metrics.counter("attempt.outcome","outcome","REQUEST_TOO_LARGE").increment();
             resolver.resolveException(request,response,null,AttemptAnalysisPolicy.error(ApiErrorCode.REQUEST_TOO_LARGE,HttpStatus.PAYLOAD_TOO_LARGE)); return;
         }
         if(bytes.length>0) {
             try {
-                com.verifiedai.sharedkernel.contracts.VersionedJsonContract.parse(new String(bytes,java.nio.charset.StandardCharsets.UTF_8));
-            } catch(IllegalArgumentException ex) {
+                String json=java.nio.charset.StandardCharsets.UTF_8.newDecoder()
+                    .onMalformedInput(java.nio.charset.CodingErrorAction.REPORT)
+                    .onUnmappableCharacter(java.nio.charset.CodingErrorAction.REPORT)
+                    .decode(java.nio.ByteBuffer.wrap(bytes)).toString();
+                var node=com.verifiedai.sharedkernel.contracts.VersionedJsonContract.parse(json);
+                if(request.getRequestURI().matches("/api/v1/problem-sessions/[^/]+/attempts")) AttemptSubmissionRequest.parse(node);
+            } catch(IllegalArgumentException | com.verifiedai.sharedkernel.error.ApiProblemException | java.nio.charset.CharacterCodingException ex) {
+                metrics.counter("attempt.outcome","outcome","REQUEST_VALIDATION_FAILED").increment();
                 resolver.resolveException(request,response,null,AttemptAnalysisPolicy.error(ApiErrorCode.REQUEST_VALIDATION_FAILED,HttpStatus.UNPROCESSABLE_ENTITY)); return;
             }
         }

@@ -8,6 +8,11 @@ final class AnalyzeMyWorkViewModel {
     let learning: AttemptLearningViewModel?
     let capture: AttemptCaptureDependencies?
     var realDomainConfirmed = false
+    var answerMode = false
+    var finalAnswer = ""
+    private var acknowledgedSubmission: AttemptSubmission?
+    private var draftSource: AttemptSourceIdentity?
+    private(set) var draftNeedsReview = false
     private(set) var reviewPreview: Data?
     var recognizedLines: [AttemptRecognizedLine] = []
     private var captureReview: AttemptCaptureReview?
@@ -38,9 +43,11 @@ final class AnalyzeMyWorkViewModel {
         return false
         #endif
     }
-    var lines: [String] { draft.components(separatedBy: .newlines) }
+    var lines: [String] { answerMode && draft.isEmpty ? [] : draft.components(separatedBy: .newlines) }
     private var submission: AttemptSubmission? {
         guard let context else { return nil }
+        if answerMode { return AttemptSubmission(source: context.source, steps: lines,
+            schemaVersion: "attempt-submission-v3", finalAnswer: finalAnswer) }
         return AttemptSubmission(source: context.source, steps: lines, realDomainConfirmed: realDomainConfirmed ? true : nil,
             captureReview: captureReview?.rawLines.count == lines.count ? captureReview : nil)
     }
@@ -48,24 +55,36 @@ final class AnalyzeMyWorkViewModel {
         guard let submission, let data = try? JSONEncoder().encode(AttemptPending(key: UUID().uuidString, submission: submission)) else { return false }
         return data.count <= 16384
     }
-    var canSubmit: Bool { active && !busy && pending == nil && context?.enabled == true && payloadFits && (1...12).contains(lines.count)
-        && lines.allSatisfy { !$0.trimmingCharacters(in: .whitespaces).isEmpty && $0.utf16.count <= 256 && $0.utf8.count <= 1024 } }
+    var canSubmit: Bool { active && !busy && pending == nil && !draftNeedsReview && context?.enabled == true
+        && payloadFits && submission?.isValid == true }
+    func confirmDraftSource() {
+        guard let context, active, !busy, pending == nil else { return }
+        draftSource = context.source; draftNeedsReview = false; saveDraft()
+    }
     func resume() {
         active = true
         run {
+            let expected = self.generation
             self.context = nil
             self.pending = try self.store.load(owner: self.owner, problem: self.problem)
             if let pending = self.pending {
                 self.draft = pending.submission.steps.joined(separator: "\n"); self.realDomainConfirmed = pending.submission.realDomainConfirmed == true; self.captureReview = pending.submission.captureReview
+                self.answerMode = pending.submission.finalAnswer != nil; self.finalAnswer = pending.submission.finalAnswer ?? ""
+                self.draftSource = pending.submission.source
             } else if let saved = try self.store.loadDraft(owner: self.owner, problem: self.problem) {
                 self.draft = saved.text; self.realDomainConfirmed = saved.realDomainConfirmed; self.captureReview = saved.captureReview
+                self.answerMode = saved.finalAnswer != nil; self.finalAnswer = saved.finalAnswer ?? ""; self.draftSource = saved.source
+            } else {
+                self.draft = ""; self.finalAnswer = ""; self.draftSource = nil; self.captureReview = nil
             }
             let history = try await self.service.list(problem: self.problem)
-            guard await self.authorized() else { return }
+            guard await self.authorized(), expected == self.generation else { return }
             self.history = history; self.result = history.last
             let context = try await self.service.context(problem: self.problem)
-            guard await self.authorized() else { return }
+            guard await self.authorized(), expected == self.generation else { return }
             self.context = context
+            self.draftNeedsReview = self.pending == nil && (!self.draft.isEmpty || !self.finalAnswer.isEmpty) && self.draftSource != context.source
+            if self.draftSource == nil && self.draft.isEmpty && self.finalAnswer.isEmpty { self.draftSource = context.source }
         }
     }
     func submit() {
@@ -116,6 +135,7 @@ final class AnalyzeMyWorkViewModel {
         guard recognizedLines.allSatisfy({ $0.confirmed }), !recognizedLines.isEmpty else { return }
         captureReview = AttemptCaptureReview(schemaVersion: "attempt-capture-review-v1", engine: extractionReference == nil ? "NATIVE_VISION" : "GATEWAY_RECOGNITION",
             rawLines: recognizedLines.map(\.raw), confirmed: true, assetSessionId: extractionReference?.0, recognitionJobId: extractionReference?.1)
+        answerMode = false; finalAnswer = ""
         draft = recognizedLines.map(\.text).joined(separator: "\n")
         cancelReview()
         saveDraft()
@@ -123,14 +143,15 @@ final class AnalyzeMyWorkViewModel {
     func cancelReview() { recognizedLines = []; reviewPreview = nil; extractionReference = nil }
     func saveDraft() {
         guard active, pending == nil else { return }
-        do { try store.saveDraft(.init(text: draft, realDomainConfirmed: realDomainConfirmed, captureReview: captureReview), owner: owner, problem: problem) }
+        if let acknowledgedSubmission, submission == acknowledgedSubmission { return }
+        do { try store.saveDraft(.init(text: draft, realDomainConfirmed: realDomainConfirmed, captureReview: answerMode ? nil : captureReview, source: draftSource ?? context?.source, finalAnswer: answerMode ? finalAnswer : nil), owner: owner, problem: problem) }
         catch { errorKey = "attempt.storage" }
     }
     func retry() { guard let pending else { resume(); return }; run(clearRejectedSubmission: true) { try await self.resolve(pending) } }
     func select(_ attempt: StudentAttempt) { guard !busy else { return }; result = attempt }
     func suspend() { active = false; generation += 1; task?.cancel(); task = nil; busy = false }
     func invalidate() {
-        suspend(); learning?.invalidate(); draft = ""; cancelReview(); realDomainConfirmed = false; captureReview = nil; extractionReference = nil; pending = nil; result = nil; context = nil; history = []; errorKey = "attempt.authorization"
+        suspend(); learning?.invalidate(); draft = ""; finalAnswer = ""; answerMode = false; draftSource = nil; acknowledgedSubmission = nil; draftNeedsReview = false; cancelReview(); realDomainConfirmed = false; captureReview = nil; extractionReference = nil; pending = nil; result = nil; context = nil; history = []; errorKey = "attempt.authorization"
     }
     private func authorized() async -> Bool {
         let expected = generation
@@ -140,13 +161,15 @@ final class AnalyzeMyWorkViewModel {
         return true
     }
     private func resolve(_ operation: AttemptPending) async throws {
+        let expected = generation
         let response = try await service.submit(problem: problem, key: operation.key, submission: operation.submission)
-        guard await authorized() else { return }
+        guard await authorized(), expected == generation else { return }
         result = response
-        if response.status == .submitted { errorKey = "attempt.pending"; return }
-        try store.remove(owner: owner, problem: problem)
-        pending = nil
         history.removeAll { $0.id == response.id }; history.append(response)
+        if response.status == .submitted && response.finalAnswer == nil { errorKey = "attempt.pending"; return }
+        try store.removeDraft(owner: owner, problem: problem)
+        try store.remove(owner: owner, problem: problem)
+        pending = nil; acknowledgedSubmission = operation.submission
         if response.status == .stale { errorKey = "attempt.stale" }
     }
     private func run(clearRejectedSubmission: Bool = false, _ operation: @escaping @MainActor () async throws -> Void) {
@@ -161,8 +184,16 @@ final class AnalyzeMyWorkViewModel {
                 errorKey = "attempt.retry"
                 if case NetworkError.server(let error) = error {
                     if clearRejectedSubmission && [400, 409, 413, 422].contains(error.status) {
-                        // Definitive non-commit: retain text but release the rejected operation identity.
-                        do { try store.remove(owner: owner, problem: problem); pending = nil; errorKey = "attempt.review" }
+                        // Rejected payload: preserve a draft before releasing the pending identity.
+                        do {
+                            if let operation = pending {
+                                try store.saveDraft(.init(text: operation.submission.steps.joined(separator: "\n"),
+                                    realDomainConfirmed: operation.submission.realDomainConfirmed == true,
+                                    captureReview: operation.submission.captureReview, source: operation.submission.source,
+                                    finalAnswer: operation.submission.finalAnswer), owner: owner, problem: problem)
+                            }
+                            try store.remove(owner: owner, problem: problem); pending = nil; errorKey = "attempt.review"
+                        }
                         catch { errorKey = "attempt.storage" }
                         context = nil
                     }

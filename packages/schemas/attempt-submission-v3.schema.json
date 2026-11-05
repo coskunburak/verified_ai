@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "attempt-submission-v3.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "source",
+    "steps",
+    "finalAnswer"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "attempt-submission-v3"
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "canonicalId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "canonicalRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "parseId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "parseRevision": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "canonicalId",
+        "canonicalRevision",
+        "parseId",
+        "parseRevision"
+      ]
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 11,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      }
+    },
+    "finalAnswer": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "description": "Exact learner-authored final answer; saved without assessment. UTF-16 <=256 and UTF-8 <=1024 bytes at runtime."
+    }
+  }
+}

@@ -9701,6 +9701,176 @@
           }
         }
       }
+    },
+    "attempt.answer.mode": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save a final answer"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Son cevabı kaydet"
+          }
+        }
+      }
+    },
+    "attempt.answer.label": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your final answer"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Son cevabın"
+          }
+        }
+      }
+    },
+    "attempt.answer.scope": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your answer will be saved as learner work. Saving does not check correctness or increase mastery."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cevabın öğrenci çalışması olarak kaydedilir. Kaydetmek doğruluğu kontrol etmez veya ustalık düzeyini artırmaz."
+          }
+        }
+      }
+    },
+    "attempt.answer.reasoningOptional": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Intermediate work is optional (up to 11 lines)."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ara adımlar isteğe bağlıdır (en fazla 11 satır)."
+          }
+        }
+      }
+    },
+    "attempt.answer.review": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Review answer"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cevabı gözden geçir"
+          }
+        }
+      }
+    },
+    "attempt.answer.save": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save my answer"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cevabımı kaydet"
+          }
+        }
+      }
+    },
+    "attempt.answer.saved": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Answer saved · Not assessed"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cevap kaydedildi · Değerlendirilmedi"
+          }
+        }
+      }
+    },
+    "attempt.draft.sourceChanged": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This draft belongs to an earlier or unknown problem revision. Review it against the current problem before submitting."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu taslak önceki veya bilinmeyen bir soru sürümüne ait. Göndermeden önce güncel soruyla karşılaştır."
+          }
+        }
+      }
+    },
+    "attempt.draft.confirmSource": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I reviewed this draft for the current problem"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Taslağı güncel soruya göre gözden geçirdim"
+          }
+        }
+      }
+    },
+    "attempt.history.sourceChanged": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Historical work for an earlier problem revision."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Önceki soru sürümüne ait geçmiş çalışma."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

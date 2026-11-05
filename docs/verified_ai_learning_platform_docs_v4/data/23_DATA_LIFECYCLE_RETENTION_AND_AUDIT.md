@@ -191,3 +191,14 @@ independently owned source problems are preserved. Gateway media uses the existi
 thumbnails are memory-only and cleared on confirmation/cancel/account invalidation. All learning tables enforce
 training_eligible=false. Protected backup-excluded iOS drafts and exact pending keys survive relaunch and clear
 on logout. Existing export expiration/backup retention remain; no immediate purge of backups is claimed.
+
+## Sprint 7.1 final-answer lifecycle
+
+Final answers are personal DERIVED_LEARNING evidence with the existing attempt retention and account deletion rules.
+StudentAttemptPrivacyLifecycleContributor exports native finalAnswer and separate intermediate text through the same
+repository, omitting private retry hashes/keys. No durable child type was added. Parent deletion reaches steps through
+the existing cascade despite the new direct-child mutation guards. Account locks fence new submissions and late
+assessment publication; a revoked/deleted owner cannot resurrect evidence. training_eligible remains false everywhere.
+Protected iOS drafts now carry source identity and optional final answer. Acknowledgement removes the draft and pending
+marker; an interrupted operation preserves the original key/source/payload. Rejected work remains a source-bound draft.
+Logout cleanup remains unchanged; no media, token, answer or raw work is added to logs/metric labels.

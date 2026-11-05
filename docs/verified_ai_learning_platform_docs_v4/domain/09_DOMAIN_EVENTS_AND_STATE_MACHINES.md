@@ -138,3 +138,11 @@ Future governance/operations may emit internal events such as:
 
 These are operational/governance events and must not be confused with learner evidence events.
 <!-- HYBRID_AI_STRATEGY_V3:END -->
+
+## Sprint 7.1 saved evidence state
+
+Legacy attempts transition SUBMITTED → ANALYZED or STALE_SOURCE once; retries of transient verifier failures
+reuse SUBMITTED and the immutable request. Final-answer capture uses SUBMITTED as saved/unassessed, with no
+background assessment job; a replay returns that same acknowledgement. Its schema prohibits ANALYZED in this
+sprint. The existing conceptual AttemptSubmitted event is not a correctness or mastery event; no new event bus
+or learning consumer is introduced. Reads never transition state.

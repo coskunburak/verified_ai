@@ -131,3 +131,17 @@ bounds. Lost acknowledgement/cancellation preserves pending identity; definitive
 Generation/current-account checks fence every async result. Native capture previews remain memory-only. Server
 learning history recovers committed drills on reopen; first-answer replay cannot duplicate mastery. Logout clears
 local pending/drafts and learning state. Offline correctness is never inferred; verified artifacts come from server.
+
+## Sprint 7.1 final answers and draft revision recovery
+
+Analyze My Work retains manual/photographic step analysis and adds final-answer mode with optional intermediate work.
+An explicit review sheet precedes capture-only submission v3. APIClient remains the only transport; native history uses
+representationVersion=2. A returned student-attempt-v2/SUBMITTED clears the pending marker as a saved acknowledgement,
+and is labeled Saved / Not assessed in EN/TR. Legacy SUBMITTED remains a retryable assessment state. No green/verified
+or mastery claim is inferred. Historical earlier-source work is explicitly labeled.
+
+Draft files now persist source identity and final answer. Older/changed-source drafts retain exact text but require
+review against the current context before a new operation is allowed. Existing unresolved operations always retry
+the original source and key. Account/generation/cancellation fences apply after network suspensions. Acknowledgement
+removes draft and pending files; selecting history cannot recreate an acknowledged draft. Store failures retain the
+pending identity for retry. Native/photo provenance and existing protected backup-excluded storage remain intact.

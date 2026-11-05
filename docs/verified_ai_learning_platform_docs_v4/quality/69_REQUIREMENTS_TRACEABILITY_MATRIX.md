@@ -199,3 +199,16 @@ Historical targeted repairs remain PASS for the earlier source only. Source exis
 ## Sprint 6.9 visualization boundary
 
 REQ-VIS-001 through REQ-VIS-010 map to V01–V10 in the Sprint 6.9 functional completion matrix. V01–V08 and V10 have bounded source implementations and authored synthetic tests; V09 has an explicit unsupported result but no reviewed phrase highlighting. Owner acceptance and hosted/device evidence remain NOT_VERIFIED.
+
+## Sprint 7.1 attempt evidence traceability
+
+| Requirement reference | Source / contract | Authored owner-executed evidence |
+|---|---|---|
+| `REQ-ATTEMPT-001` | StudentAttempt, StudentAttemptOrchestrator.submitAnswer, submission-v3/student-attempt-v2 | AttemptSubmissionRequestTest; StudentAttemptIntegrationTest; AttemptAnalysisTests |
+| `REQ-DATA-001` | V033 immutable final answer, membership and deferred shape constraints | databaseEnforcesShapeUnicodeAndCompositeOwnership; upgradeFromV032PreservesHistoricalEvidenceWithoutRewritingIt |
+| `REQ-AUTH-001` / `REQ-PRIV-001` | SolveSourceAccess, existing privacy contributor, protected source-bound drafts | StudentAttemptSubmissionControllerTest; deletedAccountCannotBeRecreatedByLateAssessment; account-isolation iOS tests |
+| `REQ-TRUST-001` / `REQ-MASTERY-001` | Capture-only saved state, null analysis, no learning dispatch | answerOnlyAndReasoningAreExactDurableUnassessedEvidence; EN/TR answer UI tests |
+| `REQ-QA-001` | sprint_7_1_owner_acceptance.sh, sprint_7_1_evidence.py | test_sprint_7_1_evidence.py; fresh owner reports pending |
+
+The exhaustive source-versus-acceptance matrix is
+`sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.1_FUNCTIONAL_COMPLETION_MATRIX.md`.

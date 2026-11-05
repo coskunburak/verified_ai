@@ -83,3 +83,13 @@ A change that affects AI behavior is not Done until:
 ## Sprint 6.9 visualization boundary
 
 Sprint 6.9 acceptance is owner-only via scripts/quality/sprint_6_9_owner_acceptance.sh --full. All required missing/skipped tests stay BLOCKED or FAIL; source fingerprints and golden artifacts are reconciled. No previous Sprint 6.8 PASS certifies new visualization source. Hosted CI, Linux isolation evidence and production authorization are separate. F08 unsupported phrase provenance must not be labeled complete.
+
+## Sprint 7.1 owner-only acceptance
+
+Sprint 7.1 local acceptance is LOCAL_ACCEPTANCE_PASSED via scripts/quality/sprint_7_1_owner_acceptance.sh --full
+(Run: 20261105-151510-r9cSGm, Gates A–G PASS, source unchanged). The dedicated owner runner supports --full and
+explicit --gate targeted repairs; targeted results never certify full acceptance. Gates A–G record preflight,
+PostgreSQL/backend, versioned contracts, iOS, privacy/security, documentation and dependent regressions. Every run
+has fresh reports/fingerprints; missing/skipped evidence is not PASS and changed source invalidates acceptance.
+Simulator absence is BLOCKED, not a skip concealed as success. ADR-011/TestFlight, hosted CI and physical-device
+VoiceOver remain separate external gates.

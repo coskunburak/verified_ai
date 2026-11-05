@@ -18,14 +18,15 @@ final class AttemptAnalysisAPI: AttemptAnalysisServicing, @unchecked Sendable {
         return r.body
     }
     func list(problem: UUID) async throws -> [StudentAttempt] {
-        let r: HTTPResponse<[StudentAttempt]> = try await client.send(HTTPRequest(endpoint: Endpoint(path: path(problem))))
+        let r: HTTPResponse<[StudentAttempt]> = try await client.send(HTTPRequest(endpoint: Endpoint(path: path(problem), queryItems: [URLQueryItem(name: "representationVersion", value: "2")])))
         guard r.body.count <= 30 else { throw NetworkError.invalidResponse }
         return try r.body.map { try $0.validated(problem: problem) }
     }
     func submit(problem: UUID, key: String, submission: AttemptSubmission) async throws -> StudentAttempt {
+        guard submission.isValid else { throw NetworkError.invalidResponse }
         let r: HTTPResponse<StudentAttempt> = try await client.send(HTTPRequest(endpoint: Endpoint(path: path(problem), method: .post),
             body: try JSONEncoder().encode(submission), idempotencyKey: key, timeout: 15))
-        guard r.body.source == submission.source, r.body.steps.map(\.content) == submission.steps else { throw NetworkError.invalidResponse }
+        guard r.body.source == submission.source, r.body.steps.map(\.content) == submission.steps, r.body.finalAnswer == submission.finalAnswer else { throw NetworkError.invalidResponse }
         return try r.body.validated(problem: problem)
     }
 }

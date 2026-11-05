@@ -10,6 +10,30 @@ final class AttemptAnalysisUITests: XCTestCase {
         methods(turkish: false, flags: ["--methods-single"])
         methods(turkish: false, flags: ["--methods-empty"])
     }
+    func testFinalAnswerSavedWithoutVerificationEnglish() { answer(turkish: false, lostAck: false) }
+    func testFinalAnswerTurkishLostAcknowledgementRecovery() { answer(turkish: true, lostAck: true) }
+    private func answer(turkish: Bool, lostAck: Bool) {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--ui-testing", "--ui-testing-authenticated", "--solve-fixture", "--attempt-fixture", "--solve-reset",
+            "--solve-fixture-scope=" + UUID().uuidString, "-AppleLanguages", turkish ? "(tr)" : "(en)"] + (lostAck ? ["--attempt-lost-ack"] : [])
+        app.launch(); defer { app.terminate() }
+        tap(app.buttons["history.session.00000000-0000-0000-0000-000000005401"], app)
+        tap(app.buttons["history.solve"], app); tap(app.buttons["attempt.open"], app)
+        tap(app.switches["attempt.answer.mode"], app)
+        let input = app.textFields["attempt.answer.input"]
+        tap(input, app); input.typeText("4\n")
+        tap(app.buttons["attempt.submit"], app)
+        XCTAssertTrue(app.buttons["attempt.answer.save"].waitForExistence(timeout: 5))
+        tap(app.buttons["attempt.answer.save"], app)
+        if lostAck { XCTAssertTrue(app.descendants(matching: .any)["attempt.error"].waitForExistence(timeout: 5)); tap(app.buttons["attempt.retry"], app) }
+        let saved = app.descendants(matching: .any)["attempt.answer.saved"].firstMatch
+        for _ in 0..<5 { if saved.isHittable { break }; app.swipeUp() }
+        XCTAssertTrue(saved.waitForExistence(timeout: 5))
+        XCTAssertTrue(saved.label.contains(turkish ? "Değerlendirilmedi" : "Not assessed"))
+        XCTAssertEqual(app.staticTexts["attempt.answer.original"].label, "4")
+        XCTAssertFalse(app.staticTexts["VERIFIED"].exists); XCTAssertFalse(app.staticTexts["attempt.outcome"].exists)
+    }
     private func methods(turkish: Bool, flags: [String]) {
         continueAfterFailure = false
         let app = XCUIApplication()

@@ -207,3 +207,15 @@ This is a highest-precedence document.
 ## Sprint 6.9 visualization boundary
 
 Visualization samples are approximate display data, never proof or VerificationPolicy input. Exact roots, source restrictions and natural-domain exclusions remain distinct. A source-only visualization cannot create an attempt, solve, verification, mastery event or assistance debit. Owner/current-source identity is checked before and after unlocked worker execution; no durable graph cache or training eligibility is added.
+
+## Sprint 7.1 final-answer capture invariants
+
+- Final-answer intent is explicit; an old attempt's last step is never retrospectively declared a final answer.
+- Submission v3 stores exact finalAnswer separately from zero to eleven intermediate steps in the existing attempt aggregate.
+- Capture-only SUBMITTED is a completed durable acknowledgement, with null analysis and no verifier/learning dispatch.
+  It does not imply correctness, independent solve, mastery gain or training eligibility. Future assessment needs an explicit versioned contract.
+- Legacy v1/v2 analysis and hashes remain unchanged. Unexpected verifier failure preserves SUBMITTED evidence for same-key recovery;
+  reauthorization and source recheck still apply. Reads never dispatch or reclassify historical work.
+- V033 protects final answers and child membership, enforces contiguous bounded new evidence, and preserves parent/account deletion cascades.
+- Default GET is a v1 display projection for old clients; representationVersion=2 exposes native final-answer semantics.
+  A projected last line is never persisted, normalized, assessed or promoted into independent learning evidence.

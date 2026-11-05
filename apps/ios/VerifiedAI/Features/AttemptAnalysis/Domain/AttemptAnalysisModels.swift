@@ -93,11 +93,17 @@ struct StudentAttempt: Codable, Identifiable, Sendable {
     let updatedAt: Date
     let trainingEligible: Bool
     var captureReview: AttemptCaptureReview? = nil
+    var finalAnswer: String? = nil
 
     func validated(problem: UUID) throws -> Self {
-        guard schemaVersion == "student-attempt-v1", problemSessionId == problem, !trainingEligible,
+        let answer = schemaVersion == "student-attempt-v2"
+        guard ["student-attempt-v1", "student-attempt-v2"].contains(schemaVersion), problemSessionId == problem, !trainingEligible,
+              updatedAt >= createdAt,
+              (answer ? (finalAnswer.map(AttemptSubmission.validText) == true && analysis == nil && captureReview == nil) : finalAnswer == nil),
               sourceType == "MANUAL", ["manual-canonical-v1", "manual-canonical-v2"].contains(normalizationVersion), source.canonicalRevision > 0, source.parseRevision > 0,
-              (1...12).contains(steps.count), steps.map(\.index) == Array(1...steps.count),
+              (answer ? (0...11).contains(steps.count) : (1...12).contains(steps.count)),
+              steps.map(\.index) == steps.indices.map({ $0 + 1 }),
+              !answer || steps.allSatisfy({ $0.normalizedStatement == nil }),
               steps.allSatisfy({ !$0.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
                   && $0.content.utf16.count <= 256 && $0.content.utf8.count <= 1024 }),
               (status == .analyzed) == (analysis != nil) else { throw NetworkError.invalidResponse }
@@ -178,7 +184,25 @@ struct StudentAttempt: Codable, Identifiable, Sendable {
         return self
     }
 }
-struct AttemptSubmission: Codable, Equatable, Sendable { let source: AttemptSourceIdentity; let steps: [String]; var realDomainConfirmed: Bool? = nil; var captureReview: AttemptCaptureReview? = nil }
+struct AttemptSubmission: Codable, Equatable, Sendable {
+    let source: AttemptSourceIdentity
+    let steps: [String]
+    var realDomainConfirmed: Bool? = nil
+    var captureReview: AttemptCaptureReview? = nil
+    var schemaVersion: String? = nil
+    var finalAnswer: String? = nil
+    static func validText(_ text: String) -> Bool {
+        !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && text.utf16.count <= 256
+            && text.utf8.count <= 1024 && !text.contains("\0")
+    }
+    var isValid: Bool {
+        guard source.canonicalRevision > 0, source.parseRevision > 0, steps.allSatisfy(Self.validText) else { return false }
+        if schemaVersion == "attempt-submission-v3" {
+            return steps.count <= 11 && finalAnswer.map(Self.validText) == true && captureReview == nil && realDomainConfirmed == nil
+        }
+        return schemaVersion == nil && finalAnswer == nil && (1...12).contains(steps.count)
+    }
+}
 protocol AttemptAnalysisServicing: Sendable {
     func context(problem: UUID) async throws -> AttemptContext
     func list(problem: UUID) async throws -> [StudentAttempt]

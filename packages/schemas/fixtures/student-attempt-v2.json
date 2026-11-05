@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "student-attempt-v2",
+  "id": "00000000-0000-0000-0000-000000007101",
+  "problemSessionId": "00000000-0000-0000-0000-000000005401",
+  "source": {
+    "canonicalId": "00000000-0000-0000-0000-000000006701",
+    "canonicalRevision": 1,
+    "parseId": "00000000-0000-0000-0000-000000006702",
+    "parseRevision": 1
+  },
+  "sourceType": "MANUAL",
+  "normalizationVersion": "manual-canonical-v1",
+  "status": "SUBMITTED",
+  "steps": [],
+  "finalAnswer": "  x = 4  ",
+  "analysis": null,
+  "createdAt": "2026-11-05T09:00:00Z",
+  "updatedAt": "2026-11-05T09:00:00Z",
+  "trainingEligible": false
+}

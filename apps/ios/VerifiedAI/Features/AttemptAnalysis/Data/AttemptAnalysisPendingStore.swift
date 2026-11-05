@@ -25,10 +25,7 @@ final class AttemptAnalysisPendingStore {
     }
     private func validate(_ value: AttemptPending) throws {
         guard value.key.range(of: #"^[A-Za-z0-9_-]{8,128}$"#, options: .regularExpression) != nil,
-              (1...12).contains(value.submission.steps.count), value.submission.steps.allSatisfy({
-                  !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && $0.utf16.count <= 256 && $0.utf8.count <= 1024
-              }),
-              value.submission.source.canonicalRevision > 0, value.submission.source.parseRevision > 0 else { throw NetworkError.invalidResponse }
+              value.submission.isValid else { throw NetworkError.invalidResponse }
     }
     func save(_ value: AttemptPending, owner: UUID, problem: UUID) throws {
         try validate(value)
@@ -49,9 +46,11 @@ final class AttemptAnalysisPendingStore {
         let text: String
         let realDomainConfirmed: Bool
         var captureReview: AttemptCaptureReview? = nil
+        var source: AttemptSourceIdentity? = nil
+        var finalAnswer: String? = nil
     }
     func saveDraft(_ draft: Draft, owner: UUID, problem: UUID) throws {
-        guard draft.text.utf8.count <= 12288 else { return }
+        guard draft.text.utf8.count <= 12288, (draft.finalAnswer?.utf8.count ?? 0) <= 1024 else { throw NetworkError.invalidResponse }
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         var root = directory; var attributes = URLResourceValues(); attributes.isExcludedFromBackup = true; try root.setResourceValues(attributes)
         let url = directory.appendingPathComponent("draft_\(owner)_\(problem).json")
@@ -67,6 +66,10 @@ final class AttemptAnalysisPendingStore {
         let data = try handle.read(upToCount: 16385) ?? Data()
         guard data.count <= 16384 else { throw NetworkError.invalidResponse }
         return try JSONDecoder().decode(Draft.self, from: data)
+    }
+    func removeDraft(owner: UUID, problem: UUID) throws {
+        let url = directory.appendingPathComponent("draft_\(owner)_\(problem).json")
+        if FileManager.default.fileExists(atPath: url.path) { try FileManager.default.removeItem(at: url) }
     }
     func clearAll() throws {
         if FileManager.default.fileExists(atPath: directory.path) { try FileManager.default.removeItem(at: directory) }

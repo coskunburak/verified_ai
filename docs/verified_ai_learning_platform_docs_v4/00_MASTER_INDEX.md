@@ -479,3 +479,12 @@ Production and shared upgrades remain NOT_AUTHORIZED; Linux release validation a
 ## Sprint 6.9 visualization boundary
 
 Sprint 6.9 implementation and limitations: `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.9_IMPLEMENTATION_MAP.md`, `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.9_EXECUTION_REPORT.md`, and `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.9_FUNCTIONAL_COMPLETION_MATRIX.md`. Core bounded visualizations are authored; F08 phrase highlighting remains unsupported; owner acceptance is NOT_VERIFIED.
+
+## Sprint 7.1 attempt domain and answer capture
+
+- `sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.1_IMPLEMENTATION_MAP.md` — existing-system gap audit, final-answer semantics, compatibility and source inventory.
+- `sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.1_FUNCTIONAL_COMPLETION_MATRIX.md` — source coverage, full owner acceptance evidence (LOCAL_ACCEPTANCE_PASSED), and separate external gates.
+- `sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.1_EXECUTION_REPORT.md` — LOCAL_ACCEPTANCE_PASSED across Gates A–G; local owner acceptance verified.
+
+V033 extends V030–V032 without rewriting historical migrations. This source handoff does not authorize broad Phase 7
+rollout or establish ADR-011's 50-student TestFlight gate; Sprint 7.2 has not been started.
