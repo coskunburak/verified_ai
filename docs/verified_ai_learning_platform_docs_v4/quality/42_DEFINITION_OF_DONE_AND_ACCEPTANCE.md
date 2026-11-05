@@ -79,3 +79,7 @@ A change that affects AI behavior is not Done until:
 - privacy/training eligibility impact is reviewed;
 - conditional secondary-solver behavior remains intentional.
 <!-- HYBRID_AI_STRATEGY_V3:END -->
+
+## Sprint 6.9 visualization boundary
+
+Sprint 6.9 acceptance is owner-only via scripts/quality/sprint_6_9_owner_acceptance.sh --full. All required missing/skipped tests stay BLOCKED or FAIL; source fingerprints and golden artifacts are reconciled. No previous Sprint 6.8 PASS certifies new visualization source. Hosted CI, Linux isolation evidence and production authorization are separate. F08 unsupported phrase provenance must not be labeled complete.

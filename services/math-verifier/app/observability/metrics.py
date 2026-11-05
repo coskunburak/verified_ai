@@ -68,3 +68,12 @@ def record_attempt_learning(result, elapsed_ms):
     with _execution_lock:
         _execution_counts[('ATTEMPT_'+result.action,result.status,'ARTIFACT')] += 1
         _execution_ms['ATTEMPT_'+result.action] += max(0,elapsed_ms)
+
+
+def record_visualization(result, elapsed_ms):
+    from app.api.schemas.math_visualization import Reason
+    if result.status not in {'SUPPORTED','UNSUPPORTED','UNAVAILABLE'} or result.reasonCode not in get_args(Reason):
+        raise ValueError('Unbounded visualization label')
+    with _execution_lock:
+        _execution_counts[('VISUALIZATION',result.status,result.reasonCode)] += 1
+        _execution_ms['VISUALIZATION'] += max(0,elapsed_ms)

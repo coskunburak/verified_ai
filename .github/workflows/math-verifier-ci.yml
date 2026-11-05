@@ -4,6 +4,9 @@ on:
   pull_request:
     paths:
       - "services/math-verifier/**"
+      - "packages/schemas/math-visualization*"
+      - "evaluations/golden-datasets/visualizations/**"
+      - "scripts/quality/*math_visualization*"
       - "packages/schemas/verification-execution*.schema.json"
       - "packages/schemas/calculus-execution*.schema.json"
       - "packages/schemas/numeric-diagnostic*.schema.json"
@@ -29,3 +32,13 @@ jobs:
         working-directory: services/math-verifier
         run: python -m pytest
 
+      - name: Visualization contracts and semantic golden evaluation
+        run: |
+          mkdir -p .generated/sprint-6-9-ci
+          python scripts/quality/check_math_visualization_contracts.py
+          python scripts/quality/evaluate_math_visualization.py .generated/sprint-6-9-ci/golden.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sprint-6-9-linux-golden
+          path: .generated/sprint-6-9-ci

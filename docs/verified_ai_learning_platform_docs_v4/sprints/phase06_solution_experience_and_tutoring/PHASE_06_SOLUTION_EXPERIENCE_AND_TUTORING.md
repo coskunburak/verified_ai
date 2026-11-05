@@ -161,3 +161,7 @@ Delivered capabilities:
 - iOS `AlternativeMethodComparisonView` with method picker, compact/full toggle, pedagogical metadata (prerequisites, advantages, limitations, complexity), and 100% English and Turkish localization (83 string units).
 - Comprehensive test coverage: 563 Python verifier tests, 18 golden method cases, 110 Spring Boot backend tests, 213 iOS XCTest cases, and zero unresolved failures.
 See SPRINT_6.8_IMPLEMENTATION_MAP.md, SPRINT_6.8_EXECUTION_REPORT.md, and SPRINT_6.8_FUNCTIONAL_COMPLETION_MATRIX.md for full delivery artifacts.
+
+## Sprint 6.9 visualization boundary
+
+Sprint 6.9 core source implementation adds ephemeral deterministic visualizations behind independent default-off gates. V09 phrase-to-algebra highlighting remains PARTIAL due to missing reviewed provenance; no phase exit or production authorization follows from this delivery. Owner acceptance is NOT_VERIFIED.

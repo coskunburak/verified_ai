@@ -29,8 +29,12 @@ struct PrimarySolveView: View {
                         .accessibilityIdentifier("attempt.open")
                 }
                 if let learning = viewModel.attemptModel?.learning {
-                    NavigationLink("attempt.methods.title") { SourceMethodComparisonView(model: learning) }
+                    NavigationLink("attempt.methods.title") { SourceMethodComparisonView(model: learning, visualization: viewModel.visualizationModel) }
                         .accessibilityIdentifier("attempt.methods.open")
+                }
+                if let visualization = viewModel.visualizationModel {
+                    NavigationLink("visualization.title") { MathVisualizationView(model: visualization) }
+                        .accessibilityIdentifier("visualization.open")
                 }
                 statusCard
                 #if DEBUG

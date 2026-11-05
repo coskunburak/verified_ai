@@ -20,6 +20,14 @@ struct AppDependencies {
     let problemReviewAPI: ProblemReviewServicing
     let problemSessionHistoryAPI: ProblemSessionHistoryServicing
     let problemSessionCache: ProblemSessionCaching
+    var visualizationAPI: any MathVisualizationServicing {
+        #if DEBUG
+        if solveFixture && ProcessInfo.processInfo.arguments.contains("--visualization-fixture") {
+            return FixtureVisualizationAPI(failFirst: ProcessInfo.processInfo.arguments.contains("--visualization-fail-first"))
+        }
+        #endif
+        return MathVisualizationAPI(client: apiClient)
+    }
     let attemptPending: AttemptAnalysisPendingStore
     var attemptAPI: AttemptAnalysisServicing {
         #if DEBUG

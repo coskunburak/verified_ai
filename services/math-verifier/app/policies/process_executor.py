@@ -17,6 +17,8 @@ from app.api.schemas.calculus import CalculusRequest, CalculusResult
 from app.api.schemas.execution import ExecutionRequest, ExecutionResult
 from app.api.schemas.numeric import NumericRequest, NumericResult, parse_result, unavailable
 
+from app.api.schemas.math_visualization import Request as VisualizationRequest, Result as VisualizationResult, outcome as visualization_outcome
+
 MAX_RESPONSE_BYTES = 16384
 
 
@@ -49,7 +51,10 @@ def apply_resource_limits(budget):
 def _worker(connection, payload, budget):
     try:
         apply_resource_limits(budget)
-        if json.loads(payload).get("schemaVersion") == "method-comparison-v2":
+        if json.loads(payload).get("schemaVersion") == "math-visualization-request-v1":
+            from app.verifiers.math_visualization import execute
+            response = execute(VisualizationRequest.model_validate_json(payload))
+        elif json.loads(payload).get("schemaVersion") == "method-comparison-v2":
             from app.verifiers.attempt_learning import execute_comparison
             response = execute_comparison(ComparisonRequest.model_validate_json(payload))
         elif json.loads(payload).get("schemaVersion") == "attempt-learning-v1":
@@ -95,6 +100,8 @@ class ProcessExecutor:
 
     @staticmethod
     def failure(request, reason):
+        if isinstance(request, VisualizationRequest):
+            return visualization_outcome(request, reason=reason)
         if isinstance(request, ComparisonRequest):
             return comparison_unavailable(request, reason)
         if isinstance(request, LearningRequest):
@@ -116,7 +123,7 @@ class ProcessExecutor:
                                method=request.method, outcome="EXECUTION_FAILED", reasonCode=reason,
                                restrictionIds=[r.id for r in request.restrictions])
 
-    def execute(self, request: ExecutionRequest | CalculusRequest | NumericRequest | AttemptRequest | AttemptV2Request | LearningRequest | ComparisonRequest) -> ExecutionResult | CalculusResult | NumericResult | AttemptResult | AttemptV2Result | LearningResult | ComparisonResult:
+    def execute(self, request: ExecutionRequest | CalculusRequest | NumericRequest | AttemptRequest | AttemptV2Request | LearningRequest | ComparisonRequest | VisualizationRequest) -> ExecutionResult | CalculusResult | NumericResult | AttemptResult | AttemptV2Result | LearningResult | ComparisonResult | VisualizationResult:
         if not self._slots.acquire(blocking=False):
             return self.failure(request, "ADMISSION_LIMIT")
         receive = send = process = None
@@ -137,6 +144,9 @@ class ProcessExecutor:
                 return self.failure(request, "WORKER_FAILURE")
             if data in {b"RESOURCE_FAILURE", b"WORKER_FAILURE"}:
                 return self.failure(request, data.decode("ascii"))
+            if isinstance(request, VisualizationRequest):
+                try: return VisualizationResult.model_validate_json(data).validate_for(request)
+                except ValueError: return self.failure(request, "INVALID_RESPONSE")
             if isinstance(request, ComparisonRequest):
                 try: return ComparisonResult.model_validate_json(data).validate_for(request)
                 except ValueError: return self.failure(request, "INVALID_RESPONSE")

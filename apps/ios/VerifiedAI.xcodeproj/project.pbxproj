@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B69000000000000000000006 /* math-visualization-public-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = A69000000000000000000006 /* math-visualization-public-v1.json */; };
+		B69000000000000000000005 /* MathVisualizationUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A69000000000000000000005 /* MathVisualizationUITests.swift */; };
+		B69000000000000000000004 /* MathVisualizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A69000000000000000000004 /* MathVisualizationTests.swift */; };
+		B69000000000000000000003 /* MathVisualizationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A69000000000000000000003 /* MathVisualizationView.swift */; };
+		B69000000000000000000002 /* MathVisualizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A69000000000000000000002 /* MathVisualizationViewModel.swift */; };
+		B69000000000000000000001 /* MathVisualization.swift in Sources */ = {isa = PBXBuildFile; fileRef = A69000000000000000000001 /* MathVisualization.swift */; };
 		B68000000000000000000002 /* method-comparison-public-v2.json in Resources */ = {isa = PBXBuildFile; fileRef = A68000000000000000000002 /* method-comparison-public-v2.json */; };
 		B68000000000000000000001 /* AlternativeMethodComparisonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68000000000000000000001 /* AlternativeMethodComparisonView.swift */; };
 		B67900000000000000000006 /* CounterfactualTwinSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A67900000000000000000006 /* CounterfactualTwinSheetView.swift */; };
@@ -171,6 +177,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A69000000000000000000006 /* math-visualization-public-v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/math-visualization-public-v1.json; sourceTree = SOURCE_ROOT; };
+		A69000000000000000000005 /* MathVisualizationUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAIUITests/MathVisualizationUITests.swift; sourceTree = SOURCE_ROOT; };
+		A69000000000000000000004 /* MathVisualizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/ProblemSolving/MathVisualizationTests.swift; sourceTree = SOURCE_ROOT; };
+		A69000000000000000000003 /* MathVisualizationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/ProblemSolving/Presentation/Visualization/MathVisualizationView.swift; sourceTree = SOURCE_ROOT; };
+		A69000000000000000000002 /* MathVisualizationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/ProblemSolving/Presentation/Visualization/MathVisualizationViewModel.swift; sourceTree = SOURCE_ROOT; };
+		A69000000000000000000001 /* MathVisualization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/ProblemSolving/Presentation/Visualization/MathVisualization.swift; sourceTree = SOURCE_ROOT; };
 		A68000000000000000000002 /* method-comparison-public-v2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/method-comparison-public-v2.json; sourceTree = SOURCE_ROOT; };
 		A68000000000000000000001 /* AlternativeMethodComparisonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/AttemptAnalysis/Presentation/AlternativeMethodComparisonView.swift; sourceTree = SOURCE_ROOT; };
 		A67900000000000000000006 /* CounterfactualTwinSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/AttemptAnalysis/Presentation/CounterfactualTwinSheetView.swift; sourceTree = SOURCE_ROOT; };
@@ -927,6 +939,12 @@
 				A67900000000000000000004 /* AttemptLearningAPI.swift */,
 				A67900000000000000000005 /* AttemptLearningViewModel.swift */,
 				A67900000000000000000006 /* CounterfactualTwinSheetView.swift */,
+				A69000000000000000000001 /* MathVisualization.swift */,
+				A69000000000000000000002 /* MathVisualizationViewModel.swift */,
+				A69000000000000000000003 /* MathVisualizationView.swift */,
+				A69000000000000000000004 /* MathVisualizationTests.swift */,
+				A69000000000000000000005 /* MathVisualizationUITests.swift */,
+				A69000000000000000000006 /* math-visualization-public-v1.json */,
 				A68000000000000000000001 /* AlternativeMethodComparisonView.swift */,
 				A68000000000000000000002 /* method-comparison-public-v2.json */,
 				A67000000000000000000001 /* AttemptAnalysisAPI.swift */,
@@ -1077,6 +1095,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B69000000000000000000006 /* math-visualization-public-v1.json in Resources */,
 				B68000000000000000000002 /* method-comparison-public-v2.json in Resources */,
 				10000000000000000000001E /* Localizable.xcstrings in Resources */,
 				10000000000000000000001F /* PrivacyInfo.xcprivacy in Resources */,
@@ -1112,6 +1131,9 @@
 				B67900000000000000000004 /* AttemptLearningAPI.swift in Sources */,
 				B67900000000000000000005 /* AttemptLearningViewModel.swift in Sources */,
 				B67900000000000000000006 /* CounterfactualTwinSheetView.swift in Sources */,
+				B69000000000000000000001 /* MathVisualization.swift in Sources */,
+				B69000000000000000000002 /* MathVisualizationViewModel.swift in Sources */,
+				B69000000000000000000003 /* MathVisualizationView.swift in Sources */,
 				B68000000000000000000001 /* AlternativeMethodComparisonView.swift in Sources */,
 				B67000000000000000000001 /* AttemptAnalysisAPI.swift in Sources */,
 				B67000000000000000000002 /* AttemptAnalysisPendingStore.swift in Sources */,
@@ -1225,6 +1247,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B69000000000000000000004 /* MathVisualizationTests.swift in Sources */,
 				B54000000000000000000009 /* PrimarySolveContractTests.swift in Sources */,
 				B5400000000000000000000A /* MathPresentationTests.swift in Sources */,
 				B6700000000000000000000B /* AttemptAnalysisTests.swift in Sources */,
@@ -1254,6 +1277,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B69000000000000000000005 /* MathVisualizationUITests.swift in Sources */,
 				B6700000000000000000000C /* AttemptAnalysisUITests.swift in Sources */,
 				B64000000000000000000008 /* TutorUITests.swift in Sources */,
 				B5400000000000000000000D /* PrimarySolveUITests.swift in Sources */,

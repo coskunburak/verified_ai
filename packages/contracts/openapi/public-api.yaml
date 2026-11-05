@@ -4,6 +4,46 @@ info:
   version: 0.1.0
 
 paths:
+  /api/v1/problem-sessions/{problemId}/visualizations/context:
+    parameters:
+      - {name: problemId, in: path, required: true, schema: {type: string, format: uuid}}
+    get:
+      security: [{bearerAuth: []}]
+      summary: Read current owned visualization source identity; no attempt is created
+      responses:
+        '200':
+          description: Current source identity and independent feature availability
+          content:
+            application/json:
+              schema: {$ref: '../../schemas/math-visualization-context-v1.schema.json'}
+        '401': {description: Authentication required}
+        '404': {description: Source not owned}
+        '409': {description: Source not ready}
+  /api/v1/problem-sessions/{problemId}/visualizations:
+    parameters:
+      - {name: problemId, in: path, required: true, schema: {type: string, format: uuid}}
+    post:
+      security: [{bearerAuth: []}]
+      summary: Ephemeral deterministic source projection, no solve, attempt, debit or verification mutation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '../../schemas/math-visualization-source-v1.schema.json'}
+      responses:
+        '200':
+          description: Exact source facts and bounded approximate samples; unsupported and unavailable carry no plot
+          content:
+            application/json:
+              schema: {$ref: '../../schemas/math-visualization-public-v1.schema.json'}
+        '401': {description: Authentication required}
+        '403': {description: Account inactive}
+        '404': {description: Source not owned}
+        '409': {description: VISUALIZATION_STALE_SOURCE or SOLVE_SOURCE_NOT_READY; reload context}
+        '413': {description: REQUEST_TOO_LARGE; maximum 16384 bytes}
+        '422': {description: REQUEST_VALIDATION_FAILED}
+        '429': {description: RATE_LIMIT_EXCEEDED; twenty requests per minute}
+        '503': {description: VISUALIZATION_UNAVAILABLE; disabled or invalid worker response}
   /api/v1/problem-sessions/{sessionId}/attempts/{attemptId}/counterfactual-twin:
     parameters:
       - {name: sessionId, in: path, required: true, schema: {type: string, format: uuid}}

@@ -3,6 +3,26 @@ info:
   title: Verified AI Internal Math Verifier API
   version: 0.4.0
 paths:
+  /internal/v1/verify/visualization:
+    post:
+      summary: Isolated deterministic visualization; independently default-off
+      parameters:
+        - {name: X-Internal-Token, in: header, required: true, schema: {type: string}}
+        - {name: X-Request-Id, in: header, required: true, schema: {type: string, format: uuid}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '../../schemas/math-visualization-request-v1.schema.json'}
+      responses:
+        '200':
+          description: Bound to execution, source identity, type and viewport; maximum 16384 bytes
+          content:
+            application/json:
+              schema: {$ref: '../../schemas/math-visualization-result-v1.schema.json'}
+        '401': {description: Internal authentication required}
+        '413': {description: Request exceeds 65536 bytes}
+        '422': {description: Invalid contract or correlation}
   /internal/v1/verify/attempt-v2:
     post:
       summary: Bounded isolated deterministic attempt-v2 execution

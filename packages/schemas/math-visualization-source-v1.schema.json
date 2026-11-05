@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "math-visualization-source-v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "math-visualization-source-v1"
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "canonicalId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "canonicalRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "parseId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "parseRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        }
+      },
+      "required": [
+        "canonicalId",
+        "canonicalRevision",
+        "parseId",
+        "parseRevision"
+      ]
+    },
+    "type": {
+      "enum": [
+        "FUNCTION",
+        "EQUATION",
+        "DERIVATIVE",
+        "NUMBER_LINE",
+        "STORY_BRIDGE"
+      ]
+    },
+    "viewport": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "xMin": {
+          "type": "number",
+          "minimum": -1000,
+          "maximum": 1000
+        },
+        "xMax": {
+          "type": "number",
+          "minimum": -1000,
+          "maximum": 1000
+        },
+        "yMin": {
+          "type": "number",
+          "minimum": -1000,
+          "maximum": 1000
+        },
+        "yMax": {
+          "type": "number",
+          "minimum": -1000,
+          "maximum": 1000
+        }
+      },
+      "required": [
+        "xMin",
+        "xMax",
+        "yMin",
+        "yMax"
+      ]
+    },
+    "resolution": {
+      "type": "integer",
+      "minimum": 16,
+      "maximum": 64
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "source",
+    "type",
+    "viewport",
+    "resolution"
+  ]
+}

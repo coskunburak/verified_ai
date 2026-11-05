@@ -475,3 +475,7 @@ remain unavailable. No agent execution of tests/builds/evaluations, commit or pu
 
 Active forward V030–V032 replace the earlier staged-only implementation boundary without altering V024–V029.
 Production and shared upgrades remain NOT_AUTHORIZED; Linux release validation and live handwriting coverage remain pending.
+
+## Sprint 6.9 visualization boundary
+
+Sprint 6.9 implementation and limitations: `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.9_IMPLEMENTATION_MAP.md`, `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.9_EXECUTION_REPORT.md`, and `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.9_FUNCTIONAL_COMPLETION_MATRIX.md`. Core bounded visualizations are authored; F08 phrase highlighting remains unsupported; owner acceptance is NOT_VERIFIED.

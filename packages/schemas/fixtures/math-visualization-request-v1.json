@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "math-visualization-request-v1",
+  "executionId": "00000000-0000-0000-0000-000000000071",
+  "correlationId": "00000000-0000-0000-0000-000000000071",
+  "identity": {
+    "canonicalId": "00000000-0000-0000-0000-000000000069",
+    "canonicalRevision": 1,
+    "parseId": "00000000-0000-0000-0000-000000000070",
+    "parseRevision": 1
+  },
+  "source": {
+    "original": {
+      "kind": "EXPRESSION",
+      "expression": {
+        "kind": "VARIABLE",
+        "symbol": "x"
+      }
+    },
+    "variables": [
+      {
+        "symbol": "x",
+        "domain": "REAL"
+      }
+    ],
+    "restrictions": [],
+    "domainBasis": "SOURCE_EXPLICIT"
+  },
+  "type": "FUNCTION",
+  "viewport": {
+    "xMin": -10.0,
+    "xMax": 10.0,
+    "yMin": -10.0,
+    "yMax": 10.0
+  },
+  "resolution": 48
+}

@@ -13,6 +13,7 @@ class Settings:
     calculus_enabled: bool = False
     numeric_enabled: bool = False
     attempt_enabled: bool = False
+    visualization_enabled: bool = False
     expression_max_length: int = 256
     operation_timeout_ms: int = 750
 
@@ -37,6 +38,10 @@ def get_settings() -> Settings:
             raise ValueError("Attempt production authorization is pending")
         if not sys.platform.startswith("linux"):
             raise ValueError("Attempt production execution requires Linux process resource limits")
+    visualization = os.getenv("MATH_VERIFIER_VISUALIZATION_ENABLED", "false").lower() == "true"
+    if visualization and environment not in {"local", "test"}:
+        if os.getenv("MATH_VERIFIER_VISUALIZATION_PRODUCTION_AUTHORIZED", "false").lower() != "true" or not sys.platform.startswith("linux"):
+            raise ValueError("Visualization requires production authorization and Linux isolation")
     return Settings(
         environment=environment,
         internal_token=token,
@@ -44,6 +49,7 @@ def get_settings() -> Settings:
         calculus_enabled=calculus,
         numeric_enabled=numeric,
         attempt_enabled=attempt,
+        visualization_enabled=visualization,
         expression_max_length=int(os.getenv("MATH_VERIFIER_EXPRESSION_MAX_LENGTH", "256")),
         operation_timeout_ms=int(os.getenv("MATH_VERIFIER_TIMEOUT_MS", "750")),
     )

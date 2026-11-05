@@ -173,3 +173,21 @@ def execute_attempt_learning(payload: LearningRequest | ComparisonRequest, reque
     result=executor.execute(payload) if get_settings().attempt_enabled else executor.failure(payload,"DISABLED")
     record_attempt_learning(result,(time.monotonic()-started)*1000)
     return result
+
+
+from app.api.schemas.math_visualization import Request as VisualizationRequest, Result as VisualizationResult
+
+@router.post("/visualization", response_model=VisualizationResult, dependencies=[Depends(require_internal_auth)])
+def execute_visualization(payload: VisualizationRequest, request: Request) -> VisualizationResult:
+    import time
+    from app.config import get_settings
+    from app.domain.errors import VerificationError
+    from app.policies.process_executor import executor
+    from app.observability.metrics import record_visualization
+    if request.headers.get("X-Request-Id") != payload.correlationId:
+        raise VerificationError("VERIFIER_CORRELATION_MISMATCH", "Execution correlation mismatch", 422)
+    request.state.correlation_id = payload.correlationId
+    started=time.monotonic()
+    result=executor.execute(payload) if get_settings().visualization_enabled else executor.failure(payload,"DISABLED")
+    record_visualization(result,(time.monotonic()-started)*1000)
+    return result

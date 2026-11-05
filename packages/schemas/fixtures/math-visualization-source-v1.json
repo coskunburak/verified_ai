@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "math-visualization-source-v1",
+  "source": {
+    "canonicalId": "00000000-0000-0000-0000-000000000069",
+    "canonicalRevision": 1,
+    "parseId": "00000000-0000-0000-0000-000000000070",
+    "parseRevision": 1
+  },
+  "type": "FUNCTION",
+  "viewport": {
+    "xMin": -10.0,
+    "xMax": 10.0,
+    "yMin": -10.0,
+    "yMax": 10.0
+  },
+  "resolution": 48
+}

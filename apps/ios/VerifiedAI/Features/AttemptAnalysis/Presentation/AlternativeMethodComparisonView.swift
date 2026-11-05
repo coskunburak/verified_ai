@@ -86,10 +86,15 @@ struct AlternativeMethodComparisonView: View {
 
 struct SourceMethodComparisonView: View {
     @Bindable var model: AttemptLearningViewModel
+    var visualization: MathVisualizationViewModel? = nil
     @Environment(\.scenePhase) private var phase
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: SpacingTokens.md) {
+                if let visualization {
+                    NavigationLink("visualization.title") { MathVisualizationView(model: visualization) }
+                        .accessibilityIdentifier("visualization.methods.open")
+                }
                 if model.busy { ProgressView("attempt.methods.loading").accessibilityIdentifier("attempt.methods.loading") }
                 if let result = model.sourceMethods {
                     AlternativeMethodComparisonView(evidence: result.evidence)

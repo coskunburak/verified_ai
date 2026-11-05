@@ -195,3 +195,7 @@ Historical targeted repairs remain PASS for the earlier source only. Source exis
 | Method evidence / domain safety | method-comparison v2 schemas, MethodComparisonEvidence, rational-method-comparison-v2 golden dataset | Exact bounded real algebra only; no learner verification promotion |
 | Source-backed access / privacy | AttemptLearningService.comparison, StudentAttemptIntegrationTest, StudentAttemptControllerTest | Owner/source checked twice; no fabricated attempts, no new durable artifact |
 | Local release evidence | sprint_6_8_owner_acceptance.sh and sprint_6_8_evidence.py | NOT_EXECUTED by agent; skips block, full source changes invalidate historical coverage |
+
+## Sprint 6.9 visualization boundary
+
+REQ-VIS-001 through REQ-VIS-010 map to V01–V10 in the Sprint 6.9 functional completion matrix. V01–V08 and V10 have bounded source implementations and authored synthetic tests; V09 has an explicit unsupported result but no reviewed phrase highlighting. Owner acceptance and hosted/device evidence remain NOT_VERIFIED.

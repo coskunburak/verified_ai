@@ -203,3 +203,7 @@ This is a highest-precedence document.
 - Unknown real scope, unproven transformations and unencodable outcomes produce no verified cards. Negative-discriminant quadratics use the square argument without a non-real radical AST.
 - Factoring and repeated-root square forms normalize to one derivation when their transformation trees agree. Card counts are never padded.
 - v2 comparisons are ephemeral source projections: exact owner/parse/canonical identity before and after unlocked bounded execution; deterministic recomputation on retry. v1 stored methods remain immutable historical evidence.
+
+## Sprint 6.9 visualization boundary
+
+Visualization samples are approximate display data, never proof or VerificationPolicy input. Exact roots, source restrictions and natural-domain exclusions remain distinct. A source-only visualization cannot create an attempt, solve, verification, mastery event or assistance debit. Owner/current-source identity is checked before and after unlocked worker execution; no durable graph cache or training eligibility is added.

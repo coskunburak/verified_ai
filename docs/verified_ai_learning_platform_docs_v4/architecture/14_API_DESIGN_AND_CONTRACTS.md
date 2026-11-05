@@ -314,3 +314,7 @@ replays recompute deterministically, under 30 learning calls/account/minute and 
 Unknown authority fields reject. Source change returns 409; worker/disabled failures return 503;
 UNSUPPORTED and NO_ALTERNATIVE return typed 200 outcomes with zero verified cards. No global solver
 or learner verdict changes. See Sprint 6.8 implementation map for proof bounds and owner gates.
+
+## Sprint 6.9 visualization boundary
+
+GET /api/v1/problem-sessions/{problemId}/visualizations/context and POST /api/v1/problem-sessions/{problemId}/visualizations provide an ephemeral source projection. Independent context/source/request/result/public v1 schemas bind source revisions, execution ID, viewport and kind. Request cap 16 KiB; worker response cap remains 16 KiB. HTTP 409 requires source reload, 429 rate recovery, 503 unavailable; unsupported mathematical scope returns an empty UNSUPPORTED result. No-store responses, JWT ownership and post-worker reauthorization apply.

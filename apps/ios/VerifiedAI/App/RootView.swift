@@ -198,6 +198,15 @@ struct RootView: View {
                     let attemptService = dependencies.attemptAPI
                     return PrimarySolveViewModel(userId: userId, sessionId: sessionId, service: dependencies.primarySolveAPI,
                         recovery: dependencies.solveRecovery, network: dependencies.solveFlowNetworkMonitor,
+                        visualizationModel: MathVisualizationViewModel(api: dependencies.visualizationAPI, problem: sessionId, ownsAccount: {
+                            #if DEBUG
+                            if dependencies.solveFixture && ProcessInfo.processInfo.arguments.contains("--visualization-fixture") { return true }
+                            #endif
+                            let stored = try? await dependencies.authenticationSessionStore.loadSession()
+                            guard case .authenticated(let latest) = signInViewModel.state else { return false }
+                            return stored?.userId == userId && stored?.sessionId == authSessionId
+                                && latest.userId == userId && latest.sessionId == authSessionId
+                        }),
                         attemptModel: AnalyzeMyWorkViewModel(owner: userId, problem: sessionId, service: attemptService,
                             store: dependencies.attemptPending, capture: AttemptCaptureDependencies(capture: problemCaptureViewModel, upload: problemAssetUploadViewModel, review: problemReviewViewModel, camera: dependencies.problemCameraClient), learningAPI: dependencies.attemptLearningAPI, ownsAccount: {
                                 guard case .authenticated(let current) = signInViewModel.state,

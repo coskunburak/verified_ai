@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "math-visualization-context-v1",
+  "enabled": false,
+  "source": {
+    "canonicalId": "00000000-0000-0000-0000-000000000069",
+    "canonicalRevision": 1,
+    "parseId": "00000000-0000-0000-0000-000000000070",
+    "parseRevision": 1
+  }
+}

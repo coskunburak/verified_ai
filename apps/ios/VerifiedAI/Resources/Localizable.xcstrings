@@ -1,6 +1,890 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "visualization.expression": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Function or equation residual (original domain retained)"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fonksiyon veya denklem farkı (özgün tanım kümesi korunur)"
+          }
+        }
+      }
+    },
+    "visualization.derivativeExpression": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exact ambient derivative (restricted to source domain)"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kesin türev ifadesi (kaynak tanım kümesiyle sınırlı)"
+          }
+        }
+      }
+    },
+    "visualization.rateLimit": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Too many visualization requests. Wait a minute, then reload."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çok fazla görselleştirme isteği gönderildi. Bir dakika bekleyip yeniden yükleyin."
+          }
+        }
+      }
+    },
+    "visualization.invalid": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The response or request could not be validated. Reload the current source."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yanıt veya istek doğrulanamadı. Güncel kaynağı yeniden yükleyin."
+          }
+        }
+      }
+    },
+    "visualization.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Explore the mathematics"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Matematiği keşfet"
+          }
+        }
+      }
+    },
+    "visualization.scope": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A source-bound illustration. It does not verify your work or change the solution."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaynağa bağlı bir gösterimdir. Çalışmanızı doğrulamaz, çözümü değiştirmez."
+          }
+        }
+      }
+    },
+    "visualization.type": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Visualization type"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Görselleştirme türü"
+          }
+        }
+      }
+    },
+    "visualization.loading": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preparing a bounded visualization…"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sınırlı görselleştirme hazırlanıyor…"
+          }
+        }
+      }
+    },
+    "visualization.function": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Function — solid line"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fonksiyon — düz çizgi"
+          }
+        }
+      }
+    },
+    "visualization.derivative": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Derivative — dashed line"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Türev — kesikli çizgi"
+          }
+        }
+      }
+    },
+    "visualization.selected": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Approximate sample: x = %.4g, y = %.4g"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yaklaşık örnek: x = %.4g, y = %.4g"
+          }
+        }
+      }
+    },
+    "visualization.previous": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Previous sample"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Önceki örnek"
+          }
+        }
+      }
+    },
+    "visualization.next": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Next sample"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sonraki örnek"
+          }
+        }
+      }
+    },
+    "visualization.approximate": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lines join approximate samples within continuous branches. They do not prove roots or describe every detail between samples."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çizgiler sürekli dallardaki yaklaşık örnekleri birleştirir. Kökleri kanıtlamaz veya örnekler arasındaki her ayrıntıyı göstermez."
+          }
+        }
+      }
+    },
+    "visualization.numberLine": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exact set on the number line"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sayı doğrusunda kesin küme"
+          }
+        }
+      }
+    },
+    "visualization.empty": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The set is empty."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Küme boştur."
+          }
+        }
+      }
+    },
+    "visualization.exact": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exact mathematical features"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kesin matematiksel özellikler"
+          }
+        }
+      }
+    },
+    "visualization.naturalDomain": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Natural domain (including holes)"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Doğal tanım kümesi (delikler dahil)"
+          }
+        }
+      }
+    },
+    "visualization.sourceDomain": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Explicit source restrictions"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaynağın açık kısıtları"
+          }
+        }
+      }
+    },
+    "visualization.solutionSet": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exact solution set"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kesin çözüm kümesi"
+          }
+        }
+      }
+    },
+    "visualization.retry": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reload current source"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Güncel kaynağı yeniden yükle"
+          }
+        }
+      }
+    },
+    "visualization.zoomIn": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zoom in"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yakınlaştır"
+          }
+        }
+      }
+    },
+    "visualization.zoomOut": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zoom out"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uzaklaştır"
+          }
+        }
+      }
+    },
+    "visualization.left": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pan left"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sola kaydır"
+          }
+        }
+      }
+    },
+    "visualization.right": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pan right"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sağa kaydır"
+          }
+        }
+      }
+    },
+    "visualization.reset": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset viewport"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Görünümü sıfırla"
+          }
+        }
+      }
+    },
+    "visualization.chartSummary": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Approximate graph. Solid: function or equation residual. Dashed: derivative. Use sample buttons for accessible selection. Axes have no physical units."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yaklaşık grafik. Düz çizgi: fonksiyon veya denklem farkı. Kesikli çizgi: türev. Erişilebilir seçim için örnek düğmelerini kullanın. Eksenler fiziksel birim içermez."
+          }
+        }
+      }
+    },
+    "visualization.interval": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exact interval: %@. Round endpoints are excluded; square endpoints are included."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kesin aralık: %@. Yuvarlak uçlar hariç, köşeli uçlar dahildir."
+          }
+        }
+      }
+    },
+    "visualization.provenance": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phrase-to-algebra highlighting requires reviewed source mappings. This source does not contain that evidence."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Metinden cebire vurgulama, incelenmiş kaynak eşlemeleri gerektirir. Bu kaynakta bu kanıt bulunmuyor."
+          }
+        }
+      }
+    },
+    "visualization.unsupported": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This source or visualization type is outside the supported real rational model. Try the number line for a set or inequality."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu kaynak veya tür, desteklenen gerçek rasyonel modelin dışındadır. Küme veya eşitsizlik için sayı doğrusunu deneyin."
+          }
+        }
+      }
+    },
+    "visualization.offline": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connection unavailable. Reconnect and reload."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bağlantı yok. Bağlandıktan sonra yeniden yükleyin."
+          }
+        }
+      }
+    },
+    "visualization.stale": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The source changed. Reload its current revision."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaynak değişti. Güncel sürümünü yeniden yükleyin."
+          }
+        }
+      }
+    },
+    "visualization.unauthorized": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Access to this source is no longer available. Return to your account."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu kaynağa erişim artık yok. Hesabınıza geri dönün."
+          }
+        }
+      }
+    },
+    "visualization.unavailable": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Visualization is unavailable or the response could not be validated. Retry later."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Görselleştirme kullanılamıyor veya yanıt doğrulanamadı. Daha sonra yeniden deneyin."
+          }
+        }
+      }
+    },
+    "visualization.type.FUNCTION": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Function"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fonksiyon"
+          }
+        }
+      }
+    },
+    "visualization.type.EQUATION": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Equation residual"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Denklem farkı"
+          }
+        }
+      }
+    },
+    "visualization.type.DERIVATIVE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Function and derivative"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fonksiyon ve türev"
+          }
+        }
+      }
+    },
+    "visualization.type.NUMBER_LINE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Number line"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sayı doğrusu"
+          }
+        }
+      }
+    },
+    "visualization.type.STORY_BRIDGE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Story to algebra"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Metinden cebire"
+          }
+        }
+      }
+    },
+    "visualization.feature.ROOT_INTERCEPT": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exact root / x intercept"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kesin kök / x ekseni kesişimi"
+          }
+        }
+      }
+    },
+    "visualization.feature.Y_INTERCEPT": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exact y intercept"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kesin y ekseni kesişimi"
+          }
+        }
+      }
+    },
+    "visualization.feature.QUADRATIC_VERTEX": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quadratic vertex (x also gives the symmetry axis)"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Parabolün tepe noktası (x, simetri eksenini de verir)"
+          }
+        }
+      }
+    },
+    "visualization.feature.SLOPE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slope (second coordinate)"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eğim (ikinci koordinat)"
+          }
+        }
+      }
+    },
+    "visualization.concept.APPROXIMATE_SAMPLE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Samples are approximate display data, not mathematical evidence."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Örnekler yaklaşık gösterim verisidir, matematiksel kanıt değildir."
+          }
+        }
+      }
+    },
+    "visualization.concept.ROOT_INTERCEPT": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An exact root makes the plotted function or equation residual zero within the source domain."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kesin kök, kaynak tanım kümesinde fonksiyonu veya denklem farkını sıfır yapar."
+          }
+        }
+      }
+    },
+    "visualization.concept.POSITIVE_SLOPE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The affine model has positive slope."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Doğrusal modelin eğimi pozitiftir."
+          }
+        }
+      }
+    },
+    "visualization.concept.NEGATIVE_SLOPE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The affine model has negative slope."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Doğrusal modelin eğimi negatiftir."
+          }
+        }
+      }
+    },
+    "visualization.concept.ZERO_DERIVATIVE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The ambient function has zero derivative on its natural domain. Restriction endpoints do not assert a two-sided derivative."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fonksiyonun doğal tanım kümesindeki türevi sıfırdır. Kısıt uçlarında iki yönlü türev iddia edilmez."
+          }
+        }
+      }
+    },
+    "visualization.concept.DOMAIN_HOLE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Excluded inputs remain excluded even if a denominator cancels. Separate branches are never connected across them."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Payda sadeleşse bile dışlanan girdiler dışarıda kalır. Ayrı dallar bu noktalardan birleştirilmez."
+          }
+        }
+      }
+    },
+    "visualization.concept.QUADRATIC_VERTEX": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The exact vertex lies in the source domain. The unrestricted quadratic is symmetric about its x coordinate; restrictions may remove part of that graph."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kesin tepe noktası kaynak tanım kümesindedir. Kısıtsız parabol, bu x değerinde simetriktir; kısıtlar grafiğin bir bölümünü kaldırabilir."
+          }
+        }
+      }
+    },
+    "visualization.concept.OPEN_BOUNDARY": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An open endpoint is excluded. Infinite ends are always open and extend outward."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Açık uç kümeye dahil değildir. Sonsuz uçlar her zaman açıktır ve dışarı uzanır."
+          }
+        }
+      }
+    },
+    "visualization.concept.CLOSED_BOUNDARY": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A closed endpoint belongs to the set. A single closed point can be an isolated solution."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kapalı uç kümeye dahildir. Tek kapalı nokta yalıtılmış çözüm olabilir."
+          }
+        }
+      }
+    },
     "attempt.methods.scope": {
       "extractionState": "manual",
       "localizations": {

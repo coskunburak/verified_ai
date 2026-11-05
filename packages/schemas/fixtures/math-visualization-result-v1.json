@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "math-visualization-result-v1",
+  "policyVersion": "math-visualization-policy-v1",
+  "executionId": "00000000-0000-0000-0000-000000000071",
+  "correlationId": "00000000-0000-0000-0000-000000000071",
+  "identity": {
+    "canonicalId": "00000000-0000-0000-0000-000000000069",
+    "canonicalRevision": 1,
+    "parseId": "00000000-0000-0000-0000-000000000070",
+    "parseRevision": 1
+  },
+  "type": "FUNCTION",
+  "viewport": {
+    "xMin": -10.0,
+    "xMax": 10.0,
+    "yMin": -10.0,
+    "yMax": 10.0
+  },
+  "resolution": 48,
+  "status": "SUPPORTED",
+  "reasonCode": "BOUNDED_EXACT_MODEL",
+  "naturalDomain": {
+    "kind": "REALS"
+  },
+  "sourceDomain": {
+    "kind": "REALS"
+  },
+  "solutionSet": null,
+  "numberLine": [
+    {
+      "lower": "-oo",
+      "upper": "oo",
+      "lowerValue": null,
+      "upperValue": null,
+      "leftOpen": true,
+      "rightOpen": true
+    }
+  ],
+  "features": [
+    {
+      "code": "ROOT_INTERCEPT",
+      "x": "0",
+      "y": "0"
+    },
+    {
+      "code": "SLOPE",
+      "x": "0",
+      "y": "1"
+    }
+  ],
+  "segments": [
+    {
+      "id": "f0",
+      "curve": "FUNCTION",
+      "points": [
+        {
+          "x": -1.0,
+          "y": -1.0
+        },
+        {
+          "x": 0.0,
+          "y": 0.0
+        },
+        {
+          "x": 1.0,
+          "y": 1.0
+        }
+      ]
+    }
+  ],
+  "concepts": [
+    "APPROXIMATE_SAMPLE",
+    "POSITIVE_SLOPE"
+  ],
+  "axes": "X_Y_UNITLESS",
+  "sampleSemantics": "APPROXIMATE_DISPLAY_ONLY",
+  "trainingEligible": false,
+  "expression": {
+    "kind": "VARIABLE",
+    "symbol": "x"
+  },
+  "derivativeExpression": null
+}

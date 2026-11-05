@@ -112,3 +112,7 @@ Every recoverable error has a concrete next action.
 ## Paywall
 
 Show exact price, billing period, trial terms, renewal, restore and legal links. No deceptive scarcity or hidden close behavior.
+
+## Sprint 6.9 visualization boundary
+
+Sprint 6.9 uses native Swift Charts with separate continuous series, solid function and dashed derivative legends, accessible sample controls, bounded viewport controls and exact number-line endpoint summaries. Exact features and approximate samples are labeled separately in EN/TR. Background/disappearance clears the graph; account/source/generation fences prevent stale publication. Device VoiceOver/Dynamic Type/appearance validation remains owner-executed.

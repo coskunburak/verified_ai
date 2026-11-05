@@ -1,0 +1,1661 @@
+{
+  "schemaVersion": "visualization-golden-v1",
+  "synthetic": true,
+  "cases": [
+    {
+      "id": "quadratic-roots",
+      "request": {
+        "schemaVersion": "math-visualization-request-v1",
+        "executionId": "00000000-0000-0000-0000-000000000071",
+        "correlationId": "00000000-0000-0000-0000-000000000071",
+        "identity": {
+          "canonicalId": "00000000-0000-0000-0000-000000000069",
+          "canonicalRevision": 1,
+          "parseId": "00000000-0000-0000-0000-000000000070",
+          "parseRevision": 1
+        },
+        "source": {
+          "original": {
+            "kind": "RELATION",
+            "left": {
+              "kind": "BINARY",
+              "operator": "SUBTRACT",
+              "left": {
+                "kind": "BINARY",
+                "operator": "POWER",
+                "left": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "value": "2",
+                  "numericType": "INTEGER"
+                }
+              },
+              "right": {
+                "kind": "NUMBER",
+                "value": "4",
+                "numericType": "INTEGER"
+              }
+            },
+            "right": {
+              "kind": "NUMBER",
+              "value": "0",
+              "numericType": "INTEGER"
+            },
+            "relation": "EQUALS"
+          },
+          "variables": [
+            {
+              "symbol": "x",
+              "domain": "REAL"
+            }
+          ],
+          "restrictions": [],
+          "domainBasis": "SOURCE_EXPLICIT"
+        },
+        "type": "EQUATION",
+        "viewport": {
+          "xMin": -10.0,
+          "xMax": 10.0,
+          "yMin": -10.0,
+          "yMax": 10.0
+        },
+        "resolution": 48
+      },
+      "expected": {
+        "status": "SUPPORTED",
+        "roots": [
+          "-2",
+          "2"
+        ]
+      }
+    },
+    {
+      "id": "empty-real-roots",
+      "request": {
+        "schemaVersion": "math-visualization-request-v1",
+        "executionId": "00000000-0000-0000-0000-000000000071",
+        "correlationId": "00000000-0000-0000-0000-000000000071",
+        "identity": {
+          "canonicalId": "00000000-0000-0000-0000-000000000069",
+          "canonicalRevision": 1,
+          "parseId": "00000000-0000-0000-0000-000000000070",
+          "parseRevision": 1
+        },
+        "source": {
+          "original": {
+            "kind": "RELATION",
+            "left": {
+              "kind": "BINARY",
+              "operator": "ADD",
+              "left": {
+                "kind": "BINARY",
+                "operator": "POWER",
+                "left": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "value": "2",
+                  "numericType": "INTEGER"
+                }
+              },
+              "right": {
+                "kind": "NUMBER",
+                "value": "1",
+                "numericType": "INTEGER"
+              }
+            },
+            "right": {
+              "kind": "NUMBER",
+              "value": "0",
+              "numericType": "INTEGER"
+            },
+            "relation": "EQUALS"
+          },
+          "variables": [
+            {
+              "symbol": "x",
+              "domain": "REAL"
+            }
+          ],
+          "restrictions": [],
+          "domainBasis": "SOURCE_EXPLICIT"
+        },
+        "type": "EQUATION",
+        "viewport": {
+          "xMin": -10.0,
+          "xMax": 10.0,
+          "yMin": -10.0,
+          "yMax": 10.0
+        },
+        "resolution": 48
+      },
+      "expected": {
+        "status": "SUPPORTED",
+        "solutionKind": "EMPTY_SET"
+      }
+    },
+    {
+      "id": "cancelled-hole",
+      "request": {
+        "schemaVersion": "math-visualization-request-v1",
+        "executionId": "00000000-0000-0000-0000-000000000071",
+        "correlationId": "00000000-0000-0000-0000-000000000071",
+        "identity": {
+          "canonicalId": "00000000-0000-0000-0000-000000000069",
+          "canonicalRevision": 1,
+          "parseId": "00000000-0000-0000-0000-000000000070",
+          "parseRevision": 1
+        },
+        "source": {
+          "original": {
+            "kind": "EXPRESSION",
+            "expression": {
+              "kind": "BINARY",
+              "operator": "DIVIDE",
+              "left": {
+                "kind": "BINARY",
+                "operator": "SUBTRACT",
+                "left": {
+                  "kind": "BINARY",
+                  "operator": "POWER",
+                  "left": {
+                    "kind": "VARIABLE",
+                    "symbol": "x"
+                  },
+                  "right": {
+                    "kind": "NUMBER",
+                    "value": "2",
+                    "numericType": "INTEGER"
+                  }
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "value": "1",
+                  "numericType": "INTEGER"
+                }
+              },
+              "right": {
+                "kind": "BINARY",
+                "operator": "SUBTRACT",
+                "left": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "value": "1",
+                  "numericType": "INTEGER"
+                }
+              }
+            }
+          },
+          "variables": [
+            {
+              "symbol": "x",
+              "domain": "REAL"
+            }
+          ],
+          "restrictions": [],
+          "domainBasis": "SOURCE_EXPLICIT"
+        },
+        "type": "FUNCTION",
+        "viewport": {
+          "xMin": -10.0,
+          "xMax": 10.0,
+          "yMin": -10.0,
+          "yMax": 10.0
+        },
+        "resolution": 48
+      },
+      "expected": {
+        "status": "SUPPORTED",
+        "excluded": [
+          "1"
+        ]
+      }
+    },
+    {
+      "id": "rational-pole",
+      "request": {
+        "schemaVersion": "math-visualization-request-v1",
+        "executionId": "00000000-0000-0000-0000-000000000071",
+        "correlationId": "00000000-0000-0000-0000-000000000071",
+        "identity": {
+          "canonicalId": "00000000-0000-0000-0000-000000000069",
+          "canonicalRevision": 1,
+          "parseId": "00000000-0000-0000-0000-000000000070",
+          "parseRevision": 1
+        },
+        "source": {
+          "original": {
+            "kind": "EXPRESSION",
+            "expression": {
+              "kind": "BINARY",
+              "operator": "DIVIDE",
+              "left": {
+                "kind": "NUMBER",
+                "value": "1",
+                "numericType": "INTEGER"
+              },
+              "right": {
+                "kind": "BINARY",
+                "operator": "SUBTRACT",
+                "left": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "value": "1",
+                  "numericType": "INTEGER"
+                }
+              }
+            }
+          },
+          "variables": [
+            {
+              "symbol": "x",
+              "domain": "REAL"
+            }
+          ],
+          "restrictions": [],
+          "domainBasis": "SOURCE_EXPLICIT"
+        },
+        "type": "FUNCTION",
+        "viewport": {
+          "xMin": -10.0,
+          "xMax": 10.0,
+          "yMin": -10.0,
+          "yMax": 10.0
+        },
+        "resolution": 48
+      },
+      "expected": {
+        "status": "SUPPORTED",
+        "excluded": [
+          "1"
+        ]
+      }
+    },
+    {
+      "id": "derivative-hole",
+      "request": {
+        "schemaVersion": "math-visualization-request-v1",
+        "executionId": "00000000-0000-0000-0000-000000000071",
+        "correlationId": "00000000-0000-0000-0000-000000000071",
+        "identity": {
+          "canonicalId": "00000000-0000-0000-0000-000000000069",
+          "canonicalRevision": 1,
+          "parseId": "00000000-0000-0000-0000-000000000070",
+          "parseRevision": 1
+        },
+        "source": {
+          "original": {
+            "kind": "EXPRESSION",
+            "expression": {
+              "kind": "BINARY",
+              "operator": "DIVIDE",
+              "left": {
+                "kind": "BINARY",
+                "operator": "SUBTRACT",
+                "left": {
+                  "kind": "BINARY",
+                  "operator": "POWER",
+                  "left": {
+                    "kind": "VARIABLE",
+                    "symbol": "x"
+                  },
+                  "right": {
+                    "kind": "NUMBER",
+                    "value": "2",
+                    "numericType": "INTEGER"
+                  }
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "value": "1",
+                  "numericType": "INTEGER"
+                }
+              },
+              "right": {
+                "kind": "BINARY",
+                "operator": "SUBTRACT",
+                "left": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "value": "1",
+                  "numericType": "INTEGER"
+                }
+              }
+            }
+          },
+          "variables": [
+            {
+              "symbol": "x",
+              "domain": "REAL"
+            }
+          ],
+          "restrictions": [],
+          "domainBasis": "SOURCE_EXPLICIT"
+        },
+        "type": "DERIVATIVE",
+        "viewport": {
+          "xMin": -10.0,
+          "xMax": 10.0,
+          "yMin": -10.0,
+          "yMax": 10.0
+        },
+        "resolution": 48
+      },
+      "expected": {
+        "status": "SUPPORTED",
+        "excluded": [
+          "1"
+        ],
+        "derivative": "1"
+      }
+    },
+    {
+      "id": "positive-slope",
+      "request": {
+        "schemaVersion": "math-visualization-request-v1",
+        "executionId": "00000000-0000-0000-0000-000000000071",
+        "correlationId": "00000000-0000-0000-0000-000000000071",
+        "identity": {
+          "canonicalId": "00000000-0000-0000-0000-000000000069",
+          "canonicalRevision": 1,
+          "parseId": "00000000-0000-0000-0000-000000000070",
+          "parseRevision": 1
+        },
+        "source": {
+          "original": {
+            "kind": "EXPRESSION",
+            "expression": {
+              "kind": "BINARY",
+              "operator": "ADD",
+              "left": {
+                "kind": "BINARY",
+                "operator": "MULTIPLY",
+                "left": {
+                  "kind": "NUMBER",
+                  "value": "2",
+                  "numericType": "INTEGER"
+                },
+                "right": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                }
+              },
+              "right": {
+                "kind": "NUMBER",
+                "value": "1",
+                "numericType": "INTEGER"
+              }
+            }
+          },
+          "variables": [
+            {
+              "symbol": "x",
+              "domain": "REAL"
+            }
+          ],
+          "restrictions": [],
+          "domainBasis": "SOURCE_EXPLICIT"
+        },
+        "type": "FUNCTION",
+        "viewport": {
+          "xMin": -10.0,
+          "xMax": 10.0,
+          "yMin": -10.0,
+          "yMax": 10.0
+        },
+        "resolution": 48
+      },
+      "expected": {
+        "status": "SUPPORTED",
+        "slope": "2"
+      }
+    },
+    {
+      "id": "negative-slope",
+      "request": {
+        "schemaVersion": "math-visualization-request-v1",
+        "executionId": "00000000-0000-0000-0000-000000000071",
+        "correlationId": "00000000-0000-0000-0000-000000000071",
+        "identity": {
+          "canonicalId": "00000000-0000-0000-0000-000000000069",
+          "canonicalRevision": 1,
+          "parseId": "00000000-0000-0000-0000-000000000070",
+          "parseRevision": 1
+        },
+        "source": {
+          "original": {
+            "kind": "EXPRESSION",
+            "expression": {
+              "kind": "BINARY",
+              "operator": "MULTIPLY",
+              "left": {
+                "kind": "NUMBER",
+                "value": "-2",
+                "numericType": "INTEGER"
+              },
+              "right": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              }
+            }
+          },
+          "variables": [
+            {
+              "symbol": "x",
+              "domain": "REAL"
+            }
+          ],
+          "restrictions": [],
+          "domainBasis": "SOURCE_EXPLICIT"
+        },
+        "type": "FUNCTION",
+        "viewport": {
+          "xMin": -10.0,
+          "xMax": 10.0,
+          "yMin": -10.0,
+          "yMax": 10.0
+        },
+        "resolution": 48
+      },
+      "expected": {
+        "status": "SUPPORTED",
+        "slope": "-2"
+      }
+    },
+    {
+      "id": "repeated-root",
+      "request": {
+        "schemaVersion": "math-visualization-request-v1",
+        "executionId": "00000000-0000-0000-0000-000000000071",
+        "correlationId": "00000000-0000-0000-0000-000000000071",
+        "identity": {
+          "canonicalId": "00000000-0000-0000-0000-000000000069",
+          "canonicalRevision": 1,
+          "parseId": "00000000-0000-0000-0000-000000000070",
+          "parseRevision": 1
+        },
+        "source": {
+          "original": {
+            "kind": "RELATION",
+            "left": {
+              "kind": "BINARY",
+              "operator": "POWER",
+              "left": {
+                "kind": "BINARY",
+                "operator": "SUBTRACT",
+                "left": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "value": "1",
+                  "numericType": "INTEGER"
+                }
+              },
+              "right": {
+                "kind": "NUMBER",
+                "value": "2",
+                "numericType": "INTEGER"
+              }
+            },
+            "right": {
+              "kind": "NUMBER",
+              "value": "0",
+              "numericType": "INTEGER"
+            },
+            "relation": "EQUALS"
+          },
+          "variables": [
+            {
+              "symbol": "x",
+              "domain": "REAL"
+            }
+          ],
+          "restrictions": [],
+          "domainBasis": "SOURCE_EXPLICIT"
+        },
+        "type": "EQUATION",
+        "viewport": {
+          "xMin": -10.0,
+          "xMax": 10.0,
+          "yMin": -10.0,
+          "yMax": 10.0
+        },
+        "resolution": 48
+      },
+      "expected": {
+        "status": "SUPPORTED",
+        "roots": [
+          "1"
+        ]
+      }
+    },
+    {
+      "id": "constant-zero-derivative",
+      "request": {
+        "schemaVersion": "math-visualization-request-v1",
+        "executionId": "00000000-0000-0000-0000-000000000071",
+        "correlationId": "00000000-0000-0000-0000-000000000071",
+        "identity": {
+          "canonicalId": "00000000-0000-0000-0000-000000000069",
+          "canonicalRevision": 1,
+          "parseId": "00000000-0000-0000-0000-000000000070",
+          "parseRevision": 1
+        },
+        "source": {
+          "original": {
+            "kind": "EXPRESSION",
+            "expression": {
+              "kind": "NUMBER",
+              "value": "3",
+              "numericType": "INTEGER"
+            }
+          },
+          "variables": [
+            {
+              "symbol": "x",
+              "domain": "REAL"
+            }
+          ],
+          "restrictions": [],
+          "domainBasis": "SOURCE_EXPLICIT"
+        },
+        "type": "DERIVATIVE",
+        "viewport": {
+          "xMin": -10.0,
+          "xMax": 10.0,
+          "yMin": -10.0,
+          "yMax": 10.0
+        },
+        "resolution": 48
+      },
+      "expected": {
+        "status": "SUPPORTED",
+        "derivative": "0"
+      }
+    },
+    {
+      "id": "zero-function",
+      "request": {
+        "schemaVersion": "math-visualization-request-v1",
+        "executionId": "00000000-0000-0000-0000-000000000071",
+        "correlationId": "00000000-0000-0000-0000-000000000071",
+        "identity": {
+          "canonicalId": "00000000-0000-0000-0000-000000000069",
+          "canonicalRevision": 1,
+          "parseId": "00000000-0000-0000-0000-000000000070",
+          "parseRevision": 1
+        },
+        "source": {
+          "original": {
+            "kind": "EXPRESSION",
+            "expression": {
+              "kind": "NUMBER",
+              "value": "0",
+              "numericType": "INTEGER"
+            }
+          },
+          "variables": [
+            {
+              "symbol": "x",
+              "domain": "REAL"
+            }
+          ],
+          "restrictions": [],
+          "domainBasis": "SOURCE_EXPLICIT"
+        },
+        "type": "DERIVATIVE",
+        "viewport": {
+          "xMin": -10.0,
+          "xMax": 10.0,
+          "yMin": -10.0,
+          "yMax": 10.0
+        },
+        "resolution": 48
+      },
+      "expected": {
+        "status": "SUPPORTED",
+        "derivative": "0"
+      }
+    },
+    {
+      "id": "closed-inequality",
+      "request": {
+        "schemaVersion": "math-visualization-request-v1",
+        "executionId": "00000000-0000-0000-0000-000000000071",
+        "correlationId": "00000000-0000-0000-0000-000000000071",
+        "identity": {
+          "canonicalId": "00000000-0000-0000-0000-000000000069",
+          "canonicalRevision": 1,
+          "parseId": "00000000-0000-0000-0000-000000000070",
+          "parseRevision": 1
+        },
+        "source": {
+          "original": {
+            "kind": "RELATION",
+            "left": {
+              "kind": "BINARY",
+              "operator": "SUBTRACT",
+              "left": {
+                "kind": "BINARY",
+                "operator": "POWER",
+                "left": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "value": "2",
+                  "numericType": "INTEGER"
+                }
+              },
+              "right": {
+                "kind": "NUMBER",
+                "value": "4",
+                "numericType": "INTEGER"
+              }
+            },
+            "right": {
+              "kind": "NUMBER",
+              "value": "0",
+              "numericType": "INTEGER"
+            },
+            "relation": "LESS_THAN_OR_EQUAL"
+          },
+          "variables": [
+            {
+              "symbol": "x",
+              "domain": "REAL"
+            }
+          ],
+          "restrictions": [],
+          "domainBasis": "SOURCE_EXPLICIT"
+        },
+        "type": "NUMBER_LINE",
+        "viewport": {
+          "xMin": -10.0,
+          "xMax": 10.0,
+          "yMin": -10.0,
+          "yMax": 10.0
+        },
+        "resolution": 48
+      },
+      "expected": {
+        "status": "SUPPORTED",
+        "bands": [
+          [
+            "-2",
+            "2",
+            false,
+            false
+          ]
+        ]
+      }
+    },
+    {
+      "id": "open-inequality",
+      "request": {
+        "schemaVersion": "math-visualization-request-v1",
+        "executionId": "00000000-0000-0000-0000-000000000071",
+        "correlationId": "00000000-0000-0000-0000-000000000071",
+        "identity": {
+          "canonicalId": "00000000-0000-0000-0000-000000000069",
+          "canonicalRevision": 1,
+          "parseId": "00000000-0000-0000-0000-000000000070",
+          "parseRevision": 1
+        },
+        "source": {
+          "original": {
+            "kind": "RELATION",
+            "left": {
+              "kind": "BINARY",
+              "operator": "SUBTRACT",
+              "left": {
+                "kind": "BINARY",
+                "operator": "POWER",
+                "left": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "value": "2",
+                  "numericType": "INTEGER"
+                }
+              },
+              "right": {
+                "kind": "NUMBER",
+                "value": "4",
+                "numericType": "INTEGER"
+              }
+            },
+            "right": {
+              "kind": "NUMBER",
+              "value": "0",
+              "numericType": "INTEGER"
+            },
+            "relation": "LESS_THAN"
+          },
+          "variables": [
+            {
+              "symbol": "x",
+              "domain": "REAL"
+            }
+          ],
+          "restrictions": [],
+          "domainBasis": "SOURCE_EXPLICIT"
+        },
+        "type": "NUMBER_LINE",
+        "viewport": {
+          "xMin": -10.0,
+          "xMax": 10.0,
+          "yMin": -10.0,
+          "yMax": 10.0
+        },
+        "resolution": 48
+      },
+      "expected": {
+        "status": "SUPPORTED",
+        "bands": [
+          [
+            "-2",
+            "2",
+            true,
+            true
+          ]
+        ]
+      }
+    },
+    {
+      "id": "finite-set",
+      "request": {
+        "schemaVersion": "math-visualization-request-v1",
+        "executionId": "00000000-0000-0000-0000-000000000071",
+        "correlationId": "00000000-0000-0000-0000-000000000071",
+        "identity": {
+          "canonicalId": "00000000-0000-0000-0000-000000000069",
+          "canonicalRevision": 1,
+          "parseId": "00000000-0000-0000-0000-000000000070",
+          "parseRevision": 1
+        },
+        "source": {
+          "original": {
+            "kind": "RELATION",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "FINITE_SET",
+              "args": [
+                {
+                  "kind": "NUMBER",
+                  "value": "-2",
+                  "numericType": "INTEGER"
+                },
+                {
+                  "kind": "NUMBER",
+                  "value": "2",
+                  "numericType": "INTEGER"
+                }
+              ]
+            },
+            "relation": "MEMBER_OF"
+          },
+          "variables": [
+            {
+              "symbol": "x",
+              "domain": "REAL"
+            }
+          ],
+          "restrictions": [],
+          "domainBasis": "SOURCE_EXPLICIT"
+        },
+        "type": "NUMBER_LINE",
+        "viewport": {
+          "xMin": -10.0,
+          "xMax": 10.0,
+          "yMin": -10.0,
+          "yMax": 10.0
+        },
+        "resolution": 48
+      },
+      "expected": {
+        "status": "SUPPORTED",
+        "bands": [
+          [
+            "-2",
+            "-2",
+            false,
+            false
+          ],
+          [
+            "2",
+            "2",
+            false,
+            false
+          ]
+        ]
+      }
+    },
+    {
+      "id": "interval-union",
+      "request": {
+        "schemaVersion": "math-visualization-request-v1",
+        "executionId": "00000000-0000-0000-0000-000000000071",
+        "correlationId": "00000000-0000-0000-0000-000000000071",
+        "identity": {
+          "canonicalId": "00000000-0000-0000-0000-000000000069",
+          "canonicalRevision": 1,
+          "parseId": "00000000-0000-0000-0000-000000000070",
+          "parseRevision": 1
+        },
+        "source": {
+          "original": {
+            "kind": "RELATION",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "UNION",
+              "args": [
+                {
+                  "kind": "INTERVAL",
+                  "left": {
+                    "kind": "NUMBER",
+                    "value": "1",
+                    "numericType": "INTEGER"
+                  },
+                  "right": {
+                    "kind": "NUMBER",
+                    "value": "3",
+                    "numericType": "INTEGER"
+                  },
+                  "leftOpen": true,
+                  "rightOpen": false
+                },
+                {
+                  "kind": "INTERVAL",
+                  "left": {
+                    "kind": "NUMBER",
+                    "value": "5",
+                    "numericType": "INTEGER"
+                  },
+                  "right": {
+                    "kind": "CONSTANT",
+                    "value": "POSITIVE_INFINITY"
+                  },
+                  "leftOpen": false,
+                  "rightOpen": true
+                }
+              ]
+            },
+            "relation": "MEMBER_OF"
+          },
+          "variables": [
+            {
+              "symbol": "x",
+              "domain": "REAL"
+            }
+          ],
+          "restrictions": [],
+          "domainBasis": "SOURCE_EXPLICIT"
+        },
+        "type": "NUMBER_LINE",
+        "viewport": {
+          "xMin": -10.0,
+          "xMax": 10.0,
+          "yMin": -10.0,
+          "yMax": 10.0
+        },
+        "resolution": 48
+      },
+      "expected": {
+        "status": "SUPPORTED",
+        "bands": [
+          [
+            "1",
+            "3",
+            true,
+            false
+          ],
+          [
+            "5",
+            "oo",
+            false,
+            true
+          ]
+        ]
+      }
+    },
+    {
+      "id": "absolute-refused",
+      "request": {
+        "schemaVersion": "math-visualization-request-v1",
+        "executionId": "00000000-0000-0000-0000-000000000071",
+        "correlationId": "00000000-0000-0000-0000-000000000071",
+        "identity": {
+          "canonicalId": "00000000-0000-0000-0000-000000000069",
+          "canonicalRevision": 1,
+          "parseId": "00000000-0000-0000-0000-000000000070",
+          "parseRevision": 1
+        },
+        "source": {
+          "original": {
+            "kind": "EXPRESSION",
+            "expression": {
+              "kind": "FUNCTION",
+              "function": "ABS",
+              "args": [
+                {
+                  "kind": "BINARY",
+                  "operator": "SUBTRACT",
+                  "left": {
+                    "kind": "VARIABLE",
+                    "symbol": "x"
+                  },
+                  "right": {
+                    "kind": "NUMBER",
+                    "value": "2",
+                    "numericType": "INTEGER"
+                  }
+                }
+              ]
+            }
+          },
+          "variables": [
+            {
+              "symbol": "x",
+              "domain": "REAL"
+            }
+          ],
+          "restrictions": [],
+          "domainBasis": "SOURCE_EXPLICIT"
+        },
+        "type": "FUNCTION",
+        "viewport": {
+          "xMin": -10.0,
+          "xMax": 10.0,
+          "yMin": -10.0,
+          "yMax": 10.0
+        },
+        "resolution": 48
+      },
+      "expected": {
+        "status": "UNSUPPORTED"
+      }
+    },
+    {
+      "id": "transcendental-refused",
+      "request": {
+        "schemaVersion": "math-visualization-request-v1",
+        "executionId": "00000000-0000-0000-0000-000000000071",
+        "correlationId": "00000000-0000-0000-0000-000000000071",
+        "identity": {
+          "canonicalId": "00000000-0000-0000-0000-000000000069",
+          "canonicalRevision": 1,
+          "parseId": "00000000-0000-0000-0000-000000000070",
+          "parseRevision": 1
+        },
+        "source": {
+          "original": {
+            "kind": "EXPRESSION",
+            "expression": {
+              "kind": "FUNCTION",
+              "function": "SIN",
+              "args": [
+                {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                }
+              ]
+            }
+          },
+          "variables": [
+            {
+              "symbol": "x",
+              "domain": "REAL"
+            }
+          ],
+          "restrictions": [],
+          "domainBasis": "SOURCE_EXPLICIT"
+        },
+        "type": "FUNCTION",
+        "viewport": {
+          "xMin": -10.0,
+          "xMax": 10.0,
+          "yMin": -10.0,
+          "yMax": 10.0
+        },
+        "resolution": 48
+      },
+      "expected": {
+        "status": "UNSUPPORTED"
+      }
+    },
+    {
+      "id": "unknown-domain",
+      "request": {
+        "schemaVersion": "math-visualization-request-v1",
+        "executionId": "00000000-0000-0000-0000-000000000071",
+        "correlationId": "00000000-0000-0000-0000-000000000071",
+        "identity": {
+          "canonicalId": "00000000-0000-0000-0000-000000000069",
+          "canonicalRevision": 1,
+          "parseId": "00000000-0000-0000-0000-000000000070",
+          "parseRevision": 1
+        },
+        "source": {
+          "original": {
+            "kind": "EXPRESSION",
+            "expression": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            }
+          },
+          "variables": [
+            {
+              "symbol": "x",
+              "domain": "REAL"
+            }
+          ],
+          "restrictions": [],
+          "domainBasis": "UNRESOLVED"
+        },
+        "type": "FUNCTION",
+        "viewport": {
+          "xMin": -10.0,
+          "xMax": 10.0,
+          "yMin": -10.0,
+          "yMax": 10.0
+        },
+        "resolution": 48
+      },
+      "expected": {
+        "status": "UNSUPPORTED"
+      }
+    },
+    {
+      "id": "provenance-unavailable",
+      "request": {
+        "schemaVersion": "math-visualization-request-v1",
+        "executionId": "00000000-0000-0000-0000-000000000071",
+        "correlationId": "00000000-0000-0000-0000-000000000071",
+        "identity": {
+          "canonicalId": "00000000-0000-0000-0000-000000000069",
+          "canonicalRevision": 1,
+          "parseId": "00000000-0000-0000-0000-000000000070",
+          "parseRevision": 1
+        },
+        "source": {
+          "original": {
+            "kind": "EXPRESSION",
+            "expression": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            }
+          },
+          "variables": [
+            {
+              "symbol": "x",
+              "domain": "REAL"
+            }
+          ],
+          "restrictions": [],
+          "domainBasis": "SOURCE_EXPLICIT"
+        },
+        "type": "STORY_BRIDGE",
+        "viewport": {
+          "xMin": -10.0,
+          "xMax": 10.0,
+          "yMin": -10.0,
+          "yMax": 10.0
+        },
+        "resolution": 48
+      },
+      "expected": {
+        "status": "UNSUPPORTED",
+        "reason": "PROVENANCE_UNAVAILABLE"
+      }
+    },
+    {
+      "id": "boundary-pole",
+      "request": {
+        "schemaVersion": "math-visualization-request-v1",
+        "executionId": "00000000-0000-0000-0000-000000000071",
+        "correlationId": "00000000-0000-0000-0000-000000000071",
+        "identity": {
+          "canonicalId": "00000000-0000-0000-0000-000000000069",
+          "canonicalRevision": 1,
+          "parseId": "00000000-0000-0000-0000-000000000070",
+          "parseRevision": 1
+        },
+        "source": {
+          "original": {
+            "kind": "EXPRESSION",
+            "expression": {
+              "kind": "BINARY",
+              "operator": "DIVIDE",
+              "left": {
+                "kind": "NUMBER",
+                "value": "1",
+                "numericType": "INTEGER"
+              },
+              "right": {
+                "kind": "BINARY",
+                "operator": "SUBTRACT",
+                "left": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "value": "1",
+                  "numericType": "INTEGER"
+                }
+              }
+            }
+          },
+          "variables": [
+            {
+              "symbol": "x",
+              "domain": "REAL"
+            }
+          ],
+          "restrictions": [],
+          "domainBasis": "SOURCE_EXPLICIT"
+        },
+        "type": "FUNCTION",
+        "viewport": {
+          "xMin": 1.0,
+          "xMax": 10.0,
+          "yMin": -10.0,
+          "yMax": 10.0
+        },
+        "resolution": 48
+      },
+      "expected": {
+        "status": "SUPPORTED",
+        "excluded": [
+          "1"
+        ]
+      }
+    },
+    {
+      "id": "quartic",
+      "request": {
+        "schemaVersion": "math-visualization-request-v1",
+        "executionId": "00000000-0000-0000-0000-000000000071",
+        "correlationId": "00000000-0000-0000-0000-000000000071",
+        "identity": {
+          "canonicalId": "00000000-0000-0000-0000-000000000069",
+          "canonicalRevision": 1,
+          "parseId": "00000000-0000-0000-0000-000000000070",
+          "parseRevision": 1
+        },
+        "source": {
+          "original": {
+            "kind": "EXPRESSION",
+            "expression": {
+              "kind": "BINARY",
+              "operator": "POWER",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "value": "4",
+                "numericType": "INTEGER"
+              }
+            }
+          },
+          "variables": [
+            {
+              "symbol": "x",
+              "domain": "REAL"
+            }
+          ],
+          "restrictions": [],
+          "domainBasis": "SOURCE_EXPLICIT"
+        },
+        "type": "FUNCTION",
+        "viewport": {
+          "xMin": -10.0,
+          "xMax": 10.0,
+          "yMin": -10.0,
+          "yMax": 10.0
+        },
+        "resolution": 48
+      },
+      "expected": {
+        "status": "SUPPORTED"
+      }
+    },
+    {
+      "id": "domain-restriction",
+      "request": {
+        "schemaVersion": "math-visualization-request-v1",
+        "executionId": "00000000-0000-0000-0000-000000000071",
+        "correlationId": "00000000-0000-0000-0000-000000000071",
+        "identity": {
+          "canonicalId": "00000000-0000-0000-0000-000000000069",
+          "canonicalRevision": 1,
+          "parseId": "00000000-0000-0000-0000-000000000070",
+          "parseRevision": 1
+        },
+        "source": {
+          "original": {
+            "kind": "EXPRESSION",
+            "expression": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            }
+          },
+          "variables": [
+            {
+              "symbol": "x",
+              "domain": "REAL"
+            }
+          ],
+          "restrictions": [
+            {
+              "id": "positive",
+              "relation": "GREATER_THAN",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "value": "0",
+                "numericType": "INTEGER"
+              }
+            }
+          ],
+          "domainBasis": "SOURCE_EXPLICIT"
+        },
+        "type": "FUNCTION",
+        "viewport": {
+          "xMin": -10.0,
+          "xMax": 10.0,
+          "yMin": -10.0,
+          "yMax": 10.0
+        },
+        "resolution": 48
+      },
+      "expected": {
+        "status": "SUPPORTED"
+      }
+    },
+    {
+      "id": "empty-set",
+      "request": {
+        "schemaVersion": "math-visualization-request-v1",
+        "executionId": "00000000-0000-0000-0000-000000000071",
+        "correlationId": "00000000-0000-0000-0000-000000000071",
+        "identity": {
+          "canonicalId": "00000000-0000-0000-0000-000000000069",
+          "canonicalRevision": 1,
+          "parseId": "00000000-0000-0000-0000-000000000070",
+          "parseRevision": 1
+        },
+        "source": {
+          "original": {
+            "kind": "RELATION",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "EMPTY_SET"
+            },
+            "relation": "MEMBER_OF"
+          },
+          "variables": [
+            {
+              "symbol": "x",
+              "domain": "REAL"
+            }
+          ],
+          "restrictions": [],
+          "domainBasis": "SOURCE_EXPLICIT"
+        },
+        "type": "NUMBER_LINE",
+        "viewport": {
+          "xMin": -10.0,
+          "xMax": 10.0,
+          "yMin": -10.0,
+          "yMax": 10.0
+        },
+        "resolution": 48
+      },
+      "expected": {
+        "status": "SUPPORTED",
+        "solutionKind": "EMPTY_SET",
+        "bands": []
+      }
+    },
+    {
+      "id": "all-reals",
+      "request": {
+        "schemaVersion": "math-visualization-request-v1",
+        "executionId": "00000000-0000-0000-0000-000000000071",
+        "correlationId": "00000000-0000-0000-0000-000000000071",
+        "identity": {
+          "canonicalId": "00000000-0000-0000-0000-000000000069",
+          "canonicalRevision": 1,
+          "parseId": "00000000-0000-0000-0000-000000000070",
+          "parseRevision": 1
+        },
+        "source": {
+          "original": {
+            "kind": "RELATION",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "REALS"
+            },
+            "relation": "MEMBER_OF"
+          },
+          "variables": [
+            {
+              "symbol": "x",
+              "domain": "REAL"
+            }
+          ],
+          "restrictions": [],
+          "domainBasis": "SOURCE_EXPLICIT"
+        },
+        "type": "NUMBER_LINE",
+        "viewport": {
+          "xMin": -10.0,
+          "xMax": 10.0,
+          "yMin": -10.0,
+          "yMax": 10.0
+        },
+        "resolution": 48
+      },
+      "expected": {
+        "status": "SUPPORTED",
+        "solutionKind": "REALS",
+        "bands": [
+          [
+            "-oo",
+            "oo",
+            true,
+            true
+          ]
+        ]
+      }
+    },
+    {
+      "id": "rational-half-open",
+      "request": {
+        "schemaVersion": "math-visualization-request-v1",
+        "executionId": "00000000-0000-0000-0000-000000000071",
+        "correlationId": "00000000-0000-0000-0000-000000000071",
+        "identity": {
+          "canonicalId": "00000000-0000-0000-0000-000000000069",
+          "canonicalRevision": 1,
+          "parseId": "00000000-0000-0000-0000-000000000070",
+          "parseRevision": 1
+        },
+        "source": {
+          "original": {
+            "kind": "RELATION",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "INTERVAL",
+              "left": {
+                "kind": "BINARY",
+                "operator": "DIVIDE",
+                "left": {
+                  "kind": "NUMBER",
+                  "value": "1",
+                  "numericType": "INTEGER"
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "value": "3",
+                  "numericType": "INTEGER"
+                }
+              },
+              "right": {
+                "kind": "NUMBER",
+                "value": "2",
+                "numericType": "INTEGER"
+              },
+              "leftOpen": false,
+              "rightOpen": true
+            },
+            "relation": "MEMBER_OF"
+          },
+          "variables": [
+            {
+              "symbol": "x",
+              "domain": "REAL"
+            }
+          ],
+          "restrictions": [],
+          "domainBasis": "SOURCE_EXPLICIT"
+        },
+        "type": "NUMBER_LINE",
+        "viewport": {
+          "xMin": -10.0,
+          "xMax": 10.0,
+          "yMin": -10.0,
+          "yMax": 10.0
+        },
+        "resolution": 48
+      },
+      "expected": {
+        "status": "SUPPORTED",
+        "bands": [
+          [
+            "1/3",
+            "2",
+            false,
+            true
+          ]
+        ]
+      }
+    },
+    {
+      "id": "intersection",
+      "request": {
+        "schemaVersion": "math-visualization-request-v1",
+        "executionId": "00000000-0000-0000-0000-000000000071",
+        "correlationId": "00000000-0000-0000-0000-000000000071",
+        "identity": {
+          "canonicalId": "00000000-0000-0000-0000-000000000069",
+          "canonicalRevision": 1,
+          "parseId": "00000000-0000-0000-0000-000000000070",
+          "parseRevision": 1
+        },
+        "source": {
+          "original": {
+            "kind": "RELATION",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "INTERSECTION",
+              "args": [
+                {
+                  "kind": "INTERVAL",
+                  "left": {
+                    "kind": "NUMBER",
+                    "value": "-2",
+                    "numericType": "INTEGER"
+                  },
+                  "right": {
+                    "kind": "NUMBER",
+                    "value": "2",
+                    "numericType": "INTEGER"
+                  },
+                  "leftOpen": false,
+                  "rightOpen": false
+                },
+                {
+                  "kind": "INTERVAL",
+                  "left": {
+                    "kind": "NUMBER",
+                    "value": "0",
+                    "numericType": "INTEGER"
+                  },
+                  "right": {
+                    "kind": "NUMBER",
+                    "value": "3",
+                    "numericType": "INTEGER"
+                  },
+                  "leftOpen": true,
+                  "rightOpen": true
+                }
+              ]
+            },
+            "relation": "MEMBER_OF"
+          },
+          "variables": [
+            {
+              "symbol": "x",
+              "domain": "REAL"
+            }
+          ],
+          "restrictions": [],
+          "domainBasis": "SOURCE_EXPLICIT"
+        },
+        "type": "NUMBER_LINE",
+        "viewport": {
+          "xMin": -10.0,
+          "xMax": 10.0,
+          "yMin": -10.0,
+          "yMax": 10.0
+        },
+        "resolution": 48
+      },
+      "expected": {
+        "status": "SUPPORTED",
+        "bands": [
+          [
+            "0",
+            "2",
+            true,
+            false
+          ]
+        ]
+      }
+    },
+    {
+      "id": "equation-cancelled-root",
+      "request": {
+        "schemaVersion": "math-visualization-request-v1",
+        "executionId": "00000000-0000-0000-0000-000000000071",
+        "correlationId": "00000000-0000-0000-0000-000000000071",
+        "identity": {
+          "canonicalId": "00000000-0000-0000-0000-000000000069",
+          "canonicalRevision": 1,
+          "parseId": "00000000-0000-0000-0000-000000000070",
+          "parseRevision": 1
+        },
+        "source": {
+          "original": {
+            "kind": "RELATION",
+            "left": {
+              "kind": "BINARY",
+              "operator": "DIVIDE",
+              "left": {
+                "kind": "BINARY",
+                "operator": "SUBTRACT",
+                "left": {
+                  "kind": "BINARY",
+                  "operator": "POWER",
+                  "left": {
+                    "kind": "VARIABLE",
+                    "symbol": "x"
+                  },
+                  "right": {
+                    "kind": "NUMBER",
+                    "value": "2",
+                    "numericType": "INTEGER"
+                  }
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "value": "1",
+                  "numericType": "INTEGER"
+                }
+              },
+              "right": {
+                "kind": "BINARY",
+                "operator": "SUBTRACT",
+                "left": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "value": "1",
+                  "numericType": "INTEGER"
+                }
+              }
+            },
+            "right": {
+              "kind": "NUMBER",
+              "value": "0",
+              "numericType": "INTEGER"
+            },
+            "relation": "EQUALS"
+          },
+          "variables": [
+            {
+              "symbol": "x",
+              "domain": "REAL"
+            }
+          ],
+          "restrictions": [],
+          "domainBasis": "SOURCE_EXPLICIT"
+        },
+        "type": "EQUATION",
+        "viewport": {
+          "xMin": -10.0,
+          "xMax": 10.0,
+          "yMin": -10.0,
+          "yMax": 10.0
+        },
+        "resolution": 48
+      },
+      "expected": {
+        "status": "SUPPORTED",
+        "roots": [
+          "-1"
+        ],
+        "excluded": [
+          "1"
+        ]
+      }
+    }
+  ]
+}
