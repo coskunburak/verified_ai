@@ -67,6 +67,9 @@
     },
     "schemaVersion": {
       "const": "attempt-context-v2"
+    },
+    "structuredWorkEnabled": {
+      "type": "boolean"
     }
   },
   "required": [

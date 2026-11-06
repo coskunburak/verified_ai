@@ -377,3 +377,11 @@ Attach or persist links/artifacts for:
 
 Codex must implement this sprint in small reviewable slices, re-reading the highest-precedence semantic documents before changing domain/API/data contracts. It must not “simplify” the architecture by moving rules into prompts, client code, provider SDK adapters, generic helpers, or ungoverned ML scripts.
 <!-- PRODUCTION_EXECUTION_V3:END -->
+
+## Current source handoff — owner execution pending
+
+The implementation is mapped in `SPRINT_7.2_IMPLEMENTATION_MAP.md`; coverage/status is recorded in
+`SPRINT_7.2_FUNCTIONAL_COMPLETION_MATRIX.md` and execution limitations in `SPRINT_7.2_EXECUTION_REPORT.md`.
+Source status: SOURCE_COMPLETE. Acceptance checkboxes above remain unverified until the owner supplies a fresh full
+scripts/quality/sprint_7_2_owner_acceptance.sh --full run with matching source fingerprints. No agent test/build execution,
+CI GREEN, LOCAL_ACCEPTANCE_PASSED, production rollout or TestFlight authorization is asserted.

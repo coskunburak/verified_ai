@@ -14,6 +14,7 @@ struct AttemptContext: Codable, Sendable {
     let handwriting: String
     let twinDrill: String
     let methodComparison: String
+    var structuredWorkEnabled: Bool? = nil
 }
 enum AttemptStepVerdict: String, Codable, Sendable {
     case valid = "VALID_EQUIVALENT", wrong = "FIRST_WRONG_STEP", uncertain = "UNCERTAIN", notAssessed = "NOT_ASSESSED"
@@ -204,6 +205,8 @@ struct AttemptSubmission: Codable, Equatable, Sendable {
     }
 }
 protocol AttemptAnalysisServicing: Sendable {
+    func submitWork(problem: UUID, key: String, input: AttemptWorkRequest) async throws -> AttemptStructuredWork
+    func readWork(problem: UUID, attempt: UUID) async throws -> AttemptStructuredWork?
     func context(problem: UUID) async throws -> AttemptContext
     func list(problem: UUID) async throws -> [StudentAttempt]
     func submit(problem: UUID, key: String, submission: AttemptSubmission) async throws -> StudentAttempt
@@ -220,4 +223,93 @@ struct AttemptCaptureReview: Codable, Equatable, Sendable {
     let confirmed: Bool
     let assetSessionId: UUID?
     let recognitionJobId: UUID?
+}
+
+/// Structured syntax is a separate artifact; it never upgrades an attempt's assessment.
+struct AttemptWorkRequest: Codable, Equatable, Sendable {
+    struct Box: Codable, Equatable, Sendable {
+        let x: Double; let y: Double; let width: Double; let height: Double
+        var isValid: Bool { [x, y, width, height].allSatisfy { $0.isFinite && (0...1).contains($0) } && x + width <= 1 && y + height <= 1 }
+    }
+    struct Observation: Codable, Equatable, Identifiable, Sendable {
+        let id: UUID; let rawText: String; let confidence: Double?; let box: Box?
+        enum CodingKeys: String, CodingKey { case id, rawText, confidence, box }
+        func encode(to encoder: Encoder) throws {
+            var c = encoder.container(keyedBy: CodingKeys.self)
+            try c.encode(id, forKey: .id); try c.encode(rawText, forKey: .rawText)
+            try c.encode(confidence, forKey: .confidence); try c.encode(box, forKey: .box)
+        }
+    }
+    enum Role: String, Codable, CaseIterable, Sendable { case intermediate = "INTERMEDIATE", finalAnswer = "FINAL_ANSWER", ambiguous = "AMBIGUOUS" }
+    struct Step: Codable, Equatable, Identifiable, Sendable {
+        var id: UUID; var text: String; var role: Role; var observationIds: [UUID]; var confirmed: Bool
+    }
+    var schemaVersion = "attempt-structured-work-request-v1"
+    var source: AttemptSourceIdentity
+    var engine: String
+    var captureId: UUID?
+    var assetSessionId: UUID?
+    var recognitionJobId: UUID?
+    var supersedesAttemptId: UUID?
+    var observations: [Observation]
+    var steps: [Step]
+    enum CodingKeys: String, CodingKey { case schemaVersion, source, engine, captureId, assetSessionId, recognitionJobId, supersedesAttemptId, observations, steps }
+    func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: CodingKeys.self)
+        try c.encode(schemaVersion, forKey: .schemaVersion); try c.encode(source, forKey: .source); try c.encode(engine, forKey: .engine)
+        try c.encode(captureId, forKey: .captureId); try c.encode(assetSessionId, forKey: .assetSessionId)
+        try c.encode(recognitionJobId, forKey: .recognitionJobId); try c.encode(supersedesAttemptId, forKey: .supersedesAttemptId)
+        try c.encode(observations, forKey: .observations); try c.encode(steps, forKey: .steps)
+    }
+    var isValid: Bool {
+        guard schemaVersion == "attempt-structured-work-request-v1", source.canonicalRevision > 0, source.parseRevision > 0,
+              (1...12).contains(steps.count), observations.count <= 12, Set(steps.map(\.id)).count == steps.count,
+              Set(observations.map(\.id)).count == observations.count,
+              steps.filter({ $0.role == .finalAnswer }).count <= 1,
+              steps.allSatisfy({ AttemptSubmission.validText($0.text) && Set($0.observationIds).count == $0.observationIds.count }),
+              observations.allSatisfy({ AttemptSubmission.validText($0.rawText) && ($0.confidence.map { $0.isFinite && (0...1).contains($0) } ?? true) && ($0.box?.isValid ?? true) }),
+              Set(steps.flatMap(\.observationIds)) == Set(observations.map(\.id)) else { return false }
+        switch engine {
+        case "MANUAL": return observations.isEmpty && captureId == nil && assetSessionId == nil && recognitionJobId == nil && steps.allSatisfy { $0.observationIds.isEmpty }
+        case "NATIVE_VISION": return !observations.isEmpty && captureId != nil && assetSessionId == nil && recognitionJobId == nil && steps.allSatisfy { !$0.observationIds.isEmpty }
+        case "GATEWAY_RECOGNITION": return !observations.isEmpty && captureId == nil && assetSessionId != nil && recognitionJobId != nil && steps.allSatisfy { !$0.observationIds.isEmpty }
+        default: return false
+        }
+    }
+}
+struct AttemptStructuredWork: Codable, Sendable {
+    struct Step: Codable, Identifiable, Sendable {
+        let id: UUID; let index: Int; let role: AttemptWorkRequest.Role
+        let originalText: String?; let reviewedText: String; let observationIds: [UUID]
+        let normalizedStatement: String?; let normalizationStatus: String; let reviewStatus: String
+    }
+    let schemaVersion: String; let attemptId: UUID; let ownerId: UUID; let problemSessionId: UUID
+    let source: AttemptSourceIdentity; let revision: Int; let supersedesAttemptId: UUID?; let normalizationVersion: String
+    let createdAt: String; let engine: String; let provenance: String; let captureId: UUID?; let assetSessionId: UUID?; let recognitionJobId: UUID?
+    let provider: String?; let model: String?; let promptVersion: String?
+    let observations: [AttemptWorkRequest.Observation]; let steps: [Step]; let trainingEligible: Bool
+    func validated(problem: UUID) throws -> Self {
+        let input = AttemptWorkRequest(source: source, engine: engine, captureId: captureId, assetSessionId: assetSessionId,
+            recognitionJobId: recognitionJobId, supersedesAttemptId: supersedesAttemptId, observations: observations,
+            steps: steps.map { .init(id: $0.id, text: $0.reviewedText, role: $0.role, observationIds: $0.observationIds, confirmed: $0.reviewStatus == "CONFIRMED") })
+        guard schemaVersion == "attempt-structured-work-v1", normalizationVersion == "structured-canonical-v1", !trainingEligible,
+              problemSessionId == problem, input.isValid, (1...30).contains(revision), (revision == 1) == (supersedesAttemptId == nil),
+              provenance == (engine == "GATEWAY_RECOGNITION" ? "SERVER_RECORDED" : "CLIENT_ATTESTED"),
+              engine == "GATEWAY_RECOGNITION" ? (provider != nil && model != nil && promptVersion != nil) : (provider == nil && model == nil && promptVersion == nil),
+              steps.map(\.index) == steps.indices.map({ $0 + 1 }),
+              steps.allSatisfy({ step in
+                  ["NORMALIZED", "UNSUPPORTED", "REVIEW_REQUIRED"].contains(step.normalizationStatus)
+                  && ["CONFIRMED", "REQUIRED"].contains(step.reviewStatus)
+                  && (step.normalizationStatus == "NORMALIZED") == (step.normalizedStatement != nil)
+                  && (step.normalizedStatement?.utf16.count ?? 0) <= 1800
+                  && ((step.reviewStatus == "REQUIRED") == (step.normalizationStatus == "REVIEW_REQUIRED"))
+                  && (!(step.role == .ambiguous || step.reviewedText.contains("\n") || step.reviewedText.contains("\r")) || step.reviewStatus == "REQUIRED")
+                  && (engine == "MANUAL" ? step.originalText == step.reviewedText : step.originalText == nil)
+              }) else { throw NetworkError.invalidResponse }
+        return self
+    }
+}
+extension AttemptAnalysisServicing {
+    func submitWork(problem: UUID, key: String, input: AttemptWorkRequest) async throws -> AttemptStructuredWork { throw NetworkError.invalidResponse }
+    func readWork(problem: UUID, attempt: UUID) async throws -> AttemptStructuredWork? { nil }
 }

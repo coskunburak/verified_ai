@@ -5,13 +5,47 @@ actor FixtureAttemptAnalysisAPI: AttemptAnalysisServicing {
     private let source = AttemptSourceIdentity(canonicalId: UUID(uuidString: "00000000-0000-0000-0000-000000006701")!, canonicalRevision: 1,
         parseId: UUID(uuidString: "00000000-0000-0000-0000-000000006702")!, parseRevision: 1)
     private var committed: [String: (AttemptSubmission, StudentAttempt)] = [:]
+    private var workCommitted: [String: (AttemptWorkRequest, AttemptStructuredWork)] = [:]
     private var loseAcknowledgement: Bool
     private let enabled: Bool
     init(loseAcknowledgement: Bool = false, enabled: Bool = true) { self.loseAcknowledgement = loseAcknowledgement; self.enabled = enabled }
     func context(problem: UUID) async throws -> AttemptContext {
-        AttemptContext(schemaVersion: "attempt-context-v1", source: source, originalStatement: nil, enabled: enabled, handwriting: "UNAVAILABLE", twinDrill: "UNAVAILABLE", methodComparison: "UNAVAILABLE")
+        AttemptContext(schemaVersion: "attempt-context-v2", source: source, originalStatement: nil, enabled: enabled, handwriting: "UNAVAILABLE", twinDrill: "UNAVAILABLE", methodComparison: "UNAVAILABLE", structuredWorkEnabled: enabled)
     }
     func list(problem: UUID) async throws -> [StudentAttempt] { committed.values.map(\.1).filter { $0.problemSessionId == problem } }
+    func readWork(problem: UUID, attempt: UUID) async throws -> AttemptStructuredWork? {
+        workCommitted.values.map(\.1).first { $0.problemSessionId == problem && $0.attemptId == attempt }
+    }
+    func submitWork(problem: UUID, key: String, input: AttemptWorkRequest) async throws -> AttemptStructuredWork {
+        if let saved = workCommitted[key] {
+            guard saved.0 == input, saved.1.problemSessionId == problem else { throw NetworkError.invalidResponse }; return saved.1
+        }
+        guard enabled, input.isValid, input.source == source else { throw NetworkError.invalidResponse }
+        let id = UUID(), now = Date()
+        let prior = workCommitted.values.map(\.1).first { $0.attemptId == input.supersedesAttemptId }
+        let work = AttemptStructuredWork(schemaVersion: "attempt-structured-work-v1", attemptId: id,
+            ownerId: UUID(uuidString: "00000000-0000-0000-0000-000000007200")!, problemSessionId: problem,
+            source: source, revision: (prior?.revision ?? 0) + 1, supersedesAttemptId: input.supersedesAttemptId,
+            normalizationVersion: "structured-canonical-v1", createdAt: ISO8601DateFormatter().string(from: now),
+            engine: input.engine, provenance: "CLIENT_ATTESTED", captureId: input.captureId, assetSessionId: nil, recognitionJobId: nil,
+            provider: nil, model: nil, promptVersion: nil, observations: input.observations,
+            steps: input.steps.enumerated().map { index, step in
+                .init(id: step.id, index: index + 1, role: step.role, originalText: input.engine == "MANUAL" ? step.text : nil,
+                    reviewedText: step.text, observationIds: step.observationIds, normalizedStatement: nil,
+                    normalizationStatus: step.confirmed && step.role != .ambiguous && !step.text.contains("\n") ? "UNSUPPORTED" : "REVIEW_REQUIRED",
+                    reviewStatus: step.confirmed && step.role != .ambiguous && !step.text.contains("\n") ? "CONFIRMED" : "REQUIRED")
+            }, trainingEligible: false)
+        let answer = input.steps.first { $0.role == .finalAnswer }?.text
+        let lines = input.steps.filter { $0.role != .finalAnswer }.map(\.text)
+        let submission = AttemptSubmission(source: source, steps: lines, schemaVersion: answer == nil ? nil : "attempt-submission-v3", finalAnswer: answer)
+        let attempt = StudentAttempt(schemaVersion: answer == nil ? "student-attempt-v1" : "student-attempt-v2", id: id,
+            problemSessionId: problem, source: source, sourceType: "MANUAL", normalizationVersion: "manual-canonical-v1", status: .submitted,
+            steps: lines.enumerated().map { .init(index: $0.offset + 1, content: $0.element, normalizedStatement: nil) }, analysis: nil,
+            createdAt: now, updatedAt: now, trainingEligible: false, finalAnswer: answer)
+        committed[key] = (submission, attempt); workCommitted[key] = (input, work)
+        if loseAcknowledgement { loseAcknowledgement = false; throw URLError(.networkConnectionLost) }
+        return work
+    }
     func submit(problem: UUID, key: String, submission: AttemptSubmission) async throws -> StudentAttempt {
         if let existing = committed[key] {
             guard existing.0 == submission, existing.1.problemSessionId == problem else { throw NetworkError.invalidResponse }

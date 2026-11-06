@@ -338,3 +338,27 @@ changed payload returns IDEMPOTENCY_KEY_REUSED/409. New stale submissions reject
 Capacity is ATTEMPT_CAPACITY_EXCEEDED/409, rate limit 429, rollout/persistence unavailability 503. Body/key validation
 returns REQUEST_VALIDATION_FAILED/422; malformed path/query values return 400. Foreign objects remain 404 and inactive
 accounts 403. Only exact retries can recover a possibly committed request; GET never starts assessment.
+
+## Sprint 7.2 structured-work API
+
+POST /api/v1/problem-sessions/{sessionId}/attempts/structured-work accepts attempt-structured-work-request-v1 and returns
+attempt-structured-work-v1. GET /api/v1/problem-sessions/{sessionId}/attempts/{attemptId}/structured-work reads immutable
+owned history even when rollout is off. Historical attempts without an artifact return ATTEMPT_NOT_FOUND (404); no backfill.
+The context-v2 response adds optional structuredWorkEnabled; absent means unsupported by that server. Legacy routes and
+submission hashes are unchanged. A legacy history projection contains unassessed reviewed text and explicit final answer.
+
+All request keys are required; nullable capture/asset/job/predecessor fields must be explicit null. Responses retain explicit
+nulls for absent provenance/normalization/original OCR step text. Step roles, normalization/review status and provenance are
+closed enums. Native observations are client attestations; gateway provider/model/prompt come only from stored recognition.
+Observation IDs may be shared after splitting; every observation must remain linked and step/observation IDs are unique.
+One final answer maximum, 12 total steps, 256 UTF-16 units/1024 UTF-8 bytes per text, 16 KiB wire request, 1800-character AST
+per step, 64 KiB stored artifact. ASCII explicit multiplication is supported by the existing parser; implicit multiplication,
+Unicode superscripts/bars and unsupported calculus are retained verbatim as UNSUPPORTED, without guessed replacement.
+
+Authentication, active account, problem/attempt/asset ownership, source freshness, 30-attempt capacity and 30/minute
+structured operation rate limit apply. Same-key exact typed-command replay is checked before rollout/source freshness;
+changed payload returns IDEMPOTENCY_KEY_REUSED (409). Revisions use supersedesAttemptId and conflict with OPTIMISTIC_CONFLICT
+if already superseded; original source and observations cannot change. Errors use existing Problem Details/traceId:
+401 authentication, 403 ACCOUNT_NOT_ACTIVE, 404 RESOURCE_FORBIDDEN/ATTEMPT_NOT_FOUND, 409 ATTEMPT_STALE_SOURCE or capacity,
+413 REQUEST_TOO_LARGE, 422 REQUEST_VALIDATION_FAILED, 429 RATE_LIMIT_EXCEEDED, 503 ATTEMPT_UNAVAILABLE. Retry an uncertain
+failure with the same key and complete body. The request can safely save unresolved review; no mathematical assessment runs.

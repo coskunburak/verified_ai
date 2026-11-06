@@ -226,3 +226,11 @@ problem session, canonical/parse ID and revisions, source type, timestamps and t
 Student-attempt-v2 adds exact finalAnswer with zero to eleven separate intermediate StudentAttemptSteps. Original
 content is neither a reference Solution nor a normalized/proven mathematical claim. V3 submission deliberately
 leaves normalization and analysis null. Historical student-attempt-v1 and its analysis versions remain unchanged.
+
+## Sprint 7.2 structured child artifact
+
+StudentAttempt remains the aggregate. AttemptStructuredWork is its immutable 1:1 derived representation, with authenticated
+owner, canonical/parse lineage, normalization version, revision and optional predecessor attempt. AttemptWorkInput carries
+exact observations plus independently ordered reviewed steps. Stable IDs and observation links preserve segmentation.
+The parent retains capture-only reviewed text/finalAnswer for legacy history; its historical MANUAL source_type enum is
+not an OCR provenance claim. The child explicitly owns engine/provenance. Old attempts have no child and are never backfilled.

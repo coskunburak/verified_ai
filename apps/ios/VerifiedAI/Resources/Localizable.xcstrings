@@ -9871,6 +9871,422 @@
           }
         }
       }
+    },
+    "attempt.work.scope": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saved and structured work is not mathematically verified. Recognition confidence describes transcription only."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaydedilen ve yapılandırılan çalışma matematiksel olarak doğrulanmış değildir. Tanıma güveni yalnızca transkripsiyonla ilgilidir."
+          }
+        }
+      }
+    },
+    "attempt.work.start": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Structure my steps"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adımlarımı yapılandır"
+          }
+        }
+      }
+    },
+    "attempt.work.save": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save structured work"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yapılandırılmış çalışmayı kaydet"
+          }
+        }
+      }
+    },
+    "attempt.work.saved": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Work saved · not assessed"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çalışma kaydedildi · değerlendirilmedi"
+          }
+        }
+      }
+    },
+    "attempt.work.originalOCR": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Original transcription"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Orijinal transkripsiyon"
+          }
+        }
+      }
+    },
+    "attempt.work.reviewed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reviewed step text"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gözden geçirilen adım metni"
+          }
+        }
+      }
+    },
+    "attempt.work.role": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Step role"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adımın rolü"
+          }
+        }
+      }
+    },
+    "attempt.work.role.INTERMEDIATE": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Intermediate step"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ara işlem"
+          }
+        }
+      }
+    },
+    "attempt.work.role.FINAL_ANSWER": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Explicit final answer"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Açıkça belirtilen son cevap"
+          }
+        }
+      }
+    },
+    "attempt.work.role.AMBIGUOUS": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ambiguous layout or meaning"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Belirsiz düzen veya anlam"
+          }
+        }
+      }
+    },
+    "attempt.work.REVIEW_REQUIRED": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Review required — check symbols and layout"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İnceleme gerekli — sembolleri ve düzeni kontrol edin"
+          }
+        }
+      }
+    },
+    "attempt.work.UNSUPPORTED": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Syntax unsupported — original text preserved"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sözdizimi desteklenmiyor — orijinal metin korundu"
+          }
+        }
+      }
+    },
+    "attempt.work.NORMALIZED": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Structured syntax · not a correctness result"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yapılandırılmış sözdizimi · doğruluk sonucu değil"
+          }
+        }
+      }
+    },
+    "attempt.work.moveUp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Move step up"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adımı yukarı taşı"
+          }
+        }
+      }
+    },
+    "attempt.work.moveDown": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Move step down"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adımı aşağı taşı"
+          }
+        }
+      }
+    },
+    "attempt.work.split": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Split at the first line break"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İlk satır sonundan böl"
+          }
+        }
+      }
+    },
+    "attempt.work.merge": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Merge with next step"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sonraki adımla birleştir"
+          }
+        }
+      }
+    },
+    "attempt.work.splitHelp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Insert a line break where you want to split, then review both steps."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bölmek istediğiniz yere satır sonu ekleyin, ardından iki adımı da inceleyin."
+          }
+        }
+      }
+    },
+    "attempt.work.add": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add step"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adım ekle"
+          }
+        }
+      }
+    },
+    "attempt.work.revise": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Create a revised copy"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Düzeltilmiş kopya oluştur"
+          }
+        }
+      }
+    },
+    "attempt.work.sourceRegion": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Highlighted transcription region in the source image"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaynak görüntüde vurgulanan transkripsiyon bölgesi"
+          }
+        }
+      }
+    },
+    "attempt.work.provenance.NATIVE_VISION": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Device transcription · student reviewed"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cihaz transkripsiyonu · öğrenci incelemesi"
+          }
+        }
+      }
+    },
+    "attempt.work.provenance.GATEWAY_RECOGNITION": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Existing recognition record · student reviewed"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mevcut tanıma kaydı · öğrenci incelemesi"
+          }
+        }
+      }
+    },
+    "attempt.work.regionUnknown": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Review the whole source image. The recognition record does not specify a reliable coordinate origin."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaynak görüntünün tamamını inceleyin. Tanıma kaydı güvenilir bir koordinat başlangıcı belirtmiyor."
+          }
+        }
+      }
+    },
+    "attempt.work.continueReview": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continue reviewing structured steps"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yapılandırılmış adımları incelemeye devam et"
+          }
+        }
+      }
+    },
+    "attempt.work.remove": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove this draft step"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu taslak adımı kaldır"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

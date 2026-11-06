@@ -14,8 +14,35 @@ final class AttemptAnalysisAPI: AttemptAnalysisServicing, @unchecked Sendable {
             body: try JSONEncoder().encode(["assetSessionId": assetSession.uuidString]), timeout: 15))
         guard r.body.schemaVersion == "attempt-extraction-v1", !r.body.trainingEligible,
               r.body.assetSessionId == assetSession, r.body.status == "REVIEW_REQUIRED", (1...12).contains(r.body.steps.count),
-              r.body.steps.allSatisfy({ $0.reviewRequired && !$0.rawTranscription.isEmpty && $0.rawTranscription.utf16.count <= 256 }) else { throw NetworkError.invalidResponse }
+              r.body.steps.map(\.index) == r.body.steps.indices.map({ $0 + 1 }),
+              r.body.steps.allSatisfy({ line in
+                  line.reviewRequired && AttemptSubmission.validText(line.rawTranscription)
+                    && (line.confidence.map { $0.isFinite && (0...1).contains($0) } ?? true)
+                    && AttemptWorkRequest.Box(x: line.boundingBox.x, y: line.boundingBox.y,
+                        width: line.boundingBox.width, height: line.boundingBox.height).isValid
+              }) else { throw NetworkError.invalidResponse }
         return r.body
+    }
+    func submitWork(problem: UUID, key: String, input: AttemptWorkRequest) async throws -> AttemptStructuredWork {
+        guard input.isValid else { throw NetworkError.invalidResponse }
+        let body = try JSONEncoder().encode(input)
+        guard body.count <= 16384 else { throw NetworkError.invalidResponse }
+        let r: HTTPResponse<AttemptStructuredWork> = try await client.send(HTTPRequest(endpoint: Endpoint(path: path(problem) + "/structured-work", method: .post),
+            body: body, idempotencyKey: key, timeout: 15))
+        let work = try r.body.validated(problem: problem)
+        guard work.source == input.source, work.engine == input.engine, work.captureId == input.captureId,
+              work.assetSessionId == input.assetSessionId, work.recognitionJobId == input.recognitionJobId,
+              work.supersedesAttemptId == input.supersedesAttemptId, work.observations == input.observations,
+              work.steps.map(\.id) == input.steps.map(\.id), work.steps.map(\.reviewedText) == input.steps.map(\.text),
+              work.steps.map(\.role) == input.steps.map(\.role), work.steps.map(\.observationIds) == input.steps.map(\.observationIds) else { throw NetworkError.invalidResponse }
+        return work
+    }
+    func readWork(problem: UUID, attempt: UUID) async throws -> AttemptStructuredWork? {
+        do {
+            let r: HTTPResponse<AttemptStructuredWork> = try await client.send(HTTPRequest(endpoint: Endpoint(path: path(problem) + "/\(attempt.uuidString)/structured-work")))
+            guard r.body.attemptId == attempt else { throw NetworkError.invalidResponse }
+            return try r.body.validated(problem: problem)
+        } catch NetworkError.server(let error) where error.status == 404 && error.code == "ATTEMPT_NOT_FOUND" { return nil }
     }
     func list(problem: UUID) async throws -> [StudentAttempt] {
         let r: HTTPResponse<[StudentAttempt]> = try await client.send(HTTPRequest(endpoint: Endpoint(path: path(problem), queryItems: [URLQueryItem(name: "representationVersion", value: "2")])))

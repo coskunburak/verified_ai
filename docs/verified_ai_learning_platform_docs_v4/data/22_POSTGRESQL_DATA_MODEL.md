@@ -733,3 +733,16 @@ index, composite owner/source foreign keys and owner/session/create_key uniquene
 Apply through ordinary owner-managed Flyway before the new binary; owner PostgreSQL tests cover fresh schema and
 V032 → V033 upgrade. Rollback disables submissions and retains this reader/schema; never drop evidence or repair
 historical checksums. An older binary cannot read final-answer records and is not an operational rollback target.
+
+## V034 — attempt structured work
+
+attempt_structured_work adds attempt_id PK, user_id composite owner FK to student_attempts, revision (1–30), unique nullable
+supersedes_attempt_id with composite owner FK, bounded artifact JSONB and training_eligible=false. The owner/attempt index
+supports export and reads. Artifact ID/owner/version/revision columns must match JSON; source and problem match the parent.
+Before-insert guards require the parent's original transaction and unassessed evidence; step text/final intent matches
+accepted parent evidence exactly. Update and child-only delete are prohibited. Review revisions retain original observations,
+engine and capture/job identities, same canonical lineage and revision+1. Owner locks plus unique predecessor serialize races.
+
+This migration neither alters V030–V033 nor rewrites/backfills prior records. Account/source/attempt cascades remove artifacts;
+whole-owner deletion removes revision chains. Apply V034 before enabling the new binary path. Rollback disables creation,
+retains schema and compatible historical reader, and does not drop evidence or invoke Flyway repair.

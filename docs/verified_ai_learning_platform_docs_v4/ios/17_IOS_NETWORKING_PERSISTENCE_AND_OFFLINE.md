@@ -145,3 +145,23 @@ review against the current context before a new operation is allowed. Existing u
 the original source and key. Account/generation/cancellation fences apply after network suspensions. Acknowledgement
 removes draft and pending files; selecting history cannot recreate an acknowledged draft. Store failures retain the
 pending identity for retry. Native/photo provenance and existing protected backup-excluded storage remain intact.
+
+## Sprint 7.2 structured review and recovery
+
+AnalyzeMyWorkViewModel explicitly opts into the context-v2 structuredWorkEnabled capability. Existing entry and answer-only
+submission paths remain available. Native/gateway review creates immutable observations and independently editable steps;
+movement preserves IDs, splitting at a learner-supplied newline shares observation links, merging retains all links and
+requires renewed review. The OCR sheet can continue into the structured editor without attestation, so ambiguous/multiline
+observations can be split and reviewed without first claiming confirmation. Edits/role changes revoke confirmation. Normalized preview uses existing native AttemptMathView
+only after a server artifact is saved; UI labels separately identify saved, structured, unsupported and unassessed states.
+
+Native source previews are owner/problem/capture-bound protected local files. Vision boxes use its known bottom-left origin;
+gateway metadata does not declare an origin in the existing contract, so the UI shows the full source and an explicit warning
+instead of guessing a region overlay. All boxes/raw transcription remain in provenance. Geometry never proves 2D mathematics.
+
+Structured pending requests retain exact body/key in protected account-scoped storage (20 KB envelope; 16 KiB wire input).
+Structured drafts allow a bounded 20 KB envelope; legacy bounds remain 16 KiB. Source changes require explicit draft review;
+new source clears predecessor intent. Canceled/late/account-switched responses cannot publish. Retry after a lost acknowledgement
+uses the same key even when rollout is disabled. Definitive 400/409/413/422 preserves a review draft before releasing the key.
+Artifact reads remain enabled during rollback, and old servers without the capability are not queried for the new route.
+EN/TR labels, VoiceOver control names, Dynamic Type layouts and unassessed copy are covered by authored XCTest/XCUITest sources.

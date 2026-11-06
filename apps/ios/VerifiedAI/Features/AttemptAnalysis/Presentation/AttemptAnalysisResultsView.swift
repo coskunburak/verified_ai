@@ -47,3 +47,28 @@ struct AttemptAnalysisResultsView: View {
         // replacing the verdict and counterexample identifiers in SwiftUI's AX tree.
     }
 }
+
+struct AttemptStructuredWorkView: View {
+    let work: AttemptStructuredWork
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Label("attempt.work.saved", systemImage: "tray.and.arrow.down").font(.headline)
+                .accessibilityIdentifier("attempt.work.saved")
+            Text("attempt.work.scope")
+            ForEach(work.steps) { step in
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(LocalizedStringKey("attempt.work.role." + step.role.rawValue)).font(.headline)
+                    Text(verbatim: step.reviewedText).textSelection(.enabled)
+                    Label(LocalizedStringKey("attempt.work." + step.normalizationStatus), systemImage: step.normalizationStatus == "NORMALIZED" ? "text.alignleft" : "exclamationmark.triangle")
+                    if let statement = step.normalizedStatement { AttemptMathView(json: statement, fallback: step.reviewedText) }
+                    if !step.observationIds.isEmpty {
+                        Text("attempt.work.originalOCR").font(.caption)
+                        ForEach(work.observations.filter { step.observationIds.contains($0.id) }) { observation in
+                            Text(verbatim: observation.rawText).font(.caption).textSelection(.enabled)
+                        }
+                    }
+                }.padding().background(.quaternary, in: RoundedRectangle(cornerRadius: 12))
+            }
+        }
+    }
+}

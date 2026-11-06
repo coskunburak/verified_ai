@@ -219,3 +219,20 @@ Visualization samples are approximate display data, never proof or VerificationP
 - V033 protects final answers and child membership, enforces contiguous bounded new evidence, and preserves parent/account deletion cascades.
 - Default GET is a v1 display projection for old clients; representationVersion=2 exposes native final-answer semantics.
   A projected last line is never persisted, normalized, assessed or promoted into independent learning evidence.
+
+## Sprint 7.2 structured work invariants
+
+- Raw observations, reviewed text and normalized syntax are independent evidence layers. OCR confidence is not correctness.
+- attempt-structured-work-v1 is an immutable derived artifact of the existing StudentAttempt, never a second aggregate.
+- Manual originalText equals exact authored text. For OCR it is null: immutable observations and explicit many-to-many
+  observationIds retain original transcription across split/merge/reordering; no observation may silently disappear.
+- Each step has stable UUID, contiguous order, explicit INTERMEDIATE/FINAL_ANSWER/AMBIGUOUS intent and CONFIRMED/REQUIRED
+  review status. Unconfirmed, ambiguous or multiline layout remains REVIEW_REQUIRED with null normalizedStatement.
+- Only confirmed supported syntax is NORMALIZED. Unsupported notation stays UNSUPPORTED, retaining original text.
+  Neither state grants correctness, diagnosis, mastery, training eligibility or reference-solution authority.
+- Revision creates a new attempt; owned source, engine, original observations and capture/job identities cannot change.
+  Only one successor may reference a revision. Original accepted rows are never overwritten or backfilled.
+- Native provenance is CLIENT_ATTESTED; captureId is a device-local image reference, not server asset ownership.
+  Gateway provenance is SERVER_RECORDED and must match an existing owned recognition job and exact raw metadata.
+- Structured submission never invokes AttemptVerifierClient or emits learning evidence. Existing v1/v2/v3 submission
+  meanings and hashes remain unchanged; only the explicitly selected structured route uses the new contract.

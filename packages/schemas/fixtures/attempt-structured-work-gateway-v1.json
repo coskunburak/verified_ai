@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "attempt-structured-work-request-v1",
+  "source": {
+    "canonicalId": "00000000-0000-0000-0000-000000007201",
+    "canonicalRevision": 1,
+    "parseId": "00000000-0000-0000-0000-000000007202",
+    "parseRevision": 1
+  },
+  "engine": "GATEWAY_RECOGNITION",
+  "captureId": null,
+  "assetSessionId": "00000000-0000-0000-0000-000000007232",
+  "recognitionJobId": "00000000-0000-0000-0000-000000007233",
+  "supersedesAttemptId": null,
+  "observations": [
+    {
+      "id": "00000000-0000-0000-0000-000000007231",
+      "rawText": "1/l\n0/O",
+      "confidence": 0.2,
+      "box": {
+        "x": 0.1,
+        "y": 0.2,
+        "width": 0.5,
+        "height": 0.3
+      }
+    }
+  ],
+  "steps": [
+    {
+      "id": "00000000-0000-0000-0000-000000007211",
+      "text": "2*x=8",
+      "role": "INTERMEDIATE",
+      "observationIds": [
+        "00000000-0000-0000-0000-000000007231"
+      ],
+      "confirmed": false
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000007212",
+      "text": "x=4",
+      "role": "FINAL_ANSWER",
+      "observationIds": [
+        "00000000-0000-0000-0000-000000007231"
+      ],
+      "confirmed": false
+    }
+  ]
+}

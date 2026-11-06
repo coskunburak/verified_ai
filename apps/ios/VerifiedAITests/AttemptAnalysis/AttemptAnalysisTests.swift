@@ -1,4 +1,5 @@
 import XCTest
+import SwiftUI
 @testable import VerifiedAI
 
 @MainActor
@@ -398,5 +399,186 @@ private actor RetryableAnswerAPI: AttemptAnalysisServicing {
                 code: reject ? "ATTEMPT_STALE_SOURCE" : "TEMPORARY_UNAVAILABLE", traceId: nil, details: nil))
         }
         return try await backing.submit(problem: problem, key: key, submission: submission)
+    }
+}
+
+@MainActor
+final class AttemptStructuredWorkTests: XCTestCase {
+    private func store() -> AttemptAnalysisPendingStore {
+        AttemptAnalysisPendingStore(directory: FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString))
+    }
+    private func idle(_ model: AnalyzeMyWorkViewModel) async {
+        for _ in 0..<150 { if !model.busy { return }; try? await Task.sleep(nanoseconds: 10_000_000) }
+        XCTFail("Structured work operation did not finish")
+    }
+    func testRowBindingSurvivesAcknowledgementWithoutResurrectingDraftOrEditingSuccessor() async throws {
+        let storage = store(), owner = UUID(), problem = UUID()
+        let model = AnalyzeMyWorkViewModel(owner: owner, problem: problem, service: FixtureAttemptAnalysisAPI(), store: storage, ownsAccount: { true })
+        model.resume(); await idle(model); model.draft = "x=4"; model.startStructured()
+        let snapshot = try XCTUnwrap(model.workSteps.first)
+        let binding = AttemptStructuredEditorView(model: model).stepBinding(snapshot)
+        model.submit()
+        binding.text.wrappedValue = "late edit during submit"
+        XCTAssertEqual(model.workSteps.first?.text, "x=4")
+        await idle(model)
+        XCTAssertNotNil(model.workResult); XCTAssertNil(model.workDraft)
+        // This is the Toggle/TextEditor read that previously subscripted an empty array.
+        XCTAssertEqual(binding.wrappedValue, snapshot)
+        binding.confirmed.wrappedValue = false
+        XCTAssertNil(model.workDraft); XCTAssertNil(try storage.loadDraft(owner: owner, problem: problem))
+        model.reviseStructured()
+        XCTAssertEqual(model.workSteps.first?.id, snapshot.id)
+        binding.text.wrappedValue = "retired row callback"
+        XCTAssertEqual(model.workSteps.first?.text, "x=4")
+        model.invalidate()
+        XCTAssertEqual(binding.wrappedValue, snapshot)
+        binding.text.wrappedValue = "after logout"
+        XCTAssertNil(model.workDraft)
+    }
+    func testRowBindingsFollowIdentityAcrossReorderAndIgnoreRemovedRows() async throws {
+        let model = AnalyzeMyWorkViewModel(owner: UUID(), problem: UUID(), service: FixtureAttemptAnalysisAPI(), store: store(), ownsAccount: { true })
+        model.resume(); await idle(model); model.draft = "2*x=8\nx=4"; model.startStructured()
+        let first = model.workSteps[0], second = model.workSteps[1]
+        let binding = AttemptStructuredEditorView(model: model).stepBinding(first)
+        model.moveWorkStep(first.id, by: 1)
+        binding.text.wrappedValue = "x=5"
+        XCTAssertEqual(model.workSteps.map(\.id), [second.id, first.id])
+        XCTAssertEqual(model.workSteps.map(\.text), ["x=4", "x=5"])
+        XCTAssertFalse(binding.confirmed.wrappedValue)
+        binding.confirmed.wrappedValue = true
+        XCTAssertTrue(binding.confirmed.wrappedValue)
+        binding.role.wrappedValue = .finalAnswer
+        XCTAssertFalse(binding.confirmed.wrappedValue)
+        model.removeWorkStep(first.id)
+        XCTAssertEqual(binding.wrappedValue, first)
+        binding.text.wrappedValue = "removed row callback"
+        XCTAssertEqual(model.workSteps, [second])
+    }
+    func testManualMultiStepFinalIntentAndNoMathematicalAssessment() async throws {
+        let model = AnalyzeMyWorkViewModel(owner: UUID(), problem: UUID(), service: FixtureAttemptAnalysisAPI(), store: store(), ownsAccount: { true })
+        model.resume(); await idle(model); model.draft = "2*x=8\nx=4"; model.startStructured()
+        model.workDraft?.steps[1].role = .finalAnswer
+        XCTAssertTrue(model.canSubmit); model.submit(); await idle(model)
+        XCTAssertNil(model.pendingWork); XCTAssertNil(model.workDraft); XCTAssertNil(model.result?.analysis)
+        XCTAssertEqual(model.result?.finalAnswer, "x=4")
+        XCTAssertEqual(model.workResult?.steps.map(\.reviewedText), ["2*x=8", "x=4"])
+        XCTAssertEqual(model.workResult?.steps.map(\.normalizationStatus), ["UNSUPPORTED", "UNSUPPORTED"])
+        XCTAssertFalse(try XCTUnwrap(model.workResult).trainingEligible)
+    }
+    func testNativeCorrectionReorderMergeSplitPreservesAllOriginalObservations() async throws {
+        let model = AnalyzeMyWorkViewModel(owner: UUID(), problem: UUID(), service: FixtureAttemptAnalysisAPI(), store: store(), ownsAccount: { true })
+        model.resume(); await idle(model)
+        let source = try XCTUnwrap(model.context?.source), a = UUID(), b = UUID()
+        model.workDraft = AttemptWorkRequest(source: source, engine: "NATIVE_VISION", captureId: UUID(),
+            observations: [.init(id: a, rawText: "1/l", confidence: 0.1, box: nil), .init(id: b, rawText: "0/O", confidence: 0.2, box: nil)],
+            steps: [.init(id: UUID(), text: "x=1", role: .intermediate, observationIds: [a], confirmed: false),
+                    .init(id: UUID(), text: "x=0", role: .intermediate, observationIds: [b], confirmed: false)])
+        let second = model.workSteps[1].id
+        model.moveWorkStep(second, by: -1); XCTAssertEqual(model.workSteps.first?.id, second)
+        model.mergeWorkStep(second); XCTAssertEqual(model.workSteps.count, 1)
+        XCTAssertEqual(Set(model.workSteps[0].observationIds), Set([a, b])); XCTAssertEqual(model.workSteps[0].role, .ambiguous)
+        model.splitWorkStep(second); XCTAssertEqual(model.workSteps.count, 2)
+        XCTAssertTrue(model.workDraft?.isValid == true); model.submit(); await idle(model)
+        XCTAssertEqual(model.workResult?.observations.map(\.rawText), ["1/l", "0/O"])
+        XCTAssertTrue(model.workResult?.steps.allSatisfy { $0.normalizedStatement == nil && $0.reviewStatus == "REQUIRED" } == true)
+    }
+    func testInterruptedSubmissionUsesSameKeyAndOwnerScopedPending() async throws {
+        let owner = UUID(), problem = UUID(), storage = store(), api = FixtureAttemptAnalysisAPI(loseAcknowledgement: true)
+        let first = AnalyzeMyWorkViewModel(owner: owner, problem: problem, service: api, store: storage, ownsAccount: { true })
+        first.resume(); await idle(first); first.draft = "x=4"; first.startStructured(); first.submit(); await idle(first)
+        let pending = try XCTUnwrap(first.pendingWork)
+        XCTAssertNil(try storage.loadWork(owner: UUID(), problem: problem)); first.suspend()
+        let second = AnalyzeMyWorkViewModel(owner: owner, problem: problem, service: api, store: storage, ownsAccount: { true })
+        second.resume(); await idle(second); XCTAssertEqual(second.pendingWork, pending)
+        second.retry(); await idle(second)
+        XCTAssertNil(second.pendingWork); XCTAssertNil(try storage.loadWork(owner: owner, problem: problem))
+        let history = try await api.list(problem: problem); XCTAssertEqual(history.count, 1)
+    }
+    func testSourceBoundDraftRequiresReviewAndAccountSwitchClearsStructuredPresentation() async throws {
+        let owner = UUID(), problem = UUID(), storage = store(), api = FixtureAttemptAnalysisAPI()
+        let context = try await api.context(problem: problem)
+        let source = AttemptSourceIdentity(canonicalId: context.source.canonicalId, canonicalRevision: 99, parseId: context.source.parseId, parseRevision: 99)
+        let input = AttemptWorkRequest(source: source, engine: "MANUAL", observations: [], steps: [.init(id: UUID(), text: "4", role: .finalAnswer, observationIds: [], confirmed: true)])
+        try storage.saveDraft(.init(text: "", realDomainConfirmed: false, source: source, structuredWork: input), owner: owner, problem: problem)
+        var authorized = true
+        let model = AnalyzeMyWorkViewModel(owner: owner, problem: problem, service: api, store: storage, ownsAccount: { authorized })
+        model.resume(); await idle(model); XCTAssertTrue(model.draftNeedsReview); XCTAssertFalse(model.canSubmit)
+        model.confirmDraftSource(); XCTAssertTrue(model.canSubmit); XCTAssertEqual(model.workDraft?.source, context.source)
+        authorized = false; model.submit(); await idle(model)
+        XCTAssertNil(model.workDraft); XCTAssertNil(model.workResult); XCTAssertNil(model.pendingWork)
+    }
+    func testBoundsNullEncodingAndNoForgedProvenance() async throws {
+        let context = try await FixtureAttemptAnalysisAPI().context(problem: UUID())
+        var input = AttemptWorkRequest(source: context.source, engine: "MANUAL", observations: [], steps: [.init(id: UUID(), text: "4", role: .finalAnswer, observationIds: [], confirmed: true)])
+        let json = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(input)) as? [String: Any])
+        XCTAssertTrue(json["captureId"] is NSNull); XCTAssertTrue(json["recognitionJobId"] is NSNull); XCTAssertNil(json["provider"])
+        input.steps = (0..<12).map { .init(id: UUID(), text: "x=\($0)", role: .intermediate, observationIds: [], confirmed: true) }
+        XCTAssertTrue(input.isValid); input.steps.append(input.steps[0]); XCTAssertFalse(input.isValid)
+        input.steps = [.init(id: UUID(), text: String(repeating: "😀", count: 129), role: .intermediate, observationIds: [], confirmed: true)]
+        XCTAssertFalse(input.isValid)
+    }
+    func testSharedResponseAndLegacyDecodingRemainSeparate() throws {
+        let url = try XCTUnwrap(Bundle.main.url(forResource: "attempt-structured-work-v1", withExtension: "json"))
+        let work = try JSONDecoder().decode(AttemptStructuredWork.self, from: Data(contentsOf: url))
+        XCTAssertNoThrow(try work.validated(problem: work.problemSessionId))
+        XCTAssertEqual(work.steps.last?.role, .finalAnswer); XCTAssertFalse(work.trainingEligible)
+        XCTAssertThrowsError(try JSONDecoder().decode(StudentAttempt.self, from: Data(contentsOf: url)))
+    }
+    func testEnglishTurkishAccessibleStateCopy() throws {
+        for language in ["en", "tr"] {
+            let path = try XCTUnwrap(Bundle.main.path(forResource: language, ofType: "lproj"))
+            let bundle = try XCTUnwrap(Bundle(path: path))
+            for key in ["scope", "saved", "sourceRegion", "UNSUPPORTED", "REVIEW_REQUIRED", "NORMALIZED", "moveUp", "moveDown", "role.FINAL_ANSWER", "originalOCR"] {
+                let full = "attempt.work." + key
+                XCTAssertNotEqual(bundle.localizedString(forKey: full, value: nil, table: nil), full)
+            }
+        }
+    }
+}
+
+extension AttemptStructuredWorkTests {
+    func testNativePreviewIsBoundedImmutableOwnerIsolatedAndPurged() throws {
+        let storage = store(), owner = UUID(), problem = UUID(), capture = UUID(), bytes = Data([1, 2, 3])
+        try storage.saveWorkPreview(bytes, owner: owner, problem: problem, capture: capture)
+        XCTAssertEqual(try storage.loadWorkPreview(owner: owner, problem: problem, capture: capture), bytes)
+        XCTAssertNil(try storage.loadWorkPreview(owner: UUID(), problem: problem, capture: capture))
+        XCTAssertThrowsError(try storage.saveWorkPreview(Data([4]), owner: owner, problem: problem, capture: capture))
+        XCTAssertThrowsError(try storage.saveWorkPreview(Data(count: 2_000_001), owner: owner, problem: problem, capture: UUID()))
+        try storage.clearAll(); XCTAssertNil(try storage.loadWorkPreview(owner: owner, problem: problem, capture: capture))
+    }
+    func testCanceledStructuredResponseCannotPublishIntoReopenedState() async throws {
+        let owner = UUID(uuidString: "00000000-0000-0000-0000-000000007200")!
+        let api = DelayedStructuredAPI(), storage = store()
+        let model = AnalyzeMyWorkViewModel(owner: owner, problem: UUID(), service: api, store: storage, ownsAccount: { true })
+        model.resume(); await idle(model); model.draft = "x=4"; model.startStructured(); model.submit()
+        for _ in 0..<100 { if await api.started { break }; try await Task.sleep(nanoseconds: 5_000_000) }
+        model.suspend()
+        await api.release()
+        try await Task.sleep(nanoseconds: 30_000_000)
+        XCTAssertNil(model.workResult); XCTAssertNotNil(model.pendingWork)
+    }
+}
+private actor DelayedStructuredAPI: AttemptAnalysisServicing {
+    private let backing = FixtureAttemptAnalysisAPI()
+    private var continuation: CheckedContinuation<Void, Never>?
+    private(set) var started = false
+    func context(problem: UUID) async throws -> AttemptContext { try await backing.context(problem: problem) }
+    func list(problem: UUID) async throws -> [StudentAttempt] { try await backing.list(problem: problem) }
+    func submit(problem: UUID, key: String, submission: AttemptSubmission) async throws -> StudentAttempt { try await backing.submit(problem: problem, key: key, submission: submission) }
+    func submitWork(problem: UUID, key: String, input: AttemptWorkRequest) async throws -> AttemptStructuredWork {
+        started = true
+        await withCheckedContinuation { continuation = $0 }
+        return try await backing.submitWork(problem: problem, key: key, input: input)
+    }
+    func release() { continuation?.resume(); continuation = nil }
+}
+
+extension AttemptStructuredWorkTests {
+    func testUnconfirmedMultilineOCRCanContinueToReviewWithoutAttestation() {
+        let lines = [AttemptRecognizedLine(id: UUID(), raw: "x+1\nx-3", text: "x+1\nx-3", confidence: 0.2, box: .zero)]
+        let structured = AttemptStepReviewView(lines: .constant(lines), preview: nil, confirm: {}, cancel: {}, structured: true)
+        let legacy = AttemptStepReviewView(lines: .constant(lines), preview: nil, confirm: {}, cancel: {})
+        XCTAssertTrue(structured.canContinue); XCTAssertFalse(legacy.canContinue)
+        XCTAssertFalse(lines[0].confirmed)
     }
 }
