@@ -10,6 +10,7 @@ struct AttemptRecognizedLine: Identifiable, Sendable {
     let confidence: Float
     let box: CGRect
     var confirmed = false
+    var regionReliable = true
 }
 
 /// Device-only OCR is transcription, never mathematical evidence. Each line requires review.
@@ -51,8 +52,7 @@ actor NativeAttemptExtraction {
         guard !observations.isEmpty else { throw Failure.unreadable }
         guard observations.count <= 12 else { throw Failure.tooManyLines }
         return try observations.map { observation in
-            guard let candidate = observation.topCandidates(1).first, !candidate.string.isEmpty,
-                  candidate.string.utf16.count <= 256 else { throw Failure.unreadable }
+            guard let candidate = observation.topCandidates(1).first, AttemptSubmission.validText(candidate.string) else { throw Failure.unreadable }
             return AttemptRecognizedLine(id: UUID(), raw: candidate.string, text: candidate.string,
                 confidence: candidate.confidence, box: observation.boundingBox)
         }

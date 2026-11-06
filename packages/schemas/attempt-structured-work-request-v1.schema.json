@@ -1,0 +1,356 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "attempt-structured-work-request-v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "attempt-structured-work-request-v1"
+    },
+    "source": {
+      "$ref": "#/$defs/source"
+    },
+    "engine": {
+      "enum": [
+        "MANUAL",
+        "NATIVE_VISION",
+        "GATEWAY_RECOGNITION"
+      ]
+    },
+    "captureId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "assetSessionId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "recognitionJobId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "supersedesAttemptId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "observations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/observation"
+      },
+      "minItems": 0,
+      "maxItems": 12
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/step"
+      },
+      "minItems": 1,
+      "maxItems": 12,
+      "uniqueItems": true,
+      "contains": {
+        "properties": {
+          "role": {
+            "const": "FINAL_ANSWER"
+          }
+        }
+      },
+      "minContains": 0,
+      "maxContains": 1
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "source",
+    "engine",
+    "captureId",
+    "assetSessionId",
+    "recognitionJobId",
+    "supersedesAttemptId",
+    "observations",
+    "steps"
+  ],
+  "$defs": {
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "canonicalId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "canonicalRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "parseId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "parseRevision": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "canonicalId",
+        "canonicalRevision",
+        "parseId",
+        "parseRevision"
+      ]
+    },
+    "box": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "y": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "width": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "height": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "width",
+        "height"
+      ]
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "rawText": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "box": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/box"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "rawText",
+        "confidence",
+        "box"
+      ]
+    },
+    "step": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "role": {
+          "enum": [
+            "INTERMEDIATE",
+            "FINAL_ANSWER",
+            "AMBIGUOUS"
+          ]
+        },
+        "observationIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "minItems": 0,
+          "maxItems": 12,
+          "uniqueItems": true
+        },
+        "confirmed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "text",
+        "role",
+        "observationIds",
+        "confirmed"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "engine": {
+            "const": "MANUAL"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "captureId": {
+            "type": "null"
+          },
+          "assetSessionId": {
+            "type": "null"
+          },
+          "recognitionJobId": {
+            "type": "null"
+          },
+          "observations": {
+            "maxItems": 0
+          },
+          "steps": {
+            "items": {
+              "properties": {
+                "observationIds": {
+                  "maxItems": 0
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "engine": {
+            "const": "NATIVE_VISION"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "assetSessionId": {
+            "type": "null"
+          },
+          "recognitionJobId": {
+            "type": "null"
+          },
+          "captureId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "observations": {
+            "minItems": 1
+          },
+          "steps": {
+            "items": {
+              "properties": {
+                "observationIds": {
+                  "minItems": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "engine": {
+            "const": "GATEWAY_RECOGNITION"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "captureId": {
+            "type": "null"
+          },
+          "assetSessionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "recognitionJobId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "observations": {
+            "minItems": 1
+          },
+          "steps": {
+            "items": {
+              "properties": {
+                "observationIds": {
+                  "minItems": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

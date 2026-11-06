@@ -37,6 +37,7 @@ public class StudentAttemptOrchestrator {
     private final boolean enabled;
     private final AttemptExtractionReader extraction;
     private final boolean visionEnabled;
+    @Value("${verifiedai.attempt.structured-work-enabled:false}") private boolean structuredWorkEnabled;
     public StudentAttemptOrchestrator(SolveSourceAccess sources,VerificationSourceReader reader,ManualStepNormalizer normalizer,
         CanonicalMathCodec codec,StudentAttemptRepository store,AttemptVerifierClient verifier,PlatformTransactionManager transactions,
         Clock clock,MeterRegistry metrics,RateLimiter limiter,boolean enabled,String environment) {
@@ -54,7 +55,7 @@ public class StudentAttemptOrchestrator {
         this.sources=sources; this.reader=reader; this.normalizer=normalizer; this.codec=codec; this.store=store; this.verifier=verifier;
         this.tx=new TransactionTemplate(transactions); this.tx.setTimeout(5); this.clock=clock; this.metrics=metrics; this.limiter=limiter; this.enabled=enabled;
     }
-    public record Context(String schemaVersion,AttemptSourceIdentity source,String originalStatement,boolean enabled,String handwriting,String twinDrill,String methodComparison) {}
+    public record Context(String schemaVersion,AttemptSourceIdentity source,String originalStatement,boolean enabled,String handwriting,String twinDrill,String methodComparison,boolean structuredWorkEnabled) {}
     public Context context(UUID owner,UUID problem) {
         return operation(owner,()->tx.execute(s->{
             var source=sources.current(owner,problem); String original=null;
@@ -63,7 +64,7 @@ public class StudentAttemptOrchestrator {
                 else { var parsed=reader.readForExecution(source); if(parsed.statements().size()==1) original=codec.json(parsed.statements().getFirst()).toString(); }
             }
             catch(IllegalArgumentException | VerificationSourceReader.SourceRejected ignored) { }
-            return new Context("attempt-context-v2",identity(source),original,enabled && store.available(),visionEnabled?"NATIVE_REVIEW_AND_GATEWAY":"NATIVE_REVIEW",enabled?"VERIFIED_TEMPLATES":"UNAVAILABLE",enabled?"VERIFIED_METHODS":"UNAVAILABLE");
+            return new Context("attempt-context-v2",identity(source),original,enabled && store.available(),visionEnabled?"NATIVE_REVIEW_AND_GATEWAY":"NATIVE_REVIEW",enabled?"VERIFIED_TEMPLATES":"UNAVAILABLE",enabled?"VERIFIED_METHODS":"UNAVAILABLE",enabled && structuredWorkEnabled);
         }));
     }
     public List<StudentAttempt> list(UUID owner,UUID problem) {

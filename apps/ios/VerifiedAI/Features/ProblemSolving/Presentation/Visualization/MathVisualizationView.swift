@@ -4,6 +4,8 @@ import Charts
 struct MathVisualizationView: View {
     @Bindable var model: MathVisualizationViewModel
     @ScaledMetric(relativeTo: .title3) private var mathPointSize = 22
+    @Environment(\.dynamicTypeSize) private var typeSize
+    @Environment(\.locale) private var locale
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     var body: some View {
@@ -22,12 +24,12 @@ struct MathVisualizationView: View {
                         if model.kind == .derivative { Toggle("visualization.derivative", isOn: $model.showDerivative) }
                         FunctionPlotView(segments: model.visibleSegments, viewport: model.viewport, selectedX: $model.selectedX)
                         if let point = model.selectedSample {
-                            Text(String(format: NSLocalizedString("visualization.selected", comment: "Approximate selected sample"), point.x, point.y))
+                            Text(String(format: NSLocalizedString("visualization.selected", comment: "Approximate selected sample"), locale: locale, point.x, point.y))
                                 .monospacedDigit().accessibilityIdentifier("visualization.selection")
                         }
-                        HStack {
-                            Button("visualization.previous") { selectSample(-1) }
-                            Button("visualization.next") { selectSample(1) }
+                        sampleLayout {
+                            Button("visualization.previous") { selectSample(-1) }.accessibilityIdentifier("visualization.previous")
+                            Button("visualization.next") { selectSample(1) }.accessibilityIdentifier("visualization.next")
                         }.buttonStyle(.bordered).controlSize(.large).frame(minHeight: 44)
                         Text("visualization.approximate")
                     }
@@ -65,6 +67,9 @@ struct MathVisualizationView: View {
         .onChange(of: model.kind) { _, _ in model.changeKind() }
         .onChange(of: scenePhase) { _, phase in if phase == .active { model.load() } else { model.cancel() } }
     }
+    private var sampleLayout: AnyLayout {
+        typeSize.isAccessibilitySize ? AnyLayout(VStackLayout(alignment: .leading)) : AnyLayout(HStackLayout())
+    }
     private var viewportControls: some View {
         ViewThatFits {
             HStack { controls }
@@ -89,10 +94,10 @@ struct MathVisualizationView: View {
             Text(LocalizedStringKey(title)).font(.headline)
             if let latex = AttemptMathPresentation.latex(value) {
                 ScrollView(.horizontal) {
-                    NativeMathLabel(latex: latex, fallback: latex, pointSize: mathPointSize).fixedSize()
+                    NativeMathLabel(latex: latex, fallback: NSLocalizedString("attempt.math.unsupported", comment: "Unsupported math"), pointSize: mathPointSize).fixedSize()
                 }.accessibilityElement(children: .ignore)
                     .accessibilityLabel(Text(AttemptMathPresentation.spoken(value)))
-            }
+            } else { Text("attempt.math.unsupported") }
         }
     }
 }
@@ -104,23 +109,55 @@ struct FunctionPlotView: View {
     var body: some View {
         Chart {
             ForEach(segments) { segment in
-                ForEach(Array(segment.points.enumerated()), id: \.offset) { _, point in
-                    LineMark(x: .value("x", point.x), y: .value("y", point.y), series: .value("segment", segment.id))
-                        .foregroundStyle(segment.curve == "FUNCTION" ? ColorTokens.action : ColorTokens.warning)
-                        .lineStyle(StrokeStyle(lineWidth: 2, dash: segment.curve == "FUNCTION" ? [] : [5, 4]))
-                        .interpolationMethod(.linear)
-                    if segment.points.count == 1 {
-                        PointMark(x: .value("x", point.x), y: .value("y", point.y))
-                    }
-                }
+                segmentMarks(segment)
             }
             if let selectedX { RuleMark(x: .value("x", selectedX)).foregroundStyle(ColorTokens.textSecondary) }
         }
         .chartXScale(domain: viewport.xMin...viewport.xMax).chartYScale(domain: viewport.yMin...viewport.yMax)
         .chartXAxisLabel("x").chartYAxisLabel("y").chartXSelection(value: $selectedX)
         .frame(height: 260).accessibilityLabel("visualization.chartSummary")
+        .accessibilityHint("visualization.navigationHint")
         .accessibilityIdentifier("visualization.chart")
     }
+
+    // Separate result-builder boundaries keep Swift's constraint solver from
+    // expanding the complete chart, mark styling and localized formatting at once.
+    @ChartContentBuilder
+    private func segmentMarks(_ segment: MathVisualization.Segment) -> some ChartContent {
+        ForEach(segment.points.indices, id: \.self) { index in
+            sampleMarks(segment.points[index], in: segment)
+        }
+    }
+
+    @ChartContentBuilder
+    private func sampleMarks(_ point: MathVisualization.Sample, in segment: MathVisualization.Segment) -> some ChartContent {
+        let isFunction: Bool = segment.curve == "FUNCTION"
+        let color: Color = isFunction ? ColorTokens.action : ColorTokens.warning
+        let dash: [CGFloat] = isFunction ? [] : [5, 4]
+        let curveKey: LocalizedStringKey = isFunction ? "visualization.function" : "visualization.derivative"
+        let sampleDescription: String = approximateDescription(point)
+
+        LineMark(
+            x: .value("x", point.x),
+            y: .value("y", point.y),
+            series: .value("segment", segment.id)
+        )
+        .foregroundStyle(color)
+        .lineStyle(StrokeStyle(lineWidth: 2, dash: dash))
+        .interpolationMethod(.linear)
+        .accessibilityLabel(Text(curveKey))
+        .accessibilityValue(Text(verbatim: sampleDescription))
+
+        if segment.points.count == 1 {
+            PointMark(x: .value("x", point.x), y: .value("y", point.y))
+        }
+    }
+
+    private func approximateDescription(_ point: MathVisualization.Sample) -> String {
+        let format: String = NSLocalizedString("visualization.selected", comment: "Approximate sample")
+        return String(format: format, locale: Locale.current, point.x, point.y)
+    }
+
 }
 
 struct NumberLineView: View {

@@ -94,7 +94,6 @@ struct RootView: View {
             }
         }
         .tint(ColorTokens.action)
-        .preferredColorScheme(.dark)
         .task {
             await restoreSessionOnce()
         }

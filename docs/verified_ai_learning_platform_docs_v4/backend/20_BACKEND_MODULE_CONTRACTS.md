@@ -209,3 +209,14 @@ owns final-answer acceptance, exact source binding, capacity, idempotency and ca
 only authenticates, routes and negotiates historical display. The same repository, source lock order and privacy
 contributor remain authoritative. No new aggregate/repository, model client or cross-module infrastructure access.
 The legacy verifier failure boundary returns reauthorized durable evidence; ordinary reads never re-evaluate it.
+
+## Sprint 7.2 attempt representation boundary
+
+AttemptWorkService owns structured capture and historical artifact reads. AttemptWorkNormalizer reuses the problem module's
+ManualStepNormalizer; AttemptExtractionReader reads existing owned recognition and adds no inference call. Controller DTOs
+are strict, filter-bounded and schema validated before Jackson binding. The service holds existing account/session/source
+locks for normalization plus atomic parent/child insertion, revision checks and replay. No external work occurs in this path.
+AttemptWorkRepository persists only versioned syntax artifacts; StudentAttemptRepository remains the aggregate owner.
+StudentAttemptPrivacyLifecycleContributor exports the child and deletes through the parent cascade. Metrics use bounded
+outcome/status tags only: attempt.structured.outcome, attempt.structured.normalization, attempt.structured.duration,
+attempt.extraction.outcome and attempt.extraction.duration. Existing request validation metrics and traceId apply.

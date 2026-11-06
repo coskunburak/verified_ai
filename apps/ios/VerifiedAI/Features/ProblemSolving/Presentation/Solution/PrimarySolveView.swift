@@ -7,6 +7,8 @@ struct PrimarySolveView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dismiss) private var dismiss
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dynamicTypeSize) private var typeSize
+    @AccessibilityFocusState private var statusFocused: Bool
     @State private var isEvidenceExpanded = false
     @State private var isDetailsExpanded = false
     @State private var showsAllSteps = false
@@ -103,9 +105,7 @@ struct PrimarySolveView: View {
             if let key { UIAccessibility.post(notification: .announcement, argument: NSLocalizedString(key, comment: "Solve error")) }
         }
         .onChange(of: viewModel.snapshot?.state) { _, state in
-            if let state, !state.isActive {
-                UIAccessibility.post(notification: .announcement, argument: NSLocalizedString(state.titleKey, comment: "Solve state"))
-            }
+            if let state { statusFocused = !state.isActive }
         }
         .onChange(of: viewModel.verification) { _, decision in
             guard let decision else { return }
@@ -121,6 +121,12 @@ struct PrimarySolveView: View {
         }
     }
 
+    private var adaptiveRow: AnyLayout {
+        typeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: SpacingTokens.xs))
+            : AnyLayout(HStackLayout(alignment: .firstTextBaseline, spacing: SpacingTokens.xs))
+    }
+
     private var statusCard: some View {
         VStack(alignment: .leading, spacing: SpacingTokens.sm) {
             switch viewModel.screenPhase {
@@ -128,6 +134,7 @@ struct PrimarySolveView: View {
                 Label(LocalizedStringKey(state.titleKey), systemImage: state.symbolName)
                     .font(.title2.weight(.semibold))
                     .accessibilityIdentifier("solve.status.\(state.rawValue)")
+                    .accessibilityFocused($statusFocused)
                 Text(LocalizedStringKey(viewModel.verification == nil ? state.detailKey : "verification.generation"))
                     .foregroundStyle(ColorTokens.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -206,7 +213,7 @@ struct PrimarySolveView: View {
             .background(ColorTokens.surfaceElevated)
             .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.small))
 
-            HStack(alignment: .firstTextBaseline, spacing: SpacingTokens.xs) {
+            adaptiveRow {
                 Text("solve.methodLabel")
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(ColorTokens.textSecondary)
@@ -327,7 +334,7 @@ struct PrimarySolveView: View {
 
     private func explanationStep(_ step: SolutionStep, presentation: ExplanationPresentation) -> some View {
         VStack(alignment: .leading, spacing: SpacingTokens.md) {
-            HStack(alignment: .firstTextBaseline) {
+            adaptiveRow {
                 Text("solve.step \(step.order)").font(.headline)
                 Spacer()
                 Text(LocalizedStringKey(step.category.titleKey))

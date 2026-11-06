@@ -40,6 +40,10 @@ final class TutorViewModel {
     func refresh() {
         run {
             self.pending = try self.store.load(owner: self.owner, problem: self.problem)
+            if let pending = self.pending, let content = pending.content {
+                self.draft = content
+                self.selectedIntent = pending.intent ?? .unknown
+            }
             let sessions = try await self.service.list(problem: self.problem)
             guard await self.validAccount() else { return }
             self.sessions = sessions
@@ -134,14 +138,18 @@ final class TutorViewModel {
     }
     private func reload(_ id: UUID) async throws {
         let snapshot = try await service.read(problem: problem, session: id)
+        guard await validAccount() else { return }
+        guard (0...100).contains(snapshot.messageCount) else { throw NetworkError.invalidResponse }
         var history: [TutorMessage] = []
         while history.count < snapshot.messageCount {
             let page = try await service.messages(problem: problem, session: id, after: history.count)
-            guard !page.isEmpty, history.count + page.count <= 100 else { throw NetworkError.invalidResponse }
+            guard await validAccount() else { return }
+            guard !page.isEmpty, history.count + page.count <= snapshot.messageCount else { throw NetworkError.invalidResponse }
             history += page
         }
         let replies = try await service.turns(problem: problem, session: id, after: 0)
         guard replies.allSatisfy({ reply in history.contains { $0.id == reply.learnerMessageId && $0.sequenceNumber == reply.learnerSequenceNumber } }) else { throw NetworkError.invalidResponse }
+        guard await validAccount() else { return }
         let hints = try await service.hints(problem: problem, session: id)
         guard await validAccount() else { return }
         session = snapshot; messages = history; turns = replies; hintHistory = hints

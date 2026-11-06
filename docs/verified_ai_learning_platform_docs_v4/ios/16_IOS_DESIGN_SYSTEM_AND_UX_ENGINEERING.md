@@ -116,3 +116,7 @@ Show exact price, billing period, trial terms, renewal, restore and legal links.
 ## Sprint 6.9 visualization boundary
 
 Sprint 6.9 uses native Swift Charts with separate continuous series, solid function and dashed derivative legends, accessible sample controls, bounded viewport controls and exact number-line endpoint summaries. Exact features and approximate samples are labeled separately in EN/TR. Background/disappearance clears the graph; account/source/generation fences prevent stale publication. Device VoiceOver/Dynamic Type/appearance validation remains owner-executed.
+
+## Sprint 6.10 accessibility hardening
+
+System appearance now controls the app: semantic system surfaces/text and adaptive status/action colors support light/dark and increased contrast. Correctness text/symbols remain mandatory. Tutor honors Reduce Motion; at accessibility text sizes the composer participates in the scrollable content so large text and keyboards cannot consume the entire fixed transcript viewport. Solution headings and chart sample actions adapt vertically. Native math uses existing ScaledMetric sizing and horizontal overflow; unchanged LaTeX is not reparsed. Device contrast, VoiceOver and performance acceptance remain owner-executed.

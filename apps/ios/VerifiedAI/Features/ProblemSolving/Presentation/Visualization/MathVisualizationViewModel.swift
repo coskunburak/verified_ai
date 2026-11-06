@@ -36,7 +36,13 @@ final class MathVisualizationViewModel {
     }
     var selectedSample: MathVisualization.Sample? {
         guard let selectedX else { return nil }
-        return visibleSegments.flatMap(\.points).min { abs($0.x-selectedX) < abs($1.x-selectedX) }
+        var nearest: MathVisualization.Sample?
+        for segment in visibleSegments {
+            for point in segment.points where nearest == nil || abs(point.x - selectedX) < abs(nearest!.x - selectedX) {
+                nearest = point
+            }
+        }
+        return nearest
     }
     func cancel() {
         generation += 1; task?.cancel(); task = nil; value = nil; selectedX = nil

@@ -11,10 +11,11 @@ final class TutorUITests: XCTestCase {
         XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 6), .completed,
                        "Control must be enabled and hittable before input: \(element.identifier)")
     }
-    private func open(failure: Bool = false, turkish: Bool = false, unavailable: Bool = false) -> XCUIApplication {
+    private func open(failure: Bool = false, turkish: Bool = false, unavailable: Bool = false, largeText: Bool = false) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["--ui-testing", "--ui-testing-authenticated", "--solve-fixture", "--tutor-fixture", "--solve-reset",
             "--solve-fixture-scope=" + UUID().uuidString, "-AppleLanguages", turkish ? "(tr)" : "(en)"] + (failure ? ["--tutor-send-failure"] : []) + (unavailable ? ["--tutor-unavailable"] : [])
+        if largeText { app.launchArguments += ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"] }
         app.launch()
         addTeardownBlock { [self] in
             if (testRun?.failureCount ?? 0) > 0 {
@@ -39,16 +40,19 @@ final class TutorUITests: XCTestCase {
     }
     private func tap(_ element: XCUIElement, _ app: XCUIApplication) {
         XCTAssertTrue(element.waitForExistence(timeout: 6))
-        for _ in 0..<5 {
+        for _ in 0..<20 {
             if element.isHittable { break }
             let conversation = app.scrollViews["tutor.conversation"]
-            if conversation.exists { conversation.swipeUp() } else { app.swipeUp() }
+            if conversation.exists {
+                if element.frame.minY < conversation.frame.minY { conversation.swipeDown() }
+                else { conversation.swipeUp() }
+            } else { app.swipeUp() }
         }
         waitForReady(element); element.tap()
     }
     private func send(_ text: String, _ app: XCUIApplication) {
         let field = app.textFields["tutor.composer"].exists ? app.textFields["tutor.composer"] : app.textViews["tutor.composer"]
-        XCTAssertTrue(field.waitForExistence(timeout: 4)); waitForReady(field); field.tap(); field.typeText(text)
+        XCTAssertTrue(field.waitForExistence(timeout: 4)); tap(field, app); field.typeText(text)
         tap(app.buttons["tutor.send"], app)
         let keyboardDismissed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: app.keyboards.firstMatch)
         XCTAssertEqual(XCTWaiter.wait(for: [keyboardDismissed], timeout: 5), .completed,
@@ -61,6 +65,11 @@ final class TutorUITests: XCTestCase {
     }
     private func requireMessage(_ sequence: Int, content: String, in app: XCUIApplication) {
         let row = message(sequence, in: app)
+        // Lazy rows outside the viewport are not necessarily in the accessibility tree.
+        for _ in 0..<20 {
+            if row.exists && row.isHittable { break }
+            app.scrollViews["tutor.conversation"].swipeDown()
+        }
         XCTAssertTrue(row.waitForExistence(timeout: 5))
         XCTAssertTrue(row.label.contains(content), "The persisted message must contain the submitted text")
         XCTAssertTrue(row.label.contains("You"), "The message must identify its learner sender")
@@ -175,6 +184,24 @@ final class TutorUITests: XCTestCase {
         let row = app.descendants(matching: .any).matching(identifier: "tutor.hint.H1").firstMatch
         XCTAssertTrue(row.waitForExistence(timeout: 5)); XCTAssertTrue(row.label.contains("Bilinmeyeni"))
         XCTAssertFalse(row.label.contains("x=4")); XCTAssertFalse(app.buttons["tutor.reveal.request"].label.isEmpty)
+    }
+
+    func testEnglishAccessibilitySizeComposerAndRetryRemainReachable() {
+        let app = open(failure: true, largeText: true)
+        send("Synthetic large text retry", app)
+        tap(app.buttons["tutor.retry"], app)
+        let row = message(1, in: app)
+        for _ in 0..<20 where !row.isHittable { app.scrollViews["tutor.conversation"].swipeDown() }
+        requireMessage(1, content: "Synthetic large text retry", in: app)
+        XCTAssertFalse(message(2, in: app).exists)
+    }
+    func testTurkishAccessibilitySizeComposerRemainsReachable() {
+        let app = open(turkish: true, largeText: true)
+        send("Sentetik büyük yazı", app)
+        let row = message(1, in: app)
+        for _ in 0..<20 where !row.isHittable { app.scrollViews["tutor.conversation"].swipeDown() }
+        XCTAssertTrue(row.label.contains("Sentetik büyük yazı"))
+        XCTAssertFalse(row.label.contains("tutor."))
     }
 
 }

@@ -202,3 +202,16 @@ assessment publication; a revoked/deleted owner cannot resurrect evidence. train
 Protected iOS drafts now carry source identity and optional final answer. Acknowledgement removes the draft and pending
 marker; an interrupted operation preserves the original key/source/payload. Rejected work remains a source-bound draft.
 Logout cleanup remains unchanged; no media, token, answer or raw work is added to logs/metric labels.
+
+## Sprint 7.2 structured artifact and local image evidence
+
+Structured work is DERIVED_LEARNING owned by the parent attempt. The existing account export includes structuredWork with
+original observations, reviewed text, versions and provenance; account/source deletion cascades through parent and revisions.
+Existing backup expiration applies; restoring a backup must honor existing deletion tombstones before serving data. No training
+export/eligibility or new external destination exists. Audit/metrics exclude raw text, images, account IDs and provider secrets.
+
+Native crop previews stay on the device, keyed by owner/problem/capture UUID, complete-file protected, excluded from backup,
+immutable for that key, and bounded to 2 MB each / 30 images. Cancelled reviews remove their unused preview. Existing account
+purge clears this directory along with drafts/pending work. These are local review aids, not server-owned original uploads;
+reinstallation/logout can remove previews while server transcription evidence remains. Gateway original images remain under
+existing problem-asset ownership/retention. The structured artifact does not duplicate image bytes or extend asset retention.

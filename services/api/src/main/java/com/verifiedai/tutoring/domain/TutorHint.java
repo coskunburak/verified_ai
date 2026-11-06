@@ -17,7 +17,8 @@ public record TutorHint(String schemaVersion, UUID id, UUID tutorSessionId, int 
         HintPolicy.validatePublication(level, language, content);
         return new TutorHint("tutor-hint-v1", UUID.randomUUID(), session, level.ordinal()+1, level, content, language,
             HintPolicy.VERSION, HintPolicy.COST_VERSION, HintPolicy.assistance(level), "ASSISTANCE_ONLY",
-            "DETERMINISTIC_NO_INFERENCE", "NO_DEBIT", previous.phase(), progress, "UNAVAILABLE", true, now, false);
+            "DETERMINISTIC_NO_INFERENCE", "NO_DEBIT", previous.phase(), progress, "UNAVAILABLE", true,
+            now.truncatedTo(java.time.temporal.ChronoUnit.MICROS), false);
     }
     @com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.ALWAYS)
     public record History(String schemaVersion, UUID tutorSessionId, List<TutorHint> hints,

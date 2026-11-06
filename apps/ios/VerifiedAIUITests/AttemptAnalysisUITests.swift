@@ -125,3 +125,29 @@ final class AttemptAnalysisUITests: XCTestCase {
         XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 6), .completed); item.tap()
     }
 }
+
+extension AttemptAnalysisUITests {
+    func testStructuredWorkEnglishAccessibilityAndUnassessedState() { structured(turkish: false) }
+    func testStructuredWorkTurkishAccessibilityAndUnassessedState() { structured(turkish: true) }
+    private func structured(turkish: Bool) {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--ui-testing", "--ui-testing-authenticated", "--solve-fixture", "--attempt-fixture", "--solve-reset",
+            "--solve-fixture-scope=" + UUID().uuidString, "-AppleLanguages", turkish ? "(tr)" : "(en)", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityM"]
+        app.launch(); defer { app.terminate() }
+        tap(app.buttons["history.session.00000000-0000-0000-0000-000000005401"], app)
+        tap(app.buttons["history.solve"], app); tap(app.buttons["attempt.open"], app)
+        let editor = app.textViews["attempt.editor"]
+        tap(editor, app); editor.typeText("x=4")
+        tap(app.buttons["attempt.keyboard.done"], app)
+        for _ in 0..<6 { if app.buttons["attempt.work.start"].isHittable { break }; app.swipeDown() }
+        tap(app.buttons["attempt.work.start"], app)
+        for _ in 0..<8 { if app.buttons["attempt.submit"].isHittable { break }; app.swipeUp() }
+        tap(app.buttons["attempt.submit"], app)
+        let saved = app.descendants(matching: .any)["attempt.work.saved"].firstMatch
+        for _ in 0..<8 { if saved.isHittable { break }; app.swipeUp() }
+        XCTAssertTrue(saved.waitForExistence(timeout: 5))
+        XCTAssertTrue(saved.label.contains(turkish ? "değerlendirilmedi" : "not assessed"))
+        XCTAssertFalse(app.staticTexts["VERIFIED"].exists)
+    }
+}

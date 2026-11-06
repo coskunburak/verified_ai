@@ -40,6 +40,29 @@ import XCTest
         model.changeViewport(model.viewport.scaled(0.5)); await settled(model)
         XCTAssertEqual(model.viewport.xMin, -5)
     }
+    func testRepeatedSelectionMatchesNearestVisibleSample() async throws {
+        let value = try fixture()
+        let model = MathVisualizationViewModel(api: FixtureVisualizationAPI(), problem: value.problemId, ownsAccount: { true })
+        model.load(); await settled(model)
+        let points = model.visibleSegments.flatMap(\.points)
+        XCTAssertFalse(points.isEmpty)
+        for index in 0..<100 {
+            let x = -10.0 + Double(index) / 5.0
+            model.selectedX = x
+            let expected = points.min { abs($0.x - x) < abs($1.x - x) }
+            XCTAssertEqual(model.selectedSample?.x, expected?.x)
+            XCTAssertEqual(model.selectedSample?.y, expected?.y)
+        }
+        measure {
+            for index in 0..<100 {
+                model.selectedX = Double(index) / 10.0
+                _ = model.selectedSample
+            }
+        }
+        model.showFunction = false; model.showDerivative = false
+        XCTAssertNil(model.selectedSample)
+    }
+
     func testCancellationAndAccountFenceDiscardLateResponse() async throws {
         let value = try fixture(); var owned = true
         let model = MathVisualizationViewModel(api: FixtureVisualizationAPI(delay: 100_000_000), problem: value.problemId, ownsAccount: { owned })

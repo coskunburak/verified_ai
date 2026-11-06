@@ -117,3 +117,13 @@ private mastery/passport. UNKNOWN domain requires explicit reviewed REAL scope; 
 General handwriting/provider coverage, OCR confidence calibration, 85% recall, latency and expert pedagogy remain
 NOT_EVALUATED. New execution status is NOT_EXECUTED / PENDING_OWNER; default-off flags do not imply release approval.
 See the Sprint 6.7 implementation map for every execution path, bounded math scope and remaining runtime dependencies.
+
+## Sprint 7.2 representation boundary
+
+Raw OCR is never replaced by corrected text; observation links survive reordering and user-directed segmentation. Every
+recognition line starts unconfirmed. Low confidence prompts explicit review, but high confidence cannot bypass it. A saved
+unconfirmed/ambiguous/multiline step remains REVIEW_REQUIRED; supported confirmed syntax can be rendered without claiming
+mathematical correctness. Denominators, roots/log arguments, powers, signs and relations remain in the unsimplified syntax tree
+and original text. Unsupported notation is preserved. A final answer is explicit user intent, never inferred from the last line.
+This sprint's route does not call verification, classify errors, select a first wrong step or publish mastery. Those consumers
+must separately satisfy Sprint 7.3 authority and freshness rules. Structured work stays trainingEligible=false.

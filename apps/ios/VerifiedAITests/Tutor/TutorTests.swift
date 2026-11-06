@@ -24,6 +24,7 @@ final class TutorTests: XCTestCase {
         let restored = TutorViewModel(owner: owner, problem: problem, service: api, store: store, network: network, ownsAccount: { true })
         restored.resume(); await settle(restored)
         XCTAssertEqual(restored.pending?.key, key)
+        XCTAssertEqual(restored.draft, "Synthetic question")
         restored.retry(); await settle(restored)
         XCTAssertEqual(restored.messages.map(\.sequenceNumber), [1])
         XCTAssertNil(restored.pending)
@@ -136,7 +137,11 @@ final class TutorTests: XCTestCase {
         XCTAssertEqual(model.pending?.intent, .attemptStep)
         model.suspend()
         let restored = TutorViewModel(owner: owner, problem: problem, service: api, store: pending, network: TutorTestNetwork(), ownsAccount: { true })
-        restored.resume(); await settle(restored); restored.retry(); await settle(restored)
+        restored.resume(); await settle(restored)
+        XCTAssertEqual(restored.draft, "Synthetic step")
+        XCTAssertEqual(restored.selectedIntent, .attemptStep)
+        XCTAssertNotNil(restored.pending, "Resume must not automatically submit unresolved work")
+        restored.retry(); await settle(restored)
         XCTAssertEqual(restored.messages.count, 1); XCTAssertEqual(restored.turns.count, 1)
         let turn = try XCTUnwrap(restored.turns.first)
         XCTAssertEqual(turn.role, "TUTOR"); XCTAssertTrue(turn.uncertain)
@@ -303,6 +308,22 @@ final class TutorTests: XCTestCase {
         for _ in 0..<20 { await Task.yield() }
         XCTAssertNil(model.hintHistory); XCTAssertNil(model.session); XCTAssertFalse(model.busy)
     }
+    func testBoundedHundredMessageTranscriptSurvivesBackgroundRefresh() async throws {
+        let api = FixtureTutorAPI(), problem = UUID()
+        let session = try await api.create(problem: problem, key: "synthetic-create")
+        for index in 0..<100 {
+            _ = try await api.append(problem: problem, session: session.id, key: "synthetic-\(index)", content: "Synthetic line \(index)")
+        }
+        let model = TutorViewModel(owner: UUID(), problem: problem, service: api, store: store(), network: TutorTestNetwork(), ownsAccount: { true })
+        model.resume(); await settle(model)
+        XCTAssertEqual(model.messages.map(\.sequenceNumber), Array(1...100))
+        model.draft = "Unsent synthetic draft"
+        model.suspend(); model.resume(); await settle(model)
+        XCTAssertEqual(model.messages.count, 100)
+        XCTAssertEqual(model.draft, "Unsent synthetic draft")
+        XCTAssertNil(model.pending)
+    }
+
     func testAssistantAndFutureSchemasAreRejected() throws {
         let session = UUID()
         let message = TutorMessage(schemaVersion: "tutor-message-v1", id: UUID(), tutorSessionId: session, role: "ASSISTANT", sequenceNumber: 1, content: "Synthetic", createdAt: Date().ISO8601Format())

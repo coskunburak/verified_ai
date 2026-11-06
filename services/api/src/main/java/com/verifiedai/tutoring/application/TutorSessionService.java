@@ -51,7 +51,7 @@ public class TutorSessionService {
                 if(ex.code()==ApiErrorCode.SOLVE_SOURCE_NOT_READY) throw TutorPolicy.failure(ApiErrorCode.TUTOR_SOURCE_NOT_READY,HttpStatus.CONFLICT);
                 throw ex;
             }
-            var context=contexts.capture(owner); var now=clock.instant();
+            var context=contexts.capture(owner); var now=now();
             var session=new TutorSession(TutorPolicy.SCHEMA,UUID.randomUUID(),problem,source.canonicalId(),source.canonicalRevision(),
                 source.parseId(),source.parseRevision(),source.primarySkillId(),context.schemaVersion(),context.profileVersion(),
                 context.explanationDepth(),context.language(),context.mastery(),TutorPolicy.SAFETY,TutorPolicy.Status.ACTIVE,
@@ -82,7 +82,7 @@ public class TutorSessionService {
                 count("replay"); return replay.get();
             }
             TutorPolicy.append(session.status(),current(owner,session).sourceCurrent(),session.messageCount()+store.replyCount(owner,id),messageLimit);
-            var message=store.append(owner,session,key,content,clock.instant()); count("message_accepted"); return message;
+            var message=store.append(owner,session,key,content,now()); count("message_accepted"); return message;
         });
     }
     @Transactional(timeout=5)
@@ -118,7 +118,7 @@ public class TutorSessionService {
             // No trusted step-evidence contract exists: never infer correctness from a reference or learner text.
             var decision=SocraticPolicy.decide(previous,intent,SocraticPolicy.Evidence.UNKNOWN);
             String language="tr".equals(session.language()) ? "tr" : "en";
-            var now=clock.instant();
+            var now=now();
             var learner=store.append(owner,session,key,content,now);
             var turn=TutorTurn.create(learner,previous,intent,decision,language,now);
             store.insertTurn(owner,turn);
@@ -161,8 +161,7 @@ public class TutorSessionService {
                 throw new ApiProblemException(HttpStatus.SERVICE_UNAVAILABLE,ApiErrorCode.TUTOR_CAPABILITY_UNAVAILABLE,
                     "Hints unavailable for this source",true,"REVIEW");
             // PostgreSQL TIMESTAMPTZ retains microseconds: first response and durable replay must match exactly.
-            var hint=TutorHint.create(id,level,"tr".equals(session.language()) ? "tr" : "en",previous,next,
-                clock.instant().truncatedTo(java.time.temporal.ChronoUnit.MICROS));
+            var hint=TutorHint.create(id,level,"tr".equals(session.language()) ? "tr" : "en",previous,next,now());
             store.insertHint(owner,key,hint);
             metrics.counter("tutor.hint.delivered","level",level.name()).increment();
             count("hint_delivered"); return hint;
@@ -186,7 +185,7 @@ public class TutorSessionService {
     public TutorSession close(UUID owner, UUID problem, UUID id) {
         return operation("close",owner,problem,()-> {
             var session=owned(owner,problem,id);
-            if(session.status()==TutorPolicy.Status.ACTIVE) { store.close(owner,id,clock.instant()); count("closed"); }
+            if(session.status()==TutorPolicy.Status.ACTIVE) { store.close(owner,id,now()); count("closed"); }
             else { count("replay"); }
             return current(owner,owned(owner,problem,id));
         });
@@ -214,4 +213,5 @@ public class TutorSessionService {
         } finally { metrics.timer("tutor.request","operation",operation).record(System.nanoTime()-start,TimeUnit.NANOSECONDS); }
     }
     private void count(String outcome) { metrics.counter("tutor.lifecycle","outcome",outcome).increment(); }
+    private Instant now() { return clock.instant().truncatedTo(java.time.temporal.ChronoUnit.MICROS); }
 }

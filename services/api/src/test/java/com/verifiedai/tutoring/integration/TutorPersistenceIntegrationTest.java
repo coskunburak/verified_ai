@@ -138,4 +138,37 @@ class TutorPersistenceIntegrationTest extends PostgresIntegrationTestSupport {
         assertThatThrownBy(()->tx.execute(status->limited.create(owner,problem,"limited-key")))
             .isInstanceOfSatisfying(ApiProblemException.class,e->assertThat(e.code()).isEqualTo(ApiErrorCode.RATE_LIMIT_EXCEEDED));
     }
+    @Test void nanosecondClockSessionAndMessageCreationMatchDatabaseAndReplayExactly() {
+        var instant1 = java.time.Instant.parse("2026-11-05T13:05:44.544401530Z");
+        var fixed1 = new TutorSessionService(sources, contexts, new TutorStore(jdbc), Clock.fixed(instant1, java.time.ZoneOffset.UTC),
+            (policy, key) -> RateLimitDecision.allow(), new io.micrometer.core.instrument.simple.SimpleMeterRegistry(), 30, 100);
+        var session = tx.execute(status -> fixed1.create(owner, problem, "precise-session-key"));
+        assertThat(session.createdAt()).isEqualTo(java.time.Instant.parse("2026-11-05T13:05:44.544401Z"));
+        assertThat(session.updatedAt()).isEqualTo(java.time.Instant.parse("2026-11-05T13:05:44.544401Z"));
+        var replayedSession = tx.execute(status -> fixed1.create(owner, problem, "precise-session-key"));
+        assertThat(replayedSession).isEqualTo(session);
+        var dbSession = new TutorStore(jdbc).get(owner, problem, session.id()).orElseThrow();
+        assertThat(dbSession.createdAt()).isEqualTo(session.createdAt());
+        assertThat(dbSession.updatedAt()).isEqualTo(session.updatedAt());
+
+        var instant2 = java.time.Instant.parse("2026-11-05T13:05:44.999999999Z");
+        var fixed2 = new TutorSessionService(sources, contexts, new TutorStore(jdbc), Clock.fixed(instant2, java.time.ZoneOffset.UTC),
+            (policy, key) -> RateLimitDecision.allow(), new io.micrometer.core.instrument.simple.SimpleMeterRegistry(), 30, 100);
+        var firstMsg = tx.execute(status -> fixed2.append(owner, problem, session.id(), "boundary-msg-key", "Boundary question"));
+        assertThat(firstMsg.createdAt()).isEqualTo(java.time.Instant.parse("2026-11-05T13:05:44.999999Z"));
+        var replayedMsg = tx.execute(status -> fixed2.append(owner, problem, session.id(), "boundary-msg-key", "Boundary question"));
+        assertThat(replayedMsg).isEqualTo(firstMsg);
+        var dbMessages = new TutorStore(jdbc).messages(owner, session.id(), 0, 10);
+        assertThat(dbMessages).contains(firstMsg);
+
+        var restarted = new TutorSessionService(sources, contexts, new TutorStore(jdbc), Clock.systemUTC(),
+            (policy, key) -> RateLimitDecision.allow(), new io.micrometer.core.instrument.simple.SimpleMeterRegistry(), 30, 100);
+        var restartedReplay = tx.execute(status -> restarted.append(owner, problem, session.id(), "boundary-msg-key", "Boundary question"));
+        assertThat(restartedReplay).isEqualTo(firstMsg);
+
+        var closed = tx.execute(status -> fixed2.close(owner, problem, session.id()));
+        assertThat(closed.updatedAt()).isEqualTo(java.time.Instant.parse("2026-11-05T13:05:44.999999Z"));
+        var replayedClosed = tx.execute(status -> fixed2.close(owner, problem, session.id()));
+        assertThat(replayedClosed.updatedAt()).isEqualTo(closed.updatedAt());
+    }
 }

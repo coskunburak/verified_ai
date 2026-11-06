@@ -19,7 +19,7 @@ struct AnalyzeMyWorkCaptureView: View {
                 if let capability = viewModel.context?.handwriting,
                    ["NATIVE_REVIEW", "NATIVE_REVIEW_AND_GATEWAY"].contains(capability), let capture = viewModel.capture {
                     Button("attempt.photo.open") { gatewayCapture = false; capture.capture.open(); showingCapture = true }
-                        .disabled(viewModel.busy || viewModel.pending != nil)
+                        .disabled(viewModel.editingLocked)
                         .accessibilityIdentifier("attempt.photo.open")
                 } else if viewModel.context != nil {
                     Text("attempt.handwriting.unavailable")
@@ -27,21 +27,27 @@ struct AnalyzeMyWorkCaptureView: View {
                 }
                 if viewModel.context?.handwriting == "NATIVE_REVIEW_AND_GATEWAY", let capture = viewModel.capture {
                     Button("attempt.photo.gateway") { gatewayCapture = true; capture.upload.cancel(); capture.capture.open(); showingCapture = true }
-                        .disabled(viewModel.busy || viewModel.pending != nil)
+                        .disabled(viewModel.editingLocked)
                 }
+                if viewModel.context?.structuredWorkEnabled == true && viewModel.workDraft == nil {
+                    Button("attempt.work.start") { viewModel.startStructured() }
+                        .disabled(viewModel.editingLocked).accessibilityIdentifier("attempt.work.start")
+                }
+                if viewModel.workDraft == nil {
                 Toggle("attempt.answer.mode", isOn: $viewModel.answerMode)
-                    .disabled(viewModel.busy || viewModel.pending != nil).accessibilityIdentifier("attempt.answer.mode")
+                    .disabled(viewModel.editingLocked).accessibilityIdentifier("attempt.answer.mode")
                 if viewModel.answerMode {
                     Text("attempt.answer.scope")
                     TextField("attempt.answer.label", text: $viewModel.finalAnswer)
                         .focused($answerFocused).submitLabel(.done).onSubmit { answerFocused = false }
                         .textFieldStyle(.roundedBorder).frame(minHeight: 44).autocorrectionDisabled().textInputAutocapitalization(.never)
-                        .disabled(viewModel.busy || viewModel.pending != nil)
+                        .disabled(viewModel.editingLocked)
                         .accessibilityLabel("attempt.answer.label").accessibilityIdentifier("attempt.answer.input")
                     Text("attempt.answer.reasoningOptional")
                 } else {
                     Toggle("attempt.domain.confirmReal", isOn: $viewModel.realDomainConfirmed)
-                        .disabled(viewModel.busy || viewModel.pending != nil)
+                        .disabled(viewModel.editingLocked)
+                }
                 }
                 if viewModel.draftNeedsReview {
                     Text("attempt.draft.sourceChanged")
@@ -50,10 +56,11 @@ struct AnalyzeMyWorkCaptureView: View {
                 }
                 if let tutor { NavigationLink("tutor.title") { TutorView(viewModel: tutor) } }
                 if viewModel.context?.enabled == false { Text("attempt.unavailable") }
-                AttemptStepEditorView(text: $viewModel.draft, locked: viewModel.pending != nil || viewModel.busy)
+                if viewModel.workDraft != nil { AttemptStructuredEditorView(model: viewModel) }
+                else { AttemptStepEditorView(text: $viewModel.draft, locked: viewModel.editingLocked) }
                 if viewModel.context != nil && !viewModel.payloadFits { Text("attempt.payloadTooLarge").foregroundStyle(.secondary) }
-                Button(LocalizedStringKey(viewModel.answerMode ? "attempt.answer.review" : "attempt.submit")) {
-                    if viewModel.answerMode { reviewingSubmission = true } else { viewModel.submit() }
+                Button(LocalizedStringKey(viewModel.workDraft != nil ? "attempt.work.save" : viewModel.answerMode ? "attempt.answer.review" : "attempt.submit")) {
+                    if viewModel.answerMode && viewModel.workDraft == nil { reviewingSubmission = true } else { viewModel.submit() }
                 }
                     .buttonStyle(.borderedProminent).frame(minHeight: 44)
                     .disabled(!viewModel.canSubmit).accessibilityIdentifier("attempt.submit")
@@ -62,11 +69,16 @@ struct AnalyzeMyWorkCaptureView: View {
                     Label(LocalizedStringKey(error), systemImage: "exclamationmark.triangle")
                         .accessibilityIdentifier("attempt.error")
                 }
-                Button(LocalizedStringKey(viewModel.pending == nil ? "attempt.refresh" : "attempt.retry.button")) { viewModel.retry() }
+                Button(LocalizedStringKey(viewModel.pending == nil && viewModel.pendingWork == nil ? "attempt.refresh" : "attempt.retry.button")) { viewModel.retry() }
                     .frame(minHeight: 44).disabled(viewModel.busy).accessibilityIdentifier("attempt.retry")
                 if let result = viewModel.result {
                     if let current = viewModel.context?.source, current != result.source { Text("attempt.history.sourceChanged") }
-                    AttemptAnalysisResultsView(attempt: result)
+                    if let work = viewModel.workResult, work.attemptId == result.id {
+                        AttemptStructuredWorkView(work: work)
+                        if viewModel.context?.source == work.source && viewModel.context?.structuredWorkEnabled == true {
+                            Button("attempt.work.revise") { viewModel.reviseStructured() }.disabled(viewModel.editingLocked)
+                        }
+                    } else { AttemptAnalysisResultsView(attempt: result) }
                     if result.finalAnswer == nil, let learning = viewModel.learning { AttemptLearningPanel(model: learning, attempt: result) }
                 }
                 ForEach(viewModel.history) { attempt in
@@ -94,7 +106,7 @@ struct AnalyzeMyWorkCaptureView: View {
             }
         }
         .sheet(isPresented: Binding(get: { !viewModel.recognizedLines.isEmpty && !showingCapture }, set: { _ in })) {
-            AttemptStepReviewView(lines: $viewModel.recognizedLines, preview: viewModel.reviewPreview, confirm: { viewModel.acceptRecognizedLines() }, cancel: { viewModel.cancelReview() })
+            AttemptStepReviewView(lines: $viewModel.recognizedLines, preview: viewModel.reviewPreview, confirm: { viewModel.acceptRecognizedLines() }, cancel: { viewModel.cancelReview() }, structured: viewModel.context?.structuredWorkEnabled == true)
         }
         .sheet(isPresented: $reviewingSubmission) {
             NavigationStack {
@@ -112,6 +124,7 @@ struct AnalyzeMyWorkCaptureView: View {
         .scrollDismissesKeyboard(.interactively)
         .navigationTitle("attempt.title")
         .task { viewModel.resume() }
+        .onChange(of: viewModel.workDraft) { _, _ in viewModel.saveDraft() }
         .onChange(of: viewModel.draft) { _, _ in viewModel.saveDraft() }
         .onChange(of: viewModel.finalAnswer) { _, _ in viewModel.saveDraft() }
         .onChange(of: viewModel.answerMode) { _, _ in viewModel.saveDraft() }

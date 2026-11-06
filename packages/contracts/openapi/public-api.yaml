@@ -213,6 +213,54 @@ paths:
         "422": {description: Invalid strict request}
         "429": {description: Account rate limit}
         "503": {description: Feature disabled or verified artifact unavailable}
+  /api/v1/problem-sessions/{sessionId}/attempts/structured-work:
+    parameters:
+      - {name: sessionId, in: path, required: true, schema: {type: string, format: uuid}}
+    post:
+      security: [{bearerAuth: []}]
+      operationId: submitStructuredAttemptWork
+      summary: Save immutable reviewed syntax and raw transcription without mathematical assessment
+      description: Default-off rollout. 16 KiB UTF-8; 12 steps; exact same-key replay survives rollback/source changes. Different payload conflicts. Native provenance is client-attested; gateway metadata is checked against owned recognition. No paid inference or mastery publication.
+      parameters:
+        - {name: Idempotency-Key, in: header, required: true, schema: {type: string, pattern: '^[A-Za-z0-9_-]{8,128}$'}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '../../schemas/attempt-structured-work-request-v1.schema.json'}
+      responses:
+        '200':
+          description: Durable artifact, including explicit unsupported or review-required steps
+          content:
+            application/json:
+              schema: {$ref: '../../schemas/attempt-structured-work-v1.schema.json'}
+        '401': {$ref: '#/components/responses/Problem'}
+        '403': {$ref: '#/components/responses/Problem'}
+        '404': {$ref: '#/components/responses/Problem'}
+        '409': {$ref: '#/components/responses/Problem'}
+        '413': {$ref: '#/components/responses/Problem'}
+        '422': {$ref: '#/components/responses/Problem'}
+        '429': {$ref: '#/components/responses/Problem'}
+        '503': {$ref: '#/components/responses/Problem'}
+  /api/v1/problem-sessions/{sessionId}/attempts/{attemptId}/structured-work:
+    parameters:
+      - {name: sessionId, in: path, required: true, schema: {type: string, format: uuid}}
+      - {name: attemptId, in: path, required: true, schema: {type: string, format: uuid}}
+    get:
+      security: [{bearerAuth: []}]
+      operationId: readStructuredAttemptWork
+      summary: Read owned historical syntax, including while creation is disabled
+      description: Returns 404 for legacy attempts without an artifact. Does not derive, backfill, assess or modify historical evidence.
+      responses:
+        '200':
+          description: Exact immutable structured work
+          content:
+            application/json:
+              schema: {$ref: '../../schemas/attempt-structured-work-v1.schema.json'}
+        '401': {$ref: '#/components/responses/Problem'}
+        '403': {$ref: '#/components/responses/Problem'}
+        '404': {$ref: '#/components/responses/Problem'}
+        '429': {$ref: '#/components/responses/Problem'}
   /api/v1/problem-sessions/{sessionId}/attempts/extractions:
     parameters:
       - {name: sessionId, in: path, required: true, schema: {type: string, format: uuid}}
@@ -2595,6 +2643,11 @@ components:
       bearerFormat: JWT
 
   responses:
+    Problem:
+      description: "Stable Problem Details: 401 authentication; 403 ACCOUNT_NOT_ACTIVE; 404 RESOURCE_FORBIDDEN/ATTEMPT_NOT_FOUND; 409 ATTEMPT_STALE_SOURCE/OPTIMISTIC_CONFLICT/IDEMPOTENCY_KEY_REUSED/ATTEMPT_CAPACITY_EXCEEDED; 413 REQUEST_TOO_LARGE; 422 REQUEST_VALIDATION_FAILED; 429 RATE_LIMIT_EXCEEDED; 503 ATTEMPT_UNAVAILABLE. Retry uncertain failures with the same key and exact body. Includes traceId."
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/ProblemDetails'}
     TutorFailure:
       description: "Stable Problem Details: 400 REQUEST_VALIDATION_FAILED/IDEMPOTENCY_KEY_REQUIRED; 401 authentication; 403 ACCOUNT_NOT_ACTIVE; 404 TUTOR_NOT_FOUND/RESOURCE_FORBIDDEN (foreign and absent indistinguishable); 409 TUTOR_SOURCE_NOT_READY/TUTOR_SOURCE_STALE/TUTOR_SESSION_CLOSED/TUTOR_CAPACITY_EXCEEDED/IDEMPOTENCY_KEY_REUSED; 413 REQUEST_TOO_LARGE; 422 REQUEST_VALIDATION_FAILED; 429 RATE_LIMIT_EXCEEDED; 503 TEMPORARY_UNAVAILABLE. Existing correlation/trace identifiers apply. Retry only uncertain/temporary failures with the same key and payload."
       content:

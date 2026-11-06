@@ -1,4 +1,6 @@
 import XCTest
+import SwiftUI
+import UIKit
 @testable import VerifiedAI
 
 final class MathPresentationTests: XCTestCase {
@@ -60,4 +62,42 @@ final class MathPresentationTests: XCTestCase {
         for _ in 0..<7 { wide = .binary(.add, wide, wide) }
         XCTAssertThrowsError(try wide.validate())
     }
+    func testAttemptSpeechGroupsUnaryMinusAndNegativePowerBase() throws {
+        func node(_ json: String) throws -> AttemptJSON { try JSONDecoder().decode(AttemptJSON.self, from: Data(json.utf8)) }
+        let power = try node(#"{"kind":"BINARY","operator":"POWER","left":{"kind":"NUMBER","value":"-2"},"right":{"kind":"NUMBER","value":"2"}}"#)
+        let minus = try node(#"{"kind":"UNARY","operator":"NEGATE","operand":{"kind":"BINARY","operator":"POWER","left":{"kind":"NUMBER","value":"2"},"right":{"kind":"NUMBER","value":"2"}}}"#)
+        XCTAssertNotEqual(AttemptMathPresentation.spoken(power), AttemptMathPresentation.spoken(minus))
+        XCTAssertFalse(AttemptMathPresentation.spoken(power).contains("attempt.math."))
+        XCTAssertFalse(AttemptMathPresentation.spoken(power).contains("\\"))
+    }
+    func testUnsupportedSpeechNeverLeaksInternalCodesOrLatex() throws {
+        for input in [#"{"kind":"FUTURE_INTERNAL_CODE"}"#, #"{"kind":"UNARY","operator":"FUTURE","operand":{"kind":"NUMBER","value":"1"}}"#, #"{"kind":"VARIABLE","symbol":"\\frac{1}{2}"}"#, #"{"kind":"FUNCTION","function":"EXEC","args":[]}"#] {
+            let node = try JSONDecoder().decode(AttemptJSON.self, from: Data(input.utf8))
+            XCTAssertEqual(AttemptMathPresentation.spoken(node), NSLocalizedString("attempt.math.unsupported", comment: ""))
+        }
+        XCTAssertEqual(AttemptMathPresentation.spoken(.null), NSLocalizedString("attempt.math.unsupported", comment: ""))
+    }
+    func testIntervalSpeechPreservesExcludedEndpoints() throws {
+        let node = try JSONDecoder().decode(AttemptJSON.self, from: Data(#"{"kind":"INTERVAL","left":{"kind":"NUMBER","value":"-1"},"right":{"kind":"NUMBER","value":"2"},"leftOpen":true,"rightOpen":false}"#.utf8))
+        let speech = AttemptMathPresentation.spoken(node)
+        XCTAssertTrue(speech.contains(NSLocalizedString("attempt.math.LEFT_OPEN", comment: "")))
+        XCTAssertTrue(speech.contains(NSLocalizedString("attempt.math.RIGHT_CLOSED", comment: "")))
+        XCTAssertTrue(speech.contains(NSLocalizedString("attempt.math.NEGATE", comment: "")))
+    }
+    func testBoundedRepeatedMathSpeechPerformance() {
+        let expression = MathExpression.binary(.divide, .binary(.power, x, two), .binary(.add, x, one))
+        measure {
+            for _ in 0..<100 { _ = MathPresentation.expression(expression, spoken: true) }
+        }
+    }
+
+    @MainActor func testHighContrastStatesUseReadableSemanticFallbacks() {
+        let light = UITraitCollection(traitsFrom: [UITraitCollection(userInterfaceStyle: .light), UITraitCollection(accessibilityContrast: .high)])
+        let dark = UITraitCollection(traitsFrom: [UITraitCollection(userInterfaceStyle: .dark), UITraitCollection(accessibilityContrast: .high)])
+        for color in [ColorTokens.warning, ColorTokens.success, ColorTokens.accent, ColorTokens.action] {
+            XCTAssertEqual(UIColor(color).resolvedColor(with: light), UIColor.black)
+            XCTAssertEqual(UIColor(color).resolvedColor(with: dark), UIColor.white)
+        }
+    }
+
 }

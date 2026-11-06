@@ -44,23 +44,39 @@ enum AttemptMathPresentation {
         }
     }
     static func spoken(_ n: AttemptJSON, depth: Int = 0) -> String {
-        guard depth < 32 else { return "" }
-        func child(_ key: String) -> String { spoken(n[key], depth: depth + 1) }
-        func word(_ key: String) -> String { NSLocalizedString("attempt.math." + key, comment: "Spoken mathematical structure") }
+        guard latex(n, depth: depth) != nil else {
+            return NSLocalizedString("attempt.math.unsupported", comment: "Unsupported speech")
+        }
+        return speech(n, depth: depth)
+    }
+    private static func speech(_ n: AttemptJSON, depth: Int = 0) -> String {
+        guard depth < 32 else { return NSLocalizedString("attempt.math.unsupported", comment: "Unsupported speech") }
+        func child(_ key: String) -> String { speech(n[key], depth: depth + 1) }
+        func word(_ key: String) -> String {
+            let resource = "attempt.math." + key
+            let value = NSLocalizedString(resource, comment: "Spoken mathematical structure")
+            return value == resource ? NSLocalizedString("attempt.math.unsupported", comment: "Unsupported speech") : value
+        }
+        func group(_ value: String) -> String { word("OPEN") + " " + value + " " + word("CLOSE") }
         switch n["kind"].text {
-        case "NUMBER": return n["value"].text
+        case "NUMBER": return n["value"].text.replacingOccurrences(of: "-", with: word("NEGATE") + " ")
         case "VARIABLE": return n["symbol"].text
         case "CONSTANT": return word(n["value"].text)
         case "EXPRESSION": return child("expression")
         case "RELATION": return child("left") + " " + word(n["relation"].text) + " " + child("right")
-        case "UNARY": return word("NEGATE") + " " + child("operand")
-        case "BINARY": return word("OPEN") + " " + child("left") + " " + word(n["operator"].text) + " " + child("right") + " " + word("CLOSE")
-        case "FUNCTION": return word(n["function"].text) + " " + n["args"].items.map { spoken($0, depth: depth + 1) }.joined(separator: ", ")
-        case "FINITE_SET", "UNION", "INTERSECTION": return word(n["kind"].text) + " " + n["args"].items.map { spoken($0, depth: depth + 1) }.joined(separator: ", ")
+        case "UNARY": return word("NEGATE") + " " + group(child("operand"))
+        case "BINARY": return group(group(child("left")) + " " + word(n["operator"].text) + " " + group(child("right")))
+        case "FUNCTION": return word(n["function"].text) + " " + n["args"].items.map { group(speech($0, depth: depth + 1)) }.joined(separator: ", ")
+        case "FINITE_SET", "UNION", "INTERSECTION": return word(n["kind"].text) + " " + n["args"].items.map { speech($0, depth: depth + 1) }.joined(separator: ", ")
         case "INTERVAL": return word("INTERVAL") + " " + child("left") + ", " + child("right") + ", " + word(n["leftOpen"].flag ? "LEFT_OPEN" : "LEFT_CLOSED") + ", " + word(n["rightOpen"].flag ? "RIGHT_OPEN" : "RIGHT_CLOSED")
-        case "PIECEWISE": return word("PIECEWISE") + " " + n["branches"].items.map { spoken($0["expression"], depth: depth + 1) + ", " + spoken($0["condition"], depth: depth + 1) }.joined(separator: "; ")
-        default: return word(n["kind"].text.isEmpty ? "OTHERWISE" : n["kind"].text)
+        case "PIECEWISE": return word("PIECEWISE") + " " + n["branches"].items.map { speech($0["expression"], depth: depth + 1) + ", " + conditionSpeech($0["condition"], depth: depth + 1) }.joined(separator: "; ")
+        case "EMPTY_SET", "REALS": return word(n["kind"].text)
+        default: return word("unsupported")
         }
+    }
+    private static func conditionSpeech(_ node: AttemptJSON, depth: Int) -> String {
+        if case .null = node { return NSLocalizedString("attempt.math.OTHERWISE", comment: "Otherwise branch") }
+        return speech(node, depth: depth)
     }
     private static func variableLatex(_ n: AttemptJSON, depth: Int = 0) -> String? {
         guard depth < 32 else { return nil }
@@ -97,7 +113,7 @@ enum AttemptMathPresentation {
         case "RELATION":
             guard let a = child("left"), let b = child("right"), let op = ["EQUALS":"=", "NOT_EQUALS":"\\ne", "LESS_THAN":"<", "LESS_THAN_OR_EQUAL":"\\leq", "GREATER_THAN":">", "GREATER_THAN_OR_EQUAL":"\\geq", "MEMBER_OF":"\\in"][n["relation"].text] else { return nil }
             value = a + op + b
-        case "UNARY": guard let a = child("operand") else { return nil }; value = "-\\left(" + a + "\\right)"
+        case "UNARY": guard n["operator"].text == "NEGATE", let a = child("operand") else { return nil }; value = "-\\left(" + a + "\\right)"
         case "BINARY":
             guard let a = child("left"), let b = child("right") else { return nil }
             switch n["operator"].text {
@@ -161,7 +177,10 @@ struct AttemptMathView: View {
                 NativeMathLabel(latex: latex, fallback: fallback, pointSize: pointSize)
                     .fixedSize().padding(.vertical, 4)
             }.accessibilityElement(children: .ignore).accessibilityLabel(Text(verbatim: AttemptMathPresentation.spoken(node)))
-        } else { Text(verbatim: fallback).font(.body.monospaced()).textSelection(.enabled) }
+        } else {
+            Text(verbatim: fallback).font(.body.monospaced()).textSelection(.enabled)
+                .accessibilityLabel("attempt.math.unsupported")
+        }
     }
 }
 
@@ -182,7 +201,11 @@ struct NativeMathLabel: UIViewRepresentable {
     }
     func makeUIView(context: Context) -> Container { Container(frame: .zero) }
     func updateUIView(_ view: Container, context: Context) {
-        view.math.latex = latex; view.math.fontSize = pointSize; view.math.textColor = .label
+        // SwiftMath reparses when latex is assigned. Keep only this view's current content;
+        // no cross-account/global mathematical cache is introduced.
+        if view.math.latex != latex { view.math.latex = latex }
+        if view.math.fontSize != pointSize { view.math.fontSize = pointSize }
+        view.math.textColor = .label
         view.math.isHidden = view.math.error != nil; view.plain.isHidden = !view.math.isHidden
         view.plain.text = fallback; view.plain.font = .monospacedSystemFont(ofSize: pointSize, weight: .regular)
         view.invalidateIntrinsicContentSize()

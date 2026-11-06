@@ -212,3 +212,21 @@ REQ-VIS-001 through REQ-VIS-010 map to V01–V10 in the Sprint 6.9 functional co
 
 The exhaustive source-versus-acceptance matrix is
 `sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.1_FUNCTIONAL_COMPLETION_MATRIX.md`.
+
+## Sprint 7.2 source traceability
+
+| Existing requirement | Source | Owner evidence |
+|---|---|---|
+| Existing REQ-ATTEMPT-001 | AttemptWorkInput / AttemptStructuredWork / AttemptWorkService | AttemptWorkNormalizerTest, AttemptWorkIntegrationTest, AttemptStructuredWorkTests |
+| Existing REQ-TRUST-001 | AttemptWorkNormalizer / AttemptStructuredWorkView | synthetic structured-work goldens, XCTest unassessed state |
+| Existing REQ-AUTH-001 | SolveSourceAccess / strict filter / AttemptWorkController | AttemptWorkControllerTest, AttemptWorkProvenanceTest |
+| Existing REQ-PRIV-001 | StudentAttemptPrivacyLifecycleContributor / V034 / protected previews | staleSourceBolaAndDeletedAccountCannotPublish, native preview purge XCTest |
+| Existing REQ-DATA-001 | V034 immutable derived artifact | V033 upgrade, revision/replay/immutability PostgreSQL cases |
+| Existing REQ-EVAL-001 | Sprint 7.2 A–G runner and source fingerprints | PENDING_OWNER_TEST; no inherited PASS or agent execution |
+
+Entry point: scripts/quality/sprint_7_2_owner_acceptance.sh --full. Source delivery is not local acceptance, hosted CI,
+physical-device accessibility, 50-student TestFlight evidence or production authorization.
+
+## Sprint 6.10 hardening traceability
+
+REQ-TRUST-001 / REQ-VERIFY-001 / REQ-MATH-001 / REQ-PRIV-001: accessible verification/uncertainty, grouped mathematical speech, exact-versus-approximate chart semantics, and unchanged protected recovery/account boundaries. Evidence map: `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.10_FUNCTIONAL_COMPLETION_MATRIX.md` A–G. Owner runner: `scripts/quality/sprint_6_10_owner_acceptance.sh`; fresh full iOS, relevant backend/privacy/contracts, catalog and docs gates. Source: SOURCE_COMPLETE_PENDING_OWNER_ACCEPTANCE; tests NOT_RUN_BY_AGENT; device and CI release gates remain external.

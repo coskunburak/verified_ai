@@ -1,11 +1,11 @@
 import XCTest
 
 @MainActor final class MathVisualizationUITests: XCTestCase {
-    private func open(extra: [String] = [], methods: Bool = false) -> XCUIApplication {
+    private func open(extra: [String] = [], methods: Bool = false, turkish: Bool = false) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["--ui-testing", "--ui-testing-authenticated", "--solve-fixture", "--solve-reset",
             "--solve-fixture-scope=" + UUID().uuidString, "--visualization-fixture", "--solve-scenario=GENERATED_UNVERIFIED",
-            "-AppleLanguages", "(en)", "-AppleLocale", "en_US"] + extra
+            "-AppleLanguages", turkish ? "(tr)" : "(en)", "-AppleLocale", turkish ? "tr_TR" : "en_US"] + extra
         app.launch()
         let row = app.buttons["history.session.00000000-0000-0000-0000-000000005401"]
         XCTAssertTrue(row.waitForExistence(timeout: 8)); row.tap()
@@ -38,4 +38,14 @@ import XCTest
         let retry = app.buttons["visualization.retry"]; XCTAssertTrue(retry.waitForExistence(timeout: 5)); retry.tap()
         XCTAssertTrue(app.otherElements["visualization.chart"].waitForExistence(timeout: 5))
     }
+    func testTurkishLargeTextApproximateSampleControls() {
+        let app = open(extra: ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"], turkish: true)
+        let next = app.buttons["visualization.next"]
+        XCTAssertTrue(next.waitForExistence(timeout: 5))
+        for _ in 0..<12 where !next.isHittable { app.swipeUp() }
+        XCTAssertTrue(next.isHittable); next.tap()
+        XCTAssertTrue(app.staticTexts["visualization.selection"].label.contains("Yaklaşık"))
+        XCTAssertFalse(next.label.contains("visualization."))
+    }
+
 }

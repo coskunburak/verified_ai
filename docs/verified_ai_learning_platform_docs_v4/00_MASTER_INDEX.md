@@ -487,4 +487,21 @@ Sprint 6.9 implementation and limitations: `sprints/phase06_solution_experience_
 - `sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.1_EXECUTION_REPORT.md` — LOCAL_ACCEPTANCE_PASSED across Gates A–G; local owner acceptance verified.
 
 V033 extends V030–V032 without rewriting historical migrations. This source handoff does not authorize broad Phase 7
-rollout or establish ADR-011's 50-student TestFlight gate; Sprint 7.2 has not been started.
+rollout or establish ADR-011's 50-student TestFlight gate. Sprint 7.2 source delivery is tracked separately below.
+
+## Sprint 7.2 — source delivery, owner acceptance pending
+
+- `sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.2_IMPLEMENTATION_MAP.md` — reuse/gaps, typed artifact, V034, zero-inference flow and rollback.
+- `sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.2_FUNCTIONAL_COMPLETION_MATRIX.md` — backend/iOS/privacy/contracts and owner evidence map.
+- `sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.2_EXECUTION_REPORT.md` — source changes, limitations and owner-only acceptance.
+
+Source status: SOURCE_COMPLETE. Owner tests: PENDING_OWNER_TEST / NOT_EXECUTED_BY_AGENT. No LOCAL_ACCEPTANCE_PASSED,
+CI GREEN, TestFlight/production release, migration execution, paid inference, commit or push is claimed.
+
+## Sprint 6.10 — accessibility hardening, owner acceptance pending
+
+- `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.10_IMPLEMENTATION_MAP.md` — existing ownership, source gaps, security/cost and rollback.
+- `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.10_FUNCTIONAL_COMPLETION_MATRIX.md` — A–G delivery, authored tests and external device/performance protocol.
+- `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.10_EXECUTION_REPORT.md` — exact delta, protected Phase 7.2 working tree, owner-only full acceptance and evidence.
+
+Status: SOURCE_COMPLETE_PENDING_OWNER_ACCEPTANCE. No tests/builds were run by the agent; production is NOT_AUTHORIZED.

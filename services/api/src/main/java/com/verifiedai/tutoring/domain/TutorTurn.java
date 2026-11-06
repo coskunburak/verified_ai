@@ -20,6 +20,6 @@ public record TutorTurn(String schemaVersion, UUID id, UUID tutorSessionId, UUID
         return new TutorTurn("tutor-turn-v1", UUID.randomUUID(), learner.tutorSessionId(), learner.id(),
             learner.sequenceNumber(), UUID.randomUUID(), "TUTOR", text, language, SocraticPolicy.VERSION,
             previous.phase(), decision.progress(), intent, decision.action(), decision.outcome(), "UNKNOWN",
-            "UNAVAILABLE", true, "DETERMINISTIC_POLICY", now, false);
+            "UNAVAILABLE", true, "DETERMINISTIC_POLICY", now.truncatedTo(java.time.temporal.ChronoUnit.MICROS), false);
     }
 }

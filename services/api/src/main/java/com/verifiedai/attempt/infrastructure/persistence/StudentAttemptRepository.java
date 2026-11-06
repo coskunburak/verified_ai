@@ -70,6 +70,7 @@ public class StudentAttemptRepository {
         return jdbc.query("select * from student_attempts where user_id=? order by created_at,id",(rs,n)->readRow(rs),owner)
             .stream().toList();
     }
+    public List<com.verifiedai.attempt.domain.AttemptStructuredWork> structuredExport(UUID owner) { return new AttemptWorkRepository(jdbc).export(owner); }
     public Map<String,Object> learningExport(UUID owner) { return learning.export(owner); }
     public void delete(UUID owner) { learning.delete(owner); jdbc.update("delete from student_attempts where user_id=?",owner); }
     private StudentAttempt readRow(ResultSet rs) throws SQLException {

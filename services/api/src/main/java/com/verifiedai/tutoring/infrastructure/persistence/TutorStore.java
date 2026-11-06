@@ -48,14 +48,15 @@ public class TutorStore {
             this::message,owner,session,after,limit);
     }
     public TutorMessage append(UUID owner, TutorSession session, String key, String content, Instant now) {
+        var created=now.truncatedTo(java.time.temporal.ChronoUnit.MICROS);
         var message=new TutorMessage("tutor-message-v1",UUID.randomUUID(),session.id(),TutorPolicy.Role.LEARNER,
-            session.messageCount()+1,content,now);
+            session.messageCount()+1,content,created);
         jdbc.update("""
             insert into tutor_messages(id,user_id,tutor_session_id,role,schema_version,sequence_number,content,idempotency_key,created_at)
             values (?,?,?,'LEARNER','tutor-message-v1',?,?,?,?)
-            """,message.id(),owner,session.id(),message.sequenceNumber(),content,key,Timestamp.from(now));
+            """,message.id(),owner,session.id(),message.sequenceNumber(),content,key,Timestamp.from(created));
         jdbc.update("update tutor_sessions set message_count=message_count+1,version=version+1,updated_at=? where id=? and user_id=?",
-            Timestamp.from(now),session.id(),owner);
+            Timestamp.from(created),session.id(),owner);
         return message;
     }
     public Optional<TutorTurn> turnForMessage(UUID owner, UUID session, UUID message) {
@@ -132,7 +133,7 @@ public class TutorStore {
     }
     public void close(UUID owner, UUID id, Instant now) {
         jdbc.update("update tutor_sessions set status='CLOSED',version=version+1,updated_at=? where user_id=? and id=? and status='ACTIVE'",
-            Timestamp.from(now),owner,id);
+            Timestamp.from(now.truncatedTo(java.time.temporal.ChronoUnit.MICROS)),owner,id);
     }
     public long exportBytes(UUID owner) {
         return jdbc.queryForObject("select coalesce(sum(bytes),0) from (select octet_length(content) as bytes from tutor_messages where user_id=? union all select octet_length(content) from tutor_turns where user_id=? union all select octet_length(content) from tutor_hints where user_id=?) contents",Long.class,owner,owner,owner);

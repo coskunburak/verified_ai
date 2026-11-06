@@ -212,4 +212,21 @@ class SocraticTurnIntegrationTest extends PostgresIntegrationTestSupport {
         privacy.deleteUserData(owner,java.time.Instant.now());
         assertThat(jdbc.queryForObject("select count(*) from tutor_turns where user_id=?",Integer.class,owner)).isZero();
     }
+    @Test void nanosecondClockSocraticTurnCreationMatchesDatabaseAndReplayExactly() {
+        var s = create();
+        var instant = java.time.Instant.parse("2026-11-05T13:05:44.544401999Z");
+        var fixed = new TutorSessionService(sources, contexts, new TutorStore(jdbc), Clock.fixed(instant, java.time.ZoneOffset.UTC),
+            (policy, key) -> RateLimitDecision.allow(), new SimpleMeterRegistry(), 30, 100);
+        ReflectionTestUtils.setField(fixed, "socraticEnabled", true);
+
+        var firstTurn = tx.execute(status -> fixed.submitTurn(owner, problem, s.id(), "precise-turn-key", "Synthetic step", SocraticPolicy.Intent.UNKNOWN));
+        assertThat(firstTurn.createdAt()).isEqualTo(java.time.Instant.parse("2026-11-05T13:05:44.544401Z"));
+        var replayedTurn = tx.execute(status -> fixed.submitTurn(owner, problem, s.id(), "precise-turn-key", "Synthetic step", SocraticPolicy.Intent.UNKNOWN));
+        assertThat(replayedTurn).isEqualTo(firstTurn);
+
+        var dbTurn = new TutorStore(jdbc).turns(owner, s.id(), 0, 10).getFirst();
+        assertThat(dbTurn).isEqualTo(firstTurn);
+        var dbMessage = new TutorStore(jdbc).messages(owner, s.id(), 0, 10).getFirst();
+        assertThat(dbMessage.createdAt()).isEqualTo(firstTurn.createdAt());
+    }
 }

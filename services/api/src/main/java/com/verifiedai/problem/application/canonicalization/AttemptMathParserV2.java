@@ -7,7 +7,7 @@ import java.util.regex.*;
 
 /** Bounded syntax parser, never a mathematical truth authority. Conventional unary/power precedence. */
 final class AttemptMathParserV2 {
-    private static final Pattern TOKEN=Pattern.compile("\\s*(<=|>=|!=|[A-Za-z][A-Za-z0-9_]{0,15}|(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?|[-+*/^(){}<>=,])");
+    private static final Pattern TOKEN_PATTERN=Pattern.compile("\\s*(<=|>=|!=|[A-Za-z][A-Za-z0-9_]{0,15}|(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?|[-+*/^(){}<>=,])");
     private final ObjectMapper mapper=new ObjectMapper();
     private final Set<String> variables;
     private final List<String> tokens=new ArrayList<>();
@@ -19,7 +19,7 @@ final class AttemptMathParserV2 {
         int offset=0;
         while(offset<input.length()) {
             if(input.substring(offset).isBlank()) break;
-            var matcher=TOKEN.matcher(input); matcher.region(offset,input.length());
+            var matcher=TOKEN_PATTERN.matcher(input); matcher.region(offset,input.length());
             if(!matcher.lookingAt() || tokens.size()>=160) throw new IllegalArgumentException();
             tokens.add(matcher.group(1)); starts.add(matcher.start(1)); ends.add(matcher.end(1)); offset=matcher.end();
         }

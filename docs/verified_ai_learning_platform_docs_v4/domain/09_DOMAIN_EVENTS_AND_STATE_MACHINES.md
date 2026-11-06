@@ -146,3 +146,11 @@ reuse SUBMITTED and the immutable request. Final-answer capture uses SUBMITTED a
 background assessment job; a replay returns that same acknowledgement. Its schema prohibits ANALYZED in this
 sprint. The existing conceptual AttemptSubmitted event is not a correctness or mastery event; no new event bus
 or learning consumer is introduced. Reads never transition state.
+
+## Sprint 7.2 review and syntax states
+
+Structured capture leaves StudentAttempt SUBMITTED and analysis null. CONFIRMED is a learner transcription attestation;
+REQUIRED is explicit unresolved review. NORMALIZED, UNSUPPORTED and REVIEW_REQUIRED describe representation only.
+A changed text, role or segmentation revokes local confirmation. A saved revision is immutable; a correction creates
+another attempt/child under the same source, with revision+1 and a unique predecessor link. No assessment, mistake or
+mastery event is published by this route. Existing Sprint 6.7 evaluation transitions are not redefined.

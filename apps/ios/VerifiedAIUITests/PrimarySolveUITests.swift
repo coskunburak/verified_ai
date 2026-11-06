@@ -308,4 +308,13 @@ final class PrimarySolveUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["explanation.prerequisite"].exists)
         // VoiceOver order, Reduce Motion and long wrapping additionally require the owner manual gate.
     }
+    func testEnglishAccessibilitySizeKeepsUnverifiedAndExplanationActions() {
+        let app = launch(extra: ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"])
+        openSolve(app); start(app)
+        XCTAssertTrue(app.descendants(matching: .any)["solve.unverified"].waitForExistence(timeout: 10))
+        selectMode("BEGINNER", in: app)
+        XCTAssertEqual(app.buttons["explanation.mode.BEGINNER"].value as? String, "Selected")
+        XCTAssertTrue(app.buttons["solve.close"].isHittable)
+    }
+
 }

@@ -77,3 +77,11 @@ The phase exit review must include:
 ## 2. Anti-Gaming Mastery Invariant
 - Passively viewing a complete solution (`solution_peek_count++`) grants **`0.0` mastery increase**. A learner's `p_learned` and memory half-life `half_life_days` only advance when they submit a verified independent attempt (`Analyze My Work` -> `FULLY_CORRECT` / `ALTERNATIVE_VALID_PATH`) or solve a `SymPy`-verified Counterfactual Twin Drill (`COMPLETED_CORRECT`).
 <!-- PHASE_PRODUCTION_V6:END -->
+
+## Sprint 7.2 source handoff
+
+Owner-authorized local source preparation delivers immutable attempt structured work, explicit OCR/review/syntax boundaries,
+V034, integrated iOS review/recovery, strict contracts and an independent owner-only A–G acceptance runner. Source status is
+SOURCE_COMPLETE; current-source execution remains PENDING_OWNER_TEST. This is not a passed phase exit gate or release approval.
+ADR-011 and the 50-student TestFlight gate above remain external and unverified. No paid inference route or deployment was enabled.
+See `SPRINT_7.2_IMPLEMENTATION_MAP.md`, `SPRINT_7.2_FUNCTIONAL_COMPLETION_MATRIX.md` and `SPRINT_7.2_EXECUTION_REPORT.md`.

@@ -64,6 +64,12 @@ class SecretScanTest(unittest.TestCase):
         self.assertIn("potential secret matches", result.stderr)
         self.assertNotIn("secret scan passed", result.stdout)
 
+    def test_redaction_prevents_credential_disclosure_in_logs(self):
+        result = self.run_scan(scan_status=0, filter_status=0, output="secret_file.java:10:TOKEN = synthetic_sensitive_value")
+        self.assertEqual(1, result.returncode)
+        self.assertIn("secret_file.java:10: [POTENTIAL_SECRET_DETECTED_REDACTED]", result.stderr)
+        self.assertNotIn("synthetic_sensitive_value", result.stderr)
+
     def test_scan_errors_are_not_treated_as_no_matches(self):
         for code in (2, 127, 130):
             with self.subTest(code=code):

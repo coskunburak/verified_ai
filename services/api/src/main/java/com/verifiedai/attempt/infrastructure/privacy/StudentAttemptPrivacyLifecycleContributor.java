@@ -11,7 +11,7 @@ public class StudentAttemptPrivacyLifecycleContributor implements AccountDataLif
     public StudentAttemptPrivacyLifecycleContributor(StudentAttemptRepository store) { this.store=store; }
     public String category() { return "student-attempts"; }
     public Map<String,Object> exportUserData(UUID owner) {
-        return Map.of("schemaVersion","attempt-export-v1","trainingEligible",false,"attempts",store.available()?store.export(owner):List.of(),"learning",store.available()?store.learningExport(owner):Map.of());
+        return Map.of("schemaVersion","attempt-export-v1","trainingEligible",false,"attempts",store.available()?store.export(owner):List.of(),"learning",store.available()?store.learningExport(owner):Map.of(),"structuredWork",store.structuredExport(owner));
     }
     public void deleteUserData(UUID owner,Instant now) { if(store.available()) store.delete(owner); }
 }
