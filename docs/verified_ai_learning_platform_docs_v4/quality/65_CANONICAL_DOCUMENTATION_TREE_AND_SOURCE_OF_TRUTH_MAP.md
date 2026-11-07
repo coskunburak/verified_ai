@@ -353,3 +353,20 @@ Master Index → `roadmap/67` → `roadmap/68` → `quality/69` → `operations/
 - Sprint changes that alter architecture/domain/security/data semantics must update the canonical source in the same PR.
 - Deprecated decisions remain visible through ADR history rather than silent deletion.
 - NotebookLM/Codex should never use a sprint as the sole authority for a conflicting invariant.
+
+## Sprint 7.3 source-of-truth addendum
+
+The attempt module owns independent evaluation operations/artifacts; problem remains the canonical source authority,
+and the Python v2 verifier remains mathematical proof authority. StudentAttempt and structured-work capture stay immutable.
+Sprint 7.3 implementation map, completion matrix and execution report are maintained beside its specification in the
+Phase 7 sprint directory. Evaluation contracts live in packages/schemas; V035 owns durable publication guards.
+
+## Sprint 7.4 delivery records
+
+Under sprints/phase07_attempt_mistake_and_mastery_intelligence:
+- SPRINT_7.4_IMPLEMENTATION_MAP.md
+- SPRINT_7.4_FUNCTIONAL_COMPLETION_MATRIX.md
+- SPRINT_7.4_EXECUTION_REPORT.md
+
+These describe SOURCE_COMPLETE / PENDING_OWNER_TEST, not production acceptance. Canonical category
+semantics are in learning/30 and domain/46; strict wire mapping is mistake-category-v1.json.

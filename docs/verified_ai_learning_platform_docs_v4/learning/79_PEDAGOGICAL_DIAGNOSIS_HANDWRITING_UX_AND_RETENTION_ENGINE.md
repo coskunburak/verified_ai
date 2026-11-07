@@ -127,3 +127,11 @@ mathematical correctness. Denominators, roots/log arguments, powers, signs and r
 and original text. Unsupported notation is preserved. A final answer is explicit user intent, never inferred from the last line.
 This sprint's route does not call verification, classify errors, select a first wrong step or publish mastery. Those consumers
 must separately satisfy Sprint 7.3 authority and freshness rules. Structured work stays trainingEligible=false.
+
+## Sprint 7.4 semantic reconciliation
+
+The table's 17 codes are preserved as fine-grained signatures. Historical broad examples are not additional
+implemented predicates: WORD_VARIABLE_MISASSIGNMENT currently proves only explicit TOTAL operand omission;
+TRIG_PERIOD_OMITTED requires a bounded source interval; generic disproof cannot prove unit/notation errors.
+Versioned mistake-category-v1 supplies pedagogical categories separately from the older subject-area column.
+Accepted classification is immutable evidence and introduces no mastery update or training eligibility.

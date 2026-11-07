@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "attempt-evaluation-v1",
+  "id": "00000000-0000-0000-0000-000000007402",
+  "attemptId": "00000000-0000-0000-0000-000000007210",
+  "ownerId": "00000000-0000-0000-0000-000000007200",
+  "problemSessionId": "00000000-0000-0000-0000-000000007203",
+  "source": {
+    "canonicalId": "00000000-0000-0000-0000-000000007201",
+    "canonicalRevision": 1,
+    "parseId": "00000000-0000-0000-0000-000000007202",
+    "parseRevision": 1
+  },
+  "workRevision": 1,
+  "policyVersion": "structured-evaluation-v1",
+  "executionId": "00000000-0000-0000-0000-000000007301",
+  "createdAt": "2026-11-06T12:00:00Z",
+  "stepIds": [
+    "00000000-0000-0000-0000-000000007211",
+    "00000000-0000-0000-0000-000000007212"
+  ],
+  "analysis": {
+    "schemaVersion": "attempt-analysis-v2",
+    "verifierVersion": "bounded-attempt-v2",
+    "taxonomyVersion": "attempt-taxonomy-v2",
+    "executionId": "00000000-0000-0000-0000-000000007301",
+    "correlationId": "00000000-0000-0000-0000-000000007301",
+    "outcome": "STEP_ERROR_FOUND",
+    "firstWrongStepIndex": 1,
+    "domain": "REAL_DOMAIN",
+    "domainBasis": "SOURCE_EXPLICIT",
+    "steps": [
+      {
+        "index": 1,
+        "verdict": "FIRST_WRONG_STEP",
+        "reasonCode": "NON_EQUIVALENT",
+        "mistakeCode": "ALG_SIGN_FLIP_DISTRIBUTE",
+        "counterexampleStatus": "AVAILABLE",
+        "counterexample": {
+          "schemaVersion": "attempt-witness-v1",
+          "witnessType": "EXPRESSION_VALUES",
+          "variableValues": {
+            "x": {
+              "numerator": "0",
+              "denominator": "1"
+            }
+          },
+          "previousStepEvaluation": "2",
+          "submittedStepEvaluation": "-2",
+          "claimRefuted": "EXPRESSION_IDENTITY",
+          "domainSatisfied": true,
+          "verifierVersion": "bounded-attempt-v2",
+          "explanationCode": "UNEQUAL_VALUES"
+        },
+        "diagnosis": {
+          "code": "ALG_SIGN_FLIP_DISTRIBUTE",
+          "evidenceId": "00000000-0000-0000-0000-000000007301:1",
+          "explanationKey": "attempt.mistake.ALG_SIGN_FLIP_DISTRIBUTE",
+          "changedExpressionPath": "/expression",
+          "displayFallback": "STEP_LEVEL",
+          "classifierPolicyVersion": "structural-signatures-v1"
+        }
+      },
+      {
+        "index": 2,
+        "verdict": "NOT_ASSESSED",
+        "reasonCode": "EARLIER_DIVERGENCE",
+        "mistakeCode": null,
+        "counterexampleStatus": "NOT_APPLICABLE",
+        "counterexample": null
+      }
+    ],
+    "naturalDomain": {
+      "kind": "REALS"
+    },
+    "solutionSet": null
+  },
+  "finalStepId": null,
+  "finalAnswerStatus": "NOT_PROVIDED",
+  "finalAnswerEvidence": null,
+  "trainingEligible": false,
+  "realDomainConfirmed": false
+}

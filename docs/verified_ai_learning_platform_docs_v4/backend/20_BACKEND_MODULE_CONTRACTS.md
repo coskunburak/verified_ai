@@ -220,3 +220,10 @@ AttemptWorkRepository persists only versioned syntax artifacts; StudentAttemptRe
 StudentAttemptPrivacyLifecycleContributor exports the child and deletes through the parent cascade. Metrics use bounded
 outcome/status tags only: attempt.structured.outcome, attempt.structured.normalization, attempt.structured.duration,
 attempt.extraction.outcome and attempt.extraction.duration. Existing request validation metrics and traceId apply.
+
+## Sprint 7.4 module boundary
+
+mistake exports pure MistakeTaxonomy and MistakeClassificationDecision from its module API. attempt owns
+AttemptMistakeClassifier, application/API orchestration, immutable classification artifact and persistence as
+a dependent artifact of its accepted evaluation. mistake never imports attempt internals. Canonical skills
+use curriculum::application. No new mastery event, AI adapter or cross-module repository access is introduced.

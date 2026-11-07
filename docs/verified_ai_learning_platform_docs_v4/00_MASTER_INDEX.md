@@ -505,3 +505,23 @@ CI GREEN, TestFlight/production release, migration execution, paid inference, co
 - `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.10_EXECUTION_REPORT.md` — exact delta, protected Phase 7.2 working tree, owner-only full acceptance and evidence.
 
 Status: SOURCE_COMPLETE_PENDING_OWNER_ACCEPTANCE. No tests/builds were run by the agent; production is NOT_AUTHORIZED.
+
+## Sprint 7.3 — owner local acceptance passed
+
+- `sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.3_IMPLEMENTATION_MAP.md` — attempt-owned evaluation, v2 reuse, V035 and retry/publication boundaries.
+- `sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.3_FUNCTIONAL_COMPLETION_MATRIX.md` — requirement/source/test/gate mapping and supported proof limits.
+- `sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.3_EXECUTION_REPORT.md` — SOURCE_COMPLETE; owner full run 20261107-025110-XrMKJK LOCAL_ACCEPTANCE_PASSED; agent NOT_EXECUTED_BY_AGENT.
+
+Prior Sprint 7.2 evidence remains unchanged. Neither source delivery nor static review grants local acceptance or release approval.
+
+Sprint 7.3 owner evidence: 20261107-025110-XrMKJK, FULL, unchanged source, A–G/cleanup PASS.
+164 backend, 305 verifier and 271 iOS cases; release/CI/device/TestFlight gates remain external.
+
+## Sprint 7.4 local source handoff
+
+Evidence-grounded mistake classification source, owner-only tests and independent acceptance infrastructure
+are implemented. New results: NOT_EXECUTED / PENDING_OWNER_TEST; production is not authorized. See
+`sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.4_IMPLEMENTATION_MAP.md`,
+`sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.4_FUNCTIONAL_COMPLETION_MATRIX.md` and
+`sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.4_EXECUTION_REPORT.md`. Existing 17
+signatures map to separate pedagogical categories; unsupported cases remain explicit. No new paid AI calls.

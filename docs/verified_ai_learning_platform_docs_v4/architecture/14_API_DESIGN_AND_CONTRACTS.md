@@ -362,3 +362,18 @@ if already superseded; original source and observations cannot change. Errors us
 401 authentication, 403 ACCOUNT_NOT_ACTIVE, 404 RESOURCE_FORBIDDEN/ATTEMPT_NOT_FOUND, 409 ATTEMPT_STALE_SOURCE or capacity,
 413 REQUEST_TOO_LARGE, 422 REQUEST_VALIDATION_FAILED, 429 RATE_LIMIT_EXCEEDED, 503 ATTEMPT_UNAVAILABLE. Retry an uncertain
 failure with the same key and complete body. The request can safely save unresolved review; no mathematical assessment runs.
+
+## Sprint 7.4 classification API
+
+GET/POST /api/v1/problem-sessions/{sessionId}/attempts/{attemptId}/classification are additive, authenticated
+owner-scoped routes. No new paid entitlement applies. POST requires Idempotency-Key and strict
+attempt-mistake-request-v1 (evaluationId, source, workRevision). Owner/labels/confidence are not accepted.
+Responses use attempt-mistake-view-v1 and immutable attempt-mistake-classification-v1. NOT_CLASSIFIED,
+COMPLETED and STALE are transport states, separate from classification's evidence/review states.
+
+POST is bounded to 16 KiB and 15 requests/minute per owner. Stable Problem Details codes include
+ATTEMPT_CLASSIFICATION_NOT_READY (409), IDEMPOTENCY_KEY_REUSED (409), ATTEMPT_STALE_SOURCE (409),
+ATTEMPT_NOT_FOUND (404), REQUEST_VALIDATION_FAILED (422), REQUEST_TOO_LARGE (413), RATE_LIMIT_EXCEEDED
+(429) and ATTEMPT_UNAVAILABLE (503). GET reauthorizes and never computes; exact replay survives rollout
+disablement. On cancellation/lost acknowledgement read first, then explicitly retry the same key. Legacy
+attempt/evaluation routes stay compatible; old unstructured attempts are not backfilled.

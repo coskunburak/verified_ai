@@ -240,6 +240,12 @@
                       "SUBEXPRESSION",
                       "STEP_LEVEL"
                     ]
+                  },
+                  "classifierPolicyVersion": {
+                    "enum": [
+                      "structural-signatures-v1",
+                      null
+                    ]
                   }
                 },
                 "required": [

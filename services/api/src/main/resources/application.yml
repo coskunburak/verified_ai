@@ -265,6 +265,8 @@ logging:
 # Deterministic local Socratic policy only; this never enables the AI TUTOR capability.
 verifiedai:
   attempt:
+    classification-enabled: ${ATTEMPT_CLASSIFICATION_ENABLED:false}
+    evaluation-enabled: ${ATTEMPT_EVALUATION_ENABLED:false}
     structured-work-enabled: ${ATTEMPT_STRUCTURED_WORK_ENABLED:false}
     production-authorized: ${ATTEMPT_PRODUCTION_AUTHORIZED:false}
     vision-enabled: ${ATTEMPT_VISION_ENABLED:false}

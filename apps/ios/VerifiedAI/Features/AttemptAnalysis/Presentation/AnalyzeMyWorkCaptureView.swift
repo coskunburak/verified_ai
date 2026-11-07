@@ -12,10 +12,13 @@ struct AnalyzeMyWorkCaptureView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 if viewModel.isFixture { Label("solve.fixture", systemImage: "testtube.2") }
-                Text("attempt.scope").font(.callout)
                 if let original = viewModel.context?.originalStatement {
                     AttemptMathView(json: original, fallback: NSLocalizedString("attempt.math.expression", comment: "Original mathematical statement"))
                 }
+                // Accepted structured work has its own review/revise flow. Keep the empty
+                // manual composer out of the result screen until an explicit revision starts.
+                if viewModel.workResult == nil || viewModel.workDraft != nil {
+                Text("attempt.scope").font(.callout)
                 if let capability = viewModel.context?.handwriting,
                    ["NATIVE_REVIEW", "NATIVE_REVIEW_AND_GATEWAY"].contains(capability), let capture = viewModel.capture {
                     Button("attempt.photo.open") { gatewayCapture = false; capture.capture.open(); showingCapture = true }
@@ -54,7 +57,12 @@ struct AnalyzeMyWorkCaptureView: View {
                     Button("attempt.draft.confirmSource") { viewModel.confirmDraftSource() }
                         .disabled(viewModel.busy).accessibilityIdentifier("attempt.draft.confirmSource")
                 }
-                if let tutor { NavigationLink("tutor.title") { TutorView(viewModel: tutor) } }
+                if let tutor {
+                    NavigationLink { TutorView(viewModel: tutor) } label: {
+                        Text("tutor.title").foregroundStyle(ColorTokens.action)
+                    }
+                    .frame(minHeight: 44)
+                }
                 if viewModel.context?.enabled == false { Text("attempt.unavailable") }
                 if viewModel.workDraft != nil { AttemptStructuredEditorView(model: viewModel) }
                 else { AttemptStepEditorView(text: $viewModel.draft, locked: viewModel.editingLocked) }
@@ -64,7 +72,8 @@ struct AnalyzeMyWorkCaptureView: View {
                 }
                     .buttonStyle(.borderedProminent).frame(minHeight: 44)
                     .disabled(!viewModel.canSubmit).accessibilityIdentifier("attempt.submit")
-                if viewModel.busy { ProgressView().accessibilityLabel("attempt.loading") }
+                }
+                if viewModel.busy { ProgressView().accessibilityLabel("attempt.loading").accessibilityIdentifier("attempt.loading") }
                 if let error = viewModel.errorKey {
                     Label(LocalizedStringKey(error), systemImage: "exclamationmark.triangle")
                         .accessibilityIdentifier("attempt.error")
@@ -74,12 +83,33 @@ struct AnalyzeMyWorkCaptureView: View {
                 if let result = viewModel.result {
                     if let current = viewModel.context?.source, current != result.source { Text("attempt.history.sourceChanged") }
                     if let work = viewModel.workResult, work.attemptId == result.id {
-                        AttemptStructuredWorkView(work: work)
+                        AttemptStructuredWorkView(work: work, evaluated: viewModel.evaluation?.status == .completed)
+                        if let evaluation = viewModel.evaluation {
+                            AttemptEvaluationResultsView(value: evaluation, work: work)
+                            if let classification = viewModel.classification {
+                                AttemptMistakeResultsView(value: classification)
+                                if classification.creationEnabled && classification.status == .notClassified && !classification.historical {
+                                    Button("attempt.classification.action") { viewModel.classifyWork() }
+                                        .disabled(!viewModel.canClassify).frame(minHeight: 44)
+                                        .accessibilityIdentifier("attempt.classification.action")
+                                }
+                            }
+
+                            if evaluation.creationEnabled && !evaluation.historical && evaluation.status != .completed {
+                                Toggle("attempt.domain.confirmReal", isOn: $viewModel.evaluationRealDomainConfirmed)
+                                    .disabled(viewModel.busy || viewModel.pendingEvaluation != nil)
+                                    .accessibilityIdentifier("attempt.evaluation.confirmReal")
+                                Button("attempt.evaluation.action") { viewModel.evaluateWork() }
+                                    .disabled(!viewModel.canEvaluate).frame(minHeight: 44)
+                                    .accessibilityIdentifier("attempt.evaluation.action")
+                            }
+                        }
                         if viewModel.context?.source == work.source && viewModel.context?.structuredWorkEnabled == true {
                             Button("attempt.work.revise") { viewModel.reviseStructured() }.disabled(viewModel.editingLocked)
+                                .frame(minHeight: 44).accessibilityIdentifier("attempt.work.revise")
                         }
                     } else { AttemptAnalysisResultsView(attempt: result) }
-                    if result.finalAnswer == nil, let learning = viewModel.learning { AttemptLearningPanel(model: learning, attempt: result) }
+                    if viewModel.workResult == nil, result.finalAnswer == nil, let learning = viewModel.learning { AttemptLearningPanel(model: learning, attempt: result) }
                 }
                 ForEach(viewModel.history) { attempt in
                     Button { viewModel.select(attempt) } label: {
@@ -91,6 +121,9 @@ struct AnalyzeMyWorkCaptureView: View {
                 }
             }.padding()
         }
+        .foregroundStyle(ColorTokens.textPrimary)
+        .tint(ColorTokens.action)
+        .background(ColorTokens.background)
         .fullScreenCover(isPresented: $showingCapture) {
             if let c = viewModel.capture {
                 ProblemCaptureView(viewModel: c.capture, uploadViewModel: c.upload, problemReviewViewModel: c.review,

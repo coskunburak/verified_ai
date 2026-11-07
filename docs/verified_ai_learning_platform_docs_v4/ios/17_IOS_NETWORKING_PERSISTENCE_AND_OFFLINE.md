@@ -169,3 +169,22 @@ EN/TR labels, VoiceOver control names, Dynamic Type layouts and unassessed copy 
 ## Sprint 6.10 tutor recovery hardening
 
 Authenticated refresh restores the existing protected pending operation's content and intent into the composer. It never replays a mutation on reconnect/resume; explicit retry retains the original key. Unsent drafts remain in-memory and survive screen background/foreground within the same view model; no additional durable draft storage is introduced. History loading is capped at the existing 100-message boundary, refuses overrun pages, and checks cancellation/current-account authority after each page before continuing. Existing account invalidation clears visible content; source and Phase 7 acknowledgement/binding contracts remain unchanged.
+
+## Sprint 7.3 evaluation recovery
+
+Analyze My Work reads evaluation after saved-work/history reads. Only the explicit evaluation action sends POST.
+A protected AttemptEvaluationPending retains attempt, exact source/revision, real-domain scope claim and idempotency key.
+Reopening/reconnect does not POST; GET recovers a lost completed acknowledgement and clears pending state. IN_PROGRESS
+requires refresh; RETRYABLE permits explicit same-key retry. Account/generation fences reject late responses. New work
+revisions clear visible correctness; historical evaluations show a badge. Source-unavailable context does not hide saved
+history. Final correctness is shown separately from step status and includes the reviewed-real-scope notice where applicable.
+
+## Sprint 7.4 classification recovery
+
+Analyze My Work requests classification explicitly after accepted evaluation. The stable key
+classification-v1-<lowercase evaluation UUID> binds retries across relaunch; it contains no label authority.
+Resume performs GET only. Account/generation/evaluation identity fences prevent late publication; revision
+changes clear old presentation. Transient errors preserve accepted evaluation and expose existing retry UI.
+Strict typed validation checks source/owner/execution/causal step and category/strength/skill compatibility.
+No new local learner-content cache or provider access is added. EN/TR and non-color evidence/review labels
+are covered by owner-only unit/UI accessibility sources.

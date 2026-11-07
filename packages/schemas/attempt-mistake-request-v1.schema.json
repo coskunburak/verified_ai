@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "attempt-mistake-request-v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "attempt-mistake-request-v1"
+    },
+    "evaluationId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "canonicalId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "canonicalRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "parseId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "parseRevision": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "canonicalId",
+        "canonicalRevision",
+        "parseId",
+        "parseRevision"
+      ]
+    },
+    "workRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 30
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "evaluationId",
+    "source",
+    "workRevision"
+  ]
+}

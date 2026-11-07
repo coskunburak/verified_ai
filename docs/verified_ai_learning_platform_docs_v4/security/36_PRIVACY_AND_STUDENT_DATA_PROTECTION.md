@@ -136,3 +136,11 @@ Only typed mathematics, opaque execution/correlation IDs, variable domains and r
 Student/account/session identifiers, uploaded images, explanation text and provider credentials are excluded from execution payloads.
 Verification evidence remains owner data with immutable provenance, account export and source/account deletion cascades.
 No content is made training eligible and no additional inference or external AI validation is performed.
+
+## Sprint 7.4 private classification evidence
+
+Classification is sensitive derived learner data, owner-scoped through the accepted evaluation, with explicit
+training exclusion. Publication is under the account/source lock shared with deletion; composite lineage
+constraints and append-only guards prevent cross-owner evidence attachment or rewriting. Public input
+cannot submit authoritative labels, probabilities or user IDs. Export/deletion include V036. Metrics use
+only bounded outcome/policy/taxonomy/authority tags; no raw math, images, prompts or evidence IDs.

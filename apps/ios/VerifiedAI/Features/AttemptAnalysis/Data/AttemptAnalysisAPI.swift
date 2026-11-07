@@ -3,6 +3,28 @@ final class AttemptAnalysisAPI: AttemptAnalysisServicing, @unchecked Sendable {
     private let client: APIClient
     init(client: APIClient) { self.client = client }
     private func path(_ problem: UUID) -> String { "/api/v1/problem-sessions/\(problem.uuidString)/attempts" }
+    func readClassification(problem: UUID, attempt: UUID) async throws -> AttemptMistakeView {
+        let r: HTTPResponse<AttemptMistakeView> = try await client.send(HTTPRequest(endpoint: Endpoint(path: path(problem) + "/\(attempt.uuidString)/classification")))
+        guard r.body.attemptId == attempt else { throw NetworkError.invalidResponse }
+        return r.body
+    }
+    func classify(problem: UUID, attempt: UUID, key: String, input: AttemptMistakeRequest) async throws -> AttemptMistakeView {
+        let r: HTTPResponse<AttemptMistakeView> = try await client.send(HTTPRequest(endpoint: Endpoint(path: path(problem) + "/\(attempt.uuidString)/classification", method: .post),
+            body: try JSONEncoder().encode(input), idempotencyKey: key, timeout: 15))
+        guard r.body.attemptId == attempt else { throw NetworkError.invalidResponse }
+        return r.body
+    }
+    func readEvaluation(problem: UUID, attempt: UUID) async throws -> AttemptEvaluationView {
+        let r: HTTPResponse<AttemptEvaluationView> = try await client.send(HTTPRequest(endpoint: Endpoint(path: path(problem) + "/\(attempt.uuidString)/evaluation")))
+        guard r.body.attemptId == attempt else { throw NetworkError.invalidResponse }
+        return r.body
+    }
+    func evaluate(problem: UUID, attempt: UUID, key: String, input: AttemptEvaluationRequest) async throws -> AttemptEvaluationView {
+        let r: HTTPResponse<AttemptEvaluationView> = try await client.send(HTTPRequest(endpoint: Endpoint(path: path(problem) + "/\(attempt.uuidString)/evaluation", method: .post),
+            body: try JSONEncoder().encode(input), idempotencyKey: key, timeout: 15))
+        guard r.body.attemptId == attempt else { throw NetworkError.invalidResponse }
+        return r.body
+    }
     func context(problem: UUID) async throws -> AttemptContext {
         let r: HTTPResponse<AttemptContext> = try await client.send(HTTPRequest(endpoint: Endpoint(path: path(problem) + "/context")))
         guard ["attempt-context-v1", "attempt-context-v2"].contains(r.body.schemaVersion), r.body.source.canonicalRevision > 0, r.body.source.parseRevision > 0,

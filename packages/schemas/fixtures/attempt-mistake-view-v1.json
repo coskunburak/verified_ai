@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "attempt-mistake-view-v1",
+  "attemptId": "00000000-0000-0000-0000-000000007210",
+  "status": "COMPLETED",
+  "historical": false,
+  "creationEnabled": true,
+  "classification": {
+    "schemaVersion": "attempt-mistake-classification-v1",
+    "id": "00000000-0000-0000-0000-000000007403",
+    "attemptId": "00000000-0000-0000-0000-000000007210",
+    "ownerId": "00000000-0000-0000-0000-000000007200",
+    "problemSessionId": "00000000-0000-0000-0000-000000007203",
+    "executionId": "00000000-0000-0000-0000-000000007301",
+    "source": {
+      "canonicalId": "00000000-0000-0000-0000-000000007201",
+      "canonicalRevision": 1,
+      "parseId": "00000000-0000-0000-0000-000000007202",
+      "parseRevision": 1
+    },
+    "workRevision": 1,
+    "evaluationId": "00000000-0000-0000-0000-000000007402",
+    "taxonomyVersion": "attempt-taxonomy-v2",
+    "categoryVersion": "mistake-category-v1",
+    "policyVersion": "evidence-classifier-v1",
+    "verifierVersion": "bounded-attempt-v2",
+    "firstWrongStepId": "00000000-0000-0000-0000-000000007211",
+    "firstWrongStepIndex": 1,
+    "supportingEvidenceId": "00000000-0000-0000-0000-000000007301:1",
+    "decision": {
+      "status": "SIGNATURE_SUPPORTED",
+      "code": "ALG_SIGN_FLIP_DISTRIBUTE",
+      "category": "SIGN_ERROR",
+      "authority": "DETERMINISTIC_EVIDENCE",
+      "evidenceStrength": "STRUCTURAL_AND_DISPROOF",
+      "reviewStatus": "AUTO_DETECTED",
+      "skillId": "MATH.ALGEBRA.SIMPLIFY_EXPRESSIONS",
+      "explanationKey": "attempt.mistake.ALG_SIGN_FLIP_DISTRIBUTE"
+    },
+    "createdAt": "2026-11-07T09:00:00Z",
+    "trainingEligible": false
+  }
+}

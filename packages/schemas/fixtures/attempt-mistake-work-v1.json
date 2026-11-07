@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "attempt-structured-work-v1",
+  "attemptId": "00000000-0000-0000-0000-000000007210",
+  "ownerId": "00000000-0000-0000-0000-000000007200",
+  "problemSessionId": "00000000-0000-0000-0000-000000007203",
+  "source": {
+    "canonicalId": "00000000-0000-0000-0000-000000007201",
+    "canonicalRevision": 1,
+    "parseId": "00000000-0000-0000-0000-000000007202",
+    "parseRevision": 1
+  },
+  "revision": 1,
+  "supersedesAttemptId": null,
+  "normalizationVersion": "structured-canonical-v1",
+  "createdAt": "2026-11-05T12:00:00Z",
+  "engine": "MANUAL",
+  "provenance": "CLIENT_ATTESTED",
+  "captureId": null,
+  "assetSessionId": null,
+  "recognitionJobId": null,
+  "provider": null,
+  "model": null,
+  "promptVersion": null,
+  "observations": [],
+  "steps": [
+    {
+      "id": "00000000-0000-0000-0000-000000007211",
+      "index": 1,
+      "role": "INTERMEDIATE",
+      "originalText": "-x-2",
+      "reviewedText": "-x-2",
+      "observationIds": [],
+      "normalizedStatement": "{\"kind\":\"EXPRESSION\",\"expression\":{\"kind\":\"BINARY\",\"operator\":\"SUBTRACT\",\"left\":{\"kind\":\"UNARY\",\"operator\":\"NEGATE\",\"operand\":{\"kind\":\"VARIABLE\",\"symbol\":\"x\"}},\"right\":{\"kind\":\"NUMBER\",\"numericType\":\"INTEGER\",\"value\":\"2\"}}}",
+      "normalizationStatus": "NORMALIZED",
+      "reviewStatus": "CONFIRMED"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000007212",
+      "index": 2,
+      "role": "INTERMEDIATE",
+      "originalText": "-x-3",
+      "reviewedText": "-x-3",
+      "observationIds": [],
+      "normalizedStatement": "{\"kind\":\"EXPRESSION\",\"expression\":{\"kind\":\"BINARY\",\"operator\":\"SUBTRACT\",\"left\":{\"kind\":\"UNARY\",\"operator\":\"NEGATE\",\"operand\":{\"kind\":\"VARIABLE\",\"symbol\":\"x\"}},\"right\":{\"kind\":\"NUMBER\",\"numericType\":\"INTEGER\",\"value\":\"3\"}}}",
+      "normalizationStatus": "NORMALIZED",
+      "reviewStatus": "CONFIRMED"
+    }
+  ],
+  "trainingEligible": false
+}

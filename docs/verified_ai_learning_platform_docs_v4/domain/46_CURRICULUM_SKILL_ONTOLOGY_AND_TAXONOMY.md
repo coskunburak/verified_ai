@@ -170,3 +170,13 @@ Example seed edges:
 - Unknown AI labels are rejected or routed to review; they do not create new skills.
 - Display labels and localized strings are derived from curriculum resources, not persisted as identifiers.
 - Analytics uses canonical skill IDs or privacy-safe bands; it does not receive raw problem text by default.
+
+## Sprint 7.4 evidence-to-skill mapping
+
+MistakeTaxonomy.SKILLS permits five direct mappings: sign distribution → MATH.ALGEBRA.SIMPLIFY_EXPRESSIONS;
+fraction denominator addition → MATH.ARITHMETIC.FRACTIONS; negative inequality direction →
+MATH.EQUATIONS.INEQUALITIES_BASIC; composition order → MATH.FUNCTIONS.COMPOSITION; omitted chain factor →
+MATH.CALCULUS.DIFFERENTIATION.CHAIN_RULE. CurriculumTaxonomyCatalog must confirm active membership.
+All other signatures retain skillId=null unless a future version establishes an explicit mapping. The combined
+product/quotient signature cannot choose one derivative skill. Legacy attempt-skill-v1:* values remain legacy
+representations and are never promoted into canonical ontology identities. Mapping version: mistake-category-v1.

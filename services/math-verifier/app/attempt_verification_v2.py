@@ -58,7 +58,7 @@ def execute(request):
                     'domainSatisfied':True,'verifierVersion':'bounded-attempt-v2','explanationCode':'DIFFERENT_TRUTH' if kind=='EQUATION_TRUTH' else 'UNEQUAL_VALUES'}
                 break
             steps.append(ResultStep(index=i,verdict='FIRST_WRONG_STEP',reasonCode='NON_EQUIVALENT',mistakeCode=code,
-                diagnosis=Diagnosis(code=code,evidenceId=evidence,explanationKey='attempt.mistake.'+code,changedExpressionPath=diff.changedExpressionPath,displayFallback=diff.displayFallback),diff=diff,
+                diagnosis=Diagnosis(classifierPolicyVersion="structural-signatures-v1",code=code,evidenceId=evidence,explanationKey='attempt.mistake.'+code,changedExpressionPath=diff.changedExpressionPath,displayFallback=diff.displayFallback),diff=diff,
                 counterexample=proof,counterexampleStatus='AVAILABLE' if proof else 'COUNTEREXAMPLE_UNAVAILABLE'))
             first=i; stop='EARLIER_DIVERGENCE'
         except (ValueError,NotImplementedError,TypeError,ZeroDivisionError):

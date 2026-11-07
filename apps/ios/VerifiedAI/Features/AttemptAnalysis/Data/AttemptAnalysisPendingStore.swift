@@ -140,3 +140,38 @@ extension AttemptAnalysisPendingStore {
         return data
     }
 }
+
+struct AttemptEvaluationPending: Codable, Equatable {
+    let attemptId: UUID; let key: String; let input: AttemptEvaluationRequest
+}
+extension AttemptAnalysisPendingStore {
+    private func evaluationFile(_ owner: UUID, _ problem: UUID) -> URL { directory.appendingPathComponent("evaluation_\(owner)_\(problem).json") }
+    func loadEvaluation(owner: UUID, problem: UUID) throws -> AttemptEvaluationPending? {
+        let url = evaluationFile(owner, problem)
+        guard FileManager.default.fileExists(atPath: url.path) else { return nil }
+        let handle = try FileHandle(forReadingFrom: url); defer { try? handle.close() }
+        let data = try handle.read(upToCount: 2049) ?? Data()
+        guard data.count <= 2048 else { throw NetworkError.invalidResponse }
+        let value = try JSONDecoder().decode(AttemptEvaluationPending.self, from: data)
+        try validateEvaluation(value); return value
+    }
+    private func validateEvaluation(_ value: AttemptEvaluationPending) throws {
+        guard value.key.range(of: #"^[A-Za-z0-9_-]{8,128}$"#, options: .regularExpression) != nil,
+              value.input.schemaVersion == "attempt-evaluation-request-v1", (1...30).contains(value.input.workRevision),
+              value.input.source.canonicalRevision > 0, value.input.source.parseRevision > 0 else { throw NetworkError.invalidResponse }
+    }
+    func saveEvaluation(_ value: AttemptEvaluationPending, owner: UUID, problem: UUID) throws {
+        try validateEvaluation(value)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        var root = directory; var flags = URLResourceValues(); flags.isExcludedFromBackup = true; try root.setResourceValues(flags)
+        let url = evaluationFile(owner, problem)
+        if !FileManager.default.fileExists(atPath: url.path), try FileManager.default.contentsOfDirectory(atPath: directory.path).count >= 90 { throw NetworkError.invalidResponse }
+        let data = try JSONEncoder().encode(value)
+        guard data.count <= 2048 else { throw NetworkError.invalidResponse }
+        try data.write(to: url, options: [.atomic, .completeFileProtection])
+    }
+    func removeEvaluation(owner: UUID, problem: UUID) throws {
+        let url = evaluationFile(owner, problem)
+        if FileManager.default.fileExists(atPath: url.path) { try FileManager.default.removeItem(at: url) }
+    }
+}

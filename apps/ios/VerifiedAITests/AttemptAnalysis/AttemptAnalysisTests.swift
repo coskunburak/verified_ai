@@ -582,3 +582,284 @@ extension AttemptStructuredWorkTests {
         XCTAssertFalse(lines[0].confirmed)
     }
 }
+
+@MainActor
+final class AttemptEvaluationTests: XCTestCase {
+    private func fixture<T: Decodable>(_ name: String, as type: T.Type) throws -> T {
+        let url = try XCTUnwrap(Bundle.main.url(forResource: name, withExtension: "json"))
+        return try JSONDecoder().decode(type, from: Data(contentsOf: url))
+    }
+    private func idle(_ model: AnalyzeMyWorkViewModel) async {
+        for _ in 0..<150 { if !model.busy { return }; try? await Task.sleep(nanoseconds: 10_000_000) }
+        XCTFail("Evaluation did not finish")
+    }
+    func testSharedContractDoesNotPromoteValidStepsToFinalCorrectness() throws {
+        let work = try fixture("attempt-evaluation-work-v1", as: AttemptStructuredWork.self)
+        let view = try fixture("attempt-evaluation-view-v1", as: AttemptEvaluationView.self).validated(work: work)
+        XCTAssertEqual(view.evaluation?.finalAnswerStatus, .notProvided)
+        XCTAssertEqual(view.evaluation?.analysis.outcome, .progress)
+        XCTAssertEqual(view.evaluation?.stepIds, work.steps.map(\.id))
+    }
+    func testWrongRevisionAndForgedFinalVerdictRejected() throws {
+        let work = try fixture("attempt-evaluation-work-v1", as: AttemptStructuredWork.self)
+        let url = try XCTUnwrap(Bundle.main.url(forResource: "attempt-evaluation-view-v1", withExtension: "json"))
+        var object = try JSONSerialization.jsonObject(with: Data(contentsOf: url)) as! [String: Any]
+        var evidence = object["evaluation"] as! [String: Any]
+        evidence["workRevision"] = 2; object["evaluation"] = evidence
+        var view = try JSONDecoder().decode(AttemptEvaluationView.self, from: JSONSerialization.data(withJSONObject: object))
+        XCTAssertThrowsError(try view.validated(work: work))
+        evidence["workRevision"] = 1; evidence["finalAnswerStatus"] = "VERIFIED"; object["evaluation"] = evidence
+        view = try JSONDecoder().decode(AttemptEvaluationView.self, from: JSONSerialization.data(withJSONObject: object))
+        XCTAssertThrowsError(try view.validated(work: work))
+    }
+    func testPendingIdentityIsProtectedAndAccountScoped() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        let store = AttemptAnalysisPendingStore(directory: directory); defer { try? store.clearAll() }
+        let work = try fixture("attempt-evaluation-work-v1", as: AttemptStructuredWork.self)
+        let operation = AttemptEvaluationPending(attemptId: work.attemptId, key: UUID().uuidString, input: .init(work: work))
+        try store.saveEvaluation(operation, owner: work.ownerId, problem: work.problemSessionId)
+        XCTAssertEqual(try store.loadEvaluation(owner: work.ownerId, problem: work.problemSessionId), operation)
+        XCTAssertNil(try store.loadEvaluation(owner: UUID(), problem: work.problemSessionId))
+        try store.removeEvaluation(owner: work.ownerId, problem: work.problemSessionId)
+        XCTAssertNil(try store.loadEvaluation(owner: work.ownerId, problem: work.problemSessionId))
+    }
+    func testExplicitActionAndResumeReadOnly() async throws {
+        let store = AttemptAnalysisPendingStore(directory: FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString))
+        defer { try? store.clearAll() }
+        let model = AnalyzeMyWorkViewModel(owner: UUID(), problem: UUID(), service: FixtureAttemptAnalysisAPI(), store: store, ownsAccount: { true })
+        model.resume(); await idle(model); model.draft = "x=4"; model.startStructured(); model.submit(); await idle(model)
+        XCTAssertEqual(model.evaluation?.status, .notEvaluated)
+        model.suspend(); model.resume(); await idle(model)
+        XCTAssertEqual(model.evaluation?.status, .notEvaluated)
+        model.evaluateWork(); await idle(model)
+        XCTAssertEqual(model.evaluation?.status, .completed)
+        XCTAssertEqual(model.evaluation?.evaluation?.analysis.steps.first?.verdict, .uncertain)
+        XCTAssertNil(model.pendingEvaluation)
+        model.reviseStructured(); model.submit(); await idle(model)
+        XCTAssertEqual(model.evaluation?.status, .notEvaluated)
+        XCTAssertNil(model.evaluation?.evaluation)
+    }
+    func testEnglishTurkishEvaluationAccessibilityStrings() throws {
+        for language in ["en", "tr"] {
+            let path = try XCTUnwrap(Bundle.main.path(forResource: language, ofType: "lproj"))
+            let bundle = try XCTUnwrap(Bundle(path: path))
+            for key in ["attempt.evaluation.action", "attempt.evaluation.historical", "attempt.evaluation.RETRYABLE", "attempt.evaluation.final.INCONCLUSIVE", "attempt.evaluation.final.NOT_PROVIDED"] {
+                XCTAssertNotEqual(bundle.localizedString(forKey: key, value: nil, table: nil), key)
+            }
+        }
+    }
+}
+
+private actor EvaluationRecoveryAPI: AttemptAnalysisServicing {
+    let backing = FixtureAttemptAnalysisAPI()
+    var lose = true
+    let delay: Bool
+    var readFailure: Bool
+    private(set) var calls = 0
+    init(delay: Bool = false, readFailure: Bool = false) { self.delay = delay; self.readFailure = readFailure }
+    func context(problem: UUID) async throws -> AttemptContext { try await backing.context(problem: problem) }
+    func list(problem: UUID) async throws -> [StudentAttempt] { try await backing.list(problem: problem) }
+    func submit(problem: UUID, key: String, submission: AttemptSubmission) async throws -> StudentAttempt { try await backing.submit(problem: problem, key: key, submission: submission) }
+    func submitWork(problem: UUID, key: String, input: AttemptWorkRequest) async throws -> AttemptStructuredWork { try await backing.submitWork(problem: problem, key: key, input: input) }
+    func readWork(problem: UUID, attempt: UUID) async throws -> AttemptStructuredWork? { try await backing.readWork(problem: problem, attempt: attempt) }
+    func readEvaluation(problem: UUID, attempt: UUID) async throws -> AttemptEvaluationView {
+        if readFailure {
+            readFailure = false
+            throw NetworkError.server(problem: ProblemDetails(type: "about:blank", title: "Synthetic read conflict", status: 409,
+                code: "OPTIMISTIC_CONFLICT", traceId: nil, details: nil))
+        }
+        return try await backing.readEvaluation(problem: problem, attempt: attempt)
+    }
+    func evaluate(problem: UUID, attempt: UUID, key: String, input: AttemptEvaluationRequest) async throws -> AttemptEvaluationView {
+        calls += 1
+        let result = try await backing.evaluate(problem: problem, attempt: attempt, key: key, input: input)
+        if delay { try? await Task.sleep(nanoseconds: 200_000_000); return result }
+        if lose { lose = false; throw URLError(.networkConnectionLost) }
+        return result
+    }
+}
+extension AttemptEvaluationTests {
+    func testLostAcknowledgementRecoversByReadWithoutSecondComputation() async throws {
+        let store = AttemptAnalysisPendingStore(directory: FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString))
+        defer { try? store.clearAll() }
+        let api = EvaluationRecoveryAPI(), owner = UUID(uuidString: "00000000-0000-0000-0000-000000007200")!
+        let model = AnalyzeMyWorkViewModel(owner: owner, problem: UUID(), service: api, store: store, ownsAccount: { true })
+        model.resume(); await idle(model); model.draft = "x=4"; model.startStructured(); model.submit(); await idle(model)
+        model.evaluateWork(); await idle(model)
+        let pending = try XCTUnwrap(model.pendingEvaluation)
+        XCTAssertEqual(try store.loadEvaluation(owner: owner, problem: model.problem), pending)
+        model.suspend(); model.resume(); await idle(model)
+        XCTAssertEqual(model.evaluation?.status, .completed); XCTAssertNil(model.pendingEvaluation)
+        let calls = await api.calls; XCTAssertEqual(calls, 1)
+    }
+    func testCancelledAndAccountSwitchedResponsesCannotPublish() async throws {
+        let store = AttemptAnalysisPendingStore(directory: FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString))
+        defer { try? store.clearAll() }
+        let api = EvaluationRecoveryAPI(delay: true), owner = UUID(uuidString: "00000000-0000-0000-0000-000000007200")!
+        var owns = true
+        let model = AnalyzeMyWorkViewModel(owner: owner, problem: UUID(), service: api, store: store, ownsAccount: { owns })
+        model.resume(); await idle(model); model.draft = "x=4"; model.startStructured(); model.submit(); await idle(model)
+        model.evaluateWork()
+        for _ in 0..<50 { if await api.calls > 0 { break }; try? await Task.sleep(nanoseconds: 10_000_000) }
+        owns = false; model.invalidate()
+        try? await Task.sleep(nanoseconds: 300_000_000)
+        XCTAssertNil(model.evaluation); XCTAssertNil(model.workResult); XCTAssertNil(model.result)
+    }
+    func testSupersededWorkDisplaysHistoricalEvaluation() async throws {
+        let api = FixtureAttemptAnalysisAPI(), problem = UUID()
+        let source = try await api.context(problem: problem).source
+        let request = AttemptWorkRequest(source: source, engine: "MANUAL", observations: [], steps: [.init(id: UUID(), text: "x=4", role: .intermediate, observationIds: [], confirmed: true)])
+        let first = try await api.submitWork(problem: problem, key: "historical-first", input: request)
+        _ = try await api.evaluate(problem: problem, attempt: first.attemptId, key: "evaluate-first", input: .init(work: first))
+        var revision = request; revision.supersedesAttemptId = first.attemptId
+        _ = try await api.submitWork(problem: problem, key: "historical-second", input: revision)
+        let view = try await api.readEvaluation(problem: problem, attempt: first.attemptId).validated(work: first)
+        XCTAssertTrue(view.historical); XCTAssertEqual(view.status, .completed)
+    }
+}
+
+extension AttemptEvaluationTests {
+    func testEvaluationReadFailureCannotResurrectAcknowledgedCapture() async throws {
+        let storage = AttemptAnalysisPendingStore(directory: FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString))
+        defer { try? storage.clearAll() }
+        let api = EvaluationRecoveryAPI(readFailure: true)
+        let owner = UUID(uuidString: "00000000-0000-0000-0000-000000007200")!, problem = UUID()
+        let model = AnalyzeMyWorkViewModel(owner: owner, problem: problem, service: api, store: storage, ownsAccount: { true })
+        model.resume(); await idle(model); model.draft = "x=4"; model.startStructured(); model.submit(); await idle(model)
+        XCTAssertNotNil(model.workResult); XCTAssertNotNil(model.result)
+        XCTAssertNil(model.workDraft); XCTAssertNil(model.pendingWork)
+        XCTAssertNil(try storage.loadWork(owner: owner, problem: problem))
+        XCTAssertNil(try storage.loadDraft(owner: owner, problem: problem))
+        XCTAssertEqual(model.errorKey, "attempt.retry")
+        model.retry(); await idle(model)
+        XCTAssertEqual(model.evaluation?.status, .notEvaluated)
+        let calls = await api.calls; XCTAssertEqual(calls, 0)
+    }
+}
+
+@MainActor
+final class AttemptMistakeTests: XCTestCase {
+    private func fixture<T: Decodable>(_ name: String, _ type: T.Type) throws -> T {
+        let url = try XCTUnwrap(Bundle.main.url(forResource: name, withExtension: "json"))
+        return try JSONDecoder().decode(type, from: Data(contentsOf: url))
+    }
+    private func idle(_ model: AnalyzeMyWorkViewModel) async {
+        for _ in 0..<150 { if !model.busy { return }; try? await Task.sleep(nanoseconds: 10_000_000) }
+        XCTFail("Classification did not settle")
+    }
+    private func preparedModel(_ api: ClassificationRecoveryAPI, owns: @escaping @MainActor () async -> Bool = { true }) async -> AnalyzeMyWorkViewModel {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        addTeardownBlock { try? FileManager.default.removeItem(at: directory) }
+        let model = AnalyzeMyWorkViewModel(owner: UUID(uuidString: "00000000-0000-0000-0000-000000007200")!, problem: UUID(), service: api,
+            store: AttemptAnalysisPendingStore(directory: directory), ownsAccount: owns)
+        model.resume(); await idle(model); model.draft = "x=4"; model.startStructured(); model.submit(); await idle(model)
+        model.evaluateWork(); await idle(model)
+        return model
+    }
+    func testSharedSignatureCategoryAndEvidenceIdentity() throws {
+        let e = try fixture("attempt-mistake-evaluation-v1", AttemptEvaluation.self)
+        let view = try fixture("attempt-mistake-view-v1", AttemptMistakeView.self).validated(evaluation: e)
+        XCTAssertEqual(view.classification?.decision.category, .sign)
+        XCTAssertEqual(view.classification?.decision.evidenceStrength, .structural)
+        XCTAssertEqual(view.classification?.firstWrongStepId, e.stepIds.first)
+        XCTAssertFalse(try XCTUnwrap(view.classification).trainingEligible)
+    }
+    func testMalformedProvenanceUnknownVersionAndMissingEvidenceFailClosed() throws {
+        let e = try fixture("attempt-mistake-evaluation-v1", AttemptEvaluation.self)
+        let url = try XCTUnwrap(Bundle.main.url(forResource: "attempt-mistake-view-v1", withExtension: "json"))
+        let original = try JSONSerialization.jsonObject(with: Data(contentsOf: url)) as! [String: Any]
+        for (key, value) in [("taxonomyVersion", "future-v99"), ("supportingEvidenceId", "forged"), ("ownerId", UUID().uuidString)] {
+            var root = original; var artifact = root["classification"] as! [String: Any]; artifact[key] = value; root["classification"] = artifact
+            let decoded = try JSONDecoder().decode(AttemptMistakeView.self, from: JSONSerialization.data(withJSONObject: root))
+            XCTAssertThrowsError(try decoded.validated(evaluation: e))
+        }
+        var root = original; var artifact = root["classification"] as! [String: Any]; var decision = artifact["decision"] as! [String: Any]
+        decision["authority"] = "MODEL_SUGGESTION"; artifact["decision"] = decision; root["classification"] = artifact
+        let decoded = try JSONDecoder().decode(AttemptMistakeView.self, from: JSONSerialization.data(withJSONObject: root))
+        XCTAssertThrowsError(try decoded.validated(evaluation: e))
+    }
+    func testExplicitActionAndUnsupportedStateNeverInventCategory() async {
+        let api = ClassificationRecoveryAPI(); let model = await preparedModel(api)
+        XCTAssertTrue(model.canClassify); let before = await api.calls; XCTAssertEqual(before, 0)
+        model.classifyWork(); await idle(model)
+        XCTAssertEqual(model.classification?.classification?.decision.status, .unsupported)
+        XCTAssertNil(model.classification?.classification?.decision.category)
+        XCTAssertFalse(model.canClassify)
+    }
+    func testLostAcknowledgementRecoversByReadWithoutDuplicatePublication() async throws {
+        let api = ClassificationRecoveryAPI(lose: true); let model = await preparedModel(api)
+        let input = AttemptMistakeRequest(evaluation: try XCTUnwrap(model.evaluation?.evaluation))
+        model.classifyWork(); await idle(model); XCTAssertNotNil(model.errorKey)
+        model.suspend(); model.resume(); await idle(model)
+        XCTAssertEqual(model.classification?.status, .completed)
+        let calls = await api.calls; XCTAssertEqual(calls, 1)
+        XCTAssertEqual(input.retryKey, AttemptMistakeRequest(evaluation: try XCTUnwrap(model.evaluation?.evaluation)).retryKey)
+    }
+    func testOfflineRetryPreservesEvaluationAndRetryIdentity() async throws {
+        let api = ClassificationRecoveryAPI(offline: true); let model = await preparedModel(api)
+        let id = try XCTUnwrap(model.evaluation?.evaluation?.id)
+        model.classifyWork(); await idle(model); XCTAssertNotNil(model.errorKey)
+        XCTAssertEqual(model.evaluation?.evaluation?.id, id); XCTAssertTrue(model.canClassify)
+        model.classifyWork(); await idle(model)
+        XCTAssertEqual(model.classification?.status, .completed)
+        let keys = await api.keys; XCTAssertEqual(keys.count, 2); XCTAssertEqual(Set(keys).count, 1)
+    }
+    func testAccountSwitchAndCancelledResponseCannotPublish() async {
+        var owns = true
+        let api = ClassificationRecoveryAPI(delay: true); let model = await preparedModel(api, owns: { owns })
+        model.classifyWork()
+        for _ in 0..<50 { if await api.calls > 0 { break }; try? await Task.sleep(nanoseconds: 10_000_000) }
+        owns = false; model.invalidate(); try? await Task.sleep(nanoseconds: 300_000_000)
+        XCTAssertNil(model.classification); XCTAssertNil(model.evaluation); XCTAssertFalse(model.canClassify)
+    }
+    func testRevisedWorkDoesNotInheritClassification() async {
+        let api = ClassificationRecoveryAPI(); let model = await preparedModel(api)
+        model.classifyWork(); await idle(model); XCTAssertNotNil(model.classification?.classification)
+        model.reviseStructured(); model.submit(); await idle(model); XCTAssertNil(model.classification)
+    }
+    func testStaleClassificationKeepsAcceptedEvaluationAndStopsNewWrites() async throws {
+        let api = ClassificationRecoveryAPI(stale: true); let model = await preparedModel(api)
+        let accepted = try XCTUnwrap(model.evaluation?.evaluation?.id)
+        model.classifyWork(); await idle(model)
+        XCTAssertEqual(model.evaluation?.evaluation?.id, accepted)
+        XCTAssertEqual(model.classification?.status, .stale); XCTAssertEqual(model.classification?.historical, true)
+        XCTAssertFalse(model.canClassify); XCTAssertEqual(model.errorKey, "attempt.stale")
+    }
+    func testTaxonomyCategoriesAndLocalizationAreComplete() {
+        XCTAssertEqual(AttemptMistakeClassification.categories.count, 17)
+        for code in AttemptMistakeClassification.categories.keys {
+            for prefix in ["attempt.mistake.", "attempt.classification.correction."] {
+                XCTAssertNotEqual(String(localized: String.LocalizationValue(prefix + code)), prefix + code)
+            }
+        }
+        for key in ["UNSUPPORTED", "UNCERTAIN", "INCOMPLETE_WORK", "review.REQUIRED", "strength.NONE"] {
+            let name = "attempt.classification." + key
+            XCTAssertNotEqual(String(localized: String.LocalizationValue(name)), name)
+        }
+    }
+}
+private actor ClassificationRecoveryAPI: AttemptAnalysisServicing {
+    let backing = FixtureAttemptAnalysisAPI()
+    var lose: Bool; var offline: Bool; let delay: Bool; let stale: Bool
+    private(set) var calls = 0
+    private(set) var keys: [String] = []
+    init(lose: Bool = false, offline: Bool = false, delay: Bool = false, stale: Bool = false) { self.lose = lose; self.offline = offline; self.delay = delay; self.stale = stale }
+    func context(problem: UUID) async throws -> AttemptContext { try await backing.context(problem: problem) }
+    func list(problem: UUID) async throws -> [StudentAttempt] { try await backing.list(problem: problem) }
+    func submit(problem: UUID, key: String, submission: AttemptSubmission) async throws -> StudentAttempt { try await backing.submit(problem: problem, key: key, submission: submission) }
+    func submitWork(problem: UUID, key: String, input: AttemptWorkRequest) async throws -> AttemptStructuredWork { try await backing.submitWork(problem: problem, key: key, input: input) }
+    func readWork(problem: UUID, attempt: UUID) async throws -> AttemptStructuredWork? { try await backing.readWork(problem: problem, attempt: attempt) }
+    func readEvaluation(problem: UUID, attempt: UUID) async throws -> AttemptEvaluationView { try await backing.readEvaluation(problem: problem, attempt: attempt) }
+    func evaluate(problem: UUID, attempt: UUID, key: String, input: AttemptEvaluationRequest) async throws -> AttemptEvaluationView { try await backing.evaluate(problem: problem, attempt: attempt, key: key, input: input) }
+    func readClassification(problem: UUID, attempt: UUID) async throws -> AttemptMistakeView { try await backing.readClassification(problem: problem, attempt: attempt) }
+    func classify(problem: UUID, attempt: UUID, key: String, input: AttemptMistakeRequest) async throws -> AttemptMistakeView {
+        calls += 1; keys.append(key)
+        if stale { throw NetworkError.server(problem: ProblemDetails(type: "about:blank", title: "Synthetic stale source", status: 409,
+            code: "ATTEMPT_STALE_SOURCE", traceId: nil, details: nil)) }
+        if offline { offline = false; throw URLError(.notConnectedToInternet) }
+        let result = try await backing.classify(problem: problem, attempt: attempt, key: key, input: input)
+        if delay { try? await Task.sleep(nanoseconds: 200_000_000) }
+        if lose { lose = false; throw URLError(.networkConnectionLost) }
+        return result
+    }
+}

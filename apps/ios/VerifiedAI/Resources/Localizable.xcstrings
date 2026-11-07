@@ -3264,13 +3264,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "The assigned quantity conflicts with the explicit variable definition. Match the variable to the stated quantity and unit."
+            "value": "One operand of the explicit TOTAL expression was omitted. The submitted expression is not equivalent to that total."
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Atanan nicelik, değişkenin açık tanımıyla uyuşmuyor. Değişkeni belirtilen nicelik ve birimle eşleştir."
+            "value": "Açık TOTAL ifadesinin bir bileşeni atlandı. Gönderilen ifade bu toplama eşdeğer değil."
           }
         }
       }
@@ -10348,6 +10348,1110 @@
           "stringUnit": {
             "state": "translated",
             "value": "Klavyeyi kapat"
+          }
+        }
+      }
+    },
+    "attempt.evaluation.action": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Evaluate saved work"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaydedilen çalışmayı değerlendir"
+          }
+        }
+      }
+    },
+    "attempt.evaluation.NOT_EVALUATED": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saved, not evaluated"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaydedildi, değerlendirilmedi"
+          }
+        }
+      }
+    },
+    "attempt.evaluation.IN_PROGRESS": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Evaluation in progress. Refresh to check."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Değerlendirme sürüyor. Kontrol etmek için yenileyin."
+          }
+        }
+      }
+    },
+    "attempt.evaluation.RETRYABLE": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Evaluation service unavailable. Tap evaluate to retry safely."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Değerlendirme hizmeti kullanılamıyor. Güvenli tekrar için değerlendir düğmesine dokunun."
+          }
+        }
+      }
+    },
+    "attempt.evaluation.COMPLETED": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Evaluation evidence"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Değerlendirme kanıtları"
+          }
+        }
+      }
+    },
+    "attempt.evaluation.STALE": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Source or work has changed. Review the current revision."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaynak veya çalışma değişti. Güncel sürümü inceleyin."
+          }
+        }
+      }
+    },
+    "attempt.evaluation.historical": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Historical evaluation — source or work has changed"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geçmiş değerlendirme — kaynak veya çalışma değişti"
+          }
+        }
+      }
+    },
+    "attempt.evaluation.scope": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Step equivalence and final-answer completeness are assessed separately."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adım eşdeğerliği ve son cevabın eksiksizliği ayrı değerlendirilir."
+          }
+        }
+      }
+    },
+    "attempt.evaluation.final.VERIFIED": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Final answer: verified for the supported task"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Son cevap: desteklenen görev için doğrulandı"
+          }
+        }
+      }
+    },
+    "attempt.evaluation.final.DISPROVEN": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Final answer: disproven"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Son cevap: yanlışlığı kanıtlandı"
+          }
+        }
+      }
+    },
+    "attempt.evaluation.final.INCONCLUSIVE": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Final answer: correctness or completeness not established"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Son cevap: doğruluğu veya eksiksizliği kanıtlanamadı"
+          }
+        }
+      }
+    },
+    "attempt.evaluation.final.NOT_PROVIDED": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Final answer: not provided, not assessed"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Son cevap: verilmedi, değerlendirilmedi"
+          }
+        }
+      }
+    },
+    "attempt.evaluation.final.REVIEW_REQUIRED": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Final answer: transcription needs review"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Son cevap: metin incelemesi gerekli"
+          }
+        }
+      }
+    },
+    "attempt.evaluation.captureSaved": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Original saved work"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaydedilen özgün çalışma"
+          }
+        }
+      }
+    },
+    "attempt.evaluation.reason.EXACT_IDENTITY": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exact identity established on the supported domain."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Desteklenen tanım kümesinde özdeşlik kanıtlandı."
+          }
+        }
+      }
+    },
+    "attempt.evaluation.reason.SAME_SOLUTION_SET": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Equivalent solution sets established within the source scope."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaynak kapsamı içinde çözüm kümelerinin eşdeğerliği kanıtlandı."
+          }
+        }
+      }
+    },
+    "attempt.evaluation.reason.NON_EQUIVALENT": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This transformation is mathematically disproven."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu dönüşümün matematiksel olarak yanlışlığı kanıtlandı."
+          }
+        }
+      }
+    },
+    "attempt.evaluation.reason.UNSUPPORTED_MATH": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The submitted statement cannot be verified in the supported scope."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gönderilen ifade desteklenen kapsamda doğrulanamıyor."
+          }
+        }
+      }
+    },
+    "attempt.evaluation.reason.UNKNOWN_DOMAIN": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The source domain has not been established."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaynağın tanım kümesi belirlenmedi."
+          }
+        }
+      }
+    },
+    "attempt.evaluation.reason.UNDEFINED_SOURCE": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The source has no supported defined domain."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaynağın desteklenen bir tanım kümesi yok."
+          }
+        }
+      }
+    },
+    "attempt.evaluation.reason.EARLIER_DIVERGENCE": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not assessed after an earlier disproven step."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Önceki yanlış adım nedeniyle değerlendirilmedi."
+          }
+        }
+      }
+    },
+    "attempt.evaluation.reason.EARLIER_UNCERTAINTY": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not assessed after an earlier uncertain step."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Önceki belirsiz adım nedeniyle değerlendirilmedi."
+          }
+        }
+      }
+    },
+    "attempt.classification.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mistake evidence"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hata kanıtı"
+          }
+        }
+      }
+    },
+    "attempt.classification.action": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Classify evaluated work"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Değerlendirilen çalışmayı sınıflandır"
+          }
+        }
+      }
+    },
+    "attempt.classification.firstStep": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "First incorrect step"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İlk hatalı adım"
+          }
+        }
+      }
+    },
+    "attempt.classification.NOT_CLASSIFIED": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This evaluation has not been classified."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu değerlendirme henüz sınıflandırılmadı."
+          }
+        }
+      }
+    },
+    "attempt.classification.INVALID_TRANSFORMATION": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This transformation is disproven, but its specific cause cannot be established."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu dönüşümün yanlışlığı kanıtlandı; özgül nedeni belirlenemedi."
+          }
+        }
+      }
+    },
+    "attempt.classification.UNCERTAIN": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The evidence does not establish a reliable causal classification."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kanıt, güvenilir bir nedensel sınıflandırma için yeterli değil."
+          }
+        }
+      }
+    },
+    "attempt.classification.UNSUPPORTED": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "We cannot reliably classify this work within the supported mathematical scope."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu çalışmayı desteklenen matematik kapsamı içinde güvenilir biçimde sınıflandıramıyoruz."
+          }
+        }
+      }
+    },
+    "attempt.classification.SOURCE_REVIEW_REQUIRED": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Review the source and confirmed transcription before classifying."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sınıflandırmadan önce kaynağı ve onaylanan metni gözden geçirin."
+          }
+        }
+      }
+    },
+    "attempt.classification.INCOMPLETE_WORK": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The assessed steps are valid so far; no final answer was provided. This is not a confirmed mistake."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Değerlendirilen adımlar şu ana kadar geçerli; son yanıt verilmedi. Bu, kanıtlanmış bir hata değildir."
+          }
+        }
+      }
+    },
+    "attempt.classification.NO_ERROR_ESTABLISHED": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No causal mistake is established by these steps. This does not prove a complete solution."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu adımlar nedensel bir hata göstermiyor. Bu, çözümün tamamlandığını kanıtlamaz."
+          }
+        }
+      }
+    },
+    "attempt.classification.strength.STRUCTURAL_AND_DISPROOF": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Evidence: exact disproof and a supported structural signature."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kanıt: kesin çürütme ve desteklenen yapısal hata imzası."
+          }
+        }
+      }
+    },
+    "attempt.classification.strength.EXACT_DISPROOF": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Evidence: exact disproof; the cause remains unresolved."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kanıt: kesin çürütme; neden henüz belirlenemedi."
+          }
+        }
+      }
+    },
+    "attempt.classification.strength.NONE": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Evidence is insufficient for an error label."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hata etiketi için kanıt yetersiz."
+          }
+        }
+      }
+    },
+    "attempt.classification.review.AUTO_DETECTED": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automatically detected from verified evidence; this is not a probability or a claim about your intention."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Doğrulanmış kanıttan otomatik saptandı; olasılık veya niyetiniz hakkında bir çıkarım değildir."
+          }
+        }
+      }
+    },
+    "attempt.classification.review.REQUIRED": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Further review is needed before treating this as a specific mistake."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bunu özgül bir hata saymadan önce ek inceleme gerekiyor."
+          }
+        }
+      }
+    },
+    "attempt.classification.category.CONCEPT_ERROR": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Concept or domain rule"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kavram veya tanım kümesi kuralı"
+          }
+        }
+      }
+    },
+    "attempt.classification.category.FORMULA_ERROR": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Formula rule"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Formül kuralı"
+          }
+        }
+      }
+    },
+    "attempt.classification.category.ALGEBRA_ERROR": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Algebraic transformation"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cebirsel dönüşüm"
+          }
+        }
+      }
+    },
+    "attempt.classification.category.SIGN_ERROR": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign or direction"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İşaret veya yön"
+          }
+        }
+      }
+    },
+    "attempt.classification.category.CALCULATION_ERROR": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Calculation"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hesaplama"
+          }
+        }
+      }
+    },
+    "attempt.classification.category.INTERPRETATION_ERROR": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Expression mapping"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İfade eşleştirmesi"
+          }
+        }
+      }
+    },
+    "attempt.classification.category.UNIT_ERROR": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unit"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Birim"
+          }
+        }
+      }
+    },
+    "attempt.classification.category.NOTATION_ERROR": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notation"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gösterim"
+          }
+        }
+      }
+    },
+    "attempt.classification.category.INCOMPLETE_SOLUTION": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Incomplete solution"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eksik çözüm"
+          }
+        }
+      }
+    },
+    "attempt.classification.category.OTHER_REVIEWED": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Other reviewed case"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İncelenmiş diğer durum"
+          }
+        }
+      }
+    },
+    "attempt.classification.correction.ALG_SIGN_FLIP_DISTRIBUTE": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apply the minus sign to both terms inside the parentheses."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Parantez içindeki her iki terime de eksi işaretini uygulayın."
+          }
+        }
+      }
+    },
+    "attempt.classification.correction.ALG_FRESHMAN_DREAM_POWER": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Expand the product and retain the cross term."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çarpımı açın ve çapraz terimi koruyun."
+          }
+        }
+      }
+    },
+    "attempt.classification.correction.ALG_FRACTION_ADD_DENOM": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use a common denominator before adding the numerators."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Payları toplamadan önce ortak payda kullanın."
+          }
+        }
+      }
+    },
+    "attempt.classification.correction.ALG_ROOT_LOST_BY_DIVISION": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check the roots of the factor before dividing by it."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bir çarpana bölmeden önce çarpanı sıfır yapan değerleri kontrol edin."
+          }
+        }
+      }
+    },
+    "attempt.classification.correction.DOM_EXTRANEOUS_ROOT_DENOM": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check candidate roots in the original denominators."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aday kökleri başlangıçtaki paydalarda kontrol edin."
+          }
+        }
+      }
+    },
+    "attempt.classification.correction.DOM_EVEN_ROOT_NEGATIVE": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check each candidate against the original real-root equation."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Her aday değeri başlangıçtaki gerçek köklü denklemde kontrol edin."
+          }
+        }
+      }
+    },
+    "attempt.classification.correction.DOM_LOG_NON_POSITIVE": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check positivity of the original logarithm arguments."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Başlangıçtaki logaritma argümanlarının pozitifliğini kontrol edin."
+          }
+        }
+      }
+    },
+    "attempt.classification.correction.INEQ_NEGATIVE_MULT_NO_FLIP": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reverse the inequality when multiplying or dividing by a negative value."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Negatif değerle çarparken veya bölerken eşitsizliğin yönünü değiştirin."
+          }
+        }
+      }
+    },
+    "attempt.classification.correction.INEQ_CROSS_MULT_VARIABLE": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Separate denominator sign cases and preserve excluded values."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paydanın işaret durumlarını ayırın ve dışlanan değerleri koruyun."
+          }
+        }
+      }
+    },
+    "attempt.classification.correction.ABS_SINGLE_BRANCH_ONLY": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check both branches of the absolute-value equation."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mutlak değer denkleminin her iki dalını kontrol edin."
+          }
+        }
+      }
+    },
+    "attempt.classification.correction.FUNC_COMPOSITION_ORDER": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Evaluate the inner function first, preserving the original order."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Başlangıçtaki sırayı koruyarak önce iç fonksiyonu hesaplayın."
+          }
+        }
+      }
+    },
+    "attempt.classification.correction.TRIG_PERIOD_OMITTED": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Include all proven roots within the specified source interval."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Belirtilen başlangıç aralığındaki tüm kanıtlanmış kökleri dahil edin."
+          }
+        }
+      }
+    },
+    "attempt.classification.correction.CALC_LIMIT_INDETERMINATE_SUB": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resolve the indeterminate form before stating the limit."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Limiti belirtmeden önce belirsiz biçimi giderin."
+          }
+        }
+      }
+    },
+    "attempt.classification.correction.CALC_CHAIN_RULE_OMITTED": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Include the derivative of the inner function."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İç fonksiyonun türevini de çarpan olarak dahil edin."
+          }
+        }
+      }
+    },
+    "attempt.classification.correction.CALC_PRODUCT_QUOTIENT_NAIVE": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apply the appropriate product or quotient rule."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uygun çarpım veya bölüm türev kuralını uygulayın."
+          }
+        }
+      }
+    },
+    "attempt.classification.correction.CALC_INTEGRAL_BOUNDS_SWAPPED": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preserve the original integration bounds and orientation."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Başlangıçtaki integral sınırlarını ve yönünü koruyun."
+          }
+        }
+      }
+    },
+    "attempt.classification.correction.WORD_VARIABLE_MISASSIGNMENT": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retain both operands of the explicit TOTAL expression."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Açık TOTAL ifadesinin her iki bileşenini de koruyun."
+          }
+        }
+      }
+    },
+    "attempt.classification.skill.MATH.ALGEBRA.SIMPLIFY_EXPRESSIONS": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skill: simplify expressions"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beceri: ifadeleri sadeleştirme"
+          }
+        }
+      }
+    },
+    "attempt.classification.skill.MATH.ARITHMETIC.FRACTIONS": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skill: fractions"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beceri: kesirler"
+          }
+        }
+      }
+    },
+    "attempt.classification.skill.MATH.EQUATIONS.INEQUALITIES_BASIC": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skill: basic inequalities"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beceri: temel eşitsizlikler"
+          }
+        }
+      }
+    },
+    "attempt.classification.skill.MATH.FUNCTIONS.COMPOSITION": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skill: function composition"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beceri: fonksiyon bileşkesi"
+          }
+        }
+      }
+    },
+    "attempt.classification.skill.MATH.CALCULUS.DIFFERENTIATION.CHAIN_RULE": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skill: chain rule"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beceri: zincir kuralı"
           }
         }
       }

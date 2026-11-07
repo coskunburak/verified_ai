@@ -72,6 +72,9 @@ public class StudentAttemptRepository {
     }
     public List<com.verifiedai.attempt.domain.AttemptStructuredWork> structuredExport(UUID owner) { return new AttemptWorkRepository(jdbc).export(owner); }
     public Map<String,Object> learningExport(UUID owner) { return learning.export(owner); }
+    public List<com.verifiedai.attempt.domain.AttemptMistakeClassification> classificationExport(UUID owner) { return new AttemptMistakeRepository(jdbc).export(owner); }
+
+    public List<com.verifiedai.attempt.domain.AttemptEvaluation> evaluationExport(UUID owner) { return new AttemptEvaluationRepository(jdbc).export(owner); }
     public void delete(UUID owner) { learning.delete(owner); jdbc.update("delete from student_attempts where user_id=?",owner); }
     private StudentAttempt readRow(ResultSet rs) throws SQLException {
         var steps=jdbc.query("select step_index,content,normalized_statement::text from student_attempt_steps where user_id=? and attempt_id=? order by step_index",

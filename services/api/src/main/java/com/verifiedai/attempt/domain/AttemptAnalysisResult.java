@@ -19,8 +19,12 @@ public record AttemptAnalysisResult(String schemaVersion,String verifierVersion,
                 || changedExpressionPath==null || !changedExpressionPath.matches("/[A-Za-z0-9_/]*")) invalid();
         }
     }
-    public record Diagnosis(MistakeCode code,String evidenceId,String explanationKey,String changedExpressionPath,String displayFallback) {
-        public Diagnosis { if(code==null || evidenceId==null || evidenceId.length()>96 || explanationKey==null || !explanationKey.equals("attempt.mistake."+code.name()) || changedExpressionPath==null || !changedExpressionPath.matches("/[A-Za-z0-9_/]*") || !Set.of("STEP_LEVEL","SUBEXPRESSION").contains(displayFallback)) invalid(); }
+    public record Diagnosis(MistakeCode code,String evidenceId,String explanationKey,String changedExpressionPath,String displayFallback,
+        @com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL) String classifierPolicyVersion) {
+        public Diagnosis(MistakeCode code,String evidenceId,String explanationKey,String changedExpressionPath,String displayFallback) {
+            this(code,evidenceId,explanationKey,changedExpressionPath,displayFallback,null);
+        }
+        public Diagnosis { if(classifierPolicyVersion!=null && !"structural-signatures-v1".equals(classifierPolicyVersion)) invalid(); if(code==null || evidenceId==null || evidenceId.length()>96 || explanationKey==null || !explanationKey.equals("attempt.mistake."+code.name()) || changedExpressionPath==null || !changedExpressionPath.matches("/[A-Za-z0-9_/]*") || !Set.of("STEP_LEVEL","SUBEXPRESSION").contains(displayFallback)) invalid(); }
     }
     public AttemptAnalysisResult {
         steps=List.copyOf(steps);

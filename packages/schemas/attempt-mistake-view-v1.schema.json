@@ -1,0 +1,962 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "attempt-mistake-view-v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "attempt-mistake-view-v1"
+    },
+    "attemptId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "status": {
+      "enum": [
+        "NOT_CLASSIFIED",
+        "COMPLETED",
+        "STALE"
+      ]
+    },
+    "historical": {
+      "type": "boolean"
+    },
+    "creationEnabled": {
+      "type": "boolean"
+    },
+    "classification": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/classification"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "attemptId",
+    "status",
+    "historical",
+    "creationEnabled",
+    "classification"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "COMPLETED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "classification": {
+            "$ref": "#/$defs/classification"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "classification": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "STALE"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "historical": {
+            "const": true
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "classification": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schemaVersion": {
+          "const": "attempt-mistake-classification-v1"
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "attemptId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "ownerId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "problemSessionId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "evaluationId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "executionId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "canonicalId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "canonicalRevision": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "parseId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "parseRevision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "canonicalId",
+            "canonicalRevision",
+            "parseId",
+            "parseRevision"
+          ]
+        },
+        "workRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        },
+        "taxonomyVersion": {
+          "const": "attempt-taxonomy-v2"
+        },
+        "categoryVersion": {
+          "const": "mistake-category-v1"
+        },
+        "policyVersion": {
+          "const": "evidence-classifier-v1"
+        },
+        "verifierVersion": {
+          "const": "bounded-attempt-v2"
+        },
+        "firstWrongStepId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "firstWrongStepIndex": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 12
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "supportingEvidenceId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f-]{36}:(?:[1-9]|1[0-2])$",
+              "maxLength": 39
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "decision": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "enum": [
+                "SIGNATURE_SUPPORTED",
+                "INVALID_TRANSFORMATION",
+                "UNCERTAIN",
+                "UNSUPPORTED",
+                "SOURCE_REVIEW_REQUIRED",
+                "INCOMPLETE_WORK",
+                "NO_ERROR_ESTABLISHED"
+              ]
+            },
+            "code": {
+              "enum": [
+                "ALG_SIGN_FLIP_DISTRIBUTE",
+                "ALG_FRESHMAN_DREAM_POWER",
+                "ALG_FRACTION_ADD_DENOM",
+                "ALG_ROOT_LOST_BY_DIVISION",
+                "DOM_EXTRANEOUS_ROOT_DENOM",
+                "DOM_EVEN_ROOT_NEGATIVE",
+                "DOM_LOG_NON_POSITIVE",
+                "INEQ_NEGATIVE_MULT_NO_FLIP",
+                "INEQ_CROSS_MULT_VARIABLE",
+                "ABS_SINGLE_BRANCH_ONLY",
+                "FUNC_COMPOSITION_ORDER",
+                "TRIG_PERIOD_OMITTED",
+                "CALC_LIMIT_INDETERMINATE_SUB",
+                "CALC_CHAIN_RULE_OMITTED",
+                "CALC_PRODUCT_QUOTIENT_NAIVE",
+                "CALC_INTEGRAL_BOUNDS_SWAPPED",
+                "WORD_VARIABLE_MISASSIGNMENT",
+                "INVALID_TRANSFORMATION",
+                "ALG_TRANSFORMATION_INVALID",
+                null
+              ]
+            },
+            "category": {
+              "enum": [
+                "ALGEBRA_ERROR",
+                "CONCEPT_ERROR",
+                "FORMULA_ERROR",
+                "INTERPRETATION_ERROR",
+                "SIGN_ERROR",
+                null
+              ]
+            },
+            "authority": {
+              "const": "DETERMINISTIC_EVIDENCE"
+            },
+            "evidenceStrength": {
+              "enum": [
+                "STRUCTURAL_AND_DISPROOF",
+                "EXACT_DISPROOF",
+                "NONE"
+              ]
+            },
+            "reviewStatus": {
+              "enum": [
+                "AUTO_DETECTED",
+                "REQUIRED"
+              ]
+            },
+            "skillId": {
+              "enum": [
+                "MATH.ALGEBRA.SIMPLIFY_EXPRESSIONS",
+                "MATH.ARITHMETIC.FRACTIONS",
+                "MATH.EQUATIONS.INEQUALITIES_BASIC",
+                "MATH.FUNCTIONS.COMPOSITION",
+                "MATH.CALCULUS.DIFFERENTIATION.CHAIN_RULE",
+                null
+              ]
+            },
+            "explanationKey": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          "required": [
+            "status",
+            "code",
+            "category",
+            "authority",
+            "evidenceStrength",
+            "reviewStatus",
+            "skillId",
+            "explanationKey"
+          ],
+          "oneOf": [
+            {
+              "properties": {
+                "status": {
+                  "const": "SIGNATURE_SUPPORTED"
+                },
+                "code": {
+                  "const": "ALG_SIGN_FLIP_DISTRIBUTE"
+                },
+                "category": {
+                  "const": "SIGN_ERROR"
+                },
+                "evidenceStrength": {
+                  "const": "STRUCTURAL_AND_DISPROOF"
+                },
+                "reviewStatus": {
+                  "const": "AUTO_DETECTED"
+                },
+                "skillId": {
+                  "enum": [
+                    null,
+                    "MATH.ALGEBRA.SIMPLIFY_EXPRESSIONS"
+                  ]
+                },
+                "explanationKey": {
+                  "const": "attempt.mistake.ALG_SIGN_FLIP_DISTRIBUTE"
+                }
+              }
+            },
+            {
+              "properties": {
+                "status": {
+                  "const": "SIGNATURE_SUPPORTED"
+                },
+                "code": {
+                  "const": "ALG_FRESHMAN_DREAM_POWER"
+                },
+                "category": {
+                  "const": "ALGEBRA_ERROR"
+                },
+                "evidenceStrength": {
+                  "const": "STRUCTURAL_AND_DISPROOF"
+                },
+                "reviewStatus": {
+                  "const": "AUTO_DETECTED"
+                },
+                "skillId": {
+                  "type": "null"
+                },
+                "explanationKey": {
+                  "const": "attempt.mistake.ALG_FRESHMAN_DREAM_POWER"
+                }
+              }
+            },
+            {
+              "properties": {
+                "status": {
+                  "const": "SIGNATURE_SUPPORTED"
+                },
+                "code": {
+                  "const": "ALG_FRACTION_ADD_DENOM"
+                },
+                "category": {
+                  "const": "ALGEBRA_ERROR"
+                },
+                "evidenceStrength": {
+                  "const": "STRUCTURAL_AND_DISPROOF"
+                },
+                "reviewStatus": {
+                  "const": "AUTO_DETECTED"
+                },
+                "skillId": {
+                  "enum": [
+                    null,
+                    "MATH.ARITHMETIC.FRACTIONS"
+                  ]
+                },
+                "explanationKey": {
+                  "const": "attempt.mistake.ALG_FRACTION_ADD_DENOM"
+                }
+              }
+            },
+            {
+              "properties": {
+                "status": {
+                  "const": "SIGNATURE_SUPPORTED"
+                },
+                "code": {
+                  "const": "ALG_ROOT_LOST_BY_DIVISION"
+                },
+                "category": {
+                  "const": "ALGEBRA_ERROR"
+                },
+                "evidenceStrength": {
+                  "const": "STRUCTURAL_AND_DISPROOF"
+                },
+                "reviewStatus": {
+                  "const": "AUTO_DETECTED"
+                },
+                "skillId": {
+                  "type": "null"
+                },
+                "explanationKey": {
+                  "const": "attempt.mistake.ALG_ROOT_LOST_BY_DIVISION"
+                }
+              }
+            },
+            {
+              "properties": {
+                "status": {
+                  "const": "SIGNATURE_SUPPORTED"
+                },
+                "code": {
+                  "const": "DOM_EXTRANEOUS_ROOT_DENOM"
+                },
+                "category": {
+                  "const": "CONCEPT_ERROR"
+                },
+                "evidenceStrength": {
+                  "const": "STRUCTURAL_AND_DISPROOF"
+                },
+                "reviewStatus": {
+                  "const": "AUTO_DETECTED"
+                },
+                "skillId": {
+                  "type": "null"
+                },
+                "explanationKey": {
+                  "const": "attempt.mistake.DOM_EXTRANEOUS_ROOT_DENOM"
+                }
+              }
+            },
+            {
+              "properties": {
+                "status": {
+                  "const": "SIGNATURE_SUPPORTED"
+                },
+                "code": {
+                  "const": "DOM_EVEN_ROOT_NEGATIVE"
+                },
+                "category": {
+                  "const": "CONCEPT_ERROR"
+                },
+                "evidenceStrength": {
+                  "const": "STRUCTURAL_AND_DISPROOF"
+                },
+                "reviewStatus": {
+                  "const": "AUTO_DETECTED"
+                },
+                "skillId": {
+                  "type": "null"
+                },
+                "explanationKey": {
+                  "const": "attempt.mistake.DOM_EVEN_ROOT_NEGATIVE"
+                }
+              }
+            },
+            {
+              "properties": {
+                "status": {
+                  "const": "SIGNATURE_SUPPORTED"
+                },
+                "code": {
+                  "const": "DOM_LOG_NON_POSITIVE"
+                },
+                "category": {
+                  "const": "CONCEPT_ERROR"
+                },
+                "evidenceStrength": {
+                  "const": "STRUCTURAL_AND_DISPROOF"
+                },
+                "reviewStatus": {
+                  "const": "AUTO_DETECTED"
+                },
+                "skillId": {
+                  "type": "null"
+                },
+                "explanationKey": {
+                  "const": "attempt.mistake.DOM_LOG_NON_POSITIVE"
+                }
+              }
+            },
+            {
+              "properties": {
+                "status": {
+                  "const": "SIGNATURE_SUPPORTED"
+                },
+                "code": {
+                  "const": "INEQ_NEGATIVE_MULT_NO_FLIP"
+                },
+                "category": {
+                  "const": "SIGN_ERROR"
+                },
+                "evidenceStrength": {
+                  "const": "STRUCTURAL_AND_DISPROOF"
+                },
+                "reviewStatus": {
+                  "const": "AUTO_DETECTED"
+                },
+                "skillId": {
+                  "enum": [
+                    null,
+                    "MATH.EQUATIONS.INEQUALITIES_BASIC"
+                  ]
+                },
+                "explanationKey": {
+                  "const": "attempt.mistake.INEQ_NEGATIVE_MULT_NO_FLIP"
+                }
+              }
+            },
+            {
+              "properties": {
+                "status": {
+                  "const": "SIGNATURE_SUPPORTED"
+                },
+                "code": {
+                  "const": "INEQ_CROSS_MULT_VARIABLE"
+                },
+                "category": {
+                  "const": "ALGEBRA_ERROR"
+                },
+                "evidenceStrength": {
+                  "const": "STRUCTURAL_AND_DISPROOF"
+                },
+                "reviewStatus": {
+                  "const": "AUTO_DETECTED"
+                },
+                "skillId": {
+                  "type": "null"
+                },
+                "explanationKey": {
+                  "const": "attempt.mistake.INEQ_CROSS_MULT_VARIABLE"
+                }
+              }
+            },
+            {
+              "properties": {
+                "status": {
+                  "const": "SIGNATURE_SUPPORTED"
+                },
+                "code": {
+                  "const": "ABS_SINGLE_BRANCH_ONLY"
+                },
+                "category": {
+                  "const": "ALGEBRA_ERROR"
+                },
+                "evidenceStrength": {
+                  "const": "STRUCTURAL_AND_DISPROOF"
+                },
+                "reviewStatus": {
+                  "const": "AUTO_DETECTED"
+                },
+                "skillId": {
+                  "type": "null"
+                },
+                "explanationKey": {
+                  "const": "attempt.mistake.ABS_SINGLE_BRANCH_ONLY"
+                }
+              }
+            },
+            {
+              "properties": {
+                "status": {
+                  "const": "SIGNATURE_SUPPORTED"
+                },
+                "code": {
+                  "const": "FUNC_COMPOSITION_ORDER"
+                },
+                "category": {
+                  "const": "CONCEPT_ERROR"
+                },
+                "evidenceStrength": {
+                  "const": "STRUCTURAL_AND_DISPROOF"
+                },
+                "reviewStatus": {
+                  "const": "AUTO_DETECTED"
+                },
+                "skillId": {
+                  "enum": [
+                    null,
+                    "MATH.FUNCTIONS.COMPOSITION"
+                  ]
+                },
+                "explanationKey": {
+                  "const": "attempt.mistake.FUNC_COMPOSITION_ORDER"
+                }
+              }
+            },
+            {
+              "properties": {
+                "status": {
+                  "const": "SIGNATURE_SUPPORTED"
+                },
+                "code": {
+                  "const": "TRIG_PERIOD_OMITTED"
+                },
+                "category": {
+                  "const": "CONCEPT_ERROR"
+                },
+                "evidenceStrength": {
+                  "const": "STRUCTURAL_AND_DISPROOF"
+                },
+                "reviewStatus": {
+                  "const": "AUTO_DETECTED"
+                },
+                "skillId": {
+                  "type": "null"
+                },
+                "explanationKey": {
+                  "const": "attempt.mistake.TRIG_PERIOD_OMITTED"
+                }
+              }
+            },
+            {
+              "properties": {
+                "status": {
+                  "const": "SIGNATURE_SUPPORTED"
+                },
+                "code": {
+                  "const": "CALC_LIMIT_INDETERMINATE_SUB"
+                },
+                "category": {
+                  "const": "CONCEPT_ERROR"
+                },
+                "evidenceStrength": {
+                  "const": "STRUCTURAL_AND_DISPROOF"
+                },
+                "reviewStatus": {
+                  "const": "AUTO_DETECTED"
+                },
+                "skillId": {
+                  "type": "null"
+                },
+                "explanationKey": {
+                  "const": "attempt.mistake.CALC_LIMIT_INDETERMINATE_SUB"
+                }
+              }
+            },
+            {
+              "properties": {
+                "status": {
+                  "const": "SIGNATURE_SUPPORTED"
+                },
+                "code": {
+                  "const": "CALC_CHAIN_RULE_OMITTED"
+                },
+                "category": {
+                  "const": "FORMULA_ERROR"
+                },
+                "evidenceStrength": {
+                  "const": "STRUCTURAL_AND_DISPROOF"
+                },
+                "reviewStatus": {
+                  "const": "AUTO_DETECTED"
+                },
+                "skillId": {
+                  "enum": [
+                    null,
+                    "MATH.CALCULUS.DIFFERENTIATION.CHAIN_RULE"
+                  ]
+                },
+                "explanationKey": {
+                  "const": "attempt.mistake.CALC_CHAIN_RULE_OMITTED"
+                }
+              }
+            },
+            {
+              "properties": {
+                "status": {
+                  "const": "SIGNATURE_SUPPORTED"
+                },
+                "code": {
+                  "const": "CALC_PRODUCT_QUOTIENT_NAIVE"
+                },
+                "category": {
+                  "const": "FORMULA_ERROR"
+                },
+                "evidenceStrength": {
+                  "const": "STRUCTURAL_AND_DISPROOF"
+                },
+                "reviewStatus": {
+                  "const": "AUTO_DETECTED"
+                },
+                "skillId": {
+                  "type": "null"
+                },
+                "explanationKey": {
+                  "const": "attempt.mistake.CALC_PRODUCT_QUOTIENT_NAIVE"
+                }
+              }
+            },
+            {
+              "properties": {
+                "status": {
+                  "const": "SIGNATURE_SUPPORTED"
+                },
+                "code": {
+                  "const": "CALC_INTEGRAL_BOUNDS_SWAPPED"
+                },
+                "category": {
+                  "const": "SIGN_ERROR"
+                },
+                "evidenceStrength": {
+                  "const": "STRUCTURAL_AND_DISPROOF"
+                },
+                "reviewStatus": {
+                  "const": "AUTO_DETECTED"
+                },
+                "skillId": {
+                  "type": "null"
+                },
+                "explanationKey": {
+                  "const": "attempt.mistake.CALC_INTEGRAL_BOUNDS_SWAPPED"
+                }
+              }
+            },
+            {
+              "properties": {
+                "status": {
+                  "const": "SIGNATURE_SUPPORTED"
+                },
+                "code": {
+                  "const": "WORD_VARIABLE_MISASSIGNMENT"
+                },
+                "category": {
+                  "const": "INTERPRETATION_ERROR"
+                },
+                "evidenceStrength": {
+                  "const": "STRUCTURAL_AND_DISPROOF"
+                },
+                "reviewStatus": {
+                  "const": "AUTO_DETECTED"
+                },
+                "skillId": {
+                  "type": "null"
+                },
+                "explanationKey": {
+                  "const": "attempt.mistake.WORD_VARIABLE_MISASSIGNMENT"
+                }
+              }
+            },
+            {
+              "properties": {
+                "status": {
+                  "const": "INVALID_TRANSFORMATION"
+                },
+                "code": {
+                  "enum": [
+                    "INVALID_TRANSFORMATION",
+                    "ALG_TRANSFORMATION_INVALID"
+                  ]
+                },
+                "category": {
+                  "type": "null"
+                },
+                "skillId": {
+                  "type": "null"
+                },
+                "evidenceStrength": {
+                  "const": "EXACT_DISPROOF"
+                },
+                "reviewStatus": {
+                  "const": "REQUIRED"
+                },
+                "explanationKey": {
+                  "const": "attempt.classification.INVALID_TRANSFORMATION"
+                }
+              }
+            },
+            {
+              "properties": {
+                "status": {
+                  "const": "UNCERTAIN"
+                },
+                "code": {
+                  "type": "null"
+                },
+                "category": {
+                  "type": "null"
+                },
+                "skillId": {
+                  "type": "null"
+                },
+                "evidenceStrength": {
+                  "const": "NONE"
+                },
+                "reviewStatus": {
+                  "const": "REQUIRED"
+                },
+                "explanationKey": {
+                  "const": "attempt.classification.UNCERTAIN"
+                }
+              }
+            },
+            {
+              "properties": {
+                "status": {
+                  "const": "UNSUPPORTED"
+                },
+                "code": {
+                  "type": "null"
+                },
+                "category": {
+                  "type": "null"
+                },
+                "skillId": {
+                  "type": "null"
+                },
+                "evidenceStrength": {
+                  "const": "NONE"
+                },
+                "reviewStatus": {
+                  "const": "REQUIRED"
+                },
+                "explanationKey": {
+                  "const": "attempt.classification.UNSUPPORTED"
+                }
+              }
+            },
+            {
+              "properties": {
+                "status": {
+                  "const": "SOURCE_REVIEW_REQUIRED"
+                },
+                "code": {
+                  "type": "null"
+                },
+                "category": {
+                  "type": "null"
+                },
+                "skillId": {
+                  "type": "null"
+                },
+                "evidenceStrength": {
+                  "const": "NONE"
+                },
+                "reviewStatus": {
+                  "const": "REQUIRED"
+                },
+                "explanationKey": {
+                  "const": "attempt.classification.SOURCE_REVIEW_REQUIRED"
+                }
+              }
+            },
+            {
+              "properties": {
+                "status": {
+                  "const": "INCOMPLETE_WORK"
+                },
+                "code": {
+                  "type": "null"
+                },
+                "category": {
+                  "type": "null"
+                },
+                "skillId": {
+                  "type": "null"
+                },
+                "evidenceStrength": {
+                  "const": "NONE"
+                },
+                "reviewStatus": {
+                  "const": "REQUIRED"
+                },
+                "explanationKey": {
+                  "const": "attempt.classification.INCOMPLETE_WORK"
+                }
+              }
+            },
+            {
+              "properties": {
+                "status": {
+                  "const": "NO_ERROR_ESTABLISHED"
+                },
+                "code": {
+                  "type": "null"
+                },
+                "category": {
+                  "type": "null"
+                },
+                "skillId": {
+                  "type": "null"
+                },
+                "evidenceStrength": {
+                  "const": "NONE"
+                },
+                "reviewStatus": {
+                  "const": "REQUIRED"
+                },
+                "explanationKey": {
+                  "const": "attempt.classification.NO_ERROR_ESTABLISHED"
+                }
+              }
+            }
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 40
+        },
+        "trainingEligible": {
+          "const": false
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "id",
+        "attemptId",
+        "ownerId",
+        "problemSessionId",
+        "evaluationId",
+        "executionId",
+        "source",
+        "workRevision",
+        "taxonomyVersion",
+        "categoryVersion",
+        "policyVersion",
+        "verifierVersion",
+        "firstWrongStepId",
+        "firstWrongStepIndex",
+        "supportingEvidenceId",
+        "decision",
+        "createdAt",
+        "trainingEligible"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "decision": {
+                "properties": {
+                  "evidenceStrength": {
+                    "const": "NONE"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "firstWrongStepId": {
+                "type": "null"
+              },
+              "firstWrongStepIndex": {
+                "type": "null"
+              },
+              "supportingEvidenceId": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "firstWrongStepId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "firstWrongStepIndex": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 12
+              },
+              "supportingEvidenceId": {
+                "type": "string",
+                "minLength": 38
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

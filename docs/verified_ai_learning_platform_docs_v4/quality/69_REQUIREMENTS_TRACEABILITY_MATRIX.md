@@ -230,3 +230,28 @@ physical-device accessibility, 50-student TestFlight evidence or production auth
 ## Sprint 6.10 hardening traceability
 
 REQ-TRUST-001 / REQ-VERIFY-001 / REQ-MATH-001 / REQ-PRIV-001: accessible verification/uncertainty, grouped mathematical speech, exact-versus-approximate chart semantics, and unchanged protected recovery/account boundaries. Evidence map: `sprints/phase06_solution_experience_and_tutoring/SPRINT_6.10_FUNCTIONAL_COMPLETION_MATRIX.md` A–G. Owner runner: `scripts/quality/sprint_6_10_owner_acceptance.sh`; fresh full iOS, relevant backend/privacy/contracts, catalog and docs gates. Source: SOURCE_COMPLETE_PENDING_OWNER_ACCEPTANCE; tests NOT_RUN_BY_AGENT; device and CI release gates remain external.
+
+## Sprint 7.3 source traceability
+
+| Requirement | Implementation and evidence owner | Acceptance |
+|---|---|---|
+| REQ-TRUST-001 / REQ-VERIFY-001 | AttemptEvaluationPreparer/Service; independent final proof, ordered v2 evidence, 15 mathematical goldens | B/C/G; VERIFIED_BY_OWNER (full run 20261107-025110-XrMKJK) |
+| Existing REQ-PRIV-001 | V035 parent-owner/source binding, immutable derived evidence, privacy export/cascade | B/E; VERIFIED_BY_OWNER (full run 20261107-025110-XrMKJK) |
+| Existing REQ-EVAL-001 | Sprint 7.3 A–G runner, current 7.2 regressions, source fingerprints and adversarial evidence tests | A–G; VERIFIED_BY_OWNER (full run 20261107-025110-XrMKJK) |
+| Sprint 7.3 learner recovery | Real iOS API, explicit evaluation, protected pending identity, account fences, EN/TR/AX | C/D; VERIFIED_BY_OWNER (full run 20261107-025110-XrMKJK) |
+
+Detailed requirement-to-test mapping is in the Sprint 7.3 functional completion matrix. Source is SOURCE_COMPLETE;
+agent execution is NOT_EXECUTED_BY_AGENT. No prior sprint pass certifies this source or authorizes rollout.
+
+Acceptance is tied to the full-run fingerprint in the Sprint 7.3 execution report; external release gates remain unverified.
+
+## Sprint 7.4 evidence-grounded classification
+
+| Requirement | Source and evidence owner | Acceptance |
+|---|---|---|
+| Existing REQ-VERIFY-001 / REQ-MATH-001 | Accepted evaluation identity, causal disproof, bounded structural classification and 17-family negative goldens | B/C/G; PENDING_OWNER_TEST |
+| Existing REQ-PRIV-001 | V036 owner/evaluation FK, immutable records, export/deletion and training exclusion | B/E; PENDING_OWNER_TEST |
+| Existing REQ-TRUST-001 | Evidence bands, explicit unsupported/review, EN/TR accessible UI and recovery fences | C/D; PENDING_OWNER_TEST |
+
+Functional evidence map: Sprint 7.4 matrix A–J. Fresh independent owner runner: scripts/quality/
+sprint_7_4_owner_acceptance.sh --full. Prior owner evidence cannot certify this changed source.

@@ -3147,3 +3147,11 @@ If product evidence justifies additional clients, add `apps/android/` and/or `ap
 8. Tests mirror ownership; generated outputs are isolated; secrets never enter source.
 9. Documentation and sprint artifacts are implementation contracts and must evolve with code.
 10. If a required path is missing, architecture must be updated explicitly before inventing a local convention.
+
+## Sprint 7.4 concrete placement
+
+The implemented namespace is com.verifiedai. Pure classification semantics live in the mistake module's
+public root; attempt/{domain,application,api,infrastructure} owns accepted-evaluation derivation and durable
+lifecycle. V036 is in db/migration/platform. Shared category/schema/fixtures are in packages/schemas;
+Python reuses app/verifiers/attempt_diagnosis.py. Existing iOS Features/AttemptAnalysis files own UI/model
+changes, and quality scripts own independent owner acceptance. No parallel classifier service is introduced.

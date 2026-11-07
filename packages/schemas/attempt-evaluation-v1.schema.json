@@ -1,0 +1,1191 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "attempt-evaluation-v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "attempt-evaluation-v1"
+    },
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "attemptId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "ownerId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "problemSessionId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "canonicalId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "canonicalRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "parseId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "parseRevision": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "canonicalId",
+        "canonicalRevision",
+        "parseId",
+        "parseRevision"
+      ]
+    },
+    "workRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 30
+    },
+    "policyVersion": {
+      "const": "structured-evaluation-v1"
+    },
+    "executionId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "stepIds": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 12,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      }
+    },
+    "analysis": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schemaVersion": {
+          "const": "attempt-analysis-v2"
+        },
+        "verifierVersion": {
+          "const": "bounded-attempt-v2"
+        },
+        "taxonomyVersion": {
+          "const": "attempt-taxonomy-v2"
+        },
+        "executionId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "correlationId": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "INCOMPLETE_VALID_SO_FAR",
+            "STEP_ERROR_FOUND",
+            "NEEDS_REVIEW"
+          ]
+        },
+        "firstWrongStepIndex": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 12
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "domain": {
+          "enum": [
+            "REAL_DOMAIN",
+            "UNSUPPORTED"
+          ]
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "index": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 12
+              },
+              "verdict": {
+                "type": "string",
+                "enum": [
+                  "VALID_EQUIVALENT",
+                  "FIRST_WRONG_STEP",
+                  "UNCERTAIN",
+                  "NOT_ASSESSED"
+                ]
+              },
+              "reasonCode": {
+                "type": "string",
+                "maxLength": 64
+              },
+              "mistakeCode": {
+                "anyOf": [
+                  {
+                    "enum": [
+                      "INVALID_TRANSFORMATION",
+                      "ALG_SIGN_FLIP_DISTRIBUTE",
+                      "ALG_FRESHMAN_DREAM_POWER",
+                      "ALG_FRACTION_ADD_DENOM",
+                      "ALG_ROOT_LOST_BY_DIVISION",
+                      "DOM_EXTRANEOUS_ROOT_DENOM",
+                      "DOM_EVEN_ROOT_NEGATIVE",
+                      "DOM_LOG_NON_POSITIVE",
+                      "INEQ_NEGATIVE_MULT_NO_FLIP",
+                      "INEQ_CROSS_MULT_VARIABLE",
+                      "ABS_SINGLE_BRANCH_ONLY",
+                      "FUNC_COMPOSITION_ORDER",
+                      "TRIG_PERIOD_OMITTED",
+                      "CALC_LIMIT_INDETERMINATE_SUB",
+                      "CALC_CHAIN_RULE_OMITTED",
+                      "CALC_PRODUCT_QUOTIENT_NAIVE",
+                      "CALC_INTEGRAL_BOUNDS_SWAPPED",
+                      "WORD_VARIABLE_MISASSIGNMENT"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "counterexampleStatus": {
+                "type": "string",
+                "enum": [
+                  "AVAILABLE",
+                  "COUNTEREXAMPLE_UNAVAILABLE",
+                  "NOT_APPLICABLE"
+                ]
+              },
+              "counterexample": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "schemaVersion": {
+                        "const": "attempt-witness-v1"
+                      },
+                      "witnessType": {
+                        "type": "string",
+                        "enum": [
+                          "EXPRESSION_VALUES",
+                          "EQUATION_TRUTH"
+                        ]
+                      },
+                      "variableValues": {
+                        "type": "object",
+                        "maxProperties": 1,
+                        "additionalProperties": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "numerator": {
+                              "type": "string",
+                              "pattern": "^-?(0|[1-9][0-9]*)$",
+                              "maxLength": 320
+                            },
+                            "denominator": {
+                              "type": "string",
+                              "pattern": "^[1-9][0-9]*$",
+                              "maxLength": 320
+                            }
+                          },
+                          "required": [
+                            "numerator",
+                            "denominator"
+                          ]
+                        }
+                      },
+                      "previousStepEvaluation": {
+                        "type": "string",
+                        "maxLength": 650
+                      },
+                      "submittedStepEvaluation": {
+                        "type": "string",
+                        "maxLength": 650
+                      },
+                      "claimRefuted": {
+                        "type": "string",
+                        "enum": [
+                          "EXPRESSION_IDENTITY",
+                          "EQUATION_EQUIVALENCE"
+                        ]
+                      },
+                      "domainSatisfied": {
+                        "const": true
+                      },
+                      "verifierVersion": {
+                        "const": "bounded-attempt-v2"
+                      },
+                      "explanationCode": {
+                        "type": "string",
+                        "enum": [
+                          "UNEQUAL_VALUES",
+                          "DIFFERENT_TRUTH"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "schemaVersion",
+                      "witnessType",
+                      "variableValues",
+                      "previousStepEvaluation",
+                      "submittedStepEvaluation",
+                      "claimRefuted",
+                      "domainSatisfied",
+                      "verifierVersion",
+                      "explanationCode"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "diagnosis": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "code": {
+                        "enum": [
+                          "INVALID_TRANSFORMATION",
+                          "ALG_SIGN_FLIP_DISTRIBUTE",
+                          "ALG_FRESHMAN_DREAM_POWER",
+                          "ALG_FRACTION_ADD_DENOM",
+                          "ALG_ROOT_LOST_BY_DIVISION",
+                          "DOM_EXTRANEOUS_ROOT_DENOM",
+                          "DOM_EVEN_ROOT_NEGATIVE",
+                          "DOM_LOG_NON_POSITIVE",
+                          "INEQ_NEGATIVE_MULT_NO_FLIP",
+                          "INEQ_CROSS_MULT_VARIABLE",
+                          "ABS_SINGLE_BRANCH_ONLY",
+                          "FUNC_COMPOSITION_ORDER",
+                          "TRIG_PERIOD_OMITTED",
+                          "CALC_LIMIT_INDETERMINATE_SUB",
+                          "CALC_CHAIN_RULE_OMITTED",
+                          "CALC_PRODUCT_QUOTIENT_NAIVE",
+                          "CALC_INTEGRAL_BOUNDS_SWAPPED",
+                          "WORD_VARIABLE_MISASSIGNMENT"
+                        ]
+                      },
+                      "evidenceId": {
+                        "type": "string",
+                        "maxLength": 96
+                      },
+                      "explanationKey": {
+                        "type": "string",
+                        "maxLength": 96
+                      },
+                      "changedExpressionPath": {
+                        "type": "string",
+                        "maxLength": 160,
+                        "pattern": "^/[A-Za-z0-9_/]*$"
+                      },
+                      "displayFallback": {
+                        "enum": [
+                          "SUBEXPRESSION",
+                          "STEP_LEVEL"
+                        ]
+                      },
+                      "classifierPolicyVersion": {
+                        "enum": [
+                          "structural-signatures-v1",
+                          null
+                        ]
+                      }
+                    },
+                    "required": [
+                      "code",
+                      "evidenceId",
+                      "explanationKey",
+                      "changedExpressionPath",
+                      "displayFallback"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "diff": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "schemaVersion": {
+                        "const": "step-diff-v1"
+                      },
+                      "originalStepId": {
+                        "type": "string",
+                        "maxLength": 96
+                      },
+                      "submittedStepId": {
+                        "type": "string",
+                        "maxLength": 96
+                      },
+                      "changedExpressionPath": {
+                        "type": "string",
+                        "maxLength": 160,
+                        "pattern": "^/[A-Za-z0-9_/]*$"
+                      },
+                      "originalTokenRange": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "start": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 255
+                              },
+                              "end": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 256
+                              }
+                            },
+                            "required": [
+                              "start",
+                              "end"
+                            ]
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "submittedTokenRange": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "start": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 255
+                              },
+                              "end": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 256
+                              }
+                            },
+                            "required": [
+                              "start",
+                              "end"
+                            ]
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "diffCategory": {
+                        "const": "PROVEN_TRANSFORMATION"
+                      },
+                      "supportingEvidenceId": {
+                        "type": "string",
+                        "maxLength": 96
+                      },
+                      "confidence": {
+                        "enum": [
+                          "EXACT_STRUCTURAL",
+                          "STEP_ONLY"
+                        ]
+                      },
+                      "displayFallback": {
+                        "enum": [
+                          "SUBEXPRESSION",
+                          "STEP_LEVEL"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "schemaVersion",
+                      "originalStepId",
+                      "submittedStepId",
+                      "changedExpressionPath",
+                      "originalTokenRange",
+                      "submittedTokenRange",
+                      "diffCategory",
+                      "supportingEvidenceId",
+                      "confidence",
+                      "displayFallback"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "index",
+              "verdict",
+              "reasonCode",
+              "mistakeCode",
+              "counterexampleStatus",
+              "counterexample"
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 12
+        },
+        "domainBasis": {
+          "enum": [
+            "SOURCE_EXPLICIT",
+            "REVIEWED_REAL_TASK",
+            "UNRESOLVED"
+          ]
+        },
+        "naturalDomain": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Set"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "solutionSet": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Set"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "verifierVersion",
+        "taxonomyVersion",
+        "executionId",
+        "correlationId",
+        "outcome",
+        "firstWrongStepIndex",
+        "domain",
+        "steps",
+        "domainBasis"
+      ]
+    },
+    "finalStepId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "finalAnswerStatus": {
+      "enum": [
+        "VERIFIED",
+        "DISPROVEN",
+        "INCONCLUSIVE",
+        "NOT_PROVIDED",
+        "REVIEW_REQUIRED"
+      ]
+    },
+    "finalAnswerEvidence": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "schemaVersion": {
+              "const": "attempt-analysis-v2"
+            },
+            "verifierVersion": {
+              "const": "bounded-attempt-v2"
+            },
+            "taxonomyVersion": {
+              "const": "attempt-taxonomy-v2"
+            },
+            "executionId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "correlationId": {
+              "type": "string",
+              "maxLength": 64
+            },
+            "outcome": {
+              "type": "string",
+              "enum": [
+                "INCOMPLETE_VALID_SO_FAR",
+                "STEP_ERROR_FOUND",
+                "NEEDS_REVIEW"
+              ]
+            },
+            "firstWrongStepIndex": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 12
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "domain": {
+              "enum": [
+                "REAL_DOMAIN",
+                "UNSUPPORTED"
+              ]
+            },
+            "steps": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "index": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 12
+                  },
+                  "verdict": {
+                    "type": "string",
+                    "enum": [
+                      "VALID_EQUIVALENT",
+                      "FIRST_WRONG_STEP",
+                      "UNCERTAIN",
+                      "NOT_ASSESSED"
+                    ]
+                  },
+                  "reasonCode": {
+                    "type": "string",
+                    "maxLength": 64
+                  },
+                  "mistakeCode": {
+                    "anyOf": [
+                      {
+                        "enum": [
+                          "INVALID_TRANSFORMATION",
+                          "ALG_SIGN_FLIP_DISTRIBUTE",
+                          "ALG_FRESHMAN_DREAM_POWER",
+                          "ALG_FRACTION_ADD_DENOM",
+                          "ALG_ROOT_LOST_BY_DIVISION",
+                          "DOM_EXTRANEOUS_ROOT_DENOM",
+                          "DOM_EVEN_ROOT_NEGATIVE",
+                          "DOM_LOG_NON_POSITIVE",
+                          "INEQ_NEGATIVE_MULT_NO_FLIP",
+                          "INEQ_CROSS_MULT_VARIABLE",
+                          "ABS_SINGLE_BRANCH_ONLY",
+                          "FUNC_COMPOSITION_ORDER",
+                          "TRIG_PERIOD_OMITTED",
+                          "CALC_LIMIT_INDETERMINATE_SUB",
+                          "CALC_CHAIN_RULE_OMITTED",
+                          "CALC_PRODUCT_QUOTIENT_NAIVE",
+                          "CALC_INTEGRAL_BOUNDS_SWAPPED",
+                          "WORD_VARIABLE_MISASSIGNMENT"
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "counterexampleStatus": {
+                    "type": "string",
+                    "enum": [
+                      "AVAILABLE",
+                      "COUNTEREXAMPLE_UNAVAILABLE",
+                      "NOT_APPLICABLE"
+                    ]
+                  },
+                  "counterexample": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "schemaVersion": {
+                            "const": "attempt-witness-v1"
+                          },
+                          "witnessType": {
+                            "type": "string",
+                            "enum": [
+                              "EXPRESSION_VALUES",
+                              "EQUATION_TRUTH"
+                            ]
+                          },
+                          "variableValues": {
+                            "type": "object",
+                            "maxProperties": 1,
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "numerator": {
+                                  "type": "string",
+                                  "pattern": "^-?(0|[1-9][0-9]*)$",
+                                  "maxLength": 320
+                                },
+                                "denominator": {
+                                  "type": "string",
+                                  "pattern": "^[1-9][0-9]*$",
+                                  "maxLength": 320
+                                }
+                              },
+                              "required": [
+                                "numerator",
+                                "denominator"
+                              ]
+                            }
+                          },
+                          "previousStepEvaluation": {
+                            "type": "string",
+                            "maxLength": 650
+                          },
+                          "submittedStepEvaluation": {
+                            "type": "string",
+                            "maxLength": 650
+                          },
+                          "claimRefuted": {
+                            "type": "string",
+                            "enum": [
+                              "EXPRESSION_IDENTITY",
+                              "EQUATION_EQUIVALENCE"
+                            ]
+                          },
+                          "domainSatisfied": {
+                            "const": true
+                          },
+                          "verifierVersion": {
+                            "const": "bounded-attempt-v2"
+                          },
+                          "explanationCode": {
+                            "type": "string",
+                            "enum": [
+                              "UNEQUAL_VALUES",
+                              "DIFFERENT_TRUTH"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "schemaVersion",
+                          "witnessType",
+                          "variableValues",
+                          "previousStepEvaluation",
+                          "submittedStepEvaluation",
+                          "claimRefuted",
+                          "domainSatisfied",
+                          "verifierVersion",
+                          "explanationCode"
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "diagnosis": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "code": {
+                            "enum": [
+                              "INVALID_TRANSFORMATION",
+                              "ALG_SIGN_FLIP_DISTRIBUTE",
+                              "ALG_FRESHMAN_DREAM_POWER",
+                              "ALG_FRACTION_ADD_DENOM",
+                              "ALG_ROOT_LOST_BY_DIVISION",
+                              "DOM_EXTRANEOUS_ROOT_DENOM",
+                              "DOM_EVEN_ROOT_NEGATIVE",
+                              "DOM_LOG_NON_POSITIVE",
+                              "INEQ_NEGATIVE_MULT_NO_FLIP",
+                              "INEQ_CROSS_MULT_VARIABLE",
+                              "ABS_SINGLE_BRANCH_ONLY",
+                              "FUNC_COMPOSITION_ORDER",
+                              "TRIG_PERIOD_OMITTED",
+                              "CALC_LIMIT_INDETERMINATE_SUB",
+                              "CALC_CHAIN_RULE_OMITTED",
+                              "CALC_PRODUCT_QUOTIENT_NAIVE",
+                              "CALC_INTEGRAL_BOUNDS_SWAPPED",
+                              "WORD_VARIABLE_MISASSIGNMENT"
+                            ]
+                          },
+                          "evidenceId": {
+                            "type": "string",
+                            "maxLength": 96
+                          },
+                          "explanationKey": {
+                            "type": "string",
+                            "maxLength": 96
+                          },
+                          "changedExpressionPath": {
+                            "type": "string",
+                            "maxLength": 160,
+                            "pattern": "^/[A-Za-z0-9_/]*$"
+                          },
+                          "displayFallback": {
+                            "enum": [
+                              "SUBEXPRESSION",
+                              "STEP_LEVEL"
+                            ]
+                          },
+                          "classifierPolicyVersion": {
+                            "enum": [
+                              "structural-signatures-v1",
+                              null
+                            ]
+                          }
+                        },
+                        "required": [
+                          "code",
+                          "evidenceId",
+                          "explanationKey",
+                          "changedExpressionPath",
+                          "displayFallback"
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "diff": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "schemaVersion": {
+                            "const": "step-diff-v1"
+                          },
+                          "originalStepId": {
+                            "type": "string",
+                            "maxLength": 96
+                          },
+                          "submittedStepId": {
+                            "type": "string",
+                            "maxLength": 96
+                          },
+                          "changedExpressionPath": {
+                            "type": "string",
+                            "maxLength": 160,
+                            "pattern": "^/[A-Za-z0-9_/]*$"
+                          },
+                          "originalTokenRange": {
+                            "anyOf": [
+                              {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                  "start": {
+                                    "type": "integer",
+                                    "minimum": 0,
+                                    "maximum": 255
+                                  },
+                                  "end": {
+                                    "type": "integer",
+                                    "minimum": 1,
+                                    "maximum": 256
+                                  }
+                                },
+                                "required": [
+                                  "start",
+                                  "end"
+                                ]
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "submittedTokenRange": {
+                            "anyOf": [
+                              {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                  "start": {
+                                    "type": "integer",
+                                    "minimum": 0,
+                                    "maximum": 255
+                                  },
+                                  "end": {
+                                    "type": "integer",
+                                    "minimum": 1,
+                                    "maximum": 256
+                                  }
+                                },
+                                "required": [
+                                  "start",
+                                  "end"
+                                ]
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "diffCategory": {
+                            "const": "PROVEN_TRANSFORMATION"
+                          },
+                          "supportingEvidenceId": {
+                            "type": "string",
+                            "maxLength": 96
+                          },
+                          "confidence": {
+                            "enum": [
+                              "EXACT_STRUCTURAL",
+                              "STEP_ONLY"
+                            ]
+                          },
+                          "displayFallback": {
+                            "enum": [
+                              "SUBEXPRESSION",
+                              "STEP_LEVEL"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "schemaVersion",
+                          "originalStepId",
+                          "submittedStepId",
+                          "changedExpressionPath",
+                          "originalTokenRange",
+                          "submittedTokenRange",
+                          "diffCategory",
+                          "supportingEvidenceId",
+                          "confidence",
+                          "displayFallback"
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "index",
+                  "verdict",
+                  "reasonCode",
+                  "mistakeCode",
+                  "counterexampleStatus",
+                  "counterexample"
+                ]
+              },
+              "minItems": 1,
+              "maxItems": 12
+            },
+            "domainBasis": {
+              "enum": [
+                "SOURCE_EXPLICIT",
+                "REVIEWED_REAL_TASK",
+                "UNRESOLVED"
+              ]
+            },
+            "naturalDomain": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Set"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "solutionSet": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Set"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "schemaVersion",
+            "verifierVersion",
+            "taxonomyVersion",
+            "executionId",
+            "correlationId",
+            "outcome",
+            "firstWrongStepIndex",
+            "domain",
+            "steps",
+            "domainBasis"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "trainingEligible": {
+      "const": false
+    },
+    "realDomainConfirmed": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "id",
+    "attemptId",
+    "ownerId",
+    "problemSessionId",
+    "source",
+    "workRevision",
+    "policyVersion",
+    "executionId",
+    "createdAt",
+    "stepIds",
+    "analysis",
+    "finalStepId",
+    "finalAnswerStatus",
+    "finalAnswerEvidence",
+    "trainingEligible",
+    "realDomainConfirmed"
+  ],
+  "$defs": {
+    "Set": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "enum": [
+                "EMPTY_SET",
+                "REALS"
+              ]
+            }
+          },
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "FINITE_SET"
+            },
+            "elements": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 650
+              },
+              "minItems": 0,
+              "maxItems": 24
+            }
+          },
+          "required": [
+            "kind",
+            "elements"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "INTERVAL"
+            },
+            "start": {
+              "type": "string",
+              "maxLength": 650
+            },
+            "end": {
+              "type": "string",
+              "maxLength": 650
+            },
+            "leftOpen": {
+              "type": "boolean"
+            },
+            "rightOpen": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "kind",
+            "start",
+            "end",
+            "leftOpen",
+            "rightOpen"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "enum": [
+                "UNION",
+                "INTERSECTION"
+              ]
+            },
+            "sets": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Set"
+              },
+              "minItems": 1,
+              "maxItems": 48
+            }
+          },
+          "required": [
+            "kind",
+            "sets"
+          ]
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "finalAnswerStatus": {
+            "const": "NOT_PROVIDED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "finalStepId": {
+            "type": "null"
+          },
+          "finalAnswerEvidence": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "finalStepId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "finalAnswerStatus": {
+            "const": "REVIEW_REQUIRED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "finalAnswerEvidence": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "finalAnswerStatus": {
+            "const": "VERIFIED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "finalAnswerEvidence": {
+            "type": "object",
+            "properties": {
+              "steps": {
+                "minItems": 1,
+                "maxItems": 1,
+                "items": {
+                  "properties": {
+                    "verdict": {
+                      "const": "VALID_EQUIVALENT"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "finalAnswerStatus": {
+            "const": "DISPROVEN"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "finalAnswerEvidence": {
+            "type": "object",
+            "properties": {
+              "steps": {
+                "minItems": 1,
+                "maxItems": 1,
+                "items": {
+                  "properties": {
+                    "verdict": {
+                      "const": "FIRST_WRONG_STEP"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

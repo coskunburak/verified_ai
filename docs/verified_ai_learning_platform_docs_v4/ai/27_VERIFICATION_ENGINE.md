@@ -240,3 +240,32 @@ published or automatically collected by arbitration. The production path uses du
 exact evidence only. Production activation is prohibited; local/test flags default false.
 See [implementation map](../sprints/phase05_ai_solving_and_verification_core/SPRINT_5.11_IMPLEMENTATION_MAP.md)
 and [execution report](../sprints/phase05_ai_solving_and_verification_core/SPRINT_5.11_EXECUTION_REPORT.md).
+
+## Sprint 7.3 structured-work consumer
+
+AttemptEvaluationPreparer adapts persisted ASTs to attempt-verification-v2 without reparsing learner text.
+The existing process supervisor, DomainConstraintGuard and strict HTTP response limits remain authoritative.
+At most two calls per explicit evaluation: ordered work and independent original-to-final comparison. No model
+fallback. Java checks execution/count/domain basis and null-statement consistency, and rejects worker failures
+as recoverable operation states. No database transaction spans HTTP. Local equivalence is never a full-answer
+claim by itself; solved-form and scope rules are recorded in the Sprint 7.3 completion matrix.
+
+## Sprint 7.4 downstream classification authority
+
+Classification reads accepted attempt-evaluation-v1 and never calls a model or recomputes mathematics.
+Python structural predicates remain behind exact disproof and bounded domain checks; competing distinct
+signatures now return INVALID_TRANSFORMATION. A missing rational witness does not erase proven set/domain
+disproof. Classification cannot overwrite verification, independently mark VERIFIED or infer a causal step
+from final-only disagreement. New 17-family goldens and prior verifier regressions await owner execution.
+
+### Signature-policy compatibility
+
+New deterministic diagnoses optionally carry classifierPolicyVersion=structural-signatures-v1. Java/Python/Swift
+and embedded evaluation schemas accept this additive field and continue reading old diagnoses without it.
+Sprint 7.4 requires this marker for a specific structural category. A historical specific code without the
+marker retains its accepted disproof but produces generic INVALID_TRANSFORMATION / REQUIRED with no category
+or skill. Original evaluation evidence is never rewritten. Unknown policy markers fail closed.
+Operational rollout must install compatible API readers before the Python producer, then validate owner
+evidence before enabling classification. An older strict API reader fails closed on new producer output;
+rolling back the API also requires restoring the compatible producer. Flag-only classifier rollback retains
+current readers and producer and is the preferred forward-only recovery. No production rollout was performed.

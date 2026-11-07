@@ -98,3 +98,36 @@ ALG_TRANSFORMATION_INVALID remains readable. Unknown/uncertain work produces no 
 Specific disproof and independently verified twin completion generate unique private evidence; assistance-aware
 BKT-lite-v1 updates decay toward 0.15 and expose confidence/count/timestamps. Generic errors cannot infer a skill.
 Training eligibility remains false. All new execution/accuracy evidence is PENDING_OWNER, not measured performance.
+
+## Sprint 7.4 accepted-evidence classification
+
+The deterministic production path consumes immutable Sprint 7.3 AttemptEvaluation. It makes no new model
+or verifier call. The earlier pipeline's AI proposal is a future governed extension, not an enabled route.
+The canonical 17 fine-grained codes remain attempt-taxonomy-v2; mistake-category-v1 separately maps their
+pedagogical categories. Historical prose mentioning 18 codes is not a mandate to add a code.
+SIGNATURE_SUPPORTED requires exact disproof plus an unambiguous supported structural predicate. Multiple
+possible signatures retain only INVALID_TRANSFORMATION with category=null and review REQUIRED. An optional
+rational witness is separate from the accepted exact disproof. Only the first causal divergence is recorded.
+
+Evidence bands are STRUCTURAL_AND_DISPROOF, EXACT_DISPROOF and NONE; none is a probability. Authority types
+are DETERMINISTIC_EVIDENCE, MODEL_SUGGESTION, USER_CORRECTION and HUMAN_REVIEW, but the v1 publication
+contract accepts only deterministic authority. USER_DISPUTED and HUMAN_REVIEWED cannot be forged through
+this route; review workflows are Sprint 7.5. Classification never changes mastery or mathematical verdicts.
+
+UNCERTAIN, UNSUPPORTED, SOURCE_REVIEW_REQUIRED, INCOMPLETE_WORK and NO_ERROR_ESTABLISHED carry no code,
+category or confirmed causal step. Calculation/unit/notation predicates and OTHER_REVIEWED are unsupported;
+missing final work is not a confirmed INCOMPLETE_SOLUTION error. WORD_VARIABLE_MISASSIGNMENT is limited
+to omission of an explicit TOTAL operand. It does not infer natural-language interpretation or units.
+See mistake-category-v1.json and Sprint 7.4 completion matrix for exact coverage. All new tests are pending owner execution.
+
+### Signature-policy compatibility
+
+New deterministic diagnoses optionally carry classifierPolicyVersion=structural-signatures-v1. Java/Python/Swift
+and embedded evaluation schemas accept this additive field and continue reading old diagnoses without it.
+Sprint 7.4 requires this marker for a specific structural category. A historical specific code without the
+marker retains its accepted disproof but produces generic INVALID_TRANSFORMATION / REQUIRED with no category
+or skill. Original evaluation evidence is never rewritten. Unknown policy markers fail closed.
+Operational rollout must install compatible API readers before the Python producer, then validate owner
+evidence before enabling classification. An older strict API reader fails closed on new producer output;
+rolling back the API also requires restoring the compatible producer. Flag-only classifier rollback retains
+current readers and producer and is the preferred forward-only recovery. No production rollout was performed.

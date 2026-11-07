@@ -48,6 +48,7 @@ struct AttemptAnalysisResult: Codable, Sendable {
     struct Diagnosis: Codable, Sendable {
         let code: String; let evidenceId: String; let explanationKey: String
         let changedExpressionPath: String; let displayFallback: String
+        var classifierPolicyVersion: String? = nil
     }
     struct Step: Codable, Identifiable, Sendable {
         let index: Int
@@ -126,6 +127,7 @@ struct StudentAttempt: Codable, Identifiable, Sendable {
                       (step.counterexampleStatus == "AVAILABLE") == (step.counterexample != nil) else { throw NetworkError.invalidResponse }
                 if v2 && step.verdict == .wrong {
                     guard let d = step.diagnosis, d.code == step.mistakeCode,
+                          d.classifierPolicyVersion == nil || d.classifierPolicyVersion == "structural-signatures-v1",
                           d.evidenceId.lowercased() == id.uuidString.lowercased() + ":\(step.index)",
                           d.explanationKey == "attempt.mistake." + d.code,
                           ["STEP_LEVEL", "SUBEXPRESSION"].contains(d.displayFallback) else { throw NetworkError.invalidResponse }
@@ -205,6 +207,10 @@ struct AttemptSubmission: Codable, Equatable, Sendable {
     }
 }
 protocol AttemptAnalysisServicing: Sendable {
+    func readEvaluation(problem: UUID, attempt: UUID) async throws -> AttemptEvaluationView
+    func readClassification(problem: UUID, attempt: UUID) async throws -> AttemptMistakeView
+    func classify(problem: UUID, attempt: UUID, key: String, input: AttemptMistakeRequest) async throws -> AttemptMistakeView
+    func evaluate(problem: UUID, attempt: UUID, key: String, input: AttemptEvaluationRequest) async throws -> AttemptEvaluationView
     func submitWork(problem: UUID, key: String, input: AttemptWorkRequest) async throws -> AttemptStructuredWork
     func readWork(problem: UUID, attempt: UUID) async throws -> AttemptStructuredWork?
     func context(problem: UUID) async throws -> AttemptContext
@@ -312,4 +318,203 @@ struct AttemptStructuredWork: Codable, Sendable {
 extension AttemptAnalysisServicing {
     func submitWork(problem: UUID, key: String, input: AttemptWorkRequest) async throws -> AttemptStructuredWork { throw NetworkError.invalidResponse }
     func readWork(problem: UUID, attempt: UUID) async throws -> AttemptStructuredWork? { nil }
+}
+
+struct AttemptEvaluationRequest: Codable, Equatable, Sendable {
+    let schemaVersion: String
+    let source: AttemptSourceIdentity
+    let workRevision: Int
+    let realDomainConfirmed: Bool
+    init(work: AttemptStructuredWork, realDomainConfirmed: Bool = false) {
+        schemaVersion = "attempt-evaluation-request-v1"; source = work.source; workRevision = work.revision
+        self.realDomainConfirmed = realDomainConfirmed
+    }
+}
+struct AttemptEvaluation: Codable, Sendable {
+    enum FinalStatus: String, Codable, Sendable {
+        case verified = "VERIFIED", disproven = "DISPROVEN", inconclusive = "INCONCLUSIVE"
+        case notProvided = "NOT_PROVIDED", reviewRequired = "REVIEW_REQUIRED"
+    }
+    let schemaVersion: String; let id: UUID; let attemptId: UUID; let ownerId: UUID; let problemSessionId: UUID
+    let source: AttemptSourceIdentity; let workRevision: Int; let policyVersion: String
+    let executionId: UUID; let createdAt: String; let stepIds: [UUID]; let analysis: AttemptAnalysisResult
+    let realDomainConfirmed: Bool
+    let finalStepId: UUID?; let finalAnswerStatus: FinalStatus; let finalAnswerEvidence: AttemptAnalysisResult?
+    let trainingEligible: Bool
+}
+struct AttemptEvaluationView: Codable, Sendable {
+    enum Status: String, Codable, Sendable {
+        case notEvaluated = "NOT_EVALUATED", inProgress = "IN_PROGRESS", retryable = "RETRYABLE", completed = "COMPLETED", stale = "STALE"
+    }
+    let schemaVersion: String; let attemptId: UUID; let status: Status
+    let historical: Bool; let creationEnabled: Bool; let evaluation: AttemptEvaluation?
+    func validated(work: AttemptStructuredWork) throws -> Self {
+        guard schemaVersion == "attempt-evaluation-view-v1", attemptId == work.attemptId,
+              (status == .completed) == (evaluation != nil), status != .stale || historical else { throw NetworkError.invalidResponse }
+        if let e = evaluation {
+            guard e.schemaVersion == "attempt-evaluation-v1", e.attemptId == work.attemptId, e.ownerId == work.ownerId,
+                  e.problemSessionId == work.problemSessionId, e.source == work.source, e.workRevision == work.revision,
+                  e.policyVersion == "structured-evaluation-v1", !e.trainingEligible, e.stepIds == work.steps.map(\.id),
+                  e.finalStepId == work.steps.first(where: { $0.role == .finalAnswer })?.id,
+                  (e.finalStepId == nil) == (e.finalAnswerStatus == .notProvided),
+                  e.analysis.schemaVersion == "attempt-analysis-v2" else { throw NetworkError.invalidResponse }
+            guard e.realDomainConfirmed || e.analysis.domainBasis != "REVIEWED_REAL_TASK" else { throw NetworkError.invalidResponse }
+            try validateEvidence(e.analysis, execution: e.executionId, work: work, count: work.steps.count)
+            if let final = e.finalAnswerEvidence {
+                try validateEvidence(final, execution: e.executionId, work: work, count: 1)
+            }
+            if e.finalAnswerStatus == .verified {
+                guard e.finalAnswerEvidence?.steps.first?.verdict == .valid else { throw NetworkError.invalidResponse }
+            }
+            if e.finalAnswerStatus == .disproven {
+                guard e.finalAnswerEvidence?.steps.first?.verdict == .wrong else { throw NetworkError.invalidResponse }
+            }
+            if [.notProvided, .reviewRequired].contains(e.finalAnswerStatus), e.finalAnswerEvidence != nil { throw NetworkError.invalidResponse }
+            for (index, step) in work.steps.enumerated() where step.normalizedStatement == nil {
+                guard [.uncertain, .notAssessed].contains(e.analysis.steps[index].verdict) else { throw NetworkError.invalidResponse }
+            }
+        }
+        return self
+    }
+    private func validateEvidence(_ evidence: AttemptAnalysisResult, execution: UUID, work: AttemptStructuredWork, count: Int) throws {
+        guard evidence.schemaVersion == "attempt-analysis-v2", evidence.steps.count == count else { throw NetworkError.invalidResponse }
+        // Reuse the existing strict v2 evidence validator with a transient transport envelope.
+        // This is never saved or presented as the learner's original StudentAttempt.
+        let date = Date(timeIntervalSince1970: 0)
+        let envelope = StudentAttempt(schemaVersion: "student-attempt-v1", id: execution, problemSessionId: work.problemSessionId,
+            source: work.source, sourceType: "MANUAL", normalizationVersion: "manual-canonical-v2", status: .analyzed,
+            steps: (1...count).map { .init(index: $0, content: "evidence", normalizedStatement: nil) }, analysis: evidence,
+            createdAt: date, updatedAt: date, trainingEligible: false)
+        _ = try envelope.validated(problem: work.problemSessionId)
+    }
+}
+extension AttemptAnalysisServicing {
+    func readEvaluation(problem: UUID, attempt: UUID) async throws -> AttemptEvaluationView {
+        AttemptEvaluationView(schemaVersion: "attempt-evaluation-view-v1", attemptId: attempt, status: .notEvaluated, historical: false, creationEnabled: false, evaluation: nil)
+    }
+    func evaluate(problem: UUID, attempt: UUID, key: String, input: AttemptEvaluationRequest) async throws -> AttemptEvaluationView {
+        throw NetworkError.invalidResponse
+    }
+}
+
+struct AttemptMistakeRequest: Codable, Equatable, Sendable {
+    let schemaVersion: String
+    let evaluationId: UUID
+    let source: AttemptSourceIdentity
+    let workRevision: Int
+    init(evaluation: AttemptEvaluation) {
+        schemaVersion = "attempt-mistake-request-v1"; evaluationId = evaluation.id
+        source = evaluation.source; workRevision = evaluation.workRevision
+    }
+    // Stable across process death; server binds this key to owned immutable evidence.
+    var retryKey: String { "classification-v1-" + evaluationId.uuidString.lowercased() }
+}
+struct AttemptMistakeClassification: Codable, Sendable {
+    enum Category: String, Codable, Sendable {
+        case concept = "CONCEPT_ERROR", formula = "FORMULA_ERROR", algebra = "ALGEBRA_ERROR", sign = "SIGN_ERROR"
+        case calculation = "CALCULATION_ERROR", interpretation = "INTERPRETATION_ERROR", unit = "UNIT_ERROR"
+        case notation = "NOTATION_ERROR", incomplete = "INCOMPLETE_SOLUTION", otherReviewed = "OTHER_REVIEWED"
+    }
+    enum Status: String, Codable, Sendable {
+        case signature = "SIGNATURE_SUPPORTED", invalid = "INVALID_TRANSFORMATION", uncertain = "UNCERTAIN"
+        case unsupported = "UNSUPPORTED", sourceReview = "SOURCE_REVIEW_REQUIRED", incomplete = "INCOMPLETE_WORK", noError = "NO_ERROR_ESTABLISHED"
+    }
+    enum Strength: String, Codable, Sendable { case structural = "STRUCTURAL_AND_DISPROOF", disproof = "EXACT_DISPROOF", none = "NONE" }
+    enum Review: String, Codable, Sendable { case automatic = "AUTO_DETECTED", required = "REQUIRED" }
+    enum Authority: String, Codable, Sendable {
+        case deterministic = "DETERMINISTIC_EVIDENCE", model = "MODEL_SUGGESTION", user = "USER_CORRECTION", human = "HUMAN_REVIEW"
+    }
+    struct Decision: Codable, Sendable {
+        let status: Status; let code: String?; let category: Category?; let authority: Authority
+        let evidenceStrength: Strength; let reviewStatus: Review; let skillId: String?; let explanationKey: String
+    }
+    let schemaVersion: String; let id: UUID; let attemptId: UUID; let ownerId: UUID; let problemSessionId: UUID
+    let evaluationId: UUID; let executionId: UUID; let source: AttemptSourceIdentity; let workRevision: Int
+    let taxonomyVersion: String; let categoryVersion: String; let policyVersion: String; let verifierVersion: String
+    let firstWrongStepId: UUID?; let firstWrongStepIndex: Int?; let supportingEvidenceId: String?
+    let decision: Decision; let createdAt: String; let trainingEligible: Bool
+
+    func validated(evaluation e: AttemptEvaluation) throws -> Self {
+        guard schemaVersion == "attempt-mistake-classification-v1", attemptId == e.attemptId, ownerId == e.ownerId,
+              problemSessionId == e.problemSessionId, evaluationId == e.id, executionId == e.executionId,
+              source == e.source, workRevision == e.workRevision, taxonomyVersion == "attempt-taxonomy-v2",
+              categoryVersion == "mistake-category-v1", policyVersion == "evidence-classifier-v1",
+              verifierVersion == e.analysis.verifierVersion, !trainingEligible, decision.authority == .deterministic,
+              Self.validTimestamp(createdAt) else { throw NetworkError.invalidResponse }
+        if decision.status == .signature || decision.status == .invalid {
+            guard let index = firstWrongStepIndex, index == e.analysis.firstWrongStepIndex,
+                  (1...e.stepIds.count).contains(index), firstWrongStepId == e.stepIds[index - 1],
+                  e.analysis.steps[index - 1].verdict == .wrong,
+                  supportingEvidenceId == e.analysis.steps[index - 1].diagnosis?.evidenceId,
+                  supportingEvidenceId == executionId.uuidString.lowercased() + ":\(index)",
+                  (decision.code == e.analysis.steps[index - 1].mistakeCode ||
+                    decision.status == .invalid && decision.code == "INVALID_TRANSFORMATION" && e.analysis.steps[index - 1].diagnosis?.classifierPolicyVersion == nil) else { throw NetworkError.invalidResponse }
+            if decision.status == .signature {
+                guard let code = decision.code, let category = decision.category, Self.categories[code] == category,
+                      e.analysis.steps[index - 1].diagnosis?.classifierPolicyVersion == "structural-signatures-v1",
+                      decision.evidenceStrength == .structural, decision.reviewStatus == .automatic,
+                      decision.explanationKey == "attempt.mistake." + code,
+                      decision.skillId == nil || decision.skillId == Self.skills[code] else { throw NetworkError.invalidResponse }
+            } else {
+                guard ["INVALID_TRANSFORMATION", "ALG_TRANSFORMATION_INVALID"].contains(decision.code ?? ""),
+                      decision.category == nil, decision.skillId == nil, decision.evidenceStrength == .disproof,
+                      decision.reviewStatus == .required, decision.explanationKey == "attempt.classification.INVALID_TRANSFORMATION" else { throw NetworkError.invalidResponse }
+            }
+        } else {
+            guard e.analysis.firstWrongStepIndex == nil, firstWrongStepId == nil, firstWrongStepIndex == nil, supportingEvidenceId == nil,
+                  decision.code == nil, decision.category == nil, decision.skillId == nil,
+                  decision.evidenceStrength == .none, decision.reviewStatus == .required,
+                  decision.explanationKey == "attempt.classification." + decision.status.rawValue else { throw NetworkError.invalidResponse }
+        }
+        return self
+    }
+    private static func validTimestamp(_ value: String) -> Bool {
+        guard !value.isEmpty, value.count <= 40 else { return false }
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return formatter.date(from: value) != nil || ISO8601DateFormatter().date(from: value) != nil
+    }
+    static let categories: [String: Category] = [
+        "ALG_SIGN_FLIP_DISTRIBUTE": .sign,
+        "ALG_FRESHMAN_DREAM_POWER": .algebra,
+        "ALG_FRACTION_ADD_DENOM": .algebra,
+        "ALG_ROOT_LOST_BY_DIVISION": .algebra,
+        "DOM_EXTRANEOUS_ROOT_DENOM": .concept,
+        "DOM_EVEN_ROOT_NEGATIVE": .concept,
+        "DOM_LOG_NON_POSITIVE": .concept,
+        "INEQ_NEGATIVE_MULT_NO_FLIP": .sign,
+        "INEQ_CROSS_MULT_VARIABLE": .algebra,
+        "ABS_SINGLE_BRANCH_ONLY": .algebra,
+        "FUNC_COMPOSITION_ORDER": .concept,
+        "TRIG_PERIOD_OMITTED": .concept,
+        "CALC_LIMIT_INDETERMINATE_SUB": .concept,
+        "CALC_CHAIN_RULE_OMITTED": .formula,
+        "CALC_PRODUCT_QUOTIENT_NAIVE": .formula,
+        "CALC_INTEGRAL_BOUNDS_SWAPPED": .sign,
+        "WORD_VARIABLE_MISASSIGNMENT": .interpretation
+    ]
+    static let skills: [String: String] = [
+        "ALG_SIGN_FLIP_DISTRIBUTE": "MATH.ALGEBRA.SIMPLIFY_EXPRESSIONS",
+        "ALG_FRACTION_ADD_DENOM": "MATH.ARITHMETIC.FRACTIONS",
+        "INEQ_NEGATIVE_MULT_NO_FLIP": "MATH.EQUATIONS.INEQUALITIES_BASIC",
+        "FUNC_COMPOSITION_ORDER": "MATH.FUNCTIONS.COMPOSITION",
+        "CALC_CHAIN_RULE_OMITTED": "MATH.CALCULUS.DIFFERENTIATION.CHAIN_RULE"
+    ]
+}
+struct AttemptMistakeView: Codable, Sendable {
+    enum Status: String, Codable, Sendable { case notClassified = "NOT_CLASSIFIED", completed = "COMPLETED", stale = "STALE" }
+    let schemaVersion: String; let attemptId: UUID; let status: Status; let historical: Bool; let creationEnabled: Bool
+    let classification: AttemptMistakeClassification?
+    func validated(evaluation: AttemptEvaluation) throws -> Self {
+        guard schemaVersion == "attempt-mistake-view-v1", attemptId == evaluation.attemptId,
+              (status == .completed) == (classification != nil), status != .stale || historical else { throw NetworkError.invalidResponse }
+        if let classification { _ = try classification.validated(evaluation: evaluation) }
+        return self
+    }
+}
+extension AttemptAnalysisServicing {
+    func readClassification(problem: UUID, attempt: UUID) async throws -> AttemptMistakeView {
+        .init(schemaVersion: "attempt-mistake-view-v1", attemptId: attempt, status: .notClassified, historical: false, creationEnabled: false, classification: nil)
+    }
+    func classify(problem: UUID, attempt: UUID, key: String, input: AttemptMistakeRequest) async throws -> AttemptMistakeView { throw NetworkError.invalidResponse }
 }

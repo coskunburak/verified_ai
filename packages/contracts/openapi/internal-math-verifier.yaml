@@ -26,7 +26,7 @@ paths:
   /internal/v1/verify/attempt-v2:
     post:
       summary: Bounded isolated deterministic attempt-v2 execution
-      description: Default disabled. Shares process admission and resource limits. Unsupported mathematics returns uncertainty; no external provider calls.
+      description: Default disabled. Shares process admission and resource limits. Unsupported mathematics returns uncertainty; no external provider calls. Sprint 7.3 reuses this unchanged contract for sequence and independent final-intent comparisons. Equivalence within restrictions does not establish candidate containment or task completion; the attempt application applies conservative final-completion policy.
       security: [{internalToken: []}]
       parameters:
         - {name: X-Request-Id, in: header, required: true, schema: {type: string, maxLength: 64}}

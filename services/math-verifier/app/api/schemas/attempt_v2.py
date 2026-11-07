@@ -115,6 +115,7 @@ class Witness(CounterexampleEvidence):
 
 
 class Diagnosis(FrozenModel):
+    classifierPolicyVersion: Literal['structural-signatures-v1'] | None = None
     code: Mistake
     evidenceId: str = Field(max_length=96)
     explanationKey: str = Field(max_length=96)

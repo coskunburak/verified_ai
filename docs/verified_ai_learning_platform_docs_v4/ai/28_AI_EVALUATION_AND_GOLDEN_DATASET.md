@@ -144,3 +144,11 @@ per-slice metrics. Timeouts/errors/missing outputs do not disappear from denomin
 Raw problem/answer payloads are excluded from reports. Both connected and holdout runner
 modes return BLOCKED without inference. Local fixture success cannot authorize promotion.
 See the Sprint 5.12 implementation map and execution report for owner-only acceptance.
+
+## Sprint 7.4 deterministic classification corpus
+
+packages/schemas/fixtures/attempt-mistake-golden-v1.json contains seventeen synthetic signature families
+with explicit structural/disproof justifications. test_attempt_mistake_classification adds per-signature
+identity and unknown-domain guards, causal stopping, valid alternate syntax, near matches, domain holes,
+ambiguous causes and bounded-input checks. No live model or learner data is used. Results are NOT_EXECUTED
+/ PENDING_OWNER_TEST; no precision, recall or calibrated confidence is claimed. Fresh Gate G is mandatory.

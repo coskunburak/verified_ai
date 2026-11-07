@@ -1,0 +1,1552 @@
+{
+  "schemaVersion": "attempt-mistake-golden-v1",
+  "syntheticOnly": true,
+  "executionStatus": "NOT_EXECUTED",
+  "cases": [
+    {
+      "id": "ALG_SIGN_FLIP_DISTRIBUTE",
+      "code": "ALG_SIGN_FLIP_DISTRIBUTE",
+      "evidenceJustification": "Both terms must change sign.",
+      "request": {
+        "schemaVersion": "attempt-verification-v2",
+        "executionId": "00000000-0000-0000-0000-000000007401",
+        "correlationId": "00000000-0000-0000-0000-000000007401",
+        "original": {
+          "kind": "EXPRESSION",
+          "expression": {
+            "kind": "UNARY",
+            "operator": "NEGATE",
+            "operand": {
+              "kind": "BINARY",
+              "operator": "SUBTRACT",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "2"
+              }
+            }
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT",
+        "steps": [
+          {
+            "statement": {
+              "kind": "EXPRESSION",
+              "expression": {
+                "kind": "BINARY",
+                "operator": "SUBTRACT",
+                "left": {
+                  "kind": "UNARY",
+                  "operator": "NEGATE",
+                  "operand": {
+                    "kind": "VARIABLE",
+                    "symbol": "x"
+                  }
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "numericType": "INTEGER",
+                  "value": "2"
+                }
+              }
+            }
+          },
+          {
+            "statement": {
+              "kind": "EXPRESSION",
+              "expression": {
+                "kind": "BINARY",
+                "operator": "SUBTRACT",
+                "left": {
+                  "kind": "UNARY",
+                  "operator": "NEGATE",
+                  "operand": {
+                    "kind": "VARIABLE",
+                    "symbol": "x"
+                  }
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "numericType": "INTEGER",
+                  "value": "2"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "ALG_FRESHMAN_DREAM_POWER",
+      "code": "ALG_FRESHMAN_DREAM_POWER",
+      "evidenceJustification": "Exact disproof plus omitted cross term.",
+      "request": {
+        "schemaVersion": "attempt-verification-v2",
+        "executionId": "00000000-0000-0000-0000-000000007401",
+        "correlationId": "00000000-0000-0000-0000-000000007401",
+        "original": {
+          "kind": "EXPRESSION",
+          "expression": {
+            "kind": "BINARY",
+            "operator": "POWER",
+            "left": {
+              "kind": "BINARY",
+              "operator": "ADD",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "2"
+              }
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "2"
+            }
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT",
+        "steps": [
+          {
+            "statement": {
+              "kind": "EXPRESSION",
+              "expression": {
+                "kind": "BINARY",
+                "operator": "ADD",
+                "left": {
+                  "kind": "BINARY",
+                  "operator": "POWER",
+                  "left": {
+                    "kind": "VARIABLE",
+                    "symbol": "x"
+                  },
+                  "right": {
+                    "kind": "NUMBER",
+                    "numericType": "INTEGER",
+                    "value": "2"
+                  }
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "numericType": "INTEGER",
+                  "value": "4"
+                }
+              }
+            }
+          },
+          {
+            "statement": {
+              "kind": "EXPRESSION",
+              "expression": {
+                "kind": "BINARY",
+                "operator": "ADD",
+                "left": {
+                  "kind": "BINARY",
+                  "operator": "POWER",
+                  "left": {
+                    "kind": "VARIABLE",
+                    "symbol": "x"
+                  },
+                  "right": {
+                    "kind": "NUMBER",
+                    "numericType": "INTEGER",
+                    "value": "2"
+                  }
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "numericType": "INTEGER",
+                  "value": "4"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "ALG_FRACTION_ADD_DENOM",
+      "code": "ALG_FRACTION_ADD_DENOM",
+      "evidenceJustification": "Same numerators and denominators incorrectly added.",
+      "request": {
+        "schemaVersion": "attempt-verification-v2",
+        "executionId": "00000000-0000-0000-0000-000000007401",
+        "correlationId": "00000000-0000-0000-0000-000000007401",
+        "original": {
+          "kind": "EXPRESSION",
+          "expression": {
+            "kind": "BINARY",
+            "operator": "ADD",
+            "left": {
+              "kind": "BINARY",
+              "operator": "DIVIDE",
+              "left": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "1"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "2"
+              }
+            },
+            "right": {
+              "kind": "BINARY",
+              "operator": "DIVIDE",
+              "left": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "1"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "3"
+              }
+            }
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT",
+        "steps": [
+          {
+            "statement": {
+              "kind": "EXPRESSION",
+              "expression": {
+                "kind": "BINARY",
+                "operator": "DIVIDE",
+                "left": {
+                  "kind": "BINARY",
+                  "operator": "ADD",
+                  "left": {
+                    "kind": "NUMBER",
+                    "numericType": "INTEGER",
+                    "value": "1"
+                  },
+                  "right": {
+                    "kind": "NUMBER",
+                    "numericType": "INTEGER",
+                    "value": "1"
+                  }
+                },
+                "right": {
+                  "kind": "BINARY",
+                  "operator": "ADD",
+                  "left": {
+                    "kind": "NUMBER",
+                    "numericType": "INTEGER",
+                    "value": "2"
+                  },
+                  "right": {
+                    "kind": "NUMBER",
+                    "numericType": "INTEGER",
+                    "value": "3"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "statement": {
+              "kind": "EXPRESSION",
+              "expression": {
+                "kind": "BINARY",
+                "operator": "DIVIDE",
+                "left": {
+                  "kind": "BINARY",
+                  "operator": "ADD",
+                  "left": {
+                    "kind": "NUMBER",
+                    "numericType": "INTEGER",
+                    "value": "1"
+                  },
+                  "right": {
+                    "kind": "NUMBER",
+                    "numericType": "INTEGER",
+                    "value": "1"
+                  }
+                },
+                "right": {
+                  "kind": "BINARY",
+                  "operator": "ADD",
+                  "left": {
+                    "kind": "NUMBER",
+                    "numericType": "INTEGER",
+                    "value": "2"
+                  },
+                  "right": {
+                    "kind": "NUMBER",
+                    "numericType": "INTEGER",
+                    "value": "3"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "ALG_ROOT_LOST_BY_DIVISION",
+      "code": "ALG_ROOT_LOST_BY_DIVISION",
+      "evidenceJustification": "A root at the divided factor zero is lost.",
+      "request": {
+        "schemaVersion": "attempt-verification-v2",
+        "executionId": "00000000-0000-0000-0000-000000007401",
+        "correlationId": "00000000-0000-0000-0000-000000007401",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "BINARY",
+            "operator": "MULTIPLY",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "BINARY",
+              "operator": "SUBTRACT",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "2"
+              }
+            }
+          },
+          "right": {
+            "kind": "BINARY",
+            "operator": "MULTIPLY",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "0"
+            }
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT",
+        "steps": [
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "BINARY",
+                "operator": "SUBTRACT",
+                "left": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "numericType": "INTEGER",
+                  "value": "2"
+                }
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "0"
+              }
+            }
+          },
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "BINARY",
+                "operator": "SUBTRACT",
+                "left": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "numericType": "INTEGER",
+                  "value": "2"
+                }
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "0"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "DOM_EXTRANEOUS_ROOT_DENOM",
+      "code": "DOM_EXTRANEOUS_ROOT_DENOM",
+      "evidenceJustification": "The added root zeros the original denominator.",
+      "request": {
+        "schemaVersion": "attempt-verification-v2",
+        "executionId": "00000000-0000-0000-0000-000000007401",
+        "correlationId": "00000000-0000-0000-0000-000000007401",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "BINARY",
+            "operator": "DIVIDE",
+            "left": {
+              "kind": "BINARY",
+              "operator": "SUBTRACT",
+              "left": {
+                "kind": "BINARY",
+                "operator": "POWER",
+                "left": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "numericType": "INTEGER",
+                  "value": "2"
+                }
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "1"
+              }
+            },
+            "right": {
+              "kind": "BINARY",
+              "operator": "SUBTRACT",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "1"
+              }
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "2"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT",
+        "steps": [
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "1"
+              }
+            }
+          },
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "1"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "DOM_EVEN_ROOT_NEGATIVE",
+      "code": "DOM_EVEN_ROOT_NEGATIVE",
+      "evidenceJustification": "The added root fails the original nonnegative root range.",
+      "request": {
+        "schemaVersion": "attempt-verification-v2",
+        "executionId": "00000000-0000-0000-0000-000000007401",
+        "correlationId": "00000000-0000-0000-0000-000000007401",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "FUNCTION",
+            "function": "SQRT",
+            "args": [
+              {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              }
+            ]
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "-2"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT",
+        "steps": [
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "4"
+              }
+            }
+          },
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "4"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "DOM_LOG_NON_POSITIVE",
+      "code": "DOM_LOG_NON_POSITIVE",
+      "evidenceJustification": "An added root makes the log argument nonpositive.",
+      "request": {
+        "schemaVersion": "attempt-verification-v2",
+        "executionId": "00000000-0000-0000-0000-000000007401",
+        "correlationId": "00000000-0000-0000-0000-000000007401",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "FUNCTION",
+            "function": "LOG",
+            "args": [
+              {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              }
+            ]
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "0"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT",
+        "steps": [
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "BINARY",
+                "operator": "POWER",
+                "left": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "numericType": "INTEGER",
+                  "value": "2"
+                }
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "1"
+              }
+            }
+          },
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "BINARY",
+                "operator": "POWER",
+                "left": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "numericType": "INTEGER",
+                  "value": "2"
+                }
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "1"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "INEQ_NEGATIVE_MULT_NO_FLIP",
+      "code": "INEQ_NEGATIVE_MULT_NO_FLIP",
+      "evidenceJustification": "The scalar ratio is negative and the relation unchanged.",
+      "request": {
+        "schemaVersion": "attempt-verification-v2",
+        "executionId": "00000000-0000-0000-0000-000000007401",
+        "correlationId": "00000000-0000-0000-0000-000000007401",
+        "original": {
+          "kind": "RELATION",
+          "relation": "GREATER_THAN",
+          "left": {
+            "kind": "BINARY",
+            "operator": "MULTIPLY",
+            "left": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "-2"
+            },
+            "right": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "0"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT",
+        "steps": [
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "GREATER_THAN",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "0"
+              }
+            }
+          },
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "GREATER_THAN",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "0"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "INEQ_CROSS_MULT_VARIABLE",
+      "code": "INEQ_CROSS_MULT_VARIABLE",
+      "evidenceJustification": "Cross multiplication across a variable-sign denominator changes the set.",
+      "request": {
+        "schemaVersion": "attempt-verification-v2",
+        "executionId": "00000000-0000-0000-0000-000000007401",
+        "correlationId": "00000000-0000-0000-0000-000000007401",
+        "original": {
+          "kind": "RELATION",
+          "relation": "LESS_THAN",
+          "left": {
+            "kind": "BINARY",
+            "operator": "DIVIDE",
+            "left": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "1"
+            },
+            "right": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "0"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT",
+        "steps": [
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "LESS_THAN",
+              "left": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "1"
+              },
+              "right": {
+                "kind": "BINARY",
+                "operator": "MULTIPLY",
+                "left": {
+                  "kind": "NUMBER",
+                  "numericType": "INTEGER",
+                  "value": "0"
+                },
+                "right": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                }
+              }
+            }
+          },
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "LESS_THAN",
+              "left": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "1"
+              },
+              "right": {
+                "kind": "BINARY",
+                "operator": "MULTIPLY",
+                "left": {
+                  "kind": "NUMBER",
+                  "numericType": "INTEGER",
+                  "value": "0"
+                },
+                "right": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "ABS_SINGLE_BRANCH_ONLY",
+      "code": "ABS_SINGLE_BRANCH_ONLY",
+      "evidenceJustification": "One original absolute-value branch is missing.",
+      "request": {
+        "schemaVersion": "attempt-verification-v2",
+        "executionId": "00000000-0000-0000-0000-000000007401",
+        "correlationId": "00000000-0000-0000-0000-000000007401",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "FUNCTION",
+            "function": "ABS",
+            "args": [
+              {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              }
+            ]
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "2"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT",
+        "steps": [
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "2"
+              }
+            }
+          },
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "2"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "FUNC_COMPOSITION_ORDER",
+      "code": "FUNC_COMPOSITION_ORDER",
+      "evidenceJustification": "Exact reversed nested functions change natural domain.",
+      "request": {
+        "schemaVersion": "attempt-verification-v2",
+        "executionId": "00000000-0000-0000-0000-000000007401",
+        "correlationId": "00000000-0000-0000-0000-000000007401",
+        "original": {
+          "kind": "EXPRESSION",
+          "expression": {
+            "kind": "FUNCTION",
+            "function": "LOG",
+            "args": [
+              {
+                "kind": "FUNCTION",
+                "function": "EXP",
+                "args": [
+                  {
+                    "kind": "VARIABLE",
+                    "symbol": "x"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT",
+        "steps": [
+          {
+            "statement": {
+              "kind": "EXPRESSION",
+              "expression": {
+                "kind": "FUNCTION",
+                "function": "EXP",
+                "args": [
+                  {
+                    "kind": "FUNCTION",
+                    "function": "LOG",
+                    "args": [
+                      {
+                        "kind": "VARIABLE",
+                        "symbol": "x"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "statement": {
+              "kind": "EXPRESSION",
+              "expression": {
+                "kind": "FUNCTION",
+                "function": "EXP",
+                "args": [
+                  {
+                    "kind": "FUNCTION",
+                    "function": "LOG",
+                    "args": [
+                      {
+                        "kind": "VARIABLE",
+                        "symbol": "x"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "TRIG_PERIOD_OMITTED",
+      "code": "TRIG_PERIOD_OMITTED",
+      "evidenceJustification": "Finite interval contains proven nonzero-period sibling roots.",
+      "request": {
+        "schemaVersion": "attempt-verification-v2",
+        "executionId": "00000000-0000-0000-0000-000000007401",
+        "correlationId": "00000000-0000-0000-0000-000000007401",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "FUNCTION",
+            "function": "SIN",
+            "args": [
+              {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              }
+            ]
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "0"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [
+          {
+            "id": "lower",
+            "relation": "GREATER_THAN_OR_EQUAL",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "0"
+            }
+          },
+          {
+            "id": "upper",
+            "relation": "LESS_THAN_OR_EQUAL",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "BINARY",
+              "operator": "MULTIPLY",
+              "left": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "2"
+              },
+              "right": {
+                "kind": "CONSTANT",
+                "value": "PI"
+              }
+            }
+          }
+        ],
+        "domainBasis": "SOURCE_EXPLICIT",
+        "steps": [
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "MEMBER_OF",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "FINITE_SET",
+                "args": [
+                  {
+                    "kind": "NUMBER",
+                    "numericType": "INTEGER",
+                    "value": "0"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "MEMBER_OF",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "FINITE_SET",
+                "args": [
+                  {
+                    "kind": "NUMBER",
+                    "numericType": "INTEGER",
+                    "value": "0"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "CALC_LIMIT_INDETERMINATE_SUB",
+      "code": "CALC_LIMIT_INDETERMINATE_SUB",
+      "evidenceJustification": "Original quotient is 0/0 but the proven limit is nonzero.",
+      "request": {
+        "schemaVersion": "attempt-verification-v2",
+        "executionId": "00000000-0000-0000-0000-000000007401",
+        "correlationId": "00000000-0000-0000-0000-000000007401",
+        "original": {
+          "kind": "EXPRESSION",
+          "expression": {
+            "kind": "FUNCTION",
+            "function": "LIMIT",
+            "args": [
+              {
+                "kind": "BINARY",
+                "operator": "DIVIDE",
+                "left": {
+                  "kind": "BINARY",
+                  "operator": "SUBTRACT",
+                  "left": {
+                    "kind": "BINARY",
+                    "operator": "POWER",
+                    "left": {
+                      "kind": "VARIABLE",
+                      "symbol": "x"
+                    },
+                    "right": {
+                      "kind": "NUMBER",
+                      "numericType": "INTEGER",
+                      "value": "2"
+                    }
+                  },
+                  "right": {
+                    "kind": "NUMBER",
+                    "numericType": "INTEGER",
+                    "value": "4"
+                  }
+                },
+                "right": {
+                  "kind": "BINARY",
+                  "operator": "SUBTRACT",
+                  "left": {
+                    "kind": "VARIABLE",
+                    "symbol": "x"
+                  },
+                  "right": {
+                    "kind": "NUMBER",
+                    "numericType": "INTEGER",
+                    "value": "2"
+                  }
+                }
+              },
+              {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "2"
+              }
+            ]
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT",
+        "steps": [
+          {
+            "statement": {
+              "kind": "EXPRESSION",
+              "expression": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "0"
+              }
+            }
+          },
+          {
+            "statement": {
+              "kind": "EXPRESSION",
+              "expression": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "0"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "CALC_CHAIN_RULE_OMITTED",
+      "code": "CALC_CHAIN_RULE_OMITTED",
+      "evidenceJustification": "Submitted outer derivative omits non-unit inner derivative.",
+      "request": {
+        "schemaVersion": "attempt-verification-v2",
+        "executionId": "00000000-0000-0000-0000-000000007401",
+        "correlationId": "00000000-0000-0000-0000-000000007401",
+        "original": {
+          "kind": "EXPRESSION",
+          "expression": {
+            "kind": "FUNCTION",
+            "function": "DIFF",
+            "args": [
+              {
+                "kind": "BINARY",
+                "operator": "POWER",
+                "left": {
+                  "kind": "BINARY",
+                  "operator": "ADD",
+                  "left": {
+                    "kind": "BINARY",
+                    "operator": "MULTIPLY",
+                    "left": {
+                      "kind": "NUMBER",
+                      "numericType": "INTEGER",
+                      "value": "3"
+                    },
+                    "right": {
+                      "kind": "VARIABLE",
+                      "symbol": "x"
+                    }
+                  },
+                  "right": {
+                    "kind": "NUMBER",
+                    "numericType": "INTEGER",
+                    "value": "1"
+                  }
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "numericType": "INTEGER",
+                  "value": "2"
+                }
+              }
+            ]
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT",
+        "steps": [
+          {
+            "statement": {
+              "kind": "EXPRESSION",
+              "expression": {
+                "kind": "BINARY",
+                "operator": "MULTIPLY",
+                "left": {
+                  "kind": "NUMBER",
+                  "numericType": "INTEGER",
+                  "value": "2"
+                },
+                "right": {
+                  "kind": "BINARY",
+                  "operator": "ADD",
+                  "left": {
+                    "kind": "BINARY",
+                    "operator": "MULTIPLY",
+                    "left": {
+                      "kind": "NUMBER",
+                      "numericType": "INTEGER",
+                      "value": "3"
+                    },
+                    "right": {
+                      "kind": "VARIABLE",
+                      "symbol": "x"
+                    }
+                  },
+                  "right": {
+                    "kind": "NUMBER",
+                    "numericType": "INTEGER",
+                    "value": "1"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "statement": {
+              "kind": "EXPRESSION",
+              "expression": {
+                "kind": "BINARY",
+                "operator": "MULTIPLY",
+                "left": {
+                  "kind": "NUMBER",
+                  "numericType": "INTEGER",
+                  "value": "2"
+                },
+                "right": {
+                  "kind": "BINARY",
+                  "operator": "ADD",
+                  "left": {
+                    "kind": "BINARY",
+                    "operator": "MULTIPLY",
+                    "left": {
+                      "kind": "NUMBER",
+                      "numericType": "INTEGER",
+                      "value": "3"
+                    },
+                    "right": {
+                      "kind": "VARIABLE",
+                      "symbol": "x"
+                    }
+                  },
+                  "right": {
+                    "kind": "NUMBER",
+                    "numericType": "INTEGER",
+                    "value": "1"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "CALC_PRODUCT_QUOTIENT_NAIVE",
+      "code": "CALC_PRODUCT_QUOTIENT_NAIVE",
+      "evidenceJustification": "Submitted derivative equals the naive product of derivatives.",
+      "request": {
+        "schemaVersion": "attempt-verification-v2",
+        "executionId": "00000000-0000-0000-0000-000000007401",
+        "correlationId": "00000000-0000-0000-0000-000000007401",
+        "original": {
+          "kind": "EXPRESSION",
+          "expression": {
+            "kind": "FUNCTION",
+            "function": "DIFF",
+            "args": [
+              {
+                "kind": "BINARY",
+                "operator": "MULTIPLY",
+                "left": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                },
+                "right": {
+                  "kind": "BINARY",
+                  "operator": "ADD",
+                  "left": {
+                    "kind": "VARIABLE",
+                    "symbol": "x"
+                  },
+                  "right": {
+                    "kind": "NUMBER",
+                    "numericType": "INTEGER",
+                    "value": "3"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT",
+        "steps": [
+          {
+            "statement": {
+              "kind": "EXPRESSION",
+              "expression": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "1"
+              }
+            }
+          },
+          {
+            "statement": {
+              "kind": "EXPRESSION",
+              "expression": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "1"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "CALC_INTEGRAL_BOUNDS_SWAPPED",
+      "code": "CALC_INTEGRAL_BOUNDS_SWAPPED",
+      "evidenceJustification": "Same integrand with reversed bounds gives a different exact integral.",
+      "request": {
+        "schemaVersion": "attempt-verification-v2",
+        "executionId": "00000000-0000-0000-0000-000000007401",
+        "correlationId": "00000000-0000-0000-0000-000000007401",
+        "original": {
+          "kind": "EXPRESSION",
+          "expression": {
+            "kind": "FUNCTION",
+            "function": "INTEGRAL",
+            "args": [
+              {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "0"
+              },
+              {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "3"
+              }
+            ]
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT",
+        "steps": [
+          {
+            "statement": {
+              "kind": "EXPRESSION",
+              "expression": {
+                "kind": "FUNCTION",
+                "function": "INTEGRAL",
+                "args": [
+                  {
+                    "kind": "VARIABLE",
+                    "symbol": "x"
+                  },
+                  {
+                    "kind": "NUMBER",
+                    "numericType": "INTEGER",
+                    "value": "3"
+                  },
+                  {
+                    "kind": "NUMBER",
+                    "numericType": "INTEGER",
+                    "value": "0"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "statement": {
+              "kind": "EXPRESSION",
+              "expression": {
+                "kind": "FUNCTION",
+                "function": "INTEGRAL",
+                "args": [
+                  {
+                    "kind": "VARIABLE",
+                    "symbol": "x"
+                  },
+                  {
+                    "kind": "NUMBER",
+                    "numericType": "INTEGER",
+                    "value": "3"
+                  },
+                  {
+                    "kind": "NUMBER",
+                    "numericType": "INTEGER",
+                    "value": "0"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "WORD_VARIABLE_MISASSIGNMENT",
+      "code": "WORD_VARIABLE_MISASSIGNMENT",
+      "evidenceJustification": "Only explicit TOTAL operand omission; no natural-language inference.",
+      "request": {
+        "schemaVersion": "attempt-verification-v2",
+        "executionId": "00000000-0000-0000-0000-000000007401",
+        "correlationId": "00000000-0000-0000-0000-000000007401",
+        "original": {
+          "kind": "EXPRESSION",
+          "expression": {
+            "kind": "FUNCTION",
+            "function": "TOTAL",
+            "args": [
+              {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "3"
+              },
+              {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "4"
+              }
+            ]
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT",
+        "steps": [
+          {
+            "statement": {
+              "kind": "EXPRESSION",
+              "expression": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "3"
+              }
+            }
+          },
+          {
+            "statement": {
+              "kind": "EXPRESSION",
+              "expression": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "3"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

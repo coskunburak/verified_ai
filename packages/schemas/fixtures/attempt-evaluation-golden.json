@@ -1,0 +1,969 @@
+{
+  "schemaVersion": "attempt-evaluation-golden-v1",
+  "syntheticOnly": true,
+  "cases": [
+    {
+      "id": "correct-algebra",
+      "task": "SOLVE_EQUATION",
+      "completeForm": true,
+      "expectedVerdict": "VALID_EQUIVALENT",
+      "request": {
+        "schemaVersion": "attempt-verification-v2",
+        "executionId": "00000000-0000-0000-0000-000000007301",
+        "correlationId": "00000000-0000-0000-0000-000000007301",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "BINARY",
+            "operator": "ADD",
+            "left": {
+              "kind": "BINARY",
+              "operator": "MULTIPLY",
+              "left": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "2"
+              },
+              "right": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              }
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "3"
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "11"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT",
+        "steps": [
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "BINARY",
+                "operator": "MULTIPLY",
+                "left": {
+                  "kind": "NUMBER",
+                  "numericType": "INTEGER",
+                  "value": "2"
+                },
+                "right": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                }
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "8"
+              }
+            }
+          },
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "4"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "sign-distribution",
+      "task": "SIMPLIFY",
+      "completeForm": false,
+      "expectedVerdict": "FIRST_WRONG_STEP",
+      "request": {
+        "schemaVersion": "attempt-verification-v2",
+        "executionId": "00000000-0000-0000-0000-000000007301",
+        "correlationId": "00000000-0000-0000-0000-000000007301",
+        "original": {
+          "kind": "EXPRESSION",
+          "expression": {
+            "kind": "BINARY",
+            "operator": "MULTIPLY",
+            "left": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "-1"
+            },
+            "right": {
+              "kind": "BINARY",
+              "operator": "SUBTRACT",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "2"
+              }
+            }
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT",
+        "steps": [
+          {
+            "statement": {
+              "kind": "EXPRESSION",
+              "expression": {
+                "kind": "BINARY",
+                "operator": "SUBTRACT",
+                "left": {
+                  "kind": "BINARY",
+                  "operator": "MULTIPLY",
+                  "left": {
+                    "kind": "NUMBER",
+                    "numericType": "INTEGER",
+                    "value": "-1"
+                  },
+                  "right": {
+                    "kind": "VARIABLE",
+                    "symbol": "x"
+                  }
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "numericType": "INTEGER",
+                  "value": "2"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "denominator-hole",
+      "task": "SOLVE_EQUATION",
+      "completeForm": true,
+      "expectedVerdict": "FIRST_WRONG_STEP",
+      "request": {
+        "schemaVersion": "attempt-verification-v2",
+        "executionId": "00000000-0000-0000-0000-000000007301",
+        "correlationId": "00000000-0000-0000-0000-000000007301",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "BINARY",
+            "operator": "DIVIDE",
+            "left": {
+              "kind": "BINARY",
+              "operator": "SUBTRACT",
+              "left": {
+                "kind": "BINARY",
+                "operator": "POWER",
+                "left": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                },
+                "right": {
+                  "kind": "NUMBER",
+                  "numericType": "INTEGER",
+                  "value": "2"
+                }
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "9"
+              }
+            },
+            "right": {
+              "kind": "BINARY",
+              "operator": "SUBTRACT",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "3"
+              }
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "6"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT",
+        "steps": [
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "3"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "root-loss",
+      "task": "SOLVE_EQUATION",
+      "completeForm": true,
+      "expectedVerdict": "FIRST_WRONG_STEP",
+      "request": {
+        "schemaVersion": "attempt-verification-v2",
+        "executionId": "00000000-0000-0000-0000-000000007301",
+        "correlationId": "00000000-0000-0000-0000-000000007301",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "BINARY",
+            "operator": "MULTIPLY",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "BINARY",
+              "operator": "SUBTRACT",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "2"
+              }
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "0"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT",
+        "steps": [
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "2"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "inequality-direction",
+      "task": "SOLVE_INEQUALITY",
+      "completeForm": true,
+      "expectedVerdict": "FIRST_WRONG_STEP",
+      "request": {
+        "schemaVersion": "attempt-verification-v2",
+        "executionId": "00000000-0000-0000-0000-000000007301",
+        "correlationId": "00000000-0000-0000-0000-000000007301",
+        "original": {
+          "kind": "RELATION",
+          "relation": "GREATER_THAN",
+          "left": {
+            "kind": "BINARY",
+            "operator": "MULTIPLY",
+            "left": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "-2"
+            },
+            "right": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "0"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT",
+        "steps": [
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "GREATER_THAN",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "0"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "absolute-branch",
+      "task": "SOLVE_EQUATION",
+      "completeForm": true,
+      "expectedVerdict": "FIRST_WRONG_STEP",
+      "request": {
+        "schemaVersion": "attempt-verification-v2",
+        "executionId": "00000000-0000-0000-0000-000000007301",
+        "correlationId": "00000000-0000-0000-0000-000000007301",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "FUNCTION",
+            "function": "ABS",
+            "args": [
+              {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              }
+            ]
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "2"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT",
+        "steps": [
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "2"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "extraneous-sqrt",
+      "task": "SOLVE_EQUATION",
+      "completeForm": true,
+      "expectedVerdict": "FIRST_WRONG_STEP",
+      "request": {
+        "schemaVersion": "attempt-verification-v2",
+        "executionId": "00000000-0000-0000-0000-000000007301",
+        "correlationId": "00000000-0000-0000-0000-000000007301",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "FUNCTION",
+            "function": "SQRT",
+            "args": [
+              {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              }
+            ]
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "-2"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT",
+        "steps": [
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "4"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "extraneous-log",
+      "task": "SOLVE_EQUATION",
+      "completeForm": true,
+      "expectedVerdict": "FIRST_WRONG_STEP",
+      "request": {
+        "schemaVersion": "attempt-verification-v2",
+        "executionId": "00000000-0000-0000-0000-000000007301",
+        "correlationId": "00000000-0000-0000-0000-000000007301",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "FUNCTION",
+            "function": "LOG",
+            "args": [
+              {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              }
+            ]
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "0"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT",
+        "steps": [
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "-1"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "incomplete-final",
+      "task": "SOLVE_EQUATION",
+      "completeForm": false,
+      "expectedVerdict": "VALID_EQUIVALENT",
+      "request": {
+        "schemaVersion": "attempt-verification-v2",
+        "executionId": "00000000-0000-0000-0000-000000007301",
+        "correlationId": "00000000-0000-0000-0000-000000007301",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "BINARY",
+            "operator": "ADD",
+            "left": {
+              "kind": "BINARY",
+              "operator": "MULTIPLY",
+              "left": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "2"
+              },
+              "right": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              }
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "3"
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "11"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT",
+        "steps": [
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "BINARY",
+                "operator": "MULTIPLY",
+                "left": {
+                  "kind": "NUMBER",
+                  "numericType": "INTEGER",
+                  "value": "2"
+                },
+                "right": {
+                  "kind": "VARIABLE",
+                  "symbol": "x"
+                }
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "8"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "unsupported-notation",
+      "task": "SOLVE_EQUATION",
+      "completeForm": false,
+      "expectedVerdict": "UNCERTAIN",
+      "request": {
+        "schemaVersion": "attempt-verification-v2",
+        "executionId": "00000000-0000-0000-0000-000000007301",
+        "correlationId": "00000000-0000-0000-0000-000000007301",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "4"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT",
+        "steps": [
+          {
+            "statement": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "ambiguous-ocr",
+      "task": "SOLVE_EQUATION",
+      "completeForm": true,
+      "expectedVerdict": "UNCERTAIN",
+      "request": {
+        "schemaVersion": "attempt-verification-v2",
+        "executionId": "00000000-0000-0000-0000-000000007301",
+        "correlationId": "00000000-0000-0000-0000-000000007301",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "4"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT",
+        "steps": [
+          {
+            "statement": null
+          },
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "4"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "unknown-domain",
+      "task": "SOLVE_EQUATION",
+      "completeForm": false,
+      "expectedVerdict": "UNCERTAIN",
+      "request": {
+        "schemaVersion": "attempt-verification-v2",
+        "executionId": "00000000-0000-0000-0000-000000007301",
+        "correlationId": "00000000-0000-0000-0000-000000007301",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "VARIABLE",
+            "symbol": "x"
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "4"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "UNRESOLVED",
+        "steps": [
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "EQUALS",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "4"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "empty-solution",
+      "task": "SOLVE_EQUATION",
+      "completeForm": true,
+      "expectedVerdict": "VALID_EQUIVALENT",
+      "request": {
+        "schemaVersion": "attempt-verification-v2",
+        "executionId": "00000000-0000-0000-0000-000000007301",
+        "correlationId": "00000000-0000-0000-0000-000000007301",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "BINARY",
+            "operator": "POWER",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "2"
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "-1"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT",
+        "steps": [
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "MEMBER_OF",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "EMPTY_SET"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "all-absolute-branches",
+      "task": "SOLVE_EQUATION",
+      "completeForm": true,
+      "expectedVerdict": "VALID_EQUIVALENT",
+      "request": {
+        "schemaVersion": "attempt-verification-v2",
+        "executionId": "00000000-0000-0000-0000-000000007301",
+        "correlationId": "00000000-0000-0000-0000-000000007301",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "FUNCTION",
+            "function": "ABS",
+            "args": [
+              {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              }
+            ]
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "2"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [],
+        "domainBasis": "SOURCE_EXPLICIT",
+        "steps": [
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "MEMBER_OF",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "FINITE_SET",
+                "args": [
+                  {
+                    "kind": "NUMBER",
+                    "numericType": "INTEGER",
+                    "value": "-2"
+                  },
+                  {
+                    "kind": "NUMBER",
+                    "numericType": "INTEGER",
+                    "value": "2"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "explicit-scope-is-not-candidate-containment",
+      "task": "SOLVE_EQUATION",
+      "completeForm": false,
+      "expectedVerdict": "VALID_EQUIVALENT",
+      "request": {
+        "schemaVersion": "attempt-verification-v2",
+        "executionId": "00000000-0000-0000-0000-000000007301",
+        "correlationId": "00000000-0000-0000-0000-000000007301",
+        "original": {
+          "kind": "RELATION",
+          "relation": "EQUALS",
+          "left": {
+            "kind": "BINARY",
+            "operator": "ADD",
+            "left": {
+              "kind": "BINARY",
+              "operator": "MULTIPLY",
+              "left": {
+                "kind": "NUMBER",
+                "numericType": "INTEGER",
+                "value": "2"
+              },
+              "right": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              }
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "3"
+            }
+          },
+          "right": {
+            "kind": "NUMBER",
+            "numericType": "INTEGER",
+            "value": "11"
+          }
+        },
+        "variables": [
+          {
+            "symbol": "x",
+            "domain": "REAL"
+          }
+        ],
+        "restrictions": [
+          {
+            "id": "positive",
+            "relation": "GREATER_THAN",
+            "left": {
+              "kind": "VARIABLE",
+              "symbol": "x"
+            },
+            "right": {
+              "kind": "NUMBER",
+              "numericType": "INTEGER",
+              "value": "0"
+            }
+          }
+        ],
+        "domainBasis": "SOURCE_EXPLICIT",
+        "steps": [
+          {
+            "statement": {
+              "kind": "RELATION",
+              "relation": "MEMBER_OF",
+              "left": {
+                "kind": "VARIABLE",
+                "symbol": "x"
+              },
+              "right": {
+                "kind": "FINITE_SET",
+                "args": [
+                  {
+                    "kind": "NUMBER",
+                    "numericType": "INTEGER",
+                    "value": "4"
+                  },
+                  {
+                    "kind": "NUMBER",
+                    "numericType": "INTEGER",
+                    "value": "-4"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

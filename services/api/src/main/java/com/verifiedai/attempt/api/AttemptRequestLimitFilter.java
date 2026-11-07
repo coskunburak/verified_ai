@@ -31,6 +31,9 @@ public class AttemptRequestLimitFilter extends OncePerRequestFilter {
             metrics.counter("attempt.outcome","outcome","REQUEST_TOO_LARGE").increment();
             resolver.resolveException(request,response,null,AttemptAnalysisPolicy.error(ApiErrorCode.REQUEST_TOO_LARGE,HttpStatus.PAYLOAD_TOO_LARGE)); return;
         }
+        if(bytes.length==0 && (route(request).endsWith("/evaluation") || route(request).endsWith("/classification"))) {
+            resolver.resolveException(request,response,null,AttemptAnalysisPolicy.error(ApiErrorCode.REQUEST_VALIDATION_FAILED,HttpStatus.UNPROCESSABLE_ENTITY)); return;
+        }
         if(bytes.length>0) {
             try {
                 String json=java.nio.charset.StandardCharsets.UTF_8.newDecoder()
@@ -40,6 +43,10 @@ public class AttemptRequestLimitFilter extends OncePerRequestFilter {
                 var node=com.verifiedai.sharedkernel.contracts.VersionedJsonContract.parse(json);
                 if(route(request).matches("/api/v1/problem-sessions/[^/]+/attempts")) AttemptSubmissionRequest.parse(node);
                 if(route(request).matches("/api/v1/problem-sessions/[^/]+/attempts/structured-work")) AttemptWorkRequest.parse(node);
+                if(route(request).matches("/api/v1/problem-sessions/[^/]+/attempts/[^/]+/classification"))
+                    com.verifiedai.sharedkernel.contracts.VersionedJsonContract.validate("attempt-mistake-request-v1",json);
+                if(route(request).matches("/api/v1/problem-sessions/[^/]+/attempts/[^/]+/evaluation"))
+                    com.verifiedai.sharedkernel.contracts.VersionedJsonContract.validate("attempt-evaluation-request-v1",json);
             } catch(IllegalArgumentException | com.verifiedai.sharedkernel.error.ApiProblemException | java.nio.charset.CharacterCodingException ex) {
                 metrics.counter("attempt.outcome","outcome","REQUEST_VALIDATION_FAILED").increment();
                 resolver.resolveException(request,response,null,AttemptAnalysisPolicy.error(ApiErrorCode.REQUEST_VALIDATION_FAILED,HttpStatus.UNPROCESSABLE_ENTITY)); return;

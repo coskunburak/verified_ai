@@ -746,3 +746,27 @@ engine and capture/job identities, same canonical lineage and revision+1. Owner 
 This migration neither alters V030–V033 nor rewrites/backfills prior records. Account/source/attempt cascades remove artifacts;
 whole-owner deletion removes revision chains. Apply V034 before enabling the new binary path. Rollback disables creation,
 retains schema and compatible historical reader, and does not drop evidence or invoke Flyway repair.
+
+## Sprint 7.3 — V035 derived attempt evaluation
+
+attempt_evaluations has a unique attempt_id and owner/problem/create_key; composite parent-owner and session-owner
+FKs enforce membership. It records work_revision, source JSONB, policy_version, explicit real_domain_confirmed,
+execution_id, lease_until, created_at and bounded artifact JSONB. Claim/lease fields may change only before publication;
+accepted artifact and identity fields cannot change. Artifact ID/source/owner/revision/step IDs/final ID match parent facts.
+Original StudentAttempt/structured work remain untouched. Owner/source deletion cascades; export reads accepted artifacts.
+Apply V035 before enabling evaluation. Do not rewrite V030–V034 or backfill unsupported assessments. Rollback disables
+creation and retains schema/readers/evidence. One immutable evaluation per work revision; changed scope requires a new
+work revision, never an edit to accepted evidence. Default-off capability preserves historical reads.
+
+V035 session membership uses a deferred FK without a competing direct cascade; the structured-work parent
+is the sole deletion path. Recovery lease updates compare prior execution identity and expiry atomically.
+
+## Sprint 7.4 durable classification
+
+V036__attempt_mistake_classifications.sql adds attempt_mistake_classifications, owned by the attempt/evaluation
+lifecycle. Composite (evaluation_id,user_id,attempt_id) FK targets accepted evaluations; policy/evaluation and
+owner/problem/create_key uniqueness enforce one publication per policy and strict key replay. An append-only
+trigger validates source revision, execution, work revision, causal step, code and evidence-strength semantics.
+The derived artifact is bounded JSONB (8192 bytes), training_eligible=false. Owner/attempt/time indexes support
+historical reads/export. Deletion follows the evaluation parent; no destructive backfill or mastery update.
+Rollback disables creation and retains the new schema/readers. Future policy versions need additive migrations.

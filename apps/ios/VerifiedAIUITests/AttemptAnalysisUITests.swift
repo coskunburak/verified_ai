@@ -129,14 +129,36 @@ final class AttemptAnalysisUITests: XCTestCase {
 extension AttemptAnalysisUITests {
     func testStructuredWorkEnglishAccessibilityAndUnassessedState() { structured(turkish: false) }
     func testStructuredWorkTurkishAccessibilityAndUnassessedState() { structured(turkish: true) }
-    private func structured(turkish: Bool) {
+    func testEvaluationEnglishExplicitActionAndAccessibility() { structured(turkish: false, evaluate: true) }
+    func testEvaluationTurkishExplicitActionAndAccessibility() { structured(turkish: true, evaluate: true) }
+    func testClassificationEnglishUncertaintyAndAccessibility() { structured(turkish: false, evaluate: true, classify: true) }
+    func testClassificationTurkishUncertaintyAndAccessibility() { structured(turkish: true, evaluate: true, classify: true) }
+    private func structured(turkish: Bool, evaluate: Bool = false, classify: Bool = false) {
         continueAfterFailure = false
         let app = XCUIApplication()
         app.launchArguments = ["--ui-testing", "--ui-testing-authenticated", "--solve-fixture", "--attempt-fixture", "--solve-reset",
             "--solve-fixture-scope=" + UUID().uuidString, "-AppleLanguages", turkish ? "(tr)" : "(en)", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityM"]
         app.launch(); defer { app.terminate() }
-        tap(app.buttons["history.session.00000000-0000-0000-0000-000000005401"], app)
-        tap(app.buttons["history.solve"], app); tap(app.buttons["attempt.open"], app)
+        let row = app.buttons["history.session.00000000-0000-0000-0000-000000005401"]
+        let solve = app.buttons["history.solve"]
+        tap(row, app)
+        // Match the established PrimarySolve UI navigation fence: a cold transition
+        // may consume the first tap without presenting the destination. Re-deliver
+        // once only while the source is still actionable; never retry a submission.
+        if !solve.waitForExistence(timeout: 2), row.exists && row.isEnabled && row.isHittable {
+            row.tap()
+        }
+        guard solve.waitForExistence(timeout: 6) else {
+            let hierarchy = XCTAttachment(string: app.debugDescription)
+            hierarchy.name = "Evaluation entry — history navigation hierarchy"
+            hierarchy.lifetime = .keepAlways; add(hierarchy)
+            let screenshot = XCTAttachment(screenshot: app.screenshot())
+            screenshot.name = "Evaluation entry — history navigation screenshot"
+            screenshot.lifetime = .keepAlways; add(screenshot)
+            XCTFail("History selection did not present the solve entry")
+            return
+        }
+        tap(solve, app); tap(app.buttons["attempt.open"], app)
         let editor = app.textViews["attempt.editor"]
         tap(editor, app); editor.typeText("x=4")
         tap(app.buttons["attempt.keyboard.done"], app)
@@ -149,5 +171,41 @@ extension AttemptAnalysisUITests {
         XCTAssertTrue(saved.waitForExistence(timeout: 5))
         XCTAssertTrue(saved.label.contains(turkish ? "değerlendirilmedi" : "not assessed"))
         XCTAssertFalse(app.staticTexts["VERIFIED"].exists)
+        XCTAssertFalse(app.textViews["attempt.editor"].exists, "Saved structured evidence must not reopen an empty manual composer")
+        XCTAssertTrue(app.buttons["attempt.work.revise"].exists)
+        if evaluate {
+            let action = app.buttons["attempt.evaluation.action"]
+            tap(action, app)
+            let final = app.descendants(matching: .any)["attempt.evaluation.final"].firstMatch
+            for _ in 0..<8 { if final.isHittable { break }; app.swipeUp() }
+            XCTAssertTrue(final.waitForExistence(timeout: 5))
+            XCTAssertTrue(final.label.contains(turkish ? "verilmedi" : "not provided"))
+            XCTAssertTrue(app.descendants(matching: .any)["attempt.evaluation.step.1.UNCERTAIN"].exists)
+            if classify {
+                tap(app.buttons["attempt.classification.action"], app)
+                let explanation = app.staticTexts["attempt.classification.explanation"]
+                for _ in 0..<8 { if explanation.isHittable { break }; app.swipeUp() }
+                XCTAssertTrue(explanation.waitForExistence(timeout: 5))
+                XCTAssertTrue(explanation.label.contains(turkish ? "güvenilir" : "reliably"))
+                XCTAssertEqual(app.staticTexts.matching(identifier: "attempt.classification.explanation").count, 1)
+                XCTAssertFalse(app.buttons["attempt.classification.action"].exists)
+                XCTAssertFalse(app.staticTexts["VERIFIED"].exists)
+            }
+
+            if #available(iOS 17.0, *) {
+                let loading = app.descendants(matching: .any)["attempt.loading"].firstMatch
+                if loading.exists {
+                    let dismissed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: loading)
+                    _ = XCTWaiter.wait(for: [dismissed], timeout: 5)
+                }
+                do {
+                    try app.performAccessibilityAudit(for: [.elementDetection, .hitRegion, .sufficientElementDescription, .dynamicType, .textClipped, .trait]) { issue in
+                        false
+                    }
+                } catch {
+                    XCTFail("Accessibility audit failed: \(error)")
+                }
+            }
+        }
     }
 }

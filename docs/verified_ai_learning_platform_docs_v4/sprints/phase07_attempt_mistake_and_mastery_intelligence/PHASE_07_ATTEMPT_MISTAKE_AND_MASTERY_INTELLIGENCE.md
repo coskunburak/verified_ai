@@ -85,3 +85,25 @@ V034, integrated iOS review/recovery, strict contracts and an independent owner-
 SOURCE_COMPLETE; current-source execution remains PENDING_OWNER_TEST. This is not a passed phase exit gate or release approval.
 ADR-011 and the 50-student TestFlight gate above remain external and unverified. No paid inference route or deployment was enabled.
 See `SPRINT_7.2_IMPLEMENTATION_MAP.md`, `SPRINT_7.2_FUNCTIONAL_COMPLETION_MATRIX.md` and `SPRINT_7.2_EXECUTION_REPORT.md`.
+
+## Sprint 7.3 source handoff
+
+Independent immutable evaluation now consumes stored structured work through explicit POST and read-only GET.
+The existing bounded v2 verifier supplies step equivalence and an independent final-answer comparison. A valid
+sequence alone remains incomplete; unsupported completion/domain evidence stays inconclusive. V035, iOS recovery,
+EN/TR, strict contracts and the current-source A–G owner runner are authored. SOURCE_COMPLETE is not test evidence:
+execution is NOT_EXECUTED_BY_AGENT / PENDING_OWNER_TEST. Sprint 7.2 repaired-source acceptance is not promoted.
+
+Sprint 7.3 final owner acceptance (2026-11-07): full run 20261107-025110-XrMKJK passed all A–G
+gates and cleanup on unchanged source. LOCAL_ACCEPTANCE_PASSED / VERIFIED_BY_OWNER applies to its
+recorded fingerprint. Earlier pending entries describe the source handoff, not the final result.
+No production, hosted CI, physical-device or TestFlight authorization/evidence is implied.
+
+## Sprint 7.4 handoff — 2026-11-07
+
+Source: SOURCE_COMPLETE. Tests: NOT_EXECUTED / PENDING_OWNER_TEST. Production: PRODUCTION_NOT_AUTHORIZED.
+Sprint 7.3's local accepted-evaluation interface is reused; its earlier owner acceptance is not inherited.
+The next consumer may read immutable evaluation-linked classifications after fresh owner acceptance. It
+must respect evidence strength/review, nullable category/skill, taxonomy/policy versions, source lineage
+and training exclusion. No automatic mastery update or review-write workflow is introduced in this sprint.
+Owner runner and implementation/functional/execution records are listed in the Sprint 7.4 specification.

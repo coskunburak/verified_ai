@@ -405,3 +405,14 @@ Attach or persist links/artifacts for:
 
 Codex must implement this sprint in small reviewable slices, re-reading the highest-precedence semantic documents before changing domain/API/data contracts. It must not “simplify” the architecture by moving rules into prompts, client code, provider SDK adapters, generic helpers, or ungoverned ML scripts.
 <!-- PRODUCTION_EXECUTION_V3:END -->
+
+## Local implementation contract — 2026-11-07
+
+Source implementation follows SPRINT_7.4_IMPLEMENTATION_MAP.md,
+SPRINT_7.4_FUNCTIONAL_COMPLETION_MATRIX.md and SPRINT_7.4_EXECUTION_REPORT.md in this directory.
+Owning semantics: mistake; accepted-evaluation lifecycle/API: attempt. The baseline is 17 specific
+attempt-taxonomy-v2 codes plus generic/legacy codes, with separate mistake-category-v1 mapping.
+No eighteenth code, model call, backfill or mastery side effect is introduced. Confidence uses evidence
+bands; unsupported category coverage is explicit. Creation defaults off; V036 history survives disablement.
+Owner entry point: scripts/quality/sprint_7_4_owner_acceptance.sh --full. All new tests are NOT_EXECUTED
+/ PENDING_OWNER_TEST. Hosted CI, physical device, ADR-011 and production remain separate gates.

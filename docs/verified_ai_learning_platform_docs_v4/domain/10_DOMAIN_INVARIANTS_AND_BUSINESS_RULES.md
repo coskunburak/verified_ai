@@ -236,3 +236,22 @@ Visualization samples are approximate display data, never proof or VerificationP
   Gateway provenance is SERVER_RECORDED and must match an existing owned recognition job and exact raw metadata.
 - Structured submission never invokes AttemptVerifierClient or emits learning evidence. Existing v1/v2/v3 submission
   meanings and hashes remain unchanged; only the explicitly selected structured route uses the new contract.
+
+## Sprint 7.3 derived evaluation invariant
+
+AttemptEvaluation is independent of captured/reviewed/normalized evidence. It binds owner, problem, exact source,
+work revision, ordered stable step UUIDs, execution and policy version. It never rewrites StudentAttempt or
+AttemptStructuredWork. Step equivalence is not final completion. An independent final comparison plus supported
+solved form is required; explicit restrictions without a candidate-containment proof remain inconclusive.
+An explicit realDomainConfirmed claim may resolve UNKNOWN scope as REVIEWED_REAL_TASK, as in existing v2 analysis;
+it cannot override integer domains, missing symbols, source constraints or source assumptions. The claim is retained
+in immutable evidence and idempotency identity, and displayed to the learner. No automatic mastery/training label.
+
+## Sprint 7.4 classification invariants
+
+Accepted mathematical evaluation remains the authority; classification is immutable derived evidence.
+An authenticated owner may classify only an owned accepted evaluation with matching source/execution/work
+revision and first causal step. An uncertain prefix cannot support a later confirmed error. Model suggestions,
+user corrections, source-review and incomplete work do not grant mathematical certainty, mastery or training
+eligibility. Generic disproof cannot invent a pedagogical category or canonical skill. Replays publish once;
+future policy versions append history. No paid inference is introduced and creation defaults off.

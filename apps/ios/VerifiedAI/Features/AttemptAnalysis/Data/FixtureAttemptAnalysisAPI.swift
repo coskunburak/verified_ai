@@ -5,6 +5,8 @@ actor FixtureAttemptAnalysisAPI: AttemptAnalysisServicing {
     private let source = AttemptSourceIdentity(canonicalId: UUID(uuidString: "00000000-0000-0000-0000-000000006701")!, canonicalRevision: 1,
         parseId: UUID(uuidString: "00000000-0000-0000-0000-000000006702")!, parseRevision: 1)
     private var committed: [String: (AttemptSubmission, StudentAttempt)] = [:]
+    private var classifications: [UUID: AttemptMistakeView] = [:]
+    private var evaluations: [UUID: AttemptEvaluationView] = [:]
     private var workCommitted: [String: (AttemptWorkRequest, AttemptStructuredWork)] = [:]
     private var loseAcknowledgement: Bool
     private let enabled: Bool
@@ -15,6 +17,53 @@ actor FixtureAttemptAnalysisAPI: AttemptAnalysisServicing {
     func list(problem: UUID) async throws -> [StudentAttempt] { committed.values.map(\.1).filter { $0.problemSessionId == problem } }
     func readWork(problem: UUID, attempt: UUID) async throws -> AttemptStructuredWork? {
         workCommitted.values.map(\.1).first { $0.problemSessionId == problem && $0.attemptId == attempt }
+    }
+    func readClassification(problem: UUID, attempt: UUID) async throws -> AttemptMistakeView {
+        let evaluation = try await readEvaluation(problem: problem, attempt: attempt)
+        return .init(schemaVersion: "attempt-mistake-view-v1", attemptId: attempt,
+            status: classifications[attempt] != nil ? .completed : evaluation.historical ? .stale : .notClassified,
+            historical: evaluation.historical, creationEnabled: enabled, classification: classifications[attempt]?.classification)
+    }
+    func classify(problem: UUID, attempt: UUID, key: String, input: AttemptMistakeRequest) async throws -> AttemptMistakeView {
+        guard let e = evaluations[attempt]?.evaluation, input == AttemptMistakeRequest(evaluation: e), input.retryKey == key else { throw NetworkError.invalidResponse }
+        if let saved = classifications[attempt] { return saved }
+        guard enabled, !(try await readEvaluation(problem: problem, attempt: attempt)).historical else { throw NetworkError.invalidResponse }
+        let artifact = AttemptMistakeClassification(schemaVersion: "attempt-mistake-classification-v1", id: UUID(), attemptId: attempt,
+            ownerId: e.ownerId, problemSessionId: problem, evaluationId: e.id, executionId: e.executionId, source: e.source,
+            workRevision: e.workRevision, taxonomyVersion: "attempt-taxonomy-v2", categoryVersion: "mistake-category-v1",
+            policyVersion: "evidence-classifier-v1", verifierVersion: "bounded-attempt-v2", firstWrongStepId: nil,
+            firstWrongStepIndex: nil, supportingEvidenceId: nil,
+            decision: .init(status: .unsupported, code: nil, category: nil, authority: .deterministic, evidenceStrength: .none,
+                reviewStatus: .required, skillId: nil, explanationKey: "attempt.classification.UNSUPPORTED"),
+            createdAt: "2026-11-07T09:00:00Z", trainingEligible: false)
+        let view = AttemptMistakeView(schemaVersion: "attempt-mistake-view-v1", attemptId: attempt, status: .completed,
+            historical: false, creationEnabled: true, classification: artifact)
+        classifications[attempt] = view; return view
+    }
+    func readEvaluation(problem: UUID, attempt: UUID) async throws -> AttemptEvaluationView {
+        guard let work = try await readWork(problem: problem, attempt: attempt) else { throw NetworkError.invalidResponse }
+        let historical = workCommitted.values.contains { $0.1.supersedesAttemptId == work.attemptId }
+        if let saved = evaluations[attempt] {
+            return .init(schemaVersion: saved.schemaVersion, attemptId: attempt, status: saved.status, historical: historical, creationEnabled: enabled, evaluation: saved.evaluation)
+        }
+        return .init(schemaVersion: "attempt-evaluation-view-v1", attemptId: attempt, status: historical ? .stale : .notEvaluated, historical: historical, creationEnabled: enabled, evaluation: nil)
+    }
+    func evaluate(problem: UUID, attempt: UUID, key: String, input: AttemptEvaluationRequest) async throws -> AttemptEvaluationView {
+        if let result = evaluations[attempt] { return result }
+        guard enabled, let work = try await readWork(problem: problem, attempt: attempt), input == AttemptEvaluationRequest(work: work, realDomainConfirmed: input.realDomainConfirmed) else { throw NetworkError.invalidResponse }
+        let execution = UUID()
+        let analysis = AttemptAnalysisResult(schemaVersion: "attempt-analysis-v2", verifierVersion: "bounded-attempt-v2", taxonomyVersion: "attempt-taxonomy-v2",
+            executionId: execution, correlationId: execution.uuidString.lowercased(), outcome: .review, firstWrongStepIndex: nil, domain: "UNSUPPORTED",
+            steps: work.steps.map { .init(index: $0.index, verdict: $0.index == 1 ? .uncertain : .notAssessed,
+                reasonCode: $0.index == 1 ? "UNSUPPORTED_MATH" : "EARLIER_UNCERTAINTY", mistakeCode: nil, counterexampleStatus: "NOT_APPLICABLE", counterexample: nil) }, domainBasis: "UNRESOLVED")
+        let answer = work.steps.first { $0.role == .finalAnswer }
+        let evidence = AttemptEvaluation(schemaVersion: "attempt-evaluation-v1", id: UUID(), attemptId: attempt, ownerId: work.ownerId,
+            problemSessionId: problem, source: work.source, workRevision: work.revision, policyVersion: "structured-evaluation-v1", executionId: execution,
+            createdAt: "2026-11-06T12:00:00Z", stepIds: work.steps.map(\.id), analysis: analysis, realDomainConfirmed: input.realDomainConfirmed, finalStepId: answer?.id,
+            finalAnswerStatus: answer == nil ? .notProvided : answer?.reviewStatus == "CONFIRMED" ? .inconclusive : .reviewRequired,
+            finalAnswerEvidence: nil, trainingEligible: false)
+        let result = AttemptEvaluationView(schemaVersion: "attempt-evaluation-view-v1", attemptId: attempt, status: .completed, historical: false, creationEnabled: enabled, evaluation: evidence)
+        evaluations[attempt] = result; return result
     }
     func submitWork(problem: UUID, key: String, input: AttemptWorkRequest) async throws -> AttemptStructuredWork {
         if let saved = workCommitted[key] {

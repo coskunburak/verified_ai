@@ -215,3 +215,19 @@ immutable for that key, and bounded to 2 MB each / 30 images. Cancelled reviews 
 purge clears this directory along with drafts/pending work. These are local review aids, not server-owned original uploads;
 reinstallation/logout can remove previews while server transcription evidence remains. Gateway original images remain under
 existing problem-asset ownership/retention. The structured artifact does not duplicate image bytes or extend asset retention.
+
+## Sprint 7.3 evaluation evidence
+
+Evaluation artifacts are Sensitive DERIVED_LEARNING data with the same owner/source retention as structured work.
+Account export includes evaluations; existing parent cascades and account deletion remove accepted and pending operations.
+Derived proof is never training eligible. Operation keys/execution IDs have no credential authority; metrics use only bounded
+status tags and durations. Local iOS retry identity is account/problem-scoped, file-protected, backup-excluded and cleared
+through existing account purge. Historical status is computed at read time without mutating retained evidence.
+
+## Sprint 7.4 classification lifecycle
+
+Classification artifacts are DERIVED_LEARNING, retained with their immutable parent evaluation and included
+in student-attempts privacy export as mistakeClassifications. Account/session deletion follows a single
+cascade through structured work and evaluations; independent classification deletion/update is prohibited.
+No raw image/prompt/provider copy is added. Live deletion and existing encrypted-backup expiry/restore deletion
+reconciliation apply; immediate backup erasure is not claimed. Training eligibility remains false.

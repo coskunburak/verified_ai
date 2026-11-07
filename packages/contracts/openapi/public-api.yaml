@@ -261,6 +261,96 @@ paths:
         '403': {$ref: '#/components/responses/Problem'}
         '404': {$ref: '#/components/responses/Problem'}
         '429': {$ref: '#/components/responses/Problem'}
+  /api/v1/problem-sessions/{sessionId}/attempts/{attemptId}/classification:
+    parameters:
+      - {name: sessionId, in: path, required: true, schema: {type: string, format: uuid}}
+      - {name: attemptId, in: path, required: true, schema: {type: string, format: uuid}}
+    post:
+      security: [{bearerAuth: []}]
+      operationId: classifyAttemptMistake
+      summary: Classify accepted immutable evaluation evidence
+      description: Authenticated owner only; no additional paid entitlement. Default-off deterministic derivation from stored evaluation; no caller labels, AI or verifier calls. Requires evaluationId, exact source and workRevision; missing accepted evidence returns ATTEMPT_CLASSIFICATION_NOT_READY (409). Key reuse with different evidence returns IDEMPOTENCY_KEY_REUSED (409). New publication on stale/superseded work returns ATTEMPT_STALE_SOURCE (409). Exact replay and historical GET survive disablement. Concurrent retries serialize under the owner lock; failures roll back atomically. After cancellation or lost acknowledgement GET first, then explicitly retry the same key. Creation unavailable returns ATTEMPT_UNAVAILABLE (503); bounded to 16 KiB and 15 requests per owner per minute.
+      parameters:
+        - {name: Idempotency-Key, in: header, required: true, schema: {type: string, pattern: '^[A-Za-z0-9_-]{8,128}$'}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '../../schemas/attempt-mistake-request-v1.schema.json'}
+      responses:
+        '200':
+          description: Immutable classification or explicit unsupported/review result
+          content:
+            application/json:
+              schema: {$ref: '../../schemas/attempt-mistake-view-v1.schema.json'}
+        '401': {$ref: '#/components/responses/Problem'}
+        '403': {$ref: '#/components/responses/Problem'}
+        '404': {$ref: '#/components/responses/Problem'}
+        '409': {$ref: '#/components/responses/Problem'}
+        '413': {$ref: '#/components/responses/Problem'}
+        '422': {$ref: '#/components/responses/Problem'}
+        '429': {$ref: '#/components/responses/Problem'}
+        '503': {$ref: '#/components/responses/Problem'}
+    get:
+      security: [{bearerAuth: []}]
+      operationId: readAttemptMistakeClassification
+      summary: Read owned classification, including during rollback
+      description: Read never computes or writes. Returns NOT_CLASSIFIED, COMPLETED or STALE. Historical source is retained; legacy attempts without structured evaluation are not reinterpreted. Source/account ownership is rechecked. New evidence never changes mastery, verification or training eligibility.
+      responses:
+        '200':
+          description: Classification read model
+          content:
+            application/json:
+              schema: {$ref: '../../schemas/attempt-mistake-view-v1.schema.json'}
+        '401': {$ref: '#/components/responses/Problem'}
+        '403': {$ref: '#/components/responses/Problem'}
+        '404': {$ref: '#/components/responses/Problem'}
+        '429': {$ref: '#/components/responses/Problem'}
+  /api/v1/problem-sessions/{sessionId}/attempts/{attemptId}/evaluation:
+    parameters:
+      - {name: sessionId, in: path, required: true, schema: {type: string, format: uuid}}
+      - {name: attemptId, in: path, required: true, schema: {type: string, format: uuid}}
+    post:
+      security: [{bearerAuth: []}]
+      operationId: evaluateStructuredAttempt
+      summary: Explicit bounded evaluation of immutable structured work
+      description: Default-off. Explicit realDomainConfirmed is a retained learner scope claim (REVIEWED_REAL_TASK), never source authority; false preserves unresolved domains. One operation per work revision. Exact retry key is retained; a different key or revision conflicts (IDEMPOTENCY_KEY_REUSED). Active leases return IN_PROGRESS; expired leases allow explicit retry. Two bounded deterministic v2 calls at most, no paid inference. Stale source or superseded work rejects new evaluation (ATTEMPT_STALE_SOURCE). No mastery publication. Independent final answer may be verified even when reasoning is inconclusive; it does not imply an entirely correct attempt.
+      parameters:
+        - {name: Idempotency-Key, in: header, required: true, schema: {type: string, pattern: '^[A-Za-z0-9_-]{8,128}$'}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '../../schemas/attempt-evaluation-request-v1.schema.json'}
+      responses:
+        '200':
+          description: Durable operation or immutable assessment; RETRYABLE is a service failure, never a mathematical verdict
+          content:
+            application/json:
+              schema: {$ref: '../../schemas/attempt-evaluation-view-v1.schema.json'}
+        '401': {$ref: '#/components/responses/Problem'}
+        '403': {$ref: '#/components/responses/Problem'}
+        '404': {$ref: '#/components/responses/Problem'}
+        '409': {$ref: '#/components/responses/Problem'}
+        '413': {$ref: '#/components/responses/Problem'}
+        '422': {$ref: '#/components/responses/Problem'}
+        '429': {$ref: '#/components/responses/Problem'}
+        '503': {$ref: '#/components/responses/Problem'}
+    get:
+      security: [{bearerAuth: []}]
+      operationId: readAttemptEvaluation
+      summary: Read owned evaluation and current historical status, including during rollback
+      description: Read never starts computation. NOT_EVALUATED is returned for saved structured work; legacy attempts without structured work return ATTEMPT_NOT_FOUND. Historical includes source change or superseding work. Creation capability is server-owned.
+      responses:
+        '200':
+          description: Evaluation read model
+          content:
+            application/json:
+              schema: {$ref: '../../schemas/attempt-evaluation-view-v1.schema.json'}
+        '401': {$ref: '#/components/responses/Problem'}
+        '403': {$ref: '#/components/responses/Problem'}
+        '404': {$ref: '#/components/responses/Problem'}
+        '429': {$ref: '#/components/responses/Problem'}
   /api/v1/problem-sessions/{sessionId}/attempts/extractions:
     parameters:
       - {name: sessionId, in: path, required: true, schema: {type: string, format: uuid}}

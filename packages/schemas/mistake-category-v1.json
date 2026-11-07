@@ -1,0 +1,117 @@
+{
+  "version": "mistake-category-v1",
+  "signatureTaxonomy": "attempt-taxonomy-v2",
+  "policyVersion": "evidence-classifier-v1",
+  "mappings": [
+    {
+      "code": "ALG_SIGN_FLIP_DISTRIBUTE",
+      "category": "SIGN_ERROR",
+      "skillId": "MATH.ALGEBRA.SIMPLIFY_EXPRESSIONS",
+      "evidenceGate": "EXACT_DISPROOF_AND_UNAMBIGUOUS_STRUCTURE"
+    },
+    {
+      "code": "ALG_FRESHMAN_DREAM_POWER",
+      "category": "ALGEBRA_ERROR",
+      "skillId": null,
+      "evidenceGate": "EXACT_DISPROOF_AND_UNAMBIGUOUS_STRUCTURE"
+    },
+    {
+      "code": "ALG_FRACTION_ADD_DENOM",
+      "category": "ALGEBRA_ERROR",
+      "skillId": "MATH.ARITHMETIC.FRACTIONS",
+      "evidenceGate": "EXACT_DISPROOF_AND_UNAMBIGUOUS_STRUCTURE"
+    },
+    {
+      "code": "ALG_ROOT_LOST_BY_DIVISION",
+      "category": "ALGEBRA_ERROR",
+      "skillId": null,
+      "evidenceGate": "EXACT_DISPROOF_AND_UNAMBIGUOUS_STRUCTURE"
+    },
+    {
+      "code": "DOM_EXTRANEOUS_ROOT_DENOM",
+      "category": "CONCEPT_ERROR",
+      "skillId": null,
+      "evidenceGate": "EXACT_DISPROOF_AND_UNAMBIGUOUS_STRUCTURE"
+    },
+    {
+      "code": "DOM_EVEN_ROOT_NEGATIVE",
+      "category": "CONCEPT_ERROR",
+      "skillId": null,
+      "evidenceGate": "EXACT_DISPROOF_AND_UNAMBIGUOUS_STRUCTURE"
+    },
+    {
+      "code": "DOM_LOG_NON_POSITIVE",
+      "category": "CONCEPT_ERROR",
+      "skillId": null,
+      "evidenceGate": "EXACT_DISPROOF_AND_UNAMBIGUOUS_STRUCTURE"
+    },
+    {
+      "code": "INEQ_NEGATIVE_MULT_NO_FLIP",
+      "category": "SIGN_ERROR",
+      "skillId": "MATH.EQUATIONS.INEQUALITIES_BASIC",
+      "evidenceGate": "EXACT_DISPROOF_AND_UNAMBIGUOUS_STRUCTURE"
+    },
+    {
+      "code": "INEQ_CROSS_MULT_VARIABLE",
+      "category": "ALGEBRA_ERROR",
+      "skillId": null,
+      "evidenceGate": "EXACT_DISPROOF_AND_UNAMBIGUOUS_STRUCTURE"
+    },
+    {
+      "code": "ABS_SINGLE_BRANCH_ONLY",
+      "category": "ALGEBRA_ERROR",
+      "skillId": null,
+      "evidenceGate": "EXACT_DISPROOF_AND_UNAMBIGUOUS_STRUCTURE"
+    },
+    {
+      "code": "FUNC_COMPOSITION_ORDER",
+      "category": "CONCEPT_ERROR",
+      "skillId": "MATH.FUNCTIONS.COMPOSITION",
+      "evidenceGate": "EXACT_DISPROOF_AND_UNAMBIGUOUS_STRUCTURE"
+    },
+    {
+      "code": "TRIG_PERIOD_OMITTED",
+      "category": "CONCEPT_ERROR",
+      "skillId": null,
+      "evidenceGate": "EXACT_DISPROOF_AND_UNAMBIGUOUS_STRUCTURE"
+    },
+    {
+      "code": "CALC_LIMIT_INDETERMINATE_SUB",
+      "category": "CONCEPT_ERROR",
+      "skillId": null,
+      "evidenceGate": "EXACT_DISPROOF_AND_UNAMBIGUOUS_STRUCTURE"
+    },
+    {
+      "code": "CALC_CHAIN_RULE_OMITTED",
+      "category": "FORMULA_ERROR",
+      "skillId": "MATH.CALCULUS.DIFFERENTIATION.CHAIN_RULE",
+      "evidenceGate": "EXACT_DISPROOF_AND_UNAMBIGUOUS_STRUCTURE"
+    },
+    {
+      "code": "CALC_PRODUCT_QUOTIENT_NAIVE",
+      "category": "FORMULA_ERROR",
+      "skillId": null,
+      "evidenceGate": "EXACT_DISPROOF_AND_UNAMBIGUOUS_STRUCTURE"
+    },
+    {
+      "code": "CALC_INTEGRAL_BOUNDS_SWAPPED",
+      "category": "SIGN_ERROR",
+      "skillId": null,
+      "evidenceGate": "EXACT_DISPROOF_AND_UNAMBIGUOUS_STRUCTURE"
+    },
+    {
+      "code": "WORD_VARIABLE_MISASSIGNMENT",
+      "category": "INTERPRETATION_ERROR",
+      "skillId": null,
+      "evidenceGate": "EXACT_DISPROOF_AND_UNAMBIGUOUS_STRUCTURE"
+    }
+  ],
+  "unsupportedCategories": {
+    "CALCULATION_ERROR": "No arithmetic-slip predicate; generic disproof is insufficient.",
+    "UNIT_ERROR": "No dimensional verifier.",
+    "NOTATION_ERROR": "Unsupported syntax cannot prove a mistake.",
+    "INCOMPLETE_SOLUTION": "Missing final answer is INCOMPLETE_WORK, not a confirmed error.",
+    "OTHER_REVIEWED": "Requires human review; no review-authority publication in this policy."
+  },
+  "interpretationScope": "WORD_VARIABLE_MISASSIGNMENT proves only omission of a TOTAL operand, never natural-language intention."
+}
