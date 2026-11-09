@@ -359,3 +359,71 @@ Attach or persist links/artifacts for:
 
 Codex must implement this sprint in small reviewable slices, re-reading the highest-precedence semantic documents before changing domain/API/data contracts. It must not “simplify” the architecture by moving rules into prompts, client code, provider SDK adapters, generic helpers, or ungoverned ML scripts.
 <!-- PRODUCTION_EXECUTION_V3:END -->
+
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:START -->
+# Learning OS Production Implementation Specification v1 (`2026-11-07`)
+
+## 1. Sprint Metadata & Status
+- **Sprint ID:** `SPRINT_8.2`
+- **Canonical Title:** 8-Family Verified Twin Practice Generator & Progressive Variant Ladder (`Variant A / B / C`)
+- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011)`
+- **Primary Spec Reference:** `learning/84_VERIFIED_TWIN_PRACTICE_AND_INDEPENDENT_LEARNING_ENGINE.md`
+
+## 2. Strategic Learning OS Objective & User Value
+Expands `V031` `counterfactual_twin_drills` and `services/math-verifier/app/verifiers/attempt_learning.py` into the full **8-Family Verified Twin Engine** with a 3-tier progressive difficulty ladder:
+- **Variant A (`ISOMORPHIC_TRAP_TWIN`):** Parameter-perturbed isomorphic problem preserving the exact structural hazard.
+- **Variant B (`REVERSED_MASKED_TWIN`):** Reverses target/given (e.g., find parameter $k$ given extraneous root or critical point).
+- **Variant C (`EXAM_SYNTHESIS_TWIN`):** Combines the target skill with an adjacent prerequisite under exam framing.
+
+## 3. Entry Gate & Preconditions
+- `ADR-011` `GO` decision recorded; `Sprint 8.1` accepted.
+
+## 4. Domain Invariants & Mathematical Rules (`learning/84` Section 5)
+1. **100% SymPy Trap Invariant Gate (`G-MATH-05`):** Every candidate twin across all 8 families (Rational holes $x \neq a$, Radical/Log extraneous roots, Lost roots from variable division, Absolute value branches, Negative inequality multiplier flips, Quadratic discriminant regimes, Calculus chain/product rules, $0/0$ limits & $+C$ integrals) is symbolically verified by SymPy before storage.
+2. **Fail-Closed Refusal (`INV-TWIN-008`):** Any candidate failing symbolic verification after 2 retries within budget (`<1,500ms` deterministic, `<3,500ms` hybrid) is rejected fail-closed and replaced by a curated pre-verified skill item.
+
+## 5. Owning Spring Modulith Backend Modules & Classes
+- `com.verifiedai.studyplan`: `TargetedTwinOrchestrator.java`, `TwinVariantLadderPolicy.java`.
+- `com.verifiedai.attempt`: `CounterfactualTwinDrill.java` (`V031` + `V041`).
+
+## 6. Python Math Verifier Impact (`services/math-verifier/`)
+- `services/math-verifier/app/verifiers/attempt_learning.py`: adds deterministic parametric AST generators and SymPy structural invariant assertions for all 8 families.
+
+## 7. Database Migration & Persistence Contract (`PLANNED V041`)
+- **Migration File:** `services/api/src/main/resources/db/migration/platform/V041__verified_twin_ladder_and_templates.sql` *(PLANNED)*
+- **Schema Changes:** `ALTER TABLE counterfactual_twin_drills` (`V031`) adding `variant_tier VARCHAR(32) NOT NULL DEFAULT 'VARIANT_A_ISOMORPHIC'`, `generation_tier VARCHAR(32) NOT NULL DEFAULT 'DETERMINISTIC_TEMPLATE'`, `evidence_type_result VARCHAR(32)`, `hints_used_count INT NOT NULL DEFAULT 0`.
+
+## 8. REST API Contracts (`CNT-LOS-03`)
+- `POST /v1/attempts/{attemptId}/twins?variantTier={A|B|C}` and `POST /v1/twins/{twinId}/submit`.
+
+## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
+- Updates `apps/ios/VerifiedAI/Features/ProblemSolving/` to display Variant A/B/C progression badges and the 60-second independent lock timer.
+
+## 10. AI Capability & Unit Economics Guardrail
+- Tier-1 deterministic templates serve $\ge 80\%$ of requests at **`$0.00` LLM token cost**; Tier-2 hybrid (`AiCapability.PRACTICE_GENERATE`) is guarded by `PostgresAiSpendGuard` (`V016`/`V017`).
+
+## 11. Privacy, Safety & Compliance
+- Covered by `StudentAttemptPrivacyLifecycleContributor` (`V031` cascade).
+
+## 12. Telemetry & Observability
+- Emits `twin_variant_generated` (`variant_tier`, `generation_tier`, `latency_ms`) and `twin_invariant_check_failed`.
+
+## 13. Feature Flags & Rollback Plan
+- `verifiedai.studyplan.twin-ladder-enabled: false`, `verifiedai.studyplan.hybrid-twin-llm-enabled: false`.
+
+## 14. Automated Test Matrix (Categories A–F)
+- `test_attempt_learning_twins.py` testing 100 generated twins per family (800 cases) for non-empty solution sets and active trap preservation (`100%` pass requirement).
+
+## 15. Owner-Only Acceptance Command
+- `bash scripts/quality/sprint_8_2_owner_acceptance.sh --full`
+
+## 16. Explicit Non-Goals
+- Does not generate unverified Euclidean geometry drawings.
+
+## 17. Exit Gate & Downstream Consumers
+- Unlocks `Sprint 8.3` (Spaced Repetition Scheduler) and `Sprint 8.4` (Daily 15-Minute Coach Session).
+
+## 18. Canonical Cross-References
+- `learning/84_VERIFIED_TWIN_PRACTICE_AND_INDEPENDENT_LEARNING_ENGINE.md`
+- `quality/91_LEARNING_OS_PRODUCT_LEARNING_AND_RELEASE_ACCEPTANCE_GATES.md`
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:END -->

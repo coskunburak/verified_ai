@@ -66,9 +66,7 @@ The platform intentionally separates product semantics, learner state, AI-genera
 
 ### iOS files to review/create
 
-- `apps/ios/VerifiedLearning/Features/<Feature>/Domain/**`
-- `apps/ios/VerifiedLearning/Features/<Feature>/Data/**`
-- `apps/ios/VerifiedLearning/Features/<Feature>/Presentation/**`
+- `apps/ios/VerifiedAI/Features/Account/**`
 - feature unit tests, accessibility coverage, and critical UI-flow tests.
 
 ## API and contract considerations
@@ -365,3 +363,67 @@ Attach or persist links/artifacts for:
 
 Codex must implement this sprint in small reviewable slices, re-reading the highest-precedence semantic documents before changing domain/API/data contracts. It must not “simplify” the architecture by moving rules into prompts, client code, provider SDK adapters, generic helpers, or ungoverned ML scripts.
 <!-- PRODUCTION_EXECUTION_V3:END -->
+
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:START -->
+# Learning OS Production Implementation Specification v1 (`2026-11-07`)
+
+## 1. Sprint Metadata & Status
+- **Sprint ID:** `SPRINT_12.7`
+- **Canonical Title:** Non-Surveillance Parent/Guardian Weekly Progress Digest & Minor Consent Management
+- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011 & V1_LAUNCH)`
+- **Primary Spec Reference:** `security/89_STUDENT_COACH_PRIVACY_MINOR_SAFETY_AND_TEACHER_ACCESS.md` (Section 5)
+
+## 2. Strategic Learning OS Objective & User Value
+Provides household sponsors (parents/guardians) with a reassuring, non-intrusive **Weekly Consistency & Conquered Traps Digest** without turning Verified AI into a surveillance tool. Parents see weekly study consistency (`4/5 Gün Tamamlandı`), total Conquered Traps, and high-level readiness trend — **never** minute-by-minute activity timestamps, raw failed step drafts, camera photos, or Socratic chat logs.
+
+## 3. Entry Gate & Preconditions
+- `Sprint 12.6` (`V049` `coach_student_links` & `user_privacy_consents`) accepted; KVKK legal checkpoint `LGL-KVKK-02` verified.
+
+## 4. Domain Invariants & Anti-Surveillance Rules (`security/89` Section 5.1)
+1. **Weekly Digest Granularity Only:** Parent views are updated on a weekly/daily summary cadence and physically omit time-of-day timestamps (preventing late-night micromanagement friction).
+2. **Zero Chat/Photo Access:** Strictly enforces `403 FORBIDDEN` on all attempt step drafts, photos, and tutor turns for `OBSERVER_PARENT` role.
+
+## 5. Owning Spring Modulith Backend Modules & Classes
+- `com.verifiedai.account`: `ParentGuardianDigestProjectionService.java`, `MinorConsentService.java`.
+- `com.verifiedai.analytics`: reuses `WeeklyLearnerDigestService` (`V045`).
+
+## 6. Python Math Verifier Impact
+- None.
+
+## 7. Database Migration & Persistence Contract
+- Reuses `V045` (`weekly_learner_digests`) and `V049` (`coach_student_links` with `observer_role = 'PARENT_GUARDIAN'`).
+
+## 8. REST API Contracts (`CNT-LOS-09` & `CNT-LOS-13`)
+- `GET /v1/family/students/{studentId}/weekly-summary`.
+
+## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
+- `apps/ios/VerifiedAI/Features/Account/Presentation/FamilySharingSettingsView.swift`.
+
+## 10. AI Capability & Unit Economics Guardrail
+- **`$0.00` LLM token cost.**
+
+## 11. Privacy, Safety & Compliance
+- Complies with KVKK minor protection rules and UNESCO (2023) learner agency standards (`security/89`).
+
+## 12. Telemetry & Observability
+- Emits `parent_digest_viewed` and `family_link_revoked`.
+
+## 13. Feature Flags & Rollback Plan
+- `verifiedai.account.parent-digest-enabled: false`.
+
+## 14. Automated Test Matrix (Categories A–F)
+- Authorization & schema tests verifying `OBSERVER_PARENT` cannot access raw attempts, chat logs, or timestamps.
+
+## 15. Owner-Only Acceptance Command
+- `bash scripts/quality/sprint_12_7_owner_acceptance.sh --full`
+
+## 16. Explicit Non-Goals
+- No real-time GPS/screen-time tracking or push alerts when a student misses a single question.
+
+## 17. Exit Gate & Downstream Consumers
+- Completes family/tutor sharing governance for Phase 12.
+
+## 18. Canonical Cross-References
+- `security/89_STUDENT_COACH_PRIVACY_MINOR_SAFETY_AND_TEACHER_ACCESS.md`
+- `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md`
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:END -->

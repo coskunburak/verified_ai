@@ -114,3 +114,22 @@ D1/D7/D30 are necessary but not sufficient. Also measure:
 
 Product analytics is not a training dataset. Events should contain minimal semantic metadata and avoid raw problem/attempt content. Any future use of analytics-derived data for ML follows explicit eligibility and dataset-lineage governance.
 <!-- HYBRID_AI_STRATEGY_V3:END -->
+
+<!-- LEARNING_OS_METRICS_V7:START -->
+## V7 Learning OS Outcome Metrics and Event Taxonomy Extension (2026-11-07)
+
+The analytics catalog is extended by **`learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md`** and **`roadmap/88_LEARNING_OS_MONETIZATION_GROWTH_AND_VALIDATION_PLAN.md`** to measure verifiable learning improvement alongside commercial health:
+
+### Core Learning OS Events (Metadata-Only, Zero Raw Math/PII)
+- `mistake_passport.item_created`, `mistake_passport.state_transitioned` (`fromState`, `toState`, `errorCode`, `canonicalSkillCode`)
+- `twin_drill.issued`, `twin_drill.completed` (`variant`: `A`/`B`/`C`, `evidenceClass`: `INDEPENDENT`/`HINT_ASSISTED`/`SOLUTION_REVEALED_ASSISTED`, `passed`: `boolean`, `durationMs`)
+- `retrieval_check.scheduled`, `retrieval_check.completed` (`stage`: `48H`/`7D`/`21D`, `passedIndependent`: `boolean`)
+- `daily_coach.plan_generated`, `daily_coach.item_completed`, `daily_coach.plan_rebalanced`
+- `paywall.mistake_moment_shown`, `paywall.twin_success_shown`, `paywall.trial_started`
+
+### Primary Learning OS Outcome KPIs
+1. **Verified Independent Twin Resolution Rate (`VITRR`):** `%` of diagnosed mistake events followed by an `INDEPENDENT` Twin Variant A pass within 24 hours.
+2. **48-Hour & 7-Day Delayed Retrieval Pass Rate (`DRPR-48h` / `DRPR-7d`):** `%` of remediated skills where the learner passes a delayed retrieval check without hints.
+3. **Mistake Recurrence Reduction Rate (`MRRR-14d`):** Relative reduction in `MistakeRecurrenceIndex` for remediated error codes over 14 days.
+4. **Transfer Gain Index (`TGI`):** Independent first-attempt accuracy gain on Variant B/C transfer problems.
+<!-- LEARNING_OS_METRICS_V7:END -->

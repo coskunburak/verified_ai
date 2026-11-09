@@ -67,11 +67,9 @@ The platform intentionally separates product semantics, learner state, AI-genera
 
 ### Backend files to review/create
 
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/domain/**`
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/application/**`
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/api/**`
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/infrastructure/**`
-- corresponding module tests and architecture tests.
+- `services/api/src/main/java/com/verifiedai/billing/**` *(Google Play Billing v7 verification adapter)*
+- `apps/android/**` *(Native Kotlin 2.x + Jetpack Compose Android client)*
+- corresponding module tests and cross-platform golden contract parity tests.
 
 ## API and contract considerations
 
@@ -367,3 +365,69 @@ Attach or persist links/artifacts for:
 
 Codex must implement this sprint in small reviewable slices, re-reading the highest-precedence semantic documents before changing domain/API/data contracts. It must not “simplify” the architecture by moving rules into prompts, client code, provider SDK adapters, generic helpers, or ungoverned ML scripts.
 <!-- PRODUCTION_EXECUTION_V3:END -->
+
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:START -->
+# Learning OS Production Implementation Specification v1 (`2026-11-07`)
+
+## 1. Sprint Metadata & Status
+- **Sprint ID:** `SPRINT_12.10`
+- **Canonical Title:** Native Android Client (`Kotlin + Jetpack Compose`), Google Play Billing v7, and Cross-Platform 2D Math Parity
+- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011 & IOS_V1_UNIT_ECONOMICS_GATE)`
+- **Primary Spec Reference:** `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md` (Section 8) & `roadmap/87_LEARNING_OS_STRATEGIC_PHASE_AND_SPRINT_EXPANSION_PROGRAM.md`
+
+## 2. Strategic Learning OS Objective & User Value
+Unlocks the remaining ~65% of the Turkish YKS student market (`product/82`) by delivering the native **Android Learning OS Client (`apps/android/`)** built with Kotlin 2.x, Jetpack Compose, Room offline caching, and native Compose Canvas 2D mathematical rendering (`ADR-010`), achieving 100% functional and mathematical parity with `apps/ios/VerifiedAI/` across all 12 core screens (`learning/85`) and 13 domain contracts (`CNT-LOS-01` through `CNT-LOS-13`).
+
+## 3. Entry Gate & Preconditions
+- iOS V1 public launch (`Phase 11`) achieves stable unit economics (`Paid Conversion >= 1.8%`, `Gross Margin >= 65%`, `Gate G3` in `roadmap/87`).
+
+## 4. Domain Invariants & Cross-Platform Parity Rules
+1. **Zero Business Logic Duplication on Client:** Android and iOS are pure declarative presentation clients over `CNT-LOS-01..13`; neither client computes mastery, mistake propensity, or exam readiness locally.
+2. **Native 2D Math & Step-Diff Parity (`ADR-010`):** Android's Compose math renderer consumes the exact same `MathVisualizationPayload` and token-level step diff AST from `services/math-verifier/` as iOS, with zero WebView overhead.
+3. **Google Play Families & Data Safety Compliance (`security/89`):** Enforces pre-execution AI consent, on-device EXIF stripping and bounding-box cropping, and in-app account deletion parity.
+
+## 5. Owning Backend & Client Modules
+- `apps/android/`: `feature:coach`, `feature:capture`, `feature:attemptanalysis`, `feature:mistakepassport`, `feature:mastery`, `feature:exam`, `feature:subscription`, `core:mathrenderer`, `core:network`, `core:database`.
+- `com.verifiedai.billing`: `GooglePlayBillingApplicationService.java` (Real-Time Developer Notifications + Play Developer API purchase token verification).
+
+## 6. Python Math Verifier Impact
+- Unchanged (serves platform-neutral JSON AST payloads).
+
+## 7. Database Migration & Persistence Contract
+- Extends `com.verifiedai.billing` subscription records with `store_provider = 'GOOGLE_PLAY'` and `play_purchase_token_hash`.
+
+## 8. REST API Contracts
+- Consumes `CNT-LOS-01` through `CNT-LOS-13` + `POST /v1/billing/google-play/verify`.
+
+## 9. Android (`apps/android/`) & iOS (`apps/ios/VerifiedAI/`) Scope
+- Shared golden contract fixture test suite (`tests/contracts/learning_os_golden_fixtures/`) run against both Swift `Codable` and Kotlin `kotlinx.serialization` DTOs.
+
+## 10. AI Capability & Unit Economics Guardrail
+- Enforces identical `PostgresAiSpendGuard` and `entitlement_quota_ledgers` (`V048`) caps across iOS and Android users.
+
+## 11. Privacy, Safety & Compliance
+- Full Google Play Data Safety form & account deletion web/in-app link parity (`security/89`).
+
+## 12. Telemetry & Observability
+- Emits identical analytics event schemas (`operations/48`, `quality/91` Section 8) tagged with `client_platform: "ANDROID"`.
+
+## 13. Feature Flags & Rollback Plan
+- `verifiedai.billing.google-play-enabled: false`.
+
+## 14. Automated Test Matrix (Categories A–F)
+- 100% pass on shared golden JSON contract fixtures between iOS and Android; Compose UI tests for all 12 screens (`learning/85`); TalkBack accessibility math speech tests in `tr-TR` and `en-US`.
+
+## 15. Owner-Only Acceptance Command
+- `bash scripts/quality/sprint_12_10_owner_acceptance.sh --full`
+
+## 16. Explicit Non-Goals
+- Does not use React Native, Flutter, or WebView math wrappers.
+
+## 17. Exit Gate & Downstream Consumers
+- Completes cross-platform mobile parity for Variant C (`EXPANSION — YKS + ANDROID + B2B2C`).
+
+## 18. Canonical Cross-References
+- `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md`
+- `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md`
+- `roadmap/87_LEARNING_OS_STRATEGIC_PHASE_AND_SPRINT_EXPANSION_PROGRAM.md`
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:END -->

@@ -348,3 +348,73 @@ Attach or persist links/artifacts for:
 
 Codex must implement this sprint in small reviewable slices, re-reading the highest-precedence semantic documents before changing domain/API/data contracts. It must not “simplify” the architecture by moving rules into prompts, client code, provider SDK adapters, generic helpers, or ungoverned ML scripts.
 <!-- PRODUCTION_EXECUTION_V3:END -->
+
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:START -->
+# Learning OS Production Implementation Specification v1 (`2026-11-07`)
+
+## 1. Sprint Metadata & Status
+- **Sprint ID:** `SPRINT_11.9` (including Fast-Tracked Stage 1 Wedge `SPRINT_11.9A`)
+- **Canonical Title:** Closed 50-Student TestFlight Beta Cohort, Learning Transfer Telemetry & `ADR-011` Commercial Validation Gate
+- **Status:** `PLANNED` (`STAGE_1_FAST_TRACKED_UNDER_ADR_011`)
+- **Primary Spec Reference:** `sprints/02_FOCUSED_COMMERCIAL_WEDGE_SPRINT_PROGRAM.md`, `quality/91_LEARNING_OS_PRODUCT_LEARNING_AND_RELEASE_ACCEPTANCE_GATES.md`, and `operations/92_LEARNING_OS_ASSUMPTIONS_EXPERIMENTS_AND_EVIDENCE_LEDGER.md`
+
+## 2. Strategic Learning OS Objective & User Value
+Executes the two-stage closed TestFlight validation program:
+1. **Stage 1 (`SPRINT_11.9A` Focused Wedge Gate):** 50 real learners (35 Turkish YKS TYT/AYT + 15 Calculus/High School) testing the core **Attempt -> First Mistake -> Counterexample -> 60s Locked Twin -> Mistake Passport** loop over 14–30 days under a hard `$150` total cohort AI spend cap (`$5/day`).
+2. **Stage 2 (`SPRINT_11.9` Full Learning OS RC Beta):** Validates Phase 8–10 Daily Coach, Spaced Twins, YKS Readiness Simulator, and StoreKit 2 paywalls prior to public App Store launch.
+
+## 3. Entry Gate & Preconditions
+- Stage 1 (`11.9A`): `Sprint 7.4` (and `7.5–7.8` wedge slice) + `Sprint 6.2B` live cloud adapters accepted locally by owner.
+- Stage 2 (`11.9`): `ADR-011` `GO` recorded and Phases 08–10 completed.
+
+## 4. Quantitative `GO / PIVOT / STOP` Gate Criteria (`quality/91` Section 7)
+- `G-COM-01`: Cohort Day-7 Retention (`D7`) **$\ge 20.0\%$**
+- `G-COM-02`: Verified Twin Challenge Engagement Rate **$\ge 35.0\%$**
+- `G-PED-03`: Immediate Unassisted Twin Transfer Rate ($\text{UTTR}_{\text{imm}}$) **$\ge 55.0\%$**
+- `G-COM-03`: Blended Variable AI Inference Cost **$\le \$0.0100 / \text{attempt}$**
+- `G-COM-04`: Commercial Trial / Willingness-to-Pay Intent **$\ge 5.0\%$**
+
+## 5. Owning Spring Modulith Backend Modules & Classes
+- `com.verifiedai.analytics`, `com.verifiedai.ai` (`PostgresAiSpendGuard`), `com.verifiedai.attempt`, `com.verifiedai.mistake`.
+
+## 6. Python Math Verifier Impact
+- Full verifier firewall active; logs any `UNSUPPORTED` or `STEP_GAP_TOO_WIDE` refusals for golden-corpus expansion.
+
+## 7. Database Migration & Persistence Contract
+- Uses `V001`–`V036` (+ `V037`/`V038` for Stage 1 Mistake Passport & Twin loop).
+
+## 8. REST API Contracts
+- In-app structured feedback & dispute endpoints (`/v1/mistakes/{id}/dispute`).
+
+## 9. iOS (`apps/ios/VerifiedAI/`) Scope
+- TestFlight build with Apple Guideline `5.1.2(i)` pre-AI consent modal (`G-PRIV-02`).
+
+## 10. AI Capability & Unit Economics Guardrail
+- Global cohort daily budget hard-capped at `$5.00/day` (`$150.00` max 30-day cohort exposure) via `PostgresAiSpendGuard` (`V016`/`V017`).
+
+## 11. Privacy, Safety & Compliance
+- Zero under-13 testers (`INV-AGE-001`); explicit TestFlight privacy notice and 1-tap account deletion active.
+
+## 12. Telemetry & Observability
+- Tracks `EXP-LOS-01`, `EXP-LOS-02`, and `EXP-LOS-03` (`operations/92`).
+
+## 13. Feature Flags & Rollback Plan
+- Remote kill switch via `app.solving.enabled` and `verifiedai.attempt.production-authorized`.
+
+## 14. Automated Test Matrix (Categories A–F)
+- Pre-flight smoke check (`scripts/quality/focused_wedge_gate_check.sh`) + 150-case golden benchmark (`0.0%` false-valid rate).
+
+## 15. Owner-Only Acceptance Command
+- `bash scripts/quality/sprint_11_9_owner_acceptance.sh --full`
+
+## 16. Explicit Non-Goals
+- Does not authorize public App Store release until `Sprint 11.11` / `11.12` gates pass.
+
+## 17. Exit Gate & Downstream Consumers
+- Stage 1 `GO` unlocks Phases 08–10; Stage 2 `GO` unlocks `Sprint 11.10–11.12` Public V1 Launch.
+
+## 18. Canonical Cross-References
+- `adr/ADR-011_FOCUSED_V1_COMMERCIAL_LAUNCH_GATE_BEFORE_PHASE_08_13.md`
+- `roadmap/87_LEARNING_OS_STRATEGIC_PHASE_AND_SPRINT_EXPANSION_PROGRAM.md`
+- `quality/91_LEARNING_OS_PRODUCT_LEARNING_AND_RELEASE_ACCEPTANCE_GATES.md`
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:END -->

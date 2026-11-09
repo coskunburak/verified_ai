@@ -370,3 +370,19 @@ Under sprints/phase07_attempt_mistake_and_mastery_intelligence:
 
 These describe SOURCE_COMPLETE / PENDING_OWNER_TEST, not production acceptance. Canonical category
 semantics are in learning/30 and domain/46; strict wire mapping is mistake-category-v1.json.
+
+## V7 Learning OS canonical specification bundle (2026-11-07)
+
+The Learning OS strategic expansion adds 12 canonical source-of-truth documents (`81`–`92`) indexed in `00_MASTER_INDEX.md` and `DOCUMENTATION_MANIFEST.md`:
+- `product/81_LEARNING_OS_PRODUCT_VISION_AND_POSITIONING.md`
+- `product/82_LEARNING_OS_MARKET_COMPETITOR_AND_CUSTOMER_RESEARCH.md`
+- `learning/83_VERIFIED_MISTAKE_DNA_AND_MISTAKE_PASSPORT_SPECIFICATION.md`
+- `learning/84_VERIFIED_TWIN_PRACTICE_AND_INDEPENDENT_LEARNING_ENGINE.md`
+- `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md`
+- `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md`
+- `roadmap/87_LEARNING_OS_STRATEGIC_PHASE_AND_SPRINT_EXPANSION_PROGRAM.md`
+- `roadmap/88_LEARNING_OS_MONETIZATION_GROWTH_AND_VALIDATION_PLAN.md`
+- `security/89_STUDENT_COACH_PRIVACY_MINOR_SAFETY_AND_TEACHER_ACCESS.md`
+- `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md`
+- `quality/91_LEARNING_OS_PRODUCT_LEARNING_AND_RELEASE_ACCEPTANCE_GATES.md`
+- `operations/92_LEARNING_OS_ASSUMPTIONS_EXPERIMENTS_AND_EVIDENCE_LEDGER.md`

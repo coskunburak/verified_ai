@@ -67,11 +67,10 @@ The platform intentionally separates product semantics, learner state, AI-genera
 
 ### Backend files to review/create
 
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/domain/**`
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/application/**`
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/api/**`
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/infrastructure/**`
-- corresponding module tests and architecture tests.
+- `services/api/src/main/java/com/verifiedai/mastery/**`
+- `services/api/src/main/java/com/verifiedai/curriculum/**`
+- `services/api/src/main/java/com/verifiedai/attempt/**`
+- corresponding module tests (`KnowledgeGraphProjectionServiceTest`, `ClosedLoopTwinRemediationIntegrationTest`) and `ModularityTests`.
 
 ## API and contract considerations
 
@@ -367,3 +366,72 @@ Attach or persist links/artifacts for:
 
 Codex must implement this sprint in small reviewable slices, re-reading the highest-precedence semantic documents before changing domain/API/data contracts. It must not “simplify” the architecture by moving rules into prompts, client code, provider SDK adapters, generic helpers, or ungoverned ML scripts.
 <!-- PRODUCTION_EXECUTION_V3:END -->
+
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:START -->
+# Learning OS Production Implementation Specification v1 (`2026-11-07`)
+
+## 1. Sprint Metadata & Status
+- **Sprint ID:** `SPRINT_7.8`
+- **Canonical Title:** Prerequisite Knowledge Graph Projection, Learning State APIs, and Closed-Loop Twin Remediation
+- **Status:** `PLANNED` (`GATED_ON_SPRINT_7_7`)
+- **Primary Spec Reference:** `learning/84_VERIFIED_TWIN_PRACTICE_AND_INDEPENDENT_LEARNING_ENGINE.md`, `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md`, `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md`
+
+## 2. Strategic Learning OS Objective & User Value
+Exposes the unified Prerequisite Knowledge Graph (`CNT-LOS-05` `GET /v1/mastery/graph`) combining `StaticCurriculumTaxonomyCatalog` (`com.verifiedai.curriculum`), `LearnerSkillMastery` (`V031`/`V038`), and `LearnerMistakeDnaProfile` (`V037`), and wires the **60-Second Locked Counterfactual Twin (`V031`)** completion loop (`CNT-LOS-03`) so passing 2 independent twins transitions an active mistake to `RESOLVED_PENDING_RETENTION`.
+
+## 3. Entry Gate & Preconditions
+- `Sprint 7.7` accepted; `domain/46_CURRICULUM_SKILL_ONTOLOGY_AND_TAXONOMY.md` skill DAG available via `CurriculumTaxonomyCatalog`.
+
+## 4. Domain Invariants & Mathematical Rules
+1. **Conservative Prerequisite Propagation (`learning/86` Section 5.1):**
+   - Cold-start prior on $s_{\text{post}}$ is bounded by $\min_{s_{\text{pre}} \to s_{\text{post}}} M_{u, s_{\text{pre}}}$.
+   - Two consecutive failures on $s_{\text{post}}$ when $M_{u, s_{\text{pre}}} < 0.50$ flag `prerequisiteBottleneck = true` on edge $s_{\text{pre}} \to s_{\text{post}}$.
+   - Passing $s_{\text{post}}$ never inflates an unpracticed $s_{\text{pre}}$ above `0.65` (`PRACTICING`).
+2. **60-Second Twin Solution Lock (`learning/84` Section 6):** `counterfactual_twin_drills.lock_until = created_at + 60s`; solution reveal before submission classifies evidence as `SOLUTION_REVEALED_ASSISTED` (`0` remediation credit).
+
+## 5. Owning Spring Modulith Backend Modules & Classes
+- `com.verifiedai.mastery`: `KnowledgeGraphProjectionService.java`, `MasteryGraphController.java`.
+- `com.verifiedai.attempt`: `CounterfactualTwinChallengeService.java` (wires `V031` twin completion to `com.verifiedai.mistake` and `com.verifiedai.mastery`).
+
+## 6. Python Math Verifier Impact
+- Uses `services/math-verifier/app/verifiers/attempt_learning.py` and `attempt_verification_v2.py` to verify twin submissions.
+
+## 7. Database Migration & Persistence Contract
+- Uses `V031` (`counterfactual_twin_drills`, `learner_skill_mastery`) + `PLANNED V037` + `PLANNED V038`.
+
+## 8. REST API Contracts (`CNT-LOS-03` & `CNT-LOS-05`)
+- `GET /v1/mastery/graph?curriculum={code}` (`skill-graph-v1`)
+- `POST /v1/attempts/{attemptId}/twins` and `POST /v1/twins/{twinId}/submit` (`verified-twin-v1`)
+
+## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
+- Powers Screen 5 (`Verified Twin "Prove It Solo" Challenge Screen`) and Screen 7 (`Skill Mastery & Prerequisite Knowledge Graph Explorer`) in `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md`.
+
+## 10. AI Capability & Unit Economics Guardrail
+- Tier-1 deterministic twin templates execute in `<150ms` at `$0.00` AI cost.
+
+## 11. Privacy, Safety & Compliance
+- Object-level ownership verified on `twinId` and `attemptId` (`@AuthenticationPrincipal`).
+
+## 12. Telemetry & Observability
+- Emits `twin_challenge_issued`, `twin_challenge_submitted` (`evidence_type`), and `mastery_graph_viewed`.
+
+## 13. Feature Flags & Rollback Plan
+- `verifiedai.mastery.graph-api-enabled: false`, `verifiedai.attempt.twin-lock-enabled: false`.
+
+## 14. Automated Test Matrix (Categories A–F)
+- Integration tests verifying 60s lock enforcement, prerequisite bottleneck flagging, and 2-independent-pass requirement for `RESOLVED_PENDING_RETENTION`.
+
+## 15. Owner-Only Acceptance Command
+- `bash scripts/quality/sprint_7_8_owner_acceptance.sh --full`
+
+## 16. Explicit Non-Goals
+- Full 8-family multi-variant ladder (Variants A/B/C) is expanded in `Sprint 8.2`.
+
+## 17. Exit Gate & Downstream Consumers
+- Unlocks `Sprint 7.9` (Mastery & Mistake Passport Dashboard UX) and the Focused Commercial Wedge TestFlight build (`Sprint 11.9A`).
+
+## 18. Canonical Cross-References
+- `learning/84_VERIFIED_TWIN_PRACTICE_AND_INDEPENDENT_LEARNING_ENGINE.md`
+- `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md`
+- `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md`
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:END -->

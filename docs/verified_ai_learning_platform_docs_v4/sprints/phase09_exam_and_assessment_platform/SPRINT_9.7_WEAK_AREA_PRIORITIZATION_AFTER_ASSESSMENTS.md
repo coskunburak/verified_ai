@@ -348,3 +348,74 @@ Attach or persist links/artifacts for:
 
 Codex must implement this sprint in small reviewable slices, re-reading the highest-precedence semantic documents before changing domain/API/data contracts. It must not “simplify” the architecture by moving rules into prompts, client code, provider SDK adapters, generic helpers, or ungoverned ML scripts.
 <!-- PRODUCTION_EXECUTION_V3:END -->
+
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:START -->
+# Learning OS Production Implementation Specification v1 (`2026-11-07`)
+
+## 1. Sprint Metadata & Status
+- **Sprint ID:** `SPRINT_9.7`
+- **Canonical Title:** Post-Assessment Mistake Attribution ("Deneme Hata Karnesi") & YKS Net-Gain Simulator (`H-03`)
+- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011)`
+- **Primary Spec Reference:** `product/81_LEARNING_OS_PRODUCT_VISION_AND_POSITIONING.md` (`H-03`), `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md` (Screens 9 & 10)
+
+## 2. Strategic Learning OS Objective & User Value
+Converts completed mock/diagnostic sessions or photographed paper deneme errors into a **4-Category Post-Exam Attribution Breakdown**:
+1. `CONCEPTUAL_GAP` (low skill mastery $M_{u,s} < 0.45$)
+2. `RECURRING_MISTAKE_TRAP` (matches an active `mistake_code` in Mistake DNA `V037`)
+3. `TIME_PRESSURE_SLIP` (`ARITH_BASIC_COMPUTATION` under high time-per-item pressure)
+4. `STRATEGIC_OMISSION` (unattempted item)
+and ranks study recommendations by **Expected Net Gain per Study Hour ($\Delta\text{Net}/\text{hr}$)**.
+
+## 3. Entry Gate & Preconditions
+- `ADR-011` `GO` decision recorded; `Sprint 9.6` accepted.
+
+## 4. Domain Invariants & Attribution Rules
+1. **Every Wrong Mock Item Links to Canonical Attempt Evaluation (`V035`/`V036`):** When a student uploads or enters steps for a missed mock question, the step verifier attributes the exact `mistake_code` rather than treating the question as a generic binary wrong answer.
+2. **Expected Net-Gain per Study Hour Formula (`H-03`):**
+   $$\frac{\Delta\widehat{\text{Net}}}{\text{hr}}(u, s) = \frac{1.25 \cdot w_{E,s} \cdot \left(0.85 - p_{u,s}^{\text{exam}}(t)\right)_+}{\text{EstimatedRemediationHours}(M_{u,s}, \theta_{u,m})}$$
+
+## 5. Owning Spring Modulith Backend Modules & Classes
+- `com.verifiedai.exam`: `PostAssessmentAttributionService.java`, `NetGainSimulatorService.java`.
+- `com.verifiedai.studyplan`: consumes post-exam attribution to reprioritize the next 7 days of `DailyCoachSession` tasks.
+
+## 6. Python Math Verifier Impact
+- Uses `attempt_verification_v2.py` and `attempt_diagnosis.py` on submitted mock scratchpad work.
+
+## 7. Database Migration & Persistence Contract
+- Stores item-level attribution on `exam_session_items` (`V046`) and net-gain allocations on `exam_readiness_projections` (`V047`).
+
+## 8. REST API Contracts (`CNT-LOS-10` & `CNT-LOS-11`)
+- `GET /v1/exams/sessions/{id}/attribution-report` and `GET /v1/exams/readiness`.
+
+## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
+- Renders the **Post-Exam Mistake Attribution Card** and **High-ROI Topic Allocator Table** (`EXP-LOS-07`).
+
+## 10. AI Capability & Unit Economics Guardrail
+- Attribution math and ROI ranking are **100% deterministic (`$0.00` LLM cost)**.
+
+## 11. Privacy, Safety & Compliance
+- Covered by `ExamPrivacyLifecycleContributor`.
+
+## 12. Telemetry & Observability
+- Emits `exam_attribution_generated` and `net_gain_simulator_task_started` (`EXP-LOS-07`).
+
+## 13. Feature Flags & Rollback Plan
+- `verifiedai.exam.net-gain-simulator-enabled: false`.
+
+## 14. Automated Test Matrix (Categories A–F)
+- Verifies deterministic attribution into the 4 categories and verifies high-weight exam skills with remediable traps rank at the top of $\Delta\text{Net}/\text{hr}$.
+
+## 15. Owner-Only Acceptance Command
+- `bash scripts/quality/sprint_9_7_owner_acceptance.sh --full`
+
+## 16. Explicit Non-Goals
+- Does not predict university placement rank percentiles (`Sıralama`) without explicit disclaimer bounds.
+
+## 17. Exit Gate & Downstream Consumers
+- Unlocks `Sprint 9.8` (Pre-Exam 48-Hour Trap Immunity Cram Pack `H-05`) and `Sprint 9.9`.
+
+## 18. Canonical Cross-References
+- `product/81_LEARNING_OS_PRODUCT_VISION_AND_POSITIONING.md`
+- `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md`
+- `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md`
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:END -->

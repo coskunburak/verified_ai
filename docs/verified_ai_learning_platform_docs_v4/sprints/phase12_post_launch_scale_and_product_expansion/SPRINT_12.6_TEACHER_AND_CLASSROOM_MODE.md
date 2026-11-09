@@ -348,3 +348,70 @@ Attach or persist links/artifacts for:
 
 Codex must implement this sprint in small reviewable slices, re-reading the highest-precedence semantic documents before changing domain/API/data contracts. It must not “simplify” the architecture by moving rules into prompts, client code, provider SDK adapters, generic helpers, or ungoverned ML scripts.
 <!-- PRODUCTION_EXECUTION_V3:END -->
+
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:START -->
+# Learning OS Production Implementation Specification v1 (`2026-11-07`)
+
+## 1. Sprint Metadata & Status
+- **Sprint ID:** `SPRINT_12.6`
+- **Canonical Title:** B2B2C Private Tutor / Micro-Coach Co-Pilot & Consent-Gated Mistake Passport Sharing
+- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011 & V1_LAUNCH)`
+- **Primary Spec Reference:** `security/89_STUDENT_COACH_PRIVACY_MINOR_SAFETY_AND_TEACHER_ACCESS.md` & `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md` (`CNT-LOS-13`)
+
+## 2. Strategic Learning OS Objective & User Value
+Enables private math tutors (*özel ders öğretmenleri*) and boutique exam coaches to link with consenting students (`TUTOR_COPILOT_PACK` in `roadmap/88`), inspect their linked students' **Mistake Passports** and **Weekly Readiness Summaries** prior to weekly tutoring sessions, and assign a 5-problem **Verified Twin Homework Pack** — while enforcing strict RBAC isolation so tutors can **never** access private Socratic chat transcripts, uncropped camera photos, or minute-by-minute activity timestamps.
+
+## 3. Entry Gate & Preconditions
+- Public iOS V1 launch completed (`Phase 11`); Turkish KVKK legal counsel checkpoint `LGL-KVKK-03` (`security/89`) signed off.
+
+## 4. Domain Invariants & Privacy Boundaries (`INV-PRIV-RBAC-001`)
+1. **Student-Initiated Single-Use Invite Only:** Tutors cannot search for or add students by email/phone; the student generates a 15-minute cryptographic invite code (`CNT-LOS-13`).
+2. **Physical DTO Exclusion of Private Fields (`G-PRIV-03`):** Tutor projection DTOs (`LinkedStudentCoachProjectionDto`) contain **only** skill mastery, conquered/active trap codes, canonical LaTeX examples, and weekly completion counts — never `TutorTurn` chat logs or raw images.
+3. **Instant `<200ms` Student Revocation:** Tapping `Bağlantıyı Anında Kes` revokes tutor access immediately.
+
+## 5. Owning Spring Modulith Backend Modules & Classes
+- `com.verifiedai.account`: `ConsentGatedCoachLinkService.java`, `CoachStudentLink.java`, `CoachLinkController.java`.
+- `com.verifiedai.studyplan`: `TutorAssignedTwinPackService.java`.
+
+## 6. Python Math Verifier Impact
+- Verifies tutor-assigned twin packs via `attempt_learning.py`.
+
+## 7. Database Migration & Persistence Contract (`PLANNED V049`)
+- **Migration File:** `services/api/src/main/resources/db/migration/platform/V049__coach_student_links_and_consents.sql` *(PLANNED)*
+- **Table:** `coach_student_links` (`id`, `student_user_id`, `observer_user_id`, `observer_role`, `invite_code_hash`, `status`, `consented_at`, `revoked_at`).
+
+## 8. REST API Contracts (`CNT-LOS-13`)
+- `POST /v1/coach-links/invite`, `POST /v1/coach-links/accept`, `POST /v1/coach-links/{id}/revoke`, and `GET /v1/coach/students/{studentId}/passport-summary`.
+
+## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
+- Student `Coach & Family Sharing` settings screen + Tutor Co-Pilot summary view.
+
+## 10. AI Capability & Unit Economics Guardrail
+- **`$0.00` LLM token cost** for tutor dashboard reads and deterministic twin pack assignments.
+
+## 11. Privacy, Safety & Compliance
+- Registered in `AccountPrivacyLifecycleContributor`; deleting either account purges `coach_student_links`.
+
+## 12. Telemetry & Observability
+- Emits `coach_link_created`, `coach_link_revoked`, and `tutor_twin_pack_assigned`.
+
+## 13. Feature Flags & Rollback Plan
+- `verifiedai.account.coach-links-enabled: false`.
+
+## 14. Automated Test Matrix (Categories A–F)
+- RBAC security test verifying a valid Tutor JWT receives `403 FORBIDDEN` on `/v1/tutor/sessions/**` and `/v1/attempts/{id}/raw-image`, and receives `403 FORBIDDEN` within `<200ms` after student revocation.
+
+## 15. Owner-Only Acceptance Command
+- `bash scripts/quality/sprint_12_6_owner_acceptance.sh --full`
+
+## 16. Explicit Non-Goals
+- Full multi-teacher school ERP/e-Okul integration (`H-12` rejected; institutional classroom analytics gated under conditional `Phase 14`).
+
+## 17. Exit Gate & Downstream Consumers
+- Unlocks `Sprint 12.7` (Parent/Guardian Digest Experience) and conditional `Phase 14` evaluation.
+
+## 18. Canonical Cross-References
+- `security/89_STUDENT_COACH_PRIVACY_MINOR_SAFETY_AND_TEACHER_ACCESS.md`
+- `roadmap/88_LEARNING_OS_MONETIZATION_GROWTH_AND_VALIDATION_PLAN.md`
+- `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md`
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:END -->

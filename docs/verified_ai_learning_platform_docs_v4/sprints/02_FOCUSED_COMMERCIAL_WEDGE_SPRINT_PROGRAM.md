@@ -590,3 +590,22 @@ flowchart TD
     - Review the 14-day TestFlight cohort report:
       - **GO TO COMMERCIAL APP STORE LAUNCH & PHASE 07–12 EXPANSION:** `W2 retention >= 30%` (`>= 15/50` active learners in Week 2), `>= 85%` verified solve rate, and `>= 40%` of active learners voluntarily using `Analyze My Work`.
       - **PIVOT / RE-SCOPE:** If `W2 retention < 10%`, freeze all Phase 7–13 code and pivot directly based on student interview transcripts.
+
+---
+
+<!-- LEARNING_OS_RECONCILIATION_V7:START -->
+## 4. 2026-11-07 Repository Baseline & Migration Reconciliation (`SOURCE_VERIFIED`)
+
+When this Focused Commercial Wedge program was originally authored on 2026-10-31, it reserved placeholder migration numbers `V024`, `V025`, and `V026` for Sprints `6.2C`, `6.7A`, and `7.0A`. Subsequent main-track execution (`Sprints 6.4`–`7.4`) delivered those capabilities using forward migrations `V027`–`V036`:
+
+| Commercial Wedge Track Item | Planned Placeholder Migration | Actual Implemented Migration(s) in `services/api/src/main/resources/db/migration/platform/` | Current Implementation & Acceptance Status (`2026-11-07`) |
+| :--- | :--- | :--- | :--- |
+| **Sprint 6.2C** (`canonical_v2` Solution Sets & Domain Guard) | `V024` (historical placeholder) | `V030__add_attempt_diagnoses_and_canonical_v2_fields.sql` | `SOURCE_COMPLETE` / `TARGETED_REPAIR_PASSED` in Sprint `6.7` |
+| **Sprint 6.2D** (`SwiftMath` 2D Rendering & Step Diff UI) | None | Implemented in `apps/ios/VerifiedAI/Features/ProblemSession/MathematicalExpressionView.swift` | `SOURCE_COMPLETE` / `TARGETED_REPAIR_PASSED` in Sprint `6.7` |
+| **Sprint 6.7A & 6.7B** (`Analyze My Work` & Counterfactual Twins) | `V025` (historical placeholder) | `V030`, `V031__add_pedagogical_diagnosis_twin_drills_and_mastery.sql`, `V032__add_attempt_Input_mode_and_method_comparison.sql` | `SOURCE_COMPLETE` / `TARGETED_REPAIR_PASSED` in Sprint `6.7` (`PENDING_FULL_CURRENT_SOURCE_RUN`) |
+| **Sprint 7.0A & 7.1–7.4** (`Attempt Domain`, `Step Extraction`, `Step Evaluation`, `Mistake Classification`) | `V026` (historical placeholder) | `V031` (`learner_mistake_events`, `learner_skill_mastery`), `V033` (`attempt_submissions`), `V034` (`attempt_work_representations`), `V035` (`attempt_step_evaluations`), `V036` (`attempt_mistake_classifications`) | `7.1` & `7.3` `LOCAL_ACCEPTANCE_PASSED`; `7.2` & `7.4` `SOURCE_COMPLETE_PENDING_OWNER_TEST` |
+| **Sprint 6.2B** (Live Cloud AI Provider Adapters: `Gemini 2.5 Flash` + `GPT-4.1-mini` + `o4-mini`) | None (`V016`/`V018` config) | Pending live managed cloud provider adapter activation (`ADR-008`) | `SPECIFIED_NOT_IMPLEMENTED` — required before `Sprint 11.9A` live evaluation |
+| **Sprint 11.9A** (150-Case `verified-ai-eval-v2` & 50-Student TestFlight Gate) | Uses `V018`/`V022`/`V023` | Gate runner & 50-student TestFlight cohort execution | `SPECIFIED_NOT_IMPLEMENTED` — mandatory `ADR-011` gate before broad Phase 8–12 rollout |
+
+**Canonical Rule:** Never create files named `V024`, `V025`, or `V026` in `services/api/src/main/resources/db/migration/platform/`, as doing so would violate Flyway out-of-order migration validation against `V027`–`V036`. All future migrations must use `V037+` as specified in `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md` and `roadmap/87_LEARNING_OS_STRATEGIC_PHASE_AND_SPRINT_EXPANSION_PROGRAM.md`.
+<!-- LEARNING_OS_RECONCILIATION_V7:END -->

@@ -76,3 +76,11 @@ Executed immediately after `SPRINT_6.2B`..`7.0A` (`sprints/02_FOCUSED_COMMERCIAL
 ## 2. Stage 2 — Full 500-Case Benchmark & Public App Store Launch (`SPRINT_11.1`–`11.10`)
 - Expands `verified-ai-eval-v2` to the full **500-case stratified suite** (`ai/73_MATH_MODEL_EVALUATION_PLAN.md`) and completes App Store Review package, StoreKit 2 live subscription activation, disaster recovery drill, and launch runbooks.
 <!-- PHASE_PRODUCTION_V6:END -->
+
+<!-- PHASE_PRODUCTION_V7_LEARNING_OS:START -->
+# Phase Production Execution Contract v7 — Learning OS Release Gates, KVKK & Apple `5.1.2(i)` Compliance (`2026-11-07`)
+
+## 1. Mandatory Learning OS Release Gates (`quality/91` & `security/89`)
+- Enforces the four-pillar release gates in `quality/91_LEARNING_OS_PRODUCT_LEARNING_AND_RELEASE_ACCEPTANCE_GATES.md` (`G-MATH-01..06`, `G-PED-01..05`, `G-PRIV-01..04`, `G-COM-01..05`).
+- Enforces Apple App Store Guideline `5.1.2(i)` pre-execution third-party AI consent, Guideline `3.1.2` subscription disclosures, and Turkish KVKK legal counsel sign-off checkpoints (`LGL-KVKK-01..02` in `security/89_STUDENT_COACH_PRIVACY_MINOR_SAFETY_AND_TEACHER_ACCESS.md`).
+<!-- PHASE_PRODUCTION_V7_LEARNING_OS:END -->

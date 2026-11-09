@@ -201,3 +201,10 @@ units. The pure comparison kernel assumes its approval input has already been re
 it is not a production authorization entry point. No production numeric policy has been
 approved or activated here. Local reports always mark inference economics UNAVAILABLE.
 No measured savings, provider latency or cost benchmark is claimed.
+
+## V7 Learning OS Coaching & Twin Practice FinOps Controls (2026-11-07)
+
+The unit economics and `PostgresAiSpendGuard` rules for Learning OS capabilities (`Mistake Passport`, `Twin Practice`, `Daily 15-Minute Coach`, `AI Micro-Lessons`, and `Exam Readiness`) are specified in **`roadmap/88_LEARNING_OS_MONETIZATION_GROWTH_AND_VALIDATION_PLAN.md`**:
+- Deterministic engines (`BKT-Lite`, `Mistake Recurrence Index`, `Daily Study Plan Composer`, `Exam Readiness Calculator`, and `SymPy` template twin generation) execute at **$0.00 LLM token cost**.
+- `FREE` tier learners are strictly blocked from `R3` (`o4-mini`) escalation and capped at `<= $0.035/month` total AI COGS.
+- `PRO` (`<= $1.20/month` soft cap, `$1.80/month` hard circuit breaker) and `PRO_PLUS` (`<= $2.50/month` soft cap, `$3.50/month` hard circuit breaker) tiers degrade gracefully to deterministic template twin drills and `GPT-4.1-mini` (`R1`) if a learner exceeds their monthly AI budget, never blocking core learning workflows.

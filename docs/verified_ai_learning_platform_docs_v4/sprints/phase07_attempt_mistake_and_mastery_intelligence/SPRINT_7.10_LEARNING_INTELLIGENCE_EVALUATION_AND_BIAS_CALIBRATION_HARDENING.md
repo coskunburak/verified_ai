@@ -350,3 +350,70 @@ Attach or persist links/artifacts for:
 
 Codex must implement this sprint in small reviewable slices, re-reading the highest-precedence semantic documents before changing domain/API/data contracts. It must not “simplify” the architecture by moving rules into prompts, client code, provider SDK adapters, generic helpers, or ungoverned ML scripts.
 <!-- PRODUCTION_EXECUTION_V3:END -->
+
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:START -->
+# Learning OS Production Implementation Specification v1 (`2026-11-07`)
+
+## 1. Sprint Metadata & Status
+- **Sprint ID:** `SPRINT_7.10`
+- **Canonical Title:** Learning Intelligence Evaluation, Brier/ECE Psychometric Calibration, and Phase 07 Exit Gate
+- **Status:** `PLANNED` (`GATED_ON_SPRINT_7_9`)
+- **Primary Spec Reference:** `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md` & `quality/91_LEARNING_OS_PRODUCT_LEARNING_AND_RELEASE_ACCEPTANCE_GATES.md`
+
+## 2. Strategic Learning OS Objective & User Value
+Validates the entire Phase 7 Attempt, Mistake DNA, Verified Twin, and Evidence-Stratified Mastery stack against curated golden learner trajectories, implements automated **Brier Score ($\le 0.20$)** and **Expected Calibration Error ($\text{ECE} \le 0.08$)** auditing (`PLANNED V039`), and certifies the Phase 07 Exit Gate.
+
+## 3. Entry Gate & Preconditions
+- `Sprints 7.1–7.9` accepted.
+
+## 4. Domain Invariants & Calibration Rules
+1. **Psychometric Calibration Gate (`G-PED-05`):** Predicted retention probability $R_{u,s}(t)$ prior to an unassisted attempt $a$ is logged against observed unassisted outcome $O_{u,a} \in \{0, 1\}$ to compute Brier Score and 10-bin ECE.
+2. **Zero Downstream Double-Penalty Audit (`G-MATH-03`):** Golden trajectory regression verifies `0.0%` false recurring mistake creation from downstream propagated algebra steps.
+3. **100% Privacy Cascade Verification (`G-PRIV-01`):** Verifies complete deletion and export across `V030`–`V039`.
+
+## 5. Owning Spring Modulith Backend Modules & Classes
+- `com.verifiedai.analytics`: `MasteryCalibrationEvaluationService.java`, `BrierAndEceCalculator.java`.
+- `com.verifiedai.mastery`, `com.verifiedai.mistake`, `com.verifiedai.attempt`.
+
+## 6. Python Math Verifier Impact
+- Golden multi-attempt trajectory suite in `services/math-verifier/tests/`.
+
+## 7. Database Migration & Persistence Contract (`PLANNED V039`)
+- **Migration File:** `services/api/src/main/resources/db/migration/platform/V039__mastery_calibration_and_retention_snapshots.sql` *(PLANNED)*
+- **Table:** `learner_mastery_calibration_records` (`id`, `user_id`, `attempt_id`, `canonical_skill_code`, `predicted_retention_prob`, `observed_independent_outcome`, `brier_residual`, `created_at`).
+
+## 8. REST API Contracts
+- Internal/admin calibration diagnostic endpoint `GET /v1/admin/calibration/mastery-summary` (`ROLE_ADMIN`).
+
+## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
+- End-to-end Phase 7 UI regression and offline recovery verification across `AttemptAnalysis`, `ProblemSolving`, and `ProblemReview`.
+
+## 10. AI Capability & Unit Economics Guardrail
+- Verifies that Phase 7 learning state updates add `$0.00` LLM token overhead beyond initial attempt verification.
+
+## 11. Privacy, Safety & Compliance
+- `AnalyticsPrivacyLifecycleContributor` purges `learner_mastery_calibration_records` on account deletion.
+
+## 12. Telemetry & Observability
+- Emits `mastery_calibration_evaluated` (`brier_score`, `ece_score`, `sample_size`).
+
+## 13. Feature Flags & Rollback Plan
+- Certifies Phase 7 feature-flag matrix (`verifiedai.attempt.*`, `verifiedai.mistake.*`, `verifiedai.mastery.*`).
+
+## 14. Automated Test Matrix (Categories A–F)
+- Full Phase 7 golden trajectory simulation (10 synthetic learner archetypes: Crutch User, Careless High-Mastery User, Conceptual Trap Learner, Spaced Retriever, OCR-Corrector, Out-of-Scope Submitter).
+
+## 15. Owner-Only Acceptance Command
+- `bash scripts/quality/sprint_7_10_owner_acceptance.sh --full`
+
+## 16. Explicit Non-Goals
+- Does not bypass `ADR-011` (`Sprint 11.9A` 50-student TestFlight cohort remains required before Phase 8–13 rollout).
+
+## 17. Exit Gate & Downstream Consumers
+- Completes **Phase 07** and prepares the build for the `ADR-011` Focused Commercial Wedge cohort and **Phase 08** (`Adaptive Learning & Personal AI Coach`).
+
+## 18. Canonical Cross-References
+- `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md`
+- `quality/91_LEARNING_OS_PRODUCT_LEARNING_AND_RELEASE_ACCEPTANCE_GATES.md`
+- `operations/92_LEARNING_OS_ASSUMPTIONS_EXPERIMENTS_AND_EVIDENCE_LEDGER.md`
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:END -->

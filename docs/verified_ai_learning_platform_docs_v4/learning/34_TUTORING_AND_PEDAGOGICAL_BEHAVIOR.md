@@ -101,3 +101,9 @@ advance Socratic state from attempt correctness. A read-only published assistanc
 hints for the source problem. Twin completion weights assisted and independent evidence differently, with the
 existing account/source lock order. Verified method views show bounded alternate derivations and learner work;
 no measured exam-speed or universal shortcut guarantee is made. All product execution is owner-pending.
+
+## V7 Learning OS Pedagogical Guardrails & Anti-Crutch Protocol (2026-11-07)
+
+Grounded in Bastani et al. (2025, PNAS `10.1073/pnas.2422633122`) and Kestin et al. (2025, Nature Scientific Reports `10.1038/s41598-025-97652-6`), the Learning OS extends tutoring behavior with:
+- The **60-Second Independent Verification Protocol** and 3-variant progressive Twin Practice ladder (`learning/84_VERIFIED_TWIN_PRACTICE_AND_INDEPENDENT_LEARNING_ENGINE.md`).
+- Deterministic AI Micro-Lessons (`Sprint 8.6`) triggered when a mistake signature reaches `occurrence_count >= 2`, combining a 90-second concept card, concrete counterexample (`F03`), and immediate Twin check (`learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md`).

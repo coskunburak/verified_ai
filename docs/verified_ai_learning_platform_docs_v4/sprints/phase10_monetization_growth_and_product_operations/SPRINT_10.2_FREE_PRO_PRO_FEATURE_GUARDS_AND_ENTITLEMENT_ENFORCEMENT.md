@@ -67,11 +67,9 @@ The platform intentionally separates product semantics, learner state, AI-genera
 
 ### Backend files to review/create
 
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/domain/**`
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/application/**`
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/api/**`
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/infrastructure/**`
-- corresponding module tests and architecture tests.
+- `services/api/src/main/java/com/verifiedai/billing/**`
+- `services/api/src/main/resources/db/migration/platform/V048__entitlement_quota_ledgers.sql` *(PLANNED)*
+- corresponding module tests and `ModularityTests`.
 
 ## Data and persistence work
 
@@ -377,3 +375,66 @@ Attach or persist links/artifacts for:
 
 Codex must implement this sprint in small reviewable slices, re-reading the highest-precedence semantic documents before changing domain/API/data contracts. It must not “simplify” the architecture by moving rules into prompts, client code, provider SDK adapters, generic helpers, or ungoverned ML scripts.
 <!-- PRODUCTION_EXECUTION_V3:END -->
+
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:START -->
+# Learning OS Production Implementation Specification v1 (`2026-11-07`)
+
+## 1. Sprint Metadata & Status
+- **Sprint ID:** `SPRINT_10.2`
+- **Canonical Title:** `FREE`, `PRO`, `COACH_PRO`, and `YKS_SEASON_PASS` Entitlement Enforcement & Graceful Downgrade Semantics
+- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011)`
+- **Primary Spec Reference:** `roadmap/88_LEARNING_OS_MONETIZATION_GROWTH_AND_VALIDATION_PLAN.md` (Section 4) & `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md` (`CNT-LOS-12`)
+
+## 2. Strategic Learning OS Objective & User Value
+Extends `com.verifiedai.billing.CapabilityAccessPolicy` and `EntitlementApplicationService` to enforce server-authoritative feature access across `FREE`, `PRO`, `COACH_PRO`, `YKS_SEASON_PASS`, and `TUTOR_COPILOT_PACK`, while ensuring a lapsed subscriber never loses read access to their previously earned Mistake Passport or Skill Mastery history.
+
+## 3. Entry Gate & Preconditions
+- `ADR-011` `GO` decision recorded; `Sprint 10.1` accepted.
+
+## 4. Domain Invariants & Entitlement Matrix (`roadmap/88` Section 4.1)
+1. **Server-Authoritative Enforcement:** Every protected endpoint checks `CapabilityAccessPolicy` on the backend; client flags are UI hints only.
+2. **Non-Punitive Downgrade Rule:** When a `PRO` or `COACH_PRO` subscription expires, all historical `learner_mistake_dna_profiles` (`V037`) and `learner_skill_mastery` (`V031`/`V038`) records remain preserved and viewable in summary mode; only new daily quota allocations revert to `FREE` (`3` checks/day, `1` twin/day).
+
+## 5. Owning Spring Modulith Backend Modules & Classes
+- `com.verifiedai.billing`: `CapabilityAccessPolicy.java`, `EntitlementApplicationService.java`, `LearningOsCapability.java` (`ATTEMPT_VERIFY`, `DETERMINISTIC_TWIN`, `HYBRID_TWIN`, `MISTAKE_PASSPORT_FULL`, `DAILY_COACH_MISSION`, `MICRO_LESSON`, `EXAM_READINESS_SIMULATOR`, `TIMED_MOCK_SESSION`).
+
+## 6. Python Math Verifier Impact
+- None.
+
+## 7. Database Migration & Persistence Contract (`PLANNED V048`)
+- `V048__entitlement_quota_ledgers.sql` *(PLANNED)*.
+
+## 8. REST API Contracts (`CNT-LOS-12`)
+- `GET /v1/billing/entitlements` returning active tier, capability map, and remaining daily/monthly quota counters.
+
+## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
+- Updates `apps/ios/VerifiedAI/Features/Subscription/` to bind `entitlement-v2` capabilities across Coach Hub, Mistake Passport, and Exam Readiness views.
+
+## 10. AI Capability & Unit Economics Guardrail
+- Prevents unauthorized paid LLM escalation (`AiCapability.ARBITRATE`, `PRACTICE_GENERATE`) on `FREE` tier.
+
+## 11. Privacy, Safety & Compliance
+- Covered by `BillingLifecycleContributor`.
+
+## 12. Telemetry & Observability
+- Emits `entitlement_checked`, `entitlement_upgraded`, and `entitlement_downgraded`.
+
+## 13. Feature Flags & Rollback Plan
+- `verifiedai.billing.learning-os-tiers-enabled: false`.
+
+## 14. Automated Test Matrix (Categories A–F)
+- Integration tests verifying upgrade, downgrade, grace-period, and refund webhook transitions across all 4 consumer tiers.
+
+## 15. Owner-Only Acceptance Command
+- `bash scripts/quality/sprint_10_2_owner_acceptance.sh --full`
+
+## 16. Explicit Non-Goals
+- Does not delete or lock historical user data upon subscription cancellation.
+
+## 17. Exit Gate & Downstream Consumers
+- Unlocks `Sprint 10.3` (Usage Quotas & AI Spend Guards).
+
+## 18. Canonical Cross-References
+- `roadmap/88_LEARNING_OS_MONETIZATION_GROWTH_AND_VALIDATION_PLAN.md`
+- `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md`
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:END -->

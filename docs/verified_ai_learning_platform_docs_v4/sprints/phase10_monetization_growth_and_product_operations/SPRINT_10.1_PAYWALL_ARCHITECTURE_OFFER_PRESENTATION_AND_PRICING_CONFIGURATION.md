@@ -66,9 +66,7 @@ The platform intentionally separates product semantics, learner state, AI-genera
 
 ### iOS files to review/create
 
-- `apps/ios/VerifiedLearning/Features/<Feature>/Domain/**`
-- `apps/ios/VerifiedLearning/Features/<Feature>/Data/**`
-- `apps/ios/VerifiedLearning/Features/<Feature>/Presentation/**`
+- `apps/ios/VerifiedAI/Features/Subscription/**`
 - feature unit tests, accessibility coverage, and critical UI-flow tests.
 
 ## API and contract considerations
@@ -365,3 +363,67 @@ Attach or persist links/artifacts for:
 
 Codex must implement this sprint in small reviewable slices, re-reading the highest-precedence semantic documents before changing domain/API/data contracts. It must not “simplify” the architecture by moving rules into prompts, client code, provider SDK adapters, generic helpers, or ungoverned ML scripts.
 <!-- PRODUCTION_EXECUTION_V3:END -->
+
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:START -->
+# Learning OS Production Implementation Specification v1 (`2026-11-07`)
+
+## 1. Sprint Metadata & Status
+- **Sprint ID:** `SPRINT_10.1`
+- **Canonical Title:** Value-First Contextual Paywall Architecture, StoreKit 2 Offer Presentation & Seasonal YKS Pricing
+- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011)`
+- **Primary Spec Reference:** `roadmap/88_LEARNING_OS_MONETIZATION_GROWTH_AND_VALIDATION_PLAN.md` & `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md` (Screen 12)
+
+## 2. Strategic Learning OS Objective & User Value
+Delivers the server-configured StoreKit 2 paywall experience (`Screen 12`) supporting `PRO` (`199 TRY/mo`, `1,499 TRY/yr`, `$9.99/mo`), `COACH_PRO` (`349 TRY/mo`, `2,499 TRY/yr`, `$16.99/mo`), and the `YKS_SEASON_PASS` (`1,699 TRY / 6 months`), triggered contextually *after* the learner experiences value (e.g., after viewing their First-Error Diagnosis & Counterexample or unlocking their 1st Independent Mastery Shield, `EXP-MON-01`).
+
+## 3. Entry Gate & Preconditions
+- `ADR-011` `GO` decision recorded; `com.verifiedai.billing.AppleBillingApplicationService` baseline verified.
+
+## 4. Domain Invariants & Ethical Monetization Rules (`INV-MON-001`)
+1. **Never Hold Diagnosis Hostage:** A free-quota attempt that was accepted for processing always reveals the First-Error Diagnosis and Counterexample without blurring the error step behind a surprise paywall.
+2. **Zero Mid-Exam Interruption:** Paywall sheets are strictly suppressed during active timed diagnostic or twin lock countdowns.
+3. **Apple Guideline `3.1.2` Compliance:** Displays exact localized price, billing period, 48-hour trial-end reminder toggle, `Restore Purchases`, and Terms/Privacy links.
+
+## 5. Owning Spring Modulith Backend Modules & Classes
+- `com.verifiedai.billing`: `PaywallOfferCatalogService.java`, `AppleBillingApplicationService.java`, `BillingController.java`.
+
+## 6. Python Math Verifier Impact
+- None.
+
+## 7. Database Migration & Persistence Contract (`PLANNED V048`)
+- Uses `com.verifiedai.billing` tables + `PLANNED V048__entitlement_quota_ledgers.sql`.
+
+## 8. REST API Contracts (`CNT-LOS-12`)
+- `GET /v1/billing/offers?locale={tr-TR|en-US}` and `GET /v1/billing/entitlements` (`entitlement-v2`).
+
+## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
+- `apps/ios/VerifiedAI/Features/Subscription/Presentation/ContextualPaywallSheetView.swift`.
+
+## 10. AI Capability & Unit Economics Guardrail
+- **`$0.00` LLM token cost.**
+
+## 11. Privacy, Safety & Compliance
+- Covered by `BillingLifecycleContributor` and Apple Guideline `3.1.2`.
+
+## 12. Telemetry & Observability
+- Emits `paywall_viewed` (`trigger_context`), `trial_started`, `subscription_purchased`, and `restore_purchases_tapped` (`EXP-MON-01`, `EXP-MON-02`).
+
+## 13. Feature Flags & Rollback Plan
+- `verifiedai.billing.contextual-paywall-enabled: false`.
+
+## 14. Automated Test Matrix (Categories A–F)
+- StoreKitTest configuration unit tests for Monthly, Annual, and 6-Month Season Pass checkout, restore, and cancellation states.
+
+## 15. Owner-Only Acceptance Command
+- `bash scripts/quality/sprint_10_1_owner_acceptance.sh --full`
+
+## 16. Explicit Non-Goals
+- No third-party ad SDKs or dark-pattern countdown timers.
+
+## 17. Exit Gate & Downstream Consumers
+- Unlocks `Sprint 10.2` (Tiered Entitlement Enforcement) and `Sprint 10.3` (Quotas & Spend Guards).
+
+## 18. Canonical Cross-References
+- `roadmap/88_LEARNING_OS_MONETIZATION_GROWTH_AND_VALIDATION_PLAN.md`
+- `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md`
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:END -->

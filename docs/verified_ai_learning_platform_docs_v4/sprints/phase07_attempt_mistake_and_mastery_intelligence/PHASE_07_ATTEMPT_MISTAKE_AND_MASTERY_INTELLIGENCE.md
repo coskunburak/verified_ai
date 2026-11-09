@@ -107,3 +107,23 @@ The next consumer may read immutable evaluation-linked classifications after fre
 must respect evidence strength/review, nullable category/skill, taxonomy/policy versions, source lineage
 and training exclusion. No automatic mastery update or review-write workflow is introduced in this sprint.
 Owner runner and implementation/functional/execution records are listed in the Sprint 7.4 specification.
+
+<!-- PHASE_PRODUCTION_V7_LEARNING_OS:START -->
+# Phase Production Execution Contract v7 — Verified AI Learning OS Reconciliation (`2026-11-07`)
+
+## 1. Migration & Implementation Baseline Reconciliation (`SOURCE_VERIFIED`)
+- Historical references to `V026` in earlier wedge notes were superseded in actual repository execution by:
+  - `V030__create_student_attempt_and_step_verification_lifecycle.sql` (`student_attempts`, `student_attempt_steps`)
+  - `V031__add_pedagogical_diagnosis_twin_drills_and_mastery.sql` (`counterfactual_twin_drills`, `attempt_verified_methods`, `learner_mistake_events`, `learner_skill_mastery` with `mastery_version = 'bkt-lite-v1'`)
+  - `V032__canonical_real_set_source.sql`, `V033__attempt_final_answer_and_evidence_guards.sql`
+  - `V034__attempt_structured_work.sql` (`Sprint 7.2` — `SOURCE_COMPLETE` / `PENDING_OWNER_TEST`)
+  - `V035__attempt_evaluations.sql` (`Sprint 7.3` — `LOCAL_ACCEPTANCE_PASSED`, run `20261107-025110-XrMKJK`)
+  - `V036__attempt_mistake_classifications.sql` (`Sprint 7.4` — `SOURCE_COMPLETE` / `PENDING_OWNER_TEST`, `MistakeTaxonomy` `mistake-category-v1`)
+- All remaining Phase 7 sprints (`SPRINT_7.5`–`7.10`) allocate migrations starting at **`PLANNED V037+`** and use real package roots `com.verifiedai.{attempt,mistake,mastery,analytics}` and iOS path `apps/ios/VerifiedAI/Features/`.
+
+## 2. Learning OS Canonical Specifications Governed by Phase 7
+- `learning/83_VERIFIED_MISTAKE_DNA_AND_MISTAKE_PASSPORT_SPECIFICATION.md` (`SPRINT_7.5`, `7.7`, `7.9`)
+- `learning/84_VERIFIED_TWIN_PRACTICE_AND_INDEPENDENT_LEARNING_ENGINE.md` (`SPRINT_7.6`, `7.8`)
+- `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md` (`SPRINT_7.6`, `7.7`, `7.10`)
+- `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md` (`CNT-LOS-01`..`CNT-LOS-05`)
+<!-- PHASE_PRODUCTION_V7_LEARNING_OS:END -->

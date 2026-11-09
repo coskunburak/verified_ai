@@ -67,11 +67,10 @@ The platform intentionally separates product semantics, learner state, AI-genera
 
 ### Backend files to review/create
 
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/domain/**`
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/application/**`
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/api/**`
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/infrastructure/**`
-- corresponding module tests and architecture tests.
+- `services/api/src/main/java/com/verifiedai/mastery/**`
+- `services/api/src/main/java/com/verifiedai/attempt/LearnerMasteryPolicy.java`
+- `services/api/src/main/resources/db/migration/platform/V038__evidence_stratified_mastery_and_prerequisite_edges.sql` *(PLANNED)*
+- corresponding module tests (`LearnerMasteryPolicyTest`, `EvidenceStratifiedMasteryIntegrationTest`) and `ModularityTests`.
 
 ## iOS implementation work
 
@@ -85,9 +84,8 @@ The platform intentionally separates product semantics, learner state, AI-genera
 
 ### iOS files to review/create
 
-- `apps/ios/VerifiedLearning/Features/<Feature>/Domain/**`
-- `apps/ios/VerifiedLearning/Features/<Feature>/Data/**`
-- `apps/ios/VerifiedLearning/Features/<Feature>/Presentation/**`
+- `apps/ios/VerifiedAI/Features/AttemptAnalysis/**`
+- `apps/ios/VerifiedAI/Features/ProblemSolving/**`
 - feature unit tests, accessibility coverage, and critical UI-flow tests.
 
 ## Data and persistence work
@@ -412,3 +410,82 @@ Attach or persist links/artifacts for:
 
 Codex must implement this sprint in small reviewable slices, re-reading the highest-precedence semantic documents before changing domain/API/data contracts. It must not “simplify” the architecture by moving rules into prompts, client code, provider SDK adapters, generic helpers, or ungoverned ML scripts.
 <!-- PRODUCTION_EXECUTION_V3:END -->
+
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:START -->
+# Learning OS Production Implementation Specification v1 (`2026-11-07`)
+
+## 1. Sprint Metadata & Status
+- **Sprint ID:** `SPRINT_7.6`
+- **Canonical Title:** Evidence-Stratified Mastery Model (`bkt-lite-v2`) and Anti-Crutch Update Policy
+- **Status:** `PLANNED` (`GATED_ON_SPRINT_7_5`)
+- **Primary Spec Reference:** `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md` & `learning/84_VERIFIED_TWIN_PRACTICE_AND_INDEPENDENT_LEARNING_ENGINE.md`
+
+## 2. Strategic Learning OS Objective & User Value
+Upgrades `com.verifiedai.attempt.LearnerMasteryPolicy` (`bkt-lite-v1` in `V031`) into an **Evidence-Stratified Mastery Engine (`bkt-lite-v2`)** owned by `com.verifiedai.mastery`. Directly prevents the AI crutch effect (Bastani et al., 2025, `10.1073/pnas.2422633122`) by separating Observed Attempt Correctness ($O_{u,a}$), Demonstrated Independent Competence ($I_{u,s}$), and Estimated Skill Mastery ($M_{u,s}$) across the four canonical `LearningEvidenceType` values: `INDEPENDENT`, `HINT_ASSISTED` (`0.78` ceiling), `SOLUTION_REVEALED_ASSISTED` (`0.0` gain), and `UNSUPPORTED` (invariant).
+
+## 3. Entry Gate & Preconditions
+- `Sprint 7.5` (`V037` Mistake DNA ledger) accepted.
+- Existing `V031` `learner_skill_mastery` table (`score`, `half_life_days`, `evidence_count`, `confidence`) preserved and extended in place.
+
+## 4. Domain Invariants & Mathematical Rules
+1. **Four-Tier Evidence Separation (`INV-LRN-EVID-001`):**
+   - `INDEPENDENT` (0 hints, no prior solution reveal): Full positive BKT update ($p_T^{\text{ind}} = 0.18$, or $0.24$ on a Verified Twin pass); eligible for `MASTERED` ($\ge 0.85$).
+   - `HINT_ASSISTED`: Discounted update ($p_T^{\text{hint}} = 0.07$), hard-capped at $\min(M_{u,s}, 0.78)$ until an `INDEPENDENT` pass is recorded.
+   - `SOLUTION_REVEALED_ASSISTED`: Zero positive mastery gain ($\Delta M_{u,s} \le 0$).
+   - `UNSUPPORTED`: Identity update ($\Delta M_{u,s} = 0.0$, confidence unchanged).
+2. **Demonstrated Independent Competence ($I_{u,s}$):**
+   $$I_{u,s} = \frac{n_{u,s}^{\text{ind}+} + 3.0 \cdot 0.25}{n_{u,s}^{\text{total}} + 3.0}$$
+3. **Arithmetic Slip Cushioning:** When `primary_category == 'ARITHMETIC_SLIP'`, effective slip probability $p_S$ increases from $0.10$ to $0.35$ so a single calculation slip does not collapse high conceptual mastery.
+
+## 5. Owning Spring Modulith Backend Modules & Classes
+- `com.verifiedai.mastery`:
+  - `LearnerSkillMastery.java`, `LearningEvidenceType.java` (`INDEPENDENT`, `HINT_ASSISTED`, `SOLUTION_REVEALED_ASSISTED`, `UNSUPPORTED`)
+  - `EvidenceStratifiedMasteryPolicy.java` (supersedes/delegates from `LearnerMasteryPolicy` in `attempt`)
+  - `MasteryApplicationService.java`, `MasteryPrivacyLifecycleContributor.java`
+- `com.verifiedai.attempt`:
+  - Emits `AttemptLearningEvidenceRecordedEvent` with exact `hintsUsedCount`, `solutionRevealedPriorToSubmit`, and `isVerifiedTwin`.
+
+## 6. Python Math Verifier Impact (`services/math-verifier/`)
+- `services/math-verifier/app/verifiers/attempt_learning.py` aligns its mastery transition preview with `bkt-lite-v2` evidence weights.
+
+## 7. Database Migration & Persistence Contract (`PLANNED V038`)
+- **Migration File:** `services/api/src/main/resources/db/migration/platform/V038__evidence_stratified_mastery_and_prerequisite_edges.sql` *(PLANNED)*
+- **Schema Changes:**
+  - `ALTER TABLE learner_skill_mastery` (`V031`): adds `independent_evidence_count INT NOT NULL DEFAULT 0`, `assisted_evidence_count INT NOT NULL DEFAULT 0`, `independent_competence_score NUMERIC(5,4) NOT NULL DEFAULT 0.2500`, `capped_by_assistance BOOLEAN NOT NULL DEFAULT FALSE`.
+  - `CREATE TABLE learner_skill_mastery_transitions`: immutable audit log (`id`, `user_id`, `canonical_skill_code`, `attempt_id`, `evidence_type`, `prior_score`, `posterior_score`, `prior_half_life_days`, `posterior_half_life_days`, `created_at`).
+
+## 8. REST API Contracts (`CNT-LOS-04`)
+- `GET /v1/mastery/skills` returning `M_{u,s}`, `I_{u,s}`, `R_{u,s}(t)`, `C_{u,s}`, and `cappedByAssistance` badge state.
+
+## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
+- Displays **Verified Independent Shield (`Bağımsız Kanıtlandı`)** vs **Guided Practice (`0.78 Tavanı`)** badges on `AttemptAnalysis` and `ProblemSolving` completion cards.
+
+## 10. AI Capability & Unit Economics Guardrail
+- **100% Deterministic CPU calculation (`$0.00` LLM token cost).**
+
+## 11. Privacy, Safety & Compliance
+- `MasteryPrivacyLifecycleContributor` purges `learner_skill_mastery` and `learner_skill_mastery_transitions` on account deletion.
+
+## 12. Telemetry & Observability
+- Emits `skill_mastery_updated` with `evidence_type`, `prior_score`, `posterior_score`, and `capped_by_assistance`.
+
+## 13. Feature Flags & Rollback Plan
+- `verifiedai.mastery.evidence-stratified-enabled: false` (default off; falls back to `bkt-lite-v1`).
+
+## 14. Automated Test Matrix (Categories A–F)
+- Property-based tests (`G-PED-01` in `quality/91`) proving `0.78` cap on `HINT_ASSISTED`, non-increase on `SOLUTION_REVEALED_ASSISTED`, invariance on `UNSUPPORTED`, and bounds $[0.05, 0.99]$.
+
+## 15. Owner-Only Acceptance Command
+- `bash scripts/quality/sprint_7_6_owner_acceptance.sh --full`
+
+## 16. Explicit Non-Goals
+- Temporal half-life decay scheduling and reassessment triggers are completed in `Sprint 7.7`.
+
+## 17. Exit Gate & Downstream Consumers
+- Unlocks `Sprint 7.7` (Decay & Reassessment), `Sprint 7.8` (Knowledge Graph APIs), and `Phase 8` Study Planner.
+
+## 18. Canonical Cross-References
+- `learning/84_VERIFIED_TWIN_PRACTICE_AND_INDEPENDENT_LEARNING_ENGINE.md`
+- `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md`
+- `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md`
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:END -->

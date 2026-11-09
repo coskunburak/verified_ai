@@ -106,3 +106,15 @@ Projenin önündeki en büyük tehlike Google (Photomath) veya OpenAI değil; `s
 | 8 | **Ücretsiz kullanıcıların kota suistimali (Çoklu hesap)** | Orta | Sign in with Apple zorunluluğu + cihaz/IP hız sınırları (`Sprint 3.8` mevcut) + ücretsiz pakette `o4-mini` (`R3`) rotasının kapalı olması. |
 | 9 | **Üçüncü parti bulut API kesintisi (OpenAI veya Google çökmesi)** | Orta | Sağlayıcıdan bağımsız port mimarisi (`ADR-003`, `ADR-008`) sayesinde `GPT-4.1-mini` kesildiğinde 1 saniyede `Gemini 2.5 Flash` çözücüye geçilir. |
 | 10 | **Öğrencilerin uygulamayı sadece ödev kopyalamak için kullanıp sınavda gelişmemesi** | Orta | Doğrudan tam çözüme bakmak hakimiyet puanını artırmaz; puan ve seri (streak) kazanmak için `Analyze My Work` veya `İkiz Soru (F04)` çözümü zorunludur. |
+
+---
+
+<!-- LEARNING_OS_ECONOMICS_AUDIT_V7:START -->
+## 7. V7 Epistemic Classification & Learning OS Unit Economics Reconciliation (2026-11-07)
+
+To ensure strict separation between measured engineering facts, external market benchmarks, and pre-launch commercial hypotheses, all numerical projections in this document are governed by the **Epistemic Evidence Ledger (`operations/92_LEARNING_OS_ASSUMPTIONS_EXPERIMENTS_AND_EVIDENCE_LEDGER.md`)** and the **Learning OS Monetization & FinOps Plan (`roadmap/88_LEARNING_OS_MONETIZATION_GROWTH_AND_VALIDATION_PLAN.md`)**:
+
+1. **API Token Pricing & Per-Solve Cost (`$0.00581/solve`):** Classified as `MARKET_BENCHMARK` + `ENGINEERING_ESTIMATE` based on published Q4 2026 OpenAI/Google API pricing and estimated token routing mix (`70%` `R1`, `15%` `R0` cache, `15%` `R3` escalation). Live production solve cost remains `UNVALIDATED` until `Sprint 6.2B` and `Sprint 11.9A` execute (`EXP-001`).
+2. **Learning OS Coaching & Twin Practice Overhead (`~$0.00055/session`):** Daily study plan composition (`Sprint 8.4`), BKT-Lite mastery decay (`Sprint 7.6`), and SymPy twin verification (`Sprint 7.8`) are 100% deterministic (`$0.00` LLM cost); only template-miss twin phrasing and micro-lessons consume `GPT-4.1-mini` tokens, keeping total monthly AI COGS for an active `PRO` learner at `~$0.34/month` (hard cap `<= $1.20/month` via `PostgresAiSpendGuard`).
+3. **Subscriber Volume & Trial-to-Paid Conversion (`100` to `100,000` subscribers):** Classified strictly as `PRODUCT_HYPOTHESIS` scenario models (`roadmap/88_LEARNING_OS_MONETIZATION_GROWTH_AND_VALIDATION_PLAN.md`), calibrated against RevenueCat State of Subscription Apps 2025/2026 Education benchmarks (`MARKET_BENCHMARK`) and subject to validation in `EXP-005` and `EXP-006`.
+<!-- LEARNING_OS_ECONOMICS_AUDIT_V7:END -->

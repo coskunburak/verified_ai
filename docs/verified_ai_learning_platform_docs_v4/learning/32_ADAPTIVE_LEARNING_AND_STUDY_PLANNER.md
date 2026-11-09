@@ -81,3 +81,9 @@ Start with explainable heuristics/rules using mastery, recency, prerequisites, m
 
 This avoids training a recommendation model before sufficient interaction data exists.
 <!-- HYBRID_AI_STRATEGY_V3:END -->
+
+<!-- LEARNING_OS_COACH_V7:START -->
+## V7 Personal AI Mathematics Coach and Daily `1-2-1` Study Planner (2026-11-07)
+
+The concrete scoring formula ($U(a)$), 15-minute daily `1-2-1` study session architecture (`1` Mistake Closure + `2` Spaced Retrieval Drills + `1` Exam Synthesis Challenge), guilt-free missed-day recovery (`Sprint 8.5`), pre-exam triage mode (`Sprint 9.7`), and weekly learning report generation (`Sprint 8.9`) are specified in **`learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md`** and **`architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md`** (`PLANNED V039`).
+<!-- LEARNING_OS_COACH_V7:END -->

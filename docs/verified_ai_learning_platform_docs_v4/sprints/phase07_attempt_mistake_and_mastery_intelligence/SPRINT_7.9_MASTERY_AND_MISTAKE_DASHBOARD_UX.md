@@ -67,11 +67,10 @@ The platform intentionally separates product semantics, learner state, AI-genera
 
 ### Backend files to review/create
 
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/domain/**`
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/application/**`
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/api/**`
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/infrastructure/**`
-- corresponding module tests and architecture tests.
+- `services/api/src/main/java/com/verifiedai/mistake/**`
+- `services/api/src/main/java/com/verifiedai/mastery/**`
+- `services/api/src/main/java/com/verifiedai/analytics/**`
+- corresponding module tests and `ModularityTests`.
 
 ## iOS implementation work
 
@@ -85,9 +84,9 @@ The platform intentionally separates product semantics, learner state, AI-genera
 
 ### iOS files to review/create
 
-- `apps/ios/VerifiedLearning/Features/<Feature>/Domain/**`
-- `apps/ios/VerifiedLearning/Features/<Feature>/Data/**`
-- `apps/ios/VerifiedLearning/Features/<Feature>/Presentation/**`
+- `apps/ios/VerifiedAI/Features/AttemptAnalysis/**`
+- `apps/ios/VerifiedAI/Features/Home/**`
+- `apps/ios/VerifiedAI/Features/ProblemReview/**`
 - feature unit tests, accessibility coverage, and critical UI-flow tests.
 
 ## Data and persistence work
@@ -410,3 +409,70 @@ Attach or persist links/artifacts for:
 
 Codex must implement this sprint in small reviewable slices, re-reading the highest-precedence semantic documents before changing domain/API/data contracts. It must not “simplify” the architecture by moving rules into prompts, client code, provider SDK adapters, generic helpers, or ungoverned ML scripts.
 <!-- PRODUCTION_EXECUTION_V3:END -->
+
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:START -->
+# Learning OS Production Implementation Specification v1 (`2026-11-07`)
+
+## 1. Sprint Metadata & Status
+- **Sprint ID:** `SPRINT_7.9`
+- **Canonical Title:** Mistake Passport ("Exam Trap Radar"), Mastery Graph Explorer, and Counterexample Proof Card UX
+- **Status:** `PLANNED` (`GATED_ON_SPRINT_7_8`)
+- **Primary Spec Reference:** `learning/83_VERIFIED_MISTAKE_DNA_AND_MISTAKE_PASSPORT_SPECIFICATION.md` & `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md` (Screens 3, 5, 6, 7)
+
+## 2. Strategic Learning OS Objective & User Value
+Delivers the native iOS **Mistake Passport (`Sınav Tuzağı Pasaportu`)**, **Counterexample Proof Card (`H-01`)**, and **Dual-Ring Skill Mastery & Retention Explorer**, replacing stigmatic "failure lists" with an agency-building **Conquered Exam Traps (`Kapatılan Tuzaklar`)** and **Independent Transfer Rate (`Bağımsız Doğrulama Oranı`)** experience.
+
+## 3. Entry Gate & Preconditions
+- `Sprints 7.5–7.8` backend contracts (`CNT-LOS-01..05`) accepted.
+
+## 4. Domain Invariants & UX Rules
+1. **Non-Stigmatizing Framing (`learning/83` Section 7):** Externalizes recurring errors as "Active Exam Traps" (`Aktif Sınav Tuzakları`) and separates `ARITH_BASIC_COMPUTATION` speed slips into a secondary tab so structural conceptual traps remain primary.
+2. **Strict Separation of 5 Learner Quantities (`learning/86`):** UI never blends $O_{u,a}$, $I_{u,s}$, $M_{u,s}$, and $R_{u,s}(t)$ into a single ambiguous percentage.
+3. **2D Native Math Rendering (`ADR-010`):** Counterexamples and step diffs render at `60fps` with zero WebView overhead and full VoiceOver mathematical speech support (`tr-TR` and `en-US`).
+
+## 5. Owning Spring Modulith Backend Modules & Classes
+- `com.verifiedai.mistake`: `MistakePassportQueryController.java`, `MistakePassportReadModelService.java`.
+- `com.verifiedai.mastery`: `MasteryDashboardController.java`.
+
+## 6. Python Math Verifier Impact
+- Consumes `MathVisualizationPayload` and `CounterexamplePayload` from `services/math-verifier/`.
+
+## 7. Database Migration & Persistence Contract
+- Read-optimized indexes on `V037` `learner_mistake_dna_profiles` and `V031`/`V038` `learner_skill_mastery`.
+
+## 8. REST API Contracts (`CNT-LOS-01`, `CNT-LOS-04`, `CNT-LOS-05`)
+- `GET /v1/mistake-passport`, `GET /v1/mastery/skills`, `GET /v1/mastery/graph`.
+
+## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
+- `apps/ios/VerifiedAI/Features/AttemptAnalysis/Presentation/MistakePassportView.swift`
+- `apps/ios/VerifiedAI/Features/AttemptAnalysis/Presentation/CounterexampleProofCardView.swift`
+- `apps/ios/VerifiedAI/Features/ProblemReview/Presentation/MasteryKnowledgeGraphView.swift`
+
+## 10. AI Capability & Unit Economics Guardrail
+- `$0.00` LLM token cost on dashboard reads (100% deterministic projections).
+
+## 11. Privacy, Safety & Compliance
+- Local SwiftData/SQLite cache purged immediately on logout or account deletion.
+
+## 12. Telemetry & Observability
+- Emits `mistake_passport_viewed`, `attempt_counterexample_expanded`, and `mastery_graph_viewed`.
+
+## 13. Feature Flags & Rollback Plan
+- `verifiedai.mistake.passport-ui-enabled: false`.
+
+## 14. Automated Test Matrix (Categories A–F)
+- SwiftUI ViewModel unit tests covering Empty, Loading, Offline, Unsupported, and Active Trap states; VoiceOver & `tr-TR`/`en-US` localization parity tests.
+
+## 15. Owner-Only Acceptance Command
+- `bash scripts/quality/sprint_7_9_owner_acceptance.sh --full`
+
+## 16. Explicit Non-Goals
+- Does not implement timed mock exam sessions (`Phase 9`).
+
+## 17. Exit Gate & Downstream Consumers
+- Unlocks `Sprint 7.10` (Phase 7 Exit Gate & Calibration Hardening).
+
+## 18. Canonical Cross-References
+- `learning/83_VERIFIED_MISTAKE_DNA_AND_MISTAKE_PASSPORT_SPECIFICATION.md`
+- `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md`
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:END -->

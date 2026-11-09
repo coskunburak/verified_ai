@@ -79,3 +79,16 @@ The phase exit review must include:
   - A student photographs the 5–10 questions they got wrong or left blank in their physical paper YKS deneme exam (e.g., Özdebir, 3D, Bilgi Sarmal, Apotemi) alongside their scratchpad work on the booklet.
   - Verified AI batch-processes those 5–10 attempts, separates **Knowledge Gaps (Bilgi Eksikliği)** from **Algebraic/Sign Mistakes (İşlem Hatası)** and **ÖSYM Domain Traps (Tanım Kümesi Tuzağı)**, calculates how many **Net (`+4.25 Net`)** they lost solely to avoidable mistakes, and generates a tailored 15-minute **Deneme Telafi Antrenmanı**.
 <!-- PHASE_PRODUCTION_V6:END -->
+
+<!-- PHASE_PRODUCTION_V7_LEARNING_OS:START -->
+# Phase Production Execution Contract v7 — YKS Readiness Credible Intervals & Net-Gain Simulator (`2026-11-07`)
+
+## 1. Entry Gate & Package Ownership (`ADR-011`)
+- Phase 9 remains **BLOCKED_BY_ENTRY_GATE (`ADR-011`)** until the Focused Commercial Wedge records an owner `GO` decision.
+- All backend exam domain models, session timers, and readiness projections belong to `com.verifiedai.exam` (`services/api/src/main/java/com/verifiedai/exam/`), consuming `com.verifiedai.mastery` (`bkt-lite-v1`/`v2`) and `com.verifiedai.mistake` (`V036`/`V037`), with persistence in **`PLANNED V046–V047`** (`architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md`).
+
+## 2. Learning OS Canonical Specifications Governed by Phase 9
+- `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md` (Quantity 5: Expected Net Score $\widehat{\text{Net}}_{u,E}$ with mandatory 90% credible interval $[\text{Net}_{\text{low}}, \text{Net}_{\text{high}}]$ and active-trap penalty $\sum \beta_m \theta_{u,m}$)
+- `product/81_LEARNING_OS_PRODUCT_VISION_AND_POSITIONING.md` (Supporting Innovation `H-03`: YKS Net-Gain Simulator & High-ROI Topic Allocator $\Delta\text{Net} / \text{hr}$)
+- `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md` (`CNT-LOS-10` & `CNT-LOS-11`)
+<!-- PHASE_PRODUCTION_V7_LEARNING_OS:END -->

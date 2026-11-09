@@ -67,11 +67,10 @@ The platform intentionally separates product semantics, learner state, AI-genera
 
 ### Backend files to review/create
 
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/domain/**`
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/application/**`
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/api/**`
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/infrastructure/**`
-- corresponding module tests and architecture tests.
+- `services/api/src/main/java/com/verifiedai/mistake/**`
+- `services/api/src/main/java/com/verifiedai/attempt/**`
+- `services/api/src/main/resources/db/migration/platform/V037__learner_mistake_dna_profiles_and_disputes.sql` *(PLANNED)*
+- corresponding module tests (`MistakeDnaServiceTest`, `MistakeDisputeRollbackIntegrationTest`) and `ModularityTests`.
 
 ## iOS implementation work
 
@@ -85,9 +84,8 @@ The platform intentionally separates product semantics, learner state, AI-genera
 
 ### iOS files to review/create
 
-- `apps/ios/VerifiedLearning/Features/<Feature>/Domain/**`
-- `apps/ios/VerifiedLearning/Features/<Feature>/Data/**`
-- `apps/ios/VerifiedLearning/Features/<Feature>/Presentation/**`
+- `apps/ios/VerifiedAI/Features/AttemptAnalysis/**`
+- `apps/ios/VerifiedAI/Features/ProblemReview/**`
 - feature unit tests, accessibility coverage, and critical UI-flow tests.
 
 ## Data and persistence work
@@ -405,3 +403,89 @@ Attach or persist links/artifacts for:
 
 Codex must implement this sprint in small reviewable slices, re-reading the highest-precedence semantic documents before changing domain/API/data contracts. It must not “simplify” the architecture by moving rules into prompts, client code, provider SDK adapters, generic helpers, or ungoverned ML scripts.
 <!-- PRODUCTION_EXECUTION_V3:END -->
+
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:START -->
+# Learning OS Production Implementation Specification v1 (`2026-11-07`)
+
+## 1. Sprint Metadata & Status
+- **Sprint ID:** `SPRINT_7.5`
+- **Canonical Title:** Automatic Mistake Book, Longitudinal Mistake DNA Ledger, and OCR Dispute Rollback Workflows
+- **Status:** `PLANNED` (`GATED_ON_SPRINT_7_4_OWNER_ACCEPTANCE`)
+- **Primary Spec Reference:** `learning/83_VERIFIED_MISTAKE_DNA_AND_MISTAKE_PASSPORT_SPECIFICATION.md`
+
+## 2. Strategic Learning OS Objective & User Value
+Transforms isolated per-attempt mistake classifications (`V036` `attempt_mistake_classifications`) and raw mistake events (`V031` `learner_mistake_events`) into a longitudinal **Mistake DNA Ledger** that tracks exposure-adjusted recurring error propensity ($\theta_{u,m}$), enforces first-meaningful-error causal filtering (`INV-MDNA-001`), manages the 6-state recurrence lifecycle (`OBSERVED_ONCE` -> `RECURRING_PATTERN` -> `IN_REMEDIATION` -> `RESOLVED_PENDING_RETENTION` -> `STABLE_RESOLVED` / `RELAPSED`), and empowers learners to self-correct OCR step misreads or dispute diagnoses with immediate `<250ms` rollback (`INV-MDNA-004`).
+
+## 3. Entry Gate & Preconditions
+- `Sprint 7.4` (`V036`, `MistakeTaxonomy` `mistake-category-v1`) must pass owner acceptance (`bash scripts/quality/sprint_7_4_owner_acceptance.sh --full`).
+- Existing `V030`–`V036` schema lineage must remain untouched and forward-compatible.
+
+## 4. Domain Invariants & Mathematical Rules
+1. **Causal First-Error Isolation (`INV-MDNA-001`):** Only `first_error_step_index` from `AttemptEvaluation` (`V035`) emits a primary causal mistake update. Downstream propagated steps (`DOWNSTREAM_PROPAGATION`) never increment error counts.
+2. **Confidence Eligibility Gate (`INV-MDNA-002`):** Only `CLASSIFIED` attempts with `evidence_status == 'SUFFICIENT'` and `confidence >= 0.80` directly mutate recurring pattern states; `0.65 <= confidence < 0.80` records a tentative signal; `< 0.65` or `UNCLASSIFIED` / `STEP_GAP_TOO_WIDE` causes zero mutation.
+3. **Exposure-Adjusted Empirical Bayes Rate (`INV-MDNA-003`):**
+   $$\theta_{u,m} = \frac{E_{u,m}^{\text{decayed}} + \alpha_0 \mu_m}{N_{u, s(m)}^{\text{decayed}} + \alpha_0}, \qquad h_m = 21\text{ days},\; \alpha_0 = 4.0$$
+4. **Atomic Dispute/OCR Rollback (`INV-MDNA-004`):** Editing a misread step or disputing a diagnosis marks the prior event `SUPERSEDED_BY_OCR_CORRECTION` or `DISPUTED_BY_LEARNER` and recomputes $\theta_{u,m}$ deterministically.
+
+## 5. Owning Spring Modulith Backend Modules & Classes
+- `com.verifiedai.mistake`:
+  - `LearnerMistakeDnaProfile.java` (Aggregate root for `(userId, mistakeCode, canonicalSkillCode)`)
+  - `MistakeRecurrenceState.java` (`OBSERVED_ONCE`, `RECURRING_PATTERN`, `IN_REMEDIATION`, `RESOLVED_PENDING_RETENTION`, `STABLE_RESOLVED`, `RELAPSED`)
+  - `EmpiricalBayesMistakeRateCalculator.java` (pure deterministic math service)
+  - `LearnerMistakeDnaService.java` (handles `AttemptMistakeClassifiedEvent`, state transitions, and dispute rollbacks)
+  - `MistakeDnaPrivacyLifecycleContributor.java` (implements `AccountPrivacyLifecycleContributor`)
+- `com.verifiedai.attempt`:
+  - `AttemptStepOcrCorrectionService.java` (re-evaluates corrected step via `AttemptEvaluationService` and triggers DNA rollback)
+
+## 6. Python Math Verifier Impact (`services/math-verifier/`)
+- Reuses `services/math-verifier/app/verifiers/attempt_diagnosis.py` and `counterexample_engine.py`; no new paid LLM dependency.
+
+## 7. Database Migration & Persistence Contract (`PLANNED V037`)
+- **Migration File:** `services/api/src/main/resources/db/migration/platform/V037__learner_mistake_dna_profiles_and_disputes.sql` *(PLANNED)*
+- **Tables:**
+  - `learner_mistake_dna_profiles`: `id (UUID PK)`, `user_id (UUID NOT NULL)`, `mistake_code (VARCHAR(64) NOT NULL)`, `category (VARCHAR(64) NOT NULL)`, `canonical_skill_code (VARCHAR(128) NOT NULL)`, `taxonomy_version (VARCHAR(32) NOT NULL)`, `decayed_exposure_count (NUMERIC(10,4))`, `decayed_error_count (NUMERIC(10,4))`, `smoothed_propensity (NUMERIC(6,4))`, `priority_score (NUMERIC(6,2))`, `recurrence_state (VARCHAR(32) NOT NULL)`, `consecutive_independent_passes (INT NOT NULL DEFAULT 0)`, `last_attempt_id (UUID)`, `last_counterexample_json (JSONB)`, `last_occurred_at (TIMESTAMPTZ)`, `last_remediated_at (TIMESTAMPTZ)`, `next_retention_check_at (TIMESTAMPTZ)`, `updated_at (TIMESTAMPTZ)`. Unique index on `(user_id, mistake_code, canonical_skill_code)`.
+  - `learner_mistake_dispute_events`: `id (UUID PK)`, `user_id (UUID NOT NULL)`, `attempt_id (UUID NOT NULL)`, `step_index (INT)`, `dispute_type (VARCHAR(32) NOT NULL)`, `previous_step_latex (TEXT)`, `corrected_step_latex (TEXT)`, `resolution_status (VARCHAR(32) NOT NULL)`, `created_at (TIMESTAMPTZ NOT NULL)`.
+
+## 8. REST API Contracts (`CNT-LOS-01` & `CNT-LOS-02`)
+- `GET /v1/mistake-passport` (`schemaVersion: "mistake-passport-v1"`)
+- `POST /v1/attempts/{attemptId}/steps/{stepIndex}/correct-ocr` (`Idempotency-Key` required)
+- `POST /v1/mistakes/{eventId}/dispute` (`Idempotency-Key` required)
+
+## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android (`apps/android/`) Scope
+- Adds `Adımı Düzenle (OCR Hatası)` and `Hatalı Analiz Bildir` actions to `apps/ios/VerifiedAI/Features/AttemptAnalysis/` (Screen 3 in `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md`).
+- Shared JSON fixtures exported for Android parity (`Sprint 12.10`).
+
+## 10. AI Capability & Unit Economics Guardrail
+- **100% Deterministic CPU execution (`$0.00` LLM token cost)** for Mistake DNA aggregation, Beta-Binomial rate smoothing, and dispute rollback.
+
+## 11. Privacy, Safety & Compliance
+- Registers `MistakeDnaPrivacyLifecycleContributor` so `DELETE /v1/accounts/me` purges `learner_mistake_dna_profiles` and `learner_mistake_dispute_events` (`G-PRIV-01` in `quality/91`).
+
+## 12. Telemetry & Observability
+- Emits `mistake_dna_updated`, `mistake_dna_state_transitioned`, `attempt_step_ocr_corrected`, and `attempt_diagnosis_disputed`.
+
+## 13. Feature Flags & Rollback Plan
+- Controlled by `verifiedai.mistake.dna-ledger-enabled: false` (default off in `application.yml`). Disabling preserves `V037` rows read-only while reverting UI to single-attempt classification view.
+
+## 14. Automated Test Matrix (Categories A–F)
+- **A:** `ModularityTests` verifying `mistake` <-> `attempt` boundaries.
+- **B:** `EmpiricalBayesMistakeRateCalculatorTest` (verifying 2/3 errors ranks higher than 3/40 errors), `MistakeDnaStateMachineTest`, `MistakeDisputeRollbackIntegrationTest`.
+- **C/D:** iOS `AttemptAnalysisViewModelTests` for OCR edit and dispute state recovery.
+- **E:** Privacy deletion cascade test & cross-user `403` authorization test.
+- **F:** `python3 scripts/quality/docs_check.py`.
+
+## 15. Owner-Only Acceptance Command
+- `bash scripts/quality/sprint_7_5_owner_acceptance.sh --full`
+
+## 16. Explicit Non-Goals
+- Does not modify BKT skill mastery transition weights (owned by `Sprint 7.6`).
+- Does not build the full Daily Coach Study Planner (owned by `Phase 8`).
+
+## 17. Exit Gate & Downstream Consumers
+- Unlocks `Sprint 7.6` (Evidence-Stratified Mastery), `Sprint 7.7` (Decay & Reassessment), and `Sprint 7.9` (Mistake Passport Dashboard UX).
+
+## 18. Canonical Cross-References
+- `learning/83_VERIFIED_MISTAKE_DNA_AND_MISTAKE_PASSPORT_SPECIFICATION.md`
+- `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md`
+- `quality/91_LEARNING_OS_PRODUCT_LEARNING_AND_RELEASE_ACCEPTANCE_GATES.md`
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:END -->

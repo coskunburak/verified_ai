@@ -525,3 +525,25 @@ are implemented. New results: NOT_EXECUTED / PENDING_OWNER_TEST; production is n
 `sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.4_FUNCTIONAL_COMPLETION_MATRIX.md` and
 `sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.4_EXECUTION_REPORT.md`. Existing 17
 signatures map to separate pedagogical categories; unsupported cases remain explicit. No new paid AI calls.
+
+<!-- LEARNING_OS_STRATEGY_V7:START -->
+## V7 Learning OS Strategic Expansion, Evidence-Grounded Coach & Phase 7–12 Production Contracts (2026-11-07)
+
+Following the 2026-11-07 repository baseline audit (`e39bafe88ea369f98c96a65497a94462dc79ef33`), external learning science synthesis, and competitive/monetization research, Verified AI's product identity and Phase 7–12 sprint specifications are elevated into the **Verified AI Learning OS**:
+
+> **An evidence-grounded mathematics learning operating system that verifies solutions symbolically, diagnoses the first meaningful step mistake in a learner's work, generates verified counterfactual twin practice to prove independent remediation, tracks decaying mastery and recurring Mistake DNA over time, and orchestrates daily 15-minute coaching and exam readiness (`YKS TYT/AYT`, `LGS`, `SAT/AP`, `University Calculus I`).**
+
+### New Canonical Specifications (V7 — Documents 81–92)
+- `product/81_LEARNING_OS_PRODUCT_VISION_AND_POSITIONING.md` — Category definition ("Evidence-Grounded Mathematics Learning OS"), 10-step Verified Learning Value Loop, 5-screen information architecture (`Solve & Verify`, `Mistake Passport`, `Daily Coach`, `Exam Readiness`, `Profile & Safety`), and anti-bloat scope discipline.
+- `product/82_LEARNING_OS_MARKET_COMPETITOR_AND_CUSTOMER_RESEARCH.md` — Source-grounded tear-down of 16 Turkish and global competitors (Kunduz, Doping Hafıza, Raunt, Talebee, Koç'a Sor, YKS Pilot, AI Sınav, Pusula YKS, Photomath, Symbolab, Brilliant, Khanmigo, Gauth, Mathway, Wolfram Alpha, ThetaWise), ÖSYM 2024/2025 YKS statistics, and RevenueCat 2025/2026 benchmarks.
+- `learning/83_VERIFIED_MISTAKE_DNA_AND_MISTAKE_PASSPORT_SPECIFICATION.md` — 4-layer Mistake Intelligence architecture, reconciliation of `V030`–`V036` tables, Mistake Recurrence Index (`MRI`), Mistake Closure State Machine (`OPEN_ACTIVE` → `MASTERED_CLOSED`), and Mistake Passport UX.
+- `learning/84_VERIFIED_TWIN_PRACTICE_AND_INDEPENDENT_LEARNING_ENGINE.md` — 3-variant progressive Twin Practice Engine (Variant A Isomorphic, Variant B Structural, Variant C Exam Synthesis), 60-Second Independent Verification Protocol, and `INDEPENDENT` vs. `ASSISTED` epistemic evidence separation.
+- `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md` — Deterministic daily 15-minute study plan composer (`1-2-1` protocol), missed-day guilt-free recovery, pre-exam triage mode, and structured weekly learning reports.
+- `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md` — BKT-Lite + exponential half-life decay model (`bkt-lite-v1`), 48h/7d/21d delayed retrieval checks, Transfer Gain Index (`TGI`), and anti-gaming integrity guards.
+- `roadmap/87_LEARNING_OS_STRATEGIC_PHASE_AND_SPRINT_EXPANSION_PROGRAM.md` — Reconciliation of Phases 7–12 (`Sprint 7.5`–`12.10`), migration numbering (`V030`–`V036` active vs. `PLANNED V037+`), solo-founder sequencing, and `ADR-011` gate governance.
+- `roadmap/88_LEARNING_OS_MONETIZATION_GROWTH_AND_VALIDATION_PLAN.md` — Entitlement matrix (`FREE` vs. `PRO` vs. `PRO_PLUS`), Mistake-Moment and Twin-Success paywall triggers, per-subscriber AI FinOps (`<= $1.20/mo` `PRO`), and 4-stage validation funnels.
+- `security/89_STUDENT_COACH_PRIVACY_MINOR_SAFETY_AND_TEACHER_ACCESS.md` — Age-tier privacy matrix (`UNDER_13_BLOCKED`, `MINOR_13_TO_17`, `ADULT_18_PLUS`), KVKK/GDPR/Apple `5.1.2(i)` compliance, `ADR-006` enforcement, and revocable aggregate-only parent/teacher links.
+- `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md` — 6 bounded contexts, canonical schemas for `PLANNED V037`–`V041`, REST API contracts, and iOS feature module map under `apps/ios/VerifiedAI/Features/`.
+- `quality/91_LEARNING_OS_PRODUCT_LEARNING_AND_RELEASE_ACCEPTANCE_GATES.md` — 6 release readiness dimensions (`D1`–`D6`), 5 status badges, and owner-only acceptance gates (`Gate 0`–`Gate 5`).
+- `operations/92_LEARNING_OS_ASSUMPTIONS_EXPERIMENTS_AND_EVIDENCE_LEDGER.md` — Epistemic classification taxonomy (`SOURCE_VERIFIED`, `OWNER_TEST_VERIFIED`, `EMPIRICAL_RESEARCH`, `MARKET_BENCHMARK`, `ENGINEERING_ESTIMATE`, `PRODUCT_HYPOTHESIS`), audit of `roadmap/80`, and `EXP-001`–`EXP-008` registry.
+<!-- LEARNING_OS_STRATEGY_V7:END -->

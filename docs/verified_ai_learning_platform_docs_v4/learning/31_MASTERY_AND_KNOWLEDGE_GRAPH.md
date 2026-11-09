@@ -84,3 +84,7 @@ policy version and server order. Its masteryEvidence is ASSISTANCE_ONLY: a futur
 policy may consume it as assistance context, never as independent correctness or automatic positive credit.
 Tutor performs no score/confidence writes and defines no numeric penalties. Opening Tutor, changing depth
 or using accessibility does not generate hint evidence. Denied reveal/unsupported hints do not count as use.
+
+## V7 Learning OS Mastery, Half-Life Decay, and Delayed Retrieval Specification (2026-11-07)
+
+The mathematical equations for `LearnerMasteryPolicy` (`bkt-lite-v1`), exponential half-life memory decay ($R(t) = 2^{-\Delta t / H_s}$), epistemic separation of `INDEPENDENT` vs. `HINT_ASSISTED` vs. `SOLUTION_REVEALED_ASSISTED` evidence, `48h`/`7d`/`21d` delayed retrieval verification checks, and the Transfer Gain Index (`TGI`) are canonically specified in **`learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md`** and **`learning/84_VERIFIED_TWIN_PRACTICE_AND_INDEPENDENT_LEARNING_ENGINE.md`**.

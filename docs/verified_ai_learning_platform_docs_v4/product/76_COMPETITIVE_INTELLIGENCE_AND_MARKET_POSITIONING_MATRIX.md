@@ -111,3 +111,14 @@ Toplam Ağırlıklı Skor = $2\times\text{Öğrenme} + 2\times\text{Farklılaşm
 - **Kullanıcı Deneyimi:** Özellikle TYT/AYT sorularında üstteki sekme değişimiyle:
   - **Sekme 1 (Garantili Adım Adım Çözüm):** Tüm cebirsel ara adımlar.
   - **Sekme 2 (Sınav Hızı / 30 Saniyelik Taktik):** Katsayılar toplamı ($P(1)$), simetri ekseni veya grafik kesişimi ile sınavda zaman kazandıran pratik yol (yine `math-verifier` ile nihai cevabı doğrulanmış olarak).
+
+---
+
+<!-- LEARNING_OS_COMPETITIVE_V7:START -->
+## 7. V7 Learning OS Market & Turkish YKS Competitive Expansion (2026-11-07)
+
+This competitive matrix is extended by **`product/82_LEARNING_OS_MARKET_COMPETITOR_AND_CUSTOMER_RESEARCH.md`**, which adds:
+- Official ÖSYM 2024 and 2025 YKS (`TYT`/`AYT`) applicant and test-taker volume analysis (`EMPIRICAL_RESEARCH`).
+- Detailed tear-down of 8 Turkish exam-prep and coaching competitors (**Kunduz**, **Doping Hafıza**, **Raunt**, **Talebee**, **Koç'a Sor**, **YKS Pilot**, **AI Sınav**, **Pusula YKS**) alongside 8 international math/AI learning platforms (**Photomath**, **Symbolab**, **Brilliant**, **Khanmigo**, **Gauth**, **Mathway**, **Wolfram Alpha**, **ThetaWise**).
+- RevenueCat State of Subscription Apps 2025/2026 Education conversion and retention benchmarks (`MARKET_BENCHMARK`), establishing Verified AI's category wedge as the **Evidence-Grounded Mathematics Learning OS** (`product/81_LEARNING_OS_PRODUCT_VISION_AND_POSITIONING.md`).
+<!-- LEARNING_OS_COMPETITIVE_V7:END -->

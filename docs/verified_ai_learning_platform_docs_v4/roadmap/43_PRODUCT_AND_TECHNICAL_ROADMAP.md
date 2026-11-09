@@ -140,3 +140,21 @@ Per `adr/ADR-011_FOCUSED_V1_COMMERCIAL_LAUNCH_GATE_BEFORE_PHASE_08_13.md` and `r
 3. **Week 3 (Signature Differentiator — `Analyze My Work`):** Ship handwritten student attempt diagnosis (`First Wrong Step` pinpointing via SymPy step-equivalence + concrete counterexamples + Counterfactual Twin drill generation per `learning/79_PEDAGOGICAL_DIAGNOSIS_HANDWRITING_UX_AND_RETENTION_ENGINE.md`).
 4. **Week 4 (50-Student TestFlight Beta & Go/No-Go Gate):** Measure Week-2 retention (`>=30%`), `VERIFIED` yield (`>=85%`), and zero false `VERIFIED` labels before unlocking full Phase 7–11 commercial rollout.
 <!-- FOCUSED_LAUNCH_V6:END -->
+
+<!-- LEARNING_OS_ROADMAP_V7:START -->
+## V7 Learning OS Strategic Expansion & Reconciled Execution Sequence (2026-11-07)
+
+Following the 2026-11-07 repository baseline audit (`e39bafe88ea369f98c96a65497a94462dc79ef33`, migration head `V036`), the product roadmap is aligned around the **Verified AI Learning OS** (`product/81_LEARNING_OS_PRODUCT_VISION_AND_POSITIONING.md` and `roadmap/87_LEARNING_OS_STRATEGIC_PHASE_AND_SPRINT_EXPANSION_PROGRAM.md`):
+
+1. **Stage 0 — Baseline Verification & Commercial Wedge Gate (`ADR-011`):**
+   - Execute owner acceptance for `Sprint 7.2` (`V034`), `Sprint 7.4` (`V036`), and `Sprint 6.10`.
+   - Activate live cloud AI provider adapters (`Sprint 6.2B`) and execute the 150-case `verified-ai-eval-v2` benchmark + 50-student TestFlight Beta (`Sprint 11.9A`).
+2. **Stage 1 — Core Learning OS Loop (Phase 7 Completion — `Sprints 7.5`–`7.10`):**
+   - Complete Automatic Mistake Book & Closure Workflow (`Sprint 7.5`, `PLANNED V037`), BKT-Lite + Half-Life Decay Mastery Engine (`Sprints 7.6`–`7.7`, `PLANNED V038`), 3-Variant Progressive Twin Practice Engine (`Sprint 7.8`), and Unified Mistake Passport Dashboard UX (`Sprint 7.9`).
+3. **Stage 2 — Daily 15-Minute AI Coach & Spaced Retrieval (Phase 8 — `Sprints 8.1`–`8.10`):**
+   - Deliver Deterministic Next-Best-Action (`Sprint 8.1`), Spaced Repetition & 48h/7d/21d Retrieval Checks (`Sprint 8.3`, `PLANNED V039`), Daily `1-2-1` Study Plan (`Sprint 8.4`), Guilt-Free Missed-Day Rebalancing (`Sprint 8.5`), and Weekly Learning Report (`Sprint 8.9`).
+4. **Stage 3 — Exam Readiness & Monetization Loop (Phases 9–10 — `Sprints 9.1`–`10.10`):**
+   - Deliver YKS (`TYT`/`AYT`), `LGS`, `SAT/AP`, and `Calculus I` Exam Blueprints (`Sprint 9.1`, `PLANNED V040`), Calibrated Readiness Score (`Sprint 9.6`), Mistake-Moment Paywall (`Sprint 10.1`), and AI FinOps Budget Enforcement (`Sprint 10.3`).
+5. **Stage 4 — Production Launch & Ecosystem Scale (Phases 11–12):**
+   - Complete App Store Launch (`Sprints 11.1`–`11.12`) and post-launch Parent/Teacher aggregate summary views and Android/Web expansion (`Sprints 12.6`, `12.7`, `12.10`, `PLANNED V041`) only after commercial and retention gates pass (`quality/91_LEARNING_OS_PRODUCT_LEARNING_AND_RELEASE_ACCEPTANCE_GATES.md`).
+<!-- LEARNING_OS_ROADMAP_V7:END -->

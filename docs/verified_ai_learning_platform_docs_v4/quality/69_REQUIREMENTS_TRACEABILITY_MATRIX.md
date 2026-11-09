@@ -255,3 +255,16 @@ Acceptance is tied to the full-run fingerprint in the Sprint 7.3 execution repor
 
 Functional evidence map: Sprint 7.4 matrix A–J. Fresh independent owner runner: scripts/quality/
 sprint_7_4_owner_acceptance.sh --full. Prior owner evidence cannot certify this changed source.
+
+## V7 Learning OS requirements traceability extension (2026-11-07)
+
+The Learning OS strategic specifications (`product/81_LEARNING_OS_PRODUCT_VISION_AND_POSITIONING.md` through `operations/92_LEARNING_OS_ASSUMPTIONS_EXPERIMENTS_AND_EVIDENCE_LEDGER.md`) map existing canonical requirement IDs (`REQ-ATTEMPT-001`, `REQ-MISTAKE-001`, `REQ-MASTERY-001`, `REQ-ADAPT-001`, `REQ-EXAM-001`, `REQ-MON-001`, `REQ-COST-001`, `REQ-PRIV-001`, `REQ-AI-002`, `REQ-UX-001`, `REQ-QA-001`) to concrete Phase 7–12 sprint deliverables (`Sprint 7.5`–`12.10`) and the 6-dimension release acceptance gates in `quality/91_LEARNING_OS_PRODUCT_LEARNING_AND_RELEASE_ACCEPTANCE_GATES.md`:
+
+| Learning OS Domain Pillar | Canonical Specification | Governed Requirement IDs | Target Sprints & Migrations | Current Readiness Status (`2026-11-07`) |
+| :--- | :--- | :--- | :--- | :--- |
+| **Verified Mistake DNA & Mistake Passport** | `learning/83_VERIFIED_MISTAKE_DNA_AND_MISTAKE_PASSPORT_SPECIFICATION.md` | `REQ-ATTEMPT-001`, `REQ-MISTAKE-001`, `REQ-TRUST-001` | `Sprints 7.1`–`7.5`, `7.9` (`V030`–`V036` active; `PLANNED V037`) | `7.1`/`7.3` `LOCAL_ACCEPTANCE_PASSED`; `7.2`/`7.4` `SOURCE_COMPLETE_PENDING_OWNER_TEST`; `7.5`/`7.9` `SPECIFIED_NOT_IMPLEMENTED` |
+| **Verified Twin Practice & Independent Learning** | `learning/84_VERIFIED_TWIN_PRACTICE_AND_INDEPENDENT_LEARNING_ENGINE.md` | `REQ-MISTAKE-001`, `REQ-MASTERY-001`, `REQ-VERIFY-001` | `Sprint 6.7B`, `Sprint 7.8`, `Sprint 8.2` (`V031` active) | Bounded `V031` twin engine `SOURCE_COMPLETE`; 3-variant ladder `SPECIFIED_NOT_IMPLEMENTED` |
+| **Personal AI Math Coach & Daily 15-Min Plan** | `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md` | `REQ-ADAPT-001`, `REQ-UX-001`, `REQ-COST-001` | `Sprints 8.1`, `8.3`, `8.4`, `8.5`, `8.6`, `8.9` (`PLANNED V039`) | `SPECIFIED_NOT_IMPLEMENTED` (gated by `ADR-011`) |
+| **Delayed Retrieval & Mastery Evaluation** | `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md` | `REQ-MASTERY-001`, `REQ-EVAL-001`, `REQ-QA-001` | `Sprints 7.6`, `7.7`, `7.10`, `8.3` (`V031` active; `PLANNED V038`) | Initial `bkt-lite-v1` `SOURCE_COMPLETE`; `48h`/`7d`/`21d` retrieval checks `SPECIFIED_NOT_IMPLEMENTED` |
+| **Exam Readiness & Post-Mock Prioritization** | `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md` | `REQ-EXAM-001`, `REQ-ADAPT-001` | `Sprints 9.1`, `9.6`, `9.7` (`PLANNED V040`) | `SPECIFIED_NOT_IMPLEMENTED` (gated by `ADR-011`) |
+| **Minor Safety, Privacy & Parent/Teacher Access** | `security/89_STUDENT_COACH_PRIVACY_MINOR_SAFETY_AND_TEACHER_ACCESS.md` | `REQ-PRIV-001`, `REQ-AI-002`, `REQ-AUTH-001` | `Sprint 3.7`, `Sprints 11.5`, `12.6`, `12.7` (`PLANNED V041`) | Core privacy lifecycle `SOURCE_COMPLETE`; parent/teacher links `SPECIFIED_NOT_IMPLEMENTED` |

@@ -67,11 +67,9 @@ The platform intentionally separates product semantics, learner state, AI-genera
 
 ### Backend files to review/create
 
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/domain/**`
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/application/**`
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/api/**`
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/infrastructure/**`
-- corresponding module tests and architecture tests.
+- `services/api/src/main/java/com/verifiedai/studyplan/**`
+- `services/api/src/main/resources/db/migration/platform/V043__daily_coach_sessions.sql` *(PLANNED)*
+- corresponding module tests and `ModularityTests`.
 
 ## iOS implementation work
 
@@ -85,9 +83,7 @@ The platform intentionally separates product semantics, learner state, AI-genera
 
 ### iOS files to review/create
 
-- `apps/ios/VerifiedLearning/Features/<Feature>/Domain/**`
-- `apps/ios/VerifiedLearning/Features/<Feature>/Data/**`
-- `apps/ios/VerifiedLearning/Features/<Feature>/Presentation/**`
+- `apps/ios/VerifiedAI/Features/Home/**` *(replaces `HomePlaceholderView.swift` with `CoachHubView.swift`)*
 - feature unit tests, accessibility coverage, and critical UI-flow tests.
 
 ## Data and persistence work
@@ -412,3 +408,70 @@ Attach or persist links/artifacts for:
 
 Codex must implement this sprint in small reviewable slices, re-reading the highest-precedence semantic documents before changing domain/API/data contracts. It must not “simplify” the architecture by moving rules into prompts, client code, provider SDK adapters, generic helpers, or ungoverned ML scripts.
 <!-- PRODUCTION_EXECUTION_V3:END -->
+
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:START -->
+# Learning OS Production Implementation Specification v1 (`2026-11-07`)
+
+## 1. Sprint Metadata & Status
+- **Sprint ID:** `SPRINT_8.4`
+- **Canonical Title:** Daily 15-Minute Personal AI Mathematics Coach Hub & Study Plan Generation
+- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011)`
+- **Primary Spec Reference:** `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md` (Screens 1 & 8)
+
+## 2. Strategic Learning OS Objective & User Value
+Replaces `apps/ios/VerifiedAI/Features/Home/HomePlaceholderView.swift` with the **Learning OS Daily Coach Hub (`CoachHubView.swift`)**, assembling a deterministic 10–15 minute daily mission consisting of:
+1. **Block 1 (4–5 min):** Top Active Exam Trap Repair + 1 Verified Twin (`Sprint 8.1` + `8.2`).
+2. **Block 2 (4–5 min):** 2 Half-Life Spaced Retention Twins (`Sprint 8.3`).
+3. **Block 3 (3–5 min):** 1 High-ROI Exam Synthesis Item (`H-03`).
+
+## 3. Entry Gate & Preconditions
+- `ADR-011` `GO` decision recorded; `Sprints 8.1–8.3` accepted.
+
+## 4. Domain Invariants & Coaching Rules
+1. **Deterministic Coach Authority (`INV-COACH-001`):** `DailyCoachSessionService` selects all 3 mission blocks 100% deterministically in Java; LLM (`AiCapability.EXPLAIN`) is optional and restricted to generating a 1-sentence localized briefing with a deterministic template fallback.
+2. **Busy-Day Downshift Mode (`5-Min Mini Streak`):** Allows the learner to switch to a 1-twin 5-minute mission on exam-heavy school days without breaking their verified independent streak.
+
+## 5. Owning Spring Modulith Backend Modules & Classes
+- `com.verifiedai.studyplan`: `DailyCoachSessionService.java`, `DailyCoachSession.java`, `DailyCoachTask.java`, `DailyCoachController.java`.
+
+## 6. Python Math Verifier Impact
+- Pre-warms twin items for Today's 3 mission tasks.
+
+## 7. Database Migration & Persistence Contract (`PLANNED V043`)
+- **Migration File:** `services/api/src/main/resources/db/migration/platform/V043__daily_coach_sessions.sql` *(PLANNED)*
+- **Tables:** `daily_coach_sessions` (`id`, `user_id`, `local_date`, `budget_minutes`, `status`, `completed_tasks_count`, `total_tasks_count`, `briefing_text`, `created_at`), `daily_coach_tasks` (`id`, `session_id`, `task_order`, `task_type`, `target_skill_code`, `target_mistake_code`, `assigned_twin_id`, `status`, `completed_at`). Unique constraint on `(user_id, local_date)`.
+
+## 8. REST API Contracts (`CNT-LOS-06`)
+- `GET /v1/coach/today-summary` (`daily-coach-v1`) and `POST /v1/coach/missions/{id}/complete`.
+
+## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
+- Replaces `apps/ios/VerifiedAI/Features/Home/HomePlaceholderView.swift` with `CoachHubView.swift` and `DailyStudyPlanView.swift` (`<200ms` cached load).
+
+## 10. AI Capability & Unit Economics Guardrail
+- Plan assembly costs **`$0.00` LLM tokens**.
+
+## 11. Privacy, Safety & Compliance
+- Purged on account deletion via `StudyPlanPrivacyLifecycleContributor`.
+
+## 12. Telemetry & Observability
+- Emits `coach_daily_mission_started`, `coach_daily_mission_completed`, and `coach_busy_day_downshift_used`.
+
+## 13. Feature Flags & Rollback Plan
+- `verifiedai.coach.home-hub-enabled: false` (gracefully falls back to solver home view).
+
+## 14. Automated Test Matrix (Categories A–F)
+- Idempotency test on `(user_id, local_date)` concurrent `GET /v1/coach/today-summary` calls; iOS UI tests for Cold-Start, Active Mission, Offline, and Completed states.
+
+## 15. Owner-Only Acceptance Command
+- `bash scripts/quality/sprint_8_4_owner_acceptance.sh --full`
+
+## 16. Explicit Non-Goals
+- Does not introduce open-ended unanchored chat on the Home screen.
+
+## 17. Exit Gate & Downstream Consumers
+- Unlocks `Sprint 8.5` (Missed-Day Recovery), `Sprint 8.6` (Triggered Micro-Lessons), and `Sprint 8.9` (Weekly Learning Report).
+
+## 18. Canonical Cross-References
+- `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md`
+- `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md`
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:END -->

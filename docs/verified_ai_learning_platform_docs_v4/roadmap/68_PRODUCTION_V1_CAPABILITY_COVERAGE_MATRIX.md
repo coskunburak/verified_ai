@@ -156,3 +156,11 @@ Owner evidence: 185 iOS cases, 217 prior backend passes + one focused repair (21
 Status TARGETED_RECONCILIATION_PASSED; localAcceptance PENDING_FULL_CURRENT_SOURCE_RUN because
 this is cross-run evidence without a prior source-content snapshot. Hosted CI NOT_VERIFIED,
 shared upgrades BLOCKED and production NOT_AUTHORIZED. See the Sprint 6.6 execution report.
+
+## V7 Learning OS capability reconciliation — 2026-11-07
+
+At repository baseline `e39bafe88ea369f98c96a65497a94462dc79ef33` (migration head `V036`), the Learning Intelligence and Adaptive Learning capabilities (`CAP-ATTEMPT-001`, `CAP-ATTEMPT-002`, `CAP-MISTAKE-001`, `CAP-MISTAKE-002`, `CAP-MASTERY-001`, `CAP-MASTERY-002`, `CAP-ADAPT-001`, `CAP-ADAPT-002`, `CAP-ADAPT-003`, `CAP-EXAM-001`, `CAP-EXAM-002`) are governed by the Learning OS specifications (`learning/83_VERIFIED_MISTAKE_DNA_AND_MISTAKE_PASSPORT_SPECIFICATION.md`, `learning/84_VERIFIED_TWIN_PRACTICE_AND_INDEPENDENT_LEARNING_ENGINE.md`, `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md`, `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md`, and `roadmap/87_LEARNING_OS_STRATEGIC_PHASE_AND_SPRINT_EXPANSION_PROGRAM.md`):
+
+- **Attempt & Mistake Intelligence (`CAP-ATTEMPT-001`, `CAP-ATTEMPT-002`, `CAP-MISTAKE-001`):** Sprints `7.1` (`V033`) and `7.3` (`V035`) achieved `LOCAL_ACCEPTANCE_PASSED`; Sprints `7.2` (`V034`) and `7.4` (`V036`) are `SOURCE_COMPLETE_PENDING_OWNER_TEST`.
+- **Mistake Book, Decay Mastery & Twin Practice (`CAP-MISTAKE-002`, `CAP-MASTERY-001`, `CAP-MASTERY-002`):** Bounded schema/domain foundations exist in `V031` (`learner_mistake_events`, `learner_skill_mastery`, `counterfactual_twin_drills`); full Mistake Closure (`OPEN_ACTIVE` → `MASTERED_CLOSED`), delayed retrieval verification (`48h`/`7d`/`21d`), and 3-variant progressive twin ladders are specified in Sprints `7.5`–`7.10` (`PLANNED V037`–`V038`).
+- **Daily Coach, Exam Readiness & Commercialization (`CAP-ADAPT-001`..`003`, `CAP-EXAM-001`..`002`, `CAP-MON-001`..`002`):** Upgraded to 18-section production specifications across Phases 8–12 (`PLANNED V039`–`V041`), gated by `ADR-011` and `quality/91_LEARNING_OS_PRODUCT_LEARNING_AND_RELEASE_ACCEPTANCE_GATES.md`.

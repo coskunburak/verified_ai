@@ -150,3 +150,15 @@ Free, Pro and Pro+ are semantic tiers. Exact quotas/prices are configuration, no
 - Free/paid quotas may limit expensive capabilities but may not convert uncertainty into false certainty.
 - Future proprietary models must preserve identical user-facing contracts or introduce explicitly versioned behavior.
 <!-- HYBRID_AI_STRATEGY_V3:END -->
+
+<!-- LEARNING_OS_FEATURE_RULES_V7:START -->
+## V7 Learning OS product rules and feature catalog extension (2026-11-07)
+
+The feature catalog is extended into the **Verified AI Learning OS** (`product/81_LEARNING_OS_PRODUCT_VISION_AND_POSITIONING.md`):
+
+1. **Evidence-Grounded Mistake Passport (`F05` / `learning/83_VERIFIED_MISTAKE_DNA_AND_MISTAKE_PASSPORT_SPECIFICATION.md`):** Mistake cards (`OPEN_ACTIVE`, `REMEDIATION_IN_PROGRESS`, `STABILIZING`, `MASTERED_CLOSED`, `RELAPSED`) are populated strictly from verified attempt diagnoses (`V030`–`V036`, `PLANNED V037`).
+2. **Progressive 3-Variant Twin Practice (`F04` / `learning/84_VERIFIED_TWIN_PRACTICE_AND_INDEPENDENT_LEARNING_ENGINE.md`):** Remediation uses Variant A (Isomorphic Trap Twin), Variant B (Structural Twin), and Variant C (Exam Synthesis Twin) with a mandatory 60-Second Independent Verification Protocol.
+3. **Personal AI Mathematics Coach (`learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md`):** Composes a deterministic 15-minute `1-2-1` daily study session (`1` Mistake Closure + `2` Spaced Retrieval Drills + `1` Exam Synthesis Challenge) with guilt-free missed-day rebalancing.
+4. **Anti-Illusion Mastery Rule (`learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md`):** Passive solution viewing (`SOLUTION_REVEALED_ASSISTED`) never increases mastery (`\Delta P(L) = 0.0`). Only `INDEPENDENT` and bounded `HINT_ASSISTED` solves update BKT-Lite mastery and half-life decay.
+5. **Anti-Bloat Guardrails:** Social feeds, public leaderboards, unverified AI essay chat, and cosmetic avatar stores are permanently out of scope.
+<!-- LEARNING_OS_FEATURE_RULES_V7:END -->

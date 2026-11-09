@@ -359,3 +359,71 @@ Attach or persist links/artifacts for:
 
 Codex must implement this sprint in small reviewable slices, re-reading the highest-precedence semantic documents before changing domain/API/data contracts. It must not “simplify” the architecture by moving rules into prompts, client code, provider SDK adapters, generic helpers, or ungoverned ML scripts.
 <!-- PRODUCTION_EXECUTION_V3:END -->
+
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:START -->
+# Learning OS Production Implementation Specification v1 (`2026-11-07`)
+
+## 1. Sprint Metadata & Status
+- **Sprint ID:** `SPRINT_8.1`
+- **Canonical Title:** Deterministic Next-Best-Action Recommendation Engine & High-ROI Topic Allocator
+- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011)`
+- **Primary Spec Reference:** `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md` & `learning/83_VERIFIED_MISTAKE_DNA_AND_MISTAKE_PASSPORT_SPECIFICATION.md`
+
+## 2. Strategic Learning OS Objective & User Value
+Computes the learner's deterministic **Next-Best-Action (`NBA`)** recommendation queue by combining severity-weighted mistake propensity $P_{u,m}$ (`learning/83`), skill memory retention decay $R_{u,s}(t)$ (`learning/86`), prerequisite bottleneck edges (`Sprint 7.8`), and target exam topic weights $w_{E,s}$ (`H-03`).
+
+## 3. Entry Gate & Preconditions
+- **Hard Gate (`ADR-011`):** Focused Commercial Wedge (`Sprint 6.2B` + `Sprint 11.9A` 50-student TestFlight cohort) must record an owner `GO` decision.
+- Phase 07 (`Sprints 7.1–7.10`) accepted.
+
+## 4. Domain Invariants & Mathematical Ranking Rules
+1. **Deterministic Priority Formula (`INV-COACH-001`):**
+   $$\text{Score}_{\text{NBA}}(u, s, m) = 0.45 \cdot P_{u,m} + 0.30 \cdot \max(0,\; 0.75 - R_{u,s}(t)) \cdot 100 + 0.25 \cdot \text{ROI}_{E}(u, s)$$
+   where $\text{ROI}_{E}(u, s) = w_{E,s} \cdot (1 - I_{u,s})$ is the expected exam net gain per study hour.
+2. **Prerequisite Bottleneck Override:** If skill $s$ has an active prerequisite bottleneck $s_{\text{pre}} \to s$ with $M_{u,s_{\text{pre}}} < 0.50$, the recommender ranks $s_{\text{pre}}$ ahead of $s$.
+3. **Explainable Recommendation Provenance:** Every recommendation persists a structured `rationale_code` (`ACTIVE_RECURRING_TRAP`, `RETENTION_HALF_LIFE_DUE`, `PREREQUISITE_REPAIR`, `HIGH_EXAM_NET_ROI`).
+
+## 5. Owning Spring Modulith Backend Modules & Classes
+- `com.verifiedai.studyplan`: `NextBestActionRecommendationEngine.java`, `LearnerRecommendation.java`, `RecommendationController.java`, `StudyPlanPrivacyLifecycleContributor.java`.
+
+## 6. Python Math Verifier Impact
+- None (`100%` deterministic Java calculation).
+
+## 7. Database Migration & Persistence Contract (`PLANNED V040`)
+- **Migration File:** `services/api/src/main/resources/db/migration/platform/V040__next_best_action_recommendations.sql` *(PLANNED)*
+- **Table:** `learner_recommendations` (`id`, `user_id`, `recommendation_type`, `target_skill_code`, `target_mistake_code`, `priority_score`, `rationale_code`, `rationale_params_json`, `status`, `expires_at`, `created_at`).
+
+## 8. REST API Contracts (`CNT-LOS-06`)
+- `GET /v1/study-plan/recommendations` returning ranked next-best actions with localized rationale strings.
+
+## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
+- Powers the recommendation cards inside `apps/ios/VerifiedAI/Features/Home/` (`CoachHubView`).
+
+## 10. AI Capability & Unit Economics Guardrail
+- **`$0.00` LLM token cost** (100% rule/math ranker).
+
+## 11. Privacy, Safety & Compliance
+- `StudyPlanPrivacyLifecycleContributor` purges `learner_recommendations` on account deletion.
+
+## 12. Telemetry & Observability
+- Emits `recommendation_generated`, `recommendation_accepted`, and `recommendation_dismissed`.
+
+## 13. Feature Flags & Rollback Plan
+- `verifiedai.studyplan.nba-enabled: false`.
+
+## 14. Automated Test Matrix (Categories A–F)
+- Deterministic reproducibility tests verifying identical input states produce identical ranked outputs and rationale codes.
+
+## 15. Owner-Only Acceptance Command
+- `bash scripts/quality/sprint_8_1_owner_acceptance.sh --full`
+
+## 16. Explicit Non-Goals
+- Does not use black-box ML collaborative filtering (reserved for `Phase 13` `Sprint 13.8`).
+
+## 17. Exit Gate & Downstream Consumers
+- Unlocks `Sprint 8.2` (Adaptive Twin Selection/Generation) and `Sprint 8.4` (Daily 15-Minute Coach Plan).
+
+## 18. Canonical Cross-References
+- `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md`
+- `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md`
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:END -->

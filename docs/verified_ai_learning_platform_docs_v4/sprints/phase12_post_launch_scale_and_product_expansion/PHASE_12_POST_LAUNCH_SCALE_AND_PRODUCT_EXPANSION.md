@@ -71,3 +71,12 @@ The phase exit review must include:
 ## 2. High-LTV B2B2C "Özel Ders / Dershane" Micro-Cohort Pack (`SPRINT_12.6`)
 - Before building heavy K-12 enterprise district integrations, Phase 12 targets **private math tutors (özel ders öğretmenleri) and boutique YKS coaching studios**: a tutor can link 10–30 students and view an aggregated weekly **Class Mistake Passport & Domain Trap Heatmap** without manual grading.
 <!-- PHASE_PRODUCTION_V6:END -->
+
+<!-- PHASE_PRODUCTION_V7_LEARNING_OS:START -->
+# Phase Production Execution Contract v7 — Consent-Gated Tutor Co-Pilot, International Exams & Android Parity (`2026-11-07`)
+
+## 1. Learning OS Expansion Contracts (`security/89` & `architecture/90`)
+- **`SPRINT_12.6` & `SPRINT_12.7` (Teacher/Tutor & Parent/Guardian Experience):** Strictly governed by `security/89_STUDENT_COACH_PRIVACY_MINOR_SAFETY_AND_TEACHER_ACCESS.md` (`CNT-LOS-13` `coach-link-v1`, **`PLANNED V049__coach_student_links.sql`**). Linked tutors and parents see aggregate Skill Mastery, Conquered Traps, and Weekly Readiness only after student/parent double-opt-in, and **never** raw `TutorTurn` chat messages, uncropped camera photos, or minute-by-minute activity timestamps, with `<200ms` 1-tap student revocation.
+- **`SPRINT_12.8` (International Exam Verticals):** Adds declarative `ExamDefinition` packs for `INTL_IB_MATH_AA_HL`, `INTL_AP_CALC_BC`, and `INTL_SAT_MATH`.
+- **`SPRINT_12.10` (Native Android Kotlin/Jetpack Compose Parity):** Builds `apps/android/` consuming the exact same 13 domain contracts (`CNT-LOS-01..13`), `MathVisualizationPayload` (`ADR-010`), and cross-platform golden fixtures as `apps/ios/VerifiedAI/`.
+<!-- PHASE_PRODUCTION_V7_LEARNING_OS:END -->

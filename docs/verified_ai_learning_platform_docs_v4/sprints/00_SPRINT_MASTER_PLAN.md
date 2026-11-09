@@ -276,3 +276,18 @@ Phase overview: `sprints/phase12_post_launch_scale_and_product_expansion/PHASE_1
 
 Phase 13 may be skipped indefinitely if evidence shows APIs/deterministic routes remain the superior solution.
 <!-- HYBRID_AI_STRATEGY_V3:END -->
+
+<!-- LEARNING_OS_STRATEGY_V7:START -->
+# Sprint Program v7 — Learning OS Strategic Reconciliation & Implementation Baseline (2026-11-07)
+
+As of commit `e39bafe88ea369f98c96a65497a94462dc79ef33`:
+- **Active Flyway Migration Head (`SOURCE_VERIFIED`):** `V036__add_attempt_mistake_classifications.sql` (`V001`–`V023` and `V027`–`V036` exist on disk; `V024`–`V026` were historical commercial-wedge placeholders superseded by `V030`–`V036`). All new Phase 7–12 migrations start at `PLANNED V037+`.
+- **Phase 7 Status (`SOURCE_VERIFIED` / `OWNER_TEST_VERIFIED`):**
+  - `Sprint 7.1`: `LOCAL_ACCEPTANCE_PASSED` (`V033`).
+  - `Sprint 7.2`: `SOURCE_COMPLETE_PENDING_OWNER_TEST` (`V034`).
+  - `Sprint 7.3`: `LOCAL_ACCEPTANCE_PASSED` (owner run `20261107-025110-XrMKJK`, `V035`).
+  - `Sprint 7.4`: `SOURCE_COMPLETE_PENDING_OWNER_TEST` (`V036`).
+  - `Sprint 7.5`–`7.10`: Upgraded to full 18-section `LEARNING_OS_PRODUCTION_SPEC_V1` contracts targeting real `com.verifiedai.*` and `apps/ios/VerifiedAI/Features/*` paths.
+- **Phase 8–12 Governance (`ADR-011`):**
+  - Broad Phase 8–12 implementation remains gated by the Focused Commercial Wedge (`Sprint 6.2B`, `Sprint 11.9A` 50-student TestFlight Beta Go/No-Go Gate) and owner acceptance of Sprints `7.2` and `7.4`, as detailed in `roadmap/87_LEARNING_OS_STRATEGIC_PHASE_AND_SPRINT_EXPANSION_PROGRAM.md` and `quality/91_LEARNING_OS_PRODUCT_LEARNING_AND_RELEASE_ACCEPTANCE_GATES.md`.
+<!-- LEARNING_OS_STRATEGY_V7:END -->

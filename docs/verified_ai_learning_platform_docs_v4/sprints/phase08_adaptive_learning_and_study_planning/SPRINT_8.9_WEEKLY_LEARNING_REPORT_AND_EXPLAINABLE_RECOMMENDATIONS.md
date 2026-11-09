@@ -66,9 +66,8 @@ The platform intentionally separates product semantics, learner state, AI-genera
 
 ### iOS files to review/create
 
-- `apps/ios/VerifiedLearning/Features/<Feature>/Domain/**`
-- `apps/ios/VerifiedLearning/Features/<Feature>/Data/**`
-- `apps/ios/VerifiedLearning/Features/<Feature>/Presentation/**`
+- `apps/ios/VerifiedAI/Features/Home/**`
+- `apps/ios/VerifiedAI/Features/Account/**`
 - feature unit tests, accessibility coverage, and critical UI-flow tests.
 
 ## AI / verification / evaluation work
@@ -383,3 +382,68 @@ Attach or persist links/artifacts for:
 
 Codex must implement this sprint in small reviewable slices, re-reading the highest-precedence semantic documents before changing domain/API/data contracts. It must not “simplify” the architecture by moving rules into prompts, client code, provider SDK adapters, generic helpers, or ungoverned ML scripts.
 <!-- PRODUCTION_EXECUTION_V3:END -->
+
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:START -->
+# Learning OS Production Implementation Specification v1 (`2026-11-07`)
+
+## 1. Sprint Metadata & Status
+- **Sprint ID:** `SPRINT_8.9`
+- **Canonical Title:** Weekly Learning Digest & Privacy-Safe 1-Click Tutor/Parent PDF Share Packet
+- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011)`
+- **Primary Spec Reference:** `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md` (Screen 11), `security/89_STUDENT_COACH_PRIVACY_MINOR_SAFETY_AND_TEACHER_ACCESS.md`, and `product/81_LEARNING_OS_PRODUCT_VISION_AND_POSITIONING.md` (`H-06`)
+
+## 2. Strategic Learning OS Objective & User Value
+Generates the learner's deterministic **Weekly Verified Progress Report** and enables the **1-Click Tutor/Parent Share Packet (`Özel Ders Hocamla / Ailemle Paylaş`)** — a privacy-safe 1-page PDF rendered natively on-device (`ImageRenderer` / `PDFKit`) that summarizes Conquered Traps, Active Traps, Independent Competence growth, and the top 3 recommended study topics for the learner's next private tutoring lesson.
+
+## 3. Entry Gate & Preconditions
+- `ADR-011` `GO` decision recorded; `Sprints 8.1–8.6` accepted.
+
+## 4. Domain Invariants & Privacy Rules (`G-PRIV-03`)
+1. **Strict Field Whitelist in Share Packet (`security/89` Section 5.1):** The exported `weekly-digest-v1` share payload physically excludes raw `TutorTurn` chat transcripts, uncropped camera photos, email/phone numbers, and exact time-of-day activity timestamps.
+2. **On-Device PDF Rendering (`OD-ARCH-01`):** PDF rendering runs on-device in SwiftUI/Compose from the signed JSON digest (`$0.00` cloud object storage cost and zero public URL exposure).
+
+## 5. Owning Spring Modulith Backend Modules & Classes
+- `com.verifiedai.analytics`: `WeeklyLearnerDigestService.java`, `WeeklyLearnerDigest.java`, `WeeklyReportController.java`.
+
+## 6. Python Math Verifier Impact
+- None (`100%` deterministic SQL/Java aggregation).
+
+## 7. Database Migration & Persistence Contract (`PLANNED V045`)
+- **Migration File:** `services/api/src/main/resources/db/migration/platform/V045__weekly_learner_digests.sql` *(PLANNED)*
+- **Table:** `weekly_learner_digests` (`id`, `user_id`, `week_iso`, `verified_attempts_count`, `independent_twins_passed`, `conquered_traps_delta`, `digest_payload_json`, `created_at`). Unique constraint on `(user_id, week_iso)`.
+
+## 8. REST API Contracts (`CNT-LOS-09`)
+- `GET /v1/reports/weekly/{weekIso}` (`weekly-digest-v1`).
+
+## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
+- `apps/ios/VerifiedAI/Features/Account/Presentation/WeeklyProgressReportView.swift` + `TutorSharePacketPDFRenderer.swift`.
+
+## 10. AI Capability & Unit Economics Guardrail
+- **`$0.00` LLM token cost** and **`$0.00` S3 storage cost**.
+
+## 11. Privacy, Safety & Compliance
+- Verified by `G-PRIV-03` schema assertion test (`security/89`); purged on account deletion via `AnalyticsPrivacyLifecycleContributor`.
+
+## 12. Telemetry & Observability
+- Emits `weekly_report_viewed` and `weekly_tutor_packet_exported` (`EXP-LOS-06` viral loop metric).
+
+## 13. Feature Flags & Rollback Plan
+- `verifiedai.analytics.weekly-digest-enabled: false`.
+
+## 14. Automated Test Matrix (Categories A–F)
+- Security contract test asserting zero chat/photo/PII fields in `/v1/reports/weekly/{weekIso}`; iOS PDF renderer snapshot test.
+
+## 15. Owner-Only Acceptance Command
+- `bash scripts/quality/sprint_8_9_owner_acceptance.sh --full`
+
+## 16. Explicit Non-Goals
+- Live multi-student B2B2C teacher portal accounts are deferred to `Sprint 12.6` / `12.7`.
+
+## 17. Exit Gate & Downstream Consumers
+- Unlocks `Sprint 8.10` (Phase 8 Exit Gate) and feeds `EXP-MON-03` organic tutor referral attribution.
+
+## 18. Canonical Cross-References
+- `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md`
+- `security/89_STUDENT_COACH_PRIVACY_MINOR_SAFETY_AND_TEACHER_ACCESS.md`
+- `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md`
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:END -->

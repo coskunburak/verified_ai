@@ -144,3 +144,7 @@ training exclusion. Publication is under the account/source lock shared with del
 constraints and append-only guards prevent cross-owner evidence attachment or rewriting. Public input
 cannot submit authoritative labels, probabilities or user IDs. Export/deletion include V036. Metrics use
 only bounded outcome/policy/taxonomy/authority tags; no raw math, images, prompts or evidence IDs.
+
+## V7 Learning OS Student Coach Privacy, Minor Safety & Parent/Teacher Access (2026-11-07)
+
+The privacy and safety rules for longitudinal Mistake Passport records, Daily Coach study plans, age-tier gating (`UNDER_13_BLOCKED`, `MINOR_13_TO_17`, `ADULT_18_PLUS`), KVKK/GDPR/Apple App Store Guideline `5.1.2(i)` compliance, and revocable aggregate-only parent/teacher progress sharing (`PLANNED V041`, where raw handwritten photos and raw tutor chat transcripts are never exposed to linked viewers) are canonically specified in **`security/89_STUDENT_COACH_PRIVACY_MINOR_SAFETY_AND_TEACHER_ACCESS.md`**. Every new Phase 7–12 table (`PLANNED V037`–`V041`) must register an `AccountPrivacyLifecycleContributor` for complete export and deletion cascade before sprint exit.

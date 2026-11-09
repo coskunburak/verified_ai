@@ -67,11 +67,11 @@ The platform intentionally separates product semantics, learner state, AI-genera
 
 ### Backend files to review/create
 
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/domain/**`
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/application/**`
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/api/**`
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/infrastructure/**`
-- corresponding module tests and architecture tests.
+- `services/api/src/main/java/com/verifiedai/exam/**`
+- `services/api/src/main/java/com/verifiedai/mastery/**`
+- `services/api/src/main/java/com/verifiedai/mistake/**`
+- `services/api/src/main/resources/db/migration/platform/V047__exam_readiness_projections.sql` *(PLANNED)*
+- corresponding module tests and `ModularityTests`.
 
 ## Data and persistence work
 
@@ -395,3 +395,71 @@ Attach or persist links/artifacts for:
 
 Codex must implement this sprint in small reviewable slices, re-reading the highest-precedence semantic documents before changing domain/API/data contracts. It must not “simplify” the architecture by moving rules into prompts, client code, provider SDK adapters, generic helpers, or ungoverned ML scripts.
 <!-- PRODUCTION_EXECUTION_V3:END -->
+
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:START -->
+# Learning OS Production Implementation Specification v1 (`2026-11-07`)
+
+## 1. Sprint Metadata & Status
+- **Sprint ID:** `SPRINT_9.6`
+- **Canonical Title:** Exam Readiness Model, 90% Credible-Interval Net Projection ($\widehat{\text{Net}}_{u,E}$), and Active-Trap Penalty Semantics
+- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011)`
+- **Primary Spec Reference:** `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md` (Quantity 5) & `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md` (Screen 9)
+
+## 2. Strategic Learning OS Objective & User Value
+Computes the learner's **Projected Exam Net Score Interval ($[\text{Net}_{\text{low}}, \text{Net}_{\text{high}}]$)** and **"Nets Lost to Active Traps"** metric (`CNT-LOS-11`) by combining time-decayed skill retention $R_{u,s}(t)$, active Mistake DNA propensities $\theta_{u,m}$, and timed pacing factor $\tau_{u,E}$, while strictly prohibiting fake single-number precision when curriculum evidence is sparse (`INV-EXAM-001`).
+
+## 3. Entry Gate & Preconditions
+- `ADR-011` `GO` decision recorded; `Sprints 9.1–9.5` accepted.
+
+## 4. Domain Invariants & Mathematical Equations (`learning/86` Section 4.5)
+1. **Expected Skill Exam Success Probability:**
+   $$p_{u,s}^{\text{exam}}(t) = R_{u,s}(t) \cdot \left(1 - \sum_{m \in \text{Traps}(s)} \beta_m \theta_{u,m}\right) \cdot \tau_{u,E}$$
+2. **Expected Net Score & 90% Credible Interval:**
+   $$\widehat{\text{Net}}_{u,E}^{\text{mid}}(t) = \sum_{s \in E : p_{u,s}^{\text{exam}} \ge 0.30} w_{E,s} \cdot \left(p_{u,s}^{\text{exam}}(t) - 0.25 \cdot (1 - p_{u,s}^{\text{exam}}(t))\right)$$
+   $$\left[\widehat{\text{Net}}_{u,E}^{\text{low}},\; \widehat{\text{Net}}_{u,E}^{\text{high}}\right] = \widehat{\text{Net}}_{u,E}^{\text{mid}} \pm 1.645 \sqrt{\sum_{s \in E} w_{E,s}^2 \sigma_{u,s}^2(C_{u,s})}$$
+3. **Sparse Evidence Guard:** When mean epistemic confidence $\bar{C}_{u,E} < 0.25$, `confidenceTier = 'PRELIMINARY'` and the UI prompts a 10-question diagnostic rather than claiming narrow net precision.
+
+## 5. Owning Spring Modulith Backend Modules & Classes
+- `com.verifiedai.exam`: `ExamReadinessProjectionService.java`, `ExamReadinessProjection.java`, `ExamReadinessController.java`.
+
+## 6. Python Math Verifier Impact
+- None (`100%` deterministic psychometric calculation in Java).
+
+## 7. Database Migration & Persistence Contract (`PLANNED V047`)
+- **Migration File:** `services/api/src/main/resources/db/migration/platform/V047__exam_readiness_projections.sql` *(PLANNED)*
+- **Table:** `exam_readiness_projections` (`id`, `user_id`, `exam_code`, `exam_version`, `estimated_net_low`, `estimated_net_mid`, `estimated_net_high`, `net_lost_to_traps`, `epistemic_confidence`, `confidence_tier`, `high_roi_allocations_json`, `computed_at`).
+
+## 8. REST API Contracts (`CNT-LOS-11`)
+- `GET /v1/exams/readiness?examCode={TR_YKS_TYT_MATH|TR_YKS_AYT_MATH|...}` (`exam-readiness-v1`).
+
+## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
+- Renders Screen 9 (`YKS / Exam Readiness & Net-Gain Simulator Hub`) in `apps/ios/VerifiedAI/Features/Exam/` and `Features/Home/`.
+
+## 10. AI Capability & Unit Economics Guardrail
+- **`$0.00` LLM token cost.**
+
+## 11. Privacy, Safety & Compliance
+- Purged on account deletion via `ExamPrivacyLifecycleContributor`.
+
+## 12. Telemetry & Observability
+- Emits `exam_readiness_viewed` (`exam_code`, `confidence_tier`, `net_lost_to_traps`).
+
+## 13. Feature Flags & Rollback Plan
+- `verifiedai.exam.readiness-enabled: false`.
+
+## 14. Automated Test Matrix (Categories A–F)
+- Property-based tests verifying interval width narrows monotonically as `evidence_count` increases and `net_lost_to_traps` decreases when recurring mistakes are remediated.
+
+## 15. Owner-Only Acceptance Command
+- `bash scripts/quality/sprint_9_6_owner_acceptance.sh --full`
+
+## 16. Explicit Non-Goals
+- Never uses an LLM prompt to guess or estimate exam scores.
+
+## 17. Exit Gate & Downstream Consumers
+- Unlocks `Sprint 9.7` (Post-Assessment Weak-Area & Net-Gain Prioritization).
+
+## 18. Canonical Cross-References
+- `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md`
+- `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md`
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:END -->

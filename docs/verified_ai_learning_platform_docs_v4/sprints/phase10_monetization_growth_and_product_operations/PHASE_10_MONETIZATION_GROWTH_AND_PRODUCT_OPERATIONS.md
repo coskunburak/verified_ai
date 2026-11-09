@@ -75,3 +75,13 @@ All Phase 10 sprints must enforce the V6 server-authoritative unit economics mod
 - **Mistake-Moment Paywall (`SPRINT_7.0A` / `SPRINT_10.3`):** Paywalls are never shown before the user experiences value. The primary paywall triggers **after** `Analyze My Work` pinpoints the learner's recurring mistake pattern and shows how many exam nets (`+2.5 TYT/AYT Net`) they are losing to that habit.
 - **"Arkadaşına Tuzak / İkiz Soru Gönder" Viral Loop (`SPRINT_10.4` / `F29`):** Allows a learner who just survived a Domain Restriction Trap (`F09`) or solved a Counterfactual Twin (`F04`) to share a 1-tap challenge card to WhatsApp/Instagram/Telegram (*"Bu soruda öğrencilerin %84'ü x=2 yalancı köküne düşüyor, sen 45 saniyede çözebilir misin?"*) with deep-link attribution.
 <!-- PHASE_PRODUCTION_V6:END -->
+
+<!-- PHASE_PRODUCTION_V7_LEARNING_OS:START -->
+# Phase Production Execution Contract v7 — Learning OS Packaging, Ethical Paywalls & Crossover Validation (`2026-11-07`)
+
+## 1. Canonical Packaging & Unit Economics Reconciliation (`roadmap/88`)
+- Aligns `com.verifiedai.billing` (`EntitlementApplicationService`, `CapabilityAccessPolicy`, `AppleBillingApplicationService`) and `com.verifiedai.ai.PostgresAiSpendGuard` (`V016`/`V017`) with `roadmap/88_LEARNING_OS_MONETIZATION_GROWTH_AND_VALIDATION_PLAN.md`:
+  - Tiers: `FREE`, `PRO` (`199 TRY/mo`, `$9.99/mo`), `COACH_PRO` (`349 TRY/mo`, `$16.99/mo`), and `YKS_SEASON_PASS` (`1,699 TRY / 6 months`).
+  - Ethical Guardrail (`INV-MON-001`): Never hold a free-quota attempt's First-Error Diagnosis hostage behind a surprise blur paywall; trigger contextual upgrades after the learner experiences the Counterexample Proof Card or unlocks their 1st Independent Mastery Shield (`EXP-MON-01`).
+  - Planned migration: **`PLANNED V048__entitlement_quota_ledgers.sql`**.
+<!-- PHASE_PRODUCTION_V7_LEARNING_OS:END -->

@@ -76,3 +76,16 @@ The phase exit review must include:
 - **Zero-Token Deterministic Planning:**
   - Study plan generation, daily queue ranking, and spaced review scheduling must be **100% deterministic Java domain logic** (`0` LLM tokens per plan refresh). LLMs are invoked only when generating new `SymPy`-verified practice or twin items that are not already in the verified item bank.
 <!-- PHASE_PRODUCTION_V6:END -->
+
+<!-- PHASE_PRODUCTION_V7_LEARNING_OS:START -->
+# Phase Production Execution Contract v7 — Verified AI Learning OS Personal Math Coach (`2026-11-07`)
+
+## 1. Entry Gate & Migration Lineage (`ADR-011`)
+- Phase 8 production rollout remains **BLOCKED_BY_ENTRY_GATE (`ADR-011`)** until the Focused Commercial Wedge (`Sprint 6.2B` + `Sprint 11.9A` 50-student TestFlight cohort) records an explicit owner `GO` decision (`roadmap/87_LEARNING_OS_STRATEGIC_PHASE_AND_SPRINT_EXPANSION_PROGRAM.md`).
+- Database references to `V026` in v6 notes correspond in actual repository lineage to **`V031__add_pedagogical_diagnosis_twin_drills_and_mastery.sql`** (`learner_skill_mastery`, `counterfactual_twin_drills`) and **`PLANNED V037–V045`** (`architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md`).
+- All backend implementations belong to `com.verifiedai.studyplan`, `com.verifiedai.tutoring`, `com.verifiedai.mastery`, and `com.verifiedai.analytics`; iOS views reside under `apps/ios/VerifiedAI/Features/`.
+
+## 2. Learning OS Canonical Specifications Governed by Phase 8
+- `learning/84_VERIFIED_TWIN_PRACTICE_AND_INDEPENDENT_LEARNING_ENGINE.md` (`SPRINT_8.2` 8-family structural trap invariant verifier & 3-variant ladder A/B/C)
+- `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md` (`SPRINT_8.1`, `8.3`, `8.4`, `8.6`, `8.9` — Daily 15-Minute Coach Hub replacing `HomePlaceholderView.swift`, 90s Micro-Lessons, and 1-Click Weekly Tutor/Parent PDF Share Packet)
+<!-- PHASE_PRODUCTION_V7_LEARNING_OS:END -->

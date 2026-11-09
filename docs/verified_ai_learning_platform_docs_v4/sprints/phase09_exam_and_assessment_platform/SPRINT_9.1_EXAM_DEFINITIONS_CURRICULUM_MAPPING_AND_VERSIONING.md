@@ -67,11 +67,10 @@ The platform intentionally separates product semantics, learner state, AI-genera
 
 ### Backend files to review/create
 
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/domain/**`
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/application/**`
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/api/**`
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/infrastructure/**`
-- corresponding module tests and architecture tests.
+- `services/api/src/main/java/com/verifiedai/exam/**`
+- `services/api/src/main/java/com/verifiedai/curriculum/**`
+- `services/api/src/main/resources/db/migration/platform/V046__exam_definitions_and_sessions.sql` *(PLANNED)*
+- corresponding module tests and `ModularityTests`.
 
 ## Data and persistence work
 
@@ -377,3 +376,67 @@ Attach or persist links/artifacts for:
 
 Codex must implement this sprint in small reviewable slices, re-reading the highest-precedence semantic documents before changing domain/API/data contracts. It must not “simplify” the architecture by moving rules into prompts, client code, provider SDK adapters, generic helpers, or ungoverned ML scripts.
 <!-- PRODUCTION_EXECUTION_V3:END -->
+
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:START -->
+# Learning OS Production Implementation Specification v1 (`2026-11-07`)
+
+## 1. Sprint Metadata & Status
+- **Sprint ID:** `SPRINT_9.1`
+- **Canonical Title:** Declarative Exam Definitions (`TR_YKS_TYT_MATH`, `TR_YKS_AYT_MATH`, `IB`, `AP`, `SAT`), Topic Weight Vectors & Versioning
+- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011)`
+- **Primary Spec Reference:** `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md` (Section 7) & `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md`
+
+## 2. Strategic Learning OS Objective & User Value
+Establishes the declarative `ExamDefinition` catalog in `com.verifiedai.exam` mapping universal canonical skills (`domain/46_CURRICULUM_SKILL_ONTOLOGY_AND_TAXONOMY.md`) to exam-specific question weights $w_{E,s}$, scoring rules (`CORRECT_MINUS_QUARTER_WRONG` $\text{Net} = C - 0.25 W$ for ÖSYM YKS vs unweighted/weighted points for IB/AP/SAT), and time-per-question pacing baselines.
+
+## 3. Entry Gate & Preconditions
+- `ADR-011` `GO` decision recorded; Phase 08 core completed.
+
+## 4. Domain Invariants & Mathematical Rules
+1. **Skill Weight Conservation:** For any exam $E$ with total math questions $Q_E$ (e.g., $Q_{\text{TYT}} = 40$, $Q_{\text{AYT}} = 40$), $\sum_{s \in E} w_{E,s} = Q_E$, and every referenced `canonical_skill_code` must exist in `CurriculumTaxonomyCatalog`.
+2. **Immutable Exam Version Snapshots:** Exam sessions and readiness projections bind to an immutable `(exam_code, exam_version)` tuple so syllabus updates never corrupt historical mock scores.
+
+## 5. Owning Spring Modulith Backend Modules & Classes
+- `com.verifiedai.exam`: `ExamDefinition.java`, `ExamTopicWeight.java`, `ScoringFormulaPolicy.java`, `ExamCatalogService.java`, `ExamPrivacyLifecycleContributor.java`.
+
+## 6. Python Math Verifier Impact
+- None (`100%` backend domain model).
+
+## 7. Database Migration & Persistence Contract (`PLANNED V046`)
+- **Migration File:** `services/api/src/main/resources/db/migration/platform/V046__exam_definitions_and_sessions.sql` *(PLANNED)*
+- **Tables:** `exam_definitions` (`exam_code`, `exam_version`, `locale`, `total_questions`, `duration_minutes`, `wrong_answer_penalty_factor`), `exam_topic_weights` (`exam_code`, `exam_version`, `canonical_skill_code`, `question_weight`), `exam_sessions` (`id`, `user_id`, `exam_code`, `exam_version`, `session_type`, `status`, `started_at`, `submitted_at`, `net_score`).
+
+## 8. REST API Contracts (`CNT-LOS-10`)
+- `GET /v1/exams/catalog`, `POST /v1/exams/sessions`, and `POST /v1/exams/sessions/{id}/submit`.
+
+## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
+- Powers the Exam Target Selector and Timed Diagnostic screen (`Screen 10` in `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md`).
+
+## 10. AI Capability & Unit Economics Guardrail
+- **`$0.00` LLM token cost.**
+
+## 11. Privacy, Safety & Compliance
+- `ExamPrivacyLifecycleContributor` purges `exam_sessions` on account deletion.
+
+## 12. Telemetry & Observability
+- Emits `exam_target_selected` and `exam_session_submitted`.
+
+## 13. Feature Flags & Rollback Plan
+- `verifiedai.exam.catalog-enabled: false`.
+
+## 14. Automated Test Matrix (Categories A–F)
+- Validates weight conservation ($\sum w_{E,s} = 40.0$) for `TR_YKS_TYT_MATH` and `TR_YKS_AYT_MATH` and verifies $\text{Net} = C - 0.25 W$ arithmetic.
+
+## 15. Owner-Only Acceptance Command
+- `bash scripts/quality/sprint_9_1_owner_acceptance.sh --full`
+
+## 16. Explicit Non-Goals
+- Does not hardcode exam weights in SwiftUI or Android client code.
+
+## 17. Exit Gate & Downstream Consumers
+- Unlocks `Sprint 9.2` (Candidate Goal Setup) and `Sprint 9.6` (Exam Readiness & Credible Interval Model).
+
+## 18. Canonical Cross-References
+- `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md`
+- `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md`
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:END -->

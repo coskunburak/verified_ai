@@ -131,3 +131,7 @@ Operational rollout must install compatible API readers before the Python produc
 evidence before enabling classification. An older strict API reader fails closed on new producer output;
 rolling back the API also requires restoring the compatible producer. Flag-only classifier rollback retains
 current readers and producer and is the preferred forward-only recovery. No production rollout was performed.
+
+## V7 Learning OS Mistake DNA and Mistake Passport extension (2026-11-07)
+
+The longitudinal aggregation of step-level mistake classifications (`V036`), recurrence tracking (`Mistake Recurrence Index`), lifecycle state transitions (`OPEN_ACTIVE` → `REMEDIATION_IN_PROGRESS` → `STABILIZING` → `MASTERED_CLOSED` / `RELAPSED`), and Mistake Book review workflows (`Sprint 7.5`, `PLANNED V037`) are specified in **`learning/83_VERIFIED_MISTAKE_DNA_AND_MISTAKE_PASSPORT_SPECIFICATION.md`** and **`architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md`**. All Sprint 7.4 deterministic authority rules and fail-closed boundaries above remain strictly in force.

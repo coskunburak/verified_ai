@@ -67,11 +67,10 @@ The platform intentionally separates product semantics, learner state, AI-genera
 
 ### Backend files to review/create
 
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/domain/**`
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/application/**`
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/api/**`
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/infrastructure/**`
-- corresponding module tests and architecture tests.
+- `services/api/src/main/java/com/verifiedai/studyplan/**`
+- `services/api/src/main/java/com/verifiedai/mastery/**`
+- `services/api/src/main/resources/db/migration/platform/V042__spaced_review_queue.sql` *(PLANNED)*
+- corresponding module tests and `ModularityTests`.
 
 ## iOS implementation work
 
@@ -85,9 +84,8 @@ The platform intentionally separates product semantics, learner state, AI-genera
 
 ### iOS files to review/create
 
-- `apps/ios/VerifiedLearning/Features/<Feature>/Domain/**`
-- `apps/ios/VerifiedLearning/Features/<Feature>/Data/**`
-- `apps/ios/VerifiedLearning/Features/<Feature>/Presentation/**`
+- `apps/ios/VerifiedAI/Features/Home/**`
+- `apps/ios/VerifiedAI/Features/ProblemReview/**`
 - feature unit tests, accessibility coverage, and critical UI-flow tests.
 
 ## Data and persistence work
@@ -405,3 +403,69 @@ Attach or persist links/artifacts for:
 
 Codex must implement this sprint in small reviewable slices, re-reading the highest-precedence semantic documents before changing domain/API/data contracts. It must not “simplify” the architecture by moving rules into prompts, client code, provider SDK adapters, generic helpers, or ungoverned ML scripts.
 <!-- PRODUCTION_EXECUTION_V3:END -->
+
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:START -->
+# Learning OS Production Implementation Specification v1 (`2026-11-07`)
+
+## 1. Sprint Metadata & Status
+- **Sprint ID:** `SPRINT_8.3`
+- **Canonical Title:** Half-Life Spaced Repetition Scheduler for Skills and 7-Day Trap Immunity Checks
+- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011)`
+- **Primary Spec Reference:** `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md` & `learning/83_VERIFIED_MISTAKE_DNA_AND_MISTAKE_PASSPORT_SPECIFICATION.md`
+
+## 2. Strategic Learning OS Objective & User Value
+Schedules spaced retrieval twins when a skill's retention $R_{u,s}(t)$ decays below `0.72` or when a mistake in `RESOLVED_PENDING_RETENTION` reaches its $+7\text{ day}$ immunity verification window (`G-PED-04`), operationalizing Dunlosky et al. (2013) distributed and interleaved practice principles.
+
+## 3. Entry Gate & Preconditions
+- `ADR-011` `GO` decision recorded; `Sprint 8.2` accepted.
+
+## 4. Domain Invariants & Mathematical Rules
+1. **Optimal Review Trigger:** Due timestamp $t_{\text{due}}$ for skill $s$ with mastery $M_{u,s}(t_0) > 0.72$ is solved deterministically from $R_{u,s}(t_{\text{due}}) = 0.72$:
+   $$t_{\text{due}} = t_0 + H_{u,s} \cdot \log_2\!\left(\frac{M_{u,s}(t_0) - 0.05}{0.72 - 0.05}\right)$$
+2. **Interleaved Session Mixing:** A daily review queue of $\ge 2$ items must interleave at least 2 distinct `canonical_skill_code` values rather than massing identical templates back-to-back.
+3. **Anti-Backlog Overload Guard:** Caps due spaced reviews surfaced per day to $\le 3$ items so returning learners are never greeted by a punishing "47 overdue items" wall.
+
+## 5. Owning Spring Modulith Backend Modules & Classes
+- `com.verifiedai.studyplan`: `SpacedRepetitionScheduler.java`, `SpacedReviewQueueItem.java`, `SpacedReviewController.java`.
+
+## 6. Python Math Verifier Impact
+- Pre-generates Variant B/A twins via `attempt_learning.py` for due queue items.
+
+## 7. Database Migration & Persistence Contract (`PLANNED V042`)
+- **Migration File:** `services/api/src/main/resources/db/migration/platform/V042__spaced_review_queue.sql` *(PLANNED)*
+- **Table:** `spaced_review_queue` (`id`, `user_id`, `canonical_skill_code`, `target_mistake_code`, `trigger_type`, `due_at`, `assigned_twin_id`, `status`, `completed_at`, `created_at`).
+
+## 8. REST API Contracts (`CNT-LOS-07`)
+- `GET /v1/study-plan/spaced-queue` (`spaced-queue-v1`).
+
+## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
+- Renders Block 2 (`Spaced Retention Check`) inside Screen 1 (`CoachHubView`) and Screen 8 (`Daily Study Plan View`).
+
+## 10. AI Capability & Unit Economics Guardrail
+- **`$0.00` LLM token cost** for queue calculation and deterministic twin scheduling.
+
+## 11. Privacy, Safety & Compliance
+- Purged on account deletion via `StudyPlanPrivacyLifecycleContributor`.
+
+## 12. Telemetry & Observability
+- Emits `spaced_review_scheduled` and `spaced_review_completed` (`days_since_last_practice`, `evidence_type`, `outcome`).
+
+## 13. Feature Flags & Rollback Plan
+- `verifiedai.studyplan.spaced-repetition-enabled: false`.
+
+## 14. Automated Test Matrix (Categories A–F)
+- Unit tests verifying $t_{\text{due}}$ inversion formula, interleaving constraint ($\ge 2$ skills), and max-3 daily cap on overdue backlogs.
+
+## 15. Owner-Only Acceptance Command
+- `bash scripts/quality/sprint_8_3_owner_acceptance.sh --full`
+
+## 16. Explicit Non-Goals
+- Push notification delivery infrastructure is handled in `Sprint 10.4`.
+
+## 17. Exit Gate & Downstream Consumers
+- Unlocks `Sprint 8.4` (Daily 15-Minute Coach Session).
+
+## 18. Canonical Cross-References
+- `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md`
+- `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md`
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:END -->

@@ -67,11 +67,9 @@ The platform intentionally separates product semantics, learner state, AI-genera
 
 ### Backend files to review/create
 
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/domain/**`
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/application/**`
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/api/**`
-- `services/api/src/main/java/com/verifiedlearning/<owning-module>/infrastructure/**`
-- corresponding module tests and architecture tests.
+- `services/api/src/main/java/com/verifiedai/mastery/**`
+- `services/api/src/main/java/com/verifiedai/mistake/**`
+- corresponding module tests (`HalfLifeRetentionCalculatorTest`, `MasteryDecayReassessmentTest`) and `ModularityTests`.
 
 ## iOS implementation work
 
@@ -85,9 +83,8 @@ The platform intentionally separates product semantics, learner state, AI-genera
 
 ### iOS files to review/create
 
-- `apps/ios/VerifiedLearning/Features/<Feature>/Domain/**`
-- `apps/ios/VerifiedLearning/Features/<Feature>/Data/**`
-- `apps/ios/VerifiedLearning/Features/<Feature>/Presentation/**`
+- `apps/ios/VerifiedAI/Features/AttemptAnalysis/**`
+- `apps/ios/VerifiedAI/Features/ProblemReview/**`
 - feature unit tests, accessibility coverage, and critical UI-flow tests.
 
 ## Data and persistence work
@@ -405,3 +402,72 @@ Attach or persist links/artifacts for:
 
 Codex must implement this sprint in small reviewable slices, re-reading the highest-precedence semantic documents before changing domain/API/data contracts. It must not “simplify” the architecture by moving rules into prompts, client code, provider SDK adapters, generic helpers, or ungoverned ML scripts.
 <!-- PRODUCTION_EXECUTION_V3:END -->
+
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:START -->
+# Learning OS Production Implementation Specification v1 (`2026-11-07`)
+
+## 1. Sprint Metadata & Status
+- **Sprint ID:** `SPRINT_7.7`
+- **Canonical Title:** Mastery Confidence, Half-Life Memory Decay ($R_{u,s}(t)$), and Spaced Reassessment Triggers
+- **Status:** `PLANNED` (`GATED_ON_SPRINT_7_6`)
+- **Primary Spec Reference:** `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md` (Quantity 4: $R_{u,s}(t)$)
+
+## 2. Strategic Learning OS Objective & User Value
+Implements the temporal memory decay and half-life expansion equations (`learning/86` Section 4.4) over `V031`/`V038` `learner_skill_mastery` (`half_life_days` $\in [1, 90]$) and connects 7-day delayed reassessment passes to the Mistake DNA state transition `RESOLVED_PENDING_RETENTION` -> `STABLE_RESOLVED` ("Conquered Exam Trap").
+
+## 3. Entry Gate & Preconditions
+- `Sprint 7.6` (`bkt-lite-v2` evidence-stratified mastery & `V038`) accepted.
+
+## 4. Domain Invariants & Mathematical Rules
+1. **Retention Decay Formula:**
+   $$R_{u,s}(t) = 0.05 + \left(M_{u,s}(t_{\text{last}}) - 0.05\right) \cdot 2^{-(t - t_{\text{last}}) / H_{u,s}}$$
+2. **Spaced vs. Massed Half-Life Expansion (`Dunlosky Law`):**
+   - Spaced `INDEPENDENT` pass ($\Delta t \ge 0.5 H_{u,s}$): $H_{u,s}^{\text{new}} = \min(90.0,\; H_{u,s} \cdot (1.85 + 0.35 \min(1.0, \Delta t / H_{u,s})))$.
+   - Massed same-session pass ($\Delta t < 0.5 H_{u,s}$): $H_{u,s}^{\text{new}} = \min(90.0,\; H_{u,s} \cdot 1.20)$.
+   - Causal error: $H_{u,s}^{\text{new}} = \max(1.0,\; 0.55 \cdot H_{u,s})$.
+3. **7-Day Trap Immunity Gate (`G-PED-02`):** A mistake in `RESOLVED_PENDING_RETENTION` only transitions to `STABLE_RESOLVED` when an `INDEPENDENT` reassessment attempt succeeds at $\Delta t \ge 7\text{ days}$.
+
+## 5. Owning Spring Modulith Backend Modules & Classes
+- `com.verifiedai.mastery`: `HalfLifeRetentionPolicy.java`, `SkillReassessmentTriggerService.java`.
+- `com.verifiedai.mistake`: `MistakeRetentionResolutionListener.java` (transitions `RESOLVED_PENDING_RETENTION` -> `STABLE_RESOLVED` or `RELAPSED`).
+
+## 6. Python Math Verifier Impact
+- None (pure temporal domain calculation in `com.verifiedai.mastery`).
+
+## 7. Database Migration & Persistence Contract
+- Uses `V031` (`half_life_days`, `last_practiced_at`) + `PLANNED V037` (`next_retention_check_at`) + `PLANNED V038` (`learner_skill_mastery_transitions`).
+
+## 8. REST API Contracts (`CNT-LOS-04`)
+- `GET /v1/mastery/skills` includes real-time computed `retentionScore` ($R_{u,s}(t)$), `halfLifeDays`, `confidence`, and `reassessmentDue`.
+
+## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
+- Renders dual-ring skill nodes (Inner solid core = $M_{u,s}$, Outer decay ring = $R_{u,s}(t)$) in `ProblemReview` and `AttemptAnalysis`.
+
+## 10. AI Capability & Unit Economics Guardrail
+- **100% Deterministic CPU calculation (`$0.00` LLM token cost).**
+
+## 11. Privacy, Safety & Compliance
+- Covered by `MasteryPrivacyLifecycleContributor` and `MistakeDnaPrivacyLifecycleContributor`.
+
+## 12. Telemetry & Observability
+- Emits `skill_retention_evaluated` and `mistake_dna_state_transitioned` (`to_state: STABLE_RESOLVED | RELAPSED`).
+
+## 13. Feature Flags & Rollback Plan
+- `verifiedai.mastery.decay-reassessment-enabled: false`.
+
+## 14. Automated Test Matrix (Categories A–F)
+- Unit tests proving spaced retrieval ($\Delta t \ge 0.5 H$) increases `half_life_days` strictly more than massed practice ($\Delta t < 0.5 H$), and proving 7-day gate for `STABLE_RESOLVED`.
+
+## 15. Owner-Only Acceptance Command
+- `bash scripts/quality/sprint_7_7_owner_acceptance.sh --full`
+
+## 16. Explicit Non-Goals
+- Full daily study plan scheduling belongs to `Sprint 8.3` / `8.4`.
+
+## 17. Exit Gate & Downstream Consumers
+- Unlocks `Sprint 7.8` (Knowledge Graph Projection APIs) and `Sprint 7.9` (Mastery & Mistake Passport Dashboard UX).
+
+## 18. Canonical Cross-References
+- `learning/83_VERIFIED_MISTAKE_DNA_AND_MISTAKE_PASSPORT_SPECIFICATION.md`
+- `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md`
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:END -->
