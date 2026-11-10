@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mistake-dispute-result-v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "mistake-dispute-result-v1"
+    },
+    "operationId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "attemptId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "classificationId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "replacementAttemptId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "status": {
+      "enum": [
+        "EXCLUDED",
+        "REEVALUATION_REQUIRED"
+      ]
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "trainingEligible": {
+      "const": false
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "operationId",
+    "attemptId",
+    "classificationId",
+    "replacementAttemptId",
+    "status",
+    "createdAt",
+    "trainingEligible"
+  ],
+  "oneOf": [
+    {
+      "properties": {
+        "status": {
+          "const": "EXCLUDED"
+        },
+        "classificationId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "replacementAttemptId": {
+          "type": "null"
+        }
+      }
+    },
+    {
+      "properties": {
+        "status": {
+          "const": "REEVALUATION_REQUIRED"
+        },
+        "classificationId": {
+          "type": "null"
+        },
+        "replacementAttemptId": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    }
+  ]
+}

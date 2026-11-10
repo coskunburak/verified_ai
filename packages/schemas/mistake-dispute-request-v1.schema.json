@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mistake-dispute-request-v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "mistake-dispute-request-v1"
+    },
+    "evaluationId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "workRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 30
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "evaluationId",
+    "workRevision"
+  ]
+}

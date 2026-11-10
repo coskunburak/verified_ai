@@ -136,3 +136,13 @@ If a user writes adversarial text inside a problem capture or tutor turn (e.g., 
 - `adr/ADR-006_PRODUCTION_STUDENT_DATA_NOT_TRAINING_DATA_BY_DEFAULT.md`
 - `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md`
 - `quality/91_LEARNING_OS_PRODUCT_LEARNING_AND_RELEASE_ACCEPTANCE_GATES.md`
+
+## Sprint 7.5 implemented privacy boundary (owner tests pending)
+
+The implementation uses `AccountDataLifecycleContributor`, including `MistakeDnaPrivacyLifecycleContributor`, for
+owner exports and account deletion. New dispute rows contain evidence references rather than duplicated handwritten text.
+V034 retains original OCR plus reviewed revisions under existing DERIVED_LEARNING rules; V036 remains immutable.
+Parent deletion cascades remove operations and invalidate cached profiles. Exported profiles are explicitly dated snapshots.
+The existing local AttemptPending purge also removes protected correction retries. No student content or private IDs enter
+new telemetry; no training triage/export, image TTL, consent change, teacher access or new third-party inference is added.
+FREE/PRO restrictions are server-side; dispute/correction and personal export are not premium-gated.

@@ -3,6 +3,9 @@ import SwiftUI
 struct AnalyzeMyWorkCaptureView: View {
     @State var viewModel: AnalyzeMyWorkViewModel
     var tutor: TutorViewModel? = nil
+    @State private var editingOcr = false
+    @State private var ocrStep = 1
+    @State private var correctedOcr = ""
     @State private var showingCapture = false
     @State private var gatewayCapture = false
     @State private var reviewingSubmission = false
@@ -80,6 +83,11 @@ struct AnalyzeMyWorkCaptureView: View {
                 }
                 Button(LocalizedStringKey(viewModel.pending == nil && viewModel.pendingWork == nil ? "attempt.refresh" : "attempt.retry.button")) { viewModel.retry() }
                     .frame(minHeight: 44).disabled(viewModel.busy).accessibilityIdentifier("attempt.retry")
+                if viewModel.pendingCorrection != nil {
+                    Text("attempt.dna.pending")
+                    Button("attempt.dna.reviewHistory") { viewModel.reviewCorrectionHistory() }
+                        .disabled(viewModel.busy).frame(minHeight: 44).accessibilityIdentifier("attempt.dna.reviewHistory")
+                }
                 if let result = viewModel.result {
                     if let current = viewModel.context?.source, current != result.source { Text("attempt.history.sourceChanged") }
                     if let work = viewModel.workResult, work.attemptId == result.id {
@@ -88,6 +96,23 @@ struct AnalyzeMyWorkCaptureView: View {
                             AttemptEvaluationResultsView(value: evaluation, work: work)
                             if let classification = viewModel.classification {
                                 AttemptMistakeResultsView(value: classification)
+                                if viewModel.effectiveMistake?.effectiveStatus == "DISPUTED_OR_CORRECTED" {
+                                    Label("attempt.dna.excluded", systemImage: "checkmark.shield")
+                                        .accessibilityIdentifier("attempt.dna.excluded")
+                                }
+                                if viewModel.effectiveMistake?.enabled == true {
+                                    Button("attempt.dna.dispute") { viewModel.disputeDiagnosis() }
+                                        .disabled(!viewModel.canDispute).frame(minHeight: 44)
+                                        .accessibilityIdentifier("attempt.dna.dispute")
+                                    if work.engine != "MANUAL" {
+                                        Button("attempt.dna.correct") {
+                                            ocrStep = classification.classification?.firstWrongStepIndex ?? 1
+                                            correctedOcr = work.steps[ocrStep - 1].reviewedText
+                                            editingOcr = true
+                                        }.disabled(!viewModel.canCorrectOcr).frame(minHeight: 44)
+                                            .accessibilityIdentifier("attempt.dna.correct")
+                                    }
+                                }
                                 if classification.creationEnabled && classification.status == .notClassified && !classification.historical {
                                     Button("attempt.classification.action") { viewModel.classifyWork() }
                                         .disabled(!viewModel.canClassify).frame(minHeight: 44)
@@ -140,6 +165,29 @@ struct AnalyzeMyWorkCaptureView: View {
         }
         .sheet(isPresented: Binding(get: { !viewModel.recognizedLines.isEmpty && !showingCapture }, set: { _ in })) {
             AttemptStepReviewView(lines: $viewModel.recognizedLines, preview: viewModel.reviewPreview, confirm: { viewModel.acceptRecognizedLines() }, cancel: { viewModel.cancelReview() }, structured: viewModel.context?.structuredWorkEnabled == true)
+        }
+        .sheet(isPresented: $editingOcr) {
+            NavigationStack {
+                Form {
+                    if let work = viewModel.workResult {
+                        Picker("attempt.dna.step", selection: $ocrStep) {
+                            ForEach(work.steps) { step in Text("\(step.index)").tag(step.index) }
+                        }
+                        .onChange(of: ocrStep) { _, index in correctedOcr = work.steps[index - 1].reviewedText }
+                        TextField("attempt.dna.correctedText", text: $correctedOcr, axis: .vertical)
+                            .autocorrectionDisabled().textInputAutocapitalization(.never)
+                            .accessibilityIdentifier("attempt.dna.correctedText")
+                        Text("attempt.dna.reevaluate")
+                        Button("attempt.dna.save") {
+                            viewModel.correctOcr(step: ocrStep, text: correctedOcr); editingOcr = false
+                        }.disabled(!viewModel.canCorrectOcr || !AttemptSubmission.validText(correctedOcr)
+                            || correctedOcr.contains("\n") || correctedOcr.contains("\r") || correctedOcr == work.steps[ocrStep - 1].reviewedText)
+                            .accessibilityIdentifier("attempt.dna.save")
+                    }
+                }
+                .navigationTitle("attempt.dna.correct")
+                .toolbar { ToolbarItem(placement: .cancellationAction) { Button("attempt.ocr.cancel") { editingOcr = false } } }
+            }
         }
         .sheet(isPresented: $reviewingSubmission) {
             NavigationStack {

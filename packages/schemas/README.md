@@ -45,3 +45,12 @@ pending; successful answer reveal and production rollout are unavailable.
 ## Sprint 6.7 product integration
 
 New attempt v2, canonical-problem-v3, semantic diff, learning/twin/passport/extraction and compatibility response schemas are authored. Legacy v1 schemas remain unchanged. Seventeen bounded diagnoses are listed in attempt-taxonomy-v2; contract validation and targeted repair execution passed in owner runs.
+
+### Sprint 7.5 Mistake DNA contracts (owner verification pending)
+
+`mistake-dna-view-v1` describes grouped scale-8 propensity snapshots and owner ledger provenance; FREE responses contain
+at most two profiles and no ledger entries. `mistake-effective-state-v1` reports per-diagnosis exclusion independently of
+premium history. `mistake-dispute-request-v1` / `mistake-dispute-result-v1` and `attempt-ocr-correction-request-v1` /
+`attempt-ocr-correction-result-v1` preserve original V034–V036 evidence, return stable operations and require explicit
+re-evaluation of replacement work. Shared synthetic fixtures accompany each schema. No confidence, new skill IDs,
+mastery/resolution claims, or training eligibility are added. Existing classification schemas remain unchanged.

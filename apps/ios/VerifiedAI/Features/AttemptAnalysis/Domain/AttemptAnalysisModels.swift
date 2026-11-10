@@ -207,6 +207,9 @@ struct AttemptSubmission: Codable, Equatable, Sendable {
     }
 }
 protocol AttemptAnalysisServicing: Sendable {
+    func effectiveMistake(event: UUID) async throws -> MistakeEffectiveState
+    func disputeMistake(event: UUID, attempt: UUID, key: String, input: MistakeDisputeRequest) async throws -> MistakeDisputeResult
+    func correctOcr(problem: UUID, pending: AttemptPendingCorrection) async throws -> AttemptOcrCorrectionResult
     func readEvaluation(problem: UUID, attempt: UUID) async throws -> AttemptEvaluationView
     func readClassification(problem: UUID, attempt: UUID) async throws -> AttemptMistakeView
     func classify(problem: UUID, attempt: UUID, key: String, input: AttemptMistakeRequest) async throws -> AttemptMistakeView
@@ -468,7 +471,7 @@ struct AttemptMistakeClassification: Codable, Sendable {
         }
         return self
     }
-    private static func validTimestamp(_ value: String) -> Bool {
+    static func validTimestamp(_ value: String) -> Bool {
         guard !value.isEmpty, value.count <= 40 else { return false }
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -517,4 +520,45 @@ extension AttemptAnalysisServicing {
         .init(schemaVersion: "attempt-mistake-view-v1", attemptId: attempt, status: .notClassified, historical: false, creationEnabled: false, classification: nil)
     }
     func classify(problem: UUID, attempt: UUID, key: String, input: AttemptMistakeRequest) async throws -> AttemptMistakeView { throw NetworkError.invalidResponse }
+}
+
+struct MistakeEffectiveState: Codable, Sendable {
+    let schemaVersion: String; let eventId: UUID; let enabled: Bool; let effectiveStatus: String
+    func validated(event: UUID) throws -> Self {
+        guard schemaVersion == "mistake-effective-state-v1", eventId == event,
+              ["EFFECTIVE", "DISPUTED_OR_CORRECTED", "SUPERSEDED", "FUTURE_EVIDENCE", "UNMAPPED_SKILL", "INSUFFICIENT_EXPOSURE_EVIDENCE", "DISABLED"].contains(effectiveStatus) else { throw NetworkError.invalidResponse }
+        return self
+    }
+}
+struct MistakeDisputeRequest: Codable, Sendable {
+    let schemaVersion = "mistake-dispute-request-v1"
+    let evaluationId: UUID; let workRevision: Int
+}
+struct MistakeDisputeResult: Codable, Sendable {
+    let schemaVersion: String; let operationId: UUID; let attemptId: UUID; let classificationId: UUID?
+    let replacementAttemptId: UUID?; let status: String; let createdAt: String; let trainingEligible: Bool
+    func validated(attempt: UUID, event: UUID?) throws -> Self {
+        guard schemaVersion == "mistake-dispute-result-v1", attemptId == attempt, classificationId == event, !trainingEligible,
+              AttemptMistakeClassification.validTimestamp(createdAt),
+              (event != nil && replacementAttemptId == nil && status == "EXCLUDED") ||
+                (event == nil && replacementAttemptId != nil && status == "REEVALUATION_REQUIRED") else { throw NetworkError.invalidResponse }
+        return self
+    }
+}
+struct AttemptOcrCorrectionRequest: Codable, Equatable, Sendable {
+    var schemaVersion = "attempt-ocr-correction-request-v1"
+    let source: AttemptSourceIdentity; let workRevision: Int; let correctedText: String
+}
+struct AttemptOcrCorrectionResult: Codable, Sendable {
+    let schemaVersion: String; let operation: MistakeDisputeResult; let work: AttemptStructuredWork
+}
+struct AttemptPendingCorrection: Codable, Equatable, Sendable {
+    let attemptId: UUID; let stepIndex: Int; let key: String; let input: AttemptOcrCorrectionRequest
+}
+extension AttemptAnalysisServicing {
+    func effectiveMistake(event: UUID) async throws -> MistakeEffectiveState {
+        .init(schemaVersion: "mistake-effective-state-v1", eventId: event, enabled: false, effectiveStatus: "DISABLED")
+    }
+    func disputeMistake(event: UUID, attempt: UUID, key: String, input: MistakeDisputeRequest) async throws -> MistakeDisputeResult { throw NetworkError.invalidResponse }
+    func correctOcr(problem: UUID, pending: AttemptPendingCorrection) async throws -> AttemptOcrCorrectionResult { throw NetworkError.invalidResponse }
 }

@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "mistake-dna-view-v1",
+  "enabled": true,
+  "policyVersion": "mistake-dna-v1",
+  "asOf": "2026-11-09T00:00:00Z",
+  "profiles": [
+    {
+      "mistakeCode": "ALG_SIGN_FLIP_DISTRIBUTE",
+      "skillId": "MATH.ALGEBRA.SIMPLIFY_EXPRESSIONS",
+      "taxonomyVersion": "attempt-taxonomy-v2",
+      "categoryVersion": "mistake-category-v1",
+      "policyVersion": "mistake-dna-v1",
+      "decayedErrorCount": 2,
+      "decayedExposureCount": 3,
+      "smoothedPropensity": 0.34285714,
+      "recentErrorCount": 2,
+      "recurrenceState": "RECURRING_PATTERN",
+      "lastOccurredAt": "2026-11-09T00:00:00Z",
+      "asOf": "2026-11-09T00:00:00Z"
+    }
+  ],
+  "entries": [],
+  "limited": true,
+  "trainingEligible": false
+}

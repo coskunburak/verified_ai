@@ -1,0 +1,6 @@
+{
+  "schemaVersion": "mistake-effective-state-v1",
+  "eventId": "00000000-0000-0000-0000-000000007403",
+  "enabled": true,
+  "effectiveStatus": "DISPUTED_OR_CORRECTED"
+}

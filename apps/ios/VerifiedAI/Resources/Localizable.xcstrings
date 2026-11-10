@@ -1,6 +1,159 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "attempt.dna.pending": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Correction confirmation is pending. Retry safely, or review saved history. Reviewing history does not undo a saved correction."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Düzeltme onayı bekleniyor. Güvenle yeniden dene veya kayıtlı geçmişi incele. Geçmişi incelemek kaydedilmiş düzeltmeyi geri almaz."
+          }
+        }
+      }
+    },
+    "attempt.dna.reviewHistory": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Review saved history"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kayıtlı geçmişi incele"
+          }
+        }
+      }
+    },
+    "attempt.dna.dispute": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Report incorrect diagnosis"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hatalı analiz bildir"
+          }
+        }
+      }
+    },
+    "attempt.dna.excluded": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This diagnosis is excluded from your mistake insights."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu analiz hata içgörülerinden çıkarıldı."
+          }
+        }
+      }
+    },
+    "attempt.dna.correct": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit misread step"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yanlış okunan adımı düzenle"
+          }
+        }
+      }
+    },
+    "attempt.dna.step": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Step"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adım"
+          }
+        }
+      }
+    },
+    "attempt.dna.correctedText": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Corrected step"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Düzeltilmiş adım"
+          }
+        }
+      }
+    },
+    "attempt.dna.reevaluate": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your original work is preserved. Evaluate the corrected work again to update your insights."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Özgün çalışman korunur. İçgörülerini güncellemek için düzeltilmiş çalışmanı yeniden değerlendir."
+          }
+        }
+      }
+    },
+    "attempt.dna.save": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save correction"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Düzeltmeyi kaydet"
+          }
+        }
+      }
+    },
     "visualization.expression": {
       "extractionState": "manual",
       "localizations": {

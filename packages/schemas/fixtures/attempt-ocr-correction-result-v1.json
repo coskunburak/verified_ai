@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "attempt-ocr-correction-result-v1",
+  "operation": {
+    "schemaVersion": "mistake-dispute-result-v1",
+    "operationId": "00000000-0000-4000-8000-000000000075",
+    "attemptId": "00000000-0000-0000-0000-000000007210",
+    "classificationId": null,
+    "replacementAttemptId": "00000000-0000-4000-8000-000000000075",
+    "status": "REEVALUATION_REQUIRED",
+    "createdAt": "2026-11-09T00:00:00Z",
+    "trainingEligible": false
+  },
+  "work": {
+    "schemaVersion": "attempt-structured-work-v1",
+    "attemptId": "00000000-0000-4000-8000-000000000075",
+    "ownerId": "00000000-0000-0000-0000-000000007200",
+    "problemSessionId": "00000000-0000-0000-0000-000000007203",
+    "source": {
+      "canonicalId": "00000000-0000-0000-0000-000000007201",
+      "canonicalRevision": 1,
+      "parseId": "00000000-0000-0000-0000-000000007202",
+      "parseRevision": 1
+    },
+    "revision": 2,
+    "supersedesAttemptId": "00000000-0000-0000-0000-000000007210",
+    "normalizationVersion": "structured-canonical-v1",
+    "createdAt": "2026-11-05T12:00:00Z",
+    "engine": "NATIVE_VISION",
+    "provenance": "CLIENT_ATTESTED",
+    "captureId": "00000000-0000-0000-0000-000000007230",
+    "assetSessionId": null,
+    "recognitionJobId": null,
+    "provider": null,
+    "model": null,
+    "promptVersion": null,
+    "observations": [
+      {
+        "id": "00000000-0000-0000-0000-000000007231",
+        "rawText": "1/l\n0/O",
+        "confidence": 0.2,
+        "box": {
+          "x": 0.1,
+          "y": 0.2,
+          "width": 0.5,
+          "height": 0.3
+        }
+      }
+    ],
+    "steps": [
+      {
+        "id": "00000000-0000-0000-0000-000000007211",
+        "index": 1,
+        "role": "INTERMEDIATE",
+        "originalText": null,
+        "reviewedText": "2*x=8",
+        "observationIds": [
+          "00000000-0000-0000-0000-000000007231"
+        ],
+        "normalizedStatement": null,
+        "normalizationStatus": "UNSUPPORTED",
+        "reviewStatus": "CONFIRMED"
+      },
+      {
+        "id": "00000000-0000-0000-0000-000000007212",
+        "index": 2,
+        "role": "FINAL_ANSWER",
+        "originalText": null,
+        "reviewedText": "x=4",
+        "observationIds": [
+          "00000000-0000-0000-0000-000000007231"
+        ],
+        "normalizedStatement": null,
+        "normalizationStatus": "UNSUPPORTED",
+        "reviewStatus": "CONFIRMED"
+      }
+    ],
+    "trainingEligible": false
+  }
+}

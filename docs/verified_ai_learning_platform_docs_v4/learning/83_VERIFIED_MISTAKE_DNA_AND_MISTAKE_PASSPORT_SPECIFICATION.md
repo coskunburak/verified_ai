@@ -59,17 +59,19 @@ Let an attempt $A$ consist of ordered student steps $S_1, S_2, \dots, S_k$ evalu
 
 1. **Primary Causal Error Only:** Only the step $S_{i^*}$ where $i^* = \text{first\_error\_step\_index}$ is eligible to emit a primary `CAUSAL_MISTAKE_EVENT` into the learner's Mistake DNA profile.
 2. **Downstream Propagation Suppression:** Any subsequent step $S_j$ ($j > i^*$) marked as `DOWNSTREAM_PROPAGATION` (where the student applied a valid algebraic operation to the already-corrupted expression from $S_{i^*}$) **MUST NOT** increment mistake counts or lower skill mastery.
-3. **Independent Secondary Error Exception:** A step $S_j$ ($j > i^*$) may emit a secondary mistake event *only* if the symbolic verifier proves that $S_{j-1} \not\Rightarrow S_j$ introduces a distinct, non-propagated transformation error with `confidence >= 0.85`.
+3. **Secondary errors:** deferred. Sprint 7.5 admits exactly one primary cause per evaluation, with no inferred confidence or secondary causal events.
 
-### 4.2 Confidence and Evidence Eligibility Gate (`INV-MDNA-002`)
+### 4.2 Implemented Deterministic Evidence Eligibility (`INV-MDNA-002`)
 
-Every `AttemptMistakeClassification` (`V036`) carries `confidence` $c \in [0, 1]$, `classification_status`, and `evidence_status`. Update eligibility is strictly partitioned:
-
-| Confidence & Evidence Tier | Condition | Mistake DNA Ledger Action | Mastery Action (`bkt-lite-v1`) | UI Presentation |
-|---|---|---|---|---|
-| **Tier 1: Verified High-Confidence Diagnosis** | `classification_status == 'CLASSIFIED'` AND `evidence_status == 'SUFFICIENT'` AND $c \ge 0.80$ AND code $\notin \{\text{UNCLASSIFIED}, \text{STEP\_GAP\_TOO\_WIDE}\}$ | Increments causal mistake count; updates recurrence state machine. | Triggers standard BKT-lite error update on mapped `primary_skill_code`. | Full **Exam Trap Card** + Counterexample + Verified Twin CTA. |
-| **Tier 2: Tentative Diagnostic Signal** | `classification_status == 'CLASSIFIED'` AND $0.65 \le c < 0.80$ | Stored as `TENTATIVE_SIGNAL` in event log; requires a 2nd corroborating event before surfacing as a recurring pattern. | Half-weight mastery adjustment ($\lambda = 0.5$). | Soft coaching note: *"Possible sign/domain slip at Step $i$; verify your step."* |
-| **Tier 3: Ambiguous / Step Gap / Refusal** | $c < 0.65$ OR code $\in \{\text{UNCLASSIFIED}, \text{STEP\_GAP\_TOO\_WIDE}\}$ OR `evidence_status != 'SUFFICIENT'` | **Zero Mistake DNA mutation.** | **Zero mastery penalty.** | Non-punitive prompt to show intermediate step or re-scan handwriting. |
+Sprint 7.5 preserves V036's actual contract: SIGNATURE_SUPPORTED + DETERMINISTIC_EVIDENCE +
+STRUCTURAL_AND_DISPROOF + AUTO_DETECTED, accepted evaluation/execution/source/work lineage, and a confirmed causal prefix.
+There is no numeric classification confidence in V036. Earlier 0.80/0.65 tentative tiers are not implemented or inferred;
+ambiguous, unsupported, generic disproof and review-required diagnoses have zero DNA/mastery mutation.
+Only the five existing MistakeTaxonomy.SKILLS mappings are authoritative. Propensity also requires a matching accepted
+primary skill for the exact canonical source, active compatible ontology and tag accepted before work submission.
+Successful denominators require NO_ERROR_ESTABLISHED plus a verified final answer and all steps VALID_EQUIVALENT.
+Missing tagging or unmapped errors remain auditable without a propensity. No secondary causal exceptions are implemented.
+See the Sprint 7.5 specification and execution report for the complete eligible-cohort contract.
 
 ### 4.3 Exposure-Adjusted Recurring Mistake Rate (`INV-MDNA-003`)
 
@@ -86,7 +88,7 @@ For learner $u$, mistake code $m$, and mapped skill cluster $s(m)$:
    $$\theta_{u,m} = \frac{E_{u,m}^{\text{decayed}} + \alpha_0 \mu_m}{N_{u, s(m)}^{\text{decayed}} + \alpha_0}$$
    where $\mu_m \in (0.02, 0.25)$ is the baseline prior error rate for mistake code $m$ (initialized at $0.10$) and $\alpha_0 = 4.0$ is the prior pseudocount strength.
 
-3. **Severity-Weighted Priority Score $P_{u,m} \in [0, 100]$ (Used by Daily Coach & Study Planner):**
+3. **Future, unimplemented Severity-Weighted Priority Score $P_{u,m} \in [0, 100]$ (Used by Daily Coach & Study Planner):**
    $$P_{u,m} = 100 \cdot \theta_{u,m} \cdot \omega_{\text{severity}}(m) \cdot \omega_{\text{exam}}(s(m)) \cdot (1 - \rho_{\text{remediated}}(u,m))$$
    where:
    - $\omega_{\text{severity}}(m) = 1.0$ for structural misconceptions (`DOMAIN_RESTRICTION`, `INEQUALITY_DIRECTION`, `CALCULUS_RULE_APPLICATION`, `LOGICAL_EQUIVALENCE`), $0.85$ for `ALGEBRAIC_MANIPULATION` / `SIGN_ERROR`, and $0.50$ for isolated `ARITHMETIC_SLIP`.
@@ -97,12 +99,14 @@ For learner $u$, mistake code $m$, and mapped skill cluster $s(m)$:
 
 ## 5. Mistake DNA Lifecycle & Recurrence State Machine
 
-Each `(user_id, mistake_code, canonical_skill_code)` tuple in the learner's Mistake Passport transitions deterministically across six states:
+The six states are a forward contract. Sprint 7.5 only projects OBSERVED_ONCE and RECURRING_PATTERN,
+including reversal after exclusion/decay. The other transitions below require Sprint 7.8 evidence and are not executable yet.
+Removing all effective errors removes a profile without awarding resolution. Each owner/code/skill tuple is independent:
 
 ```mermaid
 stateDiagram-v2
     [*] --> OBSERVED_ONCE: 1st Tier-1 causal error event
-    OBSERVED_ONCE --> RECURRING_PATTERN: >= 2 causal errors within 21d OR propensity >= 0.22
+    OBSERVED_ONCE --> RECURRING_PATTERN: >= 2 causal errors within 21d AND propensity >= 0.22
     OBSERVED_ONCE --> STABLE_RESOLVED: >= 3 consecutive independent successes on skill + 14d no error
     RECURRING_PATTERN --> IN_REMEDIATION: Student starts targeted Twin Drill or Micro-Lesson
     IN_REMEDIATION --> RESOLVED_PENDING_RETENTION: 2 consecutive INDEPENDENT Twin successes (0 hints)
@@ -128,10 +132,13 @@ stateDiagram-v2
 Handwriting OCR and camera captures can misread a minus sign, exponent, or subscript. If a student is falsely accused of a mistake due to an OCR misread, trust collapses immediately.
 
 ### 6.1 Self-Service Dispute Actions (`INV-MDNA-004`)
-On every Attempt Diagnosis screen (`apps/ios/VerifiedAI/Features/AttemptAnalysis/`), the student has two 1-tap corrective actions:
-1. **"Edit Misread Step (`Adımı Düzenle`)"**: Allows editing the LaTeX/math tokens of step $S_i$ and re-running `AttemptEvaluation` (`V035`) and `AttemptMistakeClassification` (`V036`).
-   - If the edited step is valid, the prior `learner_mistake_events` row and `attempt_mistake_classifications` record are marked `SUPERSEDED_BY_OCR_CORRECTION`, and the Mistake DNA propensity $\theta_{u,m}$ and `learner_skill_mastery` (`V031`) are atomically recomputed.
-2. **"Flag Incorrect Diagnosis (`Hatalı Analiz Bildir`)"**: Marks the event as `DISPUTED_BY_LEARNER`, immediately freezes any negative mastery or Mistake DNA impact from that attempt, and queues the anonymized canonical math payload for golden-dataset regression triage.
+The existing Attempt Analysis offers “Edit misread step” and “Report incorrect diagnosis”. V035/V036 rows are never
+modified. V037 append-only dispute/correction operations and V034 revision lineage define effective exclusion.
+Dispute atomically excludes the whole observation from both error/exposure counts and rebuilds profiles. OCR correction
+atomically saves replacement work, excludes the prior revision and returns REEVALUATION_REQUIRED; the learner then invokes
+existing evaluation/classification actions. Late results for superseded work cannot restore it. These paths create no
+mastery side effects, so there is no speculative mastery rollback or automatic golden-dataset/training export.
+The <250 ms rollback objective is unverified until owner execution; local synthetic and staging latency are distinct.
 
 ---
 
@@ -174,7 +181,7 @@ As `domain/46_CURRICULUM_SKILL_ONTOLOGY_AND_TAXONOMY.md` and `MistakeTaxonomy.ja
 ### 10.1 Requirements
 - `MDNA-REQ-001`: Downstream propagated errors (`step_index > first_error_step_index` with `DOWNSTREAM_PROPAGATION`) must never create a recurring mistake entry.
 - `MDNA-REQ-002`: Mistake ranking must use the exposure-adjusted Empirical Bayes rate $\theta_{u,m}$, never raw unnormalized error counts.
-- `MDNA-REQ-003`: Learner OCR correction or dispute must reverse Mistake DNA and mastery side-effects within $< 250\text{ ms}$ p95.
+- `MDNA-REQ-003`: Learner OCR correction or dispute targets reversal of effective Mistake DNA within $< 250\text{ ms}$ p95.
 - `MDNA-REQ-004`: Transitioning a recurring mistake to `RESOLVED_PENDING_RETENTION` requires $\ge 2$ verified `INDEPENDENT` completions (0 hints, no prior solution reveal).
 
 ### 10.2 Explicit Assumptions & Non-Goals
@@ -190,8 +197,8 @@ As `domain/46_CURRICULUM_SKILL_ONTOLOGY_AND_TAXONOMY.md` and `MistakeTaxonomy.ja
 
 ## 11. Risks and Open Decisions
 
-- **Risk `R-MDNA-01` (Sparse Skill Mapping in `mistake-category-v1`):** Currently `MistakeTaxonomy.java` explicitly maps 5 mistake codes to canonical skills while leaving others with `Optional.empty()` skill mapping, falling back to the problem's primary skill.
-  - *Mitigation:* `Sprint 7.5` expands explicit skill-resolution rules so every classified mistake code resolves either to its intrinsic skill code or the attempt's verified `canonical_skill_code`.
+- **Risk `R-MDNA-01` (Sparse Skill Mapping in `mistake-category-v1`):** MistakeTaxonomy explicitly maps five codes; unmapped codes retain a null skill and are never assigned a fallback skill.
+  - *Mitigation:* Sprint 7.5 preserves those five mappings and refuses propensity without matching accepted source-skill provenance. Broader mappings need a separate versioned contract.
 - **Open Decision `OD-MDNA-01`:** Whether `ARITH_BASIC_COMPUTATION` slips should appear in the primary Mistake Passport view or in a secondary "Carelessness / Speed Audit" tab (recommended: secondary tab so structural conceptual traps remain front-and-center).
 
 ---

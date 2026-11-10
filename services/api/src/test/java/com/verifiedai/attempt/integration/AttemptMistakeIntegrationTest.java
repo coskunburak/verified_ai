@@ -20,7 +20,7 @@ class AttemptMistakeIntegrationTest extends AttemptEvaluationIntegrationTest {
     @Autowired AttemptMistakeRepository classifications;
     @Autowired AttemptMistakeClassifier classifier;
     AttemptMistakeService classification(boolean enabled) {
-        return new AttemptMistakeService(sources,attempts,works,evaluations,classifications,classifier,transactions,
+        return new AttemptMistakeService(dna,sources,attempts,works,evaluations,classifications,classifier,transactions,
             Clock.systemUTC(),(p,k)->RateLimitDecision.allow(),metrics,enabled,true,"test",false);
     }
     AttemptEvaluation accepted(AttemptStructuredWork work) {
@@ -131,11 +131,11 @@ class AttemptMistakeIntegrationTest extends AttemptEvaluationIntegrationTest {
         classification(true).classify(owner,problem,work.attemptId(),"metrics-classification",command(e));
         for(var meter:metrics.getMeters()) for(var tag:meter.getId().getTags())
             assertThat(tag.getValue()).doesNotContain(owner.toString(),work.attemptId().toString(),"x=4");
-        var limited=new AttemptMistakeService(sources,attempts,works,evaluations,classifications,classifier,transactions,
+        var limited=new AttemptMistakeService(dna,sources,attempts,works,evaluations,classifications,classifier,transactions,
             Clock.systemUTC(),(p,k)->RateLimitDecision.denied(60),metrics,true,true,"test",false);
         assertThatThrownBy(()->limited.read(owner,problem,work.attemptId()))
             .isInstanceOfSatisfying(ApiProblemException.class,x->assertThat(x.code()).isEqualTo(ApiErrorCode.RATE_LIMIT_EXCEEDED));
-        assertThatThrownBy(()->new AttemptMistakeService(sources,attempts,works,evaluations,classifications,classifier,transactions,
+        assertThatThrownBy(()->new AttemptMistakeService(dna,sources,attempts,works,evaluations,classifications,classifier,transactions,
             Clock.systemUTC(),(p,k)->RateLimitDecision.allow(),metrics,true,true,"production",false)).isInstanceOf(IllegalArgumentException.class);
     }
     @Test void upgradeFromV035AddsNoBackfillAndPreservesOldEvidence() throws Exception {

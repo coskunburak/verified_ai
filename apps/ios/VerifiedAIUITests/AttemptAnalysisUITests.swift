@@ -133,11 +133,14 @@ extension AttemptAnalysisUITests {
     func testEvaluationTurkishExplicitActionAndAccessibility() { structured(turkish: true, evaluate: true) }
     func testClassificationEnglishUncertaintyAndAccessibility() { structured(turkish: false, evaluate: true, classify: true) }
     func testClassificationTurkishUncertaintyAndAccessibility() { structured(turkish: true, evaluate: true, classify: true) }
-    private func structured(turkish: Bool, evaluate: Bool = false, classify: Bool = false) {
+    func testMistakeDisputeEnglishAccessibility() { structured(turkish: false, evaluate: true, classify: true, dna: true) }
+    func testMistakeDisputeTurkishAccessibility() { structured(turkish: true, evaluate: true, classify: true, dna: true) }
+    private func structured(turkish: Bool, evaluate: Bool = false, classify: Bool = false, dna: Bool = false) {
         continueAfterFailure = false
         let app = XCUIApplication()
         app.launchArguments = ["--ui-testing", "--ui-testing-authenticated", "--solve-fixture", "--attempt-fixture", "--solve-reset",
             "--solve-fixture-scope=" + UUID().uuidString, "-AppleLanguages", turkish ? "(tr)" : "(en)", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityM"]
+        if dna { app.launchArguments.append("--fixture-mistake-dna") }
         app.launch(); defer { app.terminate() }
         let row = app.buttons["history.session.00000000-0000-0000-0000-000000005401"]
         let solve = app.buttons["history.solve"]
@@ -189,6 +192,14 @@ extension AttemptAnalysisUITests {
                 XCTAssertTrue(explanation.label.contains(turkish ? "güvenilir" : "reliably"))
                 XCTAssertEqual(app.staticTexts.matching(identifier: "attempt.classification.explanation").count, 1)
                 XCTAssertFalse(app.buttons["attempt.classification.action"].exists)
+                if dna {
+                    tap(app.buttons["attempt.dna.dispute"], app)
+                    let excluded = app.descendants(matching: .any)["attempt.dna.excluded"].firstMatch
+                    XCTAssertTrue(excluded.waitForExistence(timeout: 5))
+                    XCTAssertTrue(excluded.label.contains(turkish ? "çıkarıldı" : "excluded"))
+                    XCTAssertFalse(app.buttons["attempt.dna.dispute"].isEnabled)
+                    XCTAssertFalse(app.buttons["attempt.dna.correct"].exists)
+                }
                 XCTAssertFalse(app.staticTexts["VERIFIED"].exists)
             }
 

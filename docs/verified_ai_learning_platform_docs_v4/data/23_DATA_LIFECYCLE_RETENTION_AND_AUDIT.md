@@ -231,3 +231,12 @@ in student-attempts privacy export as mistakeClassifications. Account/session de
 cascade through structured work and evaluations; independent classification deletion/update is prohibited.
 No raw image/prompt/provider copy is added. Live deletion and existing encrypted-backup expiry/restore deletion
 reconciliation apply; immediate backup erasure is not claimed. Training eligibility remains false.
+
+## Sprint 7.5 Mistake DNA lifecycle
+
+Profiles and operation references are DERIVED_LEARNING, trainingEligible=false. `mistake-dna` account export includes
+as-of projection snapshots and immutable operations; the existing attempt export supplies original work, revisions,
+evaluations and classifications. Account deletion explicitly purges profiles and deletes operations via the parent-work
+cascade. Session/source deletion invalidates profiles. Backup expiry and restore deletion reconciliation remain unchanged.
+OCR corrections reuse V034 storage; no duplicate raw text is stored in V037. Protected, backup-excluded iOS correction
+retry files live in the existing AttemptPending directory and are removed by its account lifecycle purge.

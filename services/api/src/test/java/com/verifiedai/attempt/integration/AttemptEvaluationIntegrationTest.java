@@ -29,6 +29,7 @@ import static org.assertj.core.api.Assertions.*;
 
 @Import(StudentAttemptIntegrationTest.StorageConfiguration.class)
 class AttemptEvaluationIntegrationTest extends PostgresIntegrationTestSupport {
+    @Autowired com.verifiedai.mistake.LearnerMistakeDnaService dna;
     @Autowired JdbcTemplate jdbc;
     @Autowired javax.sql.DataSource dataSource;
     @Autowired CanonicalProblemApplicationService canonical;
@@ -52,7 +53,7 @@ class AttemptEvaluationIntegrationTest extends PostgresIntegrationTestSupport {
         source=new TransactionTemplate(transactions).execute(t->{var s=sources.current(owner,problem);return new AttemptSourceIdentity(s.canonicalProblemId(),s.canonicalRevision(),s.problemParseId(),s.problemParseRevision());});
     }
     AttemptWorkService capture() {
-        return new AttemptWorkService(sources,attempts,works,normalizer,parser,extraction,reader,codec,metrics,
+        return new AttemptWorkService(dna,sources,attempts,works,normalizer,parser,extraction,reader,codec,metrics,
             (p,k)->RateLimitDecision.allow(),Clock.systemUTC(),transactions,true,true,"test",false);
     }
     AttemptStructuredWork work(UUID prior) { return work(prior,"x=4"); }

@@ -1,0 +1,221 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mistake-dna-view-v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "mistake-dna-view-v1"
+    },
+    "enabled": {
+      "type": "boolean"
+    },
+    "policyVersion": {
+      "const": "mistake-dna-v1"
+    },
+    "asOf": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "profiles": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "mistakeCode": {
+            "type": "string"
+          },
+          "skillId": {
+            "type": "string"
+          },
+          "taxonomyVersion": {
+            "const": "attempt-taxonomy-v2"
+          },
+          "categoryVersion": {
+            "const": "mistake-category-v1"
+          },
+          "policyVersion": {
+            "const": "mistake-dna-v1"
+          },
+          "decayedErrorCount": {
+            "type": "number",
+            "minimum": 0
+          },
+          "decayedExposureCount": {
+            "type": "number",
+            "minimum": 0
+          },
+          "smoothedPropensity": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "recentErrorCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "recurrenceState": {
+            "enum": [
+              "OBSERVED_ONCE",
+              "RECURRING_PATTERN",
+              "IN_REMEDIATION",
+              "RESOLVED_PENDING_RETENTION",
+              "STABLE_RESOLVED",
+              "RELAPSED"
+            ]
+          },
+          "lastOccurredAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "asOf": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "mistakeCode",
+          "skillId",
+          "taxonomyVersion",
+          "categoryVersion",
+          "policyVersion",
+          "decayedErrorCount",
+          "decayedExposureCount",
+          "smoothedPropensity",
+          "recentErrorCount",
+          "recurrenceState",
+          "lastOccurredAt",
+          "asOf"
+        ]
+      }
+    },
+    "entries": {
+      "type": "array",
+      "maxItems": 30,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "attemptId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "evaluationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "workRevision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 30
+          },
+          "mistakeCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "skillId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "effectiveStatus": {
+            "enum": [
+              "EFFECTIVE",
+              "DISPUTED_OR_CORRECTED",
+              "SUPERSEDED",
+              "FUTURE_EVIDENCE",
+              "UNMAPPED_SKILL",
+              "INSUFFICIENT_EXPOSURE_EVIDENCE",
+              "DISABLED"
+            ]
+          },
+          "observedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "executionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "skillEvidenceId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "eventId",
+          "attemptId",
+          "evaluationId",
+          "workRevision",
+          "mistakeCode",
+          "skillId",
+          "effectiveStatus",
+          "observedAt",
+          "executionId",
+          "skillEvidenceId"
+        ]
+      }
+    },
+    "limited": {
+      "type": "boolean"
+    },
+    "trainingEligible": {
+      "const": false
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "enabled",
+    "policyVersion",
+    "asOf",
+    "profiles",
+    "entries",
+    "limited",
+    "trainingEligible"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "limited": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "profiles": {
+            "maxItems": 2
+          },
+          "entries": {
+            "maxItems": 0
+          }
+        }
+      }
+    }
+  ]
+}

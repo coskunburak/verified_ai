@@ -863,3 +863,84 @@ private actor ClassificationRecoveryAPI: AttemptAnalysisServicing {
         return result
     }
 }
+
+@MainActor
+final class MistakeDnaTests: XCTestCase {
+    private let owner = UUID(uuidString: "00000000-0000-0000-0000-000000007200")!
+    private func store() -> AttemptAnalysisPendingStore {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        addTeardownBlock { try? FileManager.default.removeItem(at: directory) }
+        return AttemptAnalysisPendingStore(directory: directory)
+    }
+    private func idle(_ model: AnalyzeMyWorkViewModel) async {
+        for _ in 0..<150 { if !model.busy { return }; try? await Task.sleep(nanoseconds: 10_000_000) }
+        XCTFail("DNA operation did not settle")
+    }
+    private func prepare(_ api: FixtureAttemptAnalysisAPI, store: AttemptAnalysisPendingStore, problem: UUID,
+                         native: Bool = false, owns: @escaping @MainActor () async -> Bool = { true }) async -> AnalyzeMyWorkViewModel {
+        let model = AnalyzeMyWorkViewModel(owner: owner, problem: problem, service: api, store: store, ownsAccount: owns)
+        model.resume(); await idle(model); model.draft = "x=5"; model.startStructured()
+        if native, let source = model.context?.source {
+            let observation = AttemptWorkRequest.Observation(id: UUID(), rawText: "x=5", confidence: nil, box: nil)
+            model.workDraft = .init(source: source, engine: "NATIVE_VISION", captureId: UUID(), observations: [observation],
+                steps: [.init(id: UUID(), text: "x=5", role: .intermediate, observationIds: [observation.id], confirmed: true)])
+        }
+        model.submit(); await idle(model); model.evaluateWork(); await idle(model); model.classifyWork(); await idle(model)
+        return model
+    }
+    func testSharedDisputeAndCorrectionContractsRejectForeignIdentityAndTraining() throws {
+        func data(_ name: String) throws -> Data { try Data(contentsOf: XCTUnwrap(Bundle.main.url(forResource: name, withExtension: "json"))) }
+        let result = try JSONDecoder().decode(MistakeDisputeResult.self, from: data("mistake-dispute-result-v1"))
+        _ = try result.validated(attempt: result.attemptId, event: result.classificationId)
+        XCTAssertThrowsError(try result.validated(attempt: UUID(), event: result.classificationId))
+        let state = try JSONDecoder().decode(MistakeEffectiveState.self, from: data("mistake-effective-state-v1"))
+        _ = try state.validated(event: state.eventId)
+        let correction = try JSONDecoder().decode(AttemptOcrCorrectionResult.self, from: data("attempt-ocr-correction-result-v1"))
+        _ = try correction.operation.validated(attempt: correction.operation.attemptId, event: nil)
+        _ = try correction.work.validated(problem: correction.work.problemSessionId)
+        var forged = try JSONSerialization.jsonObject(with: data("mistake-dispute-result-v1")) as! [String: Any]
+        forged["trainingEligible"] = true
+        let bad = try JSONDecoder().decode(MistakeDisputeResult.self, from: JSONSerialization.data(withJSONObject: forged))
+        XCTAssertThrowsError(try bad.validated(attempt: result.attemptId, event: result.classificationId))
+    }
+    func testDisputeLostAcknowledgementRecoversWithoutChangingEvidence() async throws {
+        let api = FixtureAttemptAnalysisAPI(dnaEnabled: true, loseDnaAcknowledgement: true)
+        let model = await prepare(api, store: store(), problem: UUID())
+        let original = try XCTUnwrap(model.classification?.classification?.id)
+        XCTAssertTrue(model.canDispute); model.disputeDiagnosis(); await idle(model); XCTAssertNotNil(model.errorKey)
+        model.retry(); await idle(model)
+        XCTAssertEqual(model.classification?.classification?.id, original)
+        XCTAssertEqual(model.effectiveMistake?.effectiveStatus, "DISPUTED_OR_CORRECTED"); XCTAssertFalse(model.canDispute)
+    }
+    func testCorrectionSurvivesRelaunchAndKeepsOriginalOcr() async throws {
+        let api = FixtureAttemptAnalysisAPI(dnaEnabled: true, loseDnaAcknowledgement: true), pending = store(), problem = UUID()
+        let model = await prepare(api, store: pending, problem: problem, native: true)
+        let original = try XCTUnwrap(model.workResult)
+        XCTAssertTrue(model.canCorrectOcr); model.correctOcr(step: 1, text: "x=4"); await idle(model)
+        let operation = try XCTUnwrap(model.pendingCorrection); model.suspend()
+        XCTAssertNil(try pending.loadCorrection(owner: UUID(), problem: problem))
+        let reopened = AnalyzeMyWorkViewModel(owner: owner, problem: problem, service: api, store: pending, ownsAccount: { true })
+        reopened.resume(); await idle(reopened); XCTAssertEqual(reopened.pendingCorrection, operation)
+        reopened.retry(); await idle(reopened)
+        XCTAssertNil(reopened.pendingCorrection); XCTAssertNil(reopened.evaluation?.evaluation)
+        XCTAssertEqual(reopened.workResult?.supersedesAttemptId, original.attemptId)
+        XCTAssertEqual(reopened.workResult?.observations, original.observations)
+        XCTAssertEqual(reopened.workResult?.steps.first?.reviewedText, "x=4")
+        XCTAssertTrue(reopened.canEvaluate)
+    }
+    func testLateDisputeCannotPublishAfterAccountSwitch() async {
+        var owns = true
+        let api = FixtureAttemptAnalysisAPI(dnaEnabled: true, dnaDelay: true)
+        let model = await prepare(api, store: store(), problem: UUID(), owns: { owns })
+        model.disputeDiagnosis(); owns = false; await idle(model)
+        XCTAssertNil(model.effectiveMistake); XCTAssertNil(model.classification)
+    }
+    func testDisabledActionsAndLocalizedSafetyCopy() async {
+        let model = await prepare(FixtureAttemptAnalysisAPI(), store: store(), problem: UUID())
+        XCTAssertFalse(model.canDispute); XCTAssertFalse(model.canCorrectOcr)
+        for key in ["dispute", "excluded", "correct", "step", "correctedText", "reevaluate", "save"] {
+            let name = "attempt.dna." + key
+            XCTAssertNotEqual(String(localized: String.LocalizationValue(name)), name)
+        }
+    }
+}

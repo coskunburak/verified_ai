@@ -4,6 +4,70 @@ info:
   version: 0.1.0
 
 paths:
+  /api/v1/mistakes/dna:
+    get:
+      summary: Read effective mistake state
+      security: [{bearerAuth: []}]
+      responses:
+        "200":
+          description: Owner scoped result. Correction requires explicit re-evaluation. FREE DNA reads contain at most two profiles and no ledger entries.
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/MistakeDnaView"}
+        default: {$ref: "#/components/responses/Problem"}
+  /api/v1/mistakes/{eventId}/effective-state:
+    get:
+      summary: Read effective mistake state
+      security: [{bearerAuth: []}]
+      parameters:
+        - {name: eventId, in: path, required: true, schema: {type: string, format: uuid}}
+      responses:
+        "200":
+          description: Owner scoped result. Correction requires explicit re-evaluation. FREE DNA reads contain at most two profiles and no ledger entries.
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/MistakeEffectiveState"}
+        default: {$ref: "#/components/responses/Problem"}
+  /api/v1/mistakes/{eventId}/dispute:
+    post:
+      summary: Record immutable learner correction
+      security: [{bearerAuth: []}]
+      parameters:
+        - {name: eventId, in: path, required: true, schema: {type: string, format: uuid}}
+        - {name: Idempotency-Key, in: header, required: true, schema: {type: string, pattern: "^[A-Za-z0-9_-]{8,128}$"}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/MistakeDisputeRequest"}
+      responses:
+        "200":
+          description: Owner scoped result. Correction requires explicit re-evaluation. FREE DNA reads contain at most two profiles and no ledger entries.
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/MistakeDisputeResult"}
+        default: {$ref: "#/components/responses/Problem"}
+  /api/v1/problem-sessions/{problemId}/attempts/{id}/steps/{stepIndex}/correct-ocr:
+    post:
+      summary: Record immutable learner correction
+      security: [{bearerAuth: []}]
+      parameters:
+        - {name: problemId, in: path, required: true, schema: {type: string, format: uuid}}
+        - {name: id, in: path, required: true, schema: {type: string, format: uuid}}
+        - {name: stepIndex, in: path, required: true, schema: {type: integer, minimum: 1, maximum: 12}}
+        - {name: Idempotency-Key, in: header, required: true, schema: {type: string, pattern: "^[A-Za-z0-9_-]{8,128}$"}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/AttemptOcrCorrectionRequest"}
+      responses:
+        "200":
+          description: Owner scoped result. Correction requires explicit re-evaluation. FREE DNA reads contain at most two profiles and no ledger entries.
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/AttemptOcrCorrectionResult"}
+        default: {$ref: "#/components/responses/Problem"}
   /api/v1/problem-sessions/{problemId}/visualizations/context:
     parameters:
       - {name: problemId, in: path, required: true, schema: {type: string, format: uuid}}
@@ -2745,6 +2809,1126 @@ components:
           schema: {"$ref": "#/components/schemas/ProblemDetails"}
 
   schemas:
+    MistakeDnaView: {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schemaVersion": {
+          "const": "mistake-dna-view-v1"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "policyVersion": {
+          "const": "mistake-dna-v1"
+        },
+        "asOf": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "profiles": {
+          "type": "array",
+          "maxItems": 5,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mistakeCode": {
+                "type": "string"
+              },
+              "skillId": {
+                "type": "string"
+              },
+              "taxonomyVersion": {
+                "const": "attempt-taxonomy-v2"
+              },
+              "categoryVersion": {
+                "const": "mistake-category-v1"
+              },
+              "policyVersion": {
+                "const": "mistake-dna-v1"
+              },
+              "decayedErrorCount": {
+                "type": "number",
+                "minimum": 0
+              },
+              "decayedExposureCount": {
+                "type": "number",
+                "minimum": 0
+              },
+              "smoothedPropensity": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "recentErrorCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "recurrenceState": {
+                "enum": [
+                  "OBSERVED_ONCE",
+                  "RECURRING_PATTERN",
+                  "IN_REMEDIATION",
+                  "RESOLVED_PENDING_RETENTION",
+                  "STABLE_RESOLVED",
+                  "RELAPSED"
+                ]
+              },
+              "lastOccurredAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "asOf": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "required": [
+              "mistakeCode",
+              "skillId",
+              "taxonomyVersion",
+              "categoryVersion",
+              "policyVersion",
+              "decayedErrorCount",
+              "decayedExposureCount",
+              "smoothedPropensity",
+              "recentErrorCount",
+              "recurrenceState",
+              "lastOccurredAt",
+              "asOf"
+            ]
+          }
+        },
+        "entries": {
+          "type": "array",
+          "maxItems": 30,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "eventId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "attemptId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "evaluationId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "workRevision": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 30
+              },
+              "mistakeCode": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "skillId": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "effectiveStatus": {
+                "enum": [
+                  "EFFECTIVE",
+                  "DISPUTED_OR_CORRECTED",
+                  "SUPERSEDED",
+                  "FUTURE_EVIDENCE",
+                  "UNMAPPED_SKILL",
+                  "INSUFFICIENT_EXPOSURE_EVIDENCE",
+                  "DISABLED"
+                ]
+              },
+              "observedAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "executionId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "skillEvidenceId": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "eventId",
+              "attemptId",
+              "evaluationId",
+              "workRevision",
+              "mistakeCode",
+              "skillId",
+              "effectiveStatus",
+              "observedAt",
+              "executionId",
+              "skillEvidenceId"
+            ]
+          }
+        },
+        "limited": {
+          "type": "boolean"
+        },
+        "trainingEligible": {
+          "const": false
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "enabled",
+        "policyVersion",
+        "asOf",
+        "profiles",
+        "entries",
+        "limited",
+        "trainingEligible"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "limited": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "profiles": {
+                "maxItems": 2
+              },
+              "entries": {
+                "maxItems": 0
+              }
+            }
+          }
+        }
+      ]
+    }
+    MistakeDisputeRequest: {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schemaVersion": {
+          "const": "mistake-dispute-request-v1"
+        },
+        "evaluationId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "workRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "evaluationId",
+        "workRevision"
+      ]
+    }
+    MistakeDisputeResult: {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schemaVersion": {
+          "const": "mistake-dispute-result-v1"
+        },
+        "operationId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "attemptId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "classificationId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "replacementAttemptId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "enum": [
+            "EXCLUDED",
+            "REEVALUATION_REQUIRED"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "trainingEligible": {
+          "const": false
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "operationId",
+        "attemptId",
+        "classificationId",
+        "replacementAttemptId",
+        "status",
+        "createdAt",
+        "trainingEligible"
+      ],
+      "oneOf": [
+        {
+          "properties": {
+            "status": {
+              "const": "EXCLUDED"
+            },
+            "classificationId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "replacementAttemptId": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "status": {
+              "const": "REEVALUATION_REQUIRED"
+            },
+            "classificationId": {
+              "type": "null"
+            },
+            "replacementAttemptId": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        }
+      ]
+    }
+    MistakeEffectiveState: {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schemaVersion": {
+          "const": "mistake-effective-state-v1"
+        },
+        "eventId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "effectiveStatus": {
+          "enum": [
+            "EFFECTIVE",
+            "DISPUTED_OR_CORRECTED",
+            "SUPERSEDED",
+            "FUTURE_EVIDENCE",
+            "UNMAPPED_SKILL",
+            "INSUFFICIENT_EXPOSURE_EVIDENCE",
+            "DISABLED"
+          ]
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "eventId",
+        "enabled",
+        "effectiveStatus"
+      ]
+    }
+    AttemptOcrCorrectionRequest: {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schemaVersion": {
+          "const": "attempt-ocr-correction-request-v1"
+        },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "canonicalId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "canonicalRevision": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "parseId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "parseRevision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "canonicalId",
+            "canonicalRevision",
+            "parseId",
+            "parseRevision"
+          ]
+        },
+        "workRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        },
+        "correctedText": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^[^\\r\\n]+$"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "source",
+        "workRevision",
+        "correctedText"
+      ]
+    }
+    AttemptOcrCorrectionResult: {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schemaVersion": {
+          "const": "attempt-ocr-correction-result-v1"
+        },
+        "operation": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "schemaVersion": {
+              "const": "mistake-dispute-result-v1"
+            },
+            "operationId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "attemptId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "classificationId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "replacementAttemptId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "status": {
+              "enum": [
+                "EXCLUDED",
+                "REEVALUATION_REQUIRED"
+              ]
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "trainingEligible": {
+              "const": false
+            }
+          },
+          "required": [
+            "schemaVersion",
+            "operationId",
+            "attemptId",
+            "classificationId",
+            "replacementAttemptId",
+            "status",
+            "createdAt",
+            "trainingEligible"
+          ],
+          "oneOf": [
+            {
+              "properties": {
+                "status": {
+                  "const": "EXCLUDED"
+                },
+                "classificationId": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "replacementAttemptId": {
+                  "type": "null"
+                }
+              }
+            },
+            {
+              "properties": {
+                "status": {
+                  "const": "REEVALUATION_REQUIRED"
+                },
+                "classificationId": {
+                  "type": "null"
+                },
+                "replacementAttemptId": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            }
+          ]
+        },
+        "work": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "schemaVersion": {
+              "const": "attempt-structured-work-v1"
+            },
+            "attemptId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "ownerId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "problemSessionId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "source": {
+              "$ref": "#/components/schemas/AttemptOcrCorrectionResult/$defs/source"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 30
+            },
+            "supersedesAttemptId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "normalizationVersion": {
+              "const": "structured-canonical-v1"
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "engine": {
+              "enum": [
+                "MANUAL",
+                "NATIVE_VISION",
+                "GATEWAY_RECOGNITION"
+              ]
+            },
+            "provenance": {
+              "enum": [
+                "CLIENT_ATTESTED",
+                "SERVER_RECORDED"
+              ]
+            },
+            "captureId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "assetSessionId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "recognitionJobId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "provider": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 96
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "model": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 96
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "promptVersion": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 96
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "observations": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/AttemptOcrCorrectionResult/$defs/observation"
+              },
+              "minItems": 0,
+              "maxItems": 12
+            },
+            "steps": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/AttemptOcrCorrectionResult/$defs/step"
+              },
+              "minItems": 1,
+              "maxItems": 12,
+              "uniqueItems": true,
+              "contains": {
+                "properties": {
+                  "role": {
+                    "const": "FINAL_ANSWER"
+                  }
+                }
+              },
+              "minContains": 0,
+              "maxContains": 1
+            },
+            "trainingEligible": {
+              "const": false
+            }
+          },
+          "required": [
+            "schemaVersion",
+            "attemptId",
+            "ownerId",
+            "problemSessionId",
+            "source",
+            "revision",
+            "supersedesAttemptId",
+            "normalizationVersion",
+            "createdAt",
+            "engine",
+            "provenance",
+            "captureId",
+            "assetSessionId",
+            "recognitionJobId",
+            "provider",
+            "model",
+            "promptVersion",
+            "observations",
+            "steps",
+            "trainingEligible"
+          ],
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "engine": {
+                    "const": "MANUAL"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "captureId": {
+                    "type": "null"
+                  },
+                  "assetSessionId": {
+                    "type": "null"
+                  },
+                  "recognitionJobId": {
+                    "type": "null"
+                  },
+                  "observations": {
+                    "maxItems": 0
+                  },
+                  "steps": {
+                    "items": {
+                      "properties": {
+                        "observationIds": {
+                          "maxItems": 0
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "engine": {
+                    "const": "NATIVE_VISION"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "assetSessionId": {
+                    "type": "null"
+                  },
+                  "recognitionJobId": {
+                    "type": "null"
+                  },
+                  "captureId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "observations": {
+                    "minItems": 1
+                  },
+                  "steps": {
+                    "items": {
+                      "properties": {
+                        "observationIds": {
+                          "minItems": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "engine": {
+                    "const": "GATEWAY_RECOGNITION"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "captureId": {
+                    "type": "null"
+                  },
+                  "assetSessionId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "recognitionJobId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "observations": {
+                    "minItems": 1
+                  },
+                  "steps": {
+                    "items": {
+                      "properties": {
+                        "observationIds": {
+                          "minItems": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "engine": {
+                    "const": "GATEWAY_RECOGNITION"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "provenance": {
+                    "const": "SERVER_RECORDED"
+                  },
+                  "provider": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  },
+                  "promptVersion": {
+                    "type": "string"
+                  }
+                }
+              },
+              "else": {
+                "properties": {
+                  "provenance": {
+                    "const": "CLIENT_ATTESTED"
+                  },
+                  "provider": {
+                    "type": "null"
+                  },
+                  "model": {
+                    "type": "null"
+                  },
+                  "promptVersion": {
+                    "type": "null"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "operation",
+        "work"
+      ],
+      "$defs": {
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "canonicalId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "canonicalRevision": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "parseId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "parseRevision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "canonicalId",
+            "canonicalRevision",
+            "parseId",
+            "parseRevision"
+          ]
+        },
+        "box": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "x": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "y": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "width": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "height": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          },
+          "required": [
+            "x",
+            "y",
+            "width",
+            "height"
+          ]
+        },
+        "observation": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "rawText": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "confidence": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "box": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/AttemptOcrCorrectionResult/$defs/box"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "rawText",
+            "confidence",
+            "box"
+          ]
+        },
+        "step": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "index": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 12
+            },
+            "role": {
+              "enum": [
+                "INTERMEDIATE",
+                "FINAL_ANSWER",
+                "AMBIGUOUS"
+              ]
+            },
+            "originalText": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "reviewedText": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "observationIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "minItems": 0,
+              "maxItems": 12,
+              "uniqueItems": true
+            },
+            "normalizedStatement": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 1800
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "normalizationStatus": {
+              "enum": [
+                "NORMALIZED",
+                "UNSUPPORTED",
+                "REVIEW_REQUIRED"
+              ]
+            },
+            "reviewStatus": {
+              "enum": [
+                "CONFIRMED",
+                "REQUIRED"
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "index",
+            "role",
+            "originalText",
+            "reviewedText",
+            "observationIds",
+            "normalizedStatement",
+            "normalizationStatus",
+            "reviewStatus"
+          ],
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "normalizationStatus": {
+                    "const": "NORMALIZED"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "normalizedStatement": {
+                    "type": "string"
+                  },
+                  "reviewStatus": {
+                    "const": "CONFIRMED"
+                  }
+                }
+              },
+              "else": {
+                "properties": {
+                  "normalizedStatement": {
+                    "type": "null"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "reviewStatus": {
+                    "const": "REQUIRED"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "normalizationStatus": {
+                    "const": "REVIEW_REQUIRED"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "normalizationStatus": {
+                    "const": "REVIEW_REQUIRED"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "reviewStatus": {
+                    "const": "REQUIRED"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "role": {
+                    "const": "AMBIGUOUS"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "reviewStatus": {
+                    "const": "REQUIRED"
+                  },
+                  "normalizationStatus": {
+                    "const": "REVIEW_REQUIRED"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
     TutorHint: {
       "type": "object",
       "additionalProperties": false,

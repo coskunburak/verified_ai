@@ -770,3 +770,13 @@ trigger validates source revision, execution, work revision, causal step, code a
 The derived artifact is bounded JSONB (8192 bytes), training_eligible=false. Owner/attempt/time indexes support
 historical reads/export. Deletion follows the evaluation parent; no destructive backfill or mastery update.
 Rollback disables creation and retains the new schema/readers. Future policy versions need additive migrations.
+
+## Sprint 7.5 reproducible DNA projections and immutable exclusions
+
+V037 adds `learner_mistake_dna_profiles` (owner/code/skill/policy key; taxonomy/category, scale-8 decayed counts and
+propensity, recurrence, recent count, last event and as-of timestamp) and `learner_mistake_dispute_events` (immutable
+owner/attempt/classification/replacement references, operation type, step index, hash-bound key, policy and timestamp).
+Composite owner FKs prevent cross-account linkage. Unique owner/key and attempt/type constraints prevent duplicate operations.
+The shared account row lock serializes classification, supersession, dispute, projection and deletion. Projection rows are
+rebuildable caches; source deletion invalidates them. Operations follow a single parent-work cascade with deferred auxiliary
+references. No V031 event table duplication or V035/V036 artifact updates occur; only V037 is newly authored, not applied.

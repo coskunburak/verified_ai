@@ -2,7 +2,7 @@
 
 ## Sprint mission
 
-Create a durable, searchable, grouped mistake history with review states and practice-again actions.
+Create the longitudinal Mistake DNA foundation and correction/dispute controls. The reconciled Sprint 7.5 contract below scopes full Passport and practice-again workflows to Sprints 7.7–7.8.
 
 This sprint is a production delivery unit. It is not complete when the happy-path UI or endpoint exists; it is complete when domain semantics, failure behavior, security, telemetry, test coverage, documentation, and operational ownership are coherent.
 
@@ -69,7 +69,7 @@ The platform intentionally separates product semantics, learner state, AI-genera
 
 - `services/api/src/main/java/com/verifiedai/mistake/**`
 - `services/api/src/main/java/com/verifiedai/attempt/**`
-- `services/api/src/main/resources/db/migration/platform/V037__learner_mistake_dna_profiles_and_disputes.sql` *(PLANNED)*
+- `services/api/src/main/resources/db/migration/platform/V037__learner_mistake_dna_profiles_and_disputes.sql` *(AUTHORED — NOT APPLIED)*
 - corresponding module tests (`MistakeDnaServiceTest`, `MistakeDisputeRollbackIntegrationTest`) and `ModularityTests`.
 
 ## iOS implementation work
@@ -409,80 +409,95 @@ Codex must implement this sprint in small reviewable slices, re-reading the high
 
 ## 1. Sprint Metadata & Status
 - **Sprint ID:** `SPRINT_7.5`
-- **Canonical Title:** Automatic Mistake Book, Longitudinal Mistake DNA Ledger, and OCR Dispute Rollback Workflows
-- **Status:** `PLANNED` (`GATED_ON_SPRINT_7_4_OWNER_ACCEPTANCE`)
-- **Primary Spec Reference:** `learning/83_VERIFIED_MISTAKE_DNA_AND_MISTAKE_PASSPORT_SPECIFICATION.md`
+- **Status:** `SOURCE_COMPLETE_PENDING_OWNER_TEST`; `PRODUCTION_NOT_AUTHORIZED`.
+- **Entry gate:** Sprint 7.4 implementation is committed at `e39bafe`; a matching passing FULL owner run is not established locally. Isolated Sprint 7.5 source work is authorized; acceptance and release remain blocked.
+- **Source report:** `SPRINT_7.5_EXECUTION_REPORT.md` contains the implementation map, acceptance coverage, limitations and exact file changes.
 
 ## 2. Strategic Learning OS Objective & User Value
-Transforms isolated per-attempt mistake classifications (`V036` `attempt_mistake_classifications`) and raw mistake events (`V031` `learner_mistake_events`) into a longitudinal **Mistake DNA Ledger** that tracks exposure-adjusted recurring error propensity ($\theta_{u,m}$), enforces first-meaningful-error causal filtering (`INV-MDNA-001`), manages the 6-state recurrence lifecycle (`OBSERVED_ONCE` -> `RECURRING_PATTERN` -> `IN_REMEDIATION` -> `RESOLVED_PENDING_RETENTION` -> `STABLE_RESOLVED` / `RELAPSED`), and empowers learners to self-correct OCR step misreads or dispute diagnoses with immediate `<250ms` rollback (`INV-MDNA-004`).
+Implement the longitudinal Mistake DNA foundation and learner correction/dispute controls in Attempt Analysis.
+The original broad Mistake Book/practice-again mission is superseded by roadmap 87: full Passport is Sprint 7.7,
+remediation and retention closure are Sprint 7.8, mastery is Sprint 7.6. None is launched here.
 
 ## 3. Entry Gate & Preconditions
-- `Sprint 7.4` (`V036`, `MistakeTaxonomy` `mistake-category-v1`) must pass owner acceptance (`bash scripts/quality/sprint_7_4_owner_acceptance.sh --full`).
-- Existing `V030`–`V036` schema lineage must remain untouched and forward-compatible.
+Preserve V030–V036 files and immutable accepted evidence. The owner-only runner checks original Sprint 7.4 FULL
+evidence against committed runtime/test/contracts at `e39bafe`; it does not execute or overwrite old acceptance runs.
+An unavailable prior gate returns BLOCKED while independent Sprint 7.5 checks still run.
 
 ## 4. Domain Invariants & Mathematical Rules
-1. **Causal First-Error Isolation (`INV-MDNA-001`):** Only `first_error_step_index` from `AttemptEvaluation` (`V035`) emits a primary causal mistake update. Downstream propagated steps (`DOWNSTREAM_PROPAGATION`) never increment error counts.
-2. **Confidence Eligibility Gate (`INV-MDNA-002`):** Only `CLASSIFIED` attempts with `evidence_status == 'SUFFICIENT'` and `confidence >= 0.80` directly mutate recurring pattern states; `0.65 <= confidence < 0.80` records a tentative signal; `< 0.65` or `UNCLASSIFIED` / `STEP_GAP_TOO_WIDE` causes zero mutation.
-3. **Exposure-Adjusted Empirical Bayes Rate (`INV-MDNA-003`):**
-   $$\theta_{u,m} = \frac{E_{u,m}^{\text{decayed}} + \alpha_0 \mu_m}{N_{u, s(m)}^{\text{decayed}} + \alpha_0}, \qquad h_m = 21\text{ days},\; \alpha_0 = 4.0$$
-4. **Atomic Dispute/OCR Rollback (`INV-MDNA-004`):** Editing a misread step or disputing a diagnosis marks the prior event `SUPERSEDED_BY_OCR_CORRECTION` or `DISPUTED_BY_LEARNER` and recomputes $\theta_{u,m}$ deterministically.
+1. `INV-MDNA-001`: one V036 classification per accepted evaluation; only its validated first wrong step can be causal. Later NOT_ASSESSED/EARLIER_DIVERGENCE steps contribute nothing. No secondary causal error inference.
+2. `INV-MDNA-002`: retain `attempt-taxonomy-v2`, `mistake-category-v1`, `evidence-classifier-v1`, `bounded-attempt-v2` and `structural-signatures-v1`. Eligibility requires `SIGNATURE_SUPPORTED`, `DETERMINISTIC_EVIDENCE`, `STRUCTURAL_AND_DISPROOF`, `AUTO_DETECTED`, accepted source/work/execution lineage and a confirmed causal prefix. V036 has no numerical confidence; no numeric or tentative tier is manufactured.
+3. `INV-MDNA-003`: an exposure requires the exact canonical source's latest accepted CLASSIFIED primary-skill tag **as of work submission**, a compatible active curriculum ontology, and either the eligible mapped causal diagnosis or a fully verified final answer with every step VALID_EQUIVALENT and NO_ERROR_ESTABLISHED classification. A causal code's existing authoritative skill must match that source tag. Missing, ambiguous, unrelated or unmapped skill evidence cannot produce propensity. This is a conservative eligible-evidence cohort, not a rate across all raw attempts. V031 legacy skill labels/Twin events are not denominators.
+4. Weight is `2^(-elapsedUtcDays/21)`; propensity is `(decayedErrors + 4*0.10)/(decayedExposures + 4)`. Stable time/UUID ordering, StrictMath, injected Clock, UTC microsecond snapshots, scale 8 HALF_EVEN output and threshold comparison. Future events are excluded until their event time. Delayed evidence uses original work time. There are no invented severity/exam weights.
+5. Recurrence requires **two causal errors in the inclusive preceding 21 days AND rounded propensity >= 0.22**. Only OBSERVED_ONCE and RECURRING_PATTERN are projected. All six enum states are reserved; remediation/resolution/relapse transitions require future evidence and are rejected here. Removing all effective errors removes the profile, not a false resolved badge.
+6. `INV-MDNA-004`: append-only learner operations exclude the original attempt from both numerator and denominator; recompute in the same owner-locked transaction. Ordinary structured-work supersession also invalidates the earlier revision. Dispute has no automatic reactivation. Source/parent deletion invalidates cached profiles.
 
 ## 5. Owning Spring Modulith Backend Modules & Classes
-- `com.verifiedai.mistake`:
-  - `LearnerMistakeDnaProfile.java` (Aggregate root for `(userId, mistakeCode, canonicalSkillCode)`)
-  - `MistakeRecurrenceState.java` (`OBSERVED_ONCE`, `RECURRING_PATTERN`, `IN_REMEDIATION`, `RESOLVED_PENDING_RETENTION`, `STABLE_RESOLVED`, `RELAPSED`)
-  - `EmpiricalBayesMistakeRateCalculator.java` (pure deterministic math service)
-  - `LearnerMistakeDnaService.java` (handles `AttemptMistakeClassifiedEvent`, state transitions, and dispute rollbacks)
-  - `MistakeDnaPrivacyLifecycleContributor.java` (implements `AccountPrivacyLifecycleContributor`)
-- `com.verifiedai.attempt`:
-  - `AttemptStepOcrCorrectionService.java` (re-evaluates corrected step via `AttemptEvaluationService` and triggers DNA rollback)
+- `mistake`: LearnerMistakeDnaService, LearnerMistakeDnaProfile, EmpiricalBayesMistakeRateCalculator, MistakeRecurrenceState, MistakeDnaEvidenceSource, MistakeDnaRepository and MistakeDnaPrivacyLifecycleContributor.
+- `attempt`: AttemptMistakeDnaEvidenceSource validates immutable lineage through the public mistake port; AttemptMistakeService refreshes accepted/replayed classifications; AttemptWorkService refreshes supersession; AttemptStepOcrCorrectionService creates the replacement work.
+- `problem`: SolveSourceAccess.skillAt supplies existing accepted source-specific curriculum provenance. It neither classifies new math nor calls a provider.
+- Dependency direction remains attempt -> mistake; mistake imports no attempt implementation classes.
 
-## 6. Python Math Verifier Impact (`services/math-verifier/`)
-- Reuses `services/math-verifier/app/verifiers/attempt_diagnosis.py` and `counterexample_engine.py`; no new paid LLM dependency.
+## 6. Python Math Verifier Impact
+No verifier algorithms, paid calls or model routing changes. Existing evaluation/classification workflows remain the sole mathematical authority.
 
-## 7. Database Migration & Persistence Contract (`PLANNED V037`)
-- **Migration File:** `services/api/src/main/resources/db/migration/platform/V037__learner_mistake_dna_profiles_and_disputes.sql` *(PLANNED)*
-- **Tables:**
-  - `learner_mistake_dna_profiles`: `id (UUID PK)`, `user_id (UUID NOT NULL)`, `mistake_code (VARCHAR(64) NOT NULL)`, `category (VARCHAR(64) NOT NULL)`, `canonical_skill_code (VARCHAR(128) NOT NULL)`, `taxonomy_version (VARCHAR(32) NOT NULL)`, `decayed_exposure_count (NUMERIC(10,4))`, `decayed_error_count (NUMERIC(10,4))`, `smoothed_propensity (NUMERIC(6,4))`, `priority_score (NUMERIC(6,2))`, `recurrence_state (VARCHAR(32) NOT NULL)`, `consecutive_independent_passes (INT NOT NULL DEFAULT 0)`, `last_attempt_id (UUID)`, `last_counterexample_json (JSONB)`, `last_occurred_at (TIMESTAMPTZ)`, `last_remediated_at (TIMESTAMPTZ)`, `next_retention_check_at (TIMESTAMPTZ)`, `updated_at (TIMESTAMPTZ)`. Unique index on `(user_id, mistake_code, canonical_skill_code)`.
-  - `learner_mistake_dispute_events`: `id (UUID PK)`, `user_id (UUID NOT NULL)`, `attempt_id (UUID NOT NULL)`, `step_index (INT)`, `dispute_type (VARCHAR(32) NOT NULL)`, `previous_step_latex (TEXT)`, `corrected_step_latex (TEXT)`, `resolution_status (VARCHAR(32) NOT NULL)`, `created_at (TIMESTAMPTZ NOT NULL)`.
+## 7. Database Migration & Persistence Contract
+`V037__learner_mistake_dna_profiles_and_disputes.sql` is authored, NOT APPLIED.
+- `learner_mistake_dna_profiles` is a disposable derived cache keyed by owner/code/skill/policy, with taxonomy/category versions, decayed counts, propensity, recent count, recurrence, last event and as-of time.
+- `learner_mistake_dispute_events` is append-only, owner/attempt bound, unique by owner/key and attempt/operation type. Composite FKs bind classifications and replacement work. Hash-bound retries return the original operation. OCR rows reference original/replacement work instead of copying private step text.
+- V036 remains the immutable diagnosis ledger; V034 remains revision history. V031 is not duplicated or rewritten. Profile deletion on parent classification cascade prevents orphaned derived retention.
 
-## 8. REST API Contracts (`CNT-LOS-01` & `CNT-LOS-02`)
-- `GET /v1/mistake-passport` (`schemaVersion: "mistake-passport-v1"`)
-- `POST /v1/attempts/{attemptId}/steps/{stepIndex}/correct-ocr` (`Idempotency-Key` required)
-- `POST /v1/mistakes/{eventId}/dispute` (`Idempotency-Key` required)
+## 8. REST API Contracts
+- `GET /api/v1/mistakes/dna`: FREE receives at most two grouped profiles and no ledger entries; current PRO/PRO_PLUS entitlement permits the owner ledger. Stable grouping/ranking is propensity descending then code/skill; no full Passport experience.
+- `GET /api/v1/mistakes/{eventId}/effective-state`: owner-only per-diagnosis state, available independently of premium history access.
+- `POST /api/v1/mistakes/{eventId}/dispute`: strict `mistake-dispute-request-v1` and Idempotency-Key; response `mistake-dispute-result-v1`, EXCLUDED.
+- `POST /api/v1/problem-sessions/{problemId}/attempts/{id}/steps/{stepIndex}/correct-ocr`: strict `attempt-ocr-correction-request-v1`; preserves original OCR and creates a new immutable work revision. Response `attempt-ocr-correction-result-v1`, REEVALUATION_REQUIRED. Explicit existing evaluation/classification actions subsequently admit new accepted evidence. No network I/O occurs in the correction transaction.
+- Existing Problem Details, 16 KiB body bound, owner locks, rate limiting and 8–128 character idempotency keys apply. Foreign resources return 404. Manual work cannot be relabeled as OCR.
 
-## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android (`apps/android/`) Scope
-- Adds `Adımı Düzenle (OCR Hatası)` and `Hatalı Analiz Bildir` actions to `apps/ios/VerifiedAI/Features/AttemptAnalysis/` (Screen 3 in `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md`).
-- Shared JSON fixtures exported for Android parity (`Sprint 12.10`).
+## 9. iOS Scope
+Attempt Analysis gains localized EN/TR dispute status and a step correction editor. Responses are fenced by account,
+generation and original evidence identity. Correction retries are owner/problem scoped, size bounded, protected on disk,
+excluded from backup and covered by the existing account purge. An uncertain acknowledgement can be retried with its
+saved key after relaunch. Reviewing saved history discards only the local retry, never undoes a server correction.
+No Android application or Passport screen is introduced.
 
 ## 10. AI Capability & Unit Economics Guardrail
-- **100% Deterministic CPU execution (`$0.00` LLM token cost)** for Mistake DNA aggregation, Beta-Binomial rate smoothing, and dispute rollback.
+Zero new inference calls for aggregation/dispute/correction. Explicit re-evaluation uses the existing bounded verifier,
+not a paid model. No student data becomes training-eligible.
 
 ## 11. Privacy, Safety & Compliance
-- Registers `MistakeDnaPrivacyLifecycleContributor` so `DELETE /v1/accounts/me` purges `learner_mistake_dna_profiles` and `learner_mistake_dispute_events` (`G-PRIV-01` in `quality/91`).
+The existing AccountDataLifecycleContributor mechanism exports cached profiles (explicit as-of snapshots) and immutable
+operation references. Account deletion removes profiles and parent-work cascades remove operations. Retention follows
+DERIVED_LEARNING and existing backup expiry/deletion reconciliation; no new raw-image TTL or training consent is invented.
 
 ## 12. Telemetry & Observability
-- Emits `mistake_dna_updated`, `mistake_dna_state_transitioned`, `attempt_step_ocr_corrected`, and `attempt_diagnosis_disputed`.
+After commit: mistake_dna_updated, mistake_dna_state_transitioned (bounded from/to), attempt_step_ocr_corrected,
+attempt_diagnosis_disputed. No student IDs, step text or private evidence IDs in metric tags. Rollback duration includes
+DB projection work and exposes a 250 ms histogram boundary. Production/staging latency remains unverified.
 
 ## 13. Feature Flags & Rollback Plan
-- Controlled by `verifiedai.mistake.dna-ledger-enabled: false` (default off in `application.yml`). Disabling preserves `V037` rows read-only while reverting UI to single-attempt classification view.
+`verifiedai.mistake.dna-enabled` / `MISTAKE_DNA_ENABLED` defaults false, additionally requires attempt capability and
+existing production authorization outside local/test. Disabling stops new DNA operations/projection delivery; original
+classification/history/privacy and accepted operation replay remain. Retain V037 and compatible readers; do not roll back
+migrations or erase evidence. Re-enabling rebuilds derived state from effective history.
 
-## 14. Automated Test Matrix (Categories A–F)
-- **A:** `ModularityTests` verifying `mistake` <-> `attempt` boundaries.
-- **B:** `EmpiricalBayesMistakeRateCalculatorTest` (verifying 2/3 errors ranks higher than 3/40 errors), `MistakeDnaStateMachineTest`, `MistakeDisputeRollbackIntegrationTest`.
-- **C/D:** iOS `AttemptAnalysisViewModelTests` for OCR edit and dispute state recovery.
-- **E:** Privacy deletion cascade test & cross-user `403` authorization test.
-- **F:** `python3 scripts/quality/docs_check.py`.
+## 14. Automated Test Matrix (Authored, Not Executed)
+A: migration/source inventory and historical entry gate. B: Java domain, PostgreSQL migration/immutability/rollback,
+concurrency, source/ownership/privacy, fixed clock and local synthetic rollback latency; existing ModularityTest and
+7.1–7.4 regression suites. C: strict JSON/OpenAPI contracts and localization. D: Swift DTO/view-model/retry/account fences
+and EN/TR dispute accessibility. E: fresh full backend security/privacy evidence. F: canonical documentation/manifest.
+G: verifier regressions and synthetic acceptance-evidence integrity tests. Missing tools, required tests or evidence cannot PASS.
 
 ## 15. Owner-Only Acceptance Command
-- `bash scripts/quality/sprint_7_5_owner_acceptance.sh --full`
+`bash scripts/quality/sprint_7_5_owner_acceptance.sh --full`
 
 ## 16. Explicit Non-Goals
-- Does not modify BKT skill mastery transition weights (owned by `Sprint 7.6`).
-- Does not build the full Daily Coach Study Planner (owned by `Phase 8`).
+No mastery mutations/reversals: this V034–V036 path creates none. No new V031 learning events, numeric confidence,
+secondary causal diagnoses, skill mappings, severity ranking, resolved badges, Passport, Twin remediation or Phase 8 work.
 
 ## 17. Exit Gate & Downstream Consumers
-- Unlocks `Sprint 7.6` (Evidence-Stratified Mastery), `Sprint 7.7` (Decay & Reassessment), and `Sprint 7.9` (Mistake Passport Dashboard UX).
+`NOT RUN — MANUAL OWNER EXECUTION REQUIRED`. All authored source remains pending owner verification. Sprint 7.4's
+FULL entry evidence, current Sprint 7.5 FULL results and later owner approval are required before acceptance or advancement.
+Sprint 7.6 has not begun; Sprint 7.7 owns Passport and Sprint 7.8 owns remediation closure.
 
 ## 18. Canonical Cross-References
 - `learning/83_VERIFIED_MISTAKE_DNA_AND_MISTAKE_PASSPORT_SPECIFICATION.md`

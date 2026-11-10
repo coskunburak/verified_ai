@@ -264,6 +264,8 @@ logging:
 
 # Deterministic local Socratic policy only; this never enables the AI TUTOR capability.
 verifiedai:
+  mistake:
+    dna-enabled: ${MISTAKE_DNA_ENABLED:false}
   attempt:
     classification-enabled: ${ATTEMPT_CLASSIFICATION_ENABLED:false}
     evaluation-enabled: ${ATTEMPT_EVALUATION_ENABLED:false}

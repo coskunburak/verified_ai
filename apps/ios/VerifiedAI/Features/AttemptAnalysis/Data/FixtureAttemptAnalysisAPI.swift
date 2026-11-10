@@ -8,9 +8,47 @@ actor FixtureAttemptAnalysisAPI: AttemptAnalysisServicing {
     private var classifications: [UUID: AttemptMistakeView] = [:]
     private var evaluations: [UUID: AttemptEvaluationView] = [:]
     private var workCommitted: [String: (AttemptWorkRequest, AttemptStructuredWork)] = [:]
+    private let dnaEnabled: Bool
+    private var loseDnaAcknowledgement: Bool
+    private let dnaDelay: Bool
+    private var dnaOperations: [String: MistakeDisputeResult] = [:]
     private var loseAcknowledgement: Bool
     private let enabled: Bool
-    init(loseAcknowledgement: Bool = false, enabled: Bool = true) { self.loseAcknowledgement = loseAcknowledgement; self.enabled = enabled }
+    init(loseAcknowledgement: Bool = false, enabled: Bool = true, dnaEnabled: Bool = false, loseDnaAcknowledgement: Bool = false, dnaDelay: Bool = false) {
+        self.loseAcknowledgement = loseAcknowledgement; self.enabled = enabled
+        self.dnaEnabled = dnaEnabled || ProcessInfo.processInfo.arguments.contains("--fixture-mistake-dna")
+        self.loseDnaAcknowledgement = loseDnaAcknowledgement; self.dnaDelay = dnaDelay
+    }
+    func effectiveMistake(event: UUID) async throws -> MistakeEffectiveState {
+        .init(schemaVersion: "mistake-effective-state-v1", eventId: event, enabled: dnaEnabled,
+            effectiveStatus: dnaOperations.values.contains { $0.classificationId == event } ? "DISPUTED_OR_CORRECTED" : "INSUFFICIENT_EXPOSURE_EVIDENCE")
+    }
+    func disputeMistake(event: UUID, attempt: UUID, key: String, input: MistakeDisputeRequest) async throws -> MistakeDisputeResult {
+        guard dnaEnabled, classifications[attempt]?.classification?.id == event else { throw NetworkError.invalidResponse }
+        if let prior = dnaOperations[key] { return prior }
+        let value = MistakeDisputeResult(schemaVersion: "mistake-dispute-result-v1", operationId: UUID(), attemptId: attempt,
+            classificationId: event, replacementAttemptId: nil, status: "EXCLUDED", createdAt: "2026-11-09T00:00:00Z", trainingEligible: false)
+        dnaOperations[key] = value
+        if dnaDelay { try? await Task.sleep(nanoseconds: 200_000_000) }
+        if loseDnaAcknowledgement { loseDnaAcknowledgement = false; throw URLError(.networkConnectionLost) }
+        return value
+    }
+    func correctOcr(problem: UUID, pending: AttemptPendingCorrection) async throws -> AttemptOcrCorrectionResult {
+        guard dnaEnabled, let old = try await readWork(problem: problem, attempt: pending.attemptId) else { throw NetworkError.invalidResponse }
+        if let prior = dnaOperations[pending.key], let id = prior.replacementAttemptId, let work = try await readWork(problem: problem, attempt: id) {
+            return .init(schemaVersion: "attempt-ocr-correction-result-v1", operation: prior, work: work)
+        }
+        let steps = old.steps.map { step in AttemptWorkRequest.Step(id: step.id,
+            text: step.index == pending.stepIndex ? pending.input.correctedText : step.reviewedText, role: step.role,
+            observationIds: step.observationIds, confirmed: step.index == pending.stepIndex || step.reviewStatus == "CONFIRMED") }
+        let work = try await submitWork(problem: problem, key: pending.key, input: .init(source: old.source, engine: old.engine, captureId: old.captureId,
+            assetSessionId: old.assetSessionId, recognitionJobId: old.recognitionJobId, supersedesAttemptId: old.attemptId, observations: old.observations, steps: steps))
+        let value = MistakeDisputeResult(schemaVersion: "mistake-dispute-result-v1", operationId: UUID(), attemptId: old.attemptId,
+            classificationId: nil, replacementAttemptId: work.attemptId, status: "REEVALUATION_REQUIRED", createdAt: "2026-11-09T00:00:00Z", trainingEligible: false)
+        dnaOperations[pending.key] = value
+        if loseDnaAcknowledgement { loseDnaAcknowledgement = false; throw URLError(.networkConnectionLost) }
+        return .init(schemaVersion: "attempt-ocr-correction-result-v1", operation: value, work: work)
+    }
     func context(problem: UUID) async throws -> AttemptContext {
         AttemptContext(schemaVersion: "attempt-context-v2", source: source, originalStatement: nil, enabled: enabled, handwriting: "UNAVAILABLE", twinDrill: "UNAVAILABLE", methodComparison: "UNAVAILABLE", structuredWorkEnabled: enabled)
     }

@@ -21,6 +21,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 public class AttemptMistakeService {
     public record View(String schemaVersion, UUID attemptId, String status, boolean historical,
         boolean creationEnabled, AttemptMistakeClassification classification) { }
+    private final com.verifiedai.mistake.LearnerMistakeDnaService dna;
     private final SolveSourceAccess sources;
     private final StudentAttemptRepository attempts;
     private final AttemptWorkRepository works;
@@ -32,7 +33,7 @@ public class AttemptMistakeService {
     private final RateLimiter limiter;
     private final MeterRegistry metrics;
     private final boolean enabled;
-    public AttemptMistakeService(SolveSourceAccess sources, StudentAttemptRepository attempts, AttemptWorkRepository works,
+    public AttemptMistakeService(com.verifiedai.mistake.LearnerMistakeDnaService dna, SolveSourceAccess sources, StudentAttemptRepository attempts, AttemptWorkRepository works,
         AttemptEvaluationRepository evaluations, AttemptMistakeRepository store, AttemptMistakeClassifier classifier,
         PlatformTransactionManager manager, Clock clock, RateLimiter limiter, MeterRegistry metrics,
         @Value("${verifiedai.attempt.classification-enabled:false}") boolean enabled,
@@ -41,7 +42,7 @@ public class AttemptMistakeService {
         @Value("${verifiedai.attempt.production-authorized:false}") boolean authorized) {
         if(enabled && !Set.of("local", "test").contains(environment) && !authorized)
             throw new IllegalArgumentException("Classification production authorization pending");
-        this.sources=sources; this.attempts=attempts; this.works=works; this.evaluations=evaluations;
+        this.dna=dna; this.sources=sources; this.attempts=attempts; this.works=works; this.evaluations=evaluations;
         this.store=store; this.classifier=classifier; this.clock=clock; this.limiter=limiter; this.metrics=metrics;
         this.enabled=enabled && attemptsEnabled; tx=new TransactionTemplate(manager); tx.setTimeout(5);
     }
@@ -66,11 +67,12 @@ public class AttemptMistakeService {
             }
             store.checkKey(owner,problem,attempt,key,evaluation.id());
             var prior=store.get(owner,attempt).orElse(null);
-            if(prior!=null && prior.policyVersion().equals(MistakeTaxonomy.POLICY)) { count("replay"); return view(owner,problem,work,prior); }
+            if(prior!=null && prior.policyVersion().equals(MistakeTaxonomy.POLICY)) { dna.refresh(owner); count("replay"); return view(owner,problem,work,prior); }
             if(!fresh(owner,problem,work)) throw error(ApiErrorCode.ATTEMPT_STALE_SOURCE,HttpStatus.CONFLICT);
             if(!enabled) throw unavailable();
             var result=classifier.classify(evaluation,work,clock.instant());
             store.insert(key,result,evaluation);
+            dna.refresh(owner);
             org.springframework.transaction.support.TransactionSynchronizationManager.registerSynchronization(
                 new org.springframework.transaction.support.TransactionSynchronization() {
                     public void afterCommit() { count(result.decision().status().name()); }

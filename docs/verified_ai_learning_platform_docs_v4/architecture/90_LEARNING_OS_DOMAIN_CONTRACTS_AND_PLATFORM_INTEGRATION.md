@@ -54,7 +54,7 @@ All backend code resides under the canonical root package `com.verifiedai` (`SOU
 | Module Package | Current State at `e39bafe` | Authoritative Domain Ownership in Learning OS | Allowed Outbound Dependencies |
 |---|---|---|---|
 | `com.verifiedai.attempt` | Implemented (`V030`–`V036`) | `StudentAttempt`, `AttemptStructuredWork`, `AttemptEvaluation`, `AttemptMistakeClassification`, `AttemptLearningEvidence`, `CounterfactualTwinDrill` (`V031`). | `mistake`, `curriculum`, `solving`, `ai`, `privacy` |
-| `com.verifiedai.mistake` | Implemented (`MistakeTaxonomy`, `MistakeClassificationDecision`) | `MistakeTaxonomy` (`mistake-category-v1`/`v2`), `LearnerMistakeDnaProfile` (`V037`), exposure-adjusted Beta-Binomial calculator, recurrence state machine, OCR dispute rollback. | `curriculum`, `privacy`, `shared` |
+| `com.verifiedai.mistake` | Implemented (`MistakeTaxonomy`, `MistakeClassificationDecision`) | `MistakeTaxonomy` (`mistake-category-v1`; v2 is future), `LearnerMistakeDnaProfile` (`V037`), exposure-adjusted Beta-Binomial calculator, recurrence state machine, OCR dispute rollback. | `curriculum`, `privacy`, `shared` |
 | `com.verifiedai.mastery` | Scaffolded (`package-info.java`) | `LearnerSkillMastery` (`V031` ownership migration/facade in `Sprint 7.6`), `EvidenceStratifiedMasteryPolicy` (`bkt-lite-v1`/`v2`), prerequisite graph propagation, half-life decay $R_{u,s}(t)$. | `curriculum`, `mistake`, `privacy`, `shared` |
 | `com.verifiedai.studyplan` | Scaffolded (`package-info.java`) | `NextBestActionEngine` (`Sprint 8.1`), `TargetedTwinOrchestrator` (`Sprint 8.2`), `SpacedRepetitionScheduler` (`Sprint 8.3`), `DailyCoachSessionService` (`Sprint 8.4`). | `mastery`, `mistake`, `attempt`, `curriculum`, `exam`, `billing`, `privacy` |
 | `com.verifiedai.tutoring` | Implemented (`TutorSession`, `SocraticPolicy`, `HintPolicy`) | 3-rung Socratic repair sessions, `TriggeredMicroLessonService` (`Sprint 8.5`). | `attempt`, `mistake`, `ai`, `billing`, `privacy` |
@@ -71,7 +71,7 @@ All existing migrations (`V001`–`V023`, `V027`–`V036`) remain immutable. Fut
 
 | Planned Version | Target Sprint | Migration Name & Core Tables | Relationship to Existing `V030`–`V036` Tables |
 |---|---|---|---|
-| **`V037`** *(PLANNED)* | `Sprint 7.5` | `V037__learner_mistake_dna_profiles_and_disputes.sql`<br>• `learner_mistake_dna_profiles` (`user_id`, `mistake_code`, `canonical_skill_code`, `taxonomy_version`, `decayed_exposure_count`, `decayed_error_count`, `smoothed_propensity`, `recurrence_state`, `consecutive_independent_passes`, `last_occurred_at`, `last_remediated_at`, `next_retention_check_at`)<br>• `learner_mistake_dispute_events` (`id`, `attempt_id`, `user_id`, `dispute_type`, `status`, `previous_step_latex`, `corrected_step_latex`, `created_at`) | Aggregates over `V031` `learner_mistake_events` and `V036` `attempt_mistake_classifications`; adds `superseded_by_dispute_id` nullable reference. |
+| **`V037`** *(SOURCE_COMPLETE_PENDING_OWNER_TEST)* | `Sprint 7.5` | `learner_mistake_dna_profiles`: owner/code/skill/policy key, taxonomy/category, counts, propensity, recurrence and as-of snapshot. `learner_mistake_dispute_events`: immutable owner/attempt/classification/replacement references, request hash, key and time. | Reprojects validated V035/V036 through the public MistakeDnaEvidenceSource port; preserves V031/V035/V036. No supersession column is added to immutable evidence. |
 | **`V038`** *(PLANNED)* | `Sprint 7.6` | `V038__evidence_stratified_mastery_and_prerequisite_edges.sql`<br>• Alters `V031` `learner_skill_mastery` to add `independent_evidence_count`, `assisted_evidence_count`, `independent_competence_score`, `capped_by_assistance`<br>• `learner_skill_mastery_transitions` (immutable audit log of BKT updates with `evidence_type`). | Extends existing `V031` `learner_skill_mastery` in place without table duplication. |
 | **`V039`** *(PLANNED)* | `Sprint 7.9` | `V039__mastery_calibration_and_retention_snapshots.sql`<br>• `learner_mastery_calibration_records` (predicted $R_{u,s}(t)$ vs observed unassisted outcome $O_{u,a}$ for Brier/ECE calculation). | Links `V031` `learner_skill_mastery` and `V035` `attempt_evaluations`. |
 | **`V040`** *(PLANNED)* | `Sprint 8.1` | `V040__next_best_action_recommendations.sql`<br>• `learner_recommendations` (`id`, `user_id`, `recommendation_type`, `target_skill_code`, `target_mistake_code`, `priority_score`, `rationale_code`, `status`, `expires_at`). | Driven by `V037` `learner_mistake_dna_profiles` and `V031`/`V038` `learner_skill_mastery`. |
@@ -89,7 +89,7 @@ All 13 candidate contracts follow the standard envelope and error semantics in `
 | Contract ID | Endpoint / Event Name | Owner Module | Consumers | Schema Version | Idempotency Strategy | Timeout & Fallback Behavior | Privacy Classification |
 |---|---|---|---|---|---|---|---|
 | **`CNT-LOS-01`** | `GET /v1/mistake-passport`<br>`AttemptMistakeDnaSummaryContract` | `com.verifiedai.mistake` | iOS/Android `MistakePassportView`, `studyplan` | `mistake-passport-v1` | Read-only `GET` (ETag cached) | `400ms` SLA; falls back to last cached snapshot on client | `STUDENT_CONFIDENTIAL` (Summary shared with linked Tutor if consented) |
-| **`CNT-LOS-02`** | `POST /v1/attempts/{attemptId}/steps/{stepIndex}/correct-ocr`<br>`POST /v1/mistakes/{eventId}/dispute` | `com.verifiedai.attempt`, `com.verifiedai.mistake` | iOS/Android `AttemptAnalysisView` | `mistake-dispute-v1` | `Idempotency-Key` header (`UUID`) | `1,800ms` SLA; atomically rolls back `V037` DNA & `V038` mastery deltas | `STUDENT_CONFIDENTIAL` |
+| **`CNT-LOS-02`** | `POST /api/v1/problem-sessions/{problemId}/attempts/{id}/steps/{stepIndex}/correct-ocr`; `POST /api/v1/mistakes/{eventId}/dispute` | `attempt`, `mistake` | Existing iOS Attempt Analysis | `attempt-ocr-correction-request-v1`, `mistake-dispute-request-v1` | Required Idempotency-Key; owner-locked atomic exclusion/reprojection | Correction returns REEVALUATION_REQUIRED; no V038/mastery writes. <250 ms rollback target pending owner measurement. | `STUDENT_CONFIDENTIAL` |
 | **`CNT-LOS-03`** | `POST /v1/attempts/{attemptId}/twins`<br>`POST /v1/twins/{twinId}/submit` | `com.verifiedai.attempt`, `com.verifiedai.studyplan` | iOS/Android `TwinChallengeView` | `verified-twin-v1` | Deterministic key `(source_attempt_id, variant_tier)` | Tier-1 deterministic `<400ms`; Tier-2 hybrid `<3,500ms`; fail-closed refusal if unverified | `STUDENT_CONFIDENTIAL` |
 | **`CNT-LOS-04`** | `GET /v1/mastery/skills`<br>`MasteryUpdatedDomainEvent` | `com.verifiedai.mastery` | `studyplan`, `exam`, iOS/Android `MasteryMapView` | `bkt-lite-v2` | Event `attempt_id` deduplication | `250ms` read SLA; `100%` CPU deterministic | `STUDENT_CONFIDENTIAL` |
 | **`CNT-LOS-05`** | `GET /v1/mastery/graph?curriculum={code}` | `com.verifiedai.mastery`, `com.verifiedai.curriculum` | iOS/Android `MasteryGraphExplorer` | `skill-graph-v1` | Static DAG + user overlay | `300ms` SLA; cached curriculum DAG in memory | `STUDENT_CONFIDENTIAL` |
@@ -227,3 +227,13 @@ When `Sprint 12.10` unlocks after iOS V1 validation:
 - `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md`
 - `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md`
 - `security/89_STUDENT_COACH_PRIVACY_MINOR_SAFETY_AND_TEACHER_ACCESS.md`
+
+## Sprint 7.5 implementation reconciliation
+
+`GET /api/v1/mistakes/dna` supplies FREE top-two profiles or entitled owner history, and
+`GET /api/v1/mistakes/{eventId}/effective-state` supplies per-attempt correction status. Full CNT-LOS-01 Passport remains
+Sprint 7.7. The actual taxonomy remains mistake-category-v1 (17 codes/five direct skills); deterministic evidence bands
+replace unsupported numerical confidence claims. The attempt-owned adapter validates immutable evidence and exact
+source skill provenance; mistake owns aggregation and append-only exclusion. Synchronous DB-only refresh uses the shared
+account lock; evaluation network calls remain outside transactions. See Sprint 7.5's execution report under phase07 for
+source/test ownership. All execution-dependent acceptance remains pending; no new module dependency points back to attempt.

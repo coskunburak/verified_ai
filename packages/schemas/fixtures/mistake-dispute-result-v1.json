@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "mistake-dispute-result-v1",
+  "operationId": "00000000-0000-4000-8000-000000000075",
+  "attemptId": "00000000-0000-0000-0000-000000007210",
+  "classificationId": "00000000-0000-0000-0000-000000007403",
+  "replacementAttemptId": null,
+  "status": "EXCLUDED",
+  "createdAt": "2026-11-09T00:00:00Z",
+  "trainingEligible": false
+}

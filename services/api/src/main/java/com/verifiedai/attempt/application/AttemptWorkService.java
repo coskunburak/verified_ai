@@ -22,6 +22,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 /** Capture and syntax only. Owner/source locks cover the entire deterministic transaction. */
 @Service
 public class AttemptWorkService {
+    private final com.verifiedai.mistake.LearnerMistakeDnaService dna;
     private final SolveSourceAccess sources;
     private final StudentAttemptRepository attempts;
     private final AttemptWorkRepository works;
@@ -35,7 +36,7 @@ public class AttemptWorkService {
     private final Clock clock;
     private final TransactionTemplate tx;
     private final boolean enabled;
-    public AttemptWorkService(SolveSourceAccess sources,StudentAttemptRepository attempts,AttemptWorkRepository works,
+    public AttemptWorkService(com.verifiedai.mistake.LearnerMistakeDnaService dna, SolveSourceAccess sources,StudentAttemptRepository attempts,AttemptWorkRepository works,
         AttemptWorkNormalizer normalizer,ManualStepNormalizer parser,AttemptExtractionReader extraction,VerificationSourceReader reader,
         CanonicalMathCodec codec,MeterRegistry metrics,RateLimiter limiter,Clock clock,PlatformTransactionManager manager,
         @Value("${verifiedai.attempt.structured-work-enabled:false}") boolean enabled,
@@ -44,7 +45,7 @@ public class AttemptWorkService {
         @Value("${verifiedai.attempt.production-authorized:false}") boolean productionAuthorized) {
         if(enabled && !Set.of("local","test").contains(environment) && !productionAuthorized)
             throw new IllegalArgumentException("Structured work production authorization pending");
-        this.enabled=enabled && attemptEnabled; this.sources=sources; this.attempts=attempts; this.works=works;
+        this.enabled=enabled && attemptEnabled; this.dna=dna; this.sources=sources; this.attempts=attempts; this.works=works;
         this.normalizer=normalizer; this.parser=parser; this.extraction=extraction; this.reader=reader; this.codec=codec;
         this.metrics=metrics; this.limiter=limiter; this.clock=clock; tx=new TransactionTemplate(manager); tx.setTimeout(5);
     }
@@ -107,6 +108,7 @@ public class AttemptWorkService {
                 var attempt=new StudentAttempt(answer==null?"student-attempt-v1":"student-attempt-v2",id,problem,input.source(),
                     AttemptSourceType.MANUAL,"manual-canonical-v1",AttemptStatus.SUBMITTED,legacy,null,now,now,false,null,answer);
                 attempts.insert(owner,key,hash,attempt,null); works.insert(work);
+                if(previous!=null) dna.refresh(owner);
                 // Publish metrics only after durable acceptance.
                 org.springframework.transaction.support.TransactionSynchronizationManager.registerSynchronization(
                     new org.springframework.transaction.support.TransactionSynchronization() {

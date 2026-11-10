@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mistake-effective-state-v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "mistake-effective-state-v1"
+    },
+    "eventId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "enabled": {
+      "type": "boolean"
+    },
+    "effectiveStatus": {
+      "enum": [
+        "EFFECTIVE",
+        "DISPUTED_OR_CORRECTED",
+        "SUPERSEDED",
+        "FUTURE_EVIDENCE",
+        "UNMAPPED_SKILL",
+        "INSUFFICIENT_EXPOSURE_EVIDENCE",
+        "DISABLED"
+      ]
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "eventId",
+    "enabled",
+    "effectiveStatus"
+  ]
+}

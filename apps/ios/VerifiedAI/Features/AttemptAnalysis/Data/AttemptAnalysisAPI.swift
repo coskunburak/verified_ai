@@ -3,6 +3,25 @@ final class AttemptAnalysisAPI: AttemptAnalysisServicing, @unchecked Sendable {
     private let client: APIClient
     init(client: APIClient) { self.client = client }
     private func path(_ problem: UUID) -> String { "/api/v1/problem-sessions/\(problem.uuidString)/attempts" }
+    func effectiveMistake(event: UUID) async throws -> MistakeEffectiveState {
+        let r: HTTPResponse<MistakeEffectiveState> = try await client.send(HTTPRequest(endpoint: Endpoint(path: "/api/v1/mistakes/\(event.uuidString)/effective-state")))
+        return try r.body.validated(event: event)
+    }
+    func disputeMistake(event: UUID, attempt: UUID, key: String, input: MistakeDisputeRequest) async throws -> MistakeDisputeResult {
+        let r: HTTPResponse<MistakeDisputeResult> = try await client.send(HTTPRequest(endpoint: Endpoint(path: "/api/v1/mistakes/\(event.uuidString)/dispute", method: .post), body: try JSONEncoder().encode(input), idempotencyKey: key, timeout: 15))
+        return try r.body.validated(attempt: attempt, event: event)
+    }
+    func correctOcr(problem: UUID, pending: AttemptPendingCorrection) async throws -> AttemptOcrCorrectionResult {
+        let r: HTTPResponse<AttemptOcrCorrectionResult> = try await client.send(HTTPRequest(endpoint: Endpoint(path: path(problem) + "/\(pending.attemptId.uuidString)/steps/\(pending.stepIndex)/correct-ocr", method: .post), body: try JSONEncoder().encode(pending.input), idempotencyKey: pending.key, timeout: 15))
+        let value = r.body
+        _ = try value.operation.validated(attempt: pending.attemptId, event: nil)
+        _ = try value.work.validated(problem: problem)
+        guard value.schemaVersion == "attempt-ocr-correction-result-v1", value.operation.replacementAttemptId == value.work.attemptId,
+              value.work.supersedesAttemptId == pending.attemptId, value.work.revision == pending.input.workRevision + 1,
+              value.work.source == pending.input.source, value.work.steps.indices.contains(pending.stepIndex - 1),
+              value.work.steps[pending.stepIndex - 1].reviewedText == pending.input.correctedText else { throw NetworkError.invalidResponse }
+        return value
+    }
     func readClassification(problem: UUID, attempt: UUID) async throws -> AttemptMistakeView {
         let r: HTTPResponse<AttemptMistakeView> = try await client.send(HTTPRequest(endpoint: Endpoint(path: path(problem) + "/\(attempt.uuidString)/classification")))
         guard r.body.attemptId == attempt else { throw NetworkError.invalidResponse }

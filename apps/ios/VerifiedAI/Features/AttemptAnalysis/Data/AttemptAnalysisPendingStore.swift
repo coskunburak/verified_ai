@@ -174,4 +174,34 @@ extension AttemptAnalysisPendingStore {
         let url = evaluationFile(owner, problem)
         if FileManager.default.fileExists(atPath: url.path) { try FileManager.default.removeItem(at: url) }
     }
+    private func correctionFile(_ owner: UUID, _ problem: UUID) -> URL { directory.appendingPathComponent("correction_\(owner)_\(problem).json") }
+    private func validateCorrection(_ value: AttemptPendingCorrection) throws {
+        guard value.key.range(of: #"^[A-Za-z0-9_-]{8,128}$"#, options: .regularExpression) != nil,
+              (1...12).contains(value.stepIndex), (1...30).contains(value.input.workRevision),
+              value.input.schemaVersion == "attempt-ocr-correction-request-v1", AttemptSubmission.validText(value.input.correctedText),
+              !value.input.correctedText.contains("\n"), !value.input.correctedText.contains("\r") else { throw NetworkError.invalidResponse }
+    }
+    func loadCorrection(owner: UUID, problem: UUID) throws -> AttemptPendingCorrection? {
+        let url = correctionFile(owner, problem)
+        guard FileManager.default.fileExists(atPath: url.path) else { return nil }
+        let file = try FileHandle(forReadingFrom: url); defer { try? file.close() }
+        let data = try file.read(upToCount: 4097) ?? Data()
+        guard data.count <= 4096 else { throw NetworkError.invalidResponse }
+        let value = try JSONDecoder().decode(AttemptPendingCorrection.self, from: data)
+        try validateCorrection(value); return value
+    }
+    func saveCorrection(_ value: AttemptPendingCorrection, owner: UUID, problem: UUID) throws {
+        try validateCorrection(value)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        var root = directory; var flags = URLResourceValues(); flags.isExcludedFromBackup = true; try root.setResourceValues(flags)
+        let url = correctionFile(owner, problem)
+        if !FileManager.default.fileExists(atPath: url.path), try FileManager.default.contentsOfDirectory(atPath: directory.path).count >= 120 { throw NetworkError.invalidResponse }
+        let data = try JSONEncoder().encode(value)
+        guard data.count <= 4096 else { throw NetworkError.invalidResponse }
+        try data.write(to: url, options: [.atomic, .completeFileProtection])
+    }
+    func removeCorrection(owner: UUID, problem: UUID) throws {
+        let url = correctionFile(owner, problem)
+        if FileManager.default.fileExists(atPath: url.path) { try FileManager.default.removeItem(at: url) }
+    }
 }

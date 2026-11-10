@@ -28,6 +28,7 @@ import static org.assertj.core.api.Assertions.*;
 
 @Import(StudentAttemptIntegrationTest.StorageConfiguration.class)
 class AttemptWorkIntegrationTest extends PostgresIntegrationTestSupport {
+    @Autowired com.verifiedai.mistake.LearnerMistakeDnaService dna;
     @Autowired JdbcTemplate jdbc;
     @Autowired javax.sql.DataSource dataSource;
     @Autowired CanonicalProblemApplicationService canonical;
@@ -51,7 +52,7 @@ class AttemptWorkIntegrationTest extends PostgresIntegrationTestSupport {
         source=new TransactionTemplate(transactions).execute(t->{var s=sources.current(owner,problem);return new AttemptSourceIdentity(s.canonicalProblemId(),s.canonicalRevision(),s.problemParseId(),s.problemParseRevision());});
     }
     AttemptWorkService service(boolean enabled) {
-        return new AttemptWorkService(sources,attempts,works,normalizer,parser,extraction,reader,codec,metrics,
+        return new AttemptWorkService(dna,sources,attempts,works,normalizer,parser,extraction,reader,codec,metrics,
             (p,k)->RateLimitDecision.allow(),Clock.systemUTC(),transactions,enabled,true,"test",false);
     }
     AttemptWorkInput input(UUID prior,String text) {
@@ -125,7 +126,7 @@ class AttemptWorkIntegrationTest extends PostgresIntegrationTestSupport {
         UUID line=UUID.randomUUID();
         var command=new AttemptWorkInput("attempt-structured-work-request-v1",source,AttemptWorkInput.Engine.GATEWAY_RECOGNITION,null,UUID.randomUUID(),UUID.randomUUID(),null,
             List.of(new AttemptWorkInput.Observation(line,"x=4",null,null)),List.of(new AttemptWorkInput.Step(UUID.randomUUID(),"x=4",AttemptWorkInput.Role.INTERMEDIATE,List.of(line),true)));
-        var gateway=new AttemptWorkService(sources,attempts,works,normalizer,parser,new AttemptExtractionReader(recognition,true,metrics),reader,codec,metrics,
+        var gateway=new AttemptWorkService(dna,sources,attempts,works,normalizer,parser,new AttemptExtractionReader(recognition,true,metrics),reader,codec,metrics,
             (p,k)->RateLimitDecision.allow(),Clock.systemUTC(),transactions,true,true,"test",false);
         assertThatThrownBy(()->gateway.submit(owner,problem,"gateway-foreign-key",command)).isInstanceOfSatisfying(ApiProblemException.class,e->assertThat(e.code()).isEqualTo(ApiErrorCode.RESOURCE_FORBIDDEN));
         assertThat(attempts.history(owner,problem)).isEmpty(); assertThat(works.export(owner)).isEmpty();
@@ -160,7 +161,7 @@ class AttemptWorkIntegrationTest extends PostgresIntegrationTestSupport {
         for(int i=0;i<30;i++) service.submit(owner,problem,"work-capacity-"+i,input(null,"4"));
         assertThatThrownBy(()->service.submit(owner,problem,"work-capacity-over",input(null,"4")))
             .isInstanceOfSatisfying(ApiProblemException.class,e->assertThat(e.code()).isEqualTo(ApiErrorCode.ATTEMPT_CAPACITY_EXCEEDED));
-        var limited=new AttemptWorkService(sources,attempts,works,normalizer,parser,extraction,reader,codec,metrics,
+        var limited=new AttemptWorkService(dna,sources,attempts,works,normalizer,parser,extraction,reader,codec,metrics,
             (p,k)->RateLimitDecision.denied(60),Clock.systemUTC(),transactions,true,true,"test",false);
         assertThatThrownBy(()->limited.submit(owner,problem,"work-rate-limit",input(null,"4")))
             .isInstanceOfSatisfying(ApiProblemException.class,e->assertThat(e.code()).isEqualTo(ApiErrorCode.RATE_LIMIT_EXCEEDED));

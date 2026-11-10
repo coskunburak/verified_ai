@@ -31,7 +31,7 @@ public class AttemptRequestLimitFilter extends OncePerRequestFilter {
             metrics.counter("attempt.outcome","outcome","REQUEST_TOO_LARGE").increment();
             resolver.resolveException(request,response,null,AttemptAnalysisPolicy.error(ApiErrorCode.REQUEST_TOO_LARGE,HttpStatus.PAYLOAD_TOO_LARGE)); return;
         }
-        if(bytes.length==0 && (route(request).endsWith("/evaluation") || route(request).endsWith("/classification"))) {
+        if(bytes.length==0 && (route(request).endsWith("/evaluation") || route(request).endsWith("/classification") || route(request).endsWith("/correct-ocr"))) {
             resolver.resolveException(request,response,null,AttemptAnalysisPolicy.error(ApiErrorCode.REQUEST_VALIDATION_FAILED,HttpStatus.UNPROCESSABLE_ENTITY)); return;
         }
         if(bytes.length>0) {
@@ -45,6 +45,8 @@ public class AttemptRequestLimitFilter extends OncePerRequestFilter {
                 if(route(request).matches("/api/v1/problem-sessions/[^/]+/attempts/structured-work")) AttemptWorkRequest.parse(node);
                 if(route(request).matches("/api/v1/problem-sessions/[^/]+/attempts/[^/]+/classification"))
                     com.verifiedai.sharedkernel.contracts.VersionedJsonContract.validate("attempt-mistake-request-v1",json);
+                if(route(request).matches("/api/v1/problem-sessions/[^/]+/attempts/[^/]+/steps/[^/]+/correct-ocr"))
+                    com.verifiedai.sharedkernel.contracts.VersionedJsonContract.validate("attempt-ocr-correction-request-v1",json);
                 if(route(request).matches("/api/v1/problem-sessions/[^/]+/attempts/[^/]+/evaluation"))
                     com.verifiedai.sharedkernel.contracts.VersionedJsonContract.validate("attempt-evaluation-request-v1",json);
             } catch(IllegalArgumentException | com.verifiedai.sharedkernel.error.ApiProblemException | java.nio.charset.CharacterCodingException ex) {

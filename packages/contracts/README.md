@@ -21,3 +21,8 @@ not single-current-source full acceptance or production authorization. See the
 ## Sprint 6.7 product integration
 
 Public attempt routes now include reviewed extraction, durable twins/answers/history, verified methods and mistake passport. Internal attempt-v2 and attempt-learning share the authenticated bounded worker. Versioned schema references, strict ownership and idempotency apply; contract checks and targeted test repairs passed in owner runs.
+
+Sprint 7.5 adds owner-only `/api/v1/mistakes/dna`, per-event `/effective-state` and `/dispute`, plus the existing
+problem-session attempt family's `/steps/{stepIndex}/correct-ocr` operation. OpenAPI and strict shared JSON schemas
+include the exact request, retry and response contracts. Correction returns REEVALUATION_REQUIRED with replacement work;
+full Passport remains Sprint 7.7. All new contract checks are authored for manual owner execution only.

@@ -547,3 +547,11 @@ Following the 2026-11-07 repository baseline audit (`e39bafe88ea369f98c96a65497a
 - `quality/91_LEARNING_OS_PRODUCT_LEARNING_AND_RELEASE_ACCEPTANCE_GATES.md` — 6 release readiness dimensions (`D1`–`D6`), 5 status badges, and owner-only acceptance gates (`Gate 0`–`Gate 5`).
 - `operations/92_LEARNING_OS_ASSUMPTIONS_EXPERIMENTS_AND_EVIDENCE_LEDGER.md` — Epistemic classification taxonomy (`SOURCE_VERIFIED`, `OWNER_TEST_VERIFIED`, `EMPIRICAL_RESEARCH`, `MARKET_BENCHMARK`, `ENGINEERING_ESTIMATE`, `PRODUCT_HYPOTHESIS`), audit of `roadmap/80`, and `EXP-001`–`EXP-008` registry.
 <!-- LEARNING_OS_STRATEGY_V7:END -->
+
+## Sprint 7.5 source handoff
+
+`sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.5_EXECUTION_REPORT.md` records the deterministic DNA
+projection, eligible exposure cohort, immutable dispute/OCR rollback, API/iOS, privacy and owner acceptance map.
+Status: SOURCE_COMPLETE_PENDING_OWNER_TEST; V037 not applied. Sprint 7.4 FULL owner evidence remains an open entry gate.
+No tests, builds, lint/type checks, migrations or acceptance runner were executed by the agent. Full Passport (7.7),
+remediation (7.8) and mastery (7.6) remain deferred. Production is not authorized.

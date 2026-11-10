@@ -59,6 +59,20 @@ public class SolveSourceAccess {
         return rows.getFirst();
     }
 
+    public record SkillEvidence(UUID id, String skillId, String ontologyVersion) { }
+    /** Accepted curriculum tagging for this exact canonical source, as it existed at submission.
+     * This is taxonomy authority only; mathematical exposure eligibility is owned by attempt. */
+    @Transactional(propagation = Propagation.MANDATORY)
+    public java.util.Optional<SkillEvidence> skillAt(UUID owner, UUID canonical, java.time.Instant at) {
+        return jdbc.query("""
+            select id,primary_skill_id,ontology_version,status,review_reason from problem_classifications
+            where user_id=? and canonical_problem_id=? and created_at<=?
+            order by revision desc limit 1
+            """, (r,n) -> "CLASSIFIED".equals(r.getString("status")) && r.getString("review_reason")==null
+                ? new SkillEvidence(r.getObject("id",UUID.class),r.getString("primary_skill_id"),r.getString("ontology_version")) : null,
+            owner,canonical,java.sql.Timestamp.from(at)).stream().filter(java.util.Objects::nonNull).findFirst();
+    }
+
     private static ApiProblemException error(ApiErrorCode code) {
         return new ApiProblemException(code==ApiErrorCode.RESOURCE_FORBIDDEN ? HttpStatus.NOT_FOUND
                 : code==ApiErrorCode.ACCOUNT_NOT_ACTIVE ? HttpStatus.FORBIDDEN : HttpStatus.CONFLICT,

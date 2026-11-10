@@ -113,7 +113,7 @@ All product and learning analytics events emitted to `com.verifiedai.analytics` 
 
 At baseline commit `e39bafe88ea369f98c96a65497a94462dc79ef33`:
 - `Sprint 7.4` (`Mistake Taxonomy & Classification Pipeline`) is `SOURCE_COMPLETE` / `PENDING_OWNER_TEST` (`PRODUCTION_NOT_AUTHORIZED`).
-- Before starting production coding on `Sprint 7.5`, the repository owner executes:
+- Before accepting or releasing `Sprint 7.5`, the repository owner supplies genuine FULL Sprint 7.4 evidence. Isolated Sprint 7.5 source work is authorized while this gate remains open. The historical gate procedure is:
   1. Static documentation validation (`python3 scripts/quality/docs_check.py`).
   2. Full Sprint 7.4 owner acceptance (`bash scripts/quality/sprint_7_4_owner_acceptance.sh --full`) verifying that Categories A–F pass cleanly and updating `sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.4_EXECUTION_REPORT.md` with the fresh run ID.
 
@@ -138,3 +138,14 @@ At baseline commit `e39bafe88ea369f98c96a65497a94462dc79ef33`:
 - `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md`
 - `roadmap/87_LEARNING_OS_STRATEGIC_PHASE_AND_SPRINT_EXPANSION_PROGRAM.md`
 - `operations/92_LEARNING_OS_ASSUMPTIONS_EXPERIMENTS_AND_EVIDENCE_LEDGER.md`
+
+## Sprint 7.5 owner-only verification
+
+Current status is SOURCE_COMPLETE_PENDING_OWNER_TEST. The single runner `scripts/quality/sprint_7_5_owner_acceptance.sh --full`
+records fresh A–G results, source fingerprints, raw logs and cleanup in `.generated/sprint-7-5-owner/<run-id>/`.
+It checks original FULL Sprint 7.4 evidence against committed runtime/test/contracts; targeted repairs cannot satisfy entry.
+No old acceptance output is rewritten or imported as a current test result. Missing entry evidence, tools or required tests
+returns BLOCKED/nonzero; failing checks return FAIL/nonzero. Independent gates continue to produce useful owner evidence.
+The authored local 30-attempt synthetic rollback p95 test targets <250 ms; staging/production latency and cohort accuracy
+remain separate unverified gates. No numerical classification confidence or mastery/remediation success is inferred.
+Agent status: NOT RUN — MANUAL OWNER EXECUTION REQUIRED.
