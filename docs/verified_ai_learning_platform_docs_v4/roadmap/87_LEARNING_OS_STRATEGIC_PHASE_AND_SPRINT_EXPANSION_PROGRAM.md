@@ -125,6 +125,21 @@ Before modifying any sprint specification, every Learning OS capability is audit
 | **P11** | **11.9–11.10**| `BLOCKED_BY_ADR_011` | Production Hardening, KVKK/Apple `5.1.2(i)` Consent & Public V1 Launch | All backend modules | Full verifier service | Full iOS app | None | Production readiness audit | Full circuit-breaker & cost guard | Release health metrics | Live StoreKit 2 | Phase 10 exit gate | Zero P0/P1 defects; legal/privacy sign-off | `bash scripts/quality/sprint_11_10_owner_acceptance.sh --full` |
 | **P12** | **12.6–12.10**| `BLOCKED_BY_ADR_011` | International Curricula (`IB/AP/SAT`), Consent-Gated Tutor Portal & Native Android (`Kotlin/Compose`) | `curriculum`, `account`, `billing` | Locale-neutral math AST | Shared parity fixtures | Full `apps/android/` build | `PLANNED V049` (`coach_student_links`, Play Billing) | Multi-locale prompts | Cross-platform parity events | Play Billing + B2B2C seats | Phase 11 V1 launch stable | 100% iOS/Android golden math & rendering parity | `bash scripts/quality/sprint_12_10_owner_acceptance.sh --full` |
 
+### 6.1 Integration of Document 93 & Phase 14 (`SPRINT_14.1`–`SPRINT_14.10`): Active Scaffolding, Verified Twin Engine & Interactive Socratic Canvas
+
+Per `learning/93_ACTIVE_SCAFFOLDING_TWIN_VERIFICATION_AND_INTERACTIVE_CANVAS_SPECIFICATION.md` and `sprints/phase14_active_scaffolding_twin_mastery_and_interactive_canvas/PHASE_14_ACTIVE_SCAFFOLDING_TWIN_MASTERY_AND_INTERACTIVE_CANVAS.md`, three high-leverage pedagogical pillars are specified across a dedicated 10-sprint Phase 14 execution track (`SPRINT_14.1`–`SPRINT_14.10`) with non-breaking fast-track bridge hooks (`Sprint 6.5B`, `Sprint 7.8B`, `Sprint 8.6B`) to decisively out-compete passive AI video solvers (e.g., Solvi / Solvely) while preserving all existing system invariants:
+
+1. **Pillar 1 — 4-Tier Active Cognitive Scaffolding & Misconception Root-Cause Diagnosis (`SPRINT_14.1`, `SPRINT_14.2`, `SPRINT_14.5` / Fast-Track `Sprint 6.5B`):**
+   - Implements the 4-tier finite state machine (`TIER_1_CONCEPT` → `TIER_2_STRATEGY` → `TIER_3_CRITICAL_MOVE` → `TIER_4_FULL_SOLUTION`) backed by `V039` (`socratic_scaffolding_sessions`) and SymPy distractor non-equivalence verification (`scaffolding_breakpoint.py`).
+   - Prevents immediate answer-dumping; guarantees that the student cognitively engages with the mathematical breakpoint before complete proof exposure, and isolates prerequisite root-cause slips (e.g., $2^n=4 \implies n=3$) via `PrerequisiteRootCauseAnalyzer.java`.
+
+2. **Pillar 2 — SymPy CAS-Verified Parametric Isomorphic Twin Engine & Timed Mastery Challenge (`SPRINT_14.3`, `SPRINT_14.4` / Fast-Track `Sprint 7.8B`):**
+   - Augments Sprint 7.8's remediation trigger with `yks_isomorphic_twin_generator.py` covering 12 YKS/AYT/LGS families (`FAM_01`–`FAM_12`) at `<150ms` (`p95`) and `$0.00` LLM token cost.
+   - Enforces the 60–120 second timed independent verification challenge (`V040` `verified_twin_mastery_verifications`) required to award `1.00x` `bkt-lite-v2` mastery credit and transition Mistake DNA entries to `MASTERED_CLOSED`.
+
+3. **Pillar 3 — Bidirectional Interactive Socratic Canvas & Turkish Math Neural TTS (`SPRINT_14.6`, `SPRINT_14.7`, `SPRINT_14.8`, `SPRINT_14.9`, `SPRINT_14.10` / Fast-Track `Sprint 8.6B`):**
+   - Replaces passive `.mp4` video generation (Solvi's `$0.08–$0.25/video` model) with a `<32KB` 60-fps declarative vector stream (`V041` `interactive_canvas_stroke_streams`), Turkish mathematical speech normalization (`turkish_math_speech_normalizer.py`), and bidirectional `PencilKit` live ink step verification (`V042` `canvas_learner_ink_interventions`) capped at `<= $0.0080/session`.
+
 ---
 
 ## 7. Three Strategic Roadmap Variants

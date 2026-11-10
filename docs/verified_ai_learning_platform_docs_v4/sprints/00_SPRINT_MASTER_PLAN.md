@@ -143,6 +143,7 @@ Phase overview: `sprints/phase06_solution_experience_and_tutoring/PHASE_06_SOLUT
 - `Sprint 6.3` — **Explanation Depth, Beginner-to-Deep Modes, and Personalization** — `phase06_solution_experience_and_tutoring/SPRINT_6.3_EXPLANATION_DEPTH_BEGINNER_TO_DEEP_MODES_AND_PERSONALIZATION.md`
 - `Sprint 6.4` — **Tutor Session Domain and Conversation Persistence** — `phase06_solution_experience_and_tutoring/SPRINT_6.4_TUTOR_SESSION_DOMAIN_AND_CONVERSATION_PERSISTENCE.md`
 - `Sprint 6.5` — **Socratic Tutor Behavior and Pedagogical State Machine** — `phase06_solution_experience_and_tutoring/SPRINT_6.5_SOCRATIC_TUTOR_BEHAVIOR_AND_PEDAGOGICAL_STATE_MACHINE.md`
+  - `Sprint 6.5B` — **4-Tier Active Cognitive Scaffolding & Anti-Spoiler Breakpoint State Machine (Fast-Track Bridge to Phase 14)** — `phase14_active_scaffolding_twin_mastery_and_interactive_canvas/SPRINT_14.1_COMPETITIVE_PEDAGOGY_CONTRACT_AND_4_TIER_SCAFFOLDING_DOMAIN.md` & `phase14_active_scaffolding_twin_mastery_and_interactive_canvas/SPRINT_14.2_SOCRATIC_STATE_MACHINE_ANTI_SPOILER_GATES_AND_STEP_BREAKPOINT_DETECTION.md` per `learning/93_ACTIVE_SCAFFOLDING_TWIN_VERIFICATION_AND_INTERACTIVE_CANVAS_SPECIFICATION.md`.
 - `Sprint 6.6` — **Progressive Hint System and Hint Cost Semantics** — `phase06_solution_experience_and_tutoring/SPRINT_6.6_PROGRESSIVE_HINT_SYSTEM_AND_HINT_COST_SEMANTICS.md` — Bounded implementation complete; `TARGETED_RECONCILIATION_PASSED` (owner run `20261102-214452-cv4eye9f`); full current-source acceptance pending.
 - `Sprint 6.7` — **Analyze My Work: User Solution Capture, Step-Level Comparison & Mastery Intelligence** — `phase06_solution_experience_and_tutoring/SPRINT_6.7_ANALYZE_MY_WORK_USER_SOLUTION_CAPTURE_AND_STEP_LEVEL_COMPARISON.md` — Bounded product integration complete; `TARGETED_REPAIR_PASSED` (owner runs `20261103-233019-8g1dlw`, `20261104-000339-IzxY36`, `20261104-002119-IQLWzE`; `unresolvedFailures=[]`); full current-source acceptance pending owner full rerun; forward migrations V030–V032 active.
   - `Sprint 6.7A` — **Analyze My Work: Handwritten Attempt Verification & First Wrong Step Pinpointing** — Fast-tracked signature differentiator: line-by-line SymPy step equivalence + `CounterexampleEngine` per `sprints/02_FOCUSED_COMMERCIAL_WEDGE_SPRINT_PROGRAM.md`.
@@ -164,6 +165,7 @@ Phase overview: `sprints/phase07_attempt_mistake_and_mastery_intelligence/PHASE_
 - `Sprint 7.6` — **Mastery Model V1 and Deterministic Update Policy** — `phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.6_MASTERY_MODEL_V1_AND_DETERMINISTIC_UPDATE_POLICY.md`
 - `Sprint 7.7` — **Mastery Confidence, History, Decay, and Reassessment** — `phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.7_MASTERY_CONFIDENCE_HISTORY_DECAY_AND_REASSESSMENT.md`
 - `Sprint 7.8` — **Knowledge Graph Projection and Learning State APIs** — `phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.8_KNOWLEDGE_GRAPH_PROJECTION_AND_LEARNING_STATE_APIS.md`
+  - `Sprint 7.8B` — **SymPy Parametric Isomorphic Twin Engine, Timed Mastery Challenge & Prerequisite Root-Cause Repair (Fast-Track Bridge to Phase 14)** — `phase14_active_scaffolding_twin_mastery_and_interactive_canvas/SPRINT_14.3_SYMPY_PARAMETRIC_ISOMORPHIC_TWIN_ENGINE_FOR_YKS_AYT_FAMILIES.md`, `phase14_active_scaffolding_twin_mastery_and_interactive_canvas/SPRINT_14.4_TIMED_INDEPENDENT_TWIN_CHALLENGE_AND_EPISTEMIC_MASTERY_VERIFICATION.md`, and `phase14_active_scaffolding_twin_mastery_and_interactive_canvas/SPRINT_14.5_MISCONCEPTION_ROOT_CAUSE_DIAGNOSIS_AND_PREREQUISITE_REPAIR_BRIDGE.md`.
 - `Sprint 7.9` — **Mastery and Mistake Dashboard UX** — `phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.9_MASTERY_AND_MISTAKE_DASHBOARD_UX.md`
 - `Sprint 7.10` — **Learning Intelligence Evaluation and Bias/Calibration Hardening** — `phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.10_LEARNING_INTELLIGENCE_EVALUATION_AND_BIAS_CALIBRATION_HARDENING.md`
 
@@ -177,6 +179,7 @@ Phase overview: `sprints/phase08_adaptive_learning_and_study_planning/PHASE_08_A
 - `Sprint 8.4` — **Daily Study Plan Generation** — `phase08_adaptive_learning_and_study_planning/SPRINT_8.4_DAILY_STUDY_PLAN_GENERATION.md`
 - `Sprint 8.5` — **Missed-Day Recovery and Study Plan Rebalancing** — `phase08_adaptive_learning_and_study_planning/SPRINT_8.5_MISSED_DAY_RECOVERY_AND_STUDY_PLAN_REBALANCING.md`
 - `Sprint 8.6` — **AI Micro-Lessons Triggered by Diagnosed Weaknesses** — `phase08_adaptive_learning_and_study_planning/SPRINT_8.6_AI_MICRO_LESSONS_TRIGGERED_BY_DIAGNOSED_WEAKNESSES.md`
+  - `Sprint 8.6B` — **Declarative Whiteboard Vector Stream, Turkish Math Neural TTS & Bidirectional PencilKit Canvas (Fast-Track Bridge to Phase 14)** — `phase14_active_scaffolding_twin_mastery_and_interactive_canvas/SPRINT_14.6_DECLARATIVE_WHITEBOARD_VECTOR_STREAM_AND_TIMELINE_SYNCHRONIZATION.md`, `phase14_active_scaffolding_twin_mastery_and_interactive_canvas/SPRINT_14.7_TURKISH_MATHEMATICS_NEURAL_TTS_AND_SYNCHRONIZED_VOICE_PEDAGOGY.md`, and `phase14_active_scaffolding_twin_mastery_and_interactive_canvas/SPRINT_14.8_BIDIRECTIONAL_PENCILKIT_CANVAS_AND_LIVE_INK_STEP_VERIFICATION.md`.
 - `Sprint 8.7` — **Study Session Orchestration and Resume Semantics** — `phase08_adaptive_learning_and_study_planning/SPRINT_8.7_STUDY_SESSION_ORCHESTRATION_AND_RESUME_SEMANTICS.md`
 - `Sprint 8.8` — **Goals, Streaks, Achievements, and Non-Manipulative Gamification** — `phase08_adaptive_learning_and_study_planning/SPRINT_8.8_GOALS_STREAKS_ACHIEVEMENTS_AND_NON_MANIPULATIVE_GAMIFICATION.md`
 - `Sprint 8.9` — **Weekly Learning Report and Explainable Recommendations** — `phase08_adaptive_learning_and_study_planning/SPRINT_8.9_WEEKLY_LEARNING_REPORT_AND_EXPLAINABLE_RECOMMENDATIONS.md`
@@ -276,6 +279,22 @@ Phase overview: `sprints/phase12_post_launch_scale_and_product_expansion/PHASE_1
 
 Phase 13 may be skipped indefinitely if evidence shows APIs/deterministic routes remain the superior solution.
 <!-- HYBRID_AI_STRATEGY_V3:END -->
+
+## Phase 14 — Active Cognitive Scaffolding, Verified Twin Mastery & Interactive Socratic Canvas
+
+Phase overview: `sprints/phase14_active_scaffolding_twin_mastery_and_interactive_canvas/PHASE_14_ACTIVE_SCAFFOLDING_TWIN_MASTERY_AND_INTERACTIVE_CANVAS.md`
+Canonical specification: `learning/93_ACTIVE_SCAFFOLDING_TWIN_VERIFICATION_AND_INTERACTIVE_CANVAS_SPECIFICATION.md`
+
+- `Sprint 14.1` (`Sprint 6.5B-1`) — **Competitive Pedagogy Contract & 4-Tier Cognitive Scaffolding Domain (`V039`)** — `phase14_active_scaffolding_twin_mastery_and_interactive_canvas/SPRINT_14.1_COMPETITIVE_PEDAGOGY_CONTRACT_AND_4_TIER_SCAFFOLDING_DOMAIN.md`
+- `Sprint 14.2` (`Sprint 6.5B-2`) — **Socratic State Machine, Anti-Spoiler Gates & SymPy Step Breakpoint Detection** — `phase14_active_scaffolding_twin_mastery_and_interactive_canvas/SPRINT_14.2_SOCRATIC_STATE_MACHINE_ANTI_SPOILER_GATES_AND_STEP_BREAKPOINT_DETECTION.md`
+- `Sprint 14.3` (`Sprint 7.8B-1`) — **SymPy Parametric Isomorphic Twin Engine for 12 YKS/AYT/LGS Families (`<150ms`, `$0.00` AI Cost)** — `phase14_active_scaffolding_twin_mastery_and_interactive_canvas/SPRINT_14.3_SYMPY_PARAMETRIC_ISOMORPHIC_TWIN_ENGINE_FOR_YKS_AYT_FAMILIES.md`
+- `Sprint 14.4` (`Sprint 7.8B-2`) — **Timed Independent Twin Challenge & Epistemic Mastery Verification (`V040`)** — `phase14_active_scaffolding_twin_mastery_and_interactive_canvas/SPRINT_14.4_TIMED_INDEPENDENT_TWIN_CHALLENGE_AND_EPISTEMIC_MASTERY_VERIFICATION.md`
+- `Sprint 14.5` (`Sprint 7.8B-3`) — **Misconception Root-Cause Diagnosis & Prerequisite Skill Repair Bridge** — `phase14_active_scaffolding_twin_mastery_and_interactive_canvas/SPRINT_14.5_MISCONCEPTION_ROOT_CAUSE_DIAGNOSIS_AND_PREREQUISITE_REPAIR_BRIDGE.md`
+- `Sprint 14.6` (`Sprint 8.6B-1`) — **Declarative Whiteboard Vector Stream & Timeline Synchronization (`V041`, `<32KB` vs. Solvi `.mp4`)** — `phase14_active_scaffolding_twin_mastery_and_interactive_canvas/SPRINT_14.6_DECLARATIVE_WHITEBOARD_VECTOR_STREAM_AND_TIMELINE_SYNCHRONIZATION.md`
+- `Sprint 14.7` (`Sprint 8.6B-2`) — **Turkish Mathematics Neural TTS & Synchronized Voice Pedagogy** — `phase14_active_scaffolding_twin_mastery_and_interactive_canvas/SPRINT_14.7_TURKISH_MATHEMATICS_NEURAL_TTS_AND_SYNCHRONIZED_VOICE_PEDAGOGY.md`
+- `Sprint 14.8` (`Sprint 8.6B-3`) — **Bidirectional `PencilKit` Canvas & Live Ink Step Verification (`V042`)** — `phase14_active_scaffolding_twin_mastery_and_interactive_canvas/SPRINT_14.8_BIDIRECTIONAL_PENCILKIT_CANVAS_AND_LIVE_INK_STEP_VERIFICATION.md`
+- `Sprint 14.9` — **Solvi Parity Benchmark (`100-Item YKS/AYT/LGS`), Retention Experiments (`EXP-009`, `EXP-010`) & FinOps Guardrails (`<= $0.0080/session`)** — `phase14_active_scaffolding_twin_mastery_and_interactive_canvas/SPRINT_14.9_SOLVI_PARITY_BENCHMARK_RETENTION_EXPERIMENTS_AND_FINOPS_GUARDRAILS.md`
+- `Sprint 14.10` — **Phase 14 Production Hardening, Accessibility & Release Exit Gate** — `phase14_active_scaffolding_twin_mastery_and_interactive_canvas/SPRINT_14.10_PHASE_14_PRODUCTION_HARDENING_ACCESSIBILITY_AND_RELEASE_EXIT_GATE.md`
 
 <!-- LEARNING_OS_STRATEGY_V7:START -->
 # Sprint Program v7 — Learning OS Strategic Reconciliation & Implementation Baseline (2026-11-07)

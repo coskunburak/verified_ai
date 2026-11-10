@@ -1,9 +1,9 @@
 # Documentation Manifest
 
-Total Markdown files: **370**
+Total Markdown files: **382**
 
-- `00_MASTER_INDEX.md` — 565 lines — 49110 bytes
-- `DOCUMENTATION_MANIFEST.md` — 374 lines — 45251 bytes
+- `00_MASTER_INDEX.md` — 568 lines — 50041 bytes
+- `DOCUMENTATION_MANIFEST.md` — 386 lines — 47387 bytes
 - `DOCUMENTATION_V3_CHANGELOG.md` — 48 lines — 2266 bytes
 - `DOCUMENTATION_V4_CHANGELOG.md` — 29 lines — 1984 bytes
 - `DOCUMENTATION_V5_CHANGELOG.md` — 28 lines — 1154 bytes
@@ -75,6 +75,7 @@ Total Markdown files: **370**
 - `learning/84_VERIFIED_TWIN_PRACTICE_AND_INDEPENDENT_LEARNING_ENGINE.md` — 175 lines — 17636 bytes
 - `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md` — 321 lines — 23302 bytes
 - `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md` — 190 lines — 16527 bytes
+- `learning/93_ACTIVE_SCAFFOLDING_TWIN_VERIFICATION_AND_INTERACTIVE_CANVAS_SPECIFICATION.md` — 290 lines — 20614 bytes
 - `operations/37_OBSERVABILITY_SLOS_AND_INCIDENTS.md` — 158 lines — 6145 bytes
 - `operations/38_CI_CD_ENVIRONMENTS_AND_RELEASES.md` — 77 lines — 2366 bytes
 - `operations/39_RUNBOOKS_AND_FAILURE_MODES.md` — 106 lines — 6388 bytes
@@ -91,7 +92,7 @@ Total Markdown files: **370**
 - `product/05_MONETIZATION_AND_ENTITLEMENTS.md` — 111 lines — 4221 bytes
 - `product/76_COMPETITIVE_INTELLIGENCE_AND_MARKET_POSITIONING_MATRIX.md` — 124 lines — 16867 bytes
 - `product/81_LEARNING_OS_PRODUCT_VISION_AND_POSITIONING.md` — 244 lines — 27090 bytes
-- `product/82_LEARNING_OS_MARKET_COMPETITOR_AND_CUSTOMER_RESEARCH.md` — 165 lines — 21534 bytes
+- `product/82_LEARNING_OS_MARKET_COMPETITOR_AND_CUSTOMER_RESEARCH.md` — 166 lines — 22427 bytes
 - `quality/40_TEST_STRATEGY.md` — 96 lines — 2627 bytes
 - `quality/41_ENGINEERING_STANDARDS_FOR_CODEX.md` — 137 lines — 4839 bytes
 - `quality/42_DEFINITION_OF_DONE_AND_ACCEPTANCE.md` — 95 lines — 3302 bytes
@@ -108,12 +109,12 @@ Total Markdown files: **370**
 - `roadmap/67_PRODUCT_PROGRAM_STRUCTURE.md` — 75 lines — 5879 bytes
 - `roadmap/68_PRODUCTION_V1_CAPABILITY_COVERAGE_MATRIX.md` — 166 lines — 31339 bytes
 - `roadmap/80_UNIT_ECONOMICS_30_DAY_LAUNCH_CONTRACT_AND_EXECUTION_ROADMAP.md` — 120 lines — 15829 bytes
-- `roadmap/87_LEARNING_OS_STRATEGIC_PHASE_AND_SPRINT_EXPANSION_PROGRAM.md` — 214 lines — 28836 bytes
+- `roadmap/87_LEARNING_OS_STRATEGIC_PHASE_AND_SPRINT_EXPANSION_PROGRAM.md` — 229 lines — 31461 bytes
 - `roadmap/88_LEARNING_OS_MONETIZATION_GROWTH_AND_VALIDATION_PLAN.md` — 206 lines — 18781 bytes
 - `security/35_SECURITY_THREAT_MODEL.md` — 179 lines — 12434 bytes
 - `security/36_PRIVACY_AND_STUDENT_DATA_PROTECTION.md` — 150 lines — 13283 bytes
 - `security/89_STUDENT_COACH_PRIVACY_MINOR_SAFETY_AND_TEACHER_ACCESS.md` — 148 lines — 15773 bytes
-- `sprints/00_SPRINT_MASTER_PLAN.md` — 295 lines — 35923 bytes
+- `sprints/00_SPRINT_MASTER_PLAN.md` — 314 lines — 40726 bytes
 - `sprints/01_SPRINT_EXECUTION_STANDARD.md` — 120 lines — 3391 bytes
 - `sprints/02_FOCUSED_COMMERCIAL_WEDGE_SPRINT_PROGRAM.md` — 611 lines — 58224 bytes
 - `sprints/phase01_product_semantics_and_architecture/PHASE_01_EXECUTION_REPORT.md` — 423 lines — 22130 bytes
@@ -372,3 +373,14 @@ Total Markdown files: **370**
 - `sprints/phase13_proprietary_ml_evolution_and_model_independence/SPRINT_13.7_MASTERY_PREDICTION_CANDIDATE_WITH_OFFLINE_SHADOW_EVALUATION.md` — 221 lines — 9479 bytes
 - `sprints/phase13_proprietary_ml_evolution_and_model_independence/SPRINT_13.8_RECOMMENDATION_RANKING_CANDIDATE_AND_LEARNING_OUTCOME_EVALUATION.md` — 221 lines — 9524 bytes
 - `sprints/phase13_proprietary_ml_evolution_and_model_independence/SPRINT_13.9_FINE_TUNING_EXPERIMENT_INFRASTRUCTURE_MODEL_REGISTRY_AND_REPRODUCIBILITY.md` — 221 lines — 9415 bytes
+- `sprints/phase14_active_scaffolding_twin_mastery_and_interactive_canvas/PHASE_14_ACTIVE_SCAFFOLDING_TWIN_MASTERY_AND_INTERACTIVE_CANVAS.md` — 50 lines — 9451 bytes
+- `sprints/phase14_active_scaffolding_twin_mastery_and_interactive_canvas/SPRINT_14.10_PHASE_14_PRODUCTION_HARDENING_ACCESSIBILITY_AND_RELEASE_EXIT_GATE.md` — 97 lines — 8823 bytes
+- `sprints/phase14_active_scaffolding_twin_mastery_and_interactive_canvas/SPRINT_14.1_COMPETITIVE_PEDAGOGY_CONTRACT_AND_4_TIER_SCAFFOLDING_DOMAIN.md` — 122 lines — 9511 bytes
+- `sprints/phase14_active_scaffolding_twin_mastery_and_interactive_canvas/SPRINT_14.2_SOCRATIC_STATE_MACHINE_ANTI_SPOILER_GATES_AND_STEP_BREAKPOINT_DETECTION.md` — 118 lines — 9737 bytes
+- `sprints/phase14_active_scaffolding_twin_mastery_and_interactive_canvas/SPRINT_14.3_SYMPY_PARAMETRIC_ISOMORPHIC_TWIN_ENGINE_FOR_YKS_AYT_FAMILIES.md` — 121 lines — 9197 bytes
+- `sprints/phase14_active_scaffolding_twin_mastery_and_interactive_canvas/SPRINT_14.4_TIMED_INDEPENDENT_TWIN_CHALLENGE_AND_EPISTEMIC_MASTERY_VERIFICATION.md` — 114 lines — 8798 bytes
+- `sprints/phase14_active_scaffolding_twin_mastery_and_interactive_canvas/SPRINT_14.5_MISCONCEPTION_ROOT_CAUSE_DIAGNOSIS_AND_PREREQUISITE_REPAIR_BRIDGE.md` — 118 lines — 8029 bytes
+- `sprints/phase14_active_scaffolding_twin_mastery_and_interactive_canvas/SPRINT_14.6_DECLARATIVE_WHITEBOARD_VECTOR_STREAM_AND_TIMELINE_SYNCHRONIZATION.md` — 111 lines — 8283 bytes
+- `sprints/phase14_active_scaffolding_twin_mastery_and_interactive_canvas/SPRINT_14.7_TURKISH_MATHEMATICS_NEURAL_TTS_AND_SYNCHRONIZED_VOICE_PEDAGOGY.md` — 112 lines — 8333 bytes
+- `sprints/phase14_active_scaffolding_twin_mastery_and_interactive_canvas/SPRINT_14.8_BIDIRECTIONAL_PENCILKIT_CANVAS_AND_LIVE_INK_STEP_VERIFICATION.md` — 202 lines — 12827 bytes
+- `sprints/phase14_active_scaffolding_twin_mastery_and_interactive_canvas/SPRINT_14.9_SOLVI_PARITY_BENCHMARK_RETENTION_EXPERIMENTS_AND_FINOPS_GUARDRAILS.md` — 118 lines — 10526 bytes

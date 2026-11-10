@@ -80,6 +80,7 @@ The product is **not** positioned as another homework solver. Its durable value 
 - `learning/32_ADAPTIVE_LEARNING_AND_STUDY_PLANNER.md` — next-best-action engine.
 - `learning/33_EXAM_MODE_AND_ASSESSMENT_ENGINE.md` — mock exams, readiness and scoring.
 - `learning/34_TUTORING_AND_PEDAGOGICAL_BEHAVIOR.md` — Socratic tutoring, hints and explanation depth.
+- `learning/93_ACTIVE_SCAFFOLDING_TWIN_VERIFICATION_AND_INTERACTIVE_CANVAS_SPECIFICATION.md` — 4-tier cognitive scaffolding, CAS-verified isomorphic twin engine, Solvi teardown, and interactive Socratic canvas.
 
 ### Security and operations
 - `security/35_SECURITY_THREAT_MODEL.md` — trust boundaries, threats and mitigations.
@@ -546,6 +547,8 @@ Following the 2026-11-07 repository baseline audit (`e39bafe88ea369f98c96a65497a
 - `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md` — 6 bounded contexts, canonical schemas for `PLANNED V037`–`V041`, REST API contracts, and iOS feature module map under `apps/ios/VerifiedAI/Features/`.
 - `quality/91_LEARNING_OS_PRODUCT_LEARNING_AND_RELEASE_ACCEPTANCE_GATES.md` — 6 release readiness dimensions (`D1`–`D6`), 5 status badges, and owner-only acceptance gates (`Gate 0`–`Gate 5`).
 - `operations/92_LEARNING_OS_ASSUMPTIONS_EXPERIMENTS_AND_EVIDENCE_LEDGER.md` — Epistemic classification taxonomy (`SOURCE_VERIFIED`, `OWNER_TEST_VERIFIED`, `EMPIRICAL_RESEARCH`, `MARKET_BENCHMARK`, `ENGINEERING_ESTIMATE`, `PRODUCT_HYPOTHESIS`), audit of `roadmap/80`, and `EXP-001`–`EXP-008` registry.
+- `learning/93_ACTIVE_SCAFFOLDING_TWIN_VERIFICATION_AND_INTERACTIVE_CANVAS_SPECIFICATION.md` — 4-tier cognitive scaffolding protocol (`TIER_1_CONCEPT` → `TIER_4_FULL_SOLUTION`), CAS-verified isomorphic twin engine, Solvi competitive teardown, and interactive bidirectional Apple Pencil/Canvas audio-visual whiteboard architecture.
+- `sprints/phase14_active_scaffolding_twin_mastery_and_interactive_canvas/PHASE_14_ACTIVE_SCAFFOLDING_TWIN_MASTERY_AND_INTERACTIVE_CANVAS.md` — Phase 14 overview and 10 production sprint specifications (`SPRINT_14.1` through `SPRINT_14.10`) operationalizing Document 93 across backend (`V039`–`V042`), SymPy math-verifier, and native iOS (`PencilKit` + Turkish math voice sync).
 <!-- LEARNING_OS_STRATEGY_V7:END -->
 
 ## Sprint 7.5 source handoff
