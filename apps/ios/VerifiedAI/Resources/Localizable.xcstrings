@@ -1,6 +1,176 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "attempt.mastery.independent": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Independently verified answer — one piece of learning evidence"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bağımsız doğrulanmış yanıt — tek bir öğrenme kanıtı"
+          }
+        }
+      }
+    },
+    "attempt.mastery.independentIncorrect": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Independent attempt — a verified error needs practice"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bağımsız deneme — doğrulanmış hata için pratik gerekli"
+          }
+        }
+      }
+    },
+    "attempt.mastery.hint": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Correct with hints — independent mastery is not established"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İpucuyla doğru — bağımsız ustalık henüz kanıtlanmadı"
+          }
+        }
+      }
+    },
+    "attempt.mastery.hintIncorrect": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Attempt with hints — more practice needed"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İpucuyla deneme — daha fazla pratik gerekli"
+          }
+        }
+      }
+    },
+    "attempt.mastery.revealed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solution viewed — no positive mastery gain"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çözüm incelendi — ustalık artışı yok"
+          }
+        }
+      }
+    },
+    "attempt.mastery.unsupported": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Evidence unavailable — mastery unchanged"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kanıt yetersiz — ustalık değişmedi"
+          }
+        }
+      }
+    },
+    "attempt.mastery.loading": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loading learning evidence"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Öğrenme kanıtı yükleniyor"
+          }
+        }
+      }
+    },
+    "attempt.mastery.empty": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No eligible learning evidence yet"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Henüz uygun öğrenme kanıtı yok"
+          }
+        }
+      }
+    },
+    "attempt.mastery.failed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Learning evidence could not be loaded"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Öğrenme kanıtı yüklenemedi"
+          }
+        }
+      }
+    },
+    "attempt.mastery.retry": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retry learning evidence"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Öğrenme kanıtını yeniden yükle"
+          }
+        }
+      }
+    },
     "attempt.dna.pending": {
       "extractionState": "manual",
       "localizations": {

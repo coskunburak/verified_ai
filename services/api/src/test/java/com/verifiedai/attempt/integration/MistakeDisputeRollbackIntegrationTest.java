@@ -273,7 +273,7 @@ class MistakeDisputeRollbackIntegrationTest extends AttemptEvaluationIntegration
                     assertThat(isolated.queryForObject("select to_jsonb(e)::text from attempt_evaluations e where id=?",String.class,evaluation.id())).isEqualTo(evaluationBefore);
                     assertThat(new AttemptWorkRepository(isolated).get(owner,work.attemptId())).contains(work);
                     assertThat(new AttemptEvaluationRepository(isolated).get(owner,work.attemptId()).orElseThrow().artifact()).isEqualTo(evaluation);
-                    assertThat(new AttemptMistakeRepository(isolated).export(owner)).containsExactly(c);
+                    assertThat(new AttemptMistakeRepository(isolated,event -> { }).export(owner)).containsExactly(c);
                     assertThat(isolated.queryForObject("select count(*) from learner_mistake_dna_profiles",Integer.class)).isZero();
                     assertThat(isolated.queryForObject("select count(*) from learner_mistake_dispute_events",Integer.class)).isZero();
                 } finally {

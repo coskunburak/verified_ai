@@ -135,7 +135,7 @@ class StudentAttemptIntegrationTest extends PostgresIntegrationTestSupport {
     }
     @Test void learningEvidenceIsIdempotentAndPrivacyDeletesDerivedMastery() {
         var attempt=service(review(),true).submit(owner,problem,"learning-evidence",source,List.of("x=5"));
-        var learning=new com.verifiedai.attempt.infrastructure.persistence.AttemptLearningRepository(jdbc);
+        var learning=new com.verifiedai.attempt.infrastructure.persistence.AttemptLearningRepository(jdbc,new com.verifiedai.mastery.LegacyMasteryWriter(jdbc,false),event -> { });
         var diagnosis=new AttemptAnalysisResult.Diagnosis(MistakeCode.ALG_FRESHMAN_DREAM_POWER,attempt.id()+":1",
             "attempt.mistake.ALG_FRESHMAN_DREAM_POWER","/expression","STEP_LEVEL");
         var result=new AttemptAnalysisResult("attempt-analysis-v2","bounded-attempt-v2","attempt-taxonomy-v2",attempt.id(),attempt.id().toString(),
@@ -183,7 +183,7 @@ class StudentAttemptIntegrationTest extends PostgresIntegrationTestSupport {
             }
         };
         var attempt=service(synthetic,true).submit(owner,problem,"synthetic-drill-attempt",source,List.of("x=5"),true);
-        var learningStore=new com.verifiedai.attempt.infrastructure.persistence.AttemptLearningRepository(jdbc);
+        var learningStore=new com.verifiedai.attempt.infrastructure.persistence.AttemptLearningRepository(jdbc,new com.verifiedai.mastery.LegacyMasteryWriter(jdbc,false),event -> { });
         var learning=new AttemptLearningService(store,learningStore,sources,synthetic,codec,
             new com.verifiedai.tutoring.application.learning.TutorAssistanceReader(jdbc),transactions,Clock.systemUTC(),
             (p,k)->RateLimitDecision.allow(),new SimpleMeterRegistry(),true,reader);
@@ -216,7 +216,7 @@ class StudentAttemptIntegrationTest extends PostgresIntegrationTestSupport {
                     "METHODS","UNSUPPORTED","UNSUPPORTED_SOURCE",codec.parse(request).path("source"),null,List.of());
             }
         };
-        return new AttemptLearningService(store,new com.verifiedai.attempt.infrastructure.persistence.AttemptLearningRepository(jdbc),
+        return new AttemptLearningService(store,new com.verifiedai.attempt.infrastructure.persistence.AttemptLearningRepository(jdbc,new com.verifiedai.mastery.LegacyMasteryWriter(jdbc,false),event -> { }),
             sources,client,codec,new com.verifiedai.tutoring.application.learning.TutorAssistanceReader(jdbc),transactions,
             Clock.systemUTC(),(p,k)->RateLimitDecision.allow(),new SimpleMeterRegistry(),enabled,reader);
     }
@@ -259,7 +259,7 @@ class StudentAttemptIntegrationTest extends PostgresIntegrationTestSupport {
 
     @Test void comparisonDoesNotOverwriteLegacyEvidenceAndPrivacyStillDeletesIt() {
         var saved=service(review(),true).submit(owner,problem,"comparison-history",source,List.of("x=4"),true);
-        var learningStore=new com.verifiedai.attempt.infrastructure.persistence.AttemptLearningRepository(jdbc);
+        var learningStore=new com.verifiedai.attempt.infrastructure.persistence.AttemptLearningRepository(jdbc,new com.verifiedai.mastery.LegacyMasteryWriter(jdbc,false),event -> { });
         var original=codec.parse(store.request(owner,saved.id())).path("original");
         var legacy=new AttemptLearningEvidence("attempt-learning-result-v1","bounded-learning-v1",saved.id(),saved.id().toString(),
             "METHODS","VERIFIED",null,List.of(new AttemptLearningEvidence.Method("SYMBOLIC_SIMPLIFICATION",List.of(original),"verified-method-v1")));
@@ -390,7 +390,7 @@ class StudentAttemptIntegrationTest extends PostgresIntegrationTestSupport {
                     .locations("classpath:db/migration/platform").load().migrate();
                 String after=isolated.queryForObject("select (to_jsonb(a)-'final_answer')::text from student_attempts a where id=?",String.class,saved.id());
                 assertThat(after).isEqualTo(before);
-                assertThat(new StudentAttemptRepository(isolated).get(owner,problem,saved.id())).contains(saved);
+                assertThat(new StudentAttemptRepository(isolated,new com.verifiedai.attempt.infrastructure.persistence.AttemptLearningRepository(isolated,new com.verifiedai.mastery.LegacyMasteryWriter(isolated,false),event -> { })).get(owner,problem,saved.id())).contains(saved);
                 } finally { connection.setSchema(previousSchema); }
             }
         } finally { jdbc.execute("drop schema if exists "+schema+" cascade"); }

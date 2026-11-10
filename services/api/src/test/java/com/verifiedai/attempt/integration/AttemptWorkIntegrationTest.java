@@ -150,7 +150,7 @@ class AttemptWorkIntegrationTest extends PostgresIntegrationTestSupport {
                     String before=isolated.queryForObject("select to_jsonb(a)::text from student_attempts a where id=?",String.class,saved.id());
                     org.flywaydb.core.Flyway.configure().dataSource(dataSource).schemas(schema).defaultSchema(schema).locations("classpath:db/migration/platform").load().migrate();
                     assertThat(isolated.queryForObject("select to_jsonb(a)::text from student_attempts a where id=?",String.class,saved.id())).isEqualTo(before);
-                    assertThat(new StudentAttemptRepository(isolated).get(owner,problem,saved.id())).contains(saved);
+                    assertThat(new StudentAttemptRepository(isolated,new com.verifiedai.attempt.infrastructure.persistence.AttemptLearningRepository(isolated,new com.verifiedai.mastery.LegacyMasteryWriter(isolated,false),event -> { })).get(owner,problem,saved.id())).contains(saved);
                     assertThat(new AttemptWorkRepository(isolated).export(owner)).isEmpty();
                 } finally { connection.setSchema(prior); }
             }

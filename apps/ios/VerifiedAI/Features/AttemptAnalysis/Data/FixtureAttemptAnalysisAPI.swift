@@ -8,13 +8,34 @@ actor FixtureAttemptAnalysisAPI: AttemptAnalysisServicing {
     private var classifications: [UUID: AttemptMistakeView] = [:]
     private var evaluations: [UUID: AttemptEvaluationView] = [:]
     private var workCommitted: [String: (AttemptWorkRequest, AttemptStructuredWork)] = [:]
+    enum MasteryFixture: Sendable { case disabled, empty, fail, evidence(MasterySkillsView.EvidenceType) }
+    private var masteryFixture: MasteryFixture
+    private let masteryDelay: Bool
+    private var masteryRequests = 0
+    func setMastery(_ fixture: MasteryFixture) { masteryFixture = fixture }
+    func masteryRequestCount() -> Int { masteryRequests }
+    func mastery() async throws -> MasterySkillsView {
+        masteryRequests += 1
+        let selected = masteryFixture
+        if masteryDelay { try? await Task.sleep(nanoseconds: 200_000_000) }
+        switch selected {
+        case .disabled: return .disabled
+        case .fail: throw URLError(.networkConnectionLost)
+        case .empty: return .init(schemaVersion: "mastery-skills-v1", enabled: true, algorithmVersion: "bkt-lite-v2", asOf: Date(), skills: [], outcomes: [])
+        case .evidence(let type):
+            return .init(schemaVersion: "mastery-skills-v1", enabled: true, algorithmVersion: "bkt-lite-v2", asOf: Date(), skills: [],
+                outcomes: classifications.keys.map { .init(attemptId: $0, evidenceType: type, observedCorrectness: type == .unsupported ? nil : true) })
+        }
+    }
     private let dnaEnabled: Bool
     private var loseDnaAcknowledgement: Bool
     private let dnaDelay: Bool
     private var dnaOperations: [String: MistakeDisputeResult] = [:]
     private var loseAcknowledgement: Bool
     private let enabled: Bool
-    init(loseAcknowledgement: Bool = false, enabled: Bool = true, dnaEnabled: Bool = false, loseDnaAcknowledgement: Bool = false, dnaDelay: Bool = false) {
+    init(loseAcknowledgement: Bool = false, enabled: Bool = true, dnaEnabled: Bool = false, loseDnaAcknowledgement: Bool = false, dnaDelay: Bool = false, mastery: MasteryFixture = .disabled, masteryDelay: Bool = false) {
+        self.masteryFixture = ProcessInfo.processInfo.arguments.contains("--fixture-mastery") ? .evidence(.hintAssisted) : mastery
+        self.masteryDelay = masteryDelay
         self.loseAcknowledgement = loseAcknowledgement; self.enabled = enabled
         self.dnaEnabled = dnaEnabled || ProcessInfo.processInfo.arguments.contains("--fixture-mistake-dna")
         self.loseDnaAcknowledgement = loseDnaAcknowledgement; self.dnaDelay = dnaDelay

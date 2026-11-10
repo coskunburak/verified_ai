@@ -207,6 +207,7 @@ struct AttemptSubmission: Codable, Equatable, Sendable {
     }
 }
 protocol AttemptAnalysisServicing: Sendable {
+    func mastery() async throws -> MasterySkillsView
     func effectiveMistake(event: UUID) async throws -> MistakeEffectiveState
     func disputeMistake(event: UUID, attempt: UUID, key: String, input: MistakeDisputeRequest) async throws -> MistakeDisputeResult
     func correctOcr(problem: UUID, pending: AttemptPendingCorrection) async throws -> AttemptOcrCorrectionResult
@@ -561,4 +562,52 @@ extension AttemptAnalysisServicing {
     }
     func disputeMistake(event: UUID, attempt: UUID, key: String, input: MistakeDisputeRequest) async throws -> MistakeDisputeResult { throw NetworkError.invalidResponse }
     func correctOcr(problem: UUID, pending: AttemptPendingCorrection) async throws -> AttemptOcrCorrectionResult { throw NetworkError.invalidResponse }
+}
+
+
+struct MasterySkillsView: Decodable, Sendable {
+    enum EvidenceType: String, Decodable, Sendable {
+        case independent = "INDEPENDENT", hintAssisted = "HINT_ASSISTED"
+        case solutionRevealed = "SOLUTION_REVEALED_ASSISTED", unsupported = "UNSUPPORTED"
+    }
+    struct Outcome: Decodable, Sendable {
+        let attemptId: UUID; let evidenceType: EvidenceType; let observedCorrectness: Bool?
+        var labelKey: String {
+            switch evidenceType {
+            case .independent: observedCorrectness == true ? "attempt.mastery.independent" : "attempt.mastery.independentIncorrect"
+            case .hintAssisted: observedCorrectness == true ? "attempt.mastery.hint" : "attempt.mastery.hintIncorrect"
+            case .solutionRevealed: "attempt.mastery.revealed"
+            case .unsupported: "attempt.mastery.unsupported"
+            }
+        }
+    }
+    struct Skill: Decodable, Sendable {
+        let canonicalSkillCode: String
+        let posteriorMastery: Double; let independentCompetence: Double; let evidenceConfidence: Double
+        let independentEvidenceCount: Int; let assistedEvidenceCount: Int
+        let status: String; let cappedByAssistance: Bool; let retention: Double; let halfLifeDays: Double
+        let algorithmVersion: String; let observedAt: Date
+    }
+    let schemaVersion: String; let enabled: Bool; let algorithmVersion: String; let asOf: Date
+    let skills: [Skill]; let outcomes: [Outcome]
+    static let disabled = MasterySkillsView(schemaVersion: "mastery-skills-v1", enabled: false, algorithmVersion: "bkt-lite-v2", asOf: .distantPast, skills: [], outcomes: [])
+    func validated() throws -> Self {
+        guard schemaVersion == "mastery-skills-v1", algorithmVersion == "bkt-lite-v2",
+              enabled || (skills.isEmpty && outcomes.isEmpty), skills.count <= 60, outcomes.count <= 30,
+              Set(skills.map(\.canonicalSkillCode)).count == skills.count,
+              Set(outcomes.map(\.attemptId)).count == outcomes.count,
+              outcomes.allSatisfy({ ($0.evidenceType == .unsupported) == ($0.observedCorrectness == nil) }),
+              skills.allSatisfy({ s in
+                  !s.canonicalSkillCode.isEmpty && s.algorithmVersion == algorithmVersion && s.observedAt <= asOf
+                    && s.independentEvidenceCount >= 0 && s.assistedEvidenceCount >= 0
+                    && (0.05...0.99).contains(s.posteriorMastery) && (0.05...0.99).contains(s.retention)
+                    && (0...1).contains(s.independentCompetence) && (0...1).contains(s.evidenceConfidence)
+                    && (1...90).contains(s.halfLifeDays) && ["PRACTICING", "MASTERED"].contains(s.status)
+                    && (s.status != "MASTERED" || (s.independentEvidenceCount > 0 && s.posteriorMastery >= 0.85))
+              }) else { throw NetworkError.invalidResponse }
+        return self
+    }
+}
+extension AttemptAnalysisServicing {
+    func mastery() async throws -> MasterySkillsView { .disabled }
 }

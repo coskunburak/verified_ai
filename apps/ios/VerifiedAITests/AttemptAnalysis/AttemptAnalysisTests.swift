@@ -944,3 +944,73 @@ final class MistakeDnaTests: XCTestCase {
         }
     }
 }
+
+@MainActor
+final class MasteryPresentationTests: XCTestCase {
+    private func idle(_ model: AnalyzeMyWorkViewModel) async {
+        for _ in 0..<150 { if !model.busy { return }; try? await Task.sleep(nanoseconds: 10_000_000) }
+        XCTFail("Mastery request did not settle")
+    }
+    private func prepare(_ api: FixtureAttemptAnalysisAPI) async -> AnalyzeMyWorkViewModel {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        addTeardownBlock { try? FileManager.default.removeItem(at: directory) }
+        let model = AnalyzeMyWorkViewModel(owner: UUID(), problem: UUID(), service: api,
+            store: AttemptAnalysisPendingStore(directory: directory), ownsAccount: { true })
+        model.resume(); await idle(model); model.draft = "x=5"; model.startStructured()
+        model.submit(); await idle(model); model.evaluateWork(); await idle(model); model.classifyWork(); await idle(model)
+        return model
+    }
+    func testIndependentAssistedRevealedAndUnsupportedPresentation() async throws {
+        for type in [MasterySkillsView.EvidenceType.independent, .hintAssisted, .solutionRevealed, .unsupported] {
+            let model = await prepare(FixtureAttemptAnalysisAPI(mastery: .evidence(type)))
+            guard case .evidence(let outcome) = model.masteryState else { return XCTFail("Missing server evidence") }
+            XCTAssertEqual(outcome.evidenceType, type)
+            let expected: String
+            switch type {
+            case .independent: expected = "attempt.mastery.independent"
+            case .hintAssisted: expected = "attempt.mastery.hint"
+            case .solutionRevealed: expected = "attempt.mastery.revealed"
+            case .unsupported: expected = "attempt.mastery.unsupported"
+            }
+            XCTAssertEqual(outcome.labelKey, expected)
+            let incorrect = MasterySkillsView.Outcome(attemptId: UUID(), evidenceType: type, observedCorrectness: false)
+            if type == .independent { XCTAssertEqual(incorrect.labelKey, "attempt.mastery.independentIncorrect") }
+        }
+    }
+    func testDisabledEmptyFailureRetryAndNoDuplicateRequests() async {
+        let api = FixtureAttemptAnalysisAPI(mastery: .disabled)
+        let model = await prepare(api)
+        guard case .hidden = model.masteryState else { return XCTFail("Disabled state must be hidden") }
+        await api.setMastery(.empty); model.retryMastery(); await idle(model)
+        guard case .empty = model.masteryState else { return XCTFail("Missing empty state") }
+        await api.setMastery(.fail); model.retryMastery(); await idle(model)
+        guard case .failed = model.masteryState else { return XCTFail("Missing recoverable error") }
+        await api.setMastery(.evidence(.hintAssisted))
+        let before = await api.masteryRequestCount()
+        model.retryMastery(); model.retryMastery(); await idle(model)
+        let after = await api.masteryRequestCount()
+        XCTAssertEqual(after, before + 1)
+        guard case .evidence = model.masteryState else { return XCTFail("Retry did not recover") }
+    }
+    func testLoadingAndStaleResponseAfterSuspendAreFenced() async {
+        let api = FixtureAttemptAnalysisAPI(mastery: .empty, masteryDelay: true)
+        let model = await prepare(api)
+        model.retryMastery()
+        for _ in 0..<30 {
+            if case .loading = model.masteryState { break }
+            await Task.yield()
+        }
+        guard case .loading = model.masteryState else { return XCTFail("Missing loading state") }
+        model.suspend()
+        try? await Task.sleep(nanoseconds: 250_000_000)
+        guard case .hidden = model.masteryState else { return XCTFail("Stale response escaped generation fence") }
+    }
+    func testMalformedUnsupportedCorrectnessAndDisabledPayloadAreRejected() {
+        let malformed = MasterySkillsView(schemaVersion: "mastery-skills-v1", enabled: true, algorithmVersion: "bkt-lite-v2", asOf: Date(), skills: [],
+            outcomes: [.init(attemptId: UUID(), evidenceType: .unsupported, observedCorrectness: true)])
+        XCTAssertThrowsError(try malformed.validated())
+        let disabled = MasterySkillsView(schemaVersion: "mastery-skills-v1", enabled: false, algorithmVersion: "bkt-lite-v2", asOf: Date(), skills: [],
+            outcomes: [.init(attemptId: UUID(), evidenceType: .independent, observedCorrectness: true)])
+        XCTAssertThrowsError(try disabled.validated())
+    }
+}

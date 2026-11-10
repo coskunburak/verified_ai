@@ -132,6 +132,7 @@ public class PrimarySolveService {
             catch(ApiProblemException e) { state=SolveState.STALE; }
             var stored=store.candidate(jobId);
             var candidate=stored.map(row->validator.parse((String)row.get("artifact"))).orElse(null);
+            if(candidate!=null) store.recordLearningDisclosure(user,session,clock.instant());
             var provenance=stored.map(row->validator.parse((String)row.get("provenance"))).orElse(null);
             return new SolveView(job.id(),job.canonicalId(),job.parseId(),job.parseRevision(),job.attempt(),state,
                 job.failureCode(),job.createdAt(),candidate,provenance==null?null:provenance.path("provider").asText(),

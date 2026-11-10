@@ -96,6 +96,20 @@ struct AnalyzeMyWorkCaptureView: View {
                             AttemptEvaluationResultsView(value: evaluation, work: work)
                             if let classification = viewModel.classification {
                                 AttemptMistakeResultsView(value: classification)
+                                switch viewModel.masteryState {
+                                case .hidden: EmptyView()
+                                case .loading: ProgressView("attempt.mastery.loading").accessibilityIdentifier("attempt.mastery.loading")
+                                case .empty: Text("attempt.mastery.empty").accessibilityIdentifier("attempt.mastery.empty")
+                                case .failed:
+                                    Text("attempt.mastery.failed")
+                                    Button("attempt.mastery.retry") { viewModel.retryMastery() }
+                                        .frame(minHeight: 44).disabled(viewModel.busy).accessibilityIdentifier("attempt.mastery.retry")
+                                case .evidence(let outcome):
+                                    Label(LocalizedStringKey(outcome.labelKey), systemImage: "info.circle")
+                                        .fixedSize(horizontal: false, vertical: true)
+                                        .accessibilityElement(children: .combine)
+                                        .accessibilityIdentifier("attempt.mastery.evidence")
+                                }
                                 if viewModel.effectiveMistake?.effectiveStatus == "DISPUTED_OR_CORRECTED" {
                                     Label("attempt.dna.excluded", systemImage: "checkmark.shield")
                                         .accessibilityIdentifier("attempt.dna.excluded")

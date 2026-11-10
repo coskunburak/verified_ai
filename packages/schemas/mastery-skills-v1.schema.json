@@ -1,0 +1,199 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Owner-scoped mastery v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "enabled",
+    "algorithmVersion",
+    "asOf",
+    "skills",
+    "outcomes"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "mastery-skills-v1"
+    },
+    "enabled": {
+      "type": "boolean"
+    },
+    "algorithmVersion": {
+      "const": "bkt-lite-v2"
+    },
+    "asOf": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "skills": {
+      "type": "array",
+      "maxItems": 60,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "canonicalSkillCode": {
+            "type": "string",
+            "pattern": "^MATH\\.",
+            "maxLength": 96
+          },
+          "posteriorMastery": {
+            "type": "number",
+            "minimum": 0.05,
+            "maximum": 0.99
+          },
+          "independentCompetence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "evidenceConfidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "independentEvidenceCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "assistedEvidenceCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "status": {
+            "enum": [
+              "PRACTICING",
+              "MASTERED"
+            ]
+          },
+          "cappedByAssistance": {
+            "type": "boolean"
+          },
+          "retention": {
+            "type": "number",
+            "minimum": 0.05,
+            "maximum": 0.99
+          },
+          "halfLifeDays": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 90
+          },
+          "algorithmVersion": {
+            "const": "bkt-lite-v2"
+          },
+          "observedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "canonicalSkillCode",
+          "posteriorMastery",
+          "independentCompetence",
+          "evidenceConfidence",
+          "independentEvidenceCount",
+          "assistedEvidenceCount",
+          "status",
+          "cappedByAssistance",
+          "retention",
+          "halfLifeDays",
+          "algorithmVersion",
+          "observedAt"
+        ],
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "const": "MASTERED"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "independentEvidenceCount": {
+                  "minimum": 1
+                },
+                "posteriorMastery": {
+                  "minimum": 0.85
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "outcomes": {
+      "type": "array",
+      "maxItems": 30,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "attemptId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "evidenceType": {
+            "enum": [
+              "INDEPENDENT",
+              "HINT_ASSISTED",
+              "SOLUTION_REVEALED_ASSISTED",
+              "UNSUPPORTED"
+            ]
+          },
+          "observedCorrectness": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "attemptId",
+          "evidenceType",
+          "observedCorrectness"
+        ],
+        "if": {
+          "properties": {
+            "evidenceType": {
+              "const": "UNSUPPORTED"
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "observedCorrectness": {
+              "type": "null"
+            }
+          }
+        },
+        "else": {
+          "properties": {
+            "observedCorrectness": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    }
+  },
+  "if": {
+    "properties": {
+      "enabled": {
+        "const": false
+      }
+    }
+  },
+  "then": {
+    "properties": {
+      "skills": {
+        "maxItems": 0
+      },
+      "outcomes": {
+        "maxItems": 0
+      }
+    }
+  }
+}

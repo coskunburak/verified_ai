@@ -135,12 +135,15 @@ extension AttemptAnalysisUITests {
     func testClassificationTurkishUncertaintyAndAccessibility() { structured(turkish: true, evaluate: true, classify: true) }
     func testMistakeDisputeEnglishAccessibility() { structured(turkish: false, evaluate: true, classify: true, dna: true) }
     func testMistakeDisputeTurkishAccessibility() { structured(turkish: true, evaluate: true, classify: true, dna: true) }
-    private func structured(turkish: Bool, evaluate: Bool = false, classify: Bool = false, dna: Bool = false) {
+    func testMasteryEnglishEvidenceAccessibility() { structured(turkish: false, evaluate: true, classify: true, mastery: true) }
+    func testMasteryTurkishEvidenceAccessibility() { structured(turkish: true, evaluate: true, classify: true, mastery: true) }
+    private func structured(turkish: Bool, evaluate: Bool = false, classify: Bool = false, dna: Bool = false, mastery: Bool = false) {
         continueAfterFailure = false
         let app = XCUIApplication()
         app.launchArguments = ["--ui-testing", "--ui-testing-authenticated", "--solve-fixture", "--attempt-fixture", "--solve-reset",
             "--solve-fixture-scope=" + UUID().uuidString, "-AppleLanguages", turkish ? "(tr)" : "(en)", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityM"]
         if dna { app.launchArguments.append("--fixture-mistake-dna") }
+        if mastery { app.launchArguments.append("--fixture-mastery") }
         app.launch(); defer { app.terminate() }
         let row = app.buttons["history.session.00000000-0000-0000-0000-000000005401"]
         let solve = app.buttons["history.solve"]
@@ -192,6 +195,13 @@ extension AttemptAnalysisUITests {
                 XCTAssertTrue(explanation.label.contains(turkish ? "güvenilir" : "reliably"))
                 XCTAssertEqual(app.staticTexts.matching(identifier: "attempt.classification.explanation").count, 1)
                 XCTAssertFalse(app.buttons["attempt.classification.action"].exists)
+                if mastery {
+                    let badge = app.descendants(matching: .any)["attempt.mastery.evidence"].firstMatch
+                    for _ in 0..<5 { if badge.isHittable { break }; app.swipeUp() }
+                    XCTAssertTrue(badge.waitForExistence(timeout: 5))
+                    XCTAssertTrue(badge.label.contains(turkish ? "İpucuyla" : "hints"))
+                    XCTAssertTrue(badge.label.contains(turkish ? "kanıtlanmadı" : "not established"))
+                }
                 if dna {
                     tap(app.buttons["attempt.dna.dispute"], app)
                     let excluded = app.descendants(matching: .any)["attempt.dna.excluded"].firstMatch

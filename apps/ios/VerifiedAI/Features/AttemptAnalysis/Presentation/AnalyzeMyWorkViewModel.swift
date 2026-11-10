@@ -11,6 +11,8 @@ final class AnalyzeMyWorkViewModel {
     var evaluationRealDomainConfirmed = false
     private(set) var effectiveMistake: MistakeEffectiveState?
     private(set) var pendingCorrection: AttemptPendingCorrection?
+    enum MasteryState { case hidden, loading, empty, failed, evidence(MasterySkillsView.Outcome) }
+    private(set) var masteryState: MasteryState = .hidden
     private(set) var classification: AttemptMistakeView?
     private(set) var evaluation: AttemptEvaluationView?
     private(set) var pendingEvaluation: AttemptEvaluationPending?
@@ -80,7 +82,7 @@ final class AnalyzeMyWorkViewModel {
         active = true
         run {
             let expected = self.generation
-            self.context = nil; self.workResult = nil; self.evaluation = nil; self.classification = nil
+            self.context = nil; self.workResult = nil; self.evaluation = nil; self.classification = nil; self.masteryState = .hidden
             self.effectiveMistake = nil
             self.pendingCorrection = try self.store.loadCorrection(owner: self.owner, problem: self.problem)
             self.pendingEvaluation = try self.store.loadEvaluation(owner: self.owner, problem: self.problem)
@@ -210,14 +212,14 @@ final class AnalyzeMyWorkViewModel {
     }
     func retry() { if let pendingCorrection { run { try await self.resolveCorrection(pendingCorrection) }; return }; if let pendingWork { run { try await self.resolveWork(pendingWork) }; return }; guard let pending else { resume(); return }; run(clearRejectedSubmission: true) { try await self.resolve(pending) } }
     func select(_ attempt: StudentAttempt) {
-        guard !busy, pendingCorrection == nil else { return }; effectiveMistake = nil; result = attempt; workResult = nil; evaluation = nil; classification = nil
+        guard !busy, pendingCorrection == nil else { return }; effectiveMistake = nil; result = attempt; workResult = nil; evaluation = nil; classification = nil; masteryState = .hidden
         evaluationRealDomainConfirmed = pendingEvaluation?.attemptId == attempt.id ? pendingEvaluation?.input.realDomainConfirmed ?? false : false
         run { try await self.loadWork(attempt, generation: self.generation) }
     }
-    func suspend() { active = false; generation += 1; task?.cancel(); task = nil; busy = false }
+    func suspend() { masteryState = .hidden; active = false; generation += 1; task?.cancel(); task = nil; busy = false }
     func invalidate() {
         effectiveMistake = nil; pendingCorrection = nil
-        evaluation = nil; classification = nil; evaluationRealDomainConfirmed = false; pendingEvaluation = nil; workDraft = nil; pendingWork = nil; workResult = nil; acknowledgedWork = nil; workPreview = nil
+        evaluation = nil; classification = nil; masteryState = .hidden; evaluationRealDomainConfirmed = false; pendingEvaluation = nil; workDraft = nil; pendingWork = nil; workResult = nil; acknowledgedWork = nil; workPreview = nil
         suspend(); learning?.invalidate(); draft = ""; finalAnswer = ""; answerMode = false; draftSource = nil; acknowledgedSubmission = nil; draftNeedsReview = false; cancelReview(); realDomainConfirmed = false; captureReview = nil; extractionReference = nil; pending = nil; result = nil; context = nil; history = []; errorKey = "attempt.authorization"
     }
     private func authorized() async -> Bool {
@@ -343,7 +345,7 @@ extension AnalyzeMyWorkViewModel {
             guard await authorized(), expected == generation else { return }
             // Production response ownership is checked independently of the authenticated transport.
             guard isFixture || work.ownerId == owner else { invalidate(); return }
-            workResult = work; evaluation = nil; classification = nil; evaluationRealDomainConfirmed = false
+            workResult = work; evaluation = nil; classification = nil; masteryState = .hidden; evaluationRealDomainConfirmed = false
             let updated = try await service.list(problem: problem)
             guard await authorized(), expected == generation else { return }
             history = updated; result = updated.first { $0.id == work.attemptId }
@@ -421,7 +423,7 @@ extension AnalyzeMyWorkViewModel {
             } catch NetworkError.server(let failure) where failure.code == "ATTEMPT_STALE_SOURCE" {
                 guard await self.authorized(), expected == self.generation else { return }
                 try self.store.removeEvaluation(owner: self.owner, problem: self.problem); self.pendingEvaluation = nil
-                self.evaluation = nil; self.classification = nil; self.errorKey = "attempt.stale"
+                self.evaluation = nil; self.classification = nil; self.masteryState = .hidden; self.errorKey = "attempt.stale"
             }
         }
     }
@@ -433,10 +435,11 @@ extension AnalyzeMyWorkViewModel {
             && classification?.creationEnabled == true && classification?.status == .notClassified && classification?.historical == false
     }
     private func loadClassification(generation expected: Int) async throws {
-        guard let evidence = evaluation?.evaluation else { classification = nil; return }
+        guard let evidence = evaluation?.evaluation else { classification = nil; masteryState = .hidden; return }
         let response = try await service.readClassification(problem: problem, attempt: evidence.attemptId)
         guard await authorized(), generation == expected, evaluation?.evaluation?.id == evidence.id else { return }
         classification = try response.validated(evaluation: evidence)
+        await loadMastery(generation: expected)
         try await loadEffectiveMistake(generation: expected)
     }
     func classifyWork() {
@@ -448,6 +451,7 @@ extension AnalyzeMyWorkViewModel {
                 let response = try await self.service.classify(problem: self.problem, attempt: evidence.attemptId, key: input.retryKey, input: input)
                 guard await self.authorized(), self.generation == expected, self.evaluation?.evaluation?.id == evidence.id else { return }
                 self.classification = try response.validated(evaluation: evidence)
+                await self.loadMastery(generation: expected)
                 try await self.loadEffectiveMistake(generation: expected)
             } catch NetworkError.server(let failure) where failure.code == "ATTEMPT_STALE_SOURCE" {
                 guard await self.authorized(), self.generation == expected, self.evaluation?.evaluation?.id == evidence.id else { return }
@@ -480,11 +484,13 @@ extension AnalyzeMyWorkViewModel {
         guard canDispute, let value = classification?.classification else { return }
         run {
             let expected = self.generation
+            self.masteryState = .hidden
             let result = try await self.service.disputeMistake(event: value.id, attempt: value.attemptId,
                 key: "dispute-v1-" + value.id.uuidString.lowercased(), input: .init(evaluationId: value.evaluationId, workRevision: value.workRevision))
             _ = try result.validated(attempt: value.attemptId, event: value.id)
             guard await self.authorized(), self.generation == expected, self.classification?.classification?.id == value.id else { return }
             self.effectiveMistake = .init(schemaVersion: "mistake-effective-state-v1", eventId: value.id, enabled: true, effectiveStatus: "DISPUTED_OR_CORRECTED")
+            await self.loadMastery(generation: expected)
         }
     }
     func correctOcr(step: Int, text: String) {
@@ -525,8 +531,32 @@ extension AnalyzeMyWorkViewModel {
         guard let selected = updated.first(where: { $0.id == work.attemptId }) else { throw NetworkError.invalidResponse }
         try store.removeCorrection(owner: owner, problem: problem)
         try store.removeEvaluation(owner: owner, problem: problem)
-        pendingCorrection = nil; pendingEvaluation = nil; effectiveMistake = nil; classification = nil; evaluation = nil
+        pendingCorrection = nil; pendingEvaluation = nil; effectiveMistake = nil; classification = nil; masteryState = .hidden; evaluation = nil
         history = updated; result = selected; workResult = work; evaluationRealDomainConfirmed = false
         try await loadEvaluation(work, generation: expected)
+    }
+}
+
+
+extension AnalyzeMyWorkViewModel {
+    func retryMastery() {
+        guard !busy else { return }
+        run { await self.loadMastery(generation: self.generation) }
+    }
+    private func loadMastery(generation expected: Int) async {
+        guard let attempt = classification?.classification?.attemptId, classification?.historical == false else {
+            masteryState = .hidden; return
+        }
+        masteryState = .loading
+        do {
+            let value = try await service.mastery().validated()
+            guard await authorized(), generation == expected, classification?.classification?.attemptId == attempt else { return }
+            if !value.enabled { masteryState = .hidden }
+            else if let outcome = value.outcomes.first(where: { $0.attemptId == attempt }) { masteryState = .evidence(outcome) }
+            else { masteryState = .empty }
+        } catch {
+            guard await authorized(), generation == expected, classification?.classification?.attemptId == attempt else { return }
+            masteryState = .failed
+        }
     }
 }

@@ -14,7 +14,10 @@ import org.springframework.stereotype.Repository;
 public class AttemptMistakeRepository {
     private final JdbcTemplate jdbc;
     private final ObjectMapper mapper = new ObjectMapper().enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-    public AttemptMistakeRepository(JdbcTemplate jdbc) { this.jdbc = jdbc; }
+    private final org.springframework.context.ApplicationEventPublisher events;
+    public AttemptMistakeRepository(JdbcTemplate jdbc) { this(jdbc, event -> { }); }
+    @org.springframework.beans.factory.annotation.Autowired
+    public AttemptMistakeRepository(JdbcTemplate jdbc,org.springframework.context.ApplicationEventPublisher events) { this.jdbc=jdbc; this.events=events; }
     public boolean available() { return Boolean.TRUE.equals(jdbc.queryForObject("select to_regclass('attempt_mistake_classifications') is not null", Boolean.class)); }
     public Optional<AttemptMistakeClassification> get(UUID owner, UUID attempt) {
         return jdbc.query("""
@@ -40,6 +43,7 @@ public class AttemptMistakeRepository {
             insert into attempt_mistake_classifications(id,user_id,problem_session_id,attempt_id,evaluation_id,policy_version,create_key,created_at,artifact)
             values(?,?,?,?,?,?,?,?::timestamptz,?::jsonb)
             """, value.id(), value.ownerId(), value.problemSessionId(), value.attemptId(), value.evaluationId(), value.policyVersion(), key, value.createdAt(), json);
+        events.publishEvent(new com.verifiedai.mastery.MasteryEvidenceChanged(value.ownerId()));
     }
     public List<AttemptMistakeClassification> export(UUID owner) {
         if(!available()) return List.of();

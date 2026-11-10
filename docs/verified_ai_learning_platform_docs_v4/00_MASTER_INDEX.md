@@ -555,3 +555,11 @@ projection, eligible exposure cohort, immutable dispute/OCR rollback, API/iOS, p
 Status: SOURCE_COMPLETE_PENDING_OWNER_TEST; V037 not applied. Sprint 7.4 FULL owner evidence remains an open entry gate.
 No tests, builds, lint/type checks, migrations or acceptance runner were executed by the agent. Full Passport (7.7),
 remediation (7.8) and mastery (7.6) remain deferred. Production is not authorized.
+
+## Sprint 7.6 source handoff
+
+- `sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.6_IMPLEMENTATION_MAP.md` — `bkt-lite-v2` mathematical policy, anti-crutch rules, immutable assistance provenance, `V038` migration, API/iOS contracts and rollback.
+- `sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.6_FUNCTIONAL_COMPLETION_MATRIX.md` — traceable acceptance matrix (`S76-MATH` to `S76-OPS`) and operational runbook.
+- `sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.6_EXECUTION_REPORT.md` — continuation recovery, static repairs, authored tests, and `SOURCE_COMPLETE_PENDING_OWNER_TEST` status.
+
+Status: `SOURCE_COMPLETE_PENDING_OWNER_TEST`; `V038` source authored, not applied. Prior Sprint 7.5 FULL owner evidence remains an open entry gate. No tests, builds, lint/type checks, migrations or acceptance runner were executed by the agent. Production is not authorized.

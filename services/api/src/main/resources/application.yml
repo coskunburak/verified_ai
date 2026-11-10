@@ -264,6 +264,8 @@ logging:
 
 # Deterministic local Socratic policy only; this never enables the AI TUTOR capability.
 verifiedai:
+  mastery:
+    evidence-stratified-enabled: ${MASTERY_EVIDENCE_STRATIFIED_ENABLED:false}
   mistake:
     dna-enabled: ${MISTAKE_DNA_ENABLED:false}
   attempt:

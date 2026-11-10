@@ -18,6 +18,15 @@ import org.springframework.stereotype.Repository;
 public class SolveStore {
     private final JdbcTemplate jdbc;
     public SolveStore(JdbcTemplate jdbc) { this.jdbc=jdbc; }
+    /** Called under the owner lock, before a full candidate leaves the trusted runtime. */
+    public void recordLearningDisclosure(UUID owner,UUID session,Instant now) {
+        if(!Boolean.TRUE.equals(jdbc.queryForObject("select to_regclass('solution_learning_disclosures') is not null",Boolean.class))) return;
+        jdbc.update("""
+            insert into solution_learning_disclosures(user_id,problem_session_id,first_delivered_at,tracking_complete)
+            values(?,?,?,true) on conflict(user_id,problem_session_id) do update
+            set first_delivered_at=coalesce(solution_learning_disclosures.first_delivered_at,excluded.first_delivered_at)
+            """,owner,session,Timestamp.from(now));
+    }
     public Optional<SolveJob> get(UUID id) { return one("select * from solve_jobs where id=?",id); }
     public Optional<SolveJob> key(UUID user,String key) { return one("select * from solve_jobs where user_id=? and idempotency_key=?",user,key); }
     public Optional<SolveJob> latest(UUID canonical) {

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "mastery-skills-v1",
+  "enabled": true,
+  "algorithmVersion": "bkt-lite-v2",
+  "asOf": "2026-01-01T00:00:00Z",
+  "skills": [
+    {
+      "canonicalSkillCode": "MATH.ALGEBRA.SIMPLIFY_EXPRESSIONS",
+      "posteriorMastery": 0.72666667,
+      "independentCompetence": 0.4375,
+      "evidenceConfidence": 0.18126925,
+      "independentEvidenceCount": 1,
+      "assistedEvidenceCount": 0,
+      "status": "PRACTICING",
+      "cappedByAssistance": false,
+      "retention": 0.72666667,
+      "halfLifeDays": 3.6,
+      "algorithmVersion": "bkt-lite-v2",
+      "observedAt": "2026-01-01T00:00:00Z"
+    }
+  ],
+  "outcomes": [
+    {
+      "attemptId": "00000000-0000-0000-0000-000000000001",
+      "evidenceType": "INDEPENDENT",
+      "observedCorrectness": true
+    }
+  ]
+}

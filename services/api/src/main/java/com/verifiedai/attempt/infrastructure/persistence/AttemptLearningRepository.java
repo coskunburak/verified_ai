@@ -13,7 +13,13 @@ import org.springframework.stereotype.Repository;
 public class AttemptLearningRepository {
     private final JdbcTemplate jdbc;
     private final ObjectMapper mapper=new ObjectMapper().enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-    public AttemptLearningRepository(JdbcTemplate jdbc) { this.jdbc=jdbc; }
+    private final com.verifiedai.mastery.LegacyMasteryWriter legacy;
+    private final org.springframework.context.ApplicationEventPublisher events;
+    public AttemptLearningRepository(JdbcTemplate jdbc) { this(jdbc, new com.verifiedai.mastery.LegacyMasteryWriter(jdbc, false), event -> { }); }
+    @org.springframework.beans.factory.annotation.Autowired
+    public AttemptLearningRepository(JdbcTemplate jdbc,com.verifiedai.mastery.LegacyMasteryWriter legacy,org.springframework.context.ApplicationEventPublisher events) {
+        this.jdbc=jdbc; this.legacy=legacy; this.events=events;
+    }
     public record Drill(UUID id,UUID attemptId,AttemptLearningEvidence.Twin artifact,Integer selectedOption,
         String answerKey,String assistance,Instant createdAt,Instant completedAt) { }
     public Optional<Drill> drill(UUID owner,UUID attempt) {
@@ -32,6 +38,7 @@ public class AttemptLearningRepository {
         if(changed!=1) throw new IllegalStateException("Concurrent drill completion");
         observe(owner,drill.attemptId(),drill.id(),drill.artifact().mistakeCode(),selected==drill.artifact().correctOption(),
             assisted?"HINT_ASSISTED":"INDEPENDENT","bounded-learning-v1",now);
+        events.publishEvent(new com.verifiedai.mastery.MasteryEvidenceChanged(owner));
     }
     public Optional<AttemptLearningEvidence> methods(UUID owner,UUID attempt) {
         return jdbc.query("select evidence::text from attempt_verified_methods where user_id=? and attempt_id=?",
@@ -54,26 +61,19 @@ public class AttemptLearningRepository {
             values(?,?,?,?,?,?,?,?,?,?,?,?) on conflict(user_id,evidence_key) do nothing
             """,UUID.randomUUID(),owner,attempt,drill,drill==null?"ATTEMPT_DISPROOF":"TWIN_COMPLETION",evidenceKey,skill,code.name(),correct,assistance,verifier,Timestamp.from(now));
         if(inserted==0) return;
-        var prior=jdbc.query("select * from learner_skill_mastery where user_id=? and skill_id=? for update",(r,n)->
-            new LearnerMasteryPolicy.State(r.getDouble("score"),r.getDouble("half_life_days"),r.getInt("evidence_count"),r.getDouble("confidence"),r.getTimestamp("last_assessed_at").toInstant()),owner,skill).stream().findFirst().orElse(null);
-        var next=LearnerMasteryPolicy.observe(prior,correct,!"INDEPENDENT".equals(assistance),now);
-        jdbc.update("""
-            insert into learner_skill_mastery(user_id,skill_id,mastery_version,score,half_life_days,evidence_count,confidence,last_assessed_at)
-            values(?,?,'bkt-lite-v1',?,?,?,?,?) on conflict(user_id,skill_id) do update set score=excluded.score,
-            half_life_days=excluded.half_life_days,evidence_count=excluded.evidence_count,confidence=excluded.confidence,last_assessed_at=excluded.last_assessed_at
-            """,owner,skill,next.score(),next.halfLife(),next.count(),next.confidence(),Timestamp.from(now));
+        legacy.observe(owner,skill,correct,assistance,now);
     }
     public Map<String,Object> passport(UUID owner) {
         return Map.of("schemaVersion","mistake-passport-v1","trainingEligible",false,
             "events",rows("select id,attempt_id,drill_id,evidence_source,skill_id,mistake_code,correct,assistance,verifier_version,assessed_at from learner_mistake_events where user_id=? order by assessed_at,id",owner),
-            "mastery",rows("select skill_id,mastery_version,score,half_life_days,evidence_count,confidence,last_assessed_at from learner_skill_mastery where user_id=? order by skill_id",owner));
+            "mastery",rows("select skill_id,mastery_version,score,half_life_days,evidence_count,confidence,last_assessed_at from learner_skill_mastery where user_id=? and mastery_version='bkt-lite-v1' order by skill_id",owner));
     }
     public Map<String,Object> export(UUID owner) {
         return Map.of("passport",passport(owner),"drills",rows("select id,attempt_id,artifact::text,correct_option,selected_option,assistance,created_at,completed_at,training_eligible from counterfactual_twin_drills where user_id=? order by created_at,id",owner),
             "methods",rows("select attempt_id,evidence::text,created_at,training_eligible from attempt_verified_methods where user_id=? order by created_at,attempt_id",owner));
     }
     public void delete(UUID owner) {
-        jdbc.update("delete from learner_skill_mastery where user_id=?",owner);
+        jdbc.update("delete from learner_skill_mastery where user_id=? and mastery_version='bkt-lite-v1'",owner);
         jdbc.update("delete from learner_mistake_events where user_id=?",owner);
         jdbc.update("delete from counterfactual_twin_drills where user_id=?",owner);
         jdbc.update("delete from attempt_verified_methods where user_id=?",owner);

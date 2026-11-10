@@ -168,7 +168,7 @@ class AttemptMistakeIntegrationTest extends AttemptEvaluationIntegrationTest {
                     assertThat(isolated.queryForObject("select to_jsonb(e)::text from attempt_evaluations e where id=?",String.class,evaluation.id())).isEqualTo(evaluationBefore);
                     assertThat(new AttemptWorkRepository(isolated).get(owner,work.attemptId())).contains(work);
                     assertThat(new AttemptEvaluationRepository(isolated).get(owner,work.attemptId()).orElseThrow().artifact()).isEqualTo(evaluation);
-                    assertThat(new AttemptMistakeRepository(isolated).export(owner)).isEmpty();
+                    assertThat(new AttemptMistakeRepository(isolated,event -> { }).export(owner)).isEmpty();
                 } finally {
                     if(!connection.getAutoCommit()) connection.rollback();
                     connection.setAutoCommit(autoCommit); connection.setSchema(prior);
