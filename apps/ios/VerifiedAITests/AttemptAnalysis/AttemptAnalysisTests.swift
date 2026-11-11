@@ -947,6 +947,64 @@ final class MistakeDnaTests: XCTestCase {
 
 @MainActor
 final class MasteryPresentationTests: XCTestCase {
+    private struct Reachable: NetworkMonitoring { let isReachable = true }
+    private struct ReviewFixture: ProblemReviewServicing {
+        func getParseReview(problemSessionId: UUID) async throws -> ProblemParseReview {
+            let parse = NormalizedProblemParse(schemaVersion: "problem-parse-v1", supportStatus: "SUPPORTED",
+                unsupportedReason: nil, subjectId: nil, topicId: nil, taskType: nil, problemType: nil,
+                expressions: [], variables: [], constraints: [], assumptions: [],
+                uncertainty: .init(recognition: [], parse: [], reviewRequired: false),
+                sourceEvidenceRefs: [], visualQualityRisks: [], reviewRequired: false)
+            return .init(problemSessionId: problemSessionId, currentParse: .init(problemParseId: UUID(), revision: 1,
+                source: "SYSTEM", supportStatus: "SUPPORTED", reviewRequired: false, normalizedProblem: parse,
+                createdAt: Date(timeIntervalSince1970: 0)), revisionCount: 1, canCorrect: false)
+        }
+        func createCorrection(_ draft: ProblemParseCorrectionDraft, problemSessionId: UUID) async throws -> ProblemParseCorrectionOutcome {
+            throw NetworkError.invalidResponse
+        }
+        func getRevisionHistory(problemSessionId: UUID) async throws -> ProblemParseRevisionHistory {
+            throw NetworkError.invalidResponse
+        }
+    }
+
+    func testProblemReviewSkillsRecoverWithoutLosingParseAndResetOnAccountChange() async {
+        let api = FixtureAttemptAnalysisAPI(mastery: .fail)
+        let review = ProblemReviewViewModel(reviewAPI: ReviewFixture(), networkMonitor: Reachable(),
+            logger: AppLogger(subsystem: "com.verifiedai.tests", category: "retention"), masteryAPI: api)
+        let problem = UUID()
+        await review.load(problemSessionId: problem)
+        await review.loadSkills(for: problem)
+        guard case .failed = review.skillState else { return XCTFail("Expected retryable skill failure") }
+        XCTAssertEqual(review.review?.problemSessionId, problem)
+        await api.setMastery(.evidence(.independent))
+        await review.loadSkills(for: problem)
+        guard case .ready(let skills) = review.skillState else { return XCTFail("Missing recovered skill") }
+        XCTAssertEqual(skills.first?.reassessmentDue, true)
+        review.reset()
+        guard case .hidden = review.skillState else { return XCTFail("Account reset retained skill details") }
+        XCTAssertNil(review.review)
+    }
+
+    func testTemporalFixtureAndOlderResponse() throws {
+        let url = try XCTUnwrap(Bundle.main.url(forResource: "mastery-skills-v1", withExtension: "json"))
+        let data = try Data(contentsOf: url)
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let current = try decoder.decode(MasterySkillsView.self, from: data).validated()
+        XCTAssertEqual(current.skills.first?.reassessmentDue, false)
+        XCTAssertEqual(current.skills.first?.confidence, 0.18126925)
+        var json = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        var skills = try XCTUnwrap(json["skills"] as? [[String: Any]])
+        skills[0]["reassessmentDue"] = true
+        json["skills"] = skills
+        XCTAssertThrowsError(try decoder.decode(MasterySkillsView.self, from: JSONSerialization.data(withJSONObject: json)).validated())
+        for key in ["retentionScore", "confidence", "reassessmentDue", "reassessmentReason"] { skills[0].removeValue(forKey: key) }
+        json["skills"] = skills
+        let older = try decoder.decode(MasterySkillsView.self, from: JSONSerialization.data(withJSONObject: json)).validated()
+        XCTAssertNil(older.skills.first?.retentionScore)
+        XCTAssertEqual(older.skills.first?.posteriorMastery, current.skills.first?.posteriorMastery)
+    }
+
     private func idle(_ model: AnalyzeMyWorkViewModel) async {
         for _ in 0..<150 { if !model.busy { return }; try? await Task.sleep(nanoseconds: 10_000_000) }
         XCTFail("Mastery request did not settle")

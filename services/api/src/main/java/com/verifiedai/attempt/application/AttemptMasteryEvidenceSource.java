@@ -8,6 +8,7 @@ import com.verifiedai.curriculum.application.CurriculumTaxonomyCatalog;
 import com.verifiedai.mastery.*;
 import com.verifiedai.mistake.MistakeClassificationDecision;
 import com.verifiedai.mistake.MistakeTaxonomy;
+import com.verifiedai.mistake.MistakeRetentionResolutionListener;
 import com.verifiedai.problem.application.solving.SolveSourceAccess;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
@@ -18,7 +19,7 @@ import static com.verifiedai.mastery.LearningEvidenceType.*;
 
 /** Reuses the accepted V035/V036 lineage adapter; never consumes mastery output as evidence. */
 @Component
-public class AttemptMasteryEvidenceSource implements MasteryEvidenceSource {
+public class AttemptMasteryEvidenceSource implements MasteryEvidenceSource, MistakeRetentionResolutionListener.TwinSource {
     private final AttemptMistakeDnaEvidenceSource accepted;
     private final JdbcTemplate jdbc;
     private final SolveSourceAccess sources;
@@ -30,7 +31,7 @@ public class AttemptMasteryEvidenceSource implements MasteryEvidenceSource {
     }
     public List<Evidence> evidence(UUID owner) {
         var result=new ArrayList<Evidence>();
-        var excluded=Set.copyOf(jdbc.queryForList("select distinct attempt_id from learner_mistake_dispute_events where user_id=?",UUID.class,owner));
+        var excluded = excluded(owner);
         for(var e:accepted.evidence(owner)) {
             var type=type(owner,e.attemptId(),e.observedAt());
             var work=works.get(owner,e.attemptId()).orElse(null);
@@ -40,6 +41,27 @@ public class AttemptMasteryEvidenceSource implements MasteryEvidenceSource {
                 e.exposureSkill(),e.observedAt(),type,e.decision().status()==MistakeClassificationDecision.Status.NO_ERROR_ESTABLISHED,
                 false,"accepted-evaluation-v1"));
         }
+        verifiedDrills(owner, excluded).forEach(drill -> result.add(drill.evidence()));
+        return List.copyOf(result);
+    }
+
+    private Set<UUID> excluded(UUID owner) {
+        return Set.copyOf(jdbc.queryForList("select distinct attempt_id from learner_mistake_dispute_events where user_id=?", UUID.class, owner));
+    }
+
+    private record Drill(Evidence evidence, String verifiedHazard) { }
+
+    @Override
+    public List<MistakeRetentionResolutionListener.Twin> twins(UUID owner) {
+        return verifiedDrills(owner, excluded(owner)).stream()
+            .filter(d -> d.verifiedHazard() != null && d.evidence().type() != UNSUPPORTED)
+            .map(d -> new MistakeRetentionResolutionListener.Twin(d.evidence().id(), d.verifiedHazard(),
+                d.evidence().observedAt(), d.evidence().type() == INDEPENDENT, d.evidence().correct()))
+            .toList();
+    }
+
+    private List<Drill> verifiedDrills(UUID owner, Set<UUID> excluded) {
+        var result = new ArrayList<Drill>();
         // One completion per immutable drill, not its learner_mistake_events replay/delivery copy.
         jdbc.query("""
             select d.*,a.analysis_jsonb,a.problem_session_id,a.canonical_id,a.canonical_revision,a.parse_id,a.parse_revision,
@@ -50,6 +72,7 @@ public class AttemptMasteryEvidenceSource implements MasteryEvidenceSource {
                 UUID id=r.getObject("id",UUID.class),attempt=r.getObject("attempt_id",UUID.class);
                 Instant at=r.getTimestamp("completed_at").toInstant();
                 var type=type(owner,id,at); String skill=null; UUID skillEvidence=null,execution=null; boolean correct=false;
+                String hazard = null;
                 var assistance=r.getString("assistance");
                 if("HINT_ASSISTED".equals(assistance) && type==INDEPENDENT) type=HINT_ASSISTED;
                 else if(!Set.of("INDEPENDENT","HINT_ASSISTED").contains(String.valueOf(assistance))) type=UNSUPPORTED;
@@ -59,6 +82,12 @@ public class AttemptMasteryEvidenceSource implements MasteryEvidenceSource {
                     parent.validateFor(attempt,r.getInt("step_count")); execution=parent.executionId();
                     if(parent.firstWrongStepIndex()==null || parent.steps().get(parent.firstWrongStepIndex()-1).diagnosis()==null
                         || parent.steps().get(parent.firstWrongStepIndex()-1).mistakeCode()!=artifact.mistakeCode()) type=UNSUPPORTED;
+                    if (type != UNSUPPORTED && !at.isBefore(r.getTimestamp("created_at").toInstant())) {
+                        var wrong = parent.steps().get(parent.firstWrongStepIndex()-1);
+                        if (wrong.counterexampleStatus() == AttemptAnalysisResult.WitnessStatus.AVAILABLE
+                            && "structural-signatures-v1".equals(wrong.diagnosis().classifierPolicyVersion())
+                            && !works.superseded(owner, attempt)) hazard = artifact.mistakeCode().name();
+                    }
                     var mapping=sources.skillAt(owner,r.getObject("canonical_id",UUID.class),r.getTimestamp("created_at").toInstant()).orElse(null);
                     var current=sources.current(owner,r.getObject("problem_session_id",UUID.class));
                     skill=mapping==null?null:mapping.skillId(); skillEvidence=mapping==null?null:mapping.id();
@@ -75,7 +104,7 @@ public class AttemptMasteryEvidenceSource implements MasteryEvidenceSource {
                     if(ex.code()!=com.verifiedai.sharedkernel.error.ApiErrorCode.SOLVE_SOURCE_NOT_READY) throw ex;
                     type=UNSUPPORTED;
                 }
-                result.add(new Evidence(id,attempt,null,execution,skillEvidence,skill,at,type,correct,true,"verified-twin-v1"));
+                result.add(new Drill(new Evidence(id,attempt,null,execution,skillEvidence,skill,at,type,correct,true,"verified-twin-v1"), hazard));
             },owner);
         return List.copyOf(result);
     }

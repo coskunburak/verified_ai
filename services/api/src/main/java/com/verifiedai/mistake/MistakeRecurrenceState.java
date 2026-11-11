@@ -10,6 +10,7 @@ public enum MistakeRecurrenceState {
         return rate.recentErrors()>=2 && rate.propensity().compareTo(new BigDecimal("0.22"))>=0
             ? RECURRING_PATTERN : OBSERVED_ONCE;
     }
+    boolean isObservation() { return this == OBSERVED_ONCE || this == RECURRING_PATTERN; }
     public void requireObservationTransition(MistakeRecurrenceState next) {
         if((this!=OBSERVED_ONCE && this!=RECURRING_PATTERN) || (next!=OBSERVED_ONCE && next!=RECURRING_PATTERN))
             throw new IllegalArgumentException("Remediation requires future authoritative evidence");

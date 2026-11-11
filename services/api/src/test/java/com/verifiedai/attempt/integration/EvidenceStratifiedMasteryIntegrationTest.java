@@ -38,7 +38,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /** Existing synthetic source/evaluation/classification fixtures; all SQL runs in disposable PostgreSQL. */
-@TestPropertySource(properties={"verifiedai.mastery.evidence-stratified-enabled=true","verifiedai.mistake.dna-enabled=true",
+@TestPropertySource(properties={"verifiedai.mastery.decay-reassessment-enabled=true","verifiedai.mastery.evidence-stratified-enabled=true","verifiedai.mistake.dna-enabled=true",
     "verifiedai.attempt.enabled=true","verifiedai.attempt.structured-work-enabled=true"})
 @Import({StudentAttemptIntegrationTest.StorageConfiguration.class, MistakeDisputeRollbackIntegrationTest.SyntheticRateLimitConfiguration.class, EvidenceStratifiedMasteryIntegrationTest.FixedClockConfiguration.class})
 class EvidenceStratifiedMasteryIntegrationTest extends PostgresIntegrationTestSupport {
@@ -73,13 +73,17 @@ class EvidenceStratifiedMasteryIntegrationTest extends PostgresIntegrationTestSu
         canonical.canonicalize(owner,problem);
         source=new TransactionTemplate(transactions).execute(t->{var s=sources.current(owner,problem);return new AttemptSourceIdentity(s.canonicalProblemId(),s.canonicalRevision(),s.problemParseId(),s.problemParseRevision());});
     }
-    AttemptWorkService capture() {
+    AttemptWorkService capture() { return capture(TEST_CLOCK); }
+    AttemptWorkService capture(Clock when) {
         return new AttemptWorkService(dna,sources,attempts,works,normalizer,parser,extraction,reader,codec,metrics,
-            (p,k)->RateLimitDecision.allow(),TEST_CLOCK,transactions,true,true,"test",false);
+            (p,k)->RateLimitDecision.allow(),when,transactions,true,true,"test",false);
     }
     AttemptStructuredWork work(UUID prior) { return work(prior,"x=4"); }
     AttemptStructuredWork work(UUID prior,String text) {
-        return capture().submit(owner,problem,UUID.randomUUID().toString(),new AttemptWorkInput("attempt-structured-work-request-v1",source,
+        return work(prior,text,TEST_CLOCK);
+    }
+    AttemptStructuredWork work(UUID prior,String text,Clock when) {
+        return capture(when).submit(owner,problem,UUID.randomUUID().toString(),new AttemptWorkInput("attempt-structured-work-request-v1",source,
             AttemptWorkInput.Engine.MANUAL,null,null,null,prior,List.of(),List.of(new AttemptWorkInput.Step(UUID.randomUUID(),text,AttemptWorkInput.Role.FINAL_ANSWER,List.of(),true))));
     }
     AttemptEvaluationService service(boolean enabled,AttemptVerifierClient verifier) {
@@ -298,8 +302,11 @@ class EvidenceStratifiedMasteryIntegrationTest extends PostgresIntegrationTestSu
         assertThat(view.skills().getFirst().assistedEvidenceCount()).isEqualTo(1);
     }
     UUID completedTwin(boolean assisted,boolean verifiedParent) {
+        return completedTwin(assisted,verifiedParent,TEST_AT);
+    }
+    UUID completedTwin(boolean assisted,boolean verifiedParent,Instant completedAt) {
+        var at=completedAt.minusSeconds(1);
         UUID id=UUID.randomUUID(),drill=UUID.randomUUID();
-        var at=TEST_AT.truncatedTo(java.time.temporal.ChronoUnit.MICROS);
         new TransactionTemplate(transactions).executeWithoutResult(t->{
             sources.lockOwner(owner,problem);
             var attempt=new StudentAttempt("student-attempt-v1",id,problem,source,AttemptSourceType.MANUAL,"manual-canonical-v1",
@@ -327,6 +334,75 @@ class EvidenceStratifiedMasteryIntegrationTest extends PostgresIntegrationTestSu
         new TransactionTemplate(transactions).execute(t->service.read(owner));
         assertThat(jdbc.queryForObject("select count(*) from learner_skill_mastery_transitions where evidence_id=?",Integer.class,id)).isEqualTo(1);
     }
+    @Test void delayedTargetedCheckSurvivesReplayAndDisputeRetractsOnlyEffectiveResolution() throws Exception {
+        tagSource();
+        var errorsAt = Clock.offset(TEST_CLOCK, Duration.ofDays(-10));
+        var prerequisite = classify(work(null,"x=5",errorsAt),this::wrong);
+        classify(work(null,"x=5",errorsAt),this::wrong);
+        var due = TEST_AT.minusSeconds(1);
+        var pendingAt = due.minus(Duration.ofDays(7));
+        completedTwin(false,true,pendingAt.minusSeconds(1));
+        completedTwin(false,true,pendingAt);
+        completedTwin(true,true,due);
+        var skill = mastery.read(owner).skills().getFirst();
+        assertThat(skill.reassessmentDue()).isTrue();
+        assertThat(skill.reassessmentReason()).isEqualTo(SkillReassessmentTriggerService.Reason.DELAYED_TRAP_CHECK);
+        assertThat(skill.confidence()).isEqualTo(skill.evidenceConfidence());
+        assertThat(skill.retentionScore()).isEqualTo(skill.retention());
+        var tx = new TransactionTemplate(transactions);
+        tx.executeWithoutResult(status -> {
+            completedTwin(false,true,TEST_AT);
+            assertThat(dnaStore.profiles(owner).getFirst().recurrenceState()).isEqualTo(MistakeRecurrenceState.STABLE_RESOLVED);
+            status.setRollbackOnly();
+        });
+        assertThat(dnaStore.profiles(owner).getFirst().recurrenceState()).isEqualTo(MistakeRecurrenceState.RESOLVED_PENDING_RETENTION);
+        var check = completedTwin(false,true,TEST_AT);
+        var snapshot = dna.read(owner,true);
+        assertThat(snapshot.profiles().getFirst().recurrenceState()).isEqualTo(MistakeRecurrenceState.STABLE_RESOLVED);
+        var rows = jdbc.queryForList("select * from learner_mistake_retention_transitions where user_id=? order by event_at", owner);
+        assertThat(rows).hasSize(2);
+        assertThat(rows.getLast()).containsEntry("check_drill",check).containsEntry("training_eligible",false);
+        jdbc.update("delete from learner_mistake_dna_profiles where user_id=?",owner);
+        assertThat(dna.read(owner,true)).isEqualTo(snapshot);
+        assertThat(dnaStore.profiles(owner)).isEmpty();
+        var pool = Executors.newFixedThreadPool(2);
+        try {
+            Callable<Void> rebuild = () -> { tx.executeWithoutResult(t -> dna.refresh(owner)); return null; };
+            var a = pool.submit(rebuild);
+            var b = pool.submit(rebuild);
+            a.get(15,TimeUnit.SECONDS);
+            b.get(15,TimeUnit.SECONDS);
+        } finally { pool.shutdownNow(); }
+        assertThat(dnaStore.profiles(owner)).isEqualTo(snapshot.profiles());
+        assertThat(jdbc.queryForList("select * from learner_mistake_retention_transitions where user_id=? order by event_at",owner)).isEqualTo(rows);
+        var other = new SolverSourceFixture(jdbc).insertUser();
+        assertThat((List<?>)dnaStore.export(other).get("retentionTransitions")).isEmpty();
+        assertThatThrownBy(() -> jdbc.update("update learner_mistake_retention_transitions set user_id=? where check_drill=?",other,check))
+            .isInstanceOf(org.springframework.dao.DataAccessException.class);
+        dna.dispute(owner,prerequisite.id(),"retention-dispute",disputeInput(prerequisite));
+        assertThat(dna.read(owner,true).profiles().getFirst().recurrenceState()).isEqualTo(MistakeRecurrenceState.OBSERVED_ONCE);
+        assertThat((List<?>)dnaStore.export(owner).get("retentionTransitions")).hasSize(2);
+        privacy.requestDeletion(owner); privacy.confirmDeletion(owner,"DELETE");
+        assertThat((List<?>)dnaStore.export(owner).get("retentionTransitions")).isEmpty();
+    }
+
+    @Test void temporalReadsDoNotRepublishOrMoveProjectionTime() {
+        tagSource();
+        classify(work(null),this::proven);
+        var originalRepresentation = mastery.read(owner,1);
+        assertThat(originalRepresentation.skills().getFirst().retentionScore()).isNull();
+        assertThat(originalRepresentation.outcomes().getFirst().canonicalSkillCode()).isNull();
+        var persisted = jdbc.queryForMap("select * from learner_skill_mastery where user_id=?",owner);
+        var later = new MasteryApplicationService(masteryStore,masterySource,Clock.offset(TEST_CLOCK,Duration.ofDays(3)),
+            metrics,(policy,key)->RateLimitDecision.allow(),true,"test",true,dna);
+        var tx = new TransactionTemplate(transactions);
+        var first = tx.execute(t->later.read(owner));
+        assertThat(tx.execute(t->later.read(owner)).skills()).isEqualTo(first.skills());
+        assertThat(first.skills().getFirst().reassessmentDue()).isTrue();
+        assertThat(jdbc.queryForMap("select * from learner_skill_mastery where user_id=?",owner)).isEqualTo(persisted);
+        assertThat(auditCount()).isEqualTo(1);
+    }
+
     @Test void assistedTwinCannotUseIndependentTransitionAndUnverifiedTwinIsUnsupported() {
         tagSource(); deliveredHint(); completedTwin(true,true); completedTwin(true,false);
         var service=new MasteryApplicationService(masteryStore,masterySource,Clock.offset(TEST_CLOCK,Duration.ofSeconds(2)),metrics,

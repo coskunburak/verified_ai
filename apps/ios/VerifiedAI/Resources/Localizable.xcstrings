@@ -1,6 +1,108 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "attempt.temporal.mastery": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mastery"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beceri hâkimiyeti"
+          }
+        }
+      }
+    },
+    "attempt.temporal.retention": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Estimated recall now"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Şu anki hatırlama tahmini"
+          }
+        }
+      }
+    },
+    "attempt.temporal.confidence": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Evidence confidence"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kanıta duyulan güven"
+          }
+        }
+      }
+    },
+    "attempt.temporal.due": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reassessment due"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yeniden değerlendirme zamanı geldi"
+          }
+        }
+      }
+    },
+    "attempt.temporal.notDue": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No reassessment due"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yeniden değerlendirme henüz gerekmiyor"
+          }
+        }
+      }
+    },
+    "attempt.temporal.mySkills": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your skills"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Becerilerin"
+          }
+        }
+      }
+    },
     "attempt.mastery.independent": {
       "extractionState": "manual",
       "localizations": {

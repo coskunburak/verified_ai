@@ -92,11 +92,24 @@ struct ProblemReviewView: View {
             ProblemExpressionEditor(viewModel: viewModel)
         case .details:
             VStack(alignment: .leading, spacing: SpacingTokens.md) {
+                Group {
+                    switch viewModel.skillState {
+                    case .hidden: EmptyView()
+                    case .loading: ProgressView("attempt.mastery.loading")
+                    case .failed:
+                        Text("attempt.mastery.failed")
+                        Button("attempt.mastery.retry") { Task { await viewModel.loadSkills(for: problemSessionId) } }
+                    case .ready(let skills):
+                        Text("attempt.temporal.mySkills").font(.headline)
+                        ForEach(skills, id: \.canonicalSkillCode) { SkillRetentionNode(skill: $0) }
+                    }
+                }
                 ProblemParseMetadataEditor(viewModel: viewModel)
                 ProblemVariableEditor(viewModel: viewModel)
                 ProblemConstraintEditor(viewModel: viewModel)
                 ProblemAssumptionEditor(viewModel: viewModel)
             }
+            .task(id: problemSessionId) { await viewModel.loadSkills(for: problemSessionId) }
         case .revisions:
             ProblemRevisionHistoryView(viewModel: viewModel)
         }

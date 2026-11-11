@@ -127,3 +127,7 @@ Owner runner and implementation/functional/execution records are listed in the S
 - `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md` (`SPRINT_7.6`, `7.7`, `7.10`)
 - `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md` (`CNT-LOS-01`..`CNT-LOS-05`)
 <!-- PHASE_PRODUCTION_V7_LEARNING_OS:END -->
+
+## Sprint 7.7 local acceptance (2026-11-11)
+
+Owner-confirmed dependency: 7.6 completed. Sprint 7.7 temporal mastery and delayed retention checks are source-implemented. The full owner run `run-QcZF0C` passed locally. See [execution report](SPRINT_7.7_EXECUTION_REPORT.md) and [file manifest](SPRINT_7.7_FILE_MANIFEST.md). The Sprint 7.7 local acceptance prerequisite is satisfied.

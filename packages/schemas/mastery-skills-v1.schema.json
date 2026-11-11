@@ -85,6 +85,26 @@
           "observedAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "retentionScore": {
+            "type": "number",
+            "minimum": 0.05,
+            "maximum": 0.99
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "reassessmentDue": {
+            "type": "boolean"
+          },
+          "reassessmentReason": {
+            "enum": [
+              "NOT_DUE",
+              "RETENTION_THRESHOLD",
+              "DELAYED_TRAP_CHECK"
+            ]
           }
         },
         "required": [
@@ -120,6 +140,61 @@
                 }
               }
             }
+          },
+          {
+            "if": {
+              "anyOf": [
+                {
+                  "required": [
+                    "retentionScore"
+                  ]
+                },
+                {
+                  "required": [
+                    "confidence"
+                  ]
+                },
+                {
+                  "required": [
+                    "reassessmentDue"
+                  ]
+                },
+                {
+                  "required": [
+                    "reassessmentReason"
+                  ]
+                }
+              ]
+            },
+            "then": {
+              "required": [
+                "retentionScore",
+                "confidence",
+                "reassessmentDue",
+                "reassessmentReason"
+              ],
+              "if": {
+                "properties": {
+                  "reassessmentReason": {
+                    "const": "NOT_DUE"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "reassessmentDue": {
+                    "const": false
+                  }
+                }
+              },
+              "else": {
+                "properties": {
+                  "reassessmentDue": {
+                    "const": true
+                  }
+                }
+              }
+            }
           }
         ]
       }
@@ -148,6 +223,11 @@
               "boolean",
               "null"
             ]
+          },
+          "canonicalSkillCode": {
+            "type": "string",
+            "pattern": "^MATH\\.",
+            "maxLength": 96
           }
         },
         "required": [
@@ -167,6 +247,11 @@
             "observedCorrectness": {
               "type": "null"
             }
+          },
+          "not": {
+            "required": [
+              "canonicalSkillCode"
+            ]
           }
         },
         "else": {

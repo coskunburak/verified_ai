@@ -12,7 +12,13 @@ final class AnalyzeMyWorkViewModel {
     private(set) var effectiveMistake: MistakeEffectiveState?
     private(set) var pendingCorrection: AttemptPendingCorrection?
     enum MasteryState { case hidden, loading, empty, failed, evidence(MasterySkillsView.Outcome) }
-    private(set) var masteryState: MasteryState = .hidden
+    private(set) var masterySkill: MasterySkillsView.Skill?
+    private(set) var masteryState: MasteryState = .hidden {
+        didSet {
+            if case .evidence = masteryState { return }
+            masterySkill = nil
+        }
+    }
     private(set) var classification: AttemptMistakeView?
     private(set) var evaluation: AttemptEvaluationView?
     private(set) var pendingEvaluation: AttemptEvaluationPending?
@@ -547,12 +553,16 @@ extension AnalyzeMyWorkViewModel {
         guard let attempt = classification?.classification?.attemptId, classification?.historical == false else {
             masteryState = .hidden; return
         }
+        masterySkill = nil
         masteryState = .loading
         do {
             let value = try await service.mastery().validated()
             guard await authorized(), generation == expected, classification?.classification?.attemptId == attempt else { return }
             if !value.enabled { masteryState = .hidden }
-            else if let outcome = value.outcomes.first(where: { $0.attemptId == attempt }) { masteryState = .evidence(outcome) }
+            else if let outcome = value.outcomes.first(where: { $0.attemptId == attempt }) {
+                masterySkill = value.skills.first { $0.canonicalSkillCode == outcome.canonicalSkillCode && $0.retentionScore != nil }
+                masteryState = .evidence(outcome)
+            }
             else { masteryState = .empty }
         } catch {
             guard await authorized(), generation == expected, classification?.classification?.attemptId == attempt else { return }

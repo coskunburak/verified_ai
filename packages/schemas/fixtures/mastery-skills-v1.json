@@ -16,14 +16,19 @@
       "retention": 0.72666667,
       "halfLifeDays": 3.6,
       "algorithmVersion": "bkt-lite-v2",
-      "observedAt": "2026-01-01T00:00:00Z"
+      "observedAt": "2026-01-01T00:00:00Z",
+      "retentionScore": 0.72666667,
+      "confidence": 0.18126925,
+      "reassessmentDue": false,
+      "reassessmentReason": "NOT_DUE"
     }
   ],
   "outcomes": [
     {
       "attemptId": "00000000-0000-0000-0000-000000000001",
       "evidenceType": "INDEPENDENT",
-      "observedCorrectness": true
+      "observedCorrectness": true,
+      "canonicalSkillCode": "MATH.ALGEBRA.SIMPLIFY_EXPRESSIONS"
     }
   ]
 }

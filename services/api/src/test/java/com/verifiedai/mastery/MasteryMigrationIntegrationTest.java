@@ -36,6 +36,12 @@ class MasteryMigrationIntegrationTest extends PostgresIntegrationTestSupport {
             assertThat(jdbc.queryForObject("select count(*) from "+schema+".attempt_mastery_context",Integer.class)).isZero();
             assertThat(jdbc.queryForObject("select count(*) from "+schema+".learner_skill_mastery_transitions",Integer.class)).isZero();
             assertThat(upgrade.migrate().migrationsExecuted).isZero();
+            var temporal=Flyway.configure().dataSource(jdbc.getDataSource()).locations("classpath:db/migration/platform")
+                .schemas(schema).defaultSchema(schema).target("39").load();
+            assertThat(temporal.migrate().migrationsExecuted).isEqualTo(1);
+            assertThat(jdbc.queryForObject("select count(*) from "+schema+".learner_mistake_retention_transitions",Integer.class)).isZero();
+            assertThat(jdbc.queryForObject("select score from "+schema+".learner_skill_mastery where user_id=?",Double.class,owner)).isEqualTo(.91);
+            assertThat(temporal.migrate().migrationsExecuted).isZero();
         } finally { jdbc.execute("drop schema if exists "+schema+" cascade"); }
     }
 }

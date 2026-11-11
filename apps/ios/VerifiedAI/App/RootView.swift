@@ -69,7 +69,8 @@ struct RootView: View {
         _problemReviewViewModel = State(initialValue: ProblemReviewViewModel(
             reviewAPI: dependencies.problemReviewAPI,
             networkMonitor: dependencies.networkMonitor,
-            logger: dependencies.logger
+            logger: dependencies.logger,
+            masteryAPI: dependencies.attemptAPI
         ))
         _problemHistoryViewModel = State(initialValue: ProblemHistoryViewModel(
             historyAPI: dependencies.problemSessionHistoryAPI,

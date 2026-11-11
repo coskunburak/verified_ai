@@ -13,6 +13,15 @@ class MasteryControllerTest extends AttemptWorkControllerTest {
         if(token!=null) request.header("Authorization","Bearer "+token);
         return HttpClient.newHttpClient().send(request.GET().build(),HttpResponse.BodyHandlers.ofString());
     }
+    @Test void temporalRepresentationIsOwnerScopedAndRejectsUnknownVersions() throws Exception {
+        assertThat(getMastery(null,"?representationVersion=2").statusCode()).isEqualTo(401);
+        var temporal = getMastery(owner.accessToken(),"?representationVersion=2");
+        assertThat(temporal.statusCode()).isEqualTo(200);
+        com.verifiedai.sharedkernel.contracts.VersionedJsonContract.validate("mastery-skills-v1",temporal.body());
+        var invalid = getMastery(owner.accessToken(),"?representationVersion=3");
+        assertThat(invalid.statusCode()).isEqualTo(422);
+        assertThat(invalid.body()).contains("REQUEST_VALIDATION_FAILED");
+    }
     @Test void authenticatedOwnerOnlyNoClientOwnerOverrideAndStableEmptyContract() throws Exception {
         assertThat(getMastery(null,"").statusCode()).isEqualTo(401);
         var result=getMastery(owner.accessToken(),"?ownerId=00000000-0000-0000-0000-000000000000");

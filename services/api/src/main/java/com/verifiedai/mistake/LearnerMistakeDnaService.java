@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.*;
 import org.springframework.transaction.support.*;
 
 @Service
-public class LearnerMistakeDnaService {
+public class LearnerMistakeDnaService implements com.verifiedai.mastery.SkillReassessmentTriggerService.PendingChecks {
     public record Entry(UUID eventId,UUID attemptId,UUID evaluationId,UUID executionId,UUID skillEvidenceId,int workRevision,String mistakeCode,
         String skillId,String effectiveStatus,Instant observedAt) { }
     public record View(String schemaVersion,boolean enabled,String policyVersion,Instant asOf,
@@ -24,15 +24,28 @@ public class LearnerMistakeDnaService {
         UUID replacementAttemptId,String status,Instant createdAt,boolean trainingEligible) { }
     private final MistakeDnaRepository store;
     private final MistakeDnaEvidenceSource source;
+    private final MistakeRetentionResolutionListener.TwinSource twins;
+    private final boolean temporal;
     private final Clock clock;
     private final MeterRegistry metrics;
     private final boolean enabled;
     private final com.verifiedai.sharedkernel.ratelimit.RateLimiter limiter;
+    public LearnerMistakeDnaService(MistakeDnaRepository store, MistakeDnaEvidenceSource source, Clock clock,
+        MeterRegistry metrics, com.verifiedai.sharedkernel.ratelimit.RateLimiter limiter, boolean enabled,
+        boolean attemptsEnabled, String environment, boolean authorized) {
+        this(store, source, clock, metrics, limiter, enabled, attemptsEnabled, environment, authorized, false, owner -> List.of());
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
     public LearnerMistakeDnaService(MistakeDnaRepository store,MistakeDnaEvidenceSource source,Clock clock,MeterRegistry metrics,com.verifiedai.sharedkernel.ratelimit.RateLimiter limiter,
         @Value("${verifiedai.mistake.dna-enabled:false}") boolean enabled,
         @Value("${verifiedai.attempt.enabled:false}") boolean attemptsEnabled,
         @Value("${app.environment:local}") String environment,
-        @Value("${verifiedai.attempt.production-authorized:false}") boolean authorized) {
+        @Value("${verifiedai.attempt.production-authorized:false}") boolean authorized,
+        @Value("${verifiedai.mastery.decay-reassessment-enabled:false}") boolean temporal,
+        MistakeRetentionResolutionListener.TwinSource twins) {
+        this.temporal = temporal;
+        this.twins = twins;
         if(enabled && !Set.of("local","test").contains(environment) && !authorized) throw new IllegalArgumentException("DNA production authorization pending");
         this.limiter=limiter; this.store=store; this.source=source; this.clock=clock; this.metrics=metrics; this.enabled=enabled && attemptsEnabled;
     }
@@ -42,8 +55,7 @@ public class LearnerMistakeDnaService {
         limit(owner); store.lock(owner); var now=clock.instant().truncatedTo(java.time.temporal.ChronoUnit.MICROS);
         if(!enabled || !store.available()) return new View("mistake-dna-view-v1",false,EmpiricalBayesMistakeRateCalculator.POLICY,now,List.of(),List.of(),!full,false);
         var evidence=source.evidence(owner); var excluded=store.excluded(owner);
-        project(owner,evidence,excluded,now);
-        var profiles=store.profiles(owner);
+        var profiles=project(owner,evidence,excluded,now,false).profiles();
         var entries=evidence.stream().sorted(Comparator.comparing(MistakeDnaEvidenceSource.Evidence::observedAt).reversed()
             .thenComparing(MistakeDnaEvidenceSource.Evidence::classificationId)).map(e->new Entry(e.classificationId(),e.attemptId(),e.evaluationId(),e.executionId(),e.skillEvidenceId(),e.workRevision(),
                 e.decision().code(),e.decision().skillId(),status(e,excluded,now),e.observedAt())).toList();
@@ -66,11 +78,26 @@ public class LearnerMistakeDnaService {
     }
     @Transactional(propagation=Propagation.MANDATORY)
     public void refresh(UUID owner) {
-        if(enabled && store.available()) { store.lock(owner); project(owner,source.evidence(owner),store.excluded(owner),clock.instant().truncatedTo(java.time.temporal.ChronoUnit.MICROS)); }
+        if(enabled && store.available()) { store.lock(owner); project(owner,source.evidence(owner),store.excluded(owner),clock.instant().truncatedTo(java.time.temporal.ChronoUnit.MICROS),true); }
     }
-    private void project(UUID owner,List<MistakeDnaEvidenceSource.Evidence> evidence,Set<UUID> excluded,Instant now) {
+
+    @Override
+    @Transactional(propagation=Propagation.MANDATORY)
+    public Set<String> dueSkills(UUID owner, Instant asOf) {
+        if (!enabled || !temporal) return Set.of();
+        store.lock(owner);
+        if (!store.available()) throw unavailable();
+        return project(owner,source.evidence(owner),store.excluded(owner),asOf,false).dueSkills();
+    }
+
+    private record Projection(List<LearnerMistakeDnaProfile> profiles, Set<String> dueSkills) { }
+
+    private Projection project(UUID owner,List<MistakeDnaEvidenceSource.Evidence> evidence,Set<UUID> excluded,Instant now,boolean persist) {
+        if (temporal && !store.retentionAvailable()) throw unavailable();
         var active=evidence.stream().filter(e->"EFFECTIVE".equals(status(e,excluded,now))).toList();
         var next=new ArrayList<LearnerMistakeDnaProfile>();
+        var drills = temporal && !active.isEmpty() ? twins.twins(owner) : List.<MistakeRetentionResolutionListener.Twin>of();
+        var due = new HashSet<String>();
         for(var mapping:new TreeMap<>(MistakeTaxonomy.SKILLS).entrySet()) {
             String code=mapping.getKey(),skill=mapping.getValue();
             var errors=active.stream().filter(e->code.equals(e.decision().code())).toList();
@@ -78,14 +105,29 @@ public class LearnerMistakeDnaService {
             var observations=active.stream().filter(e->skill.equals(e.exposureSkill())).map(e->
                 new EmpiricalBayesMistakeRateCalculator.Observation(e.evaluationId(),e.observedAt(),code.equals(e.decision().code()))).toList();
             var rate=new EmpiricalBayesMistakeRateCalculator().calculate(observations,now);
+            var state = MistakeRecurrenceState.project(rate);
+            if (temporal) {
+                var resolution = MistakeRetentionResolutionListener.replay(code,active,drills,now,state);
+                state = resolution.state();
+                if (resolution.dueAt() != null && !now.isBefore(resolution.dueAt())) due.add(skill);
+                if (persist) for (var transition : resolution.transitions()) {
+                    if (store.record(owner,code,skill,transition,now)) afterTransition(transition.from(),transition.to());
+                }
+            }
             next.add(new LearnerMistakeDnaProfile(code,skill,"attempt-taxonomy-v2",MistakeTaxonomy.VERSION,EmpiricalBayesMistakeRateCalculator.POLICY,
-                rate.errors(),rate.exposures(),rate.propensity(),rate.recentErrors(),MistakeRecurrenceState.project(rate),
+                rate.errors(),rate.exposures(),rate.propensity(),rate.recentErrors(),state,
                 errors.stream().map(MistakeDnaEvidenceSource.Evidence::observedAt).max(Comparator.naturalOrder()).orElseThrow(),now));
         }
+        next.sort(Comparator.comparing(LearnerMistakeDnaProfile::smoothedPropensity).reversed()
+            .thenComparing(LearnerMistakeDnaProfile::mistakeCode).thenComparing(LearnerMistakeDnaProfile::skillId));
+        var result = new Projection(List.copyOf(next),Set.copyOf(due));
+        if (!persist) return result;
         var prior=store.profiles(owner); store.replace(owner,next);
         for(var value:next) prior.stream().filter(p->p.mistakeCode().equals(value.mistakeCode()) && p.recurrenceState()!=value.recurrenceState()).findFirst()
-            .ifPresent(p->{ p.recurrenceState().requireObservationTransition(value.recurrenceState()); afterTransition(p.recurrenceState(),value.recurrenceState()); });
+            .ifPresent(p->{ if (p.recurrenceState().isObservation() && value.recurrenceState().isObservation())
+                afterTransition(p.recurrenceState(),value.recurrenceState()); });
         if(!prior.isEmpty() || !next.isEmpty()) afterCommit("mistake_dna_updated");
+        return result;
     }
     private static String status(MistakeDnaEvidenceSource.Evidence e,Set<UUID> excluded,Instant now) {
         if(excluded.contains(e.attemptId())) return "DISPUTED_OR_CORRECTED";

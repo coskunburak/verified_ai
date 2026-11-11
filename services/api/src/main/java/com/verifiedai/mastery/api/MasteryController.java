@@ -12,7 +12,7 @@ public class MasteryController {
     private final MasteryApplicationService service;
     public MasteryController(MasteryApplicationService service) { this.service=service; }
     @GetMapping
-    public MasteryApplicationService.View read(@AuthenticationPrincipal Jwt jwt) {
-        return service.read(AuthenticatedUser.from(jwt).userId());
+    public MasteryApplicationService.View read(@AuthenticationPrincipal Jwt jwt, @RequestParam(defaultValue="1") int representationVersion) {
+        return service.read(AuthenticatedUser.from(jwt).userId(), representationVersion);
     }
 }

@@ -11,6 +11,7 @@
 		B75000000000000000000001 /* mistake-dispute-result-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = A75000000000000000000001 /* mistake-dispute-result-v1.json */; };
 		B75000000000000000000002 /* mistake-effective-state-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = A75000000000000000000002 /* mistake-effective-state-v1.json */; };
 		B75000000000000000000003 /* attempt-ocr-correction-result-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = A75000000000000000000003 /* attempt-ocr-correction-result-v1.json */; };
+		B77000000000000000000001 /* mastery-skills-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = A77000000000000000000001 /* mastery-skills-v1.json */; };
 		B74000000000000000000001 /* attempt-mistake-view-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = A74000000000000000000001 /* attempt-mistake-view-v1.json */; };
 		B73000000000000000000002 /* attempt-evaluation-work-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = A73000000000000000000002 /* attempt-evaluation-work-v1.json */; };
 		B73000000000000000000001 /* attempt-evaluation-view-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = A73000000000000000000001 /* attempt-evaluation-view-v1.json */; };
@@ -190,6 +191,7 @@
 		A75000000000000000000001 /* mistake-dispute-result-v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/mistake-dispute-result-v1.json; sourceTree = SOURCE_ROOT; };
 		A75000000000000000000002 /* mistake-effective-state-v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/mistake-effective-state-v1.json; sourceTree = SOURCE_ROOT; };
 		A75000000000000000000003 /* attempt-ocr-correction-result-v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/attempt-ocr-correction-result-v1.json; sourceTree = SOURCE_ROOT; };
+		A77000000000000000000001 /* mastery-skills-v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/mastery-skills-v1.json; sourceTree = SOURCE_ROOT; };
 		A74000000000000000000001 /* attempt-mistake-view-v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/attempt-mistake-view-v1.json; sourceTree = SOURCE_ROOT; };
 		A73000000000000000000002 /* attempt-evaluation-work-v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/attempt-evaluation-work-v1.json; sourceTree = SOURCE_ROOT; };
 		A73000000000000000000001 /* attempt-evaluation-view-v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/attempt-evaluation-view-v1.json; sourceTree = SOURCE_ROOT; };
@@ -964,6 +966,7 @@
 				A69000000000000000000005 /* MathVisualizationUITests.swift */,
 				A69000000000000000000006 /* math-visualization-public-v1.json */,
 				A71000000000000000000001 /* student-attempt-v2.json */,
+				A77000000000000000000001 /* mastery-skills-v1.json */,
 				A74000000000000000000001 /* attempt-mistake-view-v1.json */,
 				A74000000000000000000002 /* attempt-mistake-evaluation-v1.json */,
 				A75000000000000000000001 /* mistake-dispute-result-v1.json */,
@@ -1124,6 +1127,7 @@
 			files = (
 				B69000000000000000000006 /* math-visualization-public-v1.json in Resources */,
 				B71000000000000000000001 /* student-attempt-v2.json in Resources */,
+				B77000000000000000000001 /* mastery-skills-v1.json in Resources */,
 				B74000000000000000000001 /* attempt-mistake-view-v1.json in Resources */,
 				B74000000000000000000002 /* attempt-mistake-evaluation-v1.json in Resources */,
 				B75000000000000000000001 /* mistake-dispute-result-v1.json in Resources */,

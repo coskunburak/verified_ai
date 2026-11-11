@@ -4,6 +4,11 @@ import Observation
 @MainActor
 @Observable
 final class ProblemReviewViewModel {
+    enum SkillState { case hidden, loading, ready([MasterySkillsView.Skill]), failed }
+    private(set) var skillState: SkillState = .hidden
+    private var reviewRequest = UUID()
+    private var skillRequest = UUID()
+    private let masteryAPI: AttemptAnalysisServicing?
     private let reviewAPI: ProblemReviewServicing
     private let networkMonitor: NetworkMonitoring
     private let logger: AppLogger
@@ -17,8 +22,10 @@ final class ProblemReviewViewModel {
     init(
         reviewAPI: ProblemReviewServicing,
         networkMonitor: NetworkMonitoring,
-        logger: AppLogger
+        logger: AppLogger,
+        masteryAPI: AttemptAnalysisServicing? = nil
     ) {
+        self.masteryAPI = masteryAPI
         self.reviewAPI = reviewAPI
         self.networkMonitor = networkMonitor
         self.logger = logger
@@ -41,15 +48,21 @@ final class ProblemReviewViewModel {
             return
         }
 
+        let request = UUID()
+        reviewRequest = request
+        skillRequest = UUID()
+        skillState = .hidden
         state = .loading
         message = nil
         do {
             let loadedReview = try await reviewAPI.getParseReview(problemSessionId: problemSessionId)
+            guard reviewRequest == request, !Task.isCancelled else { return }
             review = loadedReview
             draft = ProblemParseCorrectionDraft(currentParse: loadedReview.currentParse)
             revisionHistory = nil
             state = .ready
         } catch {
+            guard reviewRequest == request, !Task.isCancelled else { return }
             logger.warning("problem_review.load_failed")
             let text = failureMessage(for: error)
             state = .failed(text)
@@ -101,7 +114,26 @@ final class ProblemReviewViewModel {
         }
     }
 
+    func loadSkills(for problem: UUID) async {
+        guard let masteryAPI, review?.problemSessionId == problem else { return }
+        let request = UUID()
+        skillRequest = request
+        skillState = .loading
+        do {
+            let snapshot = try await masteryAPI.mastery().validated()
+            guard request == skillRequest, review?.problemSessionId == problem, !Task.isCancelled else { return }
+            let skills = snapshot.skills.filter { $0.retentionScore != nil }
+            skillState = skills.isEmpty ? .hidden : .ready(skills)
+        } catch {
+            guard request == skillRequest, review?.problemSessionId == problem, !Task.isCancelled else { return }
+            skillState = .failed
+        }
+    }
+
     func reset() {
+        reviewRequest = UUID()
+        skillRequest = UUID()
+        skillState = .hidden
         state = .idle
         review = nil
         draft = nil

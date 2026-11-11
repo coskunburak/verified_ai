@@ -20,7 +20,18 @@ def main():
     for evidence in ('INDEPENDENT', 'HINT_ASSISTED', 'SOLUTION_REVEALED_ASSISTED', 'UNSUPPORTED'):
         value = copy.deepcopy(fixture)
         value['outcomes'][0].update(evidenceType=evidence, observedCorrectness=None if evidence == 'UNSUPPORTED' else False)
+        if evidence == 'UNSUPPORTED':
+            value['outcomes'][0].pop('canonicalSkillCode', None)
         validator.validate(value)
+    legacy = copy.deepcopy(fixture)
+    legacy['outcomes'][0].pop('canonicalSkillCode')
+    for key in ('retentionScore', 'confidence', 'reassessmentDue', 'reassessmentReason'):
+        del legacy['skills'][0][key]
+    validator.validate(legacy)
+    for patch in ({'retentionScore': 1.5}, {'confidence': -1}, {'reassessmentDue': True}, {'reassessmentReason': None}):
+        invalid = copy.deepcopy(fixture)
+        invalid['skills'][0].update(patch)
+        assert list(validator.iter_errors(invalid)), patch
     for mutation in ('owner', 'falseMastered', 'disabled', 'unsupported'):
         bad = copy.deepcopy(fixture)
         if mutation == 'owner': bad['ownerId'] = 'forged'

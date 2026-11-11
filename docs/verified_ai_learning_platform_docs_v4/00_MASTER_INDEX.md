@@ -566,3 +566,7 @@ remediation (7.8) and mastery (7.6) remain deferred. Production is not authorize
 - `sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.6_EXECUTION_REPORT.md` — continuation recovery, static repairs, authored tests, and `SOURCE_COMPLETE_PENDING_OWNER_TEST` status.
 
 Status: `SOURCE_COMPLETE_PENDING_OWNER_TEST`; `V038` source authored, not applied. Prior Sprint 7.5 FULL owner evidence remains an open entry gate. No tests, builds, lint/type checks, migrations or acceptance runner were executed by the agent. Production is not authorized.
+
+## Sprint 7.7 local acceptance
+
+The owner confirmed Sprint 7.6 completion on 2026-11-11. The dedicated 7.7 specification governs temporal mastery and reassessment. [Implementation map](sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.7_IMPLEMENTATION_MAP.md), [execution report](sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.7_EXECUTION_REPORT.md), and [file manifest](sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.7_FILE_MANIFEST.md). Full owner run `run-QcZF0C` passed locally on 2026-11-11.

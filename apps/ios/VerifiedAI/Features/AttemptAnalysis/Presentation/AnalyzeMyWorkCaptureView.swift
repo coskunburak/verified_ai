@@ -109,6 +109,9 @@ struct AnalyzeMyWorkCaptureView: View {
                                         .fixedSize(horizontal: false, vertical: true)
                                         .accessibilityElement(children: .combine)
                                         .accessibilityIdentifier("attempt.mastery.evidence")
+                                    if let skill = viewModel.masterySkill {
+                                        SkillRetentionNode(skill: skill)
+                                    }
                                 }
                                 if viewModel.effectiveMistake?.effectiveStatus == "DISPUTED_OR_CORRECTED" {
                                     Label("attempt.dna.excluded", systemImage: "checkmark.shield")
@@ -229,5 +232,37 @@ struct AnalyzeMyWorkCaptureView: View {
             if phase == .active { viewModel.resume() } else { viewModel.suspend() }
         }
         .accessibilityIdentifier("attempt.screen")
+    }
+}
+
+struct SkillRetentionNode: View {
+    let skill: MasterySkillsView.Skill
+    @ScaledMetric private var diameter = 52.0
+
+    var body: some View {
+        if let retention = skill.retentionScore, let confidence = skill.confidence, let due = skill.reassessmentDue {
+            VStack(alignment: .leading, spacing: SpacingTokens.xs) {
+                HStack {
+                    ZStack {
+                        Circle().stroke(ColorTokens.border, lineWidth: 3)
+                        Circle().trim(from: 0, to: retention).stroke(ColorTokens.action, lineWidth: 4)
+                        Circle().inset(by: 9).stroke(ColorTokens.border, lineWidth: 6)
+                        Circle().inset(by: 9).trim(from: 0, to: skill.posteriorMastery)
+                            .stroke(ColorTokens.textPrimary, lineWidth: 6)
+                    }
+                    .rotationEffect(.degrees(-90))
+                    .frame(width: diameter, height: diameter)
+                    .accessibilityHidden(true)
+                    Text(LocalizedStringKey("attempt.classification.skill." + skill.canonicalSkillCode))
+                        .font(.headline)
+                }
+                LabeledContent("attempt.temporal.mastery", value: skill.posteriorMastery.formatted(.percent))
+                LabeledContent("attempt.temporal.retention", value: retention.formatted(.percent))
+                LabeledContent("attempt.temporal.confidence", value: confidence.formatted(.percent))
+                Text(due ? LocalizedStringKey("attempt.temporal.due") : LocalizedStringKey("attempt.temporal.notDue"))
+            }
+            .accessibilityElement(children: .combine)
+            .accessibilityIdentifier("attempt.mastery.rings." + skill.canonicalSkillCode)
+        }
     }
 }

@@ -201,6 +201,12 @@ extension AttemptAnalysisUITests {
                     XCTAssertTrue(badge.waitForExistence(timeout: 5))
                     XCTAssertTrue(badge.label.contains(turkish ? "İpucuyla" : "hints"))
                     XCTAssertTrue(badge.label.contains(turkish ? "kanıtlanmadı" : "not established"))
+                    let node = app.descendants(matching: .any)["attempt.mastery.rings.MATH.ALGEBRA.SIMPLIFY_EXPRESSIONS"].firstMatch
+                    for _ in 0..<5 { if node.isHittable { break }; app.swipeUp() }
+                    XCTAssertTrue(node.waitForExistence(timeout: 5))
+                    XCTAssertTrue(node.label.contains(turkish ? "hatırlama" : "recall"))
+                    XCTAssertTrue(node.label.contains(turkish ? "güven" : "confidence"))
+                    XCTAssertTrue(node.label.contains(turkish ? "Yeniden değerlendirme" : "Reassessment due"))
                 }
                 if dna {
                     tap(app.buttons["attempt.dna.dispute"], app)

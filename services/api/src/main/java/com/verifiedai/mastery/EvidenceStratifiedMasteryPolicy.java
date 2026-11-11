@@ -2,7 +2,7 @@ package com.verifiedai.mastery;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.Duration;
+import static com.verifiedai.mastery.HalfLifeRetentionPolicy.elapsedDays;
 import java.time.Instant;
 import java.util.*;
 import static com.verifiedai.mastery.LearningEvidenceType.*;
@@ -25,7 +25,7 @@ public final class EvidenceStratifiedMasteryPolicy {
     public State observe(State prior,MasteryEvidenceSource.Evidence e) {
         if(e.type()==UNSUPPORTED) return prior;
         if(prior.observedAt()!=null && e.observedAt().isBefore(prior.observedAt())) throw new IllegalArgumentException("Evidence order");
-        double m=retention(prior,e.observedAt()), half=prior.halfLife();
+        double m=retention(prior,e.observedAt());
         boolean correct=e.correct() && e.type()!=SOLUTION_REVEALED_ASSISTED;
         double slip=SLIP,guess=GUESS,transition=INCORRECT_TRANSITION;
         if(correct && e.type()==HINT_ASSISTED) { slip*=1.5; guess*=2; transition=HINT_TRANSITION; }
@@ -42,10 +42,7 @@ public final class EvidenceStratifiedMasteryPolicy {
             next=prior.score()>ASSISTED_CEILING?prior.score():StrictMath.min(cap,next);
         }
         if(e.type()==SOLUTION_REVEALED_ASSISTED) next=StrictMath.min(prior.score(),next);
-        if(correct && e.type()==INDEPENDENT) {
-            double spacing=days(prior.observedAt(),e.observedAt());
-            half=StrictMath.min(90,half*(spacing>=.5*half?1.85+.35*StrictMath.min(1,spacing/half):1.20));
-        } else if(!correct) half=StrictMath.max(1,.55*half);
+        double half=HalfLifeRetentionPolicy.next(prior,e);
         int independent=prior.independent()+(e.type()==INDEPENDENT?1:0);
         int assisted=prior.assisted()+(e.type()!=INDEPENDENT?1:0);
         int hints=prior.hints()+(e.type()==HINT_ASSISTED?1:0);
@@ -65,18 +62,15 @@ public final class EvidenceStratifiedMasteryPolicy {
         State state=initial(); var steps=new ArrayList<Step>(); double successes=0,total=0;
         for(var e:ordered) {
             var next=observe(state,e); steps.add(new Step(e,state,next)); state=next;
-            double weight=StrictMath.pow(2,-days(e.observedAt(),asOf)/COMPETENCE_HALF_LIFE);
+            double weight=StrictMath.pow(2,-elapsedDays(e.observedAt(),asOf)/COMPETENCE_HALF_LIFE);
             total+=weight;
             if(e.type()==INDEPENDENT && e.correct()) successes+=weight;
         }
         return new Projection(state,round((successes+COMPETENCE_PRIOR_STRENGTH*PRIOR)/(total+COMPETENCE_PRIOR_STRENGTH)),
-            retention(state,asOf),round(state.confidence()*StrictMath.pow(2,-days(state.confidenceObservedAt(),asOf)/(2*state.halfLife()))),List.copyOf(steps));
+            retention(state,asOf),round(state.confidence()*StrictMath.pow(2,-elapsedDays(state.confidenceObservedAt(),asOf)/(2*state.halfLife()))),List.copyOf(steps));
     }
     public double retention(State state,Instant at) {
-        return round(FLOOR+(state.score()-FLOOR)*StrictMath.pow(2,-days(state.observedAt(),at)/state.halfLife()));
-    }
-    private static double days(Instant from,Instant to) {
-        return from==null?0:StrictMath.max(0,(Duration.between(from,to).getSeconds()+Duration.between(from,to).getNano()/1_000_000_000.0)/86400.0);
+        return round(HalfLifeRetentionPolicy.retention(state,at));
     }
     private static double round(double value) { return BigDecimal.valueOf(value).setScale(8,RoundingMode.HALF_EVEN).doubleValue(); }
 }

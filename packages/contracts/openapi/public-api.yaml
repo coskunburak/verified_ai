@@ -7,10 +7,15 @@ paths:
   /api/v1/mastery/skills:
     get:
       summary: Read authenticated learner mastery and evidence quality
+      parameters:
+        - in: query
+          name: representationVersion
+          schema: {type: integer, enum: [1, 2], default: 1}
+          description: Version 1 preserves the original strict response shape. Version 2 requests the temporal extension.
       security: [{bearerAuth: []}]
       responses:
         "200":
-          description: Disabled returns empty arrays. Evidence is not exam readiness. No client owner parameter.
+          description: Owner-scoped snapshot at asOf. Disabled mastery returns empty arrays. The temporal extension is absent when disabled or on older servers. When present, retentionScore and confidence equal retention and evidenceConfidence. reassessmentDue and its reason come from the server. Reads never record learning evidence.
           content:
             application/json:
               schema: {$ref: "#/components/schemas/MasterySkillsView"}
@@ -2905,6 +2910,26 @@ components:
               "observedAt": {
                 "type": "string",
                 "format": "date-time"
+              },
+              "retentionScore": {
+                "type": "number",
+                "minimum": 0.05,
+                "maximum": 0.99
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "reassessmentDue": {
+                "type": "boolean"
+              },
+              "reassessmentReason": {
+                "enum": [
+                  "NOT_DUE",
+                  "RETENTION_THRESHOLD",
+                  "DELAYED_TRAP_CHECK"
+                ]
               }
             },
             "required": [
@@ -2940,6 +2965,61 @@ components:
                     }
                   }
                 }
+              },
+              {
+                "if": {
+                  "anyOf": [
+                    {
+                      "required": [
+                        "retentionScore"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "confidence"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "reassessmentDue"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "reassessmentReason"
+                      ]
+                    }
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "retentionScore",
+                    "confidence",
+                    "reassessmentDue",
+                    "reassessmentReason"
+                  ],
+                  "if": {
+                    "properties": {
+                      "reassessmentReason": {
+                        "const": "NOT_DUE"
+                      }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "reassessmentDue": {
+                        "const": false
+                      }
+                    }
+                  },
+                  "else": {
+                    "properties": {
+                      "reassessmentDue": {
+                        "const": true
+                      }
+                    }
+                  }
+                }
               }
             ]
           }
@@ -2968,6 +3048,11 @@ components:
                   "boolean",
                   "null"
                 ]
+              },
+              "canonicalSkillCode": {
+                "type": "string",
+                "pattern": "^MATH\\.",
+                "maxLength": 96
               }
             },
             "required": [
@@ -2987,6 +3072,11 @@ components:
                 "observedCorrectness": {
                   "type": "null"
                 }
+              },
+              "not": {
+                "required": [
+                  "canonicalSkillCode"
+                ]
               }
             },
             "else": {

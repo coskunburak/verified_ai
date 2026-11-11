@@ -54,9 +54,29 @@ public class MistakeDnaRepository {
             """,owner,p.mistakeCode(),p.skillId(),p.taxonomyVersion(),p.categoryVersion(),p.policyVersion(),p.decayedErrorCount(),
             p.decayedExposureCount(),p.smoothedPropensity(),p.recentErrorCount(),p.recurrenceState().name(),Timestamp.from(p.lastOccurredAt()),Timestamp.from(p.asOf()));
     }
+    public boolean retentionAvailable() {
+        return Boolean.TRUE.equals(jdbc.queryForObject(
+            "select to_regclass('learner_mistake_retention_transitions') is not null", Boolean.class));
+    }
+
+    public boolean record(UUID owner, String code, String skill, MistakeRetentionResolutionListener.Transition t, Instant now) {
+        return jdbc.update("""
+            insert into learner_mistake_retention_transitions(id,user_id,mistake_code,skill_id,from_state,to_state,
+                first_drill,pending_drill,check_drill,classification_id,causal_attempt,pending_at,event_at,processed_at)
+            values(?,?,?,?,?,?,?,?,?,?,?,?,?,?) on conflict do nothing
+            """, UUID.randomUUID(), owner, code, skill, t.from().name(), t.to().name(), t.firstDrill(), t.pendingDrill(),
+            t.checkDrill(), t.classificationId(), t.causalAttempt(), Timestamp.from(t.pendingAt()), Timestamp.from(t.eventAt()),
+            Timestamp.from(now)) == 1;
+    }
+
     public Map<String,Object> export(UUID owner) {
         return Map.of("schemaVersion","mistake-dna-export-v1","trainingEligible",false,"profiles",profiles(owner),
+            "retentionTransitions",retentionAvailable() ? jdbc.queryForList(
+                "select * from learner_mistake_retention_transitions where user_id=? order by event_at,id", owner) : List.of(),
             "operations",jdbc.queryForList("select id,attempt_id,classification_id,replacement_attempt_id,step_index,dispute_type,policy_version,created_at,training_eligible from learner_mistake_dispute_events where user_id=? order by created_at,id",owner));
     }
-    public void deleteProfiles(UUID owner) { jdbc.update("delete from learner_mistake_dna_profiles where user_id=?",owner); }
+    public void deleteProfiles(UUID owner) {
+        if (retentionAvailable()) jdbc.update("delete from learner_mistake_retention_transitions where user_id=?", owner);
+        jdbc.update("delete from learner_mistake_dna_profiles where user_id=?",owner);
+    }
 }

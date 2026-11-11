@@ -23,8 +23,18 @@ actor FixtureAttemptAnalysisAPI: AttemptAnalysisServicing {
         case .fail: throw URLError(.networkConnectionLost)
         case .empty: return .init(schemaVersion: "mastery-skills-v1", enabled: true, algorithmVersion: "bkt-lite-v2", asOf: Date(), skills: [], outcomes: [])
         case .evidence(let type):
-            return .init(schemaVersion: "mastery-skills-v1", enabled: true, algorithmVersion: "bkt-lite-v2", asOf: Date(), skills: [],
-                outcomes: classifications.keys.map { .init(attemptId: $0, evidenceType: type, observedCorrectness: type == .unsupported ? nil : true) })
+            let at = Date()
+            let code = "MATH.ALGEBRA.SIMPLIFY_EXPRESSIONS"
+            let skill = MasterySkillsView.Skill(canonicalSkillCode: code, posteriorMastery: 0.76, independentCompetence: 0.42,
+                evidenceConfidence: 0.31, independentEvidenceCount: 1, assistedEvidenceCount: 2, status: "PRACTICING",
+                cappedByAssistance: false, retention: 0.62, halfLifeDays: 3.6, algorithmVersion: "bkt-lite-v2",
+                observedAt: at.addingTimeInterval(-86400), retentionScore: 0.62, confidence: 0.31,
+                reassessmentDue: true, reassessmentReason: "RETENTION_THRESHOLD")
+            return .init(schemaVersion: "mastery-skills-v1", enabled: true, algorithmVersion: "bkt-lite-v2", asOf: at,
+                skills: type == .unsupported ? [] : [skill], outcomes: classifications.keys.map {
+                    .init(attemptId: $0, evidenceType: type, observedCorrectness: type == .unsupported ? nil : true,
+                          canonicalSkillCode: type == .unsupported ? nil : code)
+                })
         }
     }
     private let dnaEnabled: Bool

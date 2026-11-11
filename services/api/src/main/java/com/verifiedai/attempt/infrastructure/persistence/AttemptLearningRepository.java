@@ -39,6 +39,7 @@ public class AttemptLearningRepository {
         observe(owner,drill.attemptId(),drill.id(),drill.artifact().mistakeCode(),selected==drill.artifact().correctOption(),
             assisted?"HINT_ASSISTED":"INDEPENDENT","bounded-learning-v1",now);
         events.publishEvent(new com.verifiedai.mastery.MasteryEvidenceChanged(owner));
+        events.publishEvent(new com.verifiedai.mistake.MistakeRetentionResolutionListener.TwinCompleted(owner));
     }
     public Optional<AttemptLearningEvidence> methods(UUID owner,UUID attempt) {
         return jdbc.query("select evidence::text from attempt_verified_methods where user_id=? and attempt_id=?",

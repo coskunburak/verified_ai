@@ -409,7 +409,7 @@ Codex must implement this sprint in small reviewable slices, re-reading the high
 ## 1. Sprint Metadata & Status
 - **Sprint ID:** `SPRINT_7.7`
 - **Canonical Title:** Mastery Confidence, Half-Life Memory Decay ($R_{u,s}(t)$), and Spaced Reassessment Triggers
-- **Status:** `PLANNED` (`GATED_ON_SPRINT_7_6`)
+- **Status:** `LOCAL_ACCEPTANCE_PASSED` (owner full run `run-QcZF0C`, 2026-11-11). Sprint 7.6 completion confirmed by the owner.
 - **Primary Spec Reference:** `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md` (Quantity 4: $R_{u,s}(t)$)
 
 ## 2. Strategic Learning OS Objective & User Value
@@ -435,10 +435,10 @@ Implements the temporal memory decay and half-life expansion equations (`learnin
 - None (pure temporal domain calculation in `com.verifiedai.mastery`).
 
 ## 7. Database Migration & Persistence Contract
-- Uses `V031` (`half_life_days`, `last_practiced_at`) + `PLANNED V037` (`next_retention_check_at`) + `PLANNED V038` (`learner_skill_mastery_transitions`).
+- Implemented using V031 `last_assessed_at` and `half_life_days`, V037 effective profiles, V038 immutable BKT history, and additive V039 proof-linked retention transitions. The seven-day check is computed from the second qualifying drill’s completion time.
 
 ## 8. REST API Contracts (`CNT-LOS-04`)
-- `GET /v1/mastery/skills` includes real-time computed `retentionScore` ($R_{u,s}(t)$), `halfLifeDays`, `confidence`, and `reassessmentDue`.
+- `GET /api/v1/mastery/skills?representationVersion=2` includes real-time computed `retentionScore` ($R_{u,s}(t)$), `halfLifeDays`, `confidence`, and `reassessmentDue`.
 
 ## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
 - Renders dual-ring skill nodes (Inner solid core = $M_{u,s}$, Outer decay ring = $R_{u,s}(t)$) in `ProblemReview` and `AttemptAnalysis`.

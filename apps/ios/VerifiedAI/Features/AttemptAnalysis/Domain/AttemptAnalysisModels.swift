@@ -572,6 +572,7 @@ struct MasterySkillsView: Decodable, Sendable {
     }
     struct Outcome: Decodable, Sendable {
         let attemptId: UUID; let evidenceType: EvidenceType; let observedCorrectness: Bool?
+        var canonicalSkillCode: String? = nil
         var labelKey: String {
             switch evidenceType {
             case .independent: observedCorrectness == true ? "attempt.mastery.independent" : "attempt.mastery.independentIncorrect"
@@ -587,6 +588,18 @@ struct MasterySkillsView: Decodable, Sendable {
         let independentEvidenceCount: Int; let assistedEvidenceCount: Int
         let status: String; let cappedByAssistance: Bool; let retention: Double; let halfLifeDays: Double
         let algorithmVersion: String; let observedAt: Date
+        var retentionScore: Double? = nil
+        var confidence: Double? = nil
+        var reassessmentDue: Bool? = nil
+        var reassessmentReason: String? = nil
+
+        var validTemporalFields: Bool {
+            if retentionScore == nil && confidence == nil && reassessmentDue == nil && reassessmentReason == nil { return true }
+            guard let retentionScore, let confidence, let reassessmentDue, let reassessmentReason else { return false }
+            return retentionScore == retention && confidence == evidenceConfidence
+                && ["NOT_DUE", "RETENTION_THRESHOLD", "DELAYED_TRAP_CHECK"].contains(reassessmentReason)
+                && reassessmentDue == (reassessmentReason != "NOT_DUE")
+        }
     }
     let schemaVersion: String; let enabled: Bool; let algorithmVersion: String; let asOf: Date
     let skills: [Skill]; let outcomes: [Outcome]
@@ -598,7 +611,7 @@ struct MasterySkillsView: Decodable, Sendable {
               Set(outcomes.map(\.attemptId)).count == outcomes.count,
               outcomes.allSatisfy({ ($0.evidenceType == .unsupported) == ($0.observedCorrectness == nil) }),
               skills.allSatisfy({ s in
-                  !s.canonicalSkillCode.isEmpty && s.algorithmVersion == algorithmVersion && s.observedAt <= asOf
+                  s.validTemporalFields && !s.canonicalSkillCode.isEmpty && s.algorithmVersion == algorithmVersion && s.observedAt <= asOf
                     && s.independentEvidenceCount >= 0 && s.assistedEvidenceCount >= 0
                     && (0.05...0.99).contains(s.posteriorMastery) && (0.05...0.99).contains(s.retention)
                     && (0...1).contains(s.independentCompetence) && (0...1).contains(s.evidenceConfidence)

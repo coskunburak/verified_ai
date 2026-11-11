@@ -4,7 +4,8 @@ final class AttemptAnalysisAPI: AttemptAnalysisServicing, @unchecked Sendable {
     init(client: APIClient) { self.client = client }
     private func path(_ problem: UUID) -> String { "/api/v1/problem-sessions/\(problem.uuidString)/attempts" }
     func mastery() async throws -> MasterySkillsView {
-        let response: HTTPResponse<MasterySkillsView> = try await client.send(HTTPRequest(endpoint: Endpoint(path: "/api/v1/mastery/skills")))
+        let response: HTTPResponse<MasterySkillsView> = try await client.send(HTTPRequest(endpoint: Endpoint(path: "/api/v1/mastery/skills",
+            queryItems: [URLQueryItem(name: "representationVersion", value: "2")])))
         return try response.body.validated()
     }
     func effectiveMistake(event: UUID) async throws -> MistakeEffectiveState {
