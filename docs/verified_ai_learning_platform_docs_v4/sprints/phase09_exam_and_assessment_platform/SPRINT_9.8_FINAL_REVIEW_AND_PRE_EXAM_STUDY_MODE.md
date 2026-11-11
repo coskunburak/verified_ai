@@ -394,3 +394,66 @@ Attach or persist links/artifacts for:
 
 Codex must implement this sprint in small reviewable slices, re-reading the highest-precedence semantic documents before changing domain/API/data contracts. It must not “simplify” the architecture by moving rules into prompts, client code, provider SDK adapters, generic helpers, or ungoverned ML scripts.
 <!-- PRODUCTION_EXECUTION_V3:END -->
+
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:START -->
+# Learning OS Production Implementation Specification v1 (`2026-11-07`)
+
+## 1. Sprint Metadata & Status
+- **Sprint ID:** `SPRINT_9.8`
+- **Canonical Title:** Final Review, Pre-Exam Study Mode & 48-Hour Personal Formula/Trap Sheet (`H-15`)
+- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011)`
+- **Primary Spec Reference:** `product/81_LEARNING_OS_PRODUCT_VISION_AND_POSITIONING.md` (`H-15`), `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md` (Screens 10 & 11)
+
+## 2. Strategic Learning OS Objective & User Value
+Assembles high-yield final review 48 hours prior to high-stakes exams. Suspends new concept acquisition and generates the **"Personal Formula & Trap Cheat Sheet" (`H-15` Astra AI Benchmark)**: an on-device 1-page printable or offline-ready digest pairing the student's top 10 recurring mistake counterexamples with high-yield formula proofs (`PDFKit` on-device rendering).
+
+## 3. Entry Gate & Preconditions
+- `ADR-011` `GO` decision recorded; `Sprints 9.1–9.7` accepted.
+
+## 4. Domain Invariants & Rules
+1. **Panic Inhibition Rule:** In pre-exam mode (countdown $\le 48\text{ hr}$), new unpracticed advanced skills are blocked from the review queue; the engine serves only high-weight familiar skills ($M \ge 0.50$) with active trap repair.
+2. **On-Device PDF Generation:** PDF rendering runs on-device via `ImageRenderer`/`PDFKit` ($0.00 cloud storage cost and zero private student notes uploaded to cloud).
+
+## 5. Owning Spring Modulith Backend Modules & Classes
+- `com.verifiedai.exam`: `PreExamReviewService.java`, `PersonalCheatSheetService.java`, `PreExamController.java`.
+
+## 6. Python Math Verifier Impact
+- Validates formula proofs in cheat sheets against SymPy canonical ASTs.
+
+## 7. Database Migration & Persistence Contract
+- **Tables:** `pre_exam_study_sessions` (`id`, `user_id`, `exam_code`, `hours_remaining`, `cheat_sheet_generated`, `created_at`).
+
+## 8. REST API Contracts
+- `GET /v1/exams/pre-exam-review/{examCode}`, `GET /v1/exams/cheat-sheet/{examCode}` (`cheat-sheet-v1`).
+
+## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
+- Renders `PreExamCramView.swift` and `PersonalCheatSheetPDFRenderer.swift` in `Features/Exam/`.
+
+## 10. AI Capability & Unit Economics Guardrail
+- **`$0.00` LLM token cost** (cheat sheets are built from pre-verified template cards and Mistake DNA records).
+
+## 11. Privacy, Safety & Compliance
+- Purged on account deletion via `ExamPrivacyLifecycleContributor`.
+
+## 12. Telemetry & Observability
+- Emits `pre_exam_mode_activated`, `cheat_sheet_exported`.
+
+## 13. Feature Flags & Rollback Plan
+- `verifiedai.exam.pre-exam-mode-enabled: false`.
+
+## 14. Automated Test Matrix (Categories A–F)
+- Tests panic-inhibition rule asserting zero unfamiliar skills in 48h review; iOS snapshot tests for 1-page PDF rendering.
+
+## 15. Owner-Only Acceptance Command
+- `bash scripts/quality/sprint_9_8_owner_acceptance.sh --full`
+
+## 16. Explicit Non-Goals
+- Does not predict exam questions or claim leaked content.
+
+## 17. Exit Gate & Downstream Consumers
+- Unlocks `Sprint 9.9` and `Sprint 9.10`.
+
+## 18. Canonical Cross-References
+- `product/81_LEARNING_OS_PRODUCT_VISION_AND_POSITIONING.md`
+- `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md`
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:END -->

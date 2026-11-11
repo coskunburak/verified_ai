@@ -180,6 +180,9 @@ To prevent roadmap bloat while identifying high-leverage product innovations bey
 | **H-10** | **Full Multi-Subject Expansion (History, Literature, Biology, Geography)** | 4 | 3 | 1 | 1 | 3 | 4 | 1 | 2 | 5 | 1 | 3 | **49.8** | **REJECTED FOR V1** — Destroys mathematical verification identity; Physics/Chemistry symbolic subset deferred to Phase 12.6 |
 | **H-11** | **Autonomous Open-Ended Socratic Chat Sandbox** *(Unbounded multi-turn chat without step-attempt anchoring)* | 3 | 2 | 2 | 1 | 3 | 3 | 3 | 2 | 3 | 3 | 2 | **49.0** | **REJECTED** — High token burn, prompt-injection surface, replicates generic ChatGPT |
 | **H-12** | **B2B School SIS / MEB e-Okul Enterprise Integration** *(Direct gradebook sync with school ERP systems)* | 3 | 2 | 1 | 2 | 2 | 3 | 1 | 5 | 1 | 1 | 2 | **40.2** | **REJECTED FOR V1–V2** — Fatal solo-founder procurement drag and KVKK institutional data controller liability |
+| **H-13** | **Dual-Mode Solver vs. Socratic Coach Toggle** *(Astra-benchmark UX: 1-tap switch between Quick Step-Check/Solver and Socratic Trap-Hunter with 60s twin locks)* | 5 | 5 | 5 | 5 | 5 | 4 | 5 | 5 | 5 | 5 | 5 | **96.4** | **SUPPORTING INNOVATION #3** (Sprint 8.4 / Screen 1-2) |
+| **H-14** | **"Snap-to-Plan" Syllabus & Exam Schedule Ingestion** *(Astra-benchmark feature: photograph school exam timetable or topic syllabus to auto-populate study horizon)* | 5 | 4 | 4 | 5 | 5 | 5 | 4 | 5 | 5 | 4 | 5 | **92.2** | **SUPPORTING INNOVATION #4** (Sprint 9.2 / Screen 8-9) |
+| **H-15** | **Pre-Exam 48-Hour "Personal Formula & Trap Sheet" Synthesis** *(On-device 1-page digest pairing recurring mistake counterexamples with formula proofs before exams)* | 5 | 4 | 4 | 4 | 4 | 5 | 5 | 5 | 5 | 4 | 5 | **89.8** | **EXPERIMENT-ONLY #4** (Sprint 9.8 / Screen 11) |
 
 ### 8.3 Deep Specification of Selected Innovations
 
@@ -189,6 +192,14 @@ To prevent roadmap bloat while identifying high-leverage product innovations bey
    - **Mechanism:** Directly operationalizes Bastani et al. (2025) anti-crutch findings. When a student views a hint or solution on Problem $P$, the skill's Mastery Shield enters a `PENDING_VERIFICATION` state. To lock in mastery points and increment their **Verified Independent Streak**, the student must solve a SymPy-verified Counterfactual Twin ($P'$) with hints locked for the first 60 seconds (`learning/84_VERIFIED_TWIN_PRACTICE_AND_INDEPENDENT_LEARNING_ENGINE.md`).
 3. **Supporting Innovation #2 (`H-03`): YKS Net-Gain Simulator & High-ROI Topic Allocator**
    - **Mechanism:** Combines the student's exposure-adjusted mistake frequency (`learning/83_VERIFIED_MISTAKE_DNA_AND_MISTAKE_PASSPORT_SPECIFICATION.md`), skill mastery (`bkt-lite-v1`), and historical exam topic weight tables (`Phase 9`) to rank daily study recommendations by **Expected Net Gain per Hour ($\Delta \text{Net} / \text{hr}$)** rather than alphabetical chapter order.
+4. **Supporting Innovation #3 (`H-13`): Dual-Mode Solver vs. Socratic Coach Toggle (Astra AI Benchmark)**
+   - **Mechanism:** Eliminates the student frustration of being forced into Socratic questioning when under tight homework deadlines. A top-level toggle allows students to switch between:
+     - `SOLVER_MODE` (`Hızlı Çözüm & Adım Kontrolü`): Fast multimodal OCR normalization, step diff validation, and first-wrong-step pinpointing without forcing Socratic turns.
+     - `SOCRATIC_COACH_MODE` (`Koçluk & Tuzak Avcısı`): Activates the 3-rung Socratic repair ladder, locks answers for 60 seconds, and generates independent verification twins to earn mastery points.
+5. **Supporting Innovation #4 (`H-14`): "Snap-to-Plan" Syllabus & Exam Schedule Ingestion (Astra AI Benchmark)**
+   - **Mechanism:** Replaces tedious manual date and topic forms with a camera capture flow. The student photographs their teacher's exam announcement, school syllabus, or YKS deneme calendar. Gemini 2.5 Flash extracts date, exam title, and curriculum topics into a structured `CandidateProfile` payload, immediately rebalancing `DailyCoachSession` (`Sprint 8.4`) and exam horizon timelines.
+6. **Supporting Innovation #5 (`H-15`): Pre-Exam 48-Hour "Personal Formula & Trap Sheet" Synthesis**
+   - **Mechanism:** 48 hours prior to an active exam target, the coach generates a 1-page printable or offline-ready PDF combining the student's top 10 recurring mistake codes with concise counterexamples and high-yield formula proofs (`PDFKit` on-device rendering).
 
 ---
 

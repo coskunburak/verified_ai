@@ -176,10 +176,10 @@ Phase overview: `sprints/phase08_adaptive_learning_and_study_planning/PHASE_08_A
 - `Sprint 8.1` — **Next-Best-Action Recommendation Engine** — `phase08_adaptive_learning_and_study_planning/SPRINT_8.1_NEXT_BEST_ACTION_RECOMMENDATION_ENGINE.md`
 - `Sprint 8.2` — **Adaptive Practice Question Selection and Generation** — `phase08_adaptive_learning_and_study_planning/SPRINT_8.2_ADAPTIVE_PRACTICE_QUESTION_SELECTION_AND_GENERATION.md`
 - `Sprint 8.3` — **Spaced Repetition Scheduling for Skills and Mistakes** — `phase08_adaptive_learning_and_study_planning/SPRINT_8.3_SPACED_REPETITION_SCHEDULING_FOR_SKILLS_AND_MISTAKES.md`
-- `Sprint 8.4` — **Daily Study Plan Generation** — `phase08_adaptive_learning_and_study_planning/SPRINT_8.4_DAILY_STUDY_PLAN_GENERATION.md`
+- `Sprint 8.4` — **Daily Study Plan Generation & Coach Hub (Dual-Mode Solver vs Socratic Switcher)** — `phase08_adaptive_learning_and_study_planning/SPRINT_8.4_DAILY_STUDY_PLAN_GENERATION.md`
 - `Sprint 8.5` — **Missed-Day Recovery and Study Plan Rebalancing** — `phase08_adaptive_learning_and_study_planning/SPRINT_8.5_MISSED_DAY_RECOVERY_AND_STUDY_PLAN_REBALANCING.md`
 - `Sprint 8.6` — **AI Micro-Lessons Triggered by Diagnosed Weaknesses** — `phase08_adaptive_learning_and_study_planning/SPRINT_8.6_AI_MICRO_LESSONS_TRIGGERED_BY_DIAGNOSED_WEAKNESSES.md`
-  - `Sprint 8.6B` — **Declarative Whiteboard Vector Stream, Turkish Math Neural TTS & Bidirectional PencilKit Canvas (Fast-Track Bridge to Phase 14)** — `phase14_active_scaffolding_twin_mastery_and_interactive_canvas/SPRINT_14.6_DECLARATIVE_WHITEBOARD_VECTOR_STREAM_AND_TIMELINE_SYNCHRONIZATION.md`, `phase14_active_scaffolding_twin_mastery_and_interactive_canvas/SPRINT_14.7_TURKISH_MATHEMATICS_NEURAL_TTS_AND_SYNCHRONIZED_VOICE_PEDAGOGY.md`, and `phase14_active_scaffolding_twin_mastery_and_interactive_canvas/SPRINT_14.8_BIDIRECTIONAL_PENCILKIT_CANVAS_AND_LIVE_INK_STEP_VERIFICATION.md`.
+  - `Sprint 8.6B` — **Declarative Whiteboard Vector Stream, Turkish Math Neural TTS & Bidirectional PencilKit Canvas (Fast-Track Bridge to Phase 14 & Empathetic Voice Pedagogy)** — `phase14_active_scaffolding_twin_mastery_and_interactive_canvas/SPRINT_14.6_DECLARATIVE_WHITEBOARD_VECTOR_STREAM_AND_TIMELINE_SYNCHRONIZATION.md`, `phase14_active_scaffolding_twin_mastery_and_interactive_canvas/SPRINT_14.7_TURKISH_MATHEMATICS_NEURAL_TTS_AND_SYNCHRONIZED_VOICE_PEDAGOGY.md`, and `phase14_active_scaffolding_twin_mastery_and_interactive_canvas/SPRINT_14.8_BIDIRECTIONAL_PENCILKIT_CANVAS_AND_LIVE_INK_STEP_VERIFICATION.md`.
 - `Sprint 8.7` — **Study Session Orchestration and Resume Semantics** — `phase08_adaptive_learning_and_study_planning/SPRINT_8.7_STUDY_SESSION_ORCHESTRATION_AND_RESUME_SEMANTICS.md`
 - `Sprint 8.8` — **Goals, Streaks, Achievements, and Non-Manipulative Gamification** — `phase08_adaptive_learning_and_study_planning/SPRINT_8.8_GOALS_STREAKS_ACHIEVEMENTS_AND_NON_MANIPULATIVE_GAMIFICATION.md`
 - `Sprint 8.9` — **Weekly Learning Report and Explainable Recommendations** — `phase08_adaptive_learning_and_study_planning/SPRINT_8.9_WEEKLY_LEARNING_REPORT_AND_EXPLAINABLE_RECOMMENDATIONS.md`
@@ -190,13 +190,13 @@ Phase overview: `sprints/phase08_adaptive_learning_and_study_planning/PHASE_08_A
 Phase overview: `sprints/phase09_exam_and_assessment_platform/PHASE_09_EXAM_AND_ASSESSMENT_PLATFORM.md`
 
 - `Sprint 9.1` — **Exam Definitions, Curriculum Mapping, and Versioning** — `phase09_exam_and_assessment_platform/SPRINT_9.1_EXAM_DEFINITIONS_CURRICULUM_MAPPING_AND_VERSIONING.md`
-- `Sprint 9.2` — **Learner Exam Goal Setup and Candidate Profile** — `phase09_exam_and_assessment_platform/SPRINT_9.2_LEARNER_EXAM_GOAL_SETUP_AND_CANDIDATE_PROFILE.md`
+- `Sprint 9.2` — **Learner Exam Goal Setup and Candidate Profile (Snap-to-Plan Syllabus Ingestion)** — `phase09_exam_and_assessment_platform/SPRINT_9.2_LEARNER_EXAM_GOAL_SETUP_AND_CANDIDATE_PROFILE.md`
 - `Sprint 9.3` — **Question Bank, Blueprint, and Assessment Assembly Rules** — `phase09_exam_and_assessment_platform/SPRINT_9.3_QUESTION_BANK_BLUEPRINT_AND_ASSESSMENT_ASSEMBLY_RULES.md`
 - `Sprint 9.4` — **Timed Mock Exam Runtime** — `phase09_exam_and_assessment_platform/SPRINT_9.4_TIMED_MOCK_EXAM_RUNTIME.md`
 - `Sprint 9.5` — **Scoring Engine and Evidence Traceability** — `phase09_exam_and_assessment_platform/SPRINT_9.5_SCORING_ENGINE_AND_EVIDENCE_TRACEABILITY.md`
 - `Sprint 9.6` — **Exam Readiness Model and Confidence Semantics** — `phase09_exam_and_assessment_platform/SPRINT_9.6_EXAM_READINESS_MODEL_AND_CONFIDENCE_SEMANTICS.md`
 - `Sprint 9.7` — **Weak-Area Prioritization After Assessments** — `phase09_exam_and_assessment_platform/SPRINT_9.7_WEAK_AREA_PRIORITIZATION_AFTER_ASSESSMENTS.md`
-- `Sprint 9.8` — **Final Review and Pre-Exam Study Mode** — `phase09_exam_and_assessment_platform/SPRINT_9.8_FINAL_REVIEW_AND_PRE_EXAM_STUDY_MODE.md`
+- `Sprint 9.8` — **Final Review and Pre-Exam Study Mode (48-Hour Trap & Formula Cheat Sheet)** — `phase09_exam_and_assessment_platform/SPRINT_9.8_FINAL_REVIEW_AND_PRE_EXAM_STUDY_MODE.md`
 - `Sprint 9.9` — **Exam Analytics, Reports, and Progress Comparison** — `phase09_exam_and_assessment_platform/SPRINT_9.9_EXAM_ANALYTICS_REPORTS_AND_PROGRESS_COMPARISON.md`
 - `Sprint 9.10` — **Assessment Integrity, Accessibility, Failure Recovery, and Reliability** — `phase09_exam_and_assessment_platform/SPRINT_9.10_ASSESSMENT_INTEGRITY_ACCESSIBILITY_FAILURE_RECOVERY_AND_RELIABILITY.md`
 

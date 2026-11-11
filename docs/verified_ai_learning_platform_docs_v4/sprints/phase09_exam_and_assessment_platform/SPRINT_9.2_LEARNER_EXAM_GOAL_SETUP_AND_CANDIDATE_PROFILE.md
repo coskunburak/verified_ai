@@ -377,3 +377,66 @@ Attach or persist links/artifacts for:
 
 Codex must implement this sprint in small reviewable slices, re-reading the highest-precedence semantic documents before changing domain/API/data contracts. It must not “simplify” the architecture by moving rules into prompts, client code, provider SDK adapters, generic helpers, or ungoverned ML scripts.
 <!-- PRODUCTION_EXECUTION_V3:END -->
+
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:START -->
+# Learning OS Production Implementation Specification v1 (`2026-11-07`)
+
+## 1. Sprint Metadata & Status
+- **Sprint ID:** `SPRINT_9.2`
+- **Canonical Title:** Learner Exam Goal Setup, Candidate Profile & "Snap-to-Plan" Syllabus/Exam Ingestion (`H-14`)
+- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011)`
+- **Primary Spec Reference:** `product/81_LEARNING_OS_PRODUCT_VISION_AND_POSITIONING.md` (`H-14`), `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md` (Screens 8 & 9)
+
+## 2. Strategic Learning OS Objective & User Value
+Captures target exam date, target net score, daily study budget, and introduces **"Snap-to-Plan" Syllabus & Exam Schedule Ingestion (`H-14` Astra AI Benchmark)**: allowing learners to photograph their school exam timetable or teacher's syllabus sheet. A multimodal OCR extractor maps dates and topics to canonical skills and automatically rebalances the learner's daily study plan without manual form typing.
+
+## 3. Entry Gate & Preconditions
+- `ADR-011` `GO` decision recorded; `Sprint 9.1` accepted.
+
+## 4. Domain Invariants & Rules
+1. **Immutable Candidate Exam Horizon:** Profile updates recompute remaining days and calibrate target net pace, rejecting past dates and unattainable daily study hours ($> 16\text{ hr/day}$).
+2. **Syllabus Topic Disambiguation:** Ingested syllabus text must map to canonical curriculum skill codes with minimum $0.70$ cosine similarity; unmapped text is surfaced for learner confirmation.
+
+## 5. Owning Spring Modulith Backend Modules & Classes
+- `com.verifiedai.exam`: `CandidateProfileService.java`, `SyllabusIngestionService.java`, `CandidateProfile.java`, `CandidateProfileController.java`.
+
+## 6. Python Math Verifier Impact
+- None (`100%` backend parsing/profile management).
+
+## 7. Database Migration & Persistence Contract
+- **Tables:** `candidate_profiles` (`user_id`, `exam_code`, `target_net`, `exam_date`, `daily_budget_minutes`, `created_at`, `updated_at`), `candidate_syllabus_uploads` (`id`, `user_id`, `image_hash`, `parsed_payload_json`, `created_at`).
+
+## 8. REST API Contracts
+- `POST /v1/candidate/profile`, `GET /v1/candidate/profile`, and `POST /v1/candidate/syllabus-ingest` (multipart image upload returning parsed dates, exam names, and matched skill codes).
+
+## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
+- Onboarding Exam Goal Setup view & "Snap-to-Plan" camera flow in `Features/Exam/`.
+
+## 10. AI Capability & Unit Economics Guardrail
+- Multimodal syllabus extraction runs on `Gemini 2.5 Flash` under strict rate limits ($\le 3$ uploads/month per student) with cached OCR hashes (**$0.00** marginal cost on duplicates).
+
+## 11. Privacy, Safety & Compliance
+- Purged on account deletion via `ExamPrivacyLifecycleContributor`. Uploaded syllabus images are purged after 30 days.
+
+## 12. Telemetry & Observability
+- Emits `candidate_profile_created`, `syllabus_photo_uploaded`, `syllabus_ingestion_succeeded`.
+
+## 13. Feature Flags & Rollback Plan
+- `verifiedai.exam.candidate-profile-enabled: false`, `verifiedai.exam.snap-to-plan-enabled: false`.
+
+## 14. Automated Test Matrix (Categories A–F)
+- Validates profile persistence, date validations, and synthetic syllabus OCR fixture parsing.
+
+## 15. Owner-Only Acceptance Command
+- `bash scripts/quality/sprint_9_2_owner_acceptance.sh --full`
+
+## 16. Explicit Non-Goals
+- Does not replace manual date overrides; student can always edit parsed dates.
+
+## 17. Exit Gate & Downstream Consumers
+- Unlocks `Sprint 9.3` and feeds `Sprint 8.4` daily mission assembly.
+
+## 18. Canonical Cross-References
+- `product/81_LEARNING_OS_PRODUCT_VISION_AND_POSITIONING.md`
+- `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md`
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:END -->

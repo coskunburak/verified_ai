@@ -17,7 +17,7 @@ Matematik eğitim teknolojileri pazarı 2026 itibarıyla iki kusurlu uç arasın
 
 ---
 
-## 2. Deep Competitive Tear-Down Matrix (13 Rakip Analizi)
+## 2. Deep Competitive Tear-Down Matrix (14 Rakip Analizi)
 
 | Ürün | Durum / Sahiplik (2026) | Çekirdek Mimari | Fiyatlandırma (TR / Global) | En Güçlü Yönü | Kritik Zayıflığı ve Verified AI'ın Vuracağı Boşluk |
 |---|---|---|---|---|---|
@@ -34,6 +34,7 @@ Matematik eğitim teknolojileri pazarı 2026 itibarıyla iki kusurlu uç arasın
 | **11. Khanmigo** | Aktif (Khan Academy) | GPT-4 tabanlı Sokratik istem (prompt) sarmalayıcısı | `~$4/ay` (`$44/yıl`) | Cevabı doğrudan vermeyip soru sorarak düşündürme disiplini. | Arkasında bağımsız bir CAS/SymPy doğrulayıcı olmadığı için öğrencinin doğru ara adımını bazen yanlış sanıp kafa karıştırır; kamera/el yazısı akışı zayıftır. |
 | **12. Solvely / Question.AI** | Aktif | Çoklu ders VLM sarmalayıcıları | `~$9.99/ay` | Hızlı ödev cevabı. | Sıfır doğrulama, sıfır pedagojik derinlik, yüksek abonelik iptal (churn) oranı. |
 | **13. Kunduz** | Aktif (Türkiye merkezli) | **İnsan eğitmen ağı** (Soru fotoğrafı -> Eğitmen havuzu -> 15-30 dk içinde fotoğraf yanıtı) | Paket bazlı `~700 TL – 1.300 TL/ay` | Türkiye YKS (`TYT`/`AYT`) "Yeni Nesil" sorularına tam uyum ve insan empatisi. | **Birim ekonomisi ve hız darboğazı:** Cevap 15–30 dakika sürer ve insan maliyeti yüzünden çok pahalıdır. Verified AI, `SymPy` doğrulamalı çözümü **4 saniyede** ve soru başına `~0.20 TL` maliyetle sunarak Kunduz'a **100x hız ve 4x fiyat avantajı** kurar. |
+| **14. Astra AI** | Aktif (Astra AI d.o.o., Andrej Škraba / Slovenya & Global) | Çok modlu LLM sarmalayıcısı + Sokratik prompt personası + Müfredat/Syllabus yükleme | `~€24/ay` (`~900–1.000 TL/ay` veya yıllık paket) | **Sürtünmesiz Çift Mod (Solver vs Socratic):** Hızlı ödev kontrolü ile derin Sokratik sorgulama arasında anlık geçiş. **Sınav Takvimi / Syllabus Tarama:** Sınav tarihi ve konu listesini fotoğraflayıp otomatik çalışma planına dönüştürme. Kurucu Andrej'in 10 yıllık YouTube hoca mirası sayesinde yüksek empatili, yargılamayan, samimi eğitmen dili. | **Deterministik sembolik doğrulama motoru (CAS/SymPy) YOKTUR:** Salt dil modeline dayandığı için karmaşık cebir, türev zincir kuralları ve eşitsizliklerde sessiz halüsinasyon riski taşır. Öğrencinin kendi el yazısıyla yaptığı çok adımlı çözümdeki ilk hatalı satırı (`First Wrong Step`) tespit edemez. Kalıcı Mistake DNA, Brier kalibrasyonu ve bağımsız ikiz soru kilit mekanizması bulunmaz. Ayda onlarca milyar token yaktığı için birim ekonomisi zayıftır ve fiyatı Türkiye pazarı için aşırı yüksektir (~1.000 TL/ay). **Verified AI Karşı-Konumu:** Astra'nın sürtünmesiz çift mod, syllabus tarama ve sıcak öğretmen personasını benimser; ancak üzerine Astra'nın asla sunamadığı **%100 SymPy matematiksel kesinlik, el yazısı hata teşhisi ve sıfır token çalışma planlama** kalesini kurar. |
 
 ---
 

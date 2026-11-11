@@ -430,6 +430,7 @@ Replaces `apps/ios/VerifiedAI/Features/Home/HomePlaceholderView.swift` with the 
 ## 4. Domain Invariants & Coaching Rules
 1. **Deterministic Coach Authority (`INV-COACH-001`):** `DailyCoachSessionService` selects all 3 mission blocks 100% deterministically in Java; LLM (`AiCapability.EXPLAIN`) is optional and restricted to generating a 1-sentence localized briefing with a deterministic template fallback.
 2. **Busy-Day Downshift Mode (`5-Min Mini Streak`):** Allows the learner to switch to a 1-twin 5-minute mission on exam-heavy school days without breaking their verified independent streak.
+3. **Dual-Mode Interaction Switcher (`H-13` Astra AI Benchmark):** Provides a top-level segmented toggle between `SOLVER_MODE` (`Hızlı Adım Kontrolü` — immediate step-diff verification without mandatory Socratic turns) and `SOCRATIC_COACH_MODE` (`Koçluk & Tuzak Avcısı` — 3-rung Socratic repair ladder and 60-second independent twin lock for mastery points).
 
 ## 5. Owning Spring Modulith Backend Modules & Classes
 - `com.verifiedai.studyplan`: `DailyCoachSessionService.java`, `DailyCoachSession.java`, `DailyCoachTask.java`, `DailyCoachController.java`.
@@ -439,10 +440,10 @@ Replaces `apps/ios/VerifiedAI/Features/Home/HomePlaceholderView.swift` with the 
 
 ## 7. Database Migration & Persistence Contract (`PLANNED V043`)
 - **Migration File:** `services/api/src/main/resources/db/migration/platform/V043__daily_coach_sessions.sql` *(PLANNED)*
-- **Tables:** `daily_coach_sessions` (`id`, `user_id`, `local_date`, `budget_minutes`, `status`, `completed_tasks_count`, `total_tasks_count`, `briefing_text`, `created_at`), `daily_coach_tasks` (`id`, `session_id`, `task_order`, `task_type`, `target_skill_code`, `target_mistake_code`, `assigned_twin_id`, `status`, `completed_at`). Unique constraint on `(user_id, local_date)`.
+- **Tables:** `daily_coach_sessions` (`id`, `user_id`, `local_date`, `budget_minutes`, `status`, `completed_tasks_count`, `total_tasks_count`, `briefing_text`, `preferred_mode`, `created_at`), `daily_coach_tasks` (`id`, `session_id`, `task_order`, `task_type`, `target_skill_code`, `target_mistake_code`, `assigned_twin_id`, `status`, `completed_at`). Unique constraint on `(user_id, local_date)`.
 
 ## 8. REST API Contracts (`CNT-LOS-06`)
-- `GET /v1/coach/today-summary` (`daily-coach-v1`) and `POST /v1/coach/missions/{id}/complete`.
+- `GET /v1/coach/today-summary` (`daily-coach-v1`), `PATCH /v1/coach/preferences` (`preferred_mode`), and `POST /v1/coach/missions/{id}/complete`.
 
 ## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
 - Replaces `apps/ios/VerifiedAI/Features/Home/HomePlaceholderView.swift` with `CoachHubView.swift` and `DailyStudyPlanView.swift` (`<200ms` cached load).

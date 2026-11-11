@@ -73,10 +73,11 @@ All 12 core screens obey universal non-functional contracts:
 - **Data Requirements:** `GET /v1/coach/today-summary` returning `DailyCoachBriefingDto` (active streak, `conqueredTrapsCount`, top 1 active `MistakeDnaCard`, 3-item `DailyMissionQueue`, and `ExamReadinessSummary`).
 - **Information Hierarchy:**
   1. Top Status Bar: Exam Target Pill (`YKS AYT Sayısal • Sınava 218 Gün`) + Independent Verification Streak (`🔥 5 Gün Bağımsız Seri`).
-  2. Hero Card: **Today's 12-Minute Coach Mission** (`1 Aktif Tuzak Onarımı • 2 Aralıklı Tekrar İkizi`).
-  3. Quick Capture Bar: Prominent **"Scan or Enter Your Problem (`Sorunu Tara veya Adımını Kontrol Et`)"** CTA.
-  4. Active Exam Trap Radar Preview (top 2 `RECURRING_PATTERN` badges).
-- **Primary & Secondary Actions:** Primary: `Start 12-Min Coach Session` OR `Scan Problem & My Steps`; Secondary: `View Mistake Passport`, `Switch Exam Target`.
+  2. Dual-Mode Switcher (`H-13` Astra Benchmark): `[⚡ Hızlı Adım Kontrolü (Solver)] | [🎓 Koçluk & Tuzak Avcısı (Socratic)]` segmented toggle.
+  3. Hero Card: **Today's 12-Minute Coach Mission** (`1 Aktif Tuzak Onarımı • 2 Aralıklı Tekrar İkizi`).
+  4. Quick Capture Bar: Prominent **"Scan or Enter Your Problem (`Sorunu Tara veya Adımını Kontrol Et`)"** CTA.
+  5. Active Exam Trap Radar Preview (top 2 `RECURRING_PATTERN` badges).
+- **Primary & Secondary Actions:** Primary: `Start 12-Min Coach Session` OR `Scan Problem & My Steps`; Secondary: `View Mistake Passport`, `Switch Exam Target`, `Toggle Solver/Coach Mode`.
 - **States:**
   - *Cold Start (0 attempts):* Shows a 3-question "3-Minute Trap & Readiness Diagnostic" card + sample interactive step-diff demo.
   - *Loading:* Skeleton shimmer (`< 180 ms` cached snapshot shown immediately, background refresh).
@@ -87,6 +88,7 @@ All 12 core screens obey universal non-functional contracts:
 ```text
 +--------------------------------------------------+
 | [Hedef: AYT Sayısal]          [🔥 5 Gün Bağımsız] |
+| [ ⚡ Hızlı Çözüm / Adım ]   [ 🎓 Koçluk & Tuzak ] |
 |--------------------------------------------------|
 | 🎯 BUGÜNÜN KOÇ GÖREVİ (12 Dk • +%1.4 Net Etkisi) |
 | [!] Tuzak Onarımı: Eşitsizlik Yön Değiştirme     |
@@ -219,6 +221,7 @@ All 12 core screens obey universal non-functional contracts:
   1. Ordered 3-step checklist (`1. Tuzak Onarımı`, `2. Hafıza Yarı-Ömür Tekrarı`, `3. Yüksek Net Getirili Soru`).
   2. Transparent "Why This Task?" badge on every card: *"Seçilme Nedeni: Eşitsizlik yön hatası son 14 günde 2 kez tekrarlandı + AYT'de 1.5 soru ağırlığı var."*
   3. One-tap **"Sınav Haftası / Yoğun Gün Modu (5 Dakikalık Mini Seri)"** downshift button so busy students keep their habit alive without guilt.
+  4. **Snap-to-Plan Camera Action (`H-14` Astra Benchmark):** Banner with **"Sınav Takvimini veya Ders Programını Tara"** allowing the student to snap their physical school exam timetable or topic syllabus to auto-calibrate dates and topic weights.
 
 ---
 
@@ -250,13 +253,14 @@ All 12 core screens obey universal non-functional contracts:
 ---
 
 ### Screen 11: Weekly Progress Report & Tutor/Parent Share Packet Screen
-*(Operationalizes `Sprint 8.6` & Innovation `H-06`)*
+*(Operationalizes `Sprint 8.6`, `Sprint 9.8`, & Innovations `H-06`, `H-15`)*
 
 - **Entry Points:** Sunday evening push notification or Profile/Passport `Haftalık Rapor Paylaş`.
 - **Data Requirements:** `GET /v1/reports/weekly/{weekIso}` + native PDF/image share sheet generator.
 - **Information Hierarchy:**
   1. Weekly Verified Summary: Problems Verified, Independent Twins Conquered, Active Traps Remaining, Net Readiness Delta.
   2. **1-Click "Share with My Tutor / Parent (`Özel Ders Hocamla / Ailemle Paylaş`)"** generating a clean 1-page PDF summary containing **only** aggregate skill mastery, conquered traps, and recommended next 3 topics (strictly excluding private chat messages or raw personal identifiers unless opted in per `security/89`).
+  3. **Pre-Exam 48-Hour "Personal Formula & Trap Sheet" (`H-15` Astra Benchmark):** On-device printable and offline-ready 1-page digest synthesizing the student's top 10 recurring mistake codes with verified counterexamples and high-yield formula proofs before school exams and national denemeler.
 
 ---
 
