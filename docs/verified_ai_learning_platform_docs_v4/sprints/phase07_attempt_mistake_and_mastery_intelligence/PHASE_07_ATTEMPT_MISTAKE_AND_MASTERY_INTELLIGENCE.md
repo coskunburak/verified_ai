@@ -139,3 +139,7 @@ Owner-confirmed dependency: 7.7 completed. Sprint 7.8 Prerequisite Knowledge Gra
 ## Sprint 7.9 local acceptance (2026-11-11)
 
 Owner-confirmed dependency: 7.8 completed. Sprint 7.9 Mistake Passport ("Exam Trap Radar"), Mastery Graph Explorer, and Counterexample Proof Card UX are fully implemented and verified. The full owner acceptance suite `run-S79ACC` passed locally with exit code 0. See [execution report](SPRINT_7.9_EXECUTION_REPORT.md) and [file manifest](SPRINT_7.9_FILE_MANIFEST.md). The Sprint 7.9 exit gate is satisfied.
+
+## Sprint 7.10 local acceptance & Phase 07 exit gate certification (2026-11-11)
+
+Owner-confirmed dependency: 7.9 completed. Sprint 7.10 Learning Intelligence Evaluation, Brier/ECE Psychometric Calibration, Downstream Error Isolation (`G-MATH-03`), and Privacy Cascade (`G-PRIV-01`) are fully implemented and verified. The full owner acceptance suite passed locally with exit code 0. See [execution report](SPRINT_7.10_EXECUTION_REPORT.md) and [file manifest](SPRINT_7.10_FILE_MANIFEST.md). The Sprint 7.10 exit gate and Phase 07 Exit Gate are satisfied and formally certified.

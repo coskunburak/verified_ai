@@ -311,7 +311,7 @@ As of commit `e39bafe88ea369f98c96a65497a94462dc79ef33`:
   - `Sprint 7.7`: `LOCAL_ACCEPTANCE_PASSED` (owner full run `run-QcZF0C`, 2026-11-11). See `phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.7_EXECUTION_REPORT.md`.
   - `Sprint 7.8`: `LOCAL_ACCEPTANCE_PASSED` (owner full run `run-8MFfJD`, 2026-11-11). See `phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.8_EXECUTION_REPORT.md`.
   - `Sprint 7.9`: `LOCAL_ACCEPTANCE_PASSED` (owner full run `run-S79ACC`, 2026-11-11). See `phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.9_EXECUTION_REPORT.md`.
-  - `Sprint 7.10`: Upgraded to full 18-section `LEARNING_OS_PRODUCTION_SPEC_V1` contracts targeting real `com.verifiedai.*` and `apps/ios/VerifiedAI/Features/*` paths.
+  - `Sprint 7.10`: `LOCAL_ACCEPTANCE_PASSED` (owner full run `sprint_7_10_owner_acceptance.sh --full`, 2026-11-11). Phase 07 Exit Gate formally certified. See `phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.10_EXECUTION_REPORT.md`.
 - **Phase 8–12 Governance (`ADR-011`):**
   - Broad Phase 8–12 implementation remains gated by the Focused Commercial Wedge (`Sprint 6.2B`, `Sprint 11.9A` 50-student TestFlight Beta Go/No-Go Gate) and owner acceptance of Sprints `7.2` and `7.4`, as detailed in `roadmap/87_LEARNING_OS_STRATEGIC_PHASE_AND_SPRINT_EXPANSION_PROGRAM.md` and `quality/91_LEARNING_OS_PRODUCT_LEARNING_AND_RELEASE_ACCEPTANCE_GATES.md`.
 <!-- LEARNING_OS_STRATEGY_V7:END -->

@@ -32,6 +32,9 @@
 		B79000000000000000000009 /* Sprint79MistakePassportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79000000000000000000009 /* Sprint79MistakePassportTests.swift */; };
 		B79000000000000000000010 /* mistake-passport-v1.valid.json in Resources */ = {isa = PBXBuildFile; fileRef = A79000000000000000000010 /* mistake-passport-v1.valid.json */; };
 		B79000000000000000000011 /* counterexample-proof-card-v1.valid.json in Resources */ = {isa = PBXBuildFile; fileRef = A79000000000000000000011 /* counterexample-proof-card-v1.valid.json */; };
+		B7A000000000000000000001 /* MasteryCalibrationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A000000000000000000001 /* MasteryCalibrationModels.swift */; };
+		B7A000000000000000000002 /* Sprint710MasteryCalibrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A000000000000000000002 /* Sprint710MasteryCalibrationTests.swift */; };
+		B7A000000000000000000003 /* mastery-calibration-summary-v1.valid.json in Resources */ = {isa = PBXBuildFile; fileRef = A7A000000000000000000003 /* mastery-calibration-summary-v1.valid.json */; };
 		B74000000000000000000001 /* attempt-mistake-view-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = A74000000000000000000001 /* attempt-mistake-view-v1.json */; };
 		B73000000000000000000002 /* attempt-evaluation-work-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = A73000000000000000000002 /* attempt-evaluation-work-v1.json */; };
 		B73000000000000000000001 /* attempt-evaluation-view-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = A73000000000000000000001 /* attempt-evaluation-view-v1.json */; };
@@ -232,6 +235,9 @@
 		A79000000000000000000009 /* Sprint79MistakePassportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Sprint79MistakePassportTests.swift; sourceTree = SOURCE_ROOT; };
 		A79000000000000000000010 /* mistake-passport-v1.valid.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/mistake/fixtures/mistake-passport-v1.valid.json; sourceTree = SOURCE_ROOT; };
 		A79000000000000000000011 /* counterexample-proof-card-v1.valid.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/attempt/fixtures/counterexample-proof-card-v1.valid.json; sourceTree = SOURCE_ROOT; };
+		A7A000000000000000000001 /* MasteryCalibrationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/MasteryGraph/Domain/MasteryCalibrationModels.swift; sourceTree = SOURCE_ROOT; };
+		A7A000000000000000000002 /* Sprint710MasteryCalibrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Sprint710MasteryCalibrationTests.swift; sourceTree = SOURCE_ROOT; };
+		A7A000000000000000000003 /* mastery-calibration-summary-v1.valid.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/analytics/fixtures/mastery-calibration-summary-v1.valid.json; sourceTree = SOURCE_ROOT; };
 		A74000000000000000000001 /* attempt-mistake-view-v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/attempt-mistake-view-v1.json; sourceTree = SOURCE_ROOT; };
 		A73000000000000000000002 /* attempt-evaluation-work-v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/attempt-evaluation-work-v1.json; sourceTree = SOURCE_ROOT; };
 		A73000000000000000000001 /* attempt-evaluation-view-v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/attempt-evaluation-view-v1.json; sourceTree = SOURCE_ROOT; };
@@ -1027,6 +1033,9 @@
 				A79000000000000000000009 /* Sprint79MistakePassportTests.swift */,
 				A79000000000000000000010 /* mistake-passport-v1.valid.json */,
 				A79000000000000000000011 /* counterexample-proof-card-v1.valid.json */,
+				A7A000000000000000000001 /* MasteryCalibrationModels.swift */,
+				A7A000000000000000000002 /* Sprint710MasteryCalibrationTests.swift */,
+				A7A000000000000000000003 /* mastery-calibration-summary-v1.valid.json */,
 				A74000000000000000000001 /* attempt-mistake-view-v1.json */,
 				A74000000000000000000002 /* attempt-mistake-evaluation-v1.json */,
 				A75000000000000000000001 /* mistake-dispute-result-v1.json */,
@@ -1192,6 +1201,7 @@
 				B78000000000000000000009 /* verified-twin-v1.json in Resources */,
 				B79000000000000000000010 /* mistake-passport-v1.valid.json in Resources */,
 				B79000000000000000000011 /* counterexample-proof-card-v1.valid.json in Resources */,
+				B7A000000000000000000003 /* mastery-calibration-summary-v1.valid.json in Resources */,
 				B74000000000000000000001 /* attempt-mistake-view-v1.json in Resources */,
 				B74000000000000000000002 /* attempt-mistake-evaluation-v1.json in Resources */,
 				B75000000000000000000001 /* mistake-dispute-result-v1.json in Resources */,
@@ -1243,6 +1253,7 @@
 				B79000000000000000000006 /* ExamTrapRadarCardView.swift in Sources */,
 				B79000000000000000000007 /* MistakePassportView.swift in Sources */,
 				B79000000000000000000008 /* DualRingSkillNodeView.swift in Sources */,
+				B7A000000000000000000001 /* MasteryCalibrationModels.swift in Sources */,
 				B67900000000000000000001 /* NativeAttemptExtraction.swift in Sources */,
 				B67900000000000000000002 /* AttemptStepReviewView.swift in Sources */,
 				B67900000000000000000003 /* AttemptMathView.swift in Sources */,
@@ -1367,6 +1378,7 @@
 			files = (
 				B78000000000000000000007 /* Sprint78MasteryAndTwinTests.swift in Sources */,
 				B79000000000000000000009 /* Sprint79MistakePassportTests.swift in Sources */,
+				B7A000000000000000000002 /* Sprint710MasteryCalibrationTests.swift in Sources */,
 				B69000000000000000000004 /* MathVisualizationTests.swift in Sources */,
 				B54000000000000000000009 /* PrimarySolveContractTests.swift in Sources */,
 				B5400000000000000000000A /* MathPresentationTests.swift in Sources */,

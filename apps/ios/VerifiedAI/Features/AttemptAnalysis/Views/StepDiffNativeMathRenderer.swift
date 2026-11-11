@@ -7,6 +7,7 @@ public enum MathHighlightRole: String, Sendable, CaseIterable {
     case trapStepDiff
     case contradiction
     case verifiedRule
+    case downstreamPropagation
 
     public var tintColor: Color {
         switch self {
@@ -15,6 +16,16 @@ public enum MathHighlightRole: String, Sendable, CaseIterable {
         case .trapStepDiff: return .orange
         case .contradiction: return .red
         case .verifiedRule: return .indigo
+        case .downstreamPropagation: return .blue
+        }
+    }
+
+    public var isPenalizing: Bool {
+        switch self {
+        case .trapStepDiff, .contradiction:
+            return true
+        case .witness, .verifiedCorrect, .verifiedRule, .downstreamPropagation:
+            return false
         }
     }
 }

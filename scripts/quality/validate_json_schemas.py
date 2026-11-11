@@ -51,18 +51,27 @@ def run_validation():
     counterexample_schema_path = ROOT / "packages/schemas/attempt/counterexample-proof-card-v1.schema.json"
     counterexample_fixture_path = ROOT / "packages/schemas/attempt/fixtures/counterexample-proof-card-v1.valid.json"
 
+    # Sprint 7.10 Files
+    calibration_schema_path = ROOT / "packages/schemas/analytics/mastery-calibration-summary-v1.schema.json"
+    calibration_fixture_path = ROOT / "packages/schemas/analytics/fixtures/mastery-calibration-summary-v1.valid.json"
+
     assert mistake_passport_schema_path.exists(), "Missing mistake-passport-v1.schema.json"
     assert mistake_passport_fixture_path.exists(), "Missing mistake-passport-v1.valid.json"
     assert counterexample_schema_path.exists(), "Missing counterexample-proof-card-v1.schema.json"
     assert counterexample_fixture_path.exists(), "Missing counterexample-proof-card-v1.valid.json"
+    assert calibration_schema_path.exists(), "Missing mastery-calibration-summary-v1.schema.json"
+    assert calibration_fixture_path.exists(), "Missing mastery-calibration-summary-v1.valid.json"
 
     mp_schema = json.loads(mistake_passport_schema_path.read_text(encoding="utf-8"))
     mp_fixture = json.loads(mistake_passport_fixture_path.read_text(encoding="utf-8"))
     ce_schema = json.loads(counterexample_schema_path.read_text(encoding="utf-8"))
     ce_fixture = json.loads(counterexample_fixture_path.read_text(encoding="utf-8"))
+    cal_schema = json.loads(calibration_schema_path.read_text(encoding="utf-8"))
+    cal_fixture = json.loads(calibration_fixture_path.read_text(encoding="utf-8"))
 
     validate_schema_structure(mp_schema, "mistake-passport-v1.schema.json")
     validate_schema_structure(ce_schema, "counterexample-proof-card-v1.schema.json")
+    validate_schema_structure(cal_schema, "mastery-calibration-summary-v1.schema.json")
 
     sg_schema = json.loads(skill_graph_schema_path.read_text(encoding="utf-8"))
     sg_fixture = json.loads(skill_graph_fixture_path.read_text(encoding="utf-8"))
@@ -120,6 +129,26 @@ def run_validation():
         bad_vt_3["status"] = "ISSUED"
         bad_vt_3["solutionSteps"] = [{"stepIndex": 1, "explanation": "x", "latexExpression": "x"}]
         assert list(vt_val.iter_errors(bad_vt_3)), "Expected failure when ISSUED contains solutionSteps"
+
+        # Sprint 7.10 Calibration Schema Verification & Negative Mutations
+        jsonschema.Draft202012Validator.check_schema(cal_schema)
+        cal_val = jsonschema.Draft202012Validator(cal_schema)
+        cal_val.validate(cal_fixture)
+
+        # Mutation G: Invalid bin count (9 bins instead of 10)
+        bad_cal_1 = copy.deepcopy(cal_fixture)
+        bad_cal_1["reliabilityBins"].pop()
+        assert list(cal_val.iter_errors(bad_cal_1)), "Expected failure when reliabilityBins length is not 10"
+
+        # Mutation H: Out-of-range Brier Score (> 1.0)
+        bad_cal_2 = copy.deepcopy(cal_fixture)
+        bad_cal_2["brierScore"] = 1.35000
+        assert list(cal_val.iter_errors(bad_cal_2)), "Expected failure when brierScore > 1.0"
+
+        # Mutation I: Banned stigmatizing property rejection
+        bad_cal_3 = copy.deepcopy(cal_fixture)
+        bad_cal_3["failureRate"] = 0.1200
+        assert list(cal_val.iter_errors(bad_cal_3)), "Expected failure when banned failureRate property is injected"
     else:
         # Fallback pure-python verification of invariants
         assert sg_fixture["schemaVersion"] == "skill-graph-v1"
@@ -168,6 +197,12 @@ def run_validation():
         assert submit_post["security"] == [{"bearerAuth": []}], "Security bearerAuth missing on /v1/twins/{twinId}/submit"
         assert "423" in submit_post["responses"], "HTTP 423 Locked missing from submit responses"
 
+        assert "/v1/admin/calibration/mastery-summary" in paths, "Missing /v1/admin/calibration/mastery-summary in OpenAPI spec"
+        cal_get = paths["/v1/admin/calibration/mastery-summary"]["get"]
+        assert cal_get["security"] == [{"bearerAuth": []}], "Security bearerAuth missing on /v1/admin/calibration/mastery-summary"
+        assert "200" in cal_get["responses"], "HTTP 200 OK missing from /v1/admin/calibration/mastery-summary"
+        assert "403" in cal_get["responses"], "HTTP 403 Forbidden missing from /v1/admin/calibration/mastery-summary"
+
     # 3. iOS Localizable.xcstrings 14-Key Verification
     xcstrings_data = json.loads(strings_path.read_text(encoding="utf-8"))
     strings = xcstrings_data.get("strings", {})
@@ -197,7 +232,7 @@ def run_validation():
             val = loc.get("value")
             assert val and len(val.strip()) > 0, f"Missing {lang} translation for key: {key}"
 
-    print("PASS: Sprint 7.8 JSON schemas, negative mutations, OpenAPI 3.1 endpoints, and 14 EN/TR localizations verified.")
+    print("PASS: Sprint 7.10 JSON schemas, negative mutations, OpenAPI 3.1 endpoints, and 14 EN/TR localizations verified.")
 
 
 if __name__ == "__main__":

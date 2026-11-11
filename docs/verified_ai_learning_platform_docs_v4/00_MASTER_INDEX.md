@@ -578,3 +578,7 @@ Sprint 7.8 delivers Prerequisite Knowledge Graph Projection, Learning State APIs
 ## Sprint 7.9 local acceptance
 
 Sprint 7.9 delivers Mistake Passport ("Exam Trap Radar"), Mastery Graph Explorer, and Counterexample Proof Card UX. [Execution report](sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.9_EXECUTION_REPORT.md) and [file manifest](sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.9_FILE_MANIFEST.md). Acceptance runner `scripts/quality/sprint_7_9_owner_acceptance.sh --full` passed all 7 stages on 2026-11-11.
+
+## Sprint 7.10 local acceptance & Phase 07 exit gate certification
+
+Sprint 7.10 delivers Learning Intelligence Evaluation, Brier/ECE Psychometric Calibration, Downstream Error Isolation (`G-MATH-03`), and 100% Privacy Cascade (`G-PRIV-01`). [Execution report](sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.10_EXECUTION_REPORT.md) and [file manifest](sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.10_FILE_MANIFEST.md). Acceptance runner `scripts/quality/sprint_7_10_owner_acceptance.sh --full` passed all 7 stages on 2026-11-11, formally certifying the Phase 07 Exit Gate and unlocking Phase 08.

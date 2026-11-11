@@ -1,0 +1,182 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/analytics/mastery-calibration-summary-v1.schema.json",
+  "title": "MasteryCalibrationSummaryV1",
+  "description": "Psychometric calibration summary auditing Brier Score (<= 0.20) and 10-bin ECE (<= 0.08) for unassisted retention predictions (G-PED-05).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "evaluatedAt",
+    "windowDays",
+    "sampleSize",
+    "brierScore",
+    "brierThreshold",
+    "expectedCalibrationError",
+    "eceThreshold",
+    "signedCalibrationBias",
+    "calibrationStatus",
+    "gatePassed",
+    "reliabilityBins",
+    "skillSlices"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "evaluatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "canonicalSkillCodeFilter": {
+      "type": ["string", "null"],
+      "minLength": 2,
+      "maxLength": 100
+    },
+    "windowDays": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 365
+    },
+    "sampleSize": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "brierScore": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "brierThreshold": {
+      "type": "number",
+      "const": 0.2
+    },
+    "expectedCalibrationError": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "eceThreshold": {
+      "type": "number",
+      "const": 0.08
+    },
+    "signedCalibrationBias": {
+      "type": "number",
+      "minimum": -1.0,
+      "maximum": 1.0
+    },
+    "calibrationStatus": {
+      "type": "string",
+      "enum": ["CALIBRATED", "OVERCONFIDENT", "UNDERCONFIDENT"]
+    },
+    "gatePassed": {
+      "type": "boolean"
+    },
+    "reliabilityBins": {
+      "type": "array",
+      "minItems": 10,
+      "maxItems": 10,
+      "items": {
+        "$ref": "#/$defs/ReliabilityBin"
+      }
+    },
+    "skillSlices": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/SkillCalibrationSlice"
+      }
+    }
+  },
+  "$defs": {
+    "ReliabilityBin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "binIndex",
+        "lowerBound",
+        "upperBound",
+        "sampleCount",
+        "meanPredictedConfidence",
+        "observedIndependentAccuracy",
+        "absoluteCalibrationGap"
+      ],
+      "properties": {
+        "binIndex": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "lowerBound": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 0.9
+        },
+        "upperBound": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 1.0
+        },
+        "sampleCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "meanPredictedConfidence": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "observedIndependentAccuracy": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "absoluteCalibrationGap": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        }
+      }
+    },
+    "SkillCalibrationSlice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "canonicalSkillCode",
+        "sampleSize",
+        "brierScore",
+        "expectedCalibrationError",
+        "calibrationStatus",
+        "gatePassed"
+      ],
+      "properties": {
+        "canonicalSkillCode": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100
+        },
+        "sampleSize": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "brierScore": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "expectedCalibrationError": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "calibrationStatus": {
+          "type": "string",
+          "enum": ["CALIBRATED", "OVERCONFIDENT", "UNDERCONFIDENT"]
+        },
+        "gatePassed": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

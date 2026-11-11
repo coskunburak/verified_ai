@@ -8,15 +8,48 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 @Configuration
+@EnableMethodSecurity
 class SecurityConfiguration {
+
+    @Bean
+    JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtGrantedAuthoritiesConverter defaultConverter = new JwtGrantedAuthoritiesConverter();
+        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+        converter.setJwtGrantedAuthoritiesConverter(jwt -> {
+            Collection<GrantedAuthority> authorities = new ArrayList<>(defaultConverter.convert(jwt));
+            List<String> roles = jwt.getClaimAsStringList("roles");
+            if (roles != null) {
+                for (String role : roles) {
+                    authorities.add(new SimpleGrantedAuthority(role.startsWith("ROLE_") ? role : "ROLE_" + role));
+                }
+            }
+            List<String> directAuthorities = jwt.getClaimAsStringList("authorities");
+            if (directAuthorities != null) {
+                for (String auth : directAuthorities) {
+                    authorities.add(new SimpleGrantedAuthority(auth));
+                }
+            }
+            return authorities;
+        });
+        return converter;
+    }
 
     @Bean
     SecurityFilterChain securityFilterChain(
@@ -57,10 +90,14 @@ class SecurityConfiguration {
                     "/actuator/info",
                     "/actuator/prometheus"
                 ).permitAll()
+                .requestMatchers("/v1/admin/**", "/api/v1/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/v1/**", "/v1/**").authenticated()
                 .anyRequest().denyAll()
             )
-            .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.decoder(jwtDecoder)))
+            .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt
+                .decoder(jwtDecoder)
+                .jwtAuthenticationConverter(jwtAuthenticationConverter())
+            ))
             .addFilterAfter(new AccountSessionStateFilter(accountSessionAccessValidator), BearerTokenAuthenticationFilter.class)
             .build();
     }

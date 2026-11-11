@@ -2950,6 +2950,43 @@ paths:
         '401':
           $ref: '#/components/responses/ProblemUnauthorized'
 
+  /v1/admin/calibration/mastery-summary:
+    get:
+      operationId: getMasteryCalibrationSummary
+      tags:
+        - Analytics
+      summary: Psychometric calibration summary auditing Brier Score (<= 0.20) and 10-bin ECE (<= 0.08)
+      description: >
+        Deterministic psychometric calibration summary pairing unassisted retention predictions with observed
+        binary outcomes (G-PED-05). Enforces Brier score <= 0.20 and 10-bin ECE <= 0.08.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: canonicalSkillCode
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Optional canonical skill code filter
+        - name: windowDays
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 30
+          description: Evaluation lookback window in days
+      responses:
+        '200':
+          description: Psychometric calibration summary evaluation returned.
+          content:
+            application/json:
+              schema:
+                $ref: '../../schemas/analytics/mastery-calibration-summary-v1.schema.json'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -2965,6 +3002,11 @@ components:
           schema: {$ref: '#/components/schemas/ProblemDetails'}
     ProblemUnauthorized:
       description: Authentication token is missing, invalid, or expired
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/ProblemDetails'}
+    ProblemForbidden:
+      description: Access forbidden; insufficient administrative role or permissions
       content:
         application/problem+json:
           schema: {$ref: '#/components/schemas/ProblemDetails'}
