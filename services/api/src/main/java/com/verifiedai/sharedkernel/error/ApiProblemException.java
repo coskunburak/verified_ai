@@ -3,7 +3,7 @@ package com.verifiedai.sharedkernel.error;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
 
-public final class ApiProblemException extends RuntimeException {
+public class ApiProblemException extends RuntimeException {
     private final HttpStatus status;
     private final ApiErrorCode code;
     private final boolean recoverable;

@@ -131,3 +131,7 @@ Owner runner and implementation/functional/execution records are listed in the S
 ## Sprint 7.7 local acceptance (2026-11-11)
 
 Owner-confirmed dependency: 7.6 completed. Sprint 7.7 temporal mastery and delayed retention checks are source-implemented. The full owner run `run-QcZF0C` passed locally. See [execution report](SPRINT_7.7_EXECUTION_REPORT.md) and [file manifest](SPRINT_7.7_FILE_MANIFEST.md). The Sprint 7.7 local acceptance prerequisite is satisfied.
+
+## Sprint 7.8 local acceptance (2026-11-11)
+
+Owner-confirmed dependency: 7.7 completed. Sprint 7.8 Prerequisite Knowledge Graph Projection, Learning State APIs, and Closed-Loop Twin Remediation are fully implemented and verified. The full owner acceptance suite `run-8MFfJD` passed locally with exit code 0. See [execution report](SPRINT_7.8_EXECUTION_REPORT.md) and [file manifest](SPRINT_7.8_FILE_MANIFEST.md). The Sprint 7.8 exit gate is satisfied.

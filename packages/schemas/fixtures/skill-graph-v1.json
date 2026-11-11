@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "skill-graph-v1",
+  "curriculumCode": "MATH_GRADE_09",
+  "projectedAt": "2026-11-11T12:00:00Z",
+  "nodes": [
+    {
+      "skillCode": "ALG_LIN_ISO_01",
+      "title": "Linear Variable Isolation",
+      "masteryScore": 0.4500,
+      "masteryState": "PRACTICING",
+      "attemptCount": 3,
+      "consecutiveFailures": 0,
+      "blockedByPrerequisiteBottleneck": false
+    },
+    {
+      "skillCode": "ALG_LIN_EQ_02",
+      "title": "Multi-Step Linear Equations",
+      "masteryScore": 0.2500,
+      "masteryState": "AT_RISK_REMEDIATION_REQUIRED",
+      "attemptCount": 4,
+      "consecutiveFailures": 2,
+      "blockedByPrerequisiteBottleneck": true
+    }
+  ],
+  "edges": [
+    {
+      "fromSkillCode": "ALG_LIN_ISO_01",
+      "toSkillCode": "ALG_LIN_EQ_02",
+      "weight": 1.0,
+      "prerequisiteBottleneck": true
+    }
+  ]
+}

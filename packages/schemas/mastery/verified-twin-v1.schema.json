@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.verifiedai.com/mastery/verified-twin-v1.schema.json",
+  "title": "VerifiedTwinChallengeV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "twinId",
+    "sourceAttemptId",
+    "targetSkillCode",
+    "rootCauseSkillCode",
+    "problemStatementLatex",
+    "status",
+    "createdAt",
+    "lockUntil",
+    "trainingEligible"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "verified-twin-v1" },
+    "twinId": { "type": "string", "format": "uuid" },
+    "sourceAttemptId": { "type": "string", "format": "uuid" },
+    "targetSkillCode": { "type": "string", "minLength": 2, "maxLength": 128 },
+    "rootCauseSkillCode": { "type": "string", "minLength": 2, "maxLength": 128 },
+    "problemStatementLatex": { "type": "string", "minLength": 1 },
+    "status": {
+      "type": "string",
+      "enum": [
+        "ISSUED",
+        "SOLVED_UNASSISTED",
+        "SOLUTION_REVEALED_ASSISTED",
+        "FAILED_UNASSISTED",
+        "EXPIRED"
+      ]
+    },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "lockUntil": { "type": "string", "format": "date-time" },
+    "solutionSteps": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["stepIndex", "explanation", "latexExpression"],
+            "properties": {
+              "stepIndex": { "type": "integer", "minimum": 1 },
+              "explanation": { "type": "string", "minLength": 1 },
+              "latexExpression": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      ]
+    },
+    "evaluation": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "evidenceClassification",
+            "remediationCredit",
+            "updatedMasteryScore",
+            "updatedMasteryState",
+            "remediationCleared"
+          ],
+          "properties": {
+            "evidenceClassification": {
+              "type": "string",
+              "enum": [
+                "VERIFIED_UNASSISTED_SUCCESS",
+                "UNASSISTED_INCORRECT",
+                "SOLUTION_REVEALED_ASSISTED"
+              ]
+            },
+            "remediationCredit": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+            "updatedMasteryScore": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+            "updatedMasteryState": {
+              "type": "string",
+              "enum": [
+                "UNSEEN",
+                "EMERGING",
+                "PRACTICING",
+                "MASTERED",
+                "AT_RISK_REMEDIATION_REQUIRED"
+              ]
+            },
+            "remediationCleared": { "type": "boolean" }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "evidenceClassification": { "const": "SOLUTION_REVEALED_ASSISTED" }
+                }
+              },
+              "then": {
+                "properties": {
+                  "remediationCredit": { "const": 0.0 },
+                  "remediationCleared": { "const": false }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": { "remediationCleared": { "const": true } }
+              },
+              "then": {
+                "properties": {
+                  "evidenceClassification": { "const": "VERIFIED_UNASSISTED_SUCCESS" },
+                  "remediationCredit": { "exclusiveMinimum": 0.0 }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "trainingEligible": { "const": false }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": { "enum": ["ISSUED", "FAILED_UNASSISTED"] }
+        }
+      },
+      "then": {
+        "properties": {
+          "solutionSteps": { "type": "null" }
+        }
+      }
+    }
+  ]
+}

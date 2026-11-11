@@ -11880,6 +11880,244 @@
           }
         }
       }
+    },
+    "twin.challenge.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prove It Solo"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kendin Kanıtla"
+          }
+        }
+      }
+    },
+    "twin.challenge.locked_timer": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solution locked for %d seconds"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çözüm %d saniye boyunca kilitli"
+          }
+        }
+      }
+    },
+    "twin.challenge.reveal_solution": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reveal Solution"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çözümü Göster"
+          }
+        }
+      }
+    },
+    "twin.challenge.submit_answer": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Submit Answer"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cevabı Gönder"
+          }
+        }
+      }
+    },
+    "twin.challenge.early_forfeit_warning": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Revealing the solution early forfeits remediation credit. Are you sure?"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çözümü erken görmek telafi kredisini sıfırlar. Emin misiniz?"
+          }
+        }
+      }
+    },
+    "twin.challenge.early_forfeit_confirm": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Forfeit & Reveal"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vazgeç ve Çözümü Gör"
+          }
+        }
+      }
+    },
+    "twin.challenge.success_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verified Unassisted Success!"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bağımsız Başarı Doğrulandı!"
+          }
+        }
+      }
+    },
+    "twin.challenge.remediation_credit": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "+%@ Remediation Credit"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "+%@ Telafi Kredisi"
+          }
+        }
+      }
+    },
+    "twin.challenge.assisted_info": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solution was revealed. No remediation credit awarded."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çözüm görüntülendi. Telafi kredisi verilmedi."
+          }
+        }
+      }
+    },
+    "mastery.graph.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skill Mastery & Prerequisite Graph"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beceri Hâkimiyeti ve Önkoşul Grafiği"
+          }
+        }
+      }
+    },
+    "mastery.graph.blocked_bottleneck": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prerequisite Bottleneck"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Önkoşul Darboğazı"
+          }
+        }
+      }
+    },
+    "mastery.graph.at_risk": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remediation Required"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Telafi Gerekli"
+          }
+        }
+      }
+    },
+    "mastery.graph.practicing": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Practicing"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alıştırma Yapılıyor"
+          }
+        }
+      }
+    },
+    "mastery.graph.mastered": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mastered"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ustalaşıldı"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

@@ -2805,6 +2805,124 @@ paths:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
 
+  /v1/mastery/graph:
+    get:
+      operationId: getSkillMasteryGraph
+      summary: Read-pure prerequisite knowledge graph projection for a curriculum
+      tags:
+        - MasteryIntelligence
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: curriculum
+          in: query
+          required: true
+          schema:
+            type: string
+            pattern: '^[A-Z0-9_\-]{3,64}$'
+      responses:
+        '200':
+          description: Deterministic DAG mastery projection with bottleneck flags
+          content:
+            application/json:
+              schema:
+                $ref: '../../schemas/mastery/skill-graph-v1.schema.json'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+
+  /v1/attempts/{attemptId}/twins:
+    post:
+      operationId: createCounterfactualTwinChallenge
+      summary: Generate or retrieve an active 60s-locked isomorphic twin challenge
+      tags:
+        - TwinRemediation
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: attemptId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Existing active twin drill returned idempotently
+          content:
+            application/json:
+              schema:
+                $ref: '../../schemas/mastery/verified-twin-v1.schema.json'
+        '201':
+          description: New counterfactual twin drill synthesized with 60s lock
+          content:
+            application/json:
+              schema:
+                $ref: '../../schemas/mastery/verified-twin-v1.schema.json'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '422':
+          $ref: '#/components/responses/ProblemUnprocessableEntity'
+
+  /v1/twins/{twinId}/submit:
+    post:
+      operationId: submitOrRevealCounterfactualTwin
+      summary: Submit unassisted answer or reveal solution (subject to 60s lock)
+      tags:
+        - TwinRemediation
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: twinId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+                - action
+              properties:
+                action:
+                  type: string
+                  enum: [SUBMIT_ANSWER, REVEAL_SOLUTION]
+                submittedAnswerLatex:
+                  type: string
+                  maxLength: 512
+                forceEarlyForfeit:
+                  type: boolean
+                  default: false
+      responses:
+        '200':
+          description: Twin evaluation result or assisted solution reveal
+          content:
+            application/json:
+              schema:
+                $ref: '../../schemas/mastery/verified-twin-v1.schema.json'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '409':
+          $ref: '#/components/responses/ProblemConflict'
+        '423':
+          description: Solution is locked under the 60-second unassisted window
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/TwinLockedProblemDetails'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -2813,6 +2931,31 @@ components:
       bearerFormat: JWT
 
   responses:
+    ProblemBadRequest:
+      description: Bad request or validation failure
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/ProblemDetails'}
+    ProblemUnauthorized:
+      description: Authentication token is missing, invalid, or expired
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/ProblemDetails'}
+    ProblemNotFound:
+      description: Requested resource was not found or access forbidden
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/ProblemDetails'}
+    ProblemConflict:
+      description: Conflict with current state of resource
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/ProblemDetails'}
+    ProblemUnprocessableEntity:
+      description: Domain rule violation
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/ProblemDetails'}
     Problem:
       description: "Stable Problem Details: 401 authentication; 403 ACCOUNT_NOT_ACTIVE; 404 RESOURCE_FORBIDDEN/ATTEMPT_NOT_FOUND; 409 ATTEMPT_STALE_SOURCE/OPTIMISTIC_CONFLICT/IDEMPOTENCY_KEY_REUSED/ATTEMPT_CAPACITY_EXCEEDED; 413 REQUEST_TOO_LARGE; 422 REQUEST_VALIDATION_FAILED; 429 RATE_LIMIT_EXCEEDED; 503 ATTEMPT_UNAVAILABLE. Retry uncertain failures with the same key and exact body. Includes traceId."
       content:
@@ -6639,3 +6782,22 @@ components:
         details:
           type: object
           additionalProperties: true
+
+    TwinLockedProblemDetails:
+      allOf:
+        - $ref: '#/components/schemas/ProblemDetails'
+        - type: object
+          properties:
+            details:
+              type: object
+              required: [recoverable, userAction, lockUntil, retryAfterSeconds]
+              properties:
+                recoverable:
+                  type: boolean
+                userAction:
+                  type: string
+                lockUntil:
+                  type: string
+                  format: date-time
+                retryAfterSeconds:
+                  type: integer

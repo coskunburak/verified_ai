@@ -57,7 +57,7 @@ class SecurityConfiguration {
                     "/actuator/info",
                     "/actuator/prometheus"
                 ).permitAll()
-                .requestMatchers("/api/v1/**").authenticated()
+                .requestMatchers("/api/v1/**", "/v1/**").authenticated()
                 .anyRequest().denyAll()
             )
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.decoder(jwtDecoder)))

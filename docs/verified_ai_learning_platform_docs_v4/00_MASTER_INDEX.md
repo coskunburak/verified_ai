@@ -570,3 +570,7 @@ Status: `SOURCE_COMPLETE_PENDING_OWNER_TEST`; `V038` source authored, not applie
 ## Sprint 7.7 local acceptance
 
 The owner confirmed Sprint 7.6 completion on 2026-11-11. The dedicated 7.7 specification governs temporal mastery and reassessment. [Implementation map](sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.7_IMPLEMENTATION_MAP.md), [execution report](sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.7_EXECUTION_REPORT.md), and [file manifest](sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.7_FILE_MANIFEST.md). Full owner run `run-QcZF0C` passed locally on 2026-11-11.
+
+## Sprint 7.8 local acceptance
+
+Sprint 7.8 delivers Prerequisite Knowledge Graph Projection, Learning State APIs, and Closed-Loop Twin Remediation. [Execution report](sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.8_EXECUTION_REPORT.md) and [file manifest](sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.8_FILE_MANIFEST.md). Acceptance runner `scripts/quality/sprint_7_8_owner_acceptance.sh --full` passed all 7 stages on 2026-11-11.

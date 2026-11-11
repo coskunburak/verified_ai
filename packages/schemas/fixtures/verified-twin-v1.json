@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "verified-twin-v1",
+  "twinId": "c0000000-0000-0000-0000-000000000001",
+  "sourceAttemptId": "a0000000-0000-0000-0000-000000000001",
+  "targetSkillCode": "ALG_LIN_EQ_02",
+  "rootCauseSkillCode": "ALG_LIN_ISO_01",
+  "problemStatementLatex": "3x + 4 = 19",
+  "status": "SOLVED_UNASSISTED",
+  "createdAt": "2026-11-11T12:00:00Z",
+  "lockUntil": "2026-11-11T12:01:00Z",
+  "solutionSteps": [
+    {
+      "stepIndex": 1,
+      "explanation": "Subtract 4 from both sides",
+      "latexExpression": "3x = 15"
+    },
+    {
+      "stepIndex": 2,
+      "explanation": "Divide both sides by 3",
+      "latexExpression": "x = 5"
+    }
+  ],
+  "evaluation": {
+    "evidenceClassification": "VERIFIED_UNASSISTED_SUCCESS",
+    "remediationCredit": 0.1500,
+    "updatedMasteryScore": 0.5500,
+    "updatedMasteryState": "PRACTICING",
+    "remediationCleared": true
+  },
+  "trainingEligible": false
+}

@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.verifiedai.com/mastery/skill-graph-v1.schema.json",
+  "title": "SkillGraphProjectionV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "curriculumCode", "projectedAt", "nodes", "edges"],
+  "properties": {
+    "schemaVersion": { "const": "skill-graph-v1" },
+    "curriculumCode": { "type": "string", "pattern": "^[A-Z0-9_\\-]{3,64}$" },
+    "projectedAt": { "type": "string", "format": "date-time" },
+    "nodes": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/SkillNode" }
+    },
+    "edges": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/SkillEdge" }
+    }
+  },
+  "$defs": {
+    "SkillNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "skillCode",
+        "title",
+        "masteryScore",
+        "masteryState",
+        "attemptCount",
+        "consecutiveFailures",
+        "blockedByPrerequisiteBottleneck"
+      ],
+      "properties": {
+        "skillCode": { "type": "string", "minLength": 2, "maxLength": 128 },
+        "title": { "type": "string", "minLength": 1, "maxLength": 256 },
+        "masteryScore": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "masteryState": {
+          "type": "string",
+          "enum": [
+            "UNSEEN",
+            "EMERGING",
+            "PRACTICING",
+            "MASTERED",
+            "AT_RISK_REMEDIATION_REQUIRED"
+          ]
+        },
+        "attemptCount": { "type": "integer", "minimum": 0 },
+        "consecutiveFailures": { "type": "integer", "minimum": 0 },
+        "blockedByPrerequisiteBottleneck": { "type": "boolean" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "attemptCount": { "const": 0 } }
+          },
+          "then": {
+            "properties": {
+              "masteryScore": { "maximum": 0.65 },
+              "masteryState": { "not": { "const": "MASTERED" } }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "masteryState": { "const": "MASTERED" } }
+          },
+          "then": {
+            "properties": {
+              "masteryScore": { "minimum": 0.85 },
+              "attemptCount": { "minimum": 1 },
+              "blockedByPrerequisiteBottleneck": { "const": false }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "blockedByPrerequisiteBottleneck": { "const": true } }
+          },
+          "then": {
+            "properties": {
+              "masteryState": { "const": "AT_RISK_REMEDIATION_REQUIRED" },
+              "consecutiveFailures": { "minimum": 2 }
+            }
+          }
+        }
+      ]
+    },
+    "SkillEdge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fromSkillCode", "toSkillCode", "weight", "prerequisiteBottleneck"],
+      "properties": {
+        "fromSkillCode": { "type": "string", "minLength": 2, "maxLength": 128 },
+        "toSkillCode": { "type": "string", "minLength": 2, "maxLength": 128 },
+        "weight": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "prerequisiteBottleneck": { "type": "boolean" }
+      }
+    }
+  }
+}
