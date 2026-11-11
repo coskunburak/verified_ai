@@ -184,10 +184,16 @@ struct AttemptMathView: View {
     }
 }
 
-struct NativeMathLabel: UIViewRepresentable {
-    let latex: String
-    let fallback: String
-    let pointSize: CGFloat
+public struct NativeMathLabel: UIViewRepresentable {
+    public let latex: String
+    public let fallback: String
+    public let pointSize: CGFloat
+
+    public init(latex: String, fallback: String, pointSize: CGFloat) {
+        self.latex = latex
+        self.fallback = fallback
+        self.pointSize = pointSize
+    }
     final class Container: UIView {
         let math = MTMathUILabel()
         let plain = UILabel()

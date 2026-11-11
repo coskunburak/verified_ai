@@ -1,0 +1,11 @@
+{
+  "cardId": "H-01",
+  "faultyStepLatex": "(a+b)^2 = a^2 + b^2",
+  "validStepLatex": "(a+b)^2 = a^2 + 2ab + b^2",
+  "witnessSubstitutionLatex": "a = 2, b = 3",
+  "lhsEvaluatedLatex": "(2+3)^2 = 25",
+  "rhsFaultyEvaluatedLatex": "2^2 + 3^2 = 13",
+  "contradictionStatementLatex": "25 \\neq 13",
+  "accessibilitySpeechTr": "Karşı örnek kanıtı: a yerine 2 ve b yerine 3 koyduğumuzda sol taraf 25, sağ taraf 13 olur. 25 eşit değildir 13.",
+  "accessibilitySpeechEn": "Counterexample proof: Substituting a equals 2 and b equals 3 yields 25 on left side and 13 on right side. 25 does not equal 13."
+}

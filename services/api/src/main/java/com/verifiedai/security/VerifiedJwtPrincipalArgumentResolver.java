@@ -15,7 +15,8 @@ public class VerifiedJwtPrincipalArgumentResolver implements HandlerMethodArgume
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return VerifiedJwtPrincipal.class.isAssignableFrom(parameter.getParameterType());
+        return VerifiedJwtPrincipal.class.isAssignableFrom(parameter.getParameterType())
+                || AuthenticatedLearnerPrincipal.class.isAssignableFrom(parameter.getParameterType());
     }
 
     @Override

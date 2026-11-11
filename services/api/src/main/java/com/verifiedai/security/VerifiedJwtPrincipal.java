@@ -5,7 +5,11 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import java.util.Objects;
 import java.util.UUID;
 
-public record VerifiedJwtPrincipal(UUID tenantId, UUID userId) {
+public record VerifiedJwtPrincipal(UUID tenantId, UUID userId) implements AuthenticatedLearnerPrincipal {
+    @Override
+    public UUID learnerId() {
+        return userId;
+    }
     public VerifiedJwtPrincipal {
         Objects.requireNonNull(tenantId, "tenantId cannot be null");
         Objects.requireNonNull(userId, "userId cannot be null");

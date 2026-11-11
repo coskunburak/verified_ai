@@ -2923,6 +2923,33 @@ paths:
               schema:
                 $ref: '#/components/schemas/TwinLockedProblemDetails'
 
+  /v1/mistake-passport:
+    get:
+      operationId: getMyMistakePassport
+      tags:
+        - MistakeIntelligence
+      summary: Retrieve the authenticated learner's non-stigmatizing Mistake Passport (Exam Trap Radar)
+      description: >
+        Deterministic read-model projection ($0.00 LLM token cost). Strictly derives learner identity
+        from JWT/AuthenticationPrincipal (BOLA safe). Separates conceptual exam traps from arithmetic slips.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/TrapLifecycleStatus'
+      responses:
+        '200':
+          description: Mistake Passport projection returned within <50ms p95 budget.
+          content:
+            application/json:
+              schema:
+                $ref: '../../schemas/mistake/mistake-passport-v1.schema.json'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -2968,6 +2995,82 @@ components:
           schema: {"$ref": "#/components/schemas/ProblemDetails"}
 
   schemas:
+    TrapLifecycleStatus:
+      type: string
+      enum:
+        - RECURRING_PATTERN
+        - IN_REMEDIATION
+        - RESOLVED_PENDING_RETENTION
+        - STABLE_RESOLVED
+
+    SkillFiveMetricsSnapshot:
+      type: object
+      additionalProperties: false
+      required:
+        - observedOutcomeScore
+        - independentCompetenceScore
+        - posteriorMasteryProbability
+        - retentionProbability
+        - scaffoldDependencyIndex
+      properties:
+        observedOutcomeScore:
+          type: number
+          minimum: 0.0
+          maximum: 1.0
+        independentCompetenceScore:
+          type: number
+          minimum: 0.0
+          maximum: 1.0
+        posteriorMasteryProbability:
+          type: number
+          minimum: 0.0
+          maximum: 1.0
+        retentionProbability:
+          type: number
+          minimum: 0.0
+          maximum: 1.0
+        scaffoldDependencyIndex:
+          type: number
+          minimum: 0.0
+          maximum: 1.0
+
+    CounterexampleProofSnapshot:
+      type: object
+      additionalProperties: false
+      required:
+        - cardId
+        - faultyStepLatex
+        - validStepLatex
+        - witnessSubstitutionLatex
+        - lhsEvaluatedLatex
+        - rhsFaultyEvaluatedLatex
+        - contradictionStatementLatex
+        - accessibilitySpeechTr
+        - accessibilitySpeechEn
+      properties:
+        cardId:
+          type: string
+          const: H-01
+        faultyStepLatex:
+          type: string
+        validStepLatex:
+          type: string
+        witnessSubstitutionLatex:
+          type: string
+        lhsEvaluatedLatex:
+          type: string
+        rhsFaultyEvaluatedLatex:
+          type: string
+        contradictionStatementLatex:
+          type: string
+        accessibilitySpeechTr:
+          type: string
+        accessibilitySpeechEn:
+          type: string
+
+    MistakePassportResponse:
+      $ref: '../../schemas/mistake/mistake-passport-v1.schema.json'
+
     MasterySkillsView: {
       "type": "object",
       "additionalProperties": false,

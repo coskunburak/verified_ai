@@ -45,6 +45,25 @@ def run_validation():
     assert openapi_path.exists(), "Missing public-api.yaml"
     assert strings_path.exists(), "Missing Localizable.xcstrings"
 
+    # Sprint 7.9 Files
+    mistake_passport_schema_path = ROOT / "packages/schemas/mistake/mistake-passport-v1.schema.json"
+    mistake_passport_fixture_path = ROOT / "packages/schemas/mistake/fixtures/mistake-passport-v1.valid.json"
+    counterexample_schema_path = ROOT / "packages/schemas/attempt/counterexample-proof-card-v1.schema.json"
+    counterexample_fixture_path = ROOT / "packages/schemas/attempt/fixtures/counterexample-proof-card-v1.valid.json"
+
+    assert mistake_passport_schema_path.exists(), "Missing mistake-passport-v1.schema.json"
+    assert mistake_passport_fixture_path.exists(), "Missing mistake-passport-v1.valid.json"
+    assert counterexample_schema_path.exists(), "Missing counterexample-proof-card-v1.schema.json"
+    assert counterexample_fixture_path.exists(), "Missing counterexample-proof-card-v1.valid.json"
+
+    mp_schema = json.loads(mistake_passport_schema_path.read_text(encoding="utf-8"))
+    mp_fixture = json.loads(mistake_passport_fixture_path.read_text(encoding="utf-8"))
+    ce_schema = json.loads(counterexample_schema_path.read_text(encoding="utf-8"))
+    ce_fixture = json.loads(counterexample_fixture_path.read_text(encoding="utf-8"))
+
+    validate_schema_structure(mp_schema, "mistake-passport-v1.schema.json")
+    validate_schema_structure(ce_schema, "counterexample-proof-card-v1.schema.json")
+
     sg_schema = json.loads(skill_graph_schema_path.read_text(encoding="utf-8"))
     sg_fixture = json.loads(skill_graph_fixture_path.read_text(encoding="utf-8"))
     vt_schema = json.loads(verified_twin_schema_path.read_text(encoding="utf-8"))
@@ -107,6 +126,25 @@ def run_validation():
         assert vt_fixture["schemaVersion"] == "verified-twin-v1"
         assert vt_fixture["trainingEligible"] is False
 
+    # Sprint 7.9 schema invariants
+    assert mp_fixture["schemaVersion"] == "mistake-passport.v1"
+    assert "conqueredExamTrapsCount" in mp_fixture["summaryMetrics"]
+    assert "activeExamTrapsCount" in mp_fixture["summaryMetrics"]
+    assert "independentTransferRate" in mp_fixture["summaryMetrics"]
+    for trap in mp_fixture["conceptualTraps"]:
+        assert trap["mistakeCode"] != "ARITH_BASIC_COMPUTATION", "ARITH_BASIC_COMPUTATION must not appear in conceptualTraps"
+        metrics = trap["skillMetrics"]
+        for key in ["observedOutcomeScore", "independentCompetenceScore", "posteriorMasteryProbability", "retentionProbability", "scaffoldDependencyIndex"]:
+            assert 0.0 <= metrics[key] <= 1.0, f"Metric {key} out of bounds"
+    for slip in mp_fixture["arithmeticSlips"]:
+        assert slip["mistakeCode"] == "ARITH_BASIC_COMPUTATION", "Only ARITH_BASIC_COMPUTATION in arithmeticSlips"
+
+    assert ce_fixture["cardId"] == "H-01"
+    assert "witnessSubstitutionLatex" in ce_fixture
+    assert "contradictionStatementLatex" in ce_fixture
+    assert "accessibilitySpeechTr" in ce_fixture
+    assert "accessibilitySpeechEn" in ce_fixture
+
     # 2. OpenAPI 3.1 Verification
     if yaml is not None:
         spec = yaml.safe_load(openapi_path.read_text(encoding="utf-8"))
@@ -114,6 +152,11 @@ def run_validation():
         assert "/v1/mastery/graph" in paths, "Missing /v1/mastery/graph in OpenAPI spec"
         assert "/v1/attempts/{attemptId}/twins" in paths, "Missing /v1/attempts/{attemptId}/twins in OpenAPI spec"
         assert "/v1/twins/{twinId}/submit" in paths, "Missing /v1/twins/{twinId}/submit in OpenAPI spec"
+        assert "/v1/mistake-passport" in paths, "Missing /v1/mistake-passport in OpenAPI spec"
+
+        passport_get = paths["/v1/mistake-passport"]["get"]
+        assert passport_get["security"] == [{"bearerAuth": []}], "Security bearerAuth missing on /v1/mistake-passport"
+        assert "200" in passport_get["responses"], "HTTP 200 OK missing from /v1/mistake-passport"
 
         graph_get = paths["/v1/mastery/graph"]["get"]
         assert graph_get["security"] == [{"bearerAuth": []}], "Security bearerAuth missing on /v1/mastery/graph"

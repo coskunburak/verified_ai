@@ -1,0 +1,100 @@
+{
+  "schemaVersion": "mistake-passport.v1",
+  "learnerId": "11111111-1111-1111-1111-111111111111",
+  "generatedAt": "2026-11-11T12:00:00Z",
+  "summaryMetrics": {
+    "conqueredExamTrapsCount": 3,
+    "activeExamTrapsCount": 2,
+    "pendingRetentionVerificationCount": 1,
+    "independentTransferRate": 0.8250,
+    "meanPosteriorMastery": 0.7600,
+    "meanRetentionProbability": 0.6900
+  },
+  "conceptualTraps": [
+    {
+      "mistakeDnaId": "22222222-2222-2222-2222-222222222222",
+      "mistakeCode": "ALG_SIGN_DISTRIBUTION",
+      "mistakeFamily": "CONCEPTUAL_STRUCTURAL",
+      "skillNodeId": "MATH.ALGEBRA.EXPANSION",
+      "localizedTrapTitleKey": "trap.alg_sign_distribution.title",
+      "localizedCoachingFramingKey": "trap.alg_sign_distribution.coaching_framing",
+      "lifecycleStatus": "RECURRING_PATTERN",
+      "occurrenceCount": 3,
+      "consecutiveSoloTwinPasses": 1,
+      "lastDetectedAt": "2026-11-10T14:30:00Z",
+      "retentionUnlockEligibleAt": null,
+      "conqueredAt": null,
+      "skillMetrics": {
+        "observedOutcomeScore": 0.0000,
+        "independentCompetenceScore": 0.7500,
+        "posteriorMasteryProbability": 0.6800,
+        "retentionProbability": 0.6200,
+        "scaffoldDependencyIndex": 0.2500
+      },
+      "activeTwinLink": {
+        "twinDrillId": "33333333-3333-3333-3333-333333333333",
+        "twinChallengeStatus": "READY_FOR_SOLO_PROVE_IT",
+        "deepLinkUri": "verifiedai://twin-challenge/33333333-3333-3333-3333-333333333333"
+      },
+      "latestCounterexample": {
+        "cardId": "H-01",
+        "faultyStepLatex": "(a+b)^2 = a^2 + b^2",
+        "validStepLatex": "(a+b)^2 = a^2 + 2ab + b^2",
+        "witnessSubstitutionLatex": "a = 2, b = 3",
+        "lhsEvaluatedLatex": "(2+3)^2 = 25",
+        "rhsFaultyEvaluatedLatex": "2^2 + 3^2 = 13",
+        "contradictionStatementLatex": "25 \\neq 13",
+        "accessibilitySpeechTr": "Karşı örnek kanıtı: a yerine 2 ve b yerine 3 koyduğumuzda sol taraf 25, sağ taraf 13 olur. 25 eşit değildir 13.",
+        "accessibilitySpeechEn": "Counterexample proof: Substituting a equals 2 and b equals 3 yields 25 on left side and 13 on right side. 25 does not equal 13."
+      }
+    },
+    {
+      "mistakeDnaId": "44444444-4444-4444-4444-444444444444",
+      "mistakeCode": "INEQ_NEGATIVE_MULT_NO_FLIP",
+      "mistakeFamily": "CONCEPTUAL_STRUCTURAL",
+      "skillNodeId": "MATH.INEQUALITIES.LINEAR",
+      "localizedTrapTitleKey": "trap.ineq_negative_mult_no_flip.title",
+      "localizedCoachingFramingKey": "trap.ineq_negative_mult_no_flip.coaching_framing",
+      "lifecycleStatus": "STABLE_RESOLVED",
+      "occurrenceCount": 2,
+      "consecutiveSoloTwinPasses": 2,
+      "lastDetectedAt": "2026-11-01T10:00:00Z",
+      "retentionUnlockEligibleAt": "2026-11-08T10:00:00Z",
+      "conqueredAt": "2026-11-08T10:15:00Z",
+      "skillMetrics": {
+        "observedOutcomeScore": 1.0000,
+        "independentCompetenceScore": 0.9000,
+        "posteriorMasteryProbability": 0.8500,
+        "retentionProbability": 0.8000,
+        "scaffoldDependencyIndex": 0.1000
+      },
+      "activeTwinLink": null,
+      "latestCounterexample": null
+    }
+  ],
+  "arithmeticSlips": [
+    {
+      "mistakeDnaId": "55555555-5555-5555-5555-555555555555",
+      "mistakeCode": "ARITH_BASIC_COMPUTATION",
+      "mistakeFamily": "ARITHMETIC_SLIP",
+      "skillNodeId": "MATH.ARITHMETIC.INTEGERS",
+      "localizedTrapTitleKey": "trap.arith_basic_computation.title",
+      "localizedCoachingFramingKey": "trap.arith_basic_computation.coaching_framing",
+      "lifecycleStatus": "RECURRING_PATTERN",
+      "occurrenceCount": 4,
+      "consecutiveSoloTwinPasses": 0,
+      "lastDetectedAt": "2026-11-11T09:15:00Z",
+      "retentionUnlockEligibleAt": null,
+      "conqueredAt": null,
+      "skillMetrics": {
+        "observedOutcomeScore": 0.0000,
+        "independentCompetenceScore": 0.6000,
+        "posteriorMasteryProbability": 0.5500,
+        "retentionProbability": 0.5000,
+        "scaffoldDependencyIndex": 0.4000
+      },
+      "activeTwinLink": null,
+      "latestCounterexample": null
+    }
+  ]
+}

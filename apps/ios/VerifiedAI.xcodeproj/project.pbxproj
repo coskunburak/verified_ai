@@ -21,6 +21,17 @@
 		B78000000000000000000007 /* Sprint78MasteryAndTwinTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78000000000000000000007 /* Sprint78MasteryAndTwinTests.swift */; };
 		B78000000000000000000008 /* skill-graph-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = A78000000000000000000008 /* skill-graph-v1.json */; };
 		B78000000000000000000009 /* verified-twin-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = A78000000000000000000009 /* verified-twin-v1.json */; };
+		B79000000000000000000001 /* StepDiffNativeMathRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79000000000000000000001 /* StepDiffNativeMathRenderer.swift */; };
+		B79000000000000000000002 /* CounterexampleProofCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79000000000000000000002 /* CounterexampleProofCardView.swift */; };
+		B79000000000000000000003 /* MistakePassportModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79000000000000000000003 /* MistakePassportModels.swift */; };
+		B79000000000000000000004 /* MistakePassportCacheStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79000000000000000000004 /* MistakePassportCacheStore.swift */; };
+		B79000000000000000000005 /* MistakePassportViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79000000000000000000005 /* MistakePassportViewModel.swift */; };
+		B79000000000000000000006 /* ExamTrapRadarCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79000000000000000000006 /* ExamTrapRadarCardView.swift */; };
+		B79000000000000000000007 /* MistakePassportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79000000000000000000007 /* MistakePassportView.swift */; };
+		B79000000000000000000008 /* DualRingSkillNodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79000000000000000000008 /* DualRingSkillNodeView.swift */; };
+		B79000000000000000000009 /* Sprint79MistakePassportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79000000000000000000009 /* Sprint79MistakePassportTests.swift */; };
+		B79000000000000000000010 /* mistake-passport-v1.valid.json in Resources */ = {isa = PBXBuildFile; fileRef = A79000000000000000000010 /* mistake-passport-v1.valid.json */; };
+		B79000000000000000000011 /* counterexample-proof-card-v1.valid.json in Resources */ = {isa = PBXBuildFile; fileRef = A79000000000000000000011 /* counterexample-proof-card-v1.valid.json */; };
 		B74000000000000000000001 /* attempt-mistake-view-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = A74000000000000000000001 /* attempt-mistake-view-v1.json */; };
 		B73000000000000000000002 /* attempt-evaluation-work-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = A73000000000000000000002 /* attempt-evaluation-work-v1.json */; };
 		B73000000000000000000001 /* attempt-evaluation-view-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = A73000000000000000000001 /* attempt-evaluation-view-v1.json */; };
@@ -210,6 +221,17 @@
 		A78000000000000000000007 /* Sprint78MasteryAndTwinTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Sprint78MasteryAndTwinTests.swift; sourceTree = SOURCE_ROOT; };
 		A78000000000000000000008 /* skill-graph-v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/skill-graph-v1.json; sourceTree = SOURCE_ROOT; };
 		A78000000000000000000009 /* verified-twin-v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/verified-twin-v1.json; sourceTree = SOURCE_ROOT; };
+		A79000000000000000000001 /* StepDiffNativeMathRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/AttemptAnalysis/Views/StepDiffNativeMathRenderer.swift; sourceTree = SOURCE_ROOT; };
+		A79000000000000000000002 /* CounterexampleProofCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/AttemptAnalysis/Views/CounterexampleProofCardView.swift; sourceTree = SOURCE_ROOT; };
+		A79000000000000000000003 /* MistakePassportModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/MistakePassport/Domain/MistakePassportModels.swift; sourceTree = SOURCE_ROOT; };
+		A79000000000000000000004 /* MistakePassportCacheStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/MistakePassport/Cache/MistakePassportCacheStore.swift; sourceTree = SOURCE_ROOT; };
+		A79000000000000000000005 /* MistakePassportViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/MistakePassport/ViewModels/MistakePassportViewModel.swift; sourceTree = SOURCE_ROOT; };
+		A79000000000000000000006 /* ExamTrapRadarCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/MistakePassport/Views/ExamTrapRadarCardView.swift; sourceTree = SOURCE_ROOT; };
+		A79000000000000000000007 /* MistakePassportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/MistakePassport/Views/MistakePassportView.swift; sourceTree = SOURCE_ROOT; };
+		A79000000000000000000008 /* DualRingSkillNodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/MasteryGraph/Presentation/DualRingSkillNodeView.swift; sourceTree = SOURCE_ROOT; };
+		A79000000000000000000009 /* Sprint79MistakePassportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Sprint79MistakePassportTests.swift; sourceTree = SOURCE_ROOT; };
+		A79000000000000000000010 /* mistake-passport-v1.valid.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/mistake/fixtures/mistake-passport-v1.valid.json; sourceTree = SOURCE_ROOT; };
+		A79000000000000000000011 /* counterexample-proof-card-v1.valid.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/attempt/fixtures/counterexample-proof-card-v1.valid.json; sourceTree = SOURCE_ROOT; };
 		A74000000000000000000001 /* attempt-mistake-view-v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/attempt-mistake-view-v1.json; sourceTree = SOURCE_ROOT; };
 		A73000000000000000000002 /* attempt-evaluation-work-v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/attempt-evaluation-work-v1.json; sourceTree = SOURCE_ROOT; };
 		A73000000000000000000001 /* attempt-evaluation-view-v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/attempt-evaluation-view-v1.json; sourceTree = SOURCE_ROOT; };
@@ -994,6 +1016,17 @@
 				A78000000000000000000007 /* Sprint78MasteryAndTwinTests.swift */,
 				A78000000000000000000008 /* skill-graph-v1.json */,
 				A78000000000000000000009 /* verified-twin-v1.json */,
+				A79000000000000000000001 /* StepDiffNativeMathRenderer.swift */,
+				A79000000000000000000002 /* CounterexampleProofCardView.swift */,
+				A79000000000000000000003 /* MistakePassportModels.swift */,
+				A79000000000000000000004 /* MistakePassportCacheStore.swift */,
+				A79000000000000000000005 /* MistakePassportViewModel.swift */,
+				A79000000000000000000006 /* ExamTrapRadarCardView.swift */,
+				A79000000000000000000007 /* MistakePassportView.swift */,
+				A79000000000000000000008 /* DualRingSkillNodeView.swift */,
+				A79000000000000000000009 /* Sprint79MistakePassportTests.swift */,
+				A79000000000000000000010 /* mistake-passport-v1.valid.json */,
+				A79000000000000000000011 /* counterexample-proof-card-v1.valid.json */,
 				A74000000000000000000001 /* attempt-mistake-view-v1.json */,
 				A74000000000000000000002 /* attempt-mistake-evaluation-v1.json */,
 				A75000000000000000000001 /* mistake-dispute-result-v1.json */,
@@ -1157,6 +1190,8 @@
 				B77000000000000000000001 /* mastery-skills-v1.json in Resources */,
 				B78000000000000000000008 /* skill-graph-v1.json in Resources */,
 				B78000000000000000000009 /* verified-twin-v1.json in Resources */,
+				B79000000000000000000010 /* mistake-passport-v1.valid.json in Resources */,
+				B79000000000000000000011 /* counterexample-proof-card-v1.valid.json in Resources */,
 				B74000000000000000000001 /* attempt-mistake-view-v1.json in Resources */,
 				B74000000000000000000002 /* attempt-mistake-evaluation-v1.json in Resources */,
 				B75000000000000000000001 /* mistake-dispute-result-v1.json in Resources */,
@@ -1200,6 +1235,14 @@
 				B78000000000000000000004 /* VerifiedTwinModels.swift in Sources */,
 				B78000000000000000000005 /* TwinChallengeViewModel.swift in Sources */,
 				B78000000000000000000006 /* ProveItSoloTwinView.swift in Sources */,
+				B79000000000000000000001 /* StepDiffNativeMathRenderer.swift in Sources */,
+				B79000000000000000000002 /* CounterexampleProofCardView.swift in Sources */,
+				B79000000000000000000003 /* MistakePassportModels.swift in Sources */,
+				B79000000000000000000004 /* MistakePassportCacheStore.swift in Sources */,
+				B79000000000000000000005 /* MistakePassportViewModel.swift in Sources */,
+				B79000000000000000000006 /* ExamTrapRadarCardView.swift in Sources */,
+				B79000000000000000000007 /* MistakePassportView.swift in Sources */,
+				B79000000000000000000008 /* DualRingSkillNodeView.swift in Sources */,
 				B67900000000000000000001 /* NativeAttemptExtraction.swift in Sources */,
 				B67900000000000000000002 /* AttemptStepReviewView.swift in Sources */,
 				B67900000000000000000003 /* AttemptMathView.swift in Sources */,
@@ -1323,6 +1366,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B78000000000000000000007 /* Sprint78MasteryAndTwinTests.swift in Sources */,
+				B79000000000000000000009 /* Sprint79MistakePassportTests.swift in Sources */,
 				B69000000000000000000004 /* MathVisualizationTests.swift in Sources */,
 				B54000000000000000000009 /* PrimarySolveContractTests.swift in Sources */,
 				B5400000000000000000000A /* MathPresentationTests.swift in Sources */,

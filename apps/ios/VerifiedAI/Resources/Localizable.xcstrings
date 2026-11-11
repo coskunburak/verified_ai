@@ -12118,6 +12118,448 @@
           }
         }
       }
+    },
+    "counterexample.card.header.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Concrete Counterexample Proof"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Somut Karşı Örnek Kanıtı"
+          }
+        }
+      }
+    },
+    "counterexample.card.witness.prompt": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Witness Substitution:"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tanık Değer İkamesi:"
+          }
+        }
+      }
+    },
+    "counterexample.card.lhs.actual": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actual Value (LHS)"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gerçek Değer (LHS)"
+          }
+        }
+      }
+    },
+    "counterexample.card.rhs.trap": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Faulty Step Value (RHS)"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tuzak Adım Değeri (RHS)"
+          }
+        }
+      }
+    },
+    "counterexample.card.valid_rule.label": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Valid Mathematical Rule:"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geçerli Matematik Kuralı:"
+          }
+        }
+      }
+    },
+    "counterexample.card.cta.prove_it_solo": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prove It Solo on Twin Drill"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İkiz Soruda Tek Başına Kanıtla"
+          }
+        }
+      }
+    },
+    "passport.header.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exam Trap Passport"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sınav Tuzağı Pasaportu"
+          }
+        }
+      }
+    },
+    "passport.header.conquered_traps": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conquered Exam Traps"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kapatılan Sınav Tuzakları"
+          }
+        }
+      }
+    },
+    "passport.header.independent_transfer": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Independent Transfer Rate"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bağımsız Doğrulama Oranı"
+          }
+        }
+      }
+    },
+    "passport.tab.conceptual_traps": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conceptual Exam Traps"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kavramsal Sınav Tuzakları"
+          }
+        }
+      }
+    },
+    "passport.tab.arithmetic_slips": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arithmetic Slips"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İşlem Dikkatsizlikleri"
+          }
+        }
+      }
+    },
+    "passport.filter.all": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tümü"
+          }
+        }
+      }
+    },
+    "passport.filter.recurring": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Active Traps"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aktif Tuzaklar"
+          }
+        }
+      }
+    },
+    "passport.filter.in_remediation": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In Remediation"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Onarımda"
+          }
+        }
+      }
+    },
+    "passport.filter.retention_pending": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pending Retention"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kalıcılık Bekleyenler"
+          }
+        }
+      }
+    },
+    "passport.filter.stable_resolved": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conquered"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kapatılanlar"
+          }
+        }
+      }
+    },
+    "passport.empty.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Active Exam Traps"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aktif Sınav Tuzağı Yok"
+          }
+        }
+      }
+    },
+    "passport.empty.description": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Congratulations! No active exam traps detected in your solutions."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tebrikler! Çözümlerinde herhangi bir aktif sınav tuzağı tespit edilmedi."
+          }
+        }
+      }
+    },
+    "passport.error.load_failed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Failed to load exam trap passport."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sınav tuzağı pasaportu yüklenemedi."
+          }
+        }
+      }
+    },
+    "passport.banner.offline_stale": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Offline mode: Showing cached exam trap data."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çevrimdışı mod: Önbelleğe alınmış tuzak verileri gösteriliyor."
+          }
+        }
+      }
+    },
+    "trap.alg_sign_distribution.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign Distribution Trap"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eşitsizlikte İşaret Dağıtma Tuzağı"
+          }
+        }
+      }
+    },
+    "trap.alg_sign_distribution.coaching_framing": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exam writers expect students to miss distributing negative signs across parentheses. Solve a twin drill to conquer this trap."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sınav hazırlayıcıları parantez açılımında eksi işaretini dağıtmayı unutmanızı bekler. İkiz soruyu çözerek bu tuzağı kapatın."
+          }
+        }
+      }
+    },
+    "trap.ineq_negative_mult_no_flip.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Negative Multiplier Direction Trap"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Negatif Çarpan Yön Değiştirme Tuzağı"
+          }
+        }
+      }
+    },
+    "trap.ineq_negative_mult_no_flip.coaching_framing": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exam questions often test reversing the inequality sign when multiplying or dividing by a negative number."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sınav soruları negatif bir sayıyla çarparken veya bölerken eşitsizlik yönünün değiştirilmesini sıkça sınar."
+          }
+        }
+      }
+    },
+    "trap.arith_basic_computation.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Basic Computation Slip"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Temel İşlem Dikkatsizliği"
+          }
+        }
+      }
+    },
+    "trap.arith_basic_computation.coaching_framing": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Basic arithmetic calculation slip under time pressure. Quick practice helps build precision."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zaman baskısı altında yapılan basit aritmetik işlem hatası. Dikkatinizi toplamak için hız pratiği yapın."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

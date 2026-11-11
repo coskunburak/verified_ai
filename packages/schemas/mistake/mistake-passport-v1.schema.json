@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.verifiedai.com/mistake/mistake-passport-v1.schema.json",
+  "title": "MistakePassportV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "learnerId",
+    "generatedAt",
+    "summaryMetrics",
+    "conceptualTraps",
+    "arithmeticSlips"
+  ],
+  "properties": {
+    "schemaVersion": { "type": "string", "const": "mistake-passport.v1" },
+    "learnerId": { "type": "string", "format": "uuid" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "summaryMetrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "conqueredExamTrapsCount",
+        "activeExamTrapsCount",
+        "pendingRetentionVerificationCount",
+        "independentTransferRate",
+        "meanPosteriorMastery",
+        "meanRetentionProbability"
+      ],
+      "properties": {
+        "conqueredExamTrapsCount": { "type": "integer", "minimum": 0 },
+        "activeExamTrapsCount": { "type": "integer", "minimum": 0 },
+        "pendingRetentionVerificationCount": { "type": "integer", "minimum": 0 },
+        "independentTransferRate": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "meanPosteriorMastery": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "meanRetentionProbability": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+      }
+    },
+    "conceptualTraps": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/ExamTrapItem" }
+    },
+    "arithmeticSlips": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/ExamTrapItem" }
+    }
+  },
+  "$defs": {
+    "ExamTrapItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mistakeDnaId",
+        "mistakeCode",
+        "mistakeFamily",
+        "skillNodeId",
+        "localizedTrapTitleKey",
+        "localizedCoachingFramingKey",
+        "lifecycleStatus",
+        "occurrenceCount",
+        "consecutiveSoloTwinPasses",
+        "lastDetectedAt",
+        "skillMetrics"
+      ],
+      "properties": {
+        "mistakeDnaId": { "type": "string", "format": "uuid" },
+        "mistakeCode": { "type": "string", "minLength": 3 },
+        "mistakeFamily": { "type": "string", "enum": ["CONCEPTUAL_STRUCTURAL", "ARITHMETIC_SLIP"] },
+        "skillNodeId": { "type": "string" },
+        "localizedTrapTitleKey": { "type": "string" },
+        "localizedCoachingFramingKey": { "type": "string" },
+        "lifecycleStatus": {
+          "type": "string",
+          "enum": [
+            "RECURRING_PATTERN",
+            "IN_REMEDIATION",
+            "RESOLVED_PENDING_RETENTION",
+            "STABLE_RESOLVED"
+          ]
+        },
+        "occurrenceCount": { "type": "integer", "minimum": 1 },
+        "consecutiveSoloTwinPasses": { "type": "integer", "minimum": 0 },
+        "lastDetectedAt": { "type": "string", "format": "date-time" },
+        "retentionUnlockEligibleAt": { "type": ["string", "null"], "format": "date-time" },
+        "conqueredAt": { "type": ["string", "null"], "format": "date-time" },
+        "skillMetrics": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "observedOutcomeScore",
+            "independentCompetenceScore",
+            "posteriorMasteryProbability",
+            "retentionProbability",
+            "scaffoldDependencyIndex"
+          ],
+          "properties": {
+            "observedOutcomeScore": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+            "independentCompetenceScore": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+            "posteriorMasteryProbability": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+            "retentionProbability": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+            "scaffoldDependencyIndex": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+          }
+        },
+        "activeTwinLink": {
+          "type": ["object", "null"],
+          "additionalProperties": false,
+          "required": ["twinDrillId", "twinChallengeStatus", "deepLinkUri"],
+          "properties": {
+            "twinDrillId": { "type": "string", "format": "uuid" },
+            "twinChallengeStatus": { "type": "string" },
+            "deepLinkUri": { "type": "string" }
+          }
+        },
+        "latestCounterexample": {
+          "type": ["object", "null"],
+          "additionalProperties": false,
+          "required": [
+            "cardId",
+            "faultyStepLatex",
+            "validStepLatex",
+            "witnessSubstitutionLatex",
+            "lhsEvaluatedLatex",
+            "rhsFaultyEvaluatedLatex",
+            "contradictionStatementLatex",
+            "accessibilitySpeechTr",
+            "accessibilitySpeechEn"
+          ],
+          "properties": {
+            "cardId": { "type": "string", "const": "H-01" },
+            "faultyStepLatex": { "type": "string" },
+            "validStepLatex": { "type": "string" },
+            "witnessSubstitutionLatex": { "type": "string" },
+            "lhsEvaluatedLatex": { "type": "string" },
+            "rhsFaultyEvaluatedLatex": { "type": "string" },
+            "contradictionStatementLatex": { "type": "string" },
+            "accessibilitySpeechTr": { "type": "string" },
+            "accessibilitySpeechEn": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}

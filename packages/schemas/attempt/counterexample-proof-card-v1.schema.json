@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.verifiedai.com/attempt/counterexample-proof-card-v1.schema.json",
+  "title": "CounterexampleProofCardV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "cardId",
+    "faultyStepLatex",
+    "validStepLatex",
+    "witnessSubstitutionLatex",
+    "lhsEvaluatedLatex",
+    "rhsFaultyEvaluatedLatex",
+    "contradictionStatementLatex",
+    "accessibilitySpeechTr",
+    "accessibilitySpeechEn"
+  ],
+  "properties": {
+    "cardId": {
+      "type": "string",
+      "const": "H-01"
+    },
+    "faultyStepLatex": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validStepLatex": {
+      "type": "string",
+      "minLength": 1
+    },
+    "witnessSubstitutionLatex": {
+      "type": "string",
+      "minLength": 1
+    },
+    "lhsEvaluatedLatex": {
+      "type": "string",
+      "minLength": 1
+    },
+    "rhsFaultyEvaluatedLatex": {
+      "type": "string",
+      "minLength": 1
+    },
+    "contradictionStatementLatex": {
+      "type": "string",
+      "minLength": 1
+    },
+    "accessibilitySpeechTr": {
+      "type": "string",
+      "minLength": 1
+    },
+    "accessibilitySpeechEn": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

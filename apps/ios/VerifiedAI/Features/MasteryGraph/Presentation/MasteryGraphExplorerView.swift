@@ -78,38 +78,51 @@ public struct MasteryGraphExplorerView: View {
     }
 
     private func skillNodeCard(_ node: SkillGraphNode) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
+        HStack(spacing: 16) {
+            DualRingSkillNodeView(
+                skillNodeId: node.skillCode,
+                skillTitle: node.displayName,
+                metrics: SkillFiveMetricsSnapshot(
+                    observedOutcomeScore: node.effectiveMastery,
+                    independentCompetenceScore: node.effectiveMastery,
+                    posteriorMasteryProbability: node.effectiveMastery,
+                    retentionProbability: min(1.0, max(0.05, node.effectiveMastery * 0.9)),
+                    scaffoldDependencyIndex: node.status == .atRiskRemediationRequired ? 0.35 : 0.05
+                ),
+                activeExamTrapCount: node.consecutiveFailures > 0 ? node.consecutiveFailures : 0,
+                onTapNode: {
+                    viewModel.selectNode(node)
+                }
+            )
+
+            VStack(alignment: .leading, spacing: 8) {
                 Text(node.displayName)
                     .font(.headline)
-                Spacer()
-                Text("\(Int(node.effectiveMastery * 100))%")
-                    .font(.subheadline.bold())
-                    .foregroundStyle(masteryColor(node.effectiveMastery))
-            }
 
-            HStack(spacing: 8) {
-                Text(LocalizedStringKey(node.status.localizedKey))
-                    .font(.caption2.bold())
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(statusBackgroundColor(node.status))
-                    .cornerRadius(6)
+                HStack(spacing: 8) {
+                    Text(LocalizedStringKey(node.status.localizedKey))
+                        .font(.caption2.bold())
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(statusBackgroundColor(node.status))
+                        .cornerRadius(6)
 
-                if node.blockedByPrerequisiteBottleneck {
-                    HStack(spacing: 4) {
-                        Image(systemName: "exclamationmark.triangle.fill")
-                        Text(LocalizedStringKey("mastery.graph.blocked_bottleneck"))
+                    if node.blockedByPrerequisiteBottleneck {
+                        HStack(spacing: 4) {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                            Text(LocalizedStringKey("mastery.graph.blocked_bottleneck"))
+                        }
+                        .font(.caption2.bold())
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color.orange.opacity(0.2))
+                        .foregroundStyle(.orange)
+                        .cornerRadius(6)
+                        .accessibilityIdentifier("mastery.graph.bottleneck.\(node.skillCode)")
                     }
-                    .font(.caption2.bold())
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Color.orange.opacity(0.2))
-                    .foregroundStyle(.orange)
-                    .cornerRadius(6)
-                    .accessibilityIdentifier("mastery.graph.bottleneck.\(node.skillCode)")
                 }
             }
+            Spacer()
         }
         .padding()
         .background(Color(uiColor: .secondarySystemGroupedBackground))
