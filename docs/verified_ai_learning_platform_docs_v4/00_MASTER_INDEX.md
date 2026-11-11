@@ -574,3 +574,7 @@ The owner confirmed Sprint 7.6 completion on 2026-11-11. The dedicated 7.7 speci
 ## Sprint 7.8 local acceptance
 
 Sprint 7.8 delivers Prerequisite Knowledge Graph Projection, Learning State APIs, and Closed-Loop Twin Remediation. [Execution report](sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.8_EXECUTION_REPORT.md) and [file manifest](sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.8_FILE_MANIFEST.md). Acceptance runner `scripts/quality/sprint_7_8_owner_acceptance.sh --full` passed all 7 stages on 2026-11-11.
+
+## Sprint 7.9 local acceptance
+
+Sprint 7.9 delivers Mistake Passport ("Exam Trap Radar"), Mastery Graph Explorer, and Counterexample Proof Card UX. [Execution report](sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.9_EXECUTION_REPORT.md) and [file manifest](sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.9_FILE_MANIFEST.md). Acceptance runner `scripts/quality/sprint_7_9_owner_acceptance.sh --full` passed all 7 stages on 2026-11-11.
