@@ -9,7 +9,22 @@ public protocol RecommendationCacheStoreProtocol: Sendable {
 }
 
 public actor RecommendationSQLiteCache: RecommendationCacheStoreProtocol {
-    private var db: OpaquePointer?
+    private final class Connection {
+        let handle: OpaquePointer?
+
+        init(path: String) {
+            var handle: OpaquePointer?
+            sqlite3_open(path, &handle)
+            self.handle = handle
+        }
+
+        deinit {
+            if let handle { sqlite3_close(handle) }
+        }
+    }
+
+    private let connection: Connection
+    private var db: OpaquePointer? { connection.handle }
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
 
@@ -18,25 +33,19 @@ public actor RecommendationSQLiteCache: RecommendationCacheStoreProtocol {
         decoder.dateDecodingStrategy = .iso8601
 
         if inMemory {
-            sqlite3_open(":memory:", &db)
+            connection = Connection(path: ":memory:")
         } else {
             let paths = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)
             let cacheDir = paths[0].appendingPathComponent("VerifiedAI", isDirectory: true)
             try? FileManager.default.createDirectory(at: cacheDir, withIntermediateDirectories: true)
             let fileUrl = cacheDir.appendingPathComponent("recommendations_cache.sqlite")
-            sqlite3_open(fileUrl.path, &db)
+            connection = Connection(path: fileUrl.path)
         }
-        createTableIfNotExists()
+        Self.createTableIfNotExists(on: connection.handle)
     }
 
-    deinit {
-        if let db = db {
-            sqlite3_close(db)
-        }
-    }
-
-    private func createTableIfNotExists() {
-        guard let db = db else { return }
+    private static func createTableIfNotExists(on db: OpaquePointer?) {
+        guard let db else { return }
         let createSql = """
         CREATE TABLE IF NOT EXISTS recommendations_cache (
             id TEXT PRIMARY KEY,

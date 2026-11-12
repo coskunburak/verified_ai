@@ -1,6 +1,8 @@
 package com.verifiedai.studyplan.practice;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -69,6 +71,7 @@ public class PracticeSessionItemEntity {
     @Column(name = "trap_distractor_expr", length = 512)
     private String trapDistractorExpr;
 
+    @JdbcTypeCode(SqlTypes.CHAR)
     @Column(name = "sympy_verification_hash", nullable = false, length = 64)
     private String sympyVerificationHash;
 

@@ -14,6 +14,7 @@ struct HomePlaceholderView: View {
     var makeSolveModel: ((UUID) -> PrimarySolveViewModel)? = nil
     var reviewViewModel: ProblemReviewViewModel? = nil
     var coachHubViewModel: CoachHubViewModel? = nil
+    var spacedReviewViewModel: SpacedReviewViewModel? = nil
 
     var body: some View {
         ScrollView {
@@ -30,6 +31,7 @@ struct HomePlaceholderView: View {
                     )
                 }
                 recommendationsSection
+                spacedReviewSection
                 accessSection
                 activitySection
             }
@@ -66,6 +68,46 @@ struct HomePlaceholderView: View {
                         onDismiss: {
                             Task {
                                 await coachHubViewModel.dismissRecommendation(rec.id)
+                            }
+                        }
+                    )
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var spacedReviewSection: some View {
+        if let spacedReviewViewModel, !spacedReviewViewModel.items.isEmpty {
+            VStack(alignment: .leading, spacing: SpacingTokens.md) {
+                HStack {
+                    Label(LocalizedStringKey("studyplan.spaced.section.title"), systemImage: "arrow.triangle.2.circlepath")
+                        .font(.headline)
+                        .foregroundStyle(ColorTokens.textPrimary)
+                    Spacer()
+                    if spacedReviewViewModel.isOfflineFallback {
+                        Label(LocalizedStringKey("coach.nba.offline.banner"), systemImage: "wifi.slash")
+                            .font(.caption2.weight(.medium))
+                            .foregroundStyle(ColorTokens.warning)
+                    }
+                }
+
+                ForEach(spacedReviewViewModel.items) { item in
+                    SpacedReviewCardView(
+                        item: item,
+                        onStartReview: {
+                            Task {
+                                await spacedReviewViewModel.completeItem(
+                                    itemId: item.itemId,
+                                    passed: true,
+                                    independentVerification: true,
+                                    responseTimeMs: 9000
+                                )
+                            }
+                        },
+                        onDismiss: {
+                            Task {
+                                await spacedReviewViewModel.dismissItem(itemId: item.itemId)
                             }
                         }
                     )

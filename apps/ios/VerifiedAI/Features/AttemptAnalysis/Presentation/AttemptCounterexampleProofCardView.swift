@@ -1,5 +1,5 @@
 import SwiftUI
-struct CounterexampleProofCardView: View {
+struct AttemptCounterexampleProofCardView: View {
     let proof: AttemptCounterexample
     private func display(_ value: String) -> String {
         proof.witnessType == "EQUATION_TRUTH" ? NSLocalizedString("attempt.truth." + value, comment: "Equation truth") : value

@@ -47,6 +47,7 @@ public class CounterfactualTwinDrillEntity {
     @Column(name = "generator_seed", nullable = false, updatable = false, length = 64)
     private String generatorSeed;
 
+    @JdbcTypeCode(SqlTypes.CHAR)
     @Column(name = "verifier_proof_hash", nullable = false, updatable = false, length = 64)
     private String verifierProofHash;
 

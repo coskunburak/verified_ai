@@ -23,17 +23,17 @@ public class AttemptLearningRepository {
     public record Drill(UUID id,UUID attemptId,AttemptLearningEvidence.Twin artifact,Integer selectedOption,
         String answerKey,String assistance,Instant createdAt,Instant completedAt) { }
     public Optional<Drill> drill(UUID owner,UUID attempt) {
-        return jdbc.query("select * from counterfactual_twin_drills where user_id=? and attempt_id=?",(r,n)->new Drill(
+        return jdbc.query("select * from legacy_counterfactual_twin_drills where user_id=? and attempt_id=?",(r,n)->new Drill(
             r.getObject("id",UUID.class),attempt,decode(r.getString("artifact"),AttemptLearningEvidence.Twin.class),
             (Integer)r.getObject("selected_option"),r.getString("answer_key"),r.getString("assistance"),r.getTimestamp("created_at").toInstant(),
             r.getTimestamp("completed_at")==null?null:r.getTimestamp("completed_at").toInstant()),owner,attempt).stream().findFirst();
     }
     public void insertDrill(UUID owner,UUID attempt,UUID id,AttemptLearningEvidence.Twin twin,Instant now) {
-        jdbc.update("insert into counterfactual_twin_drills(id,user_id,attempt_id,artifact,correct_option,created_at) values(?,?,?,?::jsonb,?,?)",
+        jdbc.update("insert into legacy_counterfactual_twin_drills(id,user_id,attempt_id,artifact,correct_option,created_at) values(?,?,?,?::jsonb,?,?)",
             id,owner,attempt,encode(twin),twin.correctOption(),Timestamp.from(now));
     }
     public void complete(UUID owner,Drill drill,int selected,String key,boolean assisted,Instant now) {
-        int changed=jdbc.update("update counterfactual_twin_drills set selected_option=?,answer_key=?,assistance=?,completed_at=? where id=? and user_id=? and completed_at is null",
+        int changed=jdbc.update("update legacy_counterfactual_twin_drills set selected_option=?,answer_key=?,assistance=?,completed_at=? where id=? and user_id=? and completed_at is null",
             selected,key,assisted?"HINT_ASSISTED":"INDEPENDENT",Timestamp.from(now),drill.id(),owner);
         if(changed!=1) throw new IllegalStateException("Concurrent drill completion");
         observe(owner,drill.attemptId(),drill.id(),drill.artifact().mistakeCode(),selected==drill.artifact().correctOption(),
@@ -70,12 +70,13 @@ public class AttemptLearningRepository {
             "mastery",rows("select skill_id,mastery_version,score,half_life_days,evidence_count,confidence,last_assessed_at from learner_skill_mastery where user_id=? and mastery_version='bkt-lite-v1' order by skill_id",owner));
     }
     public Map<String,Object> export(UUID owner) {
-        return Map.of("passport",passport(owner),"drills",rows("select id,attempt_id,artifact::text,correct_option,selected_option,assistance,created_at,completed_at,training_eligible from counterfactual_twin_drills where user_id=? order by created_at,id",owner),
+        return Map.of("passport",passport(owner),"drills",rows("select id,attempt_id,artifact::text,correct_option,selected_option,assistance,created_at,completed_at,training_eligible from legacy_counterfactual_twin_drills where user_id=? order by created_at,id",owner),
             "methods",rows("select attempt_id,evidence::text,created_at,training_eligible from attempt_verified_methods where user_id=? order by created_at,attempt_id",owner));
     }
     public void delete(UUID owner) {
         jdbc.update("delete from learner_skill_mastery where user_id=? and mastery_version='bkt-lite-v1'",owner);
         jdbc.update("delete from learner_mistake_events where user_id=?",owner);
+        jdbc.update("delete from legacy_counterfactual_twin_drills where user_id=?",owner);
         jdbc.update("delete from counterfactual_twin_drills where user_id=?",owner);
         jdbc.update("delete from attempt_verified_methods where user_id=?",owner);
     }

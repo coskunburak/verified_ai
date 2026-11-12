@@ -175,7 +175,7 @@ Phase overview: `sprints/phase08_adaptive_learning_and_study_planning/PHASE_08_A
 
 - `Sprint 8.1` — **Next-Best-Action Recommendation Engine** — `phase08_adaptive_learning_and_study_planning/SPRINT_8.1_NEXT_BEST_ACTION_RECOMMENDATION_ENGINE.md` (Completed: see `phase08_adaptive_learning_and_study_planning/SPRINT_8.1_EXECUTION_REPORT.md`)
 - `Sprint 8.2` — **Adaptive Practice Question Selection and Generation** — `phase08_adaptive_learning_and_study_planning/SPRINT_8.2_ADAPTIVE_PRACTICE_QUESTION_SELECTION_AND_GENERATION.md` (Completed: see `phase08_adaptive_learning_and_study_planning/SPRINT_8.2_EXECUTION_REPORT.md`)
-- `Sprint 8.3` — **Spaced Repetition Scheduling for Skills and Mistakes** — `phase08_adaptive_learning_and_study_planning/SPRINT_8.3_SPACED_REPETITION_SCHEDULING_FOR_SKILLS_AND_MISTAKES.md`
+- `Sprint 8.3` — **Spaced Repetition Scheduling for Skills and Mistakes** — `phase08_adaptive_learning_and_study_planning/SPRINT_8.3_SPACED_REPETITION_SCHEDULING_FOR_SKILLS_AND_MISTAKES.md` (Completed: see `phase08_adaptive_learning_and_study_planning/SPRINT_8.3_EXECUTION_REPORT.md`)
 - `Sprint 8.4` — **Daily Study Plan Generation & Coach Hub (Dual-Mode Solver vs Socratic Switcher)** — `phase08_adaptive_learning_and_study_planning/SPRINT_8.4_DAILY_STUDY_PLAN_GENERATION.md`
 - `Sprint 8.5` — **Missed-Day Recovery and Study Plan Rebalancing** — `phase08_adaptive_learning_and_study_planning/SPRINT_8.5_MISSED_DAY_RECOVERY_AND_STUDY_PLAN_REBALANCING.md`
 - `Sprint 8.6` — **AI Micro-Lessons Triggered by Diagnosed Weaknesses** — `phase08_adaptive_learning_and_study_planning/SPRINT_8.6_AI_MICRO_LESSONS_TRIGGERED_BY_DIAGNOSED_WEAKNESSES.md`

@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/studyplan/spaced-queue-v1.schema.json",
+  "title": "SpacedQueueV1",
+  "description": "Deterministic Spaced Repetition Queue and 7-Day Trap Immunity Checks Specification (DOC-86 §4.4, DOC-83 §5.1, G-PED-04, INV-SR-001..006).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "userId",
+    "evaluatedAt",
+    "dailyCap",
+    "surfacedCount",
+    "interleavedSkillCount",
+    "interleavingSatisfied",
+    "items"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "userId": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "evaluatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "dailyCap": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 3,
+      "const": 3
+    },
+    "surfacedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3
+    },
+    "interleavedSkillCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3
+    },
+    "interleavingSatisfied": {
+      "type": "boolean"
+    },
+    "items": {
+      "type": "array",
+      "maxItems": 3,
+      "items": {
+        "$ref": "#/$defs/SpacedQueueItem"
+      }
+    }
+  },
+  "$defs": {
+    "SpacedQueueItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "itemId",
+        "canonicalSkillCode",
+        "skillDisplayName",
+        "triggerType",
+        "targetMistakeCode",
+        "estimatedRetention",
+        "halfLifeDays",
+        "dueAt",
+        "assignedTwinId",
+        "promptPreviewLatex",
+        "status",
+        "pedagogicalBadgeKey"
+      ],
+      "properties": {
+        "itemId": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+        },
+        "canonicalSkillCode": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 96,
+          "pattern": "^[A-Z0-9_.-]+$"
+        },
+        "skillDisplayName": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 140
+        },
+        "triggerType": {
+          "type": "string",
+          "enum": [
+            "RETENTION_DECAY",
+            "TRAP_IMMUNITY_7D"
+          ]
+        },
+        "targetMistakeCode": {
+          "type": ["string", "null"],
+          "minLength": 3,
+          "maxLength": 64
+        },
+        "estimatedRetention": {
+          "type": "number",
+          "minimum": 0.05,
+          "maximum": 1.0
+        },
+        "halfLifeDays": {
+          "type": "number",
+          "minimum": 0.5,
+          "maximum": 90.0
+        },
+        "dueAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "assignedTwinId": {
+          "type": ["string", "null"],
+          "format": "uuid",
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+        },
+        "promptPreviewLatex": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "SERVED",
+            "COMPLETED",
+            "DISMISSED",
+            "EXPIRED"
+          ]
+        },
+        "pedagogicalBadgeKey": {
+          "type": "string",
+          "enum": [
+            "studyplan.spaced.badge.retention_refresh",
+            "studyplan.spaced.badge.trap_immunity_7d"
+          ]
+        }
+      }
+    }
+  }
+}

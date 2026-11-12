@@ -26,7 +26,7 @@ struct AttemptAnalysisResultsView: View {
                         } else { Text(verbatim: submitted.content).font(.body.monospaced()).textSelection(.enabled) }
                         if step.verdict == .wrong {
                             FirstWrongStepDiffView(code: step.mistakeCode ?? "ALG_TRANSFORMATION_INVALID")
-                            if let proof = step.counterexample { CounterexampleProofCardView(proof: proof) }
+                            if let proof = step.counterexample { AttemptCounterexampleProofCardView(proof: proof) }
                             else { Text("attempt.counterexample.unavailable") }
                         }
                     }.padding().background(.quaternary, in: RoundedRectangle(cornerRadius: 12))
@@ -94,12 +94,12 @@ struct AttemptEvaluationResultsView: View {
                             .accessibilityIdentifier("attempt.evaluation.step.\(step.index).\(step.verdict.rawValue)")
                         Text(LocalizedStringKey("attempt.evaluation.reason." + step.reasonCode))
                         if work.steps[step.index - 1].reviewStatus != "CONFIRMED" { Text("attempt.work.REVIEW_REQUIRED") }
-                        if let proof = step.counterexample { CounterexampleProofCardView(proof: proof) }
+                        if let proof = step.counterexample { AttemptCounterexampleProofCardView(proof: proof) }
                     }
                 }
                 Label(LocalizedStringKey("attempt.evaluation.final." + e.finalAnswerStatus.rawValue), systemImage: "flag")
                     .font(.headline).accessibilityIdentifier("attempt.evaluation.final")
-                if let proof = e.finalAnswerEvidence?.steps.first?.counterexample { CounterexampleProofCardView(proof: proof) }
+                if let proof = e.finalAnswerEvidence?.steps.first?.counterexample { AttemptCounterexampleProofCardView(proof: proof) }
             }
         }.padding()
             .foregroundStyle(ColorTokens.textPrimary)

@@ -3254,6 +3254,104 @@ paths:
         '404':
           $ref: '#/components/responses/ProblemNotFound'
 
+  /v1/study-plan/spaced-queue:
+    get:
+      operationId: getDailySpacedQueue
+      tags:
+        - StudyPlan
+      summary: Get daily spaced repetition review queue
+      description: >
+        Retrieves the prioritized daily spaced repetition queue capped at <= 3 items with interleaving and 7-day trap immunity checks (INV-SR-001..004).
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Daily spaced review queue retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '../../schemas/studyplan/spaced-queue-v1.schema.json'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+
+  /v1/study-plan/spaced-queue/{itemId}/complete:
+    post:
+      operationId: completeSpacedQueueItem
+      tags:
+        - StudyPlan
+      summary: Complete a spaced review queue item
+      description: >
+        Submits completion result for a spaced queue item, updating skill half-life and resolving or relapsing 7-day trap immunity (INV-SR-001, INV-SR-002).
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Spaced review queue item ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SpacedItemCompleteRequest'
+      responses:
+        '200':
+          description: Spaced item completed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpacedItemCompletionResponse'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '422':
+          description: Rapid guess guard triggered or invalid item state
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+
+  /v1/study-plan/spaced-queue/{itemId}/dismiss:
+    post:
+      operationId: dismissSpacedQueueItem
+      tags:
+        - StudyPlan
+      summary: Dismiss a spaced review queue item
+      description: >
+        Dismisses a spaced queue item from the active daily queue. Protected by BOLA security checks (returns 404 on tenant mismatch).
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Spaced review queue item ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SpacedItemDismissRequest'
+      responses:
+        '200':
+          description: Spaced item dismissed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpacedQueueItemDto'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -7367,3 +7465,80 @@ components:
           type: boolean
         session:
           $ref: '../../schemas/studyplan/practice-session-v1.schema.json'
+
+    SpacedItemCompleteRequest:
+      type: object
+      required: [passed, independentVerification, responseTimeMs]
+      properties:
+        passed:
+          type: boolean
+        independentVerification:
+          type: boolean
+        responseTimeMs:
+          type: integer
+          minimum: 0
+        triggeredMistakeCode:
+          type: [string, "null"]
+
+    SpacedItemCompletionResponse:
+      type: object
+      required: [itemId, previousHalfLifeDays, updatedHalfLifeDays, updatedRetention, nextDueAt, mistakeResolutionStatus]
+      properties:
+        itemId:
+          type: string
+          format: uuid
+        previousHalfLifeDays:
+          type: number
+        updatedHalfLifeDays:
+          type: number
+        updatedRetention:
+          type: number
+        nextDueAt:
+          type: string
+          format: date-time
+        mistakeResolutionStatus:
+          type: string
+          enum: [NONE, STABLE_RESOLVED, RELAPSED]
+
+    SpacedItemDismissRequest:
+      type: object
+      required: [reasonCode]
+      properties:
+        reasonCode:
+          type: string
+          enum: [SCHEDULE_LATER, ALREADY_REVIEWED_OFFLINE]
+
+    SpacedQueueItemDto:
+      type: object
+      required: [itemId, canonicalSkillCode, skillDisplayName, triggerType, estimatedRetention, halfLifeDays, dueAt, promptPreviewLatex, status, pedagogicalBadgeKey]
+      properties:
+        itemId:
+          type: string
+          format: uuid
+        canonicalSkillCode:
+          type: string
+        skillDisplayName:
+          type: string
+        triggerType:
+          type: string
+          enum: [RETENTION_DECAY, TRAP_IMMUNITY_7D]
+        targetMistakeCode:
+          type: [string, "null"]
+        estimatedRetention:
+          type: number
+        halfLifeDays:
+          type: number
+        dueAt:
+          type: string
+          format: date-time
+        assignedTwinId:
+          type: [string, "null"]
+          format: uuid
+        promptPreviewLatex:
+          type: string
+        status:
+          type: string
+          enum: [PENDING, SERVED, COMPLETED, DISMISSED, EXPIRED]
+        pedagogicalBadgeKey:
+          type: string
+          enum: [studyplan.spaced.badge.retention_refresh, studyplan.spaced.badge.trap_immunity_7d]

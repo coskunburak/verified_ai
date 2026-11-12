@@ -12951,6 +12951,108 @@
           }
         }
       }
+    },
+    "studyplan.spaced.section.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retention & Immunity Refresh"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kalıcılık ve Bağışıklık Pekiştirmesi"
+          }
+        }
+      }
+    },
+    "studyplan.spaced.badge.retention_refresh": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retention Refresh"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kalıcılık Pekiştirmesi"
+          }
+        }
+      }
+    },
+    "studyplan.spaced.badge.trap_immunity_7d": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "7-Day Immunity Check"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "7 Günlük Tuzak Bağışıklık Kontrolü"
+          }
+        }
+      }
+    },
+    "studyplan.spaced.retention.pill": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Estimated Retention: %lld%% · Ready for Review"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tahmini Kalıcılık: %%%lld · Tekrar İçin Hazır"
+          }
+        }
+      }
+    },
+    "studyplan.spaced.empty.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Memory Curves Are Strong"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hafıza Eğrilerin Güçlü Görünüyor"
+          }
+        }
+      }
+    },
+    "studyplan.spaced.action.start": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verify Retention"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kalıcılığı Doğrula"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

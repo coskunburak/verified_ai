@@ -1,9 +1,9 @@
 package com.verifiedai.mistake.passport.repository;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.verifiedai.mistake.passport.dto.MistakePassportResponseDto.*;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
+import tools.jackson.databind.ObjectMapper;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;

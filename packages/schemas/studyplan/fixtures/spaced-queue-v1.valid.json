@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "1.0.0",
+  "userId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+  "evaluatedAt": "2026-11-13T08:00:00Z",
+  "dailyCap": 3,
+  "surfacedCount": 3,
+  "interleavedSkillCount": 3,
+  "interleavingSatisfied": true,
+  "items": [
+    {
+      "itemId": "11111111-aaaa-bbbb-cccc-111111111111",
+      "canonicalSkillCode": "MATH.ALG.QUADRATIC_DISCRIMINANT",
+      "skillDisplayName": "Quadratic Discriminant Analysis",
+      "triggerType": "TRAP_IMMUNITY_7D",
+      "targetMistakeCode": "TRAP_SIGN_DISTRIB_NEG",
+      "estimatedRetention": 0.7100,
+      "halfLifeDays": 7.0,
+      "dueAt": "2026-11-13T08:00:00Z",
+      "assignedTwinId": "44444444-aaaa-bbbb-cccc-444444444444",
+      "promptPreviewLatex": "\\Delta = b^2 - 4ac \\text{ for } 2x^2 - 5x - 3 = 0",
+      "status": "PENDING",
+      "pedagogicalBadgeKey": "studyplan.spaced.badge.trap_immunity_7d"
+    },
+    {
+      "itemId": "22222222-aaaa-bbbb-cccc-222222222222",
+      "canonicalSkillCode": "MATH.CALC.CHAIN_RULE_COMPOSITE",
+      "skillDisplayName": "Composite Function Chain Rule",
+      "triggerType": "RETENTION_DECAY",
+      "targetMistakeCode": null,
+      "estimatedRetention": 0.6840,
+      "halfLifeDays": 4.5,
+      "dueAt": "2026-11-13T08:00:00Z",
+      "assignedTwinId": null,
+      "promptPreviewLatex": "\\frac{d}{dx}\\left[(3x^2 + 1)^4\\right]",
+      "status": "PENDING",
+      "pedagogicalBadgeKey": "studyplan.spaced.badge.retention_refresh"
+    },
+    {
+      "itemId": "33333333-aaaa-bbbb-cccc-333333333333",
+      "canonicalSkillCode": "MATH.TRIG.DOUBLE_ANGLE_IDENTITY",
+      "skillDisplayName": "Double Angle Trigonometric Identity",
+      "triggerType": "RETENTION_DECAY",
+      "targetMistakeCode": null,
+      "estimatedRetention": 0.7050,
+      "halfLifeDays": 6.0,
+      "dueAt": "2026-11-13T08:00:00Z",
+      "assignedTwinId": null,
+      "promptPreviewLatex": "\\sin(2\\theta) = 2\\sin(\\theta)\\cos(\\theta)",
+      "status": "PENDING",
+      "pedagogicalBadgeKey": "studyplan.spaced.badge.retention_refresh"
+    }
+  ]
+}

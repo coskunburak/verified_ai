@@ -63,6 +63,11 @@ def run_validation():
     practice_session_schema_path = ROOT / "packages/schemas/studyplan/practice-session-v1.schema.json"
     practice_session_fixture_path = ROOT / "packages/schemas/studyplan/fixtures/practice-session-v1.valid.json"
 
+    # Sprint 8.3 Files
+    spaced_queue_schema_path = ROOT / "packages/schemas/studyplan/spaced-queue-v1.schema.json"
+    spaced_queue_fixture_path = ROOT / "packages/schemas/studyplan/fixtures/spaced-queue-v1.valid.json"
+    spaced_queue_example_path = ROOT / "packages/schemas/studyplan/examples/spaced-queue-v1.valid.json"
+
     assert mistake_passport_schema_path.exists(), "Missing mistake-passport-v1.schema.json"
     assert mistake_passport_fixture_path.exists(), "Missing mistake-passport-v1.valid.json"
     assert counterexample_schema_path.exists(), "Missing counterexample-proof-card-v1.schema.json"
@@ -73,6 +78,9 @@ def run_validation():
     assert recommendations_fixture_path.exists(), "Missing learner-recommendations-v1.valid.json"
     assert practice_session_schema_path.exists(), "Missing practice-session-v1.schema.json"
     assert practice_session_fixture_path.exists(), "Missing practice-session-v1.valid.json"
+    assert spaced_queue_schema_path.exists(), "Missing spaced-queue-v1.schema.json"
+    assert spaced_queue_fixture_path.exists(), "Missing spaced-queue-v1.valid.json"
+    assert spaced_queue_example_path.exists(), "Missing spaced-queue-v1 example"
 
     mp_schema = json.loads(mistake_passport_schema_path.read_text(encoding="utf-8"))
     mp_fixture = json.loads(mistake_passport_fixture_path.read_text(encoding="utf-8"))
@@ -84,12 +92,16 @@ def run_validation():
     rec_fixture = json.loads(recommendations_fixture_path.read_text(encoding="utf-8"))
     ps_schema = json.loads(practice_session_schema_path.read_text(encoding="utf-8"))
     ps_fixture = json.loads(practice_session_fixture_path.read_text(encoding="utf-8"))
+    sq_schema = json.loads(spaced_queue_schema_path.read_text(encoding="utf-8"))
+    sq_fixture = json.loads(spaced_queue_fixture_path.read_text(encoding="utf-8"))
+    sq_example = json.loads(spaced_queue_example_path.read_text(encoding="utf-8"))
 
     validate_schema_structure(mp_schema, "mistake-passport-v1.schema.json")
     validate_schema_structure(ce_schema, "counterexample-proof-card-v1.schema.json")
     validate_schema_structure(cal_schema, "mastery-calibration-summary-v1.schema.json")
     validate_schema_structure(rec_schema, "learner-recommendations-v1.schema.json")
     validate_schema_structure(ps_schema, "practice-session-v1.schema.json")
+    validate_schema_structure(sq_schema, "spaced-queue-v1.schema.json")
 
     sg_schema = json.loads(skill_graph_schema_path.read_text(encoding="utf-8"))
     sg_fixture = json.loads(skill_graph_fixture_path.read_text(encoding="utf-8"))
@@ -231,11 +243,58 @@ def run_validation():
         bad_ps_5 = copy.deepcopy(ps_fixture)
         bad_ps_5["items"] = []
         assert list(ps_val.iter_errors(bad_ps_5)), "Expected failure when items array is empty"
+
+        # Sprint 8.3 Spaced Repetition Queue Schema Verification & Negative Mutations
+        jsonschema.Draft202012Validator.check_schema(sq_schema)
+        sq_val = jsonschema.Draft202012Validator(sq_schema)
+        sq_val.validate(sq_fixture)
+        sq_val.validate(sq_example)
+
+        # Mutation 1: mut_missing_trigger_type (deletes triggerType from an item)
+        bad_sq_1 = copy.deepcopy(sq_fixture)
+        del bad_sq_1["items"][0]["triggerType"]
+        assert list(sq_val.iter_errors(bad_sq_1)), "Expected failure when triggerType is missing from an item"
+
+        # Mutation 2: mut_overload_cap_exceeded (sets items array length to 4 or surfacedCount: 4)
+        bad_sq_2 = copy.deepcopy(sq_fixture)
+        extra_item = copy.deepcopy(bad_sq_2["items"][0])
+        extra_item["itemId"] = "99999999-aaaa-bbbb-cccc-999999999999"
+        bad_sq_2["items"].append(extra_item)
+        assert list(sq_val.iter_errors(bad_sq_2)), "Expected failure when items array length exceeds daily cap of 3"
+
+        bad_sq_2b = copy.deepcopy(sq_fixture)
+        bad_sq_2b["surfacedCount"] = 4
+        assert list(sq_val.iter_errors(bad_sq_2b)), "Expected failure when surfacedCount > 3"
+
+        # Mutation 3: mut_retention_out_of_bounds (sets estimatedRetention < 0.05 or > 1.0)
+        bad_sq_3 = copy.deepcopy(sq_fixture)
+        bad_sq_3["items"][0]["estimatedRetention"] = 0.01
+        assert list(sq_val.iter_errors(bad_sq_3)), "Expected failure when estimatedRetention < 0.05"
+
+        bad_sq_3b = copy.deepcopy(sq_fixture)
+        bad_sq_3b["items"][0]["estimatedRetention"] = 1.15
+        assert list(sq_val.iter_errors(bad_sq_3b)), "Expected failure when estimatedRetention > 1.0"
+
+        # Mutation 4: mut_additional_property_injected (injects unallowedSecretField at root or item)
+        bad_sq_4 = copy.deepcopy(sq_fixture)
+        bad_sq_4["unallowedSecretField"] = True
+        assert list(sq_val.iter_errors(bad_sq_4)), "Expected failure when root has additional property"
+
+        bad_sq_4b = copy.deepcopy(sq_fixture)
+        bad_sq_4b["items"][0]["unallowedSecretField"] = True
+        assert list(sq_val.iter_errors(bad_sq_4b)), "Expected failure when item has additional property"
+
+        # Mutation 5: mut_invalid_uuid_format (sets itemId: not-a-valid-uuid)
+        bad_sq_5 = copy.deepcopy(sq_fixture)
+        bad_sq_5["items"][0]["itemId"] = "not-a-valid-uuid"
+        assert list(sq_val.iter_errors(bad_sq_5)), "Expected failure when itemId is not a valid UUID"
     else:
         # Fallback pure-python verification of invariants
         assert sg_fixture["schemaVersion"] == "skill-graph-v1"
         assert vt_fixture["schemaVersion"] == "verified-twin-v1"
         assert vt_fixture["trainingEligible"] is False
+        assert sq_fixture["schemaVersion"] == "1.0.0"
+        assert len(sq_fixture["items"]) <= 3
 
     # Sprint 7.9 schema invariants
     assert mp_fixture["schemaVersion"] == "mistake-passport.v1"
@@ -315,6 +374,28 @@ def run_validation():
         assert practice_abandon["security"] == [{"bearerAuth": []}], "Security bearerAuth missing on abandonPracticeSession"
         assert "200" in practice_abandon["responses"], "HTTP 200 OK missing from abandonPracticeSession"
 
+        # Sprint 8.3 Spaced Repetition Endpoints
+        assert "/v1/study-plan/spaced-queue" in paths, "Missing /v1/study-plan/spaced-queue in OpenAPI spec"
+        sq_get = paths["/v1/study-plan/spaced-queue"]["get"]
+        assert sq_get["security"] == [{"bearerAuth": []}], "Security bearerAuth missing on /v1/study-plan/spaced-queue"
+        assert "200" in sq_get["responses"], "HTTP 200 OK missing from /v1/study-plan/spaced-queue"
+        assert "401" in sq_get["responses"], "HTTP 401 Unauthorized missing from /v1/study-plan/spaced-queue"
+
+        assert "/v1/study-plan/spaced-queue/{itemId}/complete" in paths, "Missing complete spaced item endpoint in OpenAPI spec"
+        sq_complete = paths["/v1/study-plan/spaced-queue/{itemId}/complete"]["post"]
+        assert sq_complete["security"] == [{"bearerAuth": []}], "Security bearerAuth missing on complete spaced item"
+        assert "200" in sq_complete["responses"], "HTTP 200 OK missing from complete spaced item"
+        assert "401" in sq_complete["responses"], "HTTP 401 Unauthorized missing from complete spaced item"
+        assert "404" in sq_complete["responses"], "HTTP 404 Not Found missing from complete spaced item"
+        assert "422" in sq_complete["responses"], "HTTP 422 Unprocessable Entity missing from complete spaced item"
+
+        assert "/v1/study-plan/spaced-queue/{itemId}/dismiss" in paths, "Missing dismiss spaced item endpoint in OpenAPI spec"
+        sq_dismiss = paths["/v1/study-plan/spaced-queue/{itemId}/dismiss"]["post"]
+        assert sq_dismiss["security"] == [{"bearerAuth": []}], "Security bearerAuth missing on dismiss spaced item"
+        assert "200" in sq_dismiss["responses"], "HTTP 200 OK missing from dismiss spaced item"
+        assert "401" in sq_dismiss["responses"], "HTTP 401 Unauthorized missing from dismiss spaced item"
+        assert "404" in sq_dismiss["responses"], "HTTP 404 Not Found missing from dismiss spaced item"
+
     # 3. iOS Localizable.xcstrings Key Verification
     xcstrings_data = json.loads(strings_path.read_text(encoding="utf-8"))
     strings = xcstrings_data.get("strings", {})
@@ -357,6 +438,12 @@ def run_validation():
         "practice.action.hint",
         "practice.action.abandon",
         "practice.trap.detected",
+        "studyplan.spaced.section.title",
+        "studyplan.spaced.badge.retention_refresh",
+        "studyplan.spaced.badge.trap_immunity_7d",
+        "studyplan.spaced.retention.pill",
+        "studyplan.spaced.empty.title",
+        "studyplan.spaced.action.start",
     ]
 
     for key in required_keys:
@@ -367,7 +454,7 @@ def run_validation():
             val = loc.get("value")
             assert val and len(val.strip()) > 0, f"Missing {lang} translation for key: {key}"
 
-    print(f"PASS: Sprint 8.1 & 8.2 JSON schemas, negative mutations, OpenAPI 3.1 endpoints, and {len(required_keys)} EN/TR localizations verified.")
+    print(f"PASS: Sprint 8.1, 8.2 & 8.3 JSON schemas, negative mutations, OpenAPI 3.1 endpoints, and {len(required_keys)} EN/TR localizations verified.")
 
 
 if __name__ == "__main__":

@@ -7,13 +7,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 PREFIXES = ('solve.', 'verification.', 'explanation.', 'tutor.', 'attempt.', 'visualization.')
-TOKEN = re.compile(r'%(?:(\d+)\$)?[-+ #0]*(?:\d+|\*)?(?:\.(?:\d+|\*))?(hh|ll|[hlLzjt])?([@diuoxXfFeEgGaAcCsSp])')
+FORMAT_SPECIFIER = re.compile(r'%(?:(\d+)\$)?[-+ #0]*(?:\d+|\*)?(?:\.(?:\d+|\*))?(hh|ll|[hlLzjt])?([@diuoxXfFeEgGaAcCsSp])')
 
 
 def placeholders(text):
     result = []
     index = 0
-    for match in TOKEN.finditer(text.replace('%%', '')):
+    for match in FORMAT_SPECIFIER.finditer(text.replace('%%', '')):
         index += 1
         result.append((int(match[1] or index), (match[2] or '') + match[3]))
     return sorted(result)

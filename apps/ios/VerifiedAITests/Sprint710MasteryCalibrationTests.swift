@@ -190,7 +190,7 @@ final class Sprint710MasteryCalibrationTests: XCTestCase {
         let sampleResponse = MistakePassportResponseDto(
             schemaVersion: "mistake-passport.v1",
             learnerId: UUID(),
-            asOf: Date(),
+            generatedAt: Date(),
             summaryMetrics: PassportSummaryMetrics(
                 conqueredExamTrapsCount: 3,
                 activeExamTrapsCount: 1,

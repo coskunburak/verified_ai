@@ -194,19 +194,19 @@ public struct NativeMathLabel: UIViewRepresentable {
         self.fallback = fallback
         self.pointSize = pointSize
     }
-    final class Container: UIView {
+    public final class Container: UIView {
         let math = MTMathUILabel()
         let plain = UILabel()
-        override init(frame: CGRect) {
+        public override init(frame: CGRect) {
             super.init(frame: frame); addSubview(math); addSubview(plain)
             math.displayErrorInline = false; math.textAlignment = .left; plain.numberOfLines = 0
         }
-        required init?(coder: NSCoder) { return nil }
-        override func layoutSubviews() { super.layoutSubviews(); math.frame = bounds; plain.frame = bounds }
-        override var intrinsicContentSize: CGSize { math.isHidden ? plain.intrinsicContentSize : math.intrinsicContentSize }
+        public required init?(coder: NSCoder) { return nil }
+        public override func layoutSubviews() { super.layoutSubviews(); math.frame = bounds; plain.frame = bounds }
+        public override var intrinsicContentSize: CGSize { math.isHidden ? plain.intrinsicContentSize : math.intrinsicContentSize }
     }
-    func makeUIView(context: Context) -> Container { Container(frame: .zero) }
-    func updateUIView(_ view: Container, context: Context) {
+    public func makeUIView(context: Context) -> Container { Container(frame: .zero) }
+    public func updateUIView(_ view: Container, context: Context) {
         // SwiftMath reparses when latex is assigned. Keep only this view's current content;
         // no cross-account/global mathematical cache is introduced.
         if view.math.latex != latex { view.math.latex = latex }
@@ -216,5 +216,5 @@ public struct NativeMathLabel: UIViewRepresentable {
         view.plain.text = fallback; view.plain.font = .monospacedSystemFont(ofSize: pointSize, weight: .regular)
         view.invalidateIntrinsicContentSize()
     }
-    func sizeThatFits(_ proposal: ProposedViewSize, uiView: Container, context: Context) -> CGSize? { uiView.intrinsicContentSize }
+    public func sizeThatFits(_ proposal: ProposedViewSize, uiView: Container, context: Context) -> CGSize? { uiView.intrinsicContentSize }
 }

@@ -4,6 +4,7 @@ import com.verifiedai.studyplan.domain.*;
 import com.verifiedai.studyplan.engine.NextBestActionRecommendationEngine;
 import com.verifiedai.studyplan.engine.ScoredRecommendation;
 import com.verifiedai.studyplan.engine.SkillCandidateSignal;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class StudyPlanService {
     private final NextBestActionSignalProvider signalProvider;
     private final Clock clock;
 
+    @Autowired
     public StudyPlanService(
             LearnerRecommendationRepository repository,
             NextBestActionRecommendationEngine engine,

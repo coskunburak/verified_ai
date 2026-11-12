@@ -64,7 +64,7 @@
 		B6700000000000000000000C /* AttemptAnalysisUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6700000000000000000000C /* AttemptAnalysisUITests.swift */; };
 		B6700000000000000000000B /* AttemptAnalysisTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6700000000000000000000B /* AttemptAnalysisTests.swift */; };
 		B6700000000000000000000A /* FirstWrongStepDiffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6700000000000000000000A /* FirstWrongStepDiffView.swift */; };
-		B67000000000000000000009 /* CounterexampleProofCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A67000000000000000000009 /* CounterexampleProofCardView.swift */; };
+		B67000000000000000000009 /* AttemptCounterexampleProofCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A67000000000000000000009 /* AttemptCounterexampleProofCardView.swift */; };
 		B67000000000000000000008 /* AttemptStepEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A67000000000000000000008 /* AttemptStepEditorView.swift */; };
 		B67000000000000000000007 /* AttemptAnalysisResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A67000000000000000000007 /* AttemptAnalysisResultsView.swift */; };
 		B67000000000000000000006 /* AnalyzeMyWorkViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A67000000000000000000006 /* AnalyzeMyWorkViewModel.swift */; };
@@ -272,7 +272,7 @@
 		A6700000000000000000000C /* AttemptAnalysisUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAIUITests/AttemptAnalysisUITests.swift; sourceTree = SOURCE_ROOT; };
 		A6700000000000000000000B /* AttemptAnalysisTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/AttemptAnalysis/AttemptAnalysisTests.swift; sourceTree = SOURCE_ROOT; };
 		A6700000000000000000000A /* FirstWrongStepDiffView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/AttemptAnalysis/Presentation/FirstWrongStepDiffView.swift; sourceTree = SOURCE_ROOT; };
-		A67000000000000000000009 /* CounterexampleProofCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/AttemptAnalysis/Presentation/CounterexampleProofCardView.swift; sourceTree = SOURCE_ROOT; };
+		A67000000000000000000009 /* AttemptCounterexampleProofCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/AttemptAnalysis/Presentation/AttemptCounterexampleProofCardView.swift; sourceTree = SOURCE_ROOT; };
 		A67000000000000000000008 /* AttemptStepEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/AttemptAnalysis/Presentation/AttemptStepEditorView.swift; sourceTree = SOURCE_ROOT; };
 		A67000000000000000000007 /* AttemptAnalysisResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/AttemptAnalysis/Presentation/AttemptAnalysisResultsView.swift; sourceTree = SOURCE_ROOT; };
 		A67000000000000000000006 /* AnalyzeMyWorkViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/AttemptAnalysis/Presentation/AnalyzeMyWorkViewModel.swift; sourceTree = SOURCE_ROOT; };
@@ -1072,7 +1072,7 @@
 				A67000000000000000000006 /* AnalyzeMyWorkViewModel.swift */,
 				A67000000000000000000007 /* AttemptAnalysisResultsView.swift */,
 				A67000000000000000000008 /* AttemptStepEditorView.swift */,
-				A67000000000000000000009 /* CounterexampleProofCardView.swift */,
+				A67000000000000000000009 /* AttemptCounterexampleProofCardView.swift */,
 				A6700000000000000000000A /* FirstWrongStepDiffView.swift */,
 				A64000000000000000000001 /* TutorSession.swift */,
 				A64000000000000000000002 /* TutorAPI.swift */,
@@ -1295,7 +1295,7 @@
 				B67000000000000000000006 /* AnalyzeMyWorkViewModel.swift in Sources */,
 				B67000000000000000000007 /* AttemptAnalysisResultsView.swift in Sources */,
 				B67000000000000000000008 /* AttemptStepEditorView.swift in Sources */,
-				B67000000000000000000009 /* CounterexampleProofCardView.swift in Sources */,
+				B67000000000000000000009 /* AttemptCounterexampleProofCardView.swift in Sources */,
 				B6700000000000000000000A /* FirstWrongStepDiffView.swift in Sources */,
 				B64000000000000000000001 /* TutorSession.swift in Sources */,
 				B64000000000000000000002 /* TutorAPI.swift in Sources */,

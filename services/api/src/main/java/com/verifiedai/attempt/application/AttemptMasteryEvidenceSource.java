@@ -66,7 +66,7 @@ public class AttemptMasteryEvidenceSource implements MasteryEvidenceSource, Mist
         jdbc.query("""
             select d.*,a.analysis_jsonb,a.problem_session_id,a.canonical_id,a.canonical_revision,a.parse_id,a.parse_revision,
                 (select count(*) from student_attempt_steps st where st.attempt_id=a.id) as step_count
-            from counterfactual_twin_drills d join student_attempts a on a.id=d.attempt_id and a.user_id=d.user_id
+            from legacy_counterfactual_twin_drills d join student_attempts a on a.id=d.attempt_id and a.user_id=d.user_id
             where d.user_id=? and d.completed_at is not null order by d.completed_at,d.id
             """,r->{
                 UUID id=r.getObject("id",UUID.class),attempt=r.getObject("attempt_id",UUID.class);

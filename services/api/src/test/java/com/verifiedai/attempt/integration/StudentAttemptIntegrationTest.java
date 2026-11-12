@@ -131,6 +131,7 @@ class StudentAttemptIntegrationTest extends PostgresIntegrationTestSupport {
         var versions=jdbc.queryForList("select version::integer from flyway_schema_history where success=true and version is not null",Integer.class);
         assertThat(versions).contains(30,31,32,33).doesNotContain(24,25,26);
         assertThat(jdbc.queryForObject("select to_regclass('learner_skill_mastery') is not null",Boolean.class)).isTrue();
+        assertThat(jdbc.queryForObject("select to_regclass('legacy_counterfactual_twin_drills') is not null",Boolean.class)).isTrue();
         assertThat(jdbc.queryForObject("select to_regclass('counterfactual_twin_drills') is not null",Boolean.class)).isTrue();
     }
     @Test void learningEvidenceIsIdempotentAndPrivacyDeletesDerivedMastery() {
@@ -198,11 +199,12 @@ class StudentAttemptIntegrationTest extends PostgresIntegrationTestSupport {
         assertThat(jdbc.queryForObject("select evidence_count from learner_skill_mastery where user_id=?",Integer.class,owner)).isEqualTo(2);
         var foreign=new SolverSourceFixture(jdbc).insertUser();
         assertThatThrownBy(()->learning.drill(foreign,problem,attempt.id())).isInstanceOf(ApiProblemException.class);
-        assertThatThrownBy(()->jdbc.update("update counterfactual_twin_drills set correct_option=1 where id=?",open.id()))
+        assertThatThrownBy(()->jdbc.update("update legacy_counterfactual_twin_drills set correct_option=1 where id=?",open.id()))
             .isInstanceOf(org.springframework.dao.DataIntegrityViolationException.class);
         var tx=new TransactionTemplate(transactions);
         assertThat(tx.execute(t->store.learningExport(owner)).toString()).doesNotContain("answer_key","answer-twin-key");
         tx.executeWithoutResult(t->{ sources.lockOwner(owner,problem); store.delete(owner); });
+        assertThat(jdbc.queryForObject("select count(*) from legacy_counterfactual_twin_drills where user_id=?",Integer.class,owner)).isZero();
         assertThat(jdbc.queryForObject("select count(*) from counterfactual_twin_drills where user_id=?",Integer.class,owner)).isZero();
     }
 
