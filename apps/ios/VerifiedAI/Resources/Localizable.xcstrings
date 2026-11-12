@@ -12764,6 +12764,193 @@
           }
         }
       }
+    },
+    "practice.session.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Daily Practice Session"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Günlük Pratik Oturumu"
+          }
+        }
+      }
+    },
+    "practice.slot.trap_closure": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trap Focus Area"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Odak Alanı Kapanışı"
+          }
+        }
+      }
+    },
+    "practice.slot.spaced_drill": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spaced Retention Drill"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aralıklı Tekrar Alıştırması"
+          }
+        }
+      }
+    },
+    "practice.slot.exam_synthesis": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exam ROI Synthesis"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sınav Sentezi"
+          }
+        }
+      }
+    },
+    "practice.lock.active": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Independent verification active: hints unlock in 60s"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bağımsız doğrulama aktif: ipuçları 60sn sonra açılacak"
+          }
+        }
+      }
+    },
+    "practice.lock.unlocked": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Independent verification window completed"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bağımsız çalışma penceresi tamamlandı"
+          }
+        }
+      }
+    },
+    "practice.rapid_guess.warning": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Take a moment to reason algebraically before guessing."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tahminde bulunmadan önce lütfen cebirsel adımları dikkatlice inceleyin."
+          }
+        }
+      }
+    },
+    "practice.action.submit": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Submit for Verification"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Doğrulamaya Gönder"
+          }
+        }
+      }
+    },
+    "practice.action.hint": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlock Hint"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İpucu Aç"
+          }
+        }
+      }
+    },
+    "practice.action.abandon": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "End Session"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oturumu Sonlandır"
+          }
+        }
+      }
+    },
+    "practice.trap.detected": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A known reasoning pattern was detected. Review the denominator exclusion rules."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bilinen bir odak alanı tespit edildi. Payda sıfırlayan kök kurallarını inceleyiniz."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

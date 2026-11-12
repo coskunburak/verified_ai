@@ -1,0 +1,374 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/studyplan/practice-session-v1.schema.json",
+  "title": "PracticeSessionV1",
+  "description": "Deterministic 1-2-1 practice session specification with 60-second independent verification protocol (INV-PRAC-001..006, DOC-84, DOC-85).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "userId",
+    "sessionMode",
+    "status",
+    "targetSkillId",
+    "learnerMasterySnapshot",
+    "totalItems",
+    "completedItems",
+    "verifiedCorrectItems",
+    "trapClosureAchieved",
+    "startedAt",
+    "updatedAt",
+    "items"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "userId": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "sourceRecommendationId": {
+      "type": ["string", "null"],
+      "format": "uuid",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "sessionMode": {
+      "type": "string",
+      "enum": [
+        "DAILY_1_2_1",
+        "TRAP_VERIFICATION_DRILL",
+        "SPACED_REVIEW",
+        "EXAM_ROI_SYNTHESIS"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "IN_PROGRESS",
+        "COMPLETED",
+        "ABANDONED"
+      ]
+    },
+    "targetSkillId": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 128
+    },
+    "activeTrapFamily": {
+      "type": ["string", "null"],
+      "maxLength": 64
+    },
+    "learnerMasterySnapshot": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "totalItems": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10
+    },
+    "completedItems": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10
+    },
+    "verifiedCorrectItems": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10
+    },
+    "trapClosureAchieved": {
+      "type": "boolean"
+    },
+    "startedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completedAt": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "abandonedAt": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10,
+      "items": {
+        "$ref": "#/$defs/PracticeSessionItem"
+      }
+    }
+  },
+  "$defs": {
+    "ZpdWindow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lowerBound",
+        "upperBound",
+        "targetDifficulty"
+      ],
+      "properties": {
+        "lowerBound": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "upperBound": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "targetDifficulty": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        }
+      }
+    },
+    "VerificationLockState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "isLocked",
+        "lockDurationSeconds",
+        "remainingLockSeconds"
+      ],
+      "properties": {
+        "isLocked": {
+          "type": "boolean"
+        },
+        "lockDurationSeconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 300
+        },
+        "remainingLockSeconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 300
+        },
+        "unlockedAt": {
+          "type": ["string", "null"],
+          "format": "date-time"
+        }
+      }
+    },
+    "SubmissionFeedback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "itemStatus",
+        "isCorrect",
+        "trapTriggered",
+        "verificationLockActive",
+        "remainingLockSeconds",
+        "trapClosureAchieved"
+      ],
+      "properties": {
+        "itemStatus": {
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "SUBMITTED_CORRECT",
+            "SUBMITTED_INCORRECT",
+            "SKIPPED"
+          ]
+        },
+        "isCorrect": {
+          "type": "boolean"
+        },
+        "trapTriggered": {
+          "type": "boolean"
+        },
+        "trapDiagnosticKey": {
+          "type": ["string", "null"]
+        },
+        "trapDiagnosticMessageTr": {
+          "type": ["string", "null"]
+        },
+        "trapDiagnosticMessageEn": {
+          "type": ["string", "null"]
+        },
+        "verificationLockActive": {
+          "type": "boolean"
+        },
+        "remainingLockSeconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 300
+        },
+        "trapClosureAchieved": {
+          "type": "boolean"
+        }
+      }
+    },
+    "PracticeSessionItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "sessionId",
+        "userId",
+        "ordinalIndex",
+        "slotRole",
+        "questionSource",
+        "sourceQuestionId",
+        "skillId",
+        "targetDifficulty",
+        "itemDifficulty",
+        "zpdWindow",
+        "promptLatex",
+        "promptInstructionTr",
+        "promptInstructionEn",
+        "canonicalSolutionExpr",
+        "sympyVerificationHash",
+        "isTwinVerification",
+        "lockState",
+        "hintsUnlockedCount",
+        "attemptCount",
+        "itemStatus",
+        "detectedTrapTriggered",
+        "createdAt"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+        },
+        "sessionId": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+        },
+        "userId": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+        },
+        "ordinalIndex": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9
+        },
+        "slotRole": {
+          "type": "string",
+          "enum": [
+            "TRAP_CLOSURE",
+            "SPACED_DRILL",
+            "EXAM_SYNTHESIS"
+          ]
+        },
+        "questionSource": {
+          "type": "string",
+          "enum": [
+            "CURATED_BANK",
+            "DETERMINISTIC_TWIN_TIER1",
+            "SYNTHESIZED_TWIN_TIER2"
+          ]
+        },
+        "sourceQuestionId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "skillId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "trapFamily": {
+          "type": ["string", "null"],
+          "maxLength": 64
+        },
+        "targetDifficulty": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "itemDifficulty": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "zpdWindow": {
+          "$ref": "#/$defs/ZpdWindow"
+        },
+        "promptLatex": {
+          "type": "string"
+        },
+        "promptInstructionTr": {
+          "type": "string",
+          "maxLength": 512
+        },
+        "promptInstructionEn": {
+          "type": "string",
+          "maxLength": 512
+        },
+        "canonicalSolutionExpr": {
+          "type": "string",
+          "maxLength": 512
+        },
+        "trapDistractorExpr": {
+          "type": ["string", "null"],
+          "maxLength": 512
+        },
+        "sympyVerificationHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "isTwinVerification": {
+          "type": "boolean"
+        },
+        "lockState": {
+          "$ref": "#/$defs/VerificationLockState"
+        },
+        "hintsUnlockedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "attemptCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "itemStatus": {
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "SUBMITTED_CORRECT",
+            "SUBMITTED_INCORRECT",
+            "SKIPPED"
+          ]
+        },
+        "submittedAnswerLatex": {
+          "type": ["string", "null"],
+          "maxLength": 512
+        },
+        "detectedTrapTriggered": {
+          "type": "boolean"
+        },
+        "verificationDurationMs": {
+          "type": ["integer", "null"]
+        },
+        "submittedAt": {
+          "type": ["string", "null"],
+          "format": "date-time"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

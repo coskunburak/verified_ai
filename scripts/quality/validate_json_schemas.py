@@ -59,6 +59,10 @@ def run_validation():
     recommendations_schema_path = ROOT / "packages/schemas/studyplan/learner-recommendations-v1.schema.json"
     recommendations_fixture_path = ROOT / "packages/schemas/studyplan/fixtures/learner-recommendations-v1.valid.json"
 
+    # Sprint 8.2 Files
+    practice_session_schema_path = ROOT / "packages/schemas/studyplan/practice-session-v1.schema.json"
+    practice_session_fixture_path = ROOT / "packages/schemas/studyplan/fixtures/practice-session-v1.valid.json"
+
     assert mistake_passport_schema_path.exists(), "Missing mistake-passport-v1.schema.json"
     assert mistake_passport_fixture_path.exists(), "Missing mistake-passport-v1.valid.json"
     assert counterexample_schema_path.exists(), "Missing counterexample-proof-card-v1.schema.json"
@@ -67,6 +71,8 @@ def run_validation():
     assert calibration_fixture_path.exists(), "Missing mastery-calibration-summary-v1.valid.json"
     assert recommendations_schema_path.exists(), "Missing learner-recommendations-v1.schema.json"
     assert recommendations_fixture_path.exists(), "Missing learner-recommendations-v1.valid.json"
+    assert practice_session_schema_path.exists(), "Missing practice-session-v1.schema.json"
+    assert practice_session_fixture_path.exists(), "Missing practice-session-v1.valid.json"
 
     mp_schema = json.loads(mistake_passport_schema_path.read_text(encoding="utf-8"))
     mp_fixture = json.loads(mistake_passport_fixture_path.read_text(encoding="utf-8"))
@@ -76,11 +82,14 @@ def run_validation():
     cal_fixture = json.loads(calibration_fixture_path.read_text(encoding="utf-8"))
     rec_schema = json.loads(recommendations_schema_path.read_text(encoding="utf-8"))
     rec_fixture = json.loads(recommendations_fixture_path.read_text(encoding="utf-8"))
+    ps_schema = json.loads(practice_session_schema_path.read_text(encoding="utf-8"))
+    ps_fixture = json.loads(practice_session_fixture_path.read_text(encoding="utf-8"))
 
     validate_schema_structure(mp_schema, "mistake-passport-v1.schema.json")
     validate_schema_structure(ce_schema, "counterexample-proof-card-v1.schema.json")
     validate_schema_structure(cal_schema, "mastery-calibration-summary-v1.schema.json")
     validate_schema_structure(rec_schema, "learner-recommendations-v1.schema.json")
+    validate_schema_structure(ps_schema, "practice-session-v1.schema.json")
 
     sg_schema = json.loads(skill_graph_schema_path.read_text(encoding="utf-8"))
     sg_fixture = json.loads(skill_graph_fixture_path.read_text(encoding="utf-8"))
@@ -192,6 +201,36 @@ def run_validation():
         bad_rec_6 = copy.deepcopy(rec_fixture)
         bad_rec_6["llmTokenCostUsd"] = 0.05
         assert list(rec_val.iter_errors(bad_rec_6)), "Expected failure when llmTokenCostUsd > 0.0"
+
+        # Sprint 8.2 Practice Session Schema Verification & Negative Mutations
+        jsonschema.Draft202012Validator.check_schema(ps_schema)
+        ps_val = jsonschema.Draft202012Validator(ps_schema)
+        ps_val.validate(ps_fixture)
+
+        # Mutation 1: Invalid session status
+        bad_ps_1 = copy.deepcopy(ps_fixture)
+        bad_ps_1["status"] = "FAILED_SESSION"
+        assert list(ps_val.iter_errors(bad_ps_1)), "Expected failure when status is invalid enum"
+
+        # Mutation 2: Target difficulty out of ZPD bounds (> 1.0)
+        bad_ps_2 = copy.deepcopy(ps_fixture)
+        bad_ps_2["items"][0]["targetDifficulty"] = 1.2500
+        assert list(ps_val.iter_errors(bad_ps_2)), "Expected failure when targetDifficulty > 1.0"
+
+        # Mutation 3: Invalid SymPy verification hash (not 64-hex)
+        bad_ps_3 = copy.deepcopy(ps_fixture)
+        bad_ps_3["items"][0]["sympyVerificationHash"] = "not-a-sha256"
+        assert list(ps_val.iter_errors(bad_ps_3)), "Expected failure when sympyVerificationHash is not 64 hex chars"
+
+        # Mutation 4: Injected stigmatizing property (weaknessScore)
+        bad_ps_4 = copy.deepcopy(ps_fixture)
+        bad_ps_4["weaknessScore"] = 0.42
+        assert list(ps_val.iter_errors(bad_ps_4)), "Expected failure when banned weaknessScore is injected"
+
+        # Mutation 5: Empty items array
+        bad_ps_5 = copy.deepcopy(ps_fixture)
+        bad_ps_5["items"] = []
+        assert list(ps_val.iter_errors(bad_ps_5)), "Expected failure when items array is empty"
     else:
         # Fallback pure-python verification of invariants
         assert sg_fixture["schemaVersion"] == "skill-graph-v1"
@@ -253,6 +292,29 @@ def run_validation():
         assert "/v1/study-plan/recommendations/{id}/accept" in paths, "Missing accept recommendation endpoint in OpenAPI spec"
         assert "/v1/study-plan/recommendations/{id}/dismiss" in paths, "Missing dismiss recommendation endpoint in OpenAPI spec"
 
+        # Sprint 8.2 Practice Endpoints
+        assert "/v1/study-plan/practice/sessions" in paths, "Missing /v1/study-plan/practice/sessions in OpenAPI spec"
+        practice_post = paths["/v1/study-plan/practice/sessions"]["post"]
+        assert practice_post["security"] == [{"bearerAuth": []}], "Security bearerAuth missing on startPracticeSession"
+        assert "201" in practice_post["responses"], "HTTP 201 Created missing from startPracticeSession"
+
+        assert "/v1/study-plan/practice/sessions/{sessionId}" in paths, "Missing getPracticeSession endpoint in OpenAPI spec"
+        practice_get = paths["/v1/study-plan/practice/sessions/{sessionId}"]["get"]
+        assert practice_get["security"] == [{"bearerAuth": []}], "Security bearerAuth missing on getPracticeSession"
+        assert "200" in practice_get["responses"], "HTTP 200 OK missing from getPracticeSession"
+        assert "404" in practice_get["responses"], "HTTP 404 Not Found missing from getPracticeSession"
+
+        assert "/v1/study-plan/practice/sessions/{sessionId}/items/{itemId}/submit" in paths, "Missing submitPracticeItemAnswer endpoint in OpenAPI spec"
+        practice_submit = paths["/v1/study-plan/practice/sessions/{sessionId}/items/{itemId}/submit"]["post"]
+        assert practice_submit["security"] == [{"bearerAuth": []}], "Security bearerAuth missing on submitPracticeItemAnswer"
+        assert "200" in practice_submit["responses"], "HTTP 200 OK missing from submitPracticeItemAnswer"
+        assert "422" in practice_submit["responses"], "HTTP 422 Unprocessable Entity missing from submitPracticeItemAnswer"
+
+        assert "/v1/study-plan/practice/sessions/{sessionId}/abandon" in paths, "Missing abandonPracticeSession endpoint in OpenAPI spec"
+        practice_abandon = paths["/v1/study-plan/practice/sessions/{sessionId}/abandon"]["post"]
+        assert practice_abandon["security"] == [{"bearerAuth": []}], "Security bearerAuth missing on abandonPracticeSession"
+        assert "200" in practice_abandon["responses"], "HTTP 200 OK missing from abandonPracticeSession"
+
     # 3. iOS Localizable.xcstrings Key Verification
     xcstrings_data = json.loads(strings_path.read_text(encoding="utf-8"))
     strings = xcstrings_data.get("strings", {})
@@ -284,6 +346,17 @@ def run_validation():
         "coach.nba.action.accept",
         "coach.nba.action.dismiss",
         "coach.nba.offline.banner",
+        "practice.session.title",
+        "practice.slot.trap_closure",
+        "practice.slot.spaced_drill",
+        "practice.slot.exam_synthesis",
+        "practice.lock.active",
+        "practice.lock.unlocked",
+        "practice.rapid_guess.warning",
+        "practice.action.submit",
+        "practice.action.hint",
+        "practice.action.abandon",
+        "practice.trap.detected",
     ]
 
     for key in required_keys:
@@ -294,7 +367,7 @@ def run_validation():
             val = loc.get("value")
             assert val and len(val.strip()) > 0, f"Missing {lang} translation for key: {key}"
 
-    print(f"PASS: Sprint 8.1 JSON schemas, negative mutations, OpenAPI 3.1 endpoints, and {len(required_keys)} EN/TR localizations verified.")
+    print(f"PASS: Sprint 8.1 & 8.2 JSON schemas, negative mutations, OpenAPI 3.1 endpoints, and {len(required_keys)} EN/TR localizations verified.")
 
 
 if __name__ == "__main__":

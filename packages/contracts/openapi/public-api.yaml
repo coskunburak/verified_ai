@@ -3101,6 +3101,159 @@ paths:
         '409':
           $ref: '#/components/responses/Problem'
 
+  /v1/study-plan/practice/sessions:
+    post:
+      operationId: startPracticeSession
+      tags:
+        - StudyPlan
+      summary: Start a deterministic 1-2-1 practice session
+      description: >
+        Initiates a 4-item practice session allocating trap closure, spaced drills, and exam synthesis (INV-PRAC-001).
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartPracticeSessionRequest'
+      responses:
+        '201':
+          description: Practice session created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '../../schemas/studyplan/practice-session-v1.schema.json'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '422':
+          $ref: '#/components/responses/ProblemUnprocessableEntity'
+
+  /v1/study-plan/practice/sessions/{sessionId}:
+    get:
+      operationId: getPracticeSession
+      tags:
+        - StudyPlan
+      summary: Get practice session details
+      description: >
+        Retrieves practice session state. Protected by BOLA security checks (returns 404 on tenant mismatch).
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Practice session ID
+      responses:
+        '200':
+          description: Practice session retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '../../schemas/studyplan/practice-session-v1.schema.json'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+
+  /v1/study-plan/practice/sessions/{sessionId}/items/{itemId}/submit:
+    post:
+      operationId: submitPracticeItemAnswer
+      tags:
+        - StudyPlan
+      summary: Submit answer for a practice item
+      description: >
+        Evaluates learner solution with SymPy and enforces 60-second independent verification protocol (INV-PRAC-004).
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Practice session ID
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Practice session item ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitPracticeItemRequest'
+      responses:
+        '200':
+          description: Submission evaluated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PracticeItemSubmissionResponse'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '422':
+          description: Rapid guess guard triggered or invalid request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+
+  /v1/study-plan/practice/sessions/{sessionId}/abandon:
+    post:
+      operationId: abandonPracticeSession
+      tags:
+        - StudyPlan
+      summary: Abandon an in-progress practice session
+      description: >
+        Transitions practice session status to ABANDONED.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Practice session ID
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PracticeSessionAbandonRequest'
+      responses:
+        '200':
+          description: Session marked as abandoned.
+          content:
+            application/json:
+              schema:
+                $ref: '../../schemas/studyplan/practice-session-v1.schema.json'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -7152,3 +7305,65 @@ components:
         preferredSessionMode:
           type: string
           enum: [STANDARD, QUICK_15MIN]
+
+    StartPracticeSessionRequest:
+      type: object
+      required: [targetSkillId]
+      properties:
+        recommendationId:
+          type: [string, "null"]
+          format: uuid
+        targetSkillId:
+          type: string
+        sessionMode:
+          type: string
+          enum: [DAILY_1_2_1, TRAP_VERIFICATION_DRILL, SPACED_REVIEW, EXAM_ROI_SYNTHESIS]
+          default: DAILY_1_2_1
+        locale:
+          type: string
+          enum: [tr-TR, en-US]
+          default: en-US
+
+    SubmitPracticeItemRequest:
+      type: object
+      properties:
+        submittedAnswerLatex:
+          type: [string, "null"]
+        clientElapsedSeconds:
+          type: integer
+          minimum: 0
+        unlockHintRequested:
+          type: boolean
+          default: false
+
+    PracticeSessionAbandonRequest:
+      type: object
+      properties:
+        reasonNote:
+          type: [string, "null"]
+
+    PracticeItemSubmissionResponse:
+      type: object
+      required: [itemStatus, isCorrect, trapTriggered, verificationLockActive, remainingLockSeconds, trapClosureAchieved]
+      properties:
+        itemStatus:
+          type: string
+          enum: [PENDING, SUBMITTED_CORRECT, SUBMITTED_INCORRECT, SKIPPED]
+        isCorrect:
+          type: boolean
+        trapTriggered:
+          type: boolean
+        trapDiagnosticKey:
+          type: [string, "null"]
+        trapDiagnosticMessageTr:
+          type: [string, "null"]
+        trapDiagnosticMessageEn:
+          type: [string, "null"]
+        verificationLockActive:
+          type: boolean
+        remainingLockSeconds:
+          type: integer
+        trapClosureAchieved:
+          type: boolean
+        session:
+          $ref: '../../schemas/studyplan/practice-session-v1.schema.json'

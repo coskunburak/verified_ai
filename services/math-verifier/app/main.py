@@ -13,6 +13,7 @@ from fastapi.responses import JSONResponse
 from app.api.routes.health import router as health_router
 from app.api.routes.metrics import router as metrics_router
 from app.api.routes.verify import router as verify_router
+from app.routers.practice_verifier import router as practice_verifier_router
 from app.config import get_settings
 from app.domain.errors import VerificationError
 from app.observability.logging import configure_logging, logger
@@ -93,3 +94,4 @@ async def request_validation_error_handler(request: Request, exc: RequestValidat
 app.include_router(health_router)
 app.include_router(metrics_router)
 app.include_router(verify_router)
+app.include_router(practice_verifier_router)
