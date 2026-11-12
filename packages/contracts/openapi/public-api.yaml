@@ -2987,6 +2987,120 @@ paths:
         '403':
           $ref: '#/components/responses/ProblemForbidden'
 
+  /v1/study-plan/recommendations:
+    get:
+      operationId: getNextBestActionRecommendations
+      tags:
+        - StudyPlan
+      summary: Deterministic Next-Best-Action (NBA) study recommendations
+      description: >
+        Returns ranked next-best actions for the authenticated learner prioritizing unresolved traps,
+        retention decay, prerequisite bottlenecks, and exam ROI (INV-COACH-001).
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 5
+            minimum: 1
+            maximum: 20
+          description: Maximum number of recommendations to return
+        - name: refresh
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+          description: Force recomputation and refresh of recommendations
+      responses:
+        '200':
+          description: Recommendations returned successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '../../schemas/studyplan/learner-recommendations-v1.schema.json'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+
+  /v1/study-plan/recommendations/{id}/dismiss:
+    post:
+      operationId: dismissRecommendation
+      tags:
+        - StudyPlan
+      summary: Dismiss a recommended action
+      description: >
+        Dismisses an active recommendation. Protected by Broken Object Level Authorization (BOLA) checks.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Recommendation ID
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DismissRecommendationRequest'
+      responses:
+        '200':
+          description: Recommendation successfully dismissed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecommendationActionResponse'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+
+  /v1/study-plan/recommendations/{id}/accept:
+    post:
+      operationId: acceptRecommendation
+      tags:
+        - StudyPlan
+      summary: Accept and start targeted practice for a recommendation
+      description: >
+        Accepts an active recommendation, transitioning its status to ACCEPTED and generating session deep link.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Recommendation ID
+      responses:
+        '200':
+          description: Recommendation accepted and target session initiated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecommendationActionResponse'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -6946,3 +7060,95 @@ components:
                   format: date-time
                 retryAfterSeconds:
                   type: integer
+
+    LearnerRecommendationsResponse:
+      type: object
+      required: [userId, generatedAt, deterministicEngineVersion, llmTokenCostUsd, recommendations]
+      properties:
+        userId:
+          type: string
+          format: uuid
+        generatedAt:
+          type: string
+          format: date-time
+        deterministicEngineVersion:
+          type: string
+          example: "NBA-v1.0"
+        llmTokenCostUsd:
+          type: number
+          example: 0.0
+        recommendations:
+          type: array
+          items:
+            $ref: '#/components/schemas/LearnerRecommendationDto'
+
+    LearnerRecommendationDto:
+      type: object
+      required: [id, userId, recommendationType, targetSkillCode, priorityScore, rationaleCode, rationaleParams, status, expiresAt, createdAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        recommendationType:
+          type: string
+          enum: [MISTAKE_REPAIR, SPACED_RETENTION, PREREQUISITE_REPAIR, HIGH_ROI_TOPIC]
+        targetSkillCode:
+          type: string
+        targetMistakeCode:
+          type: [string, "null"]
+        priorityScore:
+          type: number
+          minimum: 0.0
+          maximum: 100.0
+        rationaleCode:
+          type: string
+          enum: [ACTIVE_RECURRING_TRAP, RETENTION_HALF_LIFE_DUE, PREREQUISITE_REPAIR, HIGH_EXAM_NET_ROI]
+        rationaleParams:
+          type: object
+        status:
+          type: string
+          enum: [ACTIVE, ACCEPTED, DISMISSED, EXPIRED]
+        expiresAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    RecommendationActionResponse:
+      type: object
+      required: [recommendationId, status, nextSessionType, targetSkillCode, deepLinkUri]
+      properties:
+        recommendationId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [ACCEPTED, DISMISSED]
+        nextSessionType:
+          type: [string, "null"]
+          enum: [TWIN_REMEDIATION, SPACED_REVIEW, PREREQUISITE_DRILL, TOPIC_PRACTICE, null]
+        targetSkillCode:
+          type: string
+        targetMistakeCode:
+          type: [string, "null"]
+        deepLinkUri:
+          type: [string, "null"]
+
+    DismissRecommendationRequest:
+      type: object
+      properties:
+        reasonCode:
+          type: string
+          enum: [ALREADY_MASTERED, NOT_NOW, OTHER]
+          default: NOT_NOW
+
+    AcceptRecommendationRequest:
+      type: object
+      properties:
+        preferredSessionMode:
+          type: string
+          enum: [STANDARD, QUICK_15MIN]

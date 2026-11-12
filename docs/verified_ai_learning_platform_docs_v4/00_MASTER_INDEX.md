@@ -582,3 +582,7 @@ Sprint 7.9 delivers Mistake Passport ("Exam Trap Radar"), Mastery Graph Explorer
 ## Sprint 7.10 local acceptance & Phase 07 exit gate certification
 
 Sprint 7.10 delivers Learning Intelligence Evaluation, Brier/ECE Psychometric Calibration, Downstream Error Isolation (`G-MATH-03`), and 100% Privacy Cascade (`G-PRIV-01`). [Execution report](sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.10_EXECUTION_REPORT.md) and [file manifest](sprints/phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.10_FILE_MANIFEST.md). Acceptance runner `scripts/quality/sprint_7_10_owner_acceptance.sh --full` passed all 7 stages on 2026-11-11, formally certifying the Phase 07 Exit Gate and unlocking Phase 08.
+
+## Sprint 8.1 local acceptance & Phase 08 entry gate
+
+Sprint 8.1 delivers Deterministic Next-Best-Action (NBA) Recommendation Engine & High-ROI Topic Allocator with Flyway migration `V043`, JSON Schema Draft 2020-12 contract, Spring Modulith `studyplan` module (`INV-COACH-001` through `INV-COACH-004`, BOLA authorization, `< 500 ms` GDPR/KVKK purge contributor), native SwiftUI Coach Hub view & SQLite cache (`ADR-010`), and full localization. [Execution report](sprints/phase08_adaptive_learning_and_study_planning/SPRINT_8.1_EXECUTION_REPORT.md) and [file manifest](sprints/phase08_adaptive_learning_and_study_planning/SPRINT_8.1_FILE_MANIFEST.md). Acceptance runner `scripts/quality/sprint_8_1_owner_acceptance.sh --full` passed all 7 stages on 2026-11-12.

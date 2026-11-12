@@ -12560,6 +12560,210 @@
           }
         }
       }
+    },
+    "coach.nba.section.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your Next Best Actions"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sıradaki En Verimli Adımların"
+          }
+        }
+      }
+    },
+    "coach.nba.type.prerequisite_repair": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Foundation Builder"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Temel Önkoşul Güçlendirme"
+          }
+        }
+      }
+    },
+    "coach.nba.type.mistake_repair": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trap Mastery"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tuzak Çözümleme Antrenmanı"
+          }
+        }
+      }
+    },
+    "coach.nba.type.spaced_retention": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Memory Refresh"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aralıklı Hafıza Tekrarı"
+          }
+        }
+      }
+    },
+    "coach.nba.type.high_roi_topic": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "High Exam Net Gain"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yüksek Sınav Net Getirisi"
+          }
+        }
+      }
+    },
+    "coach.nba.rationale.active_recurring_trap": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Targeted practice resolves recurring traps observed in recent attempts."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hedefli antrenman son denemelerdeki tekrarlayan tuzakları çözer."
+          }
+        }
+      }
+    },
+    "coach.nba.rationale.retention_half_life_due": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Optimal memory refresh interval reached based on retention decay."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hafıza kalıcılık eğrisine göre en uygun tekrar zamanı geldi."
+          }
+        }
+      }
+    },
+    "coach.nba.rationale.prerequisite_repair": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Strengthening prerequisite foundation unblocks advanced progress."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Önkoşul temeli güçlendirmek ileri konulardaki tıkanıklığı çözer."
+          }
+        }
+      }
+    },
+    "coach.nba.rationale.high_exam_net_roi": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "High topic weighting on target exam offers maximized score gain."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hedef sınavdaki yüksek konu ağırlığı en yüksek net artışını sağlar."
+          }
+        }
+      }
+    },
+    "coach.nba.action.accept": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start Targeted Practice"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hedefli Çalışmayı Başlat"
+          }
+        }
+      }
+    },
+    "coach.nba.action.dismiss": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remind Me Later"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Daha Sonra Hatırlat"
+          }
+        }
+      }
+    },
+    "coach.nba.offline.banner": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Showing saved study plan (Offline Mode)"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kayıtlı çalışma planı gösteriliyor (Çevrimdışı Mod)"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

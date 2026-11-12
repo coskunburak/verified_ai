@@ -173,7 +173,7 @@ Phase overview: `sprints/phase07_attempt_mistake_and_mastery_intelligence/PHASE_
 
 Phase overview: `sprints/phase08_adaptive_learning_and_study_planning/PHASE_08_ADAPTIVE_LEARNING_AND_STUDY_PLANNING.md`
 
-- `Sprint 8.1` — **Next-Best-Action Recommendation Engine** — `phase08_adaptive_learning_and_study_planning/SPRINT_8.1_NEXT_BEST_ACTION_RECOMMENDATION_ENGINE.md`
+- `Sprint 8.1` — **Next-Best-Action Recommendation Engine** — `phase08_adaptive_learning_and_study_planning/SPRINT_8.1_NEXT_BEST_ACTION_RECOMMENDATION_ENGINE.md` (Completed: see `phase08_adaptive_learning_and_study_planning/SPRINT_8.1_EXECUTION_REPORT.md`)
 - `Sprint 8.2` — **Adaptive Practice Question Selection and Generation** — `phase08_adaptive_learning_and_study_planning/SPRINT_8.2_ADAPTIVE_PRACTICE_QUESTION_SELECTION_AND_GENERATION.md`
 - `Sprint 8.3` — **Spaced Repetition Scheduling for Skills and Mistakes** — `phase08_adaptive_learning_and_study_planning/SPRINT_8.3_SPACED_REPETITION_SCHEDULING_FOR_SKILLS_AND_MISTAKES.md`
 - `Sprint 8.4` — **Daily Study Plan Generation & Coach Hub (Dual-Mode Solver vs Socratic Switcher)** — `phase08_adaptive_learning_and_study_planning/SPRINT_8.4_DAILY_STUDY_PLAN_GENERATION.md`
@@ -312,6 +312,8 @@ As of commit `e39bafe88ea369f98c96a65497a94462dc79ef33`:
   - `Sprint 7.8`: `LOCAL_ACCEPTANCE_PASSED` (owner full run `run-8MFfJD`, 2026-11-11). See `phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.8_EXECUTION_REPORT.md`.
   - `Sprint 7.9`: `LOCAL_ACCEPTANCE_PASSED` (owner full run `run-S79ACC`, 2026-11-11). See `phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.9_EXECUTION_REPORT.md`.
   - `Sprint 7.10`: `LOCAL_ACCEPTANCE_PASSED` (owner full run `sprint_7_10_owner_acceptance.sh --full`, 2026-11-11). Phase 07 Exit Gate formally certified. See `phase07_attempt_mistake_and_mastery_intelligence/SPRINT_7.10_EXECUTION_REPORT.md`.
+- **Phase 8 Status (`SOURCE_VERIFIED` / `OWNER_TEST_VERIFIED`):**
+  - `Sprint 8.1`: `LOCAL_ACCEPTANCE_PASSED` (owner full run `sprint_8_1_owner_acceptance.sh --full`, 2026-11-12, `V043`). See `phase08_adaptive_learning_and_study_planning/SPRINT_8.1_EXECUTION_REPORT.md`.
 - **Phase 8–12 Governance (`ADR-011`):**
   - Broad Phase 8–12 implementation remains gated by the Focused Commercial Wedge (`Sprint 6.2B`, `Sprint 11.9A` 50-student TestFlight Beta Go/No-Go Gate) and owner acceptance of Sprints `7.2` and `7.4`, as detailed in `roadmap/87_LEARNING_OS_STRATEGIC_PHASE_AND_SPRINT_EXPANSION_PROGRAM.md` and `quality/91_LEARNING_OS_PRODUCT_LEARNING_AND_RELEASE_ACCEPTANCE_GATES.md`.
 <!-- LEARNING_OS_STRATEGY_V7:END -->

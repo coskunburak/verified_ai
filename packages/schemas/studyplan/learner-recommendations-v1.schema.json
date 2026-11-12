@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/studyplan/learner-recommendations-v1.schema.json",
+  "title": "LearnerRecommendationsV1",
+  "description": "Deterministic Next-Best-Action (NBA) recommendation response for adaptive learning and high-ROI study planning (INV-COACH-001, INV-COACH-004).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "userId",
+    "generatedAt",
+    "deterministicEngineVersion",
+    "llmTokenCostUsd",
+    "recommendations"
+  ],
+  "properties": {
+    "userId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "deterministicEngineVersion": {
+      "type": "string",
+      "const": "NBA-v1.0"
+    },
+    "llmTokenCostUsd": {
+      "type": "number",
+      "const": 0.0
+    },
+    "recommendations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/LearnerRecommendationItem"
+      }
+    }
+  },
+  "$defs": {
+    "LearnerRecommendationItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "userId",
+        "recommendationType",
+        "targetSkillCode",
+        "priorityScore",
+        "rationaleCode",
+        "rationaleParams",
+        "status",
+        "expiresAt",
+        "createdAt"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "userId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "recommendationType": {
+          "type": "string",
+          "enum": [
+            "MISTAKE_REPAIR",
+            "SPACED_RETENTION",
+            "PREREQUISITE_REPAIR",
+            "HIGH_ROI_TOPIC"
+          ]
+        },
+        "targetSkillCode": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 128,
+          "pattern": "^[A-Z0-9_\\-\\.]+$"
+        },
+        "targetMistakeCode": {
+          "type": ["string", "null"],
+          "maxLength": 64
+        },
+        "priorityScore": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 100.0
+        },
+        "rationaleCode": {
+          "type": "string",
+          "enum": [
+            "ACTIVE_RECURRING_TRAP",
+            "RETENTION_HALF_LIFE_DUE",
+            "PREREQUISITE_REPAIR",
+            "HIGH_EXAM_NET_ROI"
+          ]
+        },
+        "rationaleParams": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "skillCode": { "type": "string" },
+            "mistakeCode": { "type": "string" },
+            "mistakePropensity": { "type": "number" },
+            "unresolvedTrapCount": { "type": "integer" },
+            "currentRetention": { "type": "number" },
+            "retentionThreshold": { "type": "number" },
+            "halfLifeDays": { "type": "number" },
+            "prerequisiteSkillCode": { "type": "string" },
+            "blockedSkillCode": { "type": "string" },
+            "currentMastery": { "type": "number" },
+            "requiredMasteryThreshold": { "type": "number" },
+            "examCode": { "type": "string" },
+            "examWeight": { "type": "number" },
+            "estimatedNetGain": { "type": "number" },
+            "opportunityAreaScore": { "type": "number" }
+          }
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "ACTIVE",
+            "ACCEPTED",
+            "DISMISSED",
+            "EXPIRED"
+          ]
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

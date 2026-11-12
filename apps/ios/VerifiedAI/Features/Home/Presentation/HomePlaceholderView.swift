@@ -13,6 +13,7 @@ struct HomePlaceholderView: View {
     var isSolveFixture = false
     var makeSolveModel: ((UUID) -> PrimarySolveViewModel)? = nil
     var reviewViewModel: ProblemReviewViewModel? = nil
+    var coachHubViewModel: CoachHubViewModel? = nil
 
     var body: some View {
         ScrollView {
@@ -28,6 +29,7 @@ struct HomePlaceholderView: View {
                         reviewViewModel: reviewViewModel
                     )
                 }
+                recommendationsSection
                 accessSection
                 activitySection
             }
@@ -35,6 +37,41 @@ struct HomePlaceholderView: View {
         }
         .background(ColorTokens.background.ignoresSafeArea())
         .preferredColorScheme(.dark)
+    }
+
+    @ViewBuilder
+    private var recommendationsSection: some View {
+        if let coachHubViewModel, !coachHubViewModel.recommendations.isEmpty {
+            VStack(alignment: .leading, spacing: SpacingTokens.md) {
+                HStack {
+                    Label(LocalizedStringKey("coach.nba.section.title"), systemImage: "sparkles")
+                        .font(.headline)
+                        .foregroundStyle(ColorTokens.textPrimary)
+                    Spacer()
+                    if coachHubViewModel.isOfflineFallback {
+                        Label(LocalizedStringKey("coach.nba.offline.banner"), systemImage: "wifi.slash")
+                            .font(.caption2.weight(.medium))
+                            .foregroundStyle(ColorTokens.warning)
+                    }
+                }
+
+                ForEach(coachHubViewModel.recommendations) { rec in
+                    RecommendationCardView(
+                        recommendation: rec,
+                        onAccept: {
+                            Task {
+                                await coachHubViewModel.acceptRecommendation(rec.id)
+                            }
+                        },
+                        onDismiss: {
+                            Task {
+                                await coachHubViewModel.dismissRecommendation(rec.id)
+                            }
+                        }
+                    )
+                }
+            }
+        }
     }
 
     private var header: some View {

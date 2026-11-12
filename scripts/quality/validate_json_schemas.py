@@ -55,12 +55,18 @@ def run_validation():
     calibration_schema_path = ROOT / "packages/schemas/analytics/mastery-calibration-summary-v1.schema.json"
     calibration_fixture_path = ROOT / "packages/schemas/analytics/fixtures/mastery-calibration-summary-v1.valid.json"
 
+    # Sprint 8.1 Files
+    recommendations_schema_path = ROOT / "packages/schemas/studyplan/learner-recommendations-v1.schema.json"
+    recommendations_fixture_path = ROOT / "packages/schemas/studyplan/fixtures/learner-recommendations-v1.valid.json"
+
     assert mistake_passport_schema_path.exists(), "Missing mistake-passport-v1.schema.json"
     assert mistake_passport_fixture_path.exists(), "Missing mistake-passport-v1.valid.json"
     assert counterexample_schema_path.exists(), "Missing counterexample-proof-card-v1.schema.json"
     assert counterexample_fixture_path.exists(), "Missing counterexample-proof-card-v1.valid.json"
     assert calibration_schema_path.exists(), "Missing mastery-calibration-summary-v1.schema.json"
     assert calibration_fixture_path.exists(), "Missing mastery-calibration-summary-v1.valid.json"
+    assert recommendations_schema_path.exists(), "Missing learner-recommendations-v1.schema.json"
+    assert recommendations_fixture_path.exists(), "Missing learner-recommendations-v1.valid.json"
 
     mp_schema = json.loads(mistake_passport_schema_path.read_text(encoding="utf-8"))
     mp_fixture = json.loads(mistake_passport_fixture_path.read_text(encoding="utf-8"))
@@ -68,10 +74,13 @@ def run_validation():
     ce_fixture = json.loads(counterexample_fixture_path.read_text(encoding="utf-8"))
     cal_schema = json.loads(calibration_schema_path.read_text(encoding="utf-8"))
     cal_fixture = json.loads(calibration_fixture_path.read_text(encoding="utf-8"))
+    rec_schema = json.loads(recommendations_schema_path.read_text(encoding="utf-8"))
+    rec_fixture = json.loads(recommendations_fixture_path.read_text(encoding="utf-8"))
 
     validate_schema_structure(mp_schema, "mistake-passport-v1.schema.json")
     validate_schema_structure(ce_schema, "counterexample-proof-card-v1.schema.json")
     validate_schema_structure(cal_schema, "mastery-calibration-summary-v1.schema.json")
+    validate_schema_structure(rec_schema, "learner-recommendations-v1.schema.json")
 
     sg_schema = json.loads(skill_graph_schema_path.read_text(encoding="utf-8"))
     sg_fixture = json.loads(skill_graph_fixture_path.read_text(encoding="utf-8"))
@@ -149,6 +158,40 @@ def run_validation():
         bad_cal_3 = copy.deepcopy(cal_fixture)
         bad_cal_3["failureRate"] = 0.1200
         assert list(cal_val.iter_errors(bad_cal_3)), "Expected failure when banned failureRate property is injected"
+
+        # Sprint 8.1 Recommendations Schema Verification & Negative Mutations
+        jsonschema.Draft202012Validator.check_schema(rec_schema)
+        rec_val = jsonschema.Draft202012Validator(rec_schema)
+        rec_val.validate(rec_fixture)
+
+        # Mutation J1: priorityScore < 0.0 (-5.0)
+        bad_rec_1 = copy.deepcopy(rec_fixture)
+        bad_rec_1["recommendations"][0]["priorityScore"] = -5.0
+        assert list(rec_val.iter_errors(bad_rec_1)), "Expected failure when priorityScore < 0.0"
+
+        # Mutation J2: priorityScore > 100.0 (105.0)
+        bad_rec_2 = copy.deepcopy(rec_fixture)
+        bad_rec_2["recommendations"][0]["priorityScore"] = 105.0
+        assert list(rec_val.iter_errors(bad_rec_2)), "Expected failure when priorityScore > 100.0"
+
+        # Mutation K: Invalid rationaleCode enum
+        bad_rec_3 = copy.deepcopy(rec_fixture)
+        bad_rec_3["recommendations"][0]["rationaleCode"] = "UNKNOWN_RATIONALE"
+        assert list(rec_val.iter_errors(bad_rec_3)), "Expected failure when rationaleCode is invalid"
+
+        # Mutation L: Banned stigmatizing property rejection in rationaleParams
+        bad_rec_4 = copy.deepcopy(rec_fixture)
+        bad_rec_4["recommendations"][0]["rationaleParams"]["failureRate"] = 0.45
+        assert list(rec_val.iter_errors(bad_rec_4)), "Expected failure when banned failureRate property is injected"
+
+        bad_rec_5 = copy.deepcopy(rec_fixture)
+        bad_rec_5["recommendations"][0]["rationaleParams"]["weaknessScore"] = 80.0
+        assert list(rec_val.iter_errors(bad_rec_5)), "Expected failure when banned weaknessScore property is injected"
+
+        # Mutation M: Non-zero LLM token cost ($0.00 guarantee violation)
+        bad_rec_6 = copy.deepcopy(rec_fixture)
+        bad_rec_6["llmTokenCostUsd"] = 0.05
+        assert list(rec_val.iter_errors(bad_rec_6)), "Expected failure when llmTokenCostUsd > 0.0"
     else:
         # Fallback pure-python verification of invariants
         assert sg_fixture["schemaVersion"] == "skill-graph-v1"
@@ -203,7 +246,14 @@ def run_validation():
         assert "200" in cal_get["responses"], "HTTP 200 OK missing from /v1/admin/calibration/mastery-summary"
         assert "403" in cal_get["responses"], "HTTP 403 Forbidden missing from /v1/admin/calibration/mastery-summary"
 
-    # 3. iOS Localizable.xcstrings 14-Key Verification
+        assert "/v1/study-plan/recommendations" in paths, "Missing /v1/study-plan/recommendations in OpenAPI spec"
+        study_get = paths["/v1/study-plan/recommendations"]["get"]
+        assert study_get["security"] == [{"bearerAuth": []}], "Security bearerAuth missing on /v1/study-plan/recommendations"
+        assert "200" in study_get["responses"], "HTTP 200 OK missing from /v1/study-plan/recommendations"
+        assert "/v1/study-plan/recommendations/{id}/accept" in paths, "Missing accept recommendation endpoint in OpenAPI spec"
+        assert "/v1/study-plan/recommendations/{id}/dismiss" in paths, "Missing dismiss recommendation endpoint in OpenAPI spec"
+
+    # 3. iOS Localizable.xcstrings Key Verification
     xcstrings_data = json.loads(strings_path.read_text(encoding="utf-8"))
     strings = xcstrings_data.get("strings", {})
 
@@ -222,6 +272,18 @@ def run_validation():
         "mastery.graph.at_risk",
         "mastery.graph.practicing",
         "mastery.graph.mastered",
+        "coach.nba.section.title",
+        "coach.nba.type.prerequisite_repair",
+        "coach.nba.type.mistake_repair",
+        "coach.nba.type.spaced_retention",
+        "coach.nba.type.high_roi_topic",
+        "coach.nba.rationale.active_recurring_trap",
+        "coach.nba.rationale.retention_half_life_due",
+        "coach.nba.rationale.prerequisite_repair",
+        "coach.nba.rationale.high_exam_net_roi",
+        "coach.nba.action.accept",
+        "coach.nba.action.dismiss",
+        "coach.nba.offline.banner",
     ]
 
     for key in required_keys:
@@ -232,7 +294,7 @@ def run_validation():
             val = loc.get("value")
             assert val and len(val.strip()) > 0, f"Missing {lang} translation for key: {key}"
 
-    print("PASS: Sprint 7.10 JSON schemas, negative mutations, OpenAPI 3.1 endpoints, and 14 EN/TR localizations verified.")
+    print(f"PASS: Sprint 8.1 JSON schemas, negative mutations, OpenAPI 3.1 endpoints, and {len(required_keys)} EN/TR localizations verified.")
 
 
 if __name__ == "__main__":
