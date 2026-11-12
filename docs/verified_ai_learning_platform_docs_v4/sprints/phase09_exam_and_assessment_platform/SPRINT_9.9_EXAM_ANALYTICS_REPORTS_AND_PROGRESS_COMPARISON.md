@@ -394,3 +394,67 @@ Attach or persist links/artifacts for:
 
 Codex must implement this sprint in small reviewable slices, re-reading the highest-precedence semantic documents before changing domain/API/data contracts. It must not “simplify” the architecture by moving rules into prompts, client code, provider SDK adapters, generic helpers, or ungoverned ML scripts.
 <!-- PRODUCTION_EXECUTION_V3:END -->
+
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:START -->
+# Learning OS Production Implementation Specification v1 (`2026-11-07`)
+
+## 1. Sprint Metadata & Status
+- **Sprint ID:** `SPRINT_9.9`
+- **Canonical Title:** Longitudinal Exam Progress Analytics, Topic-Level Pacing & Trap Remediation Correlation
+- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011)`
+- **Primary Spec Reference:** `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md` (Screen 9) & `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md`
+
+## 2. Strategic Learning OS Objective & User Value
+Visualizes the learner's longitudinal net score growth across successive mock exams, breaking down performance by curriculum sub-topic, question-pacing speed, and section fatigue. Empirically proves product value by plotting net score gains directly alongside the elimination of recurring Mistake DNA traps.
+
+## 3. Entry Gate & Preconditions
+- `ADR-011` `GO` decision recorded; `Sprints 9.1–9.8` accepted.
+
+## 4. Domain Invariants & Analytics Rules
+1. **Longitudinal Score Trajectory (`INV-EXAM-005`):** Tracks moving averages of net scores across the last $N \le 20$ mock sessions, isolating genuine cognitive mastery gains from random test-variance fluctuations.
+2. **Speed-Pressure Pacing Analytics:** Computes mean elapsed seconds per question stratified by topic (e.g., $85\text{s}$ in Algebra vs $195\text{s}$ in Definite Integrals), highlighting speed bottlenecks that trigger time-pressure slips.
+3. **Trap Remediation Correlation:** Explicitly plots the inverse correlation between Active Trap Count and Net Score ($\Delta\text{Net} \propto -\Delta\theta_{u,m}$), validating the efficacy of the daily trap repair loop.
+
+## 5. Owning Spring Modulith Backend Modules & Classes
+- `com.verifiedai.exam`: `ExamAnalyticsService.java`, `ExamProgressReport.java`, `PacingAnalysisDto.java`, `ExamAnalyticsController.java`.
+
+## 6. Python Math Verifier Impact
+- None (`100%` SQL/Java analytics aggregation).
+
+## 7. Database Migration & Persistence Contract
+- **Tables:** `exam_analytics_snapshots` (`id`, `user_id`, `exam_code`, `net_trend_json`, `pacing_stats_json`, `conquered_traps_count`, `as_of_date`).
+
+## 8. REST API Contracts
+- `GET /v1/analytics/exams/progress?examCode={code}` (`exam-analytics-v1`).
+
+## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
+- Renders `ExamProgressHistoryView.swift` (Net growth sparklines, pacing radar charts, and topic breakdown).
+
+## 10. AI Capability & Unit Economics Guardrail
+- **`$0.00` LLM token cost** (pure statistical aggregation).
+
+## 11. Privacy, Safety & Compliance
+- Purged on account deletion via `ExamPrivacyLifecycleContributor`.
+
+## 12. Telemetry & Observability
+- Emits `exam_analytics_viewed`, `pacing_report_inspected`.
+
+## 13. Feature Flags & Rollback Plan
+- `verifiedai.exam.analytics-enabled: false`.
+
+## 14. Automated Test Matrix (Categories A–F)
+- Validates progress aggregation across 1 to 50 simulated historical mock exams, verifying pacing math and trap correlation curves.
+
+## 15. Owner-Only Acceptance Command
+- `bash scripts/quality/sprint_9_9_owner_acceptance.sh --full`
+
+## 16. Explicit Non-Goals
+- Does not expose individual student scores to public leaderboards without explicit consent.
+
+## 17. Exit Gate & Downstream Consumers
+- Unlocks `Sprint 9.10` (Phase 9 Release Exit Gate).
+
+## 18. Canonical Cross-References
+- `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md`
+- `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md`
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:END -->

@@ -365,3 +365,67 @@ Attach or persist links/artifacts for:
 
 Codex must implement this sprint in small reviewable slices, re-reading the highest-precedence semantic documents before changing domain/API/data contracts. It must not “simplify” the architecture by moving rules into prompts, client code, provider SDK adapters, generic helpers, or ungoverned ML scripts.
 <!-- PRODUCTION_EXECUTION_V3:END -->
+
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:START -->
+# Learning OS Production Implementation Specification v1 (`2026-11-07`)
+
+## 1. Sprint Metadata & Status
+- **Sprint ID:** `SPRINT_8.8`
+- **Canonical Title:** Verified Independent Streaks, Shame-Free Habit Maintenance & Pedagogical Achievements
+- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011)`
+- **Primary Spec Reference:** `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md` (Screen 1 Status Bar) & `learning/84_VERIFIED_TWIN_PRACTICE_AND_INDEPENDENT_LEARNING_ENGINE.md`
+
+## 2. Strategic Learning OS Objective & User Value
+Builds a healthy, non-manipulative motivation architecture that reinforces true mathematical problem-solving rather than mindless app opening. Rewards solely independent, verified twin completion while replacing coercive dark patterns (streak-loss guilt, aggressive alerts) with student-respecting streak shields and authentic mastery badges.
+
+## 3. Entry Gate & Preconditions
+- `ADR-011` `GO` decision recorded; `Sprint 8.7` accepted.
+
+## 4. Domain Invariants & Gamification Rules
+1. **Independent Verification Streak Law (`INV-GAMIF-001`):** A daily streak increment requires at least 1 `INDEPENDENT` verified twin pass on that local calendar day. Sokratik hints or solution views (`HINT_ASSISTED`) preserve habit continuity but DO NOT advance streak counts without an independent twin.
+2. **Shame-Free Streak Freezes:** Every learner is granted 2 automatic streak freezes per month. Missed days consume a freeze silently without guilt banners, shame emojis, or manipulative notifications.
+3. **Pedagogical Badges Only:** Badges represent genuine cognitive milestones (e.g., *"Domain Guardian: 5 consecutive rational equations without domain exclusion errors"*, *"Chain Rule Virtuoso"*), never vanity metrics like total minutes or open-ended chat counts.
+
+## 5. Owning Spring Modulith Backend Modules & Classes
+- `com.verifiedai.studyplan`: `GamificationPolicyService.java`, `LearnerStreak.java`, `AchievementBadge.java`, `GamificationController.java`.
+
+## 6. Python Math Verifier Impact
+- None (`100%` server-authoritative rule evaluation).
+
+## 7. Database Migration & Persistence Contract
+- **Tables:** `learner_streaks` (`user_id`, `current_streak_days`, `longest_streak_days`, `last_activity_date`, `streak_freezes_remaining`, `updated_at`), `learner_achievements` (`id`, `user_id`, `badge_code`, `unlocked_at`, `evidence_reference`).
+
+## 8. REST API Contracts
+- `GET /v1/gamification/summary` (`gamification-summary-v1`).
+
+## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
+- Renders `StreakBadgeView.swift` in Coach Hub top status bar and celebratory `MilestoneSheetView.swift`.
+
+## 10. AI Capability & Unit Economics Guardrail
+- **`$0.00` LLM token cost** (pure deterministic rules).
+
+## 11. Privacy, Safety & Compliance
+- Purged on account deletion via `StudyPlanPrivacyLifecycleContributor`.
+
+## 12. Telemetry & Observability
+- Emits `streak_incremented`, `streak_freeze_applied`, `achievement_unlocked`.
+
+## 13. Feature Flags & Rollback Plan
+- `verifiedai.studyplan.gamification-enabled: false`.
+
+## 14. Automated Test Matrix (Categories A–F)
+- Tests timezone boundary streak calculations, freeze consumption, and asserts assisted solves never increment streaks.
+
+## 15. Owner-Only Acceptance Command
+- `bash scripts/quality/sprint_8_8_owner_acceptance.sh --full`
+
+## 16. Explicit Non-Goals
+- No casino-style loot boxes, pay-to-freeze mechanics, or public shame leaderboards.
+
+## 17. Exit Gate & Downstream Consumers
+- Unlocks `Sprint 8.9` (Weekly Learning Report) and `Sprint 8.10`.
+
+## 18. Canonical Cross-References
+- `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md`
+- `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md`
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:END -->

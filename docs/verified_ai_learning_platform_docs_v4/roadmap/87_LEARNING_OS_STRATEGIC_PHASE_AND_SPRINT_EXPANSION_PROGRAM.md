@@ -33,7 +33,7 @@ It prevents parallel-roadmap fragmentation by classifying every Learning OS capa
 
 ## 3. Repository Baseline & Migration Truth (`SOURCE_VERIFIED`)
 
-### 3.1 Git & Sprint Acceptance Ledger at `e39bafe88ea369f98c96a65497a94462dc79ef33`
+### 3.1 Git & Sprint Acceptance Ledger at Baseline `f0252b6`
 
 | Sprint / Milestone | Code & Migration State | Owner Acceptance Status | Production Authorization |
 |---|---|---|---|
@@ -43,14 +43,19 @@ It prevents parallel-roadmap fragmentation by classifying every Learning OS capa
 | **Sprint 7.1** *(Attempt Lifecycle & Step Persistence)* | Implemented (`V030`, `V031`, `V033`) | `LOCAL_ACCEPTANCE_PASSED` | Feature-flagged `false` |
 | **Sprint 7.2** *(Handwritten/Image Attempt Extraction)* | Implemented (`V034` `attempt_structured_work`) | `SOURCE_COMPLETE` / `PENDING_OWNER_TEST` | `PRODUCTION_NOT_AUTHORIZED` |
 | **Sprint 7.3** *(Step-by-Step Correctness & First Error)* | Implemented (`V035` `attempt_evaluations`) | `LOCAL_ACCEPTANCE_PASSED` (Run `20261107-025110-XrMKJK`) | Feature-flagged `false` |
-| **Sprint 7.4** *(Mistake Taxonomy & Classification Pipeline)* | Implemented (`V036` `attempt_mistake_classifications`) | `SOURCE_COMPLETE` / `PENDING_OWNER_TEST` (Run `20261107-114912-CFdjVI` B/D repaired in source; awaits fresh `--full` run) | `PRODUCTION_NOT_AUTHORIZED` |
+| **Sprint 7.4** *(Mistake Taxonomy & Classification Pipeline)* | Implemented (`V036` `attempt_mistake_classifications`) | `LOCAL_ACCEPTANCE_PASSED` | Feature-flagged `false` |
+| **Sprint 7.5** *(Longitudinal Mistake DNA Ledger)* | Implemented (`V037` `learner_mistake_dna_profiles`) | `LOCAL_ACCEPTANCE_PASSED` | Feature-flagged `false` |
+| **Sprint 7.6** *(Evidence-Stratified Mastery & Prereq Graph)* | Implemented (`V038` `learner_skill_mastery`) | `OWNER_CONFIRMED` | Feature-flagged `false` |
+| **Sprint 7.7** *(Mistake Passport iOS UI & Dispute Rollback)* | Implemented (`Features/AttemptAnalysis`) | `LOCAL_ACCEPTANCE_PASSED` (Run `run-QcZF0C`) | Feature-flagged `false` |
+| **Sprint 7.8** *(Closed-Loop Twin Remediation Trigger)* | Implemented (`TargetedTwinOrchestrator`) | `LOCAL_ACCEPTANCE_PASSED` (Run `run-8MFfJD`) | Feature-flagged `false` |
+| **Sprint 7.9** *(Mastery & Retention Calibration Dashboard)* | Implemented (`MasteryCalibrationRecord`) | `LOCAL_ACCEPTANCE_PASSED` (Run `run-S79ACC`) | Feature-flagged `false` |
+| **Sprint 7.10** *(Phase 07 Exit Gate & Brier/ECE Calibration)* | Implemented (`V042` `calibration_records`) | `LOCAL_ACCEPTANCE_PASSED` (Run `run-qb1Xfe`, commit `f4227a0`) | **PHASE 07 EXIT GATE CERTIFIED** |
 | **Focused Commercial Wedge (`Sprint 6.2B` + `Sprint 11.9A`)** | Specified in `sprints/02_FOCUSED_COMMERCIAL_WEDGE_SPRINT_PROGRAM.md` | `NOT_STARTED` (0 of 50 TestFlight students tested) | **Blocks Phase 8–13 per `ADR-011`** |
-| **Sprints 7.5–7.10** | Planned (`com.verifiedai.mistake`, `com.verifiedai.mastery`) | `PLANNED` | Blocked until Sprint 7.4 accepted |
-| **Phases 08–13** (`Sprints 8.1–13.10`) | Specified in `sprints/phase08..13/` | `BLOCKED_BY_ENTRY_GATE (ADR-011)` | Blocked by `ADR-011` `GO` gate |
+| **Phases 08–13** (`Sprints 8.1–13.10`) | Fully specified in `sprints/phase08..13/` with `LEARNING_OS_PRODUCTION_SPEC_V1` | `BLOCKED_BY_ENTRY_GATE (ADR-011)` | Blocked by `ADR-011` `GO` gate |
 
-### 3.2 Flyway Migration Numbering Reconciliation (`V001`–`V036` vs Planned `V037+`)
-- In `services/api/src/main/resources/db/migration/platform/`, active migrations are `V001` through `V023` and `V027` through `V036__attempt_mistake_classifications.sql` (`V024`–`V026` were skipped in historical numbering, and `services/api/src/main/resources/db/planned/V025__create_student_attempt_and_step_verification_lifecycle.sql` was superseded by `V030`–`V036`).
-- **Mandatory Rule for All Future Sprints:** All net-new database migrations from Sprint `7.5` onward **MUST** allocate sequence numbers starting at **`V037+`** (`PLANNED — exact Flyway version allocated sequentially at implementation time`) and **MUST** extend existing tables (`student_attempts`, `learner_mistake_events`, `counterfactual_twin_drills`, `learner_skill_mastery`, `attempt_evaluations`, `attempt_mistake_classifications`) rather than re-creating duplicate tables.
+### 3.2 Flyway Migration Numbering Reconciliation (`V001`–`V042` vs Planned `V043+`)
+- In `services/api/src/main/resources/db/migration/platform/`, active migrations are `V001` through `V023` and `V027` through `V042__mastery_calibration_and_retention_snapshots.sql` (`V024`–`V026` were skipped in historical numbering). Migration head is firmly established at **`V042`**.
+- **Mandatory Rule for All Future Sprints:** All net-new database migrations from Sprint `8.1` onward **MUST** allocate sequence numbers starting at **`V043+`** (`PLANNED — exact Flyway version allocated sequentially at implementation time`) and **MUST** extend existing tables rather than re-creating duplicate schemas.
 
 ---
 
@@ -64,10 +69,13 @@ Before modifying any sprint specification, every Learning OS capability is audit
 | **Counterexample Generation (`x = c` witness)** | `EXISTING_AND_SUFFICIENT` | `services/math-verifier/app/counterexample_engine.py`, `V030` | Surface directly in Exam Trap Radar Card (`Sprint 7.7`). |
 | **2D Native Math Rendering & Step-Diff (`ADR-010`)** | `EXISTING_AND_SUFFICIENT` | `math_visualization.py`, `attempt_diff.py`, iOS `AttemptAnalysis` | Bind token diff highlights to Mistake Passport cards (`Sprint 7.7`). |
 | **First Meaningful Error Detection (`V035`)** | `EXISTING_AND_SUFFICIENT` | `AttemptEvaluationService`, `V035__attempt_evaluations.sql` | Passed owner acceptance in `Sprint 7.3`. |
-| **Single-Attempt Mistake Classification (`V036`)** | `EXISTING_BUT_INCOMPLETE` | `MistakeTaxonomy.java` (17 codes, 5 explicit skill links), `V036` | Pass owner acceptance on `Sprint 7.4`; expand skill resolution & taxonomy migration in `Sprint 7.5`. |
-| **Longitudinal Mistake DNA & Mistake Passport** | `EXISTING_BUT_INCOMPLETE` | `V031` `learner_mistake_events` logs raw events only; no recurrence state machine or Beta-Binomial rate | Implement `V037` `learner_mistake_dna_profiles`, exposure-adjusted rate $\theta_{u,m}$, OCR dispute rollback, and iOS Passport UI in `Sprints 7.5, 7.7, 7.8`. |
-| **Verified Counterfactual Twin Engine** | `EXISTING_BUT_INCOMPLETE` | `V031` `counterfactual_twin_drills`, basic `attempt_learning.py` | Expand to 8-family structural invariant verifier + 3-variant ladder (A/B/C) + 60s lock enforcement in `Sprints 7.8 & 8.2`. |
-| **Evidence-Stratified Mastery (`bkt-lite-v1`)** | `EXISTING_BUT_INCOMPLETE` | `V031` `learner_skill_mastery`, `LearnerMasteryPolicy.java` | Add `INDEPENDENT` vs `HINT_ASSISTED` (`0.78` ceiling) vs `SOLUTION_REVEALED_ASSISTED` (`0.0` gain) + prerequisite propagation in `Sprint 7.6`. |
+| **Single-Attempt Mistake Classification (`V036`)** | `EXISTING_AND_SUFFICIENT` | `MistakeTaxonomy.java` (17 codes, 5 explicit skill links), `V036` | Completed in `Sprint 7.4`. |
+| **Longitudinal Mistake DNA & Mistake Passport** | `EXISTING_AND_SUFFICIENT` | `V037` `learner_mistake_dna_profiles`, Beta-Binomial rate $\theta_{u,m}$, OCR dispute rollback, iOS Passport UI | Completed in `Sprints 7.5, 7.7`. |
+| **Verified Counterfactual Twin Engine** | `EXISTING_BUT_INCOMPLETE` | `V031` / `V040` `counterfactual_twin_drills`, `attempt_learning.py` | Expand to 8-family structural invariant verifier + 3-variant ladder (A/B/C) + 60s lock in `Sprint 8.2`. |
+| **Evidence-Stratified Mastery (`bkt-lite-v1`/`v2`)** | `EXISTING_AND_SUFFICIENT` | `V038` `learner_skill_mastery`, `V042` Brier/ECE calibration records | Certified in `Sprint 7.6` and `Sprint 7.10`. |
+| **Dual-Mode Solver vs Socratic Switcher (`H-13`)** | `NET_NEW_AND_GATED` | Mode enum in `CNT-LOS-06`, Screen 1/2 wireframes | Implement top-level toggle (`SOLVER` vs `SOCRATIC`) in `Sprint 8.4`. |
+| **"Snap-to-Plan" Syllabus Ingestion (`H-14`)** | `NET_NEW_AND_GATED` | `CNT-LOS-14` `POST /v1/candidate/syllabus-ingest`, Gemini Flash OCR | Implement camera schedule parser in `Sprint 9.2`. |
+| **Pre-Exam 48h Formula & Trap Sheet (`H-15`)** | `NET_NEW_AND_GATED` | `CNT-LOS-15` `cheat-sheet-v1`, on-device `PDFKit` engine | Implement 1-page printable pre-exam digest in `Sprint 9.8`. |
 | **Personal AI Math Coach & Daily 15-Min Loop** | `EXISTING_BUT_INCOMPLETE` | `com.verifiedai.tutoring` (`SocraticPolicy`, `HintPolicy`), `HomePlaceholderView.swift` | Replace `HomePlaceholderView.swift` with Daily Coach Hub; wire deterministic `StudyPlanEngine` (`Sprints 8.1, 8.3, 8.4, 8.5`). |
 | **YKS (TYT/AYT) Exam Readiness & Net-Gain Simulator** | `EXISTING_BUT_INCOMPLETE` | `sprints/phase09_exam_and_assessment_platform/` (generic templates) | Upgrade Phase 9 (`Sprints 9.1, 9.2, 9.6, 9.7, 9.9`) with credible-interval net formulas (`learning/86`) and high-ROI topic allocator (`H-03`). |
 | **StoreKit 2 Monetization & Coach Pro Tiers** | `EXISTING_BUT_INCOMPLETE` | `com.verifiedai.billing` (`EntitlementApplicationService`, `AppleBillingApplicationService`) | Upgrade `Sprints 10.1–10.3` with `COACH_PRO` and `YKS_SEASON_PASS` SKUs, contextual paywalls, and spend guards. |

@@ -383,3 +383,67 @@ Attach or persist links/artifacts for:
 
 Codex must implement this sprint in small reviewable slices, re-reading the highest-precedence semantic documents before changing domain/API/data contracts. It must not “simplify” the architecture by moving rules into prompts, client code, provider SDK adapters, generic helpers, or ungoverned ML scripts.
 <!-- PRODUCTION_EXECUTION_V3:END -->
+
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:START -->
+# Learning OS Production Implementation Specification v1 (`2026-11-07`)
+
+## 1. Sprint Metadata & Status
+- **Sprint ID:** `SPRINT_9.10`
+- **Canonical Title:** Assessment Integrity, Tamper-Resistance, Mathematical VoiceOver Accessibility & Reliability (Phase 9 Exit Gate)
+- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011)`
+- **Primary Spec Reference:** `quality/91_LEARNING_OS_PRODUCT_LEARNING_AND_RELEASE_ACCEPTANCE_GATES.md` & `adr/ADR-010_NATIVE_2D_MATH_RENDERING_AND_STEP_DIFF_HIGHLIGHTING.md`
+
+## 2. Strategic Learning OS Objective & User Value
+Hardens the entire exam engine against accidental data loss, timer tampering, network severance, and unfair accessibility barriers. Implements cryptographic submission integrity, ensures complete VoiceOver spoken math compliance for visually impaired learners, and certifies Phase 09 exit criteria across all exam definitions, session runtimes, readiness models, and attribution reports.
+
+## 3. Entry Gate & Preconditions
+- `ADR-011` `GO` decision recorded; `Sprints 9.1–9.9` accepted.
+
+## 4. Domain Invariants & Integrity Rules
+1. **Cryptographic Submission Integrity (`INV-EXAM-006`):** Final answer packets are signed with `HMAC-SHA256` using the user's ephemeral session token and server timestamp, preventing packet tampering, replay attacks, or intercepted option alterations.
+2. **Universal Spoken Math Accessibility (`ADR-010`):** Every mathematical formula in exam questions must render with native Dynamic Type (`xSmall` to `AX3`) and emit correct semantic VoiceOver speech strings in `tr-TR` (e.g., $\int_0^1 x^2 \, dx$ spoken as *"sıfırdan bire x kare d x integrali"*).
+3. **Phase 9 Exit Gate Certification:** Formally validates that `CNT-LOS-10` (Exam Sessions) and `CNT-LOS-11` (Readiness Projection) execute with $< 350\text{ms}$ SLA, zero P0/P1 defects, and full database migration integrity (`V046`/`V047`).
+
+## 5. Owning Spring Modulith Backend Modules & Classes
+- `com.verifiedai.exam`: `AssessmentIntegrityGuard.java`, `ExamQualityGateService.java`, `AdminExamQualityGateController.java`.
+
+## 6. Python Math Verifier Impact
+- Validates that mathematical LaTeX representations render semantic spoken speech tokens without loss.
+
+## 7. Database Migration & Persistence Contract
+- **Tables:** `exam_integrity_audit_logs` (`id`, `session_id`, `event_type`, `signature_verified`, `created_at`).
+
+## 8. REST API Contracts
+- `GET /v1/admin/exams/quality-gate` (`exam-quality-v1`).
+
+## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
+- Full VoiceOver accessibility certification and network failure injection tests in `Features/Exam/`.
+
+## 10. AI Capability & Unit Economics Guardrail
+- **`$0.00` LLM token cost** (pure infrastructure hardening).
+
+## 11. Privacy, Safety & Compliance
+- Compliant with minor protection and KVKK data integrity standards; audit logs purged on account deletion via `ExamPrivacyLifecycleContributor`.
+
+## 12. Telemetry & Observability
+- Emits `exam_integrity_verified`, `tamper_attempt_rejected`, `exam_quality_gate_passed`.
+
+## 13. Feature Flags & Rollback Plan
+- `verifiedai.exam.integrity-guard-enabled: false`.
+
+## 14. Automated Test Matrix (Categories A–F)
+- Security penetration tests attempting timer rollbacks and replay attacks; VoiceOver snapshot tests for 50 complex formulas.
+
+## 15. Owner-Only Acceptance Command
+- `bash scripts/quality/sprint_9_10_owner_acceptance.sh --full`
+
+## 16. Explicit Non-Goals
+- Does not install invasive proctoring software or webcam-monitoring spyware.
+
+## 17. Exit Gate & Downstream Consumers
+- Formally certifies **Phase 9 Exit Gate** and unlocks Phase 10 (`Sprint 10.1` Monetization, Entitlements & Subscription Engine).
+
+## 18. Canonical Cross-References
+- `quality/91_LEARNING_OS_PRODUCT_LEARNING_AND_RELEASE_ACCEPTANCE_GATES.md`
+- `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md`
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:END -->

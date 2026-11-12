@@ -394,3 +394,67 @@ Attach or persist links/artifacts for:
 
 Codex must implement this sprint in small reviewable slices, re-reading the highest-precedence semantic documents before changing domain/API/data contracts. It must not “simplify” the architecture by moving rules into prompts, client code, provider SDK adapters, generic helpers, or ungoverned ML scripts.
 <!-- PRODUCTION_EXECUTION_V3:END -->
+
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:START -->
+# Learning OS Production Implementation Specification v1 (`2026-11-07`)
+
+## 1. Sprint Metadata & Status
+- **Sprint ID:** `SPRINT_9.4`
+- **Canonical Title:** Timed Mock Exam Runtime, Server-Authoritative Clock & Photographed Deneme Scratchpad Ingestion (`F28`)
+- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011)`
+- **Primary Spec Reference:** `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md` (Screen 10) & `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md` (`CNT-LOS-10`)
+
+## 2. Strategic Learning OS Objective & User Value
+Delivers a resilient timed exam execution environment with server-authoritative clocking, automatic background answer saving, 120-second offline network tolerance, and strict no-hint isolation. Bridges physical paper deneme exams (`Özdebir`, `3D`, `Apotemi`) via scratchpad photo ingestion (`F28`), allowing students to analyze real exam mistakes without enduring 135-minute mobile screen fatigue.
+
+## 3. Entry Gate & Preconditions
+- `ADR-011` `GO` decision recorded; `Sprint 9.3` accepted.
+
+## 4. Domain Invariants & Runtime Rules
+1. **Server-Authoritative Clock & 120s Grace Buffer (`INV-EXAM-003`):** The session countdown is anchored strictly to server timestamp $t_{\text{start}}$. Client device clock alterations cannot prolong exam duration. If network disconnects, an offline grace buffer of $\le 120\text{ seconds}$ is granted for reconnection before the exam is auto-submitted.
+2. **Absolute No-Hint Policy:** Socratic prompts, live hint drawers, and step-by-step diff viewers are physically disabled during exam runtime (`NO_HINT_MODE`).
+3. **Idempotent Submission Protocol:** Submission requires an `Idempotency-Key: exam_sub_{sessionId}`; duplicated submissions return identical score projections without double-counting.
+
+## 5. Owning Spring Modulith Backend Modules & Classes
+- `com.verifiedai.exam`: `ExamSessionManager.java`, `ExamSession.java`, `ExamSessionItem.java`, `ExamSessionController.java`.
+
+## 6. Python Math Verifier Impact
+- Batch-processes scratchpad work photos submitted at exam completion.
+
+## 7. Database Migration & Persistence Contract (`PLANNED V046`)
+- **Tables:** `exam_sessions` (`id`, `user_id`, `exam_code`, `exam_version`, `session_type`, `status`, `started_at`, `submitted_at`, `net_score`, `total_questions`, `correct_count`, `wrong_count`, `blank_count`), `exam_session_items` (`id`, `session_id`, `question_index`, `canonical_skill_code`, `selected_option`, `is_correct`, `duration_seconds`).
+
+## 8. REST API Contracts (`CNT-LOS-10`)
+- `POST /v1/exams/sessions` and `POST /v1/exams/sessions/{id}/submit` (`exam-session-v1`).
+
+## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
+- `ExamSessionView.swift` (Screen 10): Non-anxious distraction-free pacing bar, option selector, and scratchpad photo capture.
+
+## 10. AI Capability & Unit Economics Guardrail
+- **`$0.00` LLM token cost** for exam execution and scoring.
+
+## 11. Privacy, Safety & Compliance
+- Purged on account deletion via `ExamPrivacyLifecycleContributor`.
+
+## 12. Telemetry & Observability
+- Emits `exam_session_started`, `exam_item_answered`, `exam_session_submitted`, `grace_buffer_exhausted`.
+
+## 13. Feature Flags & Rollback Plan
+- `verifiedai.exam.session-runtime-enabled: false`.
+
+## 14. Automated Test Matrix (Categories A–F)
+- Tests client clock drift injection, sudden network disconnects during exam, grace buffer auto-submit, and idempotent retry.
+
+## 15. Owner-Only Acceptance Command
+- `bash scripts/quality/sprint_9_4_owner_acceptance.sh --full`
+
+## 16. Explicit Non-Goals
+- Does not lock device hardware into single-app kiosk mode (supervised MDM).
+
+## 17. Exit Gate & Downstream Consumers
+- Unlocks `Sprint 9.5` (Scoring Engine) and `Sprint 9.7` (Post-Exam Attribution).
+
+## 18. Canonical Cross-References
+- `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md`
+- `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md`
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:END -->

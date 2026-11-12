@@ -348,3 +348,67 @@ Attach or persist links/artifacts for:
 
 Codex must implement this sprint in small reviewable slices, re-reading the highest-precedence semantic documents before changing domain/API/data contracts. It must not “simplify” the architecture by moving rules into prompts, client code, provider SDK adapters, generic helpers, or ungoverned ML scripts.
 <!-- PRODUCTION_EXECUTION_V3:END -->
+
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:START -->
+# Learning OS Production Implementation Specification v1 (`2026-11-07`)
+
+## 1. Sprint Metadata & Status
+- **Sprint ID:** `SPRINT_9.5`
+- **Canonical Title:** Deterministic Scoring Engine, ÖSYM Net Calculation Policy ($\text{Net} = C - 0.25 W$) & Evidence Traceability
+- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011)`
+- **Primary Spec Reference:** `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md` (Quantity 5) & `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md`
+
+## 2. Strategic Learning OS Objective & User Value
+Calculates explainable, deterministic exam scoring across multiple assessment frameworks, specifically implementing the Turkish ÖSYM penalty rule ($\text{Net} = \text{Correct} - 0.25 \cdot \text{Wrong}$) and AP/IB/SAT points models. Anchors every question result to verifiable attempt evidence without relying on generative LLM score approximations.
+
+## 3. Entry Gate & Preconditions
+- `ADR-011` `GO` decision recorded; `Sprint 9.4` accepted.
+
+## 4. Domain Invariants & Scoring Rules
+1. **Deterministic Penalty Arithmetic (`INV-EXAM-004`):** For ÖSYM exams, net score is governed strictly by $\text{Net} = C - 0.25 \cdot W$. Scores are rounded to exactly two decimal places, and $\text{Net} \in [-0.25 \cdot Q_E,\; Q_E]$.
+2. **Immutable Score Snapshots:** Once computed, score records bind to the immutable `exam_sessions.submitted_at` timestamp. Re-scoring is possible only through explicit administrative regrading with audit logging.
+3. **Traceability to Learning State:** Wrong answers are linked to canonical skill codes to immediately feed the post-assessment weak-area prioritization pipeline (`Sprint 9.7`).
+
+## 5. Owning Spring Modulith Backend Modules & Classes
+- `com.verifiedai.exam`: `ExamScoringService.java`, `ScoringFormulaPolicy.java`, `ExamScoreSummaryDto.java`, `ExamScoringController.java`.
+
+## 6. Python Math Verifier Impact
+- None (`100%` deterministic Java domain logic).
+
+## 7. Database Migration & Persistence Contract
+- **Tables:** `exam_session_scores` (`session_id`, `total_score`, `net_score`, `correct_count`, `wrong_count`, `omitted_count`, `scoring_policy_code`, `computed_at`).
+
+## 8. REST API Contracts
+- `GET /v1/exams/sessions/{id}/score-summary` (`exam-score-summary-v1`).
+
+## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
+- Renders `ExamScoreSummaryView.swift` (Net score badge, Correct/Wrong/Blank counters, and time-per-question metrics).
+
+## 10. AI Capability & Unit Economics Guardrail
+- **`$0.00` LLM token cost** (pure server-side math).
+
+## 11. Privacy, Safety & Compliance
+- Purged on account deletion via `ExamPrivacyLifecycleContributor`.
+
+## 12. Telemetry & Observability
+- Emits `exam_scored`, `net_score_calculated` (`exam_code`, `net_score`, `accuracy_rate`).
+
+## 13. Feature Flags & Rollback Plan
+- `verifiedai.exam.scoring-engine-enabled: false`.
+
+## 14. Automated Test Matrix (Categories A–F)
+- Tests all boundary cases: 40 correct ($40.0\text{ Net}$), 40 wrong ($-10.0\text{ Net}$), 40 blank ($0.0\text{ Net}$), and fractional decimal rounding.
+
+## 15. Owner-Only Acceptance Command
+- `bash scripts/quality/sprint_9_5_owner_acceptance.sh --full`
+
+## 16. Explicit Non-Goals
+- Does not rank students against a live national percentile bell curve without formal cohort data.
+
+## 17. Exit Gate & Downstream Consumers
+- Unlocks `Sprint 9.6` (Exam Readiness Model) and `Sprint 9.7` (Post-Assessment Attribution).
+
+## 18. Canonical Cross-References
+- `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md`
+- `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md`
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:END -->

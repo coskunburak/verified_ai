@@ -359,3 +359,67 @@ Attach or persist links/artifacts for:
 
 Codex must implement this sprint in small reviewable slices, re-reading the highest-precedence semantic documents before changing domain/API/data contracts. It must not “simplify” the architecture by moving rules into prompts, client code, provider SDK adapters, generic helpers, or ungoverned ML scripts.
 <!-- PRODUCTION_EXECUTION_V3:END -->
+
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:START -->
+# Learning OS Production Implementation Specification v1 (`2026-11-07`)
+
+## 1. Sprint Metadata & Status
+- **Sprint ID:** `SPRINT_8.10`
+- **Canonical Title:** Personalization Calibration, Cold-Start Baseline & Recommendation Quality Gates (Phase 8 Exit Gate)
+- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011)`
+- **Primary Spec Reference:** `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md` (Screen 1 Cold Start) & `quality/91_LEARNING_OS_PRODUCT_LEARNING_AND_RELEASE_ACCEPTANCE_GATES.md`
+
+## 2. Strategic Learning OS Objective & User Value
+Hardens the study planner against cold-start sparsity, conflicting goals, inactive accounts, and inaccurate inferred preferences. Provides a 3-question baseline diagnostic for new students and certifies Phase 08 exit criteria across all daily coaching, spaced repetition, micro-lesson, and reporting contracts.
+
+## 3. Entry Gate & Preconditions
+- `ADR-011` `GO` decision recorded; `Sprints 8.1–8.9` accepted.
+
+## 4. Domain Invariants & Calibration Rules
+1. **3-Question Cold-Start Diagnostic (`INV-COLD-001`):** A new student with zero attempt history is presented a 3-minute diagnostic (1 Number Sense trap, 1 Quadratic/Inequality trap, 1 Function Composition item) to initialize prior $P(L_0)$ and detect latent mistake archetypes.
+2. **Sparse Data Exploration Defense:** If a student's total evidence count across a topic is $< 3$, the recommender forces exploration mode (`CONFIDENCE_TIER = 'PRELIMINARY'`), preventing over-fitting to a single accidental mistake.
+3. **Phase 8 Exit Gate Invariant:** Phase 8 is certified complete ONLY when all Phase 8 contracts (`CNT-LOS-06`, `CNT-LOS-07`, `CNT-LOS-08`, `CNT-LOS-09`) pass automated regression suites with zero P0/P1 defects and full documentation parity.
+
+## 5. Owning Spring Modulith Backend Modules & Classes
+- `com.verifiedai.studyplan`: `ColdStartCalibrationService.java`, `PlannerQualityGateService.java`, `AdminQualityGateController.java`.
+
+## 6. Python Math Verifier Impact
+- Validates the 3 canonical diagnostic items in `attempt_learning.py`.
+
+## 7. Database Migration & Persistence Contract
+- **Tables:** `cold_start_diagnostics` (`id`, `user_id`, `completed_at`, `baseline_mastery_json`).
+
+## 8. REST API Contracts
+- `POST /v1/study-plan/cold-start` and `GET /v1/admin/study-plan/quality-gate` (`study-plan-quality-v1`).
+
+## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
+- Renders 3-minute Onboarding Diagnostic card in `CoachHubView.swift` when `attemptCount == 0`.
+
+## 10. AI Capability & Unit Economics Guardrail
+- **`$0.00` LLM token cost** (pure psychometric initialization).
+
+## 11. Privacy, Safety & Compliance
+- Purged on account deletion via `StudyPlanPrivacyLifecycleContributor`.
+
+## 12. Telemetry & Observability
+- Emits `cold_start_diagnostic_started`, `cold_start_diagnostic_completed`, `planner_quality_gate_evaluated`.
+
+## 13. Feature Flags & Rollback Plan
+- `verifiedai.studyplan.cold-start-enabled: false`.
+
+## 14. Automated Test Matrix (Categories A–F)
+- Tests cold-start state machine, sparse data exploration transitions, and end-to-end Phase 8 contract validation.
+
+## 15. Owner-Only Acceptance Command
+- `bash scripts/quality/sprint_8_10_owner_acceptance.sh --full`
+
+## 16. Explicit Non-Goals
+- Does not use external third-party psychometric profiling or data-broker tracking.
+
+## 17. Exit Gate & Downstream Consumers
+- Formally certifies **Phase 8 Exit Gate** and unlocks Phase 9 (`Sprint 9.1` Exam Definitions).
+
+## 18. Canonical Cross-References
+- `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md`
+- `quality/91_LEARNING_OS_PRODUCT_LEARNING_AND_RELEASE_ACCEPTANCE_GATES.md`
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:END -->

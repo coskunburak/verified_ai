@@ -399,3 +399,67 @@ Attach or persist links/artifacts for:
 
 Codex must implement this sprint in small reviewable slices, re-reading the highest-precedence semantic documents before changing domain/API/data contracts. It must not “simplify” the architecture by moving rules into prompts, client code, provider SDK adapters, generic helpers, or ungoverned ML scripts.
 <!-- PRODUCTION_EXECUTION_V3:END -->
+
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:START -->
+# Learning OS Production Implementation Specification v1 (`2026-11-07`)
+
+## 1. Sprint Metadata & Status
+- **Sprint ID:** `SPRINT_8.5`
+- **Canonical Title:** Non-Punitive Missed-Day Recovery, Study Plan Rebalancing & Anti-Backlog Defense
+- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011)`
+- **Primary Spec Reference:** `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md` (Screens 1 & 8) & `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md`
+
+## 2. Strategic Learning OS Objective & User Value
+Ensures learners returning after missed days or prolonged absence are never greeted by a punishing backlog wall ("47 overdue tasks"). Deterministically prunes obsolete review tasks, rebalances the daily study budget against the target exam horizon without exceeding maximum cognitive load, and preserves habit momentum via the 5-minute downshift recovery path.
+
+## 3. Entry Gate & Preconditions
+- `ADR-011` `GO` decision recorded; `Sprint 8.4` accepted.
+
+## 4. Domain Invariants & Mathematical Rules
+1. **Non-Punitive Recovery Law (`INV-COACH-004`):** When a student misses $k \ge 1$ days, the system prunes uncompleted daily missions rather than piling them up. Daily active tasks remain strictly capped at $\le 3$ items (1 active trap + 2 spaced twins).
+2. **Cognitive Load Bounded Rebalancing:** Daily budget $B_d$ adapts by $B_d' = \min(B_{\max}, B_d \cdot \frac{T_{\text{exam}}}{T_{\text{exam}} - k})$ where $B_{\max} = 25\text{ min}$. If required study time exceeds $B_{\max}$, lower-ROI topics ($\Delta\text{Net}/\text{hr} < 0.20$) are pruned rather than burning out the student.
+3. **Graceful Downshift Recovery:** An inactive streak can be restarted on the return day using the 5-Minute Mini Mode (`H-13`), immediately converting shame into re-engagement.
+
+## 5. Owning Spring Modulith Backend Modules & Classes
+- `com.verifiedai.studyplan`: `StudyPlanRebalancingService.java`, `MissedDayRecoveryPolicy.java`, `RebalanceEvent.java`, `RebalanceController.java`.
+
+## 6. Python Math Verifier Impact
+- None (`100%` deterministic Java rebalancing).
+
+## 7. Database Migration & Persistence Contract
+- **Tables:** `study_plan_rebalance_events` (`id`, `user_id`, `trigger_type`, `missed_days_count`, `pruned_tasks_count`, `rebalanced_daily_budget`, `created_at`).
+
+## 8. REST API Contracts
+- `POST /v1/study-plan/rebalance` and `GET /v1/study-plan/recovery-status` (`recovery-status-v1`).
+
+## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
+- Renders `PlanRebalanceNotificationSheet.swift` ("Hoş geldin! Birikmiş ödev yok, bugünün 12 dakikalık görevine odaklanalım").
+
+## 10. AI Capability & Unit Economics Guardrail
+- **`$0.00` LLM token cost** (100% deterministic time-algebra).
+
+## 11. Privacy, Safety & Compliance
+- Purged on account deletion via `StudyPlanPrivacyLifecycleContributor`.
+
+## 12. Telemetry & Observability
+- Emits `plan_rebalanced`, `missed_days_recovered`, `overload_pruning_executed`.
+
+## 13. Feature Flags & Rollback Plan
+- `verifiedai.studyplan.rebalancing-enabled: false`.
+
+## 14. Automated Test Matrix (Categories A–F)
+- Tests recovery after 1, 3, 7, and 30 missed days; asserts daily queue never exceeds 3 items and daily budget never exceeds 25 minutes.
+
+## 15. Owner-Only Acceptance Command
+- `bash scripts/quality/sprint_8_5_owner_acceptance.sh --full`
+
+## 16. Explicit Non-Goals
+- Does not shame the student with red guilt badges or notifications.
+
+## 17. Exit Gate & Downstream Consumers
+- Unlocks `Sprint 8.6` (Diagnosed Weakness Micro-Lessons) and feeds `Sprint 8.7`.
+
+## 18. Canonical Cross-References
+- `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md`
+- `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md`
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:END -->

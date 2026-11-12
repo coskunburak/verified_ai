@@ -394,3 +394,67 @@ Attach or persist links/artifacts for:
 
 Codex must implement this sprint in small reviewable slices, re-reading the highest-precedence semantic documents before changing domain/API/data contracts. It must not “simplify” the architecture by moving rules into prompts, client code, provider SDK adapters, generic helpers, or ungoverned ML scripts.
 <!-- PRODUCTION_EXECUTION_V3:END -->
+
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:START -->
+# Learning OS Production Implementation Specification v1 (`2026-11-07`)
+
+## 1. Sprint Metadata & Status
+- **Sprint ID:** `SPRINT_8.7`
+- **Canonical Title:** Study Session Orchestration, Offline-Safe Checkpoints & Interruption Recovery Semantics
+- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011)`
+- **Primary Spec Reference:** `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md` (Screens 1, 2 & 5) & `architecture/13_ASYNC_PROCESSING_AND_JOB_ORCHESTRATION.md`
+
+## 2. Strategic Learning OS Objective & User Value
+Provides bulletproof study session orchestration with deterministic state transitions, background pause/resume recovery, offline step caching, and idempotent completion semantics. Ensures that app kills, phone calls, or subway tunnel network drops never corrupt student solution progress or twin attempts.
+
+## 3. Entry Gate & Preconditions
+- `ADR-011` `GO` decision recorded; `Sprints 8.1–8.6` accepted.
+
+## 4. Domain Invariants & State Machine Rules
+1. **Deterministic Session States (`INV-SESS-001`):** Legal states: `INITIALIZED -> ACTIVE <-> PAUSED -> COMPLETED` (or `ABANDONED` after 24h of inactivity). Illegal transitions throw `IllegalSessionStateTransitionException` (`409 Conflict`).
+2. **Offline-Safe Local Checkpointing:** Client writes structured progress to local SQLite/SwiftData before triggering any network dispatch. On reconnection, checkpoints sync idempotently using `Idempotency-Key: sess_{id}_step_{idx}`.
+3. **Server-Authoritative Duration Clamping:** Session completion validates reported duration against wall-clock timestamps: $\text{duration}_{\text{reported}} \le (\text{submitted\_at} - \text{started\_at}) + \epsilon_{\text{clock}}$ to eliminate speed-running or artificially inflated study time telemetry.
+
+## 5. Owning Spring Modulith Backend Modules & Classes
+- `com.verifiedai.studyplan`: `StudySessionOrchestrator.java`, `StudySession.java`, `SessionCheckpoint.java`, `StudySessionController.java`.
+
+## 6. Python Math Verifier Impact
+- None (`100%` session lifecycle orchestration).
+
+## 7. Database Migration & Persistence Contract
+- **Tables:** `study_sessions` (`id`, `user_id`, `session_type`, `status`, `started_at`, `resumed_at`, `completed_at`, `total_duration_seconds`, `created_at`), `session_checkpoints` (`id`, `session_id`, `step_index`, `task_id`, `snapshot_payload_json`, `created_at`).
+
+## 8. REST API Contracts
+- `POST /v1/study-sessions/start`, `PUT /v1/study-sessions/{id}/checkpoint`, `POST /v1/study-sessions/{id}/complete` (`study-session-v1`).
+
+## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
+- `StudySessionCoordinator.swift` & `OfflineCheckpointQueue.swift` in `Features/ProblemSolving/`.
+
+## 10. AI Capability & Unit Economics Guardrail
+- **`$0.00` LLM token cost** (pure state-machine engine).
+
+## 11. Privacy, Safety & Compliance
+- Purged on account deletion via `StudyPlanPrivacyLifecycleContributor`.
+
+## 12. Telemetry & Observability
+- Emits `study_session_started`, `study_session_paused`, `study_session_resumed`, `study_session_completed`.
+
+## 13. Feature Flags & Rollback Plan
+- `verifiedai.studyplan.session-orchestration-enabled: false`.
+
+## 14. Automated Test Matrix (Categories A–F)
+- Tests recovery from backgrounding, sudden network severance, out-of-order checkpoint delivery, and idempotent completion re-delivery.
+
+## 15. Owner-Only Acceptance Command
+- `bash scripts/quality/sprint_8_7_owner_acceptance.sh --full`
+
+## 16. Explicit Non-Goals
+- Does not stream raw video or monitor device camera/microphone.
+
+## 17. Exit Gate & Downstream Consumers
+- Unlocks `Sprint 8.8` (Gamification & Streaks) and `Sprint 9.4` (Timed Mock Exam Runtime).
+
+## 18. Canonical Cross-References
+- `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md`
+- `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md`
+<!-- LEARNING_OS_PRODUCTION_SPEC_V1:END -->
