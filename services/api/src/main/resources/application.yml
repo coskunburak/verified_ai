@@ -279,5 +279,8 @@ verifiedai:
   tutoring:
     hints-enabled: ${TUTOR_HINTS_ENABLED:false}
     socratic-enabled: ${TUTOR_SOCRATIC_ENABLED:false}
+    micro-lessons-enabled: ${VERIFIEDAI_TUTORING_MICRO_LESSONS_ENABLED:true}
+    micro-lesson-min-dwell-ms: 1000
+    micro-lesson-max-dwell-ms: 600000
   studyplan:
     rebalancing-enabled: ${STUDYPLAN_REBALANCING_ENABLED:true}

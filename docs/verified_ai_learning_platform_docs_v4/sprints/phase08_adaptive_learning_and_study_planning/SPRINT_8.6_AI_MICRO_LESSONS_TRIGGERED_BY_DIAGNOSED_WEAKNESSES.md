@@ -69,7 +69,7 @@ The platform intentionally separates product semantics, learner state, AI-genera
 
 - `services/api/src/main/java/com/verifiedai/tutoring/**`
 - `services/api/src/main/java/com/verifiedai/mistake/**`
-- `services/api/src/main/resources/db/migration/platform/V044__micro_lesson_cards.sql` *(PLANNED)*
+- `services/api/src/main/resources/db/migration/platform/V049__micro_lesson_cards.sql` *(Implemented; forward-reconciled after V048)*
 - corresponding module tests and `ModularityTests`.
 
 ## AI / verification / evaluation work
@@ -386,7 +386,7 @@ Codex must implement this sprint in small reviewable slices, re-reading the high
 ## 1. Sprint Metadata & Status
 - **Sprint ID:** `SPRINT_8.6`
 - **Canonical Title:** 90-Second Interactive Micro-Lessons Triggered by Diagnosed Mistake DNA
-- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011)`
+- **Status:** `COMPLETED (VERIFIED BY OWNER ACCEPTANCE GATE)`
 - **Primary Spec Reference:** `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md` (Screen 4) & `operations/92_LEARNING_OS_ASSUMPTIONS_EXPERIMENTS_AND_EVIDENCE_LEDGER.md` (`EXP-LOS-05`)
 
 ## 2. Strategic Learning OS Objective & User Value
@@ -396,33 +396,33 @@ Delivers bounded, 60–180 second interactive **Micro-Lesson Cards** (`CNT-LOS-0
 3. **1-Tap Interactive Quick Check before returning to the Verified Twin (30s)**
 
 ## 3. Entry Gate & Preconditions
-- `ADR-011` `GO` decision recorded; `Sprint 8.4` accepted.
+- `ADR-011` `GO` decision recorded; `Sprint 8.5` accepted.
 
 ## 4. Domain Invariants & Pedagogical Rules
-1. **Strict Trigger Discipline:** Micro-lessons are never pushed as generic browsing feeds; they trigger from an active `mistake_code` in `V036`/`V037`.
-2. **Pre-Verified Canonical Examples (`ADR-001`):** Every mathematical equation and counterexample inside a micro-lesson card is pre-verified by `services/math-verifier/` and content-hashed by `(mistake_code, locale)`.
+1. **Strict Trigger Discipline:** Micro-lessons are never pushed as generic browsing feeds; they trigger from an active `mistake_code` in `V036`/`V037`, Socratic Rung 2, or Verified Twin second failure.
+2. **Pre-Verified Canonical Examples (`ADR-001`):** Every mathematical equation and counterexample inside a micro-lesson card is pre-verified by `services/math-verifier/app/micro_lesson_verifier.py` and SHA-256 content-hashed by `(mistake_code, locale)`.
 
 ## 5. Owning Spring Modulith Backend Modules & Classes
-- `com.verifiedai.tutoring`: `TriggeredMicroLessonService.java`, `MicroLessonCard.java`, `MicroLessonController.java`.
+- `com.verifiedai.tutoring`: `MicroLessonApplicationService.java`, `MicroLessonHashVerifier.java`, `MicroLessonCard.java`, `MicroLessonDataLifecycleContributor.java`, `JdbcMicroLessonRepository.java`, `MicroLessonController.java`.
 
 ## 6. Python Math Verifier Impact
-- Validates all canonical math examples in the micro-lesson catalog via `equivalence.py` and `math_visualization.py`.
+- Validates all 34 canonical math cards (`17 mistake_code x 2 locales`) in `micro_lesson_catalog_v1.json` via `app/micro_lesson_verifier.py`.
 
-## 7. Database Migration & Persistence Contract (`PLANNED V044`)
-- **Migration File:** `services/api/src/main/resources/db/migration/platform/V044__micro_lesson_cards.sql` *(PLANNED)*
-- **Tables:** `micro_lesson_catalog` (`mistake_code`, `locale`, `schema_version`, `card_payload_json`, `verification_hash`), `learner_micro_lesson_completions` (`id`, `user_id`, `mistake_code`, `source_attempt_id`, `quick_check_passed`, `duration_seconds`, `completed_at`).
+## 7. Database Migration & Persistence Contract (`V049`)
+- **Migration File:** `services/api/src/main/resources/db/migration/platform/V049__micro_lesson_cards.sql` *(Forward-reconciled after V048)*
+- **Tables:** `micro_lesson_catalog` (`card_id`, `mistake_code`, `locale`, `schema_version`, `card_payload`, `verification_hash`, `verification_status`, `verifier_version`), `learner_micro_lesson_completions` (`completion_id`, `user_id`, `card_id`, `mistake_code`, `locale`, `source_attempt_id`, `trigger_source`, `selected_option_id`, `quick_check_passed`, `dwell_time_ms`, `idempotency_key`, `training_eligible=FALSE`, `completed_at`).
 
 ## 8. REST API Contracts (`CNT-LOS-08`)
-- `GET /v1/micro-lessons/{mistakeCode}?locale={tr-TR|en-US}` and `POST /v1/micro-lessons/{mistakeCode}/complete`.
+- `GET /v1/micro-lessons/{mistakeCode}?locale={tr-TR|en-US}&triggerSource={...}&sourceAttemptId={uuid}` and `POST /v1/micro-lessons/{mistakeCode}/complete` (and `/api/v1/...` aliases).
 
 ## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
-- `apps/ios/VerifiedAI/Features/Tutor/Presentation/MicroLessonDrawerView.swift`.
+- `MicroLessonModels.swift`, `MicroLessonSQLiteCache.swift`, `MicroLessonViewModel.swift`, `MicroLessonDrawerView.swift`, `TutorView.swift`.
 
 ## 10. AI Capability & Unit Economics Guardrail
 - Pre-verified cached micro-lesson cards serve at **`$0.00` marginal LLM cost** (`100%` cache hit per `(mistake_code, locale)`).
 
 ## 11. Privacy, Safety & Compliance
-- `TutorSessionLifecycleContributor` purges `learner_micro_lesson_completions` on account deletion.
+- `MicroLessonDataLifecycleContributor` (`@Order(28)`) exports and purges `learner_micro_lesson_completions` on account deletion (`< 500 ms`) while preserving the shared `micro_lesson_catalog`.
 
 ## 12. Telemetry & Observability
 - Emits `micro_lesson_opened`, `micro_lesson_quick_check_answered`, and `micro_lesson_completed` (`EXP-LOS-05`).

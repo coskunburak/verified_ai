@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "1.0.0",
+  "completionId": "00000000-0000-4000-8602-000000000001",
+  "cardId": "00000000-0000-4000-8601-000000000001",
+  "mistakeCode": "ALG_SIGN_FLIP_DISTRIBUTE",
+  "locale": "tr-TR",
+  "quickCheckPassed": true,
+  "dwellTimeMs": 64200,
+  "completedAt": "2026-11-13T10:30:00Z",
+  "idempotentReplay": false,
+  "trainingEligible": false
+}

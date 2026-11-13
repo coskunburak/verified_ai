@@ -80,6 +80,15 @@ def run_validation():
     rebalance_response_fixture_path = ROOT / "packages/schemas/studyplan/fixtures/rebalance-response-v1.valid.json"
     openapi_core_path = ROOT / "packages/openapi/verified-ai-core-api.yaml"
 
+    # Sprint 8.6 Files
+    micro_card_schema_path = ROOT / "packages/schemas/micro-lesson-card-v1.schema.json"
+    micro_req_schema_path = ROOT / "packages/schemas/micro-lesson-complete-request-v1.schema.json"
+    micro_res_schema_path = ROOT / "packages/schemas/micro-lesson-complete-response-v1.schema.json"
+    micro_card_tr_fixture_path = ROOT / "packages/schemas/fixtures/micro-lesson-card-tr-v1.valid.json"
+    micro_card_en_fixture_path = ROOT / "packages/schemas/fixtures/micro-lesson-card-en-v1.valid.json"
+    micro_req_fixture_path = ROOT / "packages/schemas/fixtures/micro-lesson-complete-request-v1.valid.json"
+    micro_res_fixture_path = ROOT / "packages/schemas/fixtures/micro-lesson-complete-response-v1.valid.json"
+
     assert mistake_passport_schema_path.exists(), "Missing mistake-passport-v1.schema.json"
     assert mistake_passport_fixture_path.exists(), "Missing mistake-passport-v1.valid.json"
     assert counterexample_schema_path.exists(), "Missing counterexample-proof-card-v1.schema.json"
@@ -100,6 +109,13 @@ def run_validation():
     assert rebalance_response_schema_path.exists(), "Missing rebalance-response-v1.schema.json"
     assert rebalance_response_fixture_path.exists(), "Missing rebalance-response-v1.valid.json"
     assert openapi_core_path.exists(), "Missing verified-ai-core-api.yaml"
+    assert micro_card_schema_path.exists(), "Missing micro-lesson-card-v1.schema.json"
+    assert micro_req_schema_path.exists(), "Missing micro-lesson-complete-request-v1.schema.json"
+    assert micro_res_schema_path.exists(), "Missing micro-lesson-complete-response-v1.schema.json"
+    assert micro_card_tr_fixture_path.exists(), "Missing micro-lesson-card-tr-v1.valid.json"
+    assert micro_card_en_fixture_path.exists(), "Missing micro-lesson-card-en-v1.valid.json"
+    assert micro_req_fixture_path.exists(), "Missing micro-lesson-complete-request-v1.valid.json"
+    assert micro_res_fixture_path.exists(), "Missing micro-lesson-complete-response-v1.valid.json"
 
     mp_schema = json.loads(mistake_passport_schema_path.read_text(encoding="utf-8"))
     mp_fixture = json.loads(mistake_passport_fixture_path.read_text(encoding="utf-8"))
@@ -130,6 +146,17 @@ def run_validation():
     validate_schema_structure(dc_schema, "daily-coach-v1.schema.json")
     validate_schema_structure(rs_schema, "recovery-status-v1.schema.json")
     validate_schema_structure(rr_schema, "rebalance-response-v1.schema.json")
+
+    ml_card_schema = json.loads(micro_card_schema_path.read_text(encoding="utf-8"))
+    ml_req_schema = json.loads(micro_req_schema_path.read_text(encoding="utf-8"))
+    ml_res_schema = json.loads(micro_res_schema_path.read_text(encoding="utf-8"))
+    ml_card_tr_fixture = json.loads(micro_card_tr_fixture_path.read_text(encoding="utf-8"))
+    ml_card_en_fixture = json.loads(micro_card_en_fixture_path.read_text(encoding="utf-8"))
+    ml_req_fixture = json.loads(micro_req_fixture_path.read_text(encoding="utf-8"))
+    ml_res_fixture = json.loads(micro_res_fixture_path.read_text(encoding="utf-8"))
+    validate_schema_structure(ml_card_schema, "micro-lesson-card-v1.schema.json")
+    validate_schema_structure(ml_req_schema, "micro-lesson-complete-request-v1.schema.json")
+    validate_schema_structure(ml_res_schema, "micro-lesson-complete-response-v1.schema.json")
 
     sg_schema = json.loads(skill_graph_schema_path.read_text(encoding="utf-8"))
     sg_fixture = json.loads(skill_graph_fixture_path.read_text(encoding="utf-8"))
@@ -404,6 +431,34 @@ def run_validation():
         bad_rr_6 = copy.deepcopy(rr_fixture)
         bad_rr_6["pruned_concept_ids"] = ["MATH.ALG.LINEAR_EQ", "MATH.ALG.LINEAR_EQ"]
         assert list(rr_val.iter_errors(bad_rr_6)), "Expected rejection when pruned_concept_ids contains duplicates"
+
+        # Sprint 8.6 micro-lesson schema validation & negative mutations
+        jsonschema.Draft202012Validator.check_schema(ml_card_schema)
+        jsonschema.Draft202012Validator.check_schema(ml_req_schema)
+        jsonschema.Draft202012Validator.check_schema(ml_res_schema)
+        ml_card_val = jsonschema.Draft202012Validator(ml_card_schema, format_checker=jsonschema.FormatChecker())
+        ml_req_val = jsonschema.Draft202012Validator(ml_req_schema, format_checker=jsonschema.FormatChecker())
+        ml_res_val = jsonschema.Draft202012Validator(ml_res_schema, format_checker=jsonschema.FormatChecker())
+        ml_card_val.validate(ml_card_tr_fixture)
+        ml_card_val.validate(ml_card_en_fixture)
+        ml_req_val.validate(ml_req_fixture)
+        ml_res_val.validate(ml_res_fixture)
+
+        bad_ml_card = copy.deepcopy(ml_card_tr_fixture)
+        bad_ml_card["estimatedDurationSeconds"] = 240
+        assert list(ml_card_val.iter_errors(bad_ml_card)), "Expected rejection when estimatedDurationSeconds > 180"
+
+        bad_ml_card_2 = copy.deepcopy(ml_card_en_fixture)
+        bad_ml_card_2["unexpectedExtra"] = True
+        assert list(ml_card_val.iter_errors(bad_ml_card_2)), "Expected rejection on additionalProperties in micro-lesson card"
+
+        bad_ml_req = copy.deepcopy(ml_req_fixture)
+        bad_ml_req["dwellTimeMs"] = 500
+        assert list(ml_req_val.iter_errors(bad_ml_req)), "Expected rejection when dwellTimeMs < 1000"
+
+        bad_ml_res = copy.deepcopy(ml_res_fixture)
+        bad_ml_res["trainingEligible"] = True
+        assert list(ml_res_val.iter_errors(bad_ml_res)), "Expected rejection when trainingEligible != false"
     else:
         # Fallback pure-python verification of invariants
         assert sg_fixture["schemaVersion"] == "skill-graph-v1"
@@ -411,6 +466,24 @@ def run_validation():
         assert vt_fixture["trainingEligible"] is False
         assert sq_fixture["schemaVersion"] == "1.0.0"
         assert len(sq_fixture["items"]) <= 3
+
+    # Sprint 8.6 pure-python schema & fixture invariants (always verified)
+    for card_fx in (ml_card_tr_fixture, ml_card_en_fixture):
+        assert card_fx["schemaVersion"] == "1.0.0"
+        assert card_fx["verificationStatus"] == "VERIFIED"
+        assert re.fullmatch(r"[0-9a-f]{64}", card_fx["verificationHash"])
+        beats = (
+            card_fx["coreRule"]["estimatedSeconds"],
+            card_fx["brokenVsValidCounterexample"]["estimatedSeconds"],
+            card_fx["interactiveQuickCheck"]["estimatedSeconds"],
+        )
+        assert all(15 <= b <= 60 for b in beats), f"Beat out of bounds: {beats}"
+        assert card_fx["estimatedDurationSeconds"] == sum(beats)
+        assert 60 <= card_fx["estimatedDurationSeconds"] <= 180
+        assert len(card_fx["interactiveQuickCheck"]["options"]) in (3, 4)
+    assert 1000 <= ml_req_fixture["dwellTimeMs"] <= 600000
+    assert ml_res_fixture["trainingEligible"] is False
+    assert 1000 <= ml_res_fixture["dwellTimeMs"] <= 600000
 
     # Sprint 7.9 schema invariants
     assert mp_fixture["schemaVersion"] == "mistake-passport.v1"
@@ -547,8 +620,25 @@ def run_validation():
                 "StudyPlanRecoveryStatusResponse",
                 "StudyPlanRebalanceRequest",
                 "StudyPlanRebalanceResponse",
+                "MicroLessonCardResponse",
+                "MicroLessonCompleteRequest",
+                "MicroLessonCompleteResponse",
             ):
                 assert schema_name in spec_schemas, f"Missing component schema {schema_name} in {spec_name}"
+
+            assert "/v1/micro-lessons/{mistakeCode}" in spec_paths, f"Missing /v1/micro-lessons/{{mistakeCode}} in {spec_name}"
+            ml_get_op = spec_paths["/v1/micro-lessons/{mistakeCode}"]["get"]
+            assert ml_get_op["security"] == [{"bearerAuth": []}], f"Security bearerAuth missing on getMicroLessonCard in {spec_name}"
+            for code in ("200", "400", "401", "404", "422", "503"):
+                assert code in ml_get_op["responses"], f"HTTP {code} missing from getMicroLessonCard in {spec_name}"
+
+            assert "/v1/micro-lessons/{mistakeCode}/complete" in spec_paths, f"Missing /v1/micro-lessons/{{mistakeCode}}/complete in {spec_name}"
+            ml_post_op = spec_paths["/v1/micro-lessons/{mistakeCode}/complete"]["post"]
+            assert ml_post_op["security"] == [{"bearerAuth": []}], f"Security bearerAuth missing on completeMicroLesson in {spec_name}"
+            for code in ("200", "400", "401", "404", "422", "503"):
+                assert code in ml_post_op["responses"], f"HTTP {code} missing from completeMicroLesson in {spec_name}"
+
+        assert openapi_path.read_bytes() == openapi_core_path.read_bytes(), "OpenAPI mirror public-api.yaml != verified-ai-core-api.yaml"
 
     # 3. iOS Localizable.xcstrings Key Verification
     xcstrings_data = json.loads(strings_path.read_text(encoding="utf-8"))
@@ -641,10 +731,27 @@ def run_validation():
         "studyplan.rebalance.cta_mini_mode",
         "studyplan.rebalance.summary_budget_label",
         "studyplan.rebalance.summary_tasks_label",
+        "micro_lesson.header.focus_opportunity",
+        "micro_lesson.header.duration_badge",
+        "micro_lesson.beat1.tab_title",
+        "micro_lesson.beat2.tab_title",
+        "micro_lesson.beat2.common_trap_label",
+        "micro_lesson.beat2.verified_step_label",
+        "micro_lesson.beat2.counterexample_label",
+        "micro_lesson.beat3.tab_title",
+        "micro_lesson.beat3.submit_cta",
+        "micro_lesson.beat3.success_feedback",
+        "micro_lesson.beat3.retry_feedback",
+        "micro_lesson.cta.back_to_twin",
+        "micro_lesson.cta.next_beat",
+        "micro_lesson.cta.prev_beat",
+        "micro_lesson.accessibility.drawer_label",
+        "micro_lesson.error.verification_unavailable",
+        "micro_lesson.cta.open_lesson",
     ]
 
     banned_lexicon = re.compile(
-        r"\b(overdue|behind|fail|failure|punish|penalty|weak|weakness|poor|bad|stupid|dumb|incompetent|deficit|flaw|hopeless)\b",
+        r"\b(overdue|behind|fail|failure|failed|fail[s]?|punish|penalty|weak|weakness|weaknesses|poor|bad|stupid|dumb|incompetent|deficit|flaw|hopeless|remedial)\b",
         re.IGNORECASE,
     )
 
@@ -655,11 +762,11 @@ def run_validation():
             loc = entry.get("localizations", {}).get(lang, {}).get("stringUnit", {})
             val = loc.get("value")
             assert val and len(val.strip()) > 0, f"Missing {lang} translation for key: {key}"
-            if key.startswith("studyplan.rebalance."):
+            if key.startswith("studyplan.rebalance.") or key.startswith("micro_lesson."):
                 m = banned_lexicon.search(val)
                 assert not m, f"Stigmatizing lexicon word '{m.group(0)}' in {key}[{lang}]: {val}"
 
-    print(f"PASS: Sprint 8.1, 8.2, 8.3, 8.4 & 8.5 JSON schemas, negative mutations, OpenAPI 3.1 endpoints, and {len(required_keys)} EN/TR localizations verified.")
+    print(f"PASS: Sprint 8.1..8.6 JSON schemas, negative mutations, OpenAPI 3.1 endpoints, and {len(required_keys)} EN/TR localizations verified.")
 
 
 if __name__ == "__main__":

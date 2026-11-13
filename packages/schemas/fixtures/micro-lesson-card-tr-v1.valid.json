@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "1.0.0",
+  "cardId": "00000000-0000-4000-8601-000000000001",
+  "mistakeCode": "ALG_SIGN_FLIP_DISTRIBUTE",
+  "locale": "tr-TR",
+  "title": "Parantez Önündeki Eksi İşaretini Dağıtma",
+  "focusBadgeLabel": "Odak Noktası · İşaret Dağılımı",
+  "estimatedDurationSeconds": 90,
+  "triggerSource": "SOCRATIC_RUNG_2",
+  "triggeredByAttemptId": "00000000-0000-4000-8600-000000000101",
+  "coreRule": {
+    "ruleTitle": "Eksi Çarpan Her Terime Dağılır",
+    "conciseExplanation": "Parantez dışındaki negatif katsayı, içerideki birinci terimle birlikte ikinci ve sonraki tüm terimlerin de işaretini tersine çevirir.",
+    "canonicalLatexFormula": "-a(b - c) = -ab + ac",
+    "sympyCheckExpr": "-a*(b - c) == -a*b + a*c",
+    "estimatedSeconds": 30
+  },
+  "brokenVsValidCounterexample": {
+    "promptLatex": "-2(x - 3)",
+    "commonTrapLatex": "-2x - 6",
+    "whyTrapFailsExplanation": "Parantezin yalnızca ilk terimi -2 ile çarpılıp -3 terimi eski işaretiyle bırakıldığında ifade -2x - 6 olur; oysa (-2)·(-3) = +6 olmalıdır.",
+    "verifiedStepLatex": "-2x + 6",
+    "numericCounterexampleLatex": "x = 1 \\implies -2(1 - 3) = 4 \\neq -2(1) - 6 = -8",
+    "sympyEquivalenceCheckExpr": "simplify(-2*(x - 3) - (-2*x + 6)) == 0",
+    "sympyTargetExpr": "-2*(x - 3)",
+    "sympyValidExpr": "-2*x + 6",
+    "sympyTrapExpr": "-2*x - 6",
+    "counterexampleBindings": {
+      "x": 1
+    },
+    "estimatedSeconds": 30
+  },
+  "interactiveQuickCheck": {
+    "questionPrompt": "-3(2x - 5) ifadesinin eşdeğer açılımı hangisidir?",
+    "questionLatex": "-3(2x - 5)",
+    "options": [
+      {
+        "optionId": "A",
+        "latexOrText": "-6x - 15",
+        "rationale": "İkinci terimdeki eksi ile dıştaki eksi çarpıldığında artı (+15) elde edilir.",
+        "isCorrect": false
+      },
+      {
+        "optionId": "B",
+        "latexOrText": "-6x + 15",
+        "rationale": "Harika! (-3)·(2x) = -6x ve (-3)·(-5) = +15 olarak her iki terim doğru dağıtıldı.",
+        "isCorrect": true
+      },
+      {
+        "optionId": "C",
+        "latexOrText": "6x - 15",
+        "rationale": "İlk terimdeki negatif katsayı işaretini korur: (-3)·(2x) = -6x.",
+        "isCorrect": false
+      }
+    ],
+    "correctOptionId": "B",
+    "estimatedSeconds": 30
+  },
+  "verificationStatus": "VERIFIED",
+  "verifierVersion": "sympy-1.12-v1",
+  "verificationHash": "231efa2277b1cfb64c04e417d52bf31ef2e2c5b1dc99ad24c1f835b8da96b2c0"
+}

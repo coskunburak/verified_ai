@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "1.0.0",
+  "cardId": "00000000-0000-4000-8601-000000000002",
+  "mistakeCode": "ALG_SIGN_FLIP_DISTRIBUTE",
+  "locale": "en-US",
+  "title": "Distributing a Negative Factor Across Parentheses",
+  "focusBadgeLabel": "Focus Area · Sign Distribution",
+  "estimatedDurationSeconds": 90,
+  "triggerSource": "COACH_REPAIR_DRAWER",
+  "triggeredByAttemptId": null,
+  "coreRule": {
+    "ruleTitle": "Multiply Every Inner Term by the Negative Factor",
+    "conciseExplanation": "A negative multiplier outside parentheses flips the sign of every term inside, not just the first term.",
+    "canonicalLatexFormula": "-a(b - c) = -ab + ac",
+    "sympyCheckExpr": "-a*(b - c) == -a*b + a*c",
+    "estimatedSeconds": 30
+  },
+  "brokenVsValidCounterexample": {
+    "promptLatex": "-2(x - 3)",
+    "commonTrapLatex": "-2x - 6",
+    "whyTrapFailsExplanation": "Multiplying only x by -2 leaves -3 unchanged and yields -2x - 6, whereas (-2)(-3) = +6.",
+    "verifiedStepLatex": "-2x + 6",
+    "numericCounterexampleLatex": "x = 1 \\implies -2(1 - 3) = 4 \\neq -2(1) - 6 = -8",
+    "sympyEquivalenceCheckExpr": "simplify(-2*(x - 3) - (-2*x + 6)) == 0",
+    "sympyTargetExpr": "-2*(x - 3)",
+    "sympyValidExpr": "-2*x + 6",
+    "sympyTrapExpr": "-2*x - 6",
+    "counterexampleBindings": {
+      "x": 1
+    },
+    "estimatedSeconds": 30
+  },
+  "interactiveQuickCheck": {
+    "questionPrompt": "Which expanded expression is equivalent to -3(2x - 5)?",
+    "questionLatex": "-3(2x - 5)",
+    "options": [
+      {
+        "optionId": "A",
+        "latexOrText": "-6x - 15",
+        "rationale": "Check the second term: multiplying two negatives gives +15.",
+        "isCorrect": false
+      },
+      {
+        "optionId": "B",
+        "latexOrText": "-6x + 15",
+        "rationale": "Spot on! Both (-3)(2x) = -6x and (-3)(-5) = +15 are distributed accurately.",
+        "isCorrect": true
+      },
+      {
+        "optionId": "C",
+        "latexOrText": "6x - 15",
+        "rationale": "The leading term keeps its negative product: (-3)(2x) = -6x.",
+        "isCorrect": false
+      }
+    ],
+    "correctOptionId": "B",
+    "estimatedSeconds": 30
+  },
+  "verificationStatus": "VERIFIED",
+  "verifierVersion": "sympy-1.12-v1",
+  "verificationHash": "78f88d3c31c8d9266e54fbaf64b199fa261df78a3df49100f3faf62eae793d7c"
+}

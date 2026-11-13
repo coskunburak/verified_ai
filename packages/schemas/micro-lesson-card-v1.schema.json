@@ -1,0 +1,269 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.verified-ai.com/micro-lesson-card-v1.schema.json",
+  "title": "MicroLessonCardV1",
+  "description": "SymPy-verified 3-beat repair micro-lesson card contract (Sprint 8.6, INV-MICRO-002..003).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "cardId",
+    "mistakeCode",
+    "locale",
+    "title",
+    "focusBadgeLabel",
+    "estimatedDurationSeconds",
+    "coreRule",
+    "brokenVsValidCounterexample",
+    "interactiveQuickCheck",
+    "verificationStatus",
+    "verifierVersion",
+    "verificationHash"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "cardId": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "mistakeCode": {
+      "type": "string",
+      "enum": [
+        "ALG_SIGN_FLIP_DISTRIBUTE",
+        "ALG_FRESHMAN_DREAM_POWER",
+        "ALG_FRACTION_ADD_DENOM",
+        "ALG_ROOT_LOST_BY_DIVISION",
+        "DOM_EXTRANEOUS_ROOT_DENOM",
+        "DOM_EVEN_ROOT_NEGATIVE",
+        "DOM_LOG_NON_POSITIVE",
+        "INEQ_NEGATIVE_MULT_NO_FLIP",
+        "INEQ_CROSS_MULT_VARIABLE",
+        "ABS_SINGLE_BRANCH_ONLY",
+        "FUNC_COMPOSITION_ORDER",
+        "TRIG_PERIOD_OMITTED",
+        "CALC_LIMIT_INDETERMINATE_SUB",
+        "CALC_CHAIN_RULE_OMITTED",
+        "CALC_PRODUCT_QUOTIENT_NAIVE",
+        "CALC_INTEGRAL_BOUNDS_SWAPPED",
+        "WORD_VARIABLE_MISASSIGNMENT"
+      ]
+    },
+    "locale": {
+      "type": "string",
+      "enum": ["tr-TR", "en-US"]
+    },
+    "title": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 160
+    },
+    "focusBadgeLabel": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 80
+    },
+    "estimatedDurationSeconds": {
+      "type": "integer",
+      "minimum": 60,
+      "maximum": 180
+    },
+    "triggerSource": {
+      "type": ["string", "null"],
+      "enum": ["TWIN_SECOND_FAILURE", "SOCRATIC_RUNG_2", "COACH_REPAIR_DRAWER", null]
+    },
+    "triggeredByAttemptId": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "coreRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ruleTitle",
+        "conciseExplanation",
+        "canonicalLatexFormula",
+        "sympyCheckExpr",
+        "estimatedSeconds"
+      ],
+      "properties": {
+        "ruleTitle": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 120
+        },
+        "conciseExplanation": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 400
+        },
+        "canonicalLatexFormula": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "sympyCheckExpr": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "estimatedSeconds": {
+          "type": "integer",
+          "minimum": 15,
+          "maximum": 60
+        }
+      }
+    },
+    "brokenVsValidCounterexample": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "promptLatex",
+        "commonTrapLatex",
+        "whyTrapFailsExplanation",
+        "verifiedStepLatex",
+        "numericCounterexampleLatex",
+        "sympyEquivalenceCheckExpr",
+        "sympyTargetExpr",
+        "sympyValidExpr",
+        "sympyTrapExpr",
+        "counterexampleBindings",
+        "estimatedSeconds"
+      ],
+      "properties": {
+        "promptLatex": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "commonTrapLatex": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "whyTrapFailsExplanation": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 400
+        },
+        "verifiedStepLatex": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "numericCounterexampleLatex": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "sympyEquivalenceCheckExpr": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "sympyTargetExpr": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "sympyValidExpr": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "sympyTrapExpr": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "counterexampleBindings": {
+          "type": "object",
+          "additionalProperties": {
+            "type": ["number", "string"]
+          }
+        },
+        "estimatedSeconds": {
+          "type": "integer",
+          "minimum": 15,
+          "maximum": 60
+        }
+      }
+    },
+    "interactiveQuickCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "questionPrompt",
+        "questionLatex",
+        "options",
+        "correctOptionId",
+        "estimatedSeconds"
+      ],
+      "properties": {
+        "questionPrompt": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 300
+        },
+        "questionLatex": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "options": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 4,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["optionId", "latexOrText", "rationale", "isCorrect"],
+            "properties": {
+              "optionId": {
+                "type": "string",
+                "enum": ["A", "B", "C", "D"]
+              },
+              "latexOrText": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "rationale": {
+                "type": "string",
+                "minLength": 5,
+                "maxLength": 300
+              },
+              "isCorrect": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "correctOptionId": {
+          "type": "string",
+          "enum": ["A", "B", "C", "D"]
+        },
+        "estimatedSeconds": {
+          "type": "integer",
+          "minimum": 15,
+          "maximum": 60
+        }
+      }
+    },
+    "verificationStatus": {
+      "type": "string",
+      "const": "VERIFIED"
+    },
+    "verifierVersion": {
+      "type": "string",
+      "pattern": "^sympy-[0-9]+\\.[0-9]+-v[0-9]+$"
+    },
+    "verificationHash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

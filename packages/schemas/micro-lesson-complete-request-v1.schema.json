@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.verified-ai.com/micro-lesson-complete-request-v1.schema.json",
+  "title": "MicroLessonCompleteRequestV1",
+  "description": "Idempotent micro-lesson completion submission contract (Sprint 8.6, INV-MICRO-004).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "locale",
+    "triggerSource",
+    "selectedOptionId",
+    "dwellTimeMs",
+    "idempotencyKey"
+  ],
+  "properties": {
+    "locale": {
+      "type": "string",
+      "enum": ["tr-TR", "en-US"]
+    },
+    "triggerSource": {
+      "type": "string",
+      "enum": ["TWIN_SECOND_FAILURE", "SOCRATIC_RUNG_2", "COACH_REPAIR_DRAWER"]
+    },
+    "sourceAttemptId": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "selectedOptionId": {
+      "type": "string",
+      "enum": ["A", "B", "C", "D"]
+    },
+    "dwellTimeMs": {
+      "type": "integer",
+      "minimum": 1000,
+      "maximum": 600000
+    },
+    "idempotencyKey": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9_.:-]+$"
+    }
+  }
+}

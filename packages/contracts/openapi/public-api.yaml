@@ -3548,6 +3548,105 @@ paths:
         '422':
           $ref: '#/components/responses/ProblemUnprocessableEntity'
 
+  /v1/micro-lessons/{mistakeCode}:
+    get:
+      operationId: getMicroLessonCard
+      tags:
+        - Tutoring
+      summary: Retrieve pre-verified 3-beat repair micro-lesson for a diagnosed mistake pattern
+      description: >
+        Returns a deterministic SymPy-verified and SHA-256 sealed 3-beat repair micro-lesson card scoped to an authenticated learner's diagnosed mistake pattern or eligible repair trigger (INV-MICRO-001..006).
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: mistakeCode
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Canonical mistake pattern code from mistake-category-v1.json.
+        - name: locale
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [tr-TR, en-US]
+            default: tr-TR
+          description: Target locale (defaults to Accept-Language / tr-TR).
+        - name: triggerSource
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [TWIN_SECOND_FAILURE, SOCRATIC_RUNG_2, COACH_REPAIR_DRAWER]
+            default: COACH_REPAIR_DRAWER
+          description: Eligible contextual trigger source.
+        - name: sourceAttemptId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Optional learner-owned attempt identifier anchoring trigger eligibility.
+      responses:
+        '200':
+          description: Pre-verified 3-beat micro-lesson card retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MicroLessonCardResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '422':
+          $ref: '#/components/responses/ProblemUnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /v1/micro-lessons/{mistakeCode}/complete:
+    post:
+      operationId: completeMicroLesson
+      tags:
+        - Tutoring
+      summary: Record idempotent micro-lesson completion receipt
+      description: >
+        Records learner completion of a 3-beat micro-lesson with server-authoritative quick-check grading, bounded dwell time [1000, 600000] ms, idempotency replay by (user_id, idempotency_key), and training_eligible=false (INV-MICRO-004).
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: mistakeCode
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Canonical mistake pattern code from mistake-category-v1.json.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MicroLessonCompleteRequest'
+      responses:
+        '200':
+          description: Micro-lesson completion recorded (or idempotent replay returned).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MicroLessonCompleteResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '422':
+          $ref: '#/components/responses/ProblemUnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -3583,6 +3682,11 @@ components:
           schema: {$ref: '#/components/schemas/ProblemDetails'}
     ProblemUnprocessableEntity:
       description: Domain rule violation
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/ProblemDetails'}
+    ProblemServiceUnavailable:
+      description: Service feature disabled or temporarily unavailable
       content:
         application/problem+json:
           schema: {$ref: '#/components/schemas/ProblemDetails'}
@@ -7869,3 +7973,12 @@ components:
 
     StudyPlanRebalanceResponse:
       $ref: '../../schemas/studyplan/rebalance-response-v1.schema.json'
+
+    MicroLessonCardResponse:
+      $ref: '../../schemas/micro-lesson-card-v1.schema.json'
+
+    MicroLessonCompleteRequest:
+      $ref: '../../schemas/micro-lesson-complete-request-v1.schema.json'
+
+    MicroLessonCompleteResponse:
+      $ref: '../../schemas/micro-lesson-complete-response-v1.schema.json'

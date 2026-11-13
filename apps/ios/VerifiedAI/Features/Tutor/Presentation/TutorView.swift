@@ -3,11 +3,14 @@ import UIKit
 
 struct TutorView: View {
     @State var viewModel: TutorViewModel
+    var microLessonViewModel: MicroLessonViewModel? = nil
+    var microLessonMistakeCode: String? = nil
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dynamicTypeSize) private var typeSize
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @FocusState private var composerFocused: Bool
     @State private var revealConfirmation = false
+    @State private var showMicroLessonDrawer = false
     @AccessibilityFocusState private var focusedHint: UUID?
     var body: some View {
         VStack(spacing: 0) {
@@ -78,6 +81,22 @@ struct TutorView: View {
                                 Button("tutor.reveal.request") { composerFocused = false; revealConfirmation = true }
                                     .frame(minHeight: 44).disabled(!viewModel.canRequestReveal)
                                     .accessibilityIdentifier("tutor.reveal.request")
+                                if hints.hints.count >= 2,
+                                   let microVM = microLessonViewModel,
+                                   let mistakeCode = microLessonMistakeCode {
+                                    Button("micro_lesson.cta.open_lesson") {
+                                        composerFocused = false
+                                        showMicroLessonDrawer = true
+                                        Task {
+                                            await microVM.load(
+                                                mistakeCode: mistakeCode,
+                                                triggerSource: .socraticRung2
+                                            )
+                                        }
+                                    }
+                                    .frame(minHeight: 44)
+                                    .accessibilityIdentifier("tutor.micro_lesson.open")
+                                }
                             }
                         }
                         Button("tutor.close") { viewModel.close() }
@@ -137,6 +156,15 @@ struct TutorView: View {
         .confirmationDialog("tutor.reveal.confirmation", isPresented: $revealConfirmation, titleVisibility: .visible) {
             Button("tutor.reveal.confirm") { viewModel.confirmReveal() }
             Button("tutor.reveal.cancel", role: .cancel) {}
+        }
+        .sheet(isPresented: $showMicroLessonDrawer) {
+            if let microVM = microLessonViewModel {
+                MicroLessonDrawerView(
+                    viewModel: microVM,
+                    onReturnToPractice: { showMicroLessonDrawer = false },
+                    onFallbackToHints: { showMicroLessonDrawer = false }
+                )
+            }
         }
         .onChange(of: viewModel.hintHistory?.hints.last?.id) { _, id in
             // Focus reads the complete hint once; a simultaneous announcement would interrupt it.

@@ -1,0 +1,8 @@
+{
+  "locale": "tr-TR",
+  "triggerSource": "SOCRATIC_RUNG_2",
+  "sourceAttemptId": "00000000-0000-4000-8600-000000000101",
+  "selectedOptionId": "B",
+  "dwellTimeMs": 64200,
+  "idempotencyKey": "micro-8600-alg-sign-flip-001"
+}

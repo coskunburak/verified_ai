@@ -1,0 +1,2037 @@
+{
+  "schemaVersion": "1.0.0",
+  "verifierVersion": "sympy-1.12-v1",
+  "cardCount": 34,
+  "cards": [
+    {
+      "schemaVersion": "1.0.0",
+      "cardId": "00000000-0000-4000-8601-000000000001",
+      "mistakeCode": "ALG_SIGN_FLIP_DISTRIBUTE",
+      "locale": "tr-TR",
+      "title": "Parantez Önündeki Eksi İşaretini Dağıtma",
+      "focusBadgeLabel": "Odak Noktası · İşaret Dağılımı",
+      "estimatedDurationSeconds": 90,
+      "coreRule": {
+        "ruleTitle": "Eksi Çarpan Her Terime Dağılır",
+        "conciseExplanation": "Parantez dışındaki negatif katsayı, içerideki birinci terimle birlikte ikinci ve sonraki tüm terimlerin de işaretini tersine çevirir.",
+        "canonicalLatexFormula": "-a(b - c) = -ab + ac",
+        "sympyCheckExpr": "-a*(b - c) == -a*b + a*c",
+        "estimatedSeconds": 30
+      },
+      "brokenVsValidCounterexample": {
+        "promptLatex": "-2(x - 3)",
+        "commonTrapLatex": "-2x - 6",
+        "whyTrapFailsExplanation": "Parantezin yalnızca ilk terimi -2 ile çarpılıp -3 terimi eski işaretiyle bırakıldığında ifade -2x - 6 olur; oysa (-2)·(-3) = +6 olmalıdır.",
+        "verifiedStepLatex": "-2x + 6",
+        "numericCounterexampleLatex": "x = 1 \\implies -2(1 - 3) = 4 \\neq -2(1) - 6 = -8",
+        "sympyEquivalenceCheckExpr": "simplify(-2*(x - 3) - (-2*x + 6)) == 0",
+        "sympyTargetExpr": "-2*(x - 3)",
+        "sympyValidExpr": "-2*x + 6",
+        "sympyTrapExpr": "-2*x - 6",
+        "counterexampleBindings": {
+          "x": 1
+        },
+        "estimatedSeconds": 30
+      },
+      "interactiveQuickCheck": {
+        "questionPrompt": "-3(2x - 5) ifadesinin eşdeğer açılımı hangisidir?",
+        "questionLatex": "-3(2x - 5)",
+        "options": [
+          {
+            "optionId": "A",
+            "latexOrText": "-6x - 15",
+            "rationale": "İkinci terimdeki eksi ile dıştaki eksi çarpıldığında artı (+15) elde edilir.",
+            "isCorrect": false
+          },
+          {
+            "optionId": "B",
+            "latexOrText": "-6x + 15",
+            "rationale": "Harika! (-3)·(2x) = -6x ve (-3)·(-5) = +15 olarak her iki terim doğru dağıtıldı.",
+            "isCorrect": true
+          },
+          {
+            "optionId": "C",
+            "latexOrText": "6x - 15",
+            "rationale": "İlk terimdeki negatif katsayı işaretini korur: (-3)·(2x) = -6x.",
+            "isCorrect": false
+          }
+        ],
+        "correctOptionId": "B",
+        "estimatedSeconds": 30
+      },
+      "verificationStatus": "VERIFIED",
+      "verifierVersion": "sympy-1.12-v1",
+      "verificationHash": "231efa2277b1cfb64c04e417d52bf31ef2e2c5b1dc99ad24c1f835b8da96b2c0"
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "cardId": "00000000-0000-4000-8601-000000000002",
+      "mistakeCode": "ALG_SIGN_FLIP_DISTRIBUTE",
+      "locale": "en-US",
+      "title": "Distributing a Negative Factor Across Parentheses",
+      "focusBadgeLabel": "Focus Area · Sign Distribution",
+      "estimatedDurationSeconds": 90,
+      "coreRule": {
+        "ruleTitle": "Multiply Every Inner Term by the Negative Factor",
+        "conciseExplanation": "A negative multiplier outside parentheses flips the sign of every term inside, not just the first term.",
+        "canonicalLatexFormula": "-a(b - c) = -ab + ac",
+        "sympyCheckExpr": "-a*(b - c) == -a*b + a*c",
+        "estimatedSeconds": 30
+      },
+      "brokenVsValidCounterexample": {
+        "promptLatex": "-2(x - 3)",
+        "commonTrapLatex": "-2x - 6",
+        "whyTrapFailsExplanation": "Multiplying only x by -2 leaves -3 unchanged and yields -2x - 6, whereas (-2)(-3) = +6.",
+        "verifiedStepLatex": "-2x + 6",
+        "numericCounterexampleLatex": "x = 1 \\implies -2(1 - 3) = 4 \\neq -2(1) - 6 = -8",
+        "sympyEquivalenceCheckExpr": "simplify(-2*(x - 3) - (-2*x + 6)) == 0",
+        "sympyTargetExpr": "-2*(x - 3)",
+        "sympyValidExpr": "-2*x + 6",
+        "sympyTrapExpr": "-2*x - 6",
+        "counterexampleBindings": {
+          "x": 1
+        },
+        "estimatedSeconds": 30
+      },
+      "interactiveQuickCheck": {
+        "questionPrompt": "Which expanded expression is equivalent to -3(2x - 5)?",
+        "questionLatex": "-3(2x - 5)",
+        "options": [
+          {
+            "optionId": "A",
+            "latexOrText": "-6x - 15",
+            "rationale": "Check the second term: multiplying two negatives gives +15.",
+            "isCorrect": false
+          },
+          {
+            "optionId": "B",
+            "latexOrText": "-6x + 15",
+            "rationale": "Spot on! Both (-3)(2x) = -6x and (-3)(-5) = +15 are distributed accurately.",
+            "isCorrect": true
+          },
+          {
+            "optionId": "C",
+            "latexOrText": "6x - 15",
+            "rationale": "The leading term keeps its negative product: (-3)(2x) = -6x.",
+            "isCorrect": false
+          }
+        ],
+        "correctOptionId": "B",
+        "estimatedSeconds": 30
+      },
+      "verificationStatus": "VERIFIED",
+      "verifierVersion": "sympy-1.12-v1",
+      "verificationHash": "78f88d3c31c8d9266e54fbaf64b199fa261df78a3df49100f3faf62eae793d7c"
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "cardId": "00000000-0000-4000-8601-000000000003",
+      "mistakeCode": "ALG_FRESHMAN_DREAM_POWER",
+      "locale": "tr-TR",
+      "title": "Toplamın Karesinde Ortadaki Çarpım Terimi",
+      "focusBadgeLabel": "Odak Noktası · Tam Kare Özdeşliği",
+      "estimatedDurationSeconds": 90,
+      "coreRule": {
+        "ruleTitle": "Üs Toplama İşlemine Doğrudan Dağılmaz",
+        "conciseExplanation": "(a + b)^2 ifadesi (a + b)(a + b) çarpımıdır; her zaman baştaki ve sondaki karelerin yanında 2ab ortanca terimi de oluşur.",
+        "canonicalLatexFormula": "(a + b)^2 = a^2 + 2ab + b^2",
+        "sympyCheckExpr": "(a + b)**2 == a**2 + 2*a*b + b**2",
+        "estimatedSeconds": 30
+      },
+      "brokenVsValidCounterexample": {
+        "promptLatex": "(x + 3)^2",
+        "commonTrapLatex": "x^2 + 9",
+        "whyTrapFailsExplanation": "Üssü terimlere ayrı ayrı dağıtmak ortadaki 2·x·3 = 6x çapraz terimini atlar ve x = 2 değerinde 25 yerine 13 üretir.",
+        "verifiedStepLatex": "x^2 + 6x + 9",
+        "numericCounterexampleLatex": "x = 2 \\implies (2 + 3)^2 = 25 \\neq 2^2 + 9 = 13",
+        "sympyEquivalenceCheckExpr": "simplify((x + 3)**2 - (x**2 + 6*x + 9)) == 0",
+        "sympyTargetExpr": "(x + 3)**2",
+        "sympyValidExpr": "x**2 + 6*x + 9",
+        "sympyTrapExpr": "x**2 + 9",
+        "counterexampleBindings": {
+          "x": 2
+        },
+        "estimatedSeconds": 30
+      },
+      "interactiveQuickCheck": {
+        "questionPrompt": "(x - 4)^2 ifadesinin doğru açılımı hangisidir?",
+        "questionLatex": "(x - 4)^2",
+        "options": [
+          {
+            "optionId": "A",
+            "latexOrText": "x^2 - 16",
+            "rationale": "İki kare farkı (x-4)(x+4) için geçerlidir; tam karede ortanca terim bulunur.",
+            "isCorrect": false
+          },
+          {
+            "optionId": "B",
+            "latexOrText": "x^2 + 16",
+            "rationale": "Ortadaki -2·4·x = -8x çapraz terimi unutulmamalıdır.",
+            "isCorrect": false
+          },
+          {
+            "optionId": "C",
+            "latexOrText": "x^2 - 8x + 16",
+            "rationale": "Doğru! Birincinin karesi, iki çarpımın iki katı (-8x) ve ikincinin karesi (+16) eksiksiz yazıldı.",
+            "isCorrect": true
+          }
+        ],
+        "correctOptionId": "C",
+        "estimatedSeconds": 30
+      },
+      "verificationStatus": "VERIFIED",
+      "verifierVersion": "sympy-1.12-v1",
+      "verificationHash": "cb75cc22e242b3b1c7e0cab2354386f418f786999443f6541d11c47f4a4dbfc4"
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "cardId": "00000000-0000-4000-8601-000000000004",
+      "mistakeCode": "ALG_FRESHMAN_DREAM_POWER",
+      "locale": "en-US",
+      "title": "Keeping the Cross Term in Binomial Squares",
+      "focusBadgeLabel": "Focus Area · Binomial Expansion",
+      "estimatedDurationSeconds": 90,
+      "coreRule": {
+        "ruleTitle": "Exponents Do Not Distribute Over Addition",
+        "conciseExplanation": "(a + b)^2 means (a + b)(a + b), which always produces the cross term 2ab in addition to a^2 + b^2.",
+        "canonicalLatexFormula": "(a + b)^2 = a^2 + 2ab + b^2",
+        "sympyCheckExpr": "(a + b)**2 == a**2 + 2*a*b + b**2",
+        "estimatedSeconds": 30
+      },
+      "brokenVsValidCounterexample": {
+        "promptLatex": "(x + 3)^2",
+        "commonTrapLatex": "x^2 + 9",
+        "whyTrapFailsExplanation": "Squaring each term separately drops the 6x cross term, giving 13 instead of 25 when x = 2.",
+        "verifiedStepLatex": "x^2 + 6x + 9",
+        "numericCounterexampleLatex": "x = 2 \\implies (2 + 3)^2 = 25 \\neq 2^2 + 9 = 13",
+        "sympyEquivalenceCheckExpr": "simplify((x + 3)**2 - (x**2 + 6*x + 9)) == 0",
+        "sympyTargetExpr": "(x + 3)**2",
+        "sympyValidExpr": "x**2 + 6*x + 9",
+        "sympyTrapExpr": "x**2 + 9",
+        "counterexampleBindings": {
+          "x": 2
+        },
+        "estimatedSeconds": 30
+      },
+      "interactiveQuickCheck": {
+        "questionPrompt": "Which expression equals (x - 4)^2?",
+        "questionLatex": "(x - 4)^2",
+        "options": [
+          {
+            "optionId": "A",
+            "latexOrText": "x^2 - 16",
+            "rationale": "That matches (x - 4)(x + 4), not (x - 4)(x - 4).",
+            "isCorrect": false
+          },
+          {
+            "optionId": "B",
+            "latexOrText": "x^2 + 16",
+            "rationale": "Remember to include the middle cross term -2(4x) = -8x.",
+            "isCorrect": false
+          },
+          {
+            "optionId": "C",
+            "latexOrText": "x^2 - 8x + 16",
+            "rationale": "Spot on! You kept the cross term -8x along with x^2 and +16.",
+            "isCorrect": true
+          }
+        ],
+        "correctOptionId": "C",
+        "estimatedSeconds": 30
+      },
+      "verificationStatus": "VERIFIED",
+      "verifierVersion": "sympy-1.12-v1",
+      "verificationHash": "9cd9a5180777422c605eb36ad3ea976b987614c6945b974497173bae30e858cb"
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "cardId": "00000000-0000-4000-8601-000000000005",
+      "mistakeCode": "ALG_FRACTION_ADD_DENOM",
+      "locale": "tr-TR",
+      "title": "Rasyonel İfadelerde Ortak Payda Kuralı",
+      "focusBadgeLabel": "Odak Noktası · Kesir Toplama",
+      "estimatedDurationSeconds": 90,
+      "coreRule": {
+        "ruleTitle": "Paydalar Doğrudan Toplanmaz, Payda Eşitlenir",
+        "conciseExplanation": "Farklı paydalı kesirleri toplarken önce ortak payda (xy) oluşturulur, ardından genişletilmiş paylar toplanır.",
+        "canonicalLatexFormula": "\\frac{1}{x} + \\frac{1}{y} = \\frac{x + y}{xy}",
+        "sympyCheckExpr": "1/x + 1/y == (x + y)/(x*y)",
+        "estimatedSeconds": 30
+      },
+      "brokenVsValidCounterexample": {
+        "promptLatex": "\\frac{1}{x} + \\frac{1}{y}",
+        "commonTrapLatex": "\\frac{2}{x + y}",
+        "whyTrapFailsExplanation": "Payları ve paydaları ayrı ayrı toplamak 2/(x + y) verir; x = 2, y = 3 için 5/6 yerine 2/5 sonucunu üretir.",
+        "verifiedStepLatex": "\\frac{x + y}{xy}",
+        "numericCounterexampleLatex": "x = 2, y = 3 \\implies \\frac{1}{2} + \\frac{1}{3} = \\frac{5}{6} \\neq \\frac{2}{5}",
+        "sympyEquivalenceCheckExpr": "simplify((1/x + 1/y) - (x + y)/(x*y)) == 0",
+        "sympyTargetExpr": "1/x + 1/y",
+        "sympyValidExpr": "(x + y)/(x*y)",
+        "sympyTrapExpr": "2/(x + y)",
+        "counterexampleBindings": {
+          "x": 2,
+          "y": 3
+        },
+        "estimatedSeconds": 30
+      },
+      "interactiveQuickCheck": {
+        "questionPrompt": "1/a + 2/b toplamı (a, b ≠ 0) hangisine eşittir?",
+        "questionLatex": "\\frac{1}{a} + \\frac{2}{b}",
+        "options": [
+          {
+            "optionId": "A",
+            "latexOrText": "\\frac{3}{a + b}",
+            "rationale": "Farklı paydalar doğrudan toplanmaz; önce ortak payda ab kurulmalıdır.",
+            "isCorrect": false
+          },
+          {
+            "optionId": "B",
+            "latexOrText": "\\frac{b + 2a}{ab}",
+            "rationale": "Harika! İlk kesir b ile, ikinci kesir a ile genişletilip paylar toplandı.",
+            "isCorrect": true
+          },
+          {
+            "optionId": "C",
+            "latexOrText": "\\frac{a + 2b}{ab}",
+            "rationale": "İlk kesrin payı 1·b, ikinci kesrin payı 2·a olur; katsayı yerlerine dikkat edelim.",
+            "isCorrect": false
+          }
+        ],
+        "correctOptionId": "B",
+        "estimatedSeconds": 30
+      },
+      "verificationStatus": "VERIFIED",
+      "verifierVersion": "sympy-1.12-v1",
+      "verificationHash": "996edc35871e6d7e8ec35523a63a012b7fc182c3d00e40664b7767cf777eda9b"
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "cardId": "00000000-0000-4000-8601-000000000006",
+      "mistakeCode": "ALG_FRACTION_ADD_DENOM",
+      "locale": "en-US",
+      "title": "Common Denominators Before Adding Fractions",
+      "focusBadgeLabel": "Focus Area · Rational Addition",
+      "estimatedDurationSeconds": 90,
+      "coreRule": {
+        "ruleTitle": "Never Add Denominators Directly",
+        "conciseExplanation": "Convert fractions to a shared denominator (xy) before summing the scaled numerators.",
+        "canonicalLatexFormula": "\\frac{1}{x} + \\frac{1}{y} = \\frac{x + y}{xy}",
+        "sympyCheckExpr": "1/x + 1/y == (x + y)/(x*y)",
+        "estimatedSeconds": 30
+      },
+      "brokenVsValidCounterexample": {
+        "promptLatex": "\\frac{1}{x} + \\frac{1}{y}",
+        "commonTrapLatex": "\\frac{2}{x + y}",
+        "whyTrapFailsExplanation": "Adding numerators and denominators across gives 2/(x + y), which evaluates to 2/5 instead of 5/6 at x = 2, y = 3.",
+        "verifiedStepLatex": "\\frac{x + y}{xy}",
+        "numericCounterexampleLatex": "x = 2, y = 3 \\implies \\frac{1}{2} + \\frac{1}{3} = \\frac{5}{6} \\neq \\frac{2}{5}",
+        "sympyEquivalenceCheckExpr": "simplify((1/x + 1/y) - (x + y)/(x*y)) == 0",
+        "sympyTargetExpr": "1/x + 1/y",
+        "sympyValidExpr": "(x + y)/(x*y)",
+        "sympyTrapExpr": "2/(x + y)",
+        "counterexampleBindings": {
+          "x": 2,
+          "y": 3
+        },
+        "estimatedSeconds": 30
+      },
+      "interactiveQuickCheck": {
+        "questionPrompt": "Which fraction equals 1/a + 2/b for nonzero a and b?",
+        "questionLatex": "\\frac{1}{a} + \\frac{2}{b}",
+        "options": [
+          {
+            "optionId": "A",
+            "latexOrText": "\\frac{3}{a + b}",
+            "rationale": "Find a common denominator ab rather than adding a and b.",
+            "isCorrect": false
+          },
+          {
+            "optionId": "B",
+            "latexOrText": "\\frac{b + 2a}{ab}",
+            "rationale": "Spot on! Scaling by b/b and a/a yields (b + 2a)/(ab).",
+            "isCorrect": true
+          },
+          {
+            "optionId": "C",
+            "latexOrText": "\\frac{a + 2b}{ab}",
+            "rationale": "Check which numerator gets multiplied by b versus a.",
+            "isCorrect": false
+          }
+        ],
+        "correctOptionId": "B",
+        "estimatedSeconds": 30
+      },
+      "verificationStatus": "VERIFIED",
+      "verifierVersion": "sympy-1.12-v1",
+      "verificationHash": "8dbbd9a0b97321c4d6a78a097040e5ad2836539c44c51bb36d6159a2a7b877e2"
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "cardId": "00000000-0000-4000-8601-000000000007",
+      "mistakeCode": "ALG_ROOT_LOST_BY_DIVISION",
+      "locale": "tr-TR",
+      "title": "Değişkenle Sadeleştirirken Kök Kaybetmeme",
+      "focusBadgeLabel": "Odak Noktası · Çarpanlara Ayırma",
+      "estimatedDurationSeconds": 95,
+      "coreRule": {
+        "ruleTitle": "Bilinmeyen İfadeye Bölmek Yerine Ortak Çarpan Parantezine Al",
+        "conciseExplanation": "Denklemin iki tarafını x gibi sıfır olabilen bir ifadeye bölmek x = 0 kökünü siler; bunun yerine tüm terimleri bir tarafa alıp çarpanlara ayır.",
+        "canonicalLatexFormula": "x^2 - kx = 0 \\iff x(x - k) = 0 \\iff x \\in \\{0, k\\}",
+        "sympyCheckExpr": "x**2 - k*x == x*(x - k)",
+        "estimatedSeconds": 35
+      },
+      "brokenVsValidCounterexample": {
+        "promptLatex": "x^2 - 5x = 0",
+        "commonTrapLatex": "x - 5 = 0 \\implies \\{5\\}",
+        "whyTrapFailsExplanation": "Her iki tarafı x ile bölmek yalnızca x = 5 kökünü bırakır; oysa x = 0 değeri de x(x - 5) = 0 denklemini sağlar.",
+        "verifiedStepLatex": "x(x - 5) = 0 \\implies \\{0, 5\\}",
+        "numericCounterexampleLatex": "x = 0 \\implies 0^2 - 5(0) = 0 \\text{ (valid root)}",
+        "sympyEquivalenceCheckExpr": "simplify((x**2 - 5*x) - x*(x - 5)) == 0",
+        "sympyTargetExpr": "x**2 - 5*x",
+        "sympyValidExpr": "x*(x - 5)",
+        "sympyTrapExpr": "x - 5",
+        "counterexampleBindings": {
+          "x": 0
+        },
+        "estimatedSeconds": 30
+      },
+      "interactiveQuickCheck": {
+        "questionPrompt": "x^2 = 7x denkleminin gerçek sayılardaki çözüm kümesi nedir?",
+        "questionLatex": "x^2 = 7x",
+        "options": [
+          {
+            "optionId": "A",
+            "latexOrText": "\\{7\\}",
+            "rationale": "İki tarafı x'e bölmek x = 0 kökünü gözden kaçırır.",
+            "isCorrect": false
+          },
+          {
+            "optionId": "B",
+            "latexOrText": "\\{0, 7\\}",
+            "rationale": "Harika! x(x - 7) = 0 şeklinde çarpanlara ayırarak her iki kökü de korudun.",
+            "isCorrect": true
+          },
+          {
+            "optionId": "C",
+            "latexOrText": "\\{-7, 7\\}",
+            "rationale": "7x terimi karşıya -7x olarak geçer ve x parantezine alınır.",
+            "isCorrect": false
+          }
+        ],
+        "correctOptionId": "B",
+        "estimatedSeconds": 30
+      },
+      "verificationStatus": "VERIFIED",
+      "verifierVersion": "sympy-1.12-v1",
+      "verificationHash": "1a079dbd5ffe0563c105f6ae00821234aab201304bcd10e34c5d7fba7bd749f4"
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "cardId": "00000000-0000-4000-8601-000000000008",
+      "mistakeCode": "ALG_ROOT_LOST_BY_DIVISION",
+      "locale": "en-US",
+      "title": "Preserving All Roots Instead of Dividing by a Variable",
+      "focusBadgeLabel": "Focus Area · Factoring",
+      "estimatedDurationSeconds": 95,
+      "coreRule": {
+        "ruleTitle": "Factor Common Variables Rather Than Dividing Them Out",
+        "conciseExplanation": "Dividing both sides of an equation by x discards the valid root x = 0; move all terms to one side and factor instead.",
+        "canonicalLatexFormula": "x^2 - kx = 0 \\iff x(x - k) = 0 \\iff x \\in \\{0, k\\}",
+        "sympyCheckExpr": "x**2 - k*x == x*(x - k)",
+        "estimatedSeconds": 35
+      },
+      "brokenVsValidCounterexample": {
+        "promptLatex": "x^2 - 5x = 0",
+        "commonTrapLatex": "x - 5 = 0 \\implies \\{5\\}",
+        "whyTrapFailsExplanation": "Dividing by x leaves only x = 5, hiding the fact that x = 0 also makes x(x - 5) equal zero.",
+        "verifiedStepLatex": "x(x - 5) = 0 \\implies \\{0, 5\\}",
+        "numericCounterexampleLatex": "x = 0 \\implies 0^2 - 5(0) = 0 \\text{ (valid root)}",
+        "sympyEquivalenceCheckExpr": "simplify((x**2 - 5*x) - x*(x - 5)) == 0",
+        "sympyTargetExpr": "x**2 - 5*x",
+        "sympyValidExpr": "x*(x - 5)",
+        "sympyTrapExpr": "x - 5",
+        "counterexampleBindings": {
+          "x": 0
+        },
+        "estimatedSeconds": 30
+      },
+      "interactiveQuickCheck": {
+        "questionPrompt": "What is the complete real solution set of x^2 = 7x?",
+        "questionLatex": "x^2 = 7x",
+        "options": [
+          {
+            "optionId": "A",
+            "latexOrText": "\\{7\\}",
+            "rationale": "Dividing by x drops the solution x = 0.",
+            "isCorrect": false
+          },
+          {
+            "optionId": "B",
+            "latexOrText": "\\{0, 7\\}",
+            "rationale": "Spot on! Factoring x(x - 7) = 0 preserves both roots.",
+            "isCorrect": true
+          },
+          {
+            "optionId": "C",
+            "latexOrText": "\\{-7, 7\\}",
+            "rationale": "Subtract 7x to get x(x - 7) = 0 rather than x^2 = 49.",
+            "isCorrect": false
+          }
+        ],
+        "correctOptionId": "B",
+        "estimatedSeconds": 30
+      },
+      "verificationStatus": "VERIFIED",
+      "verifierVersion": "sympy-1.12-v1",
+      "verificationHash": "58f27a6c99256630ce9096c0257f257d21bfae4948797f4618e68f07ecfdff85"
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "cardId": "00000000-0000-4000-8601-000000000009",
+      "mistakeCode": "DOM_EXTRANEOUS_ROOT_DENOM",
+      "locale": "tr-TR",
+      "title": "Paydayı Sıfır Yapan Yabancı Kökü Eleme",
+      "focusBadgeLabel": "Odak Noktası · Tanım Kümesi",
+      "estimatedDurationSeconds": 95,
+      "coreRule": {
+        "ruleTitle": "Rasyonel Denklemlerde Payda Sıfır Olamaz",
+        "conciseExplanation": "Sadeleştirme veya içler dışlar çarpımı sonrası bulunan her aday kök, ilk denklemdeki tüm paydaları sıfırdan farklı tutmalıdır.",
+        "canonicalLatexFormula": "\\frac{x^2 - a^2}{x - a} = x + a \\quad (x \\neq a)",
+        "sympyCheckExpr": "(x**2 - a**2)/(x - a) == x + a",
+        "estimatedSeconds": 30
+      },
+      "brokenVsValidCounterexample": {
+        "promptLatex": "\\frac{x^2 - 4}{x - 2} = 0",
+        "commonTrapLatex": "x = 2 \\text{ kept as root}",
+        "whyTrapFailsExplanation": "Payı sıfırlayan x = 2 değeri paydayı da (2 - 2 = 0) sıfır yaptığı için tanımsızdır; gerçek tek çözüm x = -2 olur.",
+        "verifiedStepLatex": "x + 2 = 0 \\text{ with } x \\neq 2 \\implies x = -2",
+        "numericCounterexampleLatex": "x = 2 \\implies x - 2 = 0 \\text{ (undefined)}; \\; x = 5 \\implies \\frac{21}{3} = 7",
+        "sympyEquivalenceCheckExpr": "simplify((x**2 - 4)/(x - 2) - (x + 2)) == 0",
+        "sympyTargetExpr": "(x**2 - 4)/(x - 2)",
+        "sympyValidExpr": "x + 2",
+        "sympyTrapExpr": "x - 2",
+        "counterexampleBindings": {
+          "x": 5
+        },
+        "estimatedSeconds": 35
+      },
+      "interactiveQuickCheck": {
+        "questionPrompt": "(x^2 - 9)/(x - 3) = 0 denkleminin çözüm kümesi nedir?",
+        "questionLatex": "\\frac{x^2 - 9}{x - 3} = 0",
+        "options": [
+          {
+            "optionId": "A",
+            "latexOrText": "\\{-3, 3\\}",
+            "rationale": "x = 3 değeri ilk kesrin paydasını sıfır yaptığı için elenmelidir.",
+            "isCorrect": false
+          },
+          {
+            "optionId": "B",
+            "latexOrText": "\\{-3\\}",
+            "rationale": "Harika! Paydayı sıfırlayan x = 3 elendi ve yalnızca x = -3 tutuldu.",
+            "isCorrect": true
+          },
+          {
+            "optionId": "C",
+            "latexOrText": "\\{3\\}",
+            "rationale": "x = 3 paydayı sıfırlar; oysa x = -3 payı sıfırlarken paydayı -6 yapar.",
+            "isCorrect": false
+          }
+        ],
+        "correctOptionId": "B",
+        "estimatedSeconds": 30
+      },
+      "verificationStatus": "VERIFIED",
+      "verifierVersion": "sympy-1.12-v1",
+      "verificationHash": "7a38b283c38f46dd9f0ab35dabd85a01b1bafad953073e8e383a221df6a74767"
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "cardId": "00000000-0000-4000-8601-000000000010",
+      "mistakeCode": "DOM_EXTRANEOUS_ROOT_DENOM",
+      "locale": "en-US",
+      "title": "Filtering Extraneous Roots That Zero a Denominator",
+      "focusBadgeLabel": "Focus Area · Domain Restriction",
+      "estimatedDurationSeconds": 95,
+      "coreRule": {
+        "ruleTitle": "Verify Candidate Roots Against Original Denominators",
+        "conciseExplanation": "After canceling common factors or clearing fractions, discard any candidate value that makes an original denominator equal to zero.",
+        "canonicalLatexFormula": "\\frac{x^2 - a^2}{x - a} = x + a \\quad (x \\neq a)",
+        "sympyCheckExpr": "(x**2 - a**2)/(x - a) == x + a",
+        "estimatedSeconds": 30
+      },
+      "brokenVsValidCounterexample": {
+        "promptLatex": "\\frac{x^2 - 4}{x - 2} = 0",
+        "commonTrapLatex": "x = 2 \\text{ kept as root}",
+        "whyTrapFailsExplanation": "Accepting x = 2 creates 0/0 in the original fraction; only x = -2 keeps the denominator nonzero.",
+        "verifiedStepLatex": "x + 2 = 0 \\text{ with } x \\neq 2 \\implies x = -2",
+        "numericCounterexampleLatex": "x = 2 \\implies x - 2 = 0 \\text{ (undefined)}; \\; x = 5 \\implies \\frac{21}{3} = 7",
+        "sympyEquivalenceCheckExpr": "simplify((x**2 - 4)/(x - 2) - (x + 2)) == 0",
+        "sympyTargetExpr": "(x**2 - 4)/(x - 2)",
+        "sympyValidExpr": "x + 2",
+        "sympyTrapExpr": "x - 2",
+        "counterexampleBindings": {
+          "x": 5
+        },
+        "estimatedSeconds": 35
+      },
+      "interactiveQuickCheck": {
+        "questionPrompt": "What is the solution set of (x^2 - 9)/(x - 3) = 0?",
+        "questionLatex": "\\frac{x^2 - 9}{x - 3} = 0",
+        "options": [
+          {
+            "optionId": "A",
+            "latexOrText": "\\{-3, 3\\}",
+            "rationale": "Substituting x = 3 makes the denominator x - 3 equal to zero.",
+            "isCorrect": false
+          },
+          {
+            "optionId": "B",
+            "latexOrText": "\\{-3\\}",
+            "rationale": "Spot on! Excluding x = 3 leaves x = -3 as the valid solution.",
+            "isCorrect": true
+          },
+          {
+            "optionId": "C",
+            "latexOrText": "\\{3\\}",
+            "rationale": "x = 3 is excluded by the denominator, whereas x = -3 gives 0/(-6) = 0.",
+            "isCorrect": false
+          }
+        ],
+        "correctOptionId": "B",
+        "estimatedSeconds": 30
+      },
+      "verificationStatus": "VERIFIED",
+      "verifierVersion": "sympy-1.12-v1",
+      "verificationHash": "c02af1e0d01b0c11582794c91236a54ea04ce98fdac5a0a3d710cd03db9007c3"
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "cardId": "00000000-0000-4000-8601-000000000011",
+      "mistakeCode": "DOM_EVEN_ROOT_NEGATIVE",
+      "locale": "tr-TR",
+      "title": "Çift Dereceli Köklerde Mutlak Değer ve Tanım Şartı",
+      "focusBadgeLabel": "Odak Noktası · Köklü İfadeler",
+      "estimatedDurationSeconds": 90,
+      "coreRule": {
+        "ruleTitle": "Karekökün İçi Negatif Olamaz ve √(x²) = |x| Olur",
+        "conciseExplanation": "Gerçek sayılarda çift dereceli kök daima negatif olmayan bir sonuç verir; bu yüzden √(x²) doğrudan x değil |x| olarak dışarı çıkar.",
+        "canonicalLatexFormula": "\\sqrt{x^2} = |x| = \\begin{cases} x, & x \\ge 0 \\\\ -x, & x < 0 \\end{cases}",
+        "sympyCheckExpr": "sqrt(x**2) == Abs(x)",
+        "estimatedSeconds": 30
+      },
+      "brokenVsValidCounterexample": {
+        "promptLatex": "\\sqrt{x^2}",
+        "commonTrapLatex": "x",
+        "whyTrapFailsExplanation": "x = -5 iken doğrudan x yazmak -5 sonucunu verir; ancak √((-5)²) = √25 = +5 = |-5| olmalıdır.",
+        "verifiedStepLatex": "|x|",
+        "numericCounterexampleLatex": "x = -5 \\implies \\sqrt{(-5)^2} = 5 \\neq -5",
+        "sympyEquivalenceCheckExpr": "simplify(sqrt(x**2) - Abs(x)) == 0",
+        "sympyTargetExpr": "sqrt(x**2)",
+        "sympyValidExpr": "Abs(x)",
+        "sympyTrapExpr": "x",
+        "counterexampleBindings": {
+          "x": -5
+        },
+        "estimatedSeconds": 30
+      },
+      "interactiveQuickCheck": {
+        "questionPrompt": "x < 0 olmak üzere √(x²) + x ifadesinin değeri kaçtır?",
+        "questionLatex": "\\sqrt{x^2} + x \\quad (x < 0)",
+        "options": [
+          {
+            "optionId": "A",
+            "latexOrText": "2x",
+            "rationale": "x negatif olduğunda √(x²) değeri x değil -x olarak açılır.",
+            "isCorrect": false
+          },
+          {
+            "optionId": "B",
+            "latexOrText": "0",
+            "rationale": "Harika! x < 0 için √(x²) = |x| = -x olduğundan (-x) + x = 0 bulunur.",
+            "isCorrect": true
+          },
+          {
+            "optionId": "C",
+            "latexOrText": "-2x",
+            "rationale": "|x| = -x ile +x toplanınca işaretler birbirini sıfırlar.",
+            "isCorrect": false
+          }
+        ],
+        "correctOptionId": "B",
+        "estimatedSeconds": 30
+      },
+      "verificationStatus": "VERIFIED",
+      "verifierVersion": "sympy-1.12-v1",
+      "verificationHash": "4164f16d4d47c5309afe505e6d274611000bec5e593a076e2de9b48cc0710ca5"
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "cardId": "00000000-0000-4000-8601-000000000012",
+      "mistakeCode": "DOM_EVEN_ROOT_NEGATIVE",
+      "locale": "en-US",
+      "title": "Principal Even Roots and Absolute Value Output",
+      "focusBadgeLabel": "Focus Area · Radical Domains",
+      "estimatedDurationSeconds": 90,
+      "coreRule": {
+        "ruleTitle": "Principal Square Roots Are Never Negative: √(x²) = |x|",
+        "conciseExplanation": "Over the reals, an even root returns the principal non-negative value, so √(x²) simplifies to |x| rather than bare x.",
+        "canonicalLatexFormula": "\\sqrt{x^2} = |x| = \\begin{cases} x, & x \\ge 0 \\\\ -x, & x < 0 \\end{cases}",
+        "sympyCheckExpr": "sqrt(x**2) == Abs(x)",
+        "estimatedSeconds": 30
+      },
+      "brokenVsValidCounterexample": {
+        "promptLatex": "\\sqrt{x^2}",
+        "commonTrapLatex": "x",
+        "whyTrapFailsExplanation": "Simplifying √(x²) to x yields -5 when x = -5, whereas √((-5)²) = √25 = 5 = |-5|.",
+        "verifiedStepLatex": "|x|",
+        "numericCounterexampleLatex": "x = -5 \\implies \\sqrt{(-5)^2} = 5 \\neq -5",
+        "sympyEquivalenceCheckExpr": "simplify(sqrt(x**2) - Abs(x)) == 0",
+        "sympyTargetExpr": "sqrt(x**2)",
+        "sympyValidExpr": "Abs(x)",
+        "sympyTrapExpr": "x",
+        "counterexampleBindings": {
+          "x": -5
+        },
+        "estimatedSeconds": 30
+      },
+      "interactiveQuickCheck": {
+        "questionPrompt": "For x < 0, what does √(x²) + x simplify to?",
+        "questionLatex": "\\sqrt{x^2} + x \\quad (x < 0)",
+        "options": [
+          {
+            "optionId": "A",
+            "latexOrText": "2x",
+            "rationale": "When x is negative, √(x²) equals -x rather than x.",
+            "isCorrect": false
+          },
+          {
+            "optionId": "B",
+            "latexOrText": "0",
+            "rationale": "Spot on! Since x < 0, √(x²) = |x| = -x, so (-x) + x = 0.",
+            "isCorrect": true
+          },
+          {
+            "optionId": "C",
+            "latexOrText": "-2x",
+            "rationale": "Adding -x and +x cancels out to 0.",
+            "isCorrect": false
+          }
+        ],
+        "correctOptionId": "B",
+        "estimatedSeconds": 30
+      },
+      "verificationStatus": "VERIFIED",
+      "verifierVersion": "sympy-1.12-v1",
+      "verificationHash": "7bf1f7b939d60ab51de37c0ab9600d73269ebecef3126a237689fa6a92658521"
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "cardId": "00000000-0000-4000-8601-000000000013",
+      "mistakeCode": "DOM_LOG_NON_POSITIVE",
+      "locale": "tr-TR",
+      "title": "Logaritma İçinin Pozitif Kalma Zorunluluğu",
+      "focusBadgeLabel": "Odak Noktası · Logaritma Tanım Kümesi",
+      "estimatedDurationSeconds": 95,
+      "coreRule": {
+        "ruleTitle": "Çift Kuvvet Logaritma Dışına İnerken Mutlak Değer Korunur",
+        "conciseExplanation": "Logaritmanın içi daima > 0 olmalıdır. ln(x²) ifadesinde x negatif de olabileceği için 2·ln(x) değil 2·ln|x| yazılır.",
+        "canonicalLatexFormula": "\\ln(x^2) = 2\\ln|x| \\quad (x \\neq 0)",
+        "sympyCheckExpr": "log(x**2) == 2*log(Abs(x))",
+        "estimatedSeconds": 30
+      },
+      "brokenVsValidCounterexample": {
+        "promptLatex": "\\ln(x^2) \\quad (x \\neq 0)",
+        "commonTrapLatex": "2\\ln(x)",
+        "whyTrapFailsExplanation": "x = -3 değerinde (-3)² = 9 > 0 olduğundan ln(x²) tanımlıdır; fakat 2·ln(-3) gerçek sayılarda tanımsız kalır.",
+        "verifiedStepLatex": "2\\ln|x|",
+        "numericCounterexampleLatex": "x = -3 \\implies \\ln((-3)^2) = 2\\ln(3) \\in \\mathbb{R}, \\; 2\\ln(-3) \\notin \\mathbb{R}",
+        "sympyEquivalenceCheckExpr": "simplify(log(x**2) - 2*log(Abs(x))) == 0",
+        "sympyTargetExpr": "log(x**2)",
+        "sympyValidExpr": "2*log(Abs(x))",
+        "sympyTrapExpr": "2*log(x)",
+        "counterexampleBindings": {
+          "x": -3
+        },
+        "estimatedSeconds": 35
+      },
+      "interactiveQuickCheck": {
+        "questionPrompt": "ln(x - 4) fonksiyonunun gerçek sayılardaki en geniş tanım kümesi nedir?",
+        "questionLatex": "\\ln(x - 4)",
+        "options": [
+          {
+            "optionId": "A",
+            "latexOrText": "x \\ge 4",
+            "rationale": "Logaritmanın içi sıfır da olamaz; kesinlikle x - 4 > 0 şartı gerekir.",
+            "isCorrect": false
+          },
+          {
+            "optionId": "B",
+            "latexOrText": "x > 4",
+            "rationale": "Harika! Logaritma içi sıfırdan kesin büyük olmalıdır: x - 4 > 0 ⇒ x > 4.",
+            "isCorrect": true
+          },
+          {
+            "optionId": "C",
+            "latexOrText": "x \\neq 4",
+            "rationale": "Negatif değerler de (x < 4) gerçek logaritma için dışarıda kalır.",
+            "isCorrect": false
+          }
+        ],
+        "correctOptionId": "B",
+        "estimatedSeconds": 30
+      },
+      "verificationStatus": "VERIFIED",
+      "verifierVersion": "sympy-1.12-v1",
+      "verificationHash": "64239ff90ca0b0838b3367f901389ff091e7e439927d2f47a1afde9a69c6f371"
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "cardId": "00000000-0000-4000-8601-000000000014",
+      "mistakeCode": "DOM_LOG_NON_POSITIVE",
+      "locale": "en-US",
+      "title": "Keeping Logarithm Arguments Strictly Positive",
+      "focusBadgeLabel": "Focus Area · Logarithm Domains",
+      "estimatedDurationSeconds": 95,
+      "coreRule": {
+        "ruleTitle": "Preserve Absolute Value When Dropping an Even Power",
+        "conciseExplanation": "Real logarithms require strictly positive arguments (> 0). Thus ln(x²) expands to 2·ln|x| rather than 2·ln(x) when x can be negative.",
+        "canonicalLatexFormula": "\\ln(x^2) = 2\\ln|x| \\quad (x \\neq 0)",
+        "sympyCheckExpr": "log(x**2) == 2*log(Abs(x))",
+        "estimatedSeconds": 30
+      },
+      "brokenVsValidCounterexample": {
+        "promptLatex": "\\ln(x^2) \\quad (x \\neq 0)",
+        "commonTrapLatex": "2\\ln(x)",
+        "whyTrapFailsExplanation": "At x = -3, ln((-3)²) = ln(9) is real, whereas 2·ln(-3) is undefined over the real numbers.",
+        "verifiedStepLatex": "2\\ln|x|",
+        "numericCounterexampleLatex": "x = -3 \\implies \\ln((-3)^2) = 2\\ln(3) \\in \\mathbb{R}, \\; 2\\ln(-3) \\notin \\mathbb{R}",
+        "sympyEquivalenceCheckExpr": "simplify(log(x**2) - 2*log(Abs(x))) == 0",
+        "sympyTargetExpr": "log(x**2)",
+        "sympyValidExpr": "2*log(Abs(x))",
+        "sympyTrapExpr": "2*log(x)",
+        "counterexampleBindings": {
+          "x": -3
+        },
+        "estimatedSeconds": 35
+      },
+      "interactiveQuickCheck": {
+        "questionPrompt": "What is the real domain of ln(x - 4)?",
+        "questionLatex": "\\ln(x - 4)",
+        "options": [
+          {
+            "optionId": "A",
+            "latexOrText": "x \\ge 4",
+            "rationale": "Logarithms are also undefined when the argument equals zero.",
+            "isCorrect": false
+          },
+          {
+            "optionId": "B",
+            "latexOrText": "x > 4",
+            "rationale": "Spot on! Requiring x - 4 > 0 gives x > 4.",
+            "isCorrect": true
+          },
+          {
+            "optionId": "C",
+            "latexOrText": "x \\neq 4",
+            "rationale": "Values with x < 4 make the argument negative and are excluded too.",
+            "isCorrect": false
+          }
+        ],
+        "correctOptionId": "B",
+        "estimatedSeconds": 30
+      },
+      "verificationStatus": "VERIFIED",
+      "verifierVersion": "sympy-1.12-v1",
+      "verificationHash": "b07aa1af7f2e739a15f57bc5a46b0d113270340a85aa24a6b4299880c6c25771"
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "cardId": "00000000-0000-4000-8601-000000000015",
+      "mistakeCode": "INEQ_NEGATIVE_MULT_NO_FLIP",
+      "locale": "tr-TR",
+      "title": "Negatif Sayıyla Çarpma/Bölmede Eşitsizlik Yönü",
+      "focusBadgeLabel": "Odak Noktası · Eşitsizlikler",
+      "estimatedDurationSeconds": 90,
+      "coreRule": {
+        "ruleTitle": "Negatif Sayıyla İşlem Yapınca Eşitsizlik Ters Döner",
+        "conciseExplanation": "Bir eşitsizliğin her iki tarafı negatif bir sayıyla çarpılır veya bölünürse sayı doğrusundaki sıralama tersine döndüğü için sembol yön değiştirir.",
+        "canonicalLatexFormula": "-kx < b \\iff x > -\\frac{b}{k} \\quad (k > 0)",
+        "sympyCheckExpr": "-2*x < 6",
+        "estimatedSeconds": 30
+      },
+      "brokenVsValidCounterexample": {
+        "promptLatex": "-2x < 6",
+        "commonTrapLatex": "x < -3",
+        "whyTrapFailsExplanation": "Yönü çevirmeden x < -3 yazıldığında x = 0 değeri -2(0) = 0 < 6 eşitsizliğini sağladığı hâlde küme dışında kalır.",
+        "verifiedStepLatex": "x > -3",
+        "numericCounterexampleLatex": "x = 0 \\implies -2(0) = 0 < 6 \\text{ (True)}, \\; 0 < -3 \\text{ (False)}",
+        "sympyEquivalenceCheckExpr": "solveset(-2*x < 6, x, Reals) == Interval.open(-3, oo)",
+        "sympyTargetExpr": "-2*x < 6",
+        "sympyValidExpr": "x > -3",
+        "sympyTrapExpr": "x < -3",
+        "counterexampleBindings": {
+          "x": 0
+        },
+        "estimatedSeconds": 30
+      },
+      "interactiveQuickCheck": {
+        "questionPrompt": "-3x ≥ 12 eşitsizliğinin doğru çözümü hangisidir?",
+        "questionLatex": "-3x \\ge 12",
+        "options": [
+          {
+            "optionId": "A",
+            "latexOrText": "x \\ge -4",
+            "rationale": "Negatif -3 ile bölünürken ≥ işareti ≤ işaretine dönmelidir.",
+            "isCorrect": false
+          },
+          {
+            "optionId": "B",
+            "latexOrText": "x \\le -4",
+            "rationale": "Harika! -3 ile bölerken yönü çevirerek doğru aralığı buldun.",
+            "isCorrect": true
+          },
+          {
+            "optionId": "C",
+            "latexOrText": "x \\le 4",
+            "rationale": "12 / (-3) işleminin işareti negatiftir: -4.",
+            "isCorrect": false
+          }
+        ],
+        "correctOptionId": "B",
+        "estimatedSeconds": 30
+      },
+      "verificationStatus": "VERIFIED",
+      "verifierVersion": "sympy-1.12-v1",
+      "verificationHash": "cbb5cde84f13cdde631d37090dff66472d20e958f66da50b988a04390867470f"
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "cardId": "00000000-0000-4000-8601-000000000016",
+      "mistakeCode": "INEQ_NEGATIVE_MULT_NO_FLIP",
+      "locale": "en-US",
+      "title": "Flipping the Inequality When Multiplying by a Negative",
+      "focusBadgeLabel": "Focus Area · Inequalities",
+      "estimatedDurationSeconds": 90,
+      "coreRule": {
+        "ruleTitle": "Reverse the Inequality Sign on Negative Multiplication or Division",
+        "conciseExplanation": "Multiplying or dividing both sides of an inequality by a negative number reverses order on the number line, so < becomes >.",
+        "canonicalLatexFormula": "-kx < b \\iff x > -\\frac{b}{k} \\quad (k > 0)",
+        "sympyCheckExpr": "-2*x < 6",
+        "estimatedSeconds": 30
+      },
+      "brokenVsValidCounterexample": {
+        "promptLatex": "-2x < 6",
+        "commonTrapLatex": "x < -3",
+        "whyTrapFailsExplanation": "Keeping x < -3 excludes x = 0, even though -2(0) = 0 < 6 is true.",
+        "verifiedStepLatex": "x > -3",
+        "numericCounterexampleLatex": "x = 0 \\implies -2(0) = 0 < 6 \\text{ (True)}, \\; 0 < -3 \\text{ (False)}",
+        "sympyEquivalenceCheckExpr": "solveset(-2*x < 6, x, Reals) == Interval.open(-3, oo)",
+        "sympyTargetExpr": "-2*x < 6",
+        "sympyValidExpr": "x > -3",
+        "sympyTrapExpr": "x < -3",
+        "counterexampleBindings": {
+          "x": 0
+        },
+        "estimatedSeconds": 30
+      },
+      "interactiveQuickCheck": {
+        "questionPrompt": "What is the solution to -3x ≥ 12?",
+        "questionLatex": "-3x \\ge 12",
+        "options": [
+          {
+            "optionId": "A",
+            "latexOrText": "x \\ge -4",
+            "rationale": "Dividing by -3 flips ≥ to ≤.",
+            "isCorrect": false
+          },
+          {
+            "optionId": "B",
+            "latexOrText": "x \\le -4",
+            "rationale": "Spot on! Dividing by -3 and flipping the sign gives x ≤ -4.",
+            "isCorrect": true
+          },
+          {
+            "optionId": "C",
+            "latexOrText": "x \\le 4",
+            "rationale": "Check the quotient sign: 12 / (-3) = -4.",
+            "isCorrect": false
+          }
+        ],
+        "correctOptionId": "B",
+        "estimatedSeconds": 30
+      },
+      "verificationStatus": "VERIFIED",
+      "verifierVersion": "sympy-1.12-v1",
+      "verificationHash": "3ec7a1bca26309b8712978f6f2993d9690585865bb431b187e9bc3a1465db1d4"
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "cardId": "00000000-0000-4000-8601-000000000017",
+      "mistakeCode": "INEQ_CROSS_MULT_VARIABLE",
+      "locale": "tr-TR",
+      "title": "Eşitsizlikte Değişkenli Paydayla İçler Dışlar Yapmama",
+      "focusBadgeLabel": "Odak Noktası · Rasyonel Eşitsizlik",
+      "estimatedDurationSeconds": 100,
+      "coreRule": {
+        "ruleTitle": "İşareti Bilinmeyen Değişkenle Çarpmak Yerine Tek Tarafta Topla",
+        "conciseExplanation": "Paydadaki x pozitif de negatif de olabilir; içler dışlar yapmak yerine terimleri bir tarafa toplayıp işaret tablosu kur.",
+        "canonicalLatexFormula": "\\frac{f(x)}{g(x)} > c \\iff \\frac{f(x) - c\\,g(x)}{g(x)} > 0",
+        "sympyCheckExpr": "(x + 1)/x - 2 == (1 - x)/x",
+        "estimatedSeconds": 35
+      },
+      "brokenVsValidCounterexample": {
+        "promptLatex": "\\frac{x + 1}{x} > 2",
+        "commonTrapLatex": "x + 1 > 2x \\implies x < 1",
+        "whyTrapFailsExplanation": "Doğrudan x + 1 > 2x yazmak x = -1 değerini çözüm sanır; oysa (-1 + 1)/(-1) = 0 > 2 değildir.",
+        "verifiedStepLatex": "\\frac{1 - x}{x} > 0 \\implies 0 < x < 1",
+        "numericCounterexampleLatex": "x = -1 \\implies \\frac{-1 + 1}{-1} = 0 \\ngtr 2",
+        "sympyEquivalenceCheckExpr": "solveset((x + 1)/x > 2, x, Reals) == Interval.open(0, 1)",
+        "sympyTargetExpr": "(x + 1)/x > 2",
+        "sympyValidExpr": "And(x > 0, x < 1)",
+        "sympyTrapExpr": "x < 1",
+        "counterexampleBindings": {
+          "x": -1
+        },
+        "estimatedSeconds": 35
+      },
+      "interactiveQuickCheck": {
+        "questionPrompt": "(x + 1)/x > 2 eşitsizliğini sağlayan x aralığı hangisidir?",
+        "questionLatex": "\\frac{x + 1}{x} > 2",
+        "options": [
+          {
+            "optionId": "A",
+            "latexOrText": "x < 1",
+            "rationale": "x < 0 iken paydayla çarpmak eşitsizliğin yönünü bozar; x = -1 sağlamaz.",
+            "isCorrect": false
+          },
+          {
+            "optionId": "B",
+            "latexOrText": "0 < x < 1",
+            "rationale": "Harika! (1 - x)/x > 0 için işaret tablosu 0 < x < 1 aralığını verir.",
+            "isCorrect": true
+          },
+          {
+            "optionId": "C",
+            "latexOrText": "x > 1",
+            "rationale": "x = 2 için (2 + 1)/2 = 1.5 > 2 sağlanmaz.",
+            "isCorrect": false
+          }
+        ],
+        "correctOptionId": "B",
+        "estimatedSeconds": 30
+      },
+      "verificationStatus": "VERIFIED",
+      "verifierVersion": "sympy-1.12-v1",
+      "verificationHash": "7ea92d9d9dfa616a9653ee997c240a13ae2105a12b7f294f868b47c92c622e6a"
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "cardId": "00000000-0000-4000-8601-000000000018",
+      "mistakeCode": "INEQ_CROSS_MULT_VARIABLE",
+      "locale": "en-US",
+      "title": "Avoiding Blind Cross-Multiplication in Inequalities",
+      "focusBadgeLabel": "Focus Area · Rational Inequalities",
+      "estimatedDurationSeconds": 100,
+      "coreRule": {
+        "ruleTitle": "Collect Terms on One Side and Build a Sign Chart",
+        "conciseExplanation": "Because a variable denominator can be positive or negative, subtract everything to one side and inspect signs instead of cross-multiplying.",
+        "canonicalLatexFormula": "\\frac{f(x)}{g(x)} > c \\iff \\frac{f(x) - c\\,g(x)}{g(x)} > 0",
+        "sympyCheckExpr": "(x + 1)/x - 2 == (1 - x)/x",
+        "estimatedSeconds": 35
+      },
+      "brokenVsValidCounterexample": {
+        "promptLatex": "\\frac{x + 1}{x} > 2",
+        "commonTrapLatex": "x + 1 > 2x \\implies x < 1",
+        "whyTrapFailsExplanation": "Cross-multiplying into x + 1 > 2x accepts x = -1, yet (-1 + 1)/(-1) = 0 is not greater than 2.",
+        "verifiedStepLatex": "\\frac{1 - x}{x} > 0 \\implies 0 < x < 1",
+        "numericCounterexampleLatex": "x = -1 \\implies \\frac{-1 + 1}{-1} = 0 \\ngtr 2",
+        "sympyEquivalenceCheckExpr": "solveset((x + 1)/x > 2, x, Reals) == Interval.open(0, 1)",
+        "sympyTargetExpr": "(x + 1)/x > 2",
+        "sympyValidExpr": "And(x > 0, x < 1)",
+        "sympyTrapExpr": "x < 1",
+        "counterexampleBindings": {
+          "x": -1
+        },
+        "estimatedSeconds": 35
+      },
+      "interactiveQuickCheck": {
+        "questionPrompt": "Which interval solves (x + 1)/x > 2?",
+        "questionLatex": "\\frac{x + 1}{x} > 2",
+        "options": [
+          {
+            "optionId": "A",
+            "latexOrText": "x < 1",
+            "rationale": "Negative values such as x = -1 do not satisfy the original inequality.",
+            "isCorrect": false
+          },
+          {
+            "optionId": "B",
+            "latexOrText": "0 < x < 1",
+            "rationale": "Spot on! Rewriting as (1 - x)/x > 0 isolates 0 < x < 1.",
+            "isCorrect": true
+          },
+          {
+            "optionId": "C",
+            "latexOrText": "x > 1",
+            "rationale": "At x = 2, (2 + 1)/2 = 1.5 is not greater than 2.",
+            "isCorrect": false
+          }
+        ],
+        "correctOptionId": "B",
+        "estimatedSeconds": 30
+      },
+      "verificationStatus": "VERIFIED",
+      "verifierVersion": "sympy-1.12-v1",
+      "verificationHash": "9f4aa3dccd333ff1bbd40029eab2e9889d7d1c2e30ddf59365ffd6d361cb9bd6"
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "cardId": "00000000-0000-4000-8601-000000000019",
+      "mistakeCode": "ABS_SINGLE_BRANCH_ONLY",
+      "locale": "tr-TR",
+      "title": "Mutlak Değer Denklemlerinde İki Dalı da Çözme",
+      "focusBadgeLabel": "Odak Noktası · Mutlak Değer",
+      "estimatedDurationSeconds": 90,
+      "coreRule": {
+        "ruleTitle": "|u| = k Denklemi Hem u = k Hem u = -k Verir",
+        "conciseExplanation": "Sayı doğrusu üzerinde uzaklık iki yönde de ölçülebildiği için |x - 2| = 5 denklemi hem +5 hem -5 dallarıyla çözülmelidir.",
+        "canonicalLatexFormula": "|u| = k \\; (k \\ge 0) \\iff u = k \\lor u = -k",
+        "sympyCheckExpr": "Eq(Abs(x - 2), 5)",
+        "estimatedSeconds": 30
+      },
+      "brokenVsValidCounterexample": {
+        "promptLatex": "|x - 2| = 5",
+        "commonTrapLatex": "x - 2 = 5 \\implies \\{7\\}",
+        "whyTrapFailsExplanation": "Yalnızca x - 2 = 5 dalını çözmek x = -3 kökünü atlar; oysa |-3 - 2| = |-5| = 5 de geçerli bir çözümdür.",
+        "verifiedStepLatex": "x - 2 = \\pm 5 \\implies \\{-3, 7\\}",
+        "numericCounterexampleLatex": "x = -3 \\implies |-3 - 2| = |-5| = 5",
+        "sympyEquivalenceCheckExpr": "Eq(Abs(x - 2), 5) <=> Or(Eq(x, 7), Eq(x, -3))",
+        "sympyTargetExpr": "Eq(Abs(x - 2), 5)",
+        "sympyValidExpr": "Or(Eq(x, 7), Eq(x, -3))",
+        "sympyTrapExpr": "Eq(x, 7)",
+        "counterexampleBindings": {
+          "x": -3
+        },
+        "estimatedSeconds": 30
+      },
+      "interactiveQuickCheck": {
+        "questionPrompt": "|x - 4| = 3 denkleminin çözüm kümesi nedir?",
+        "questionLatex": "|x - 4| = 3",
+        "options": [
+          {
+            "optionId": "A",
+            "latexOrText": "\\{7\\}",
+            "rationale": "İkinci dal olan x - 4 = -3 denklemini de çözmelisin.",
+            "isCorrect": false
+          },
+          {
+            "optionId": "B",
+            "latexOrText": "\\{1, 7\\}",
+            "rationale": "Harika! x - 4 = 3 ve x - 4 = -3 dallarının ikisinden de 7 ve 1 bulundu.",
+            "isCorrect": true
+          },
+          {
+            "optionId": "C",
+            "latexOrText": "\\{-1, 7\\}",
+            "rationale": "x - 4 = -3 denkleminden x = 4 - 3 = +1 elde edilir.",
+            "isCorrect": false
+          }
+        ],
+        "correctOptionId": "B",
+        "estimatedSeconds": 30
+      },
+      "verificationStatus": "VERIFIED",
+      "verifierVersion": "sympy-1.12-v1",
+      "verificationHash": "e1a5575c61282d1758fbbe8007cb9822fa42128d3f9c7ced5470c80de0822e78"
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "cardId": "00000000-0000-4000-8601-000000000020",
+      "mistakeCode": "ABS_SINGLE_BRANCH_ONLY",
+      "locale": "en-US",
+      "title": "Solving Both Branches of an Absolute Value Equation",
+      "focusBadgeLabel": "Focus Area · Absolute Value",
+      "estimatedDurationSeconds": 90,
+      "coreRule": {
+        "ruleTitle": "|u| = k Splits Into u = k and u = -k",
+        "conciseExplanation": "Distance on the number line works in both directions, so |x - 2| = 5 requires solving both x - 2 = 5 and x - 2 = -5.",
+        "canonicalLatexFormula": "|u| = k \\; (k \\ge 0) \\iff u = k \\lor u = -k",
+        "sympyCheckExpr": "Eq(Abs(x - 2), 5)",
+        "estimatedSeconds": 30
+      },
+      "brokenVsValidCounterexample": {
+        "promptLatex": "|x - 2| = 5",
+        "commonTrapLatex": "x - 2 = 5 \\implies \\{7\\}",
+        "whyTrapFailsExplanation": "Solving only x - 2 = 5 misses x = -3, even though |-3 - 2| = |-5| = 5.",
+        "verifiedStepLatex": "x - 2 = \\pm 5 \\implies \\{-3, 7\\}",
+        "numericCounterexampleLatex": "x = -3 \\implies |-3 - 2| = |-5| = 5",
+        "sympyEquivalenceCheckExpr": "Eq(Abs(x - 2), 5) <=> Or(Eq(x, 7), Eq(x, -3))",
+        "sympyTargetExpr": "Eq(Abs(x - 2), 5)",
+        "sympyValidExpr": "Or(Eq(x, 7), Eq(x, -3))",
+        "sympyTrapExpr": "Eq(x, 7)",
+        "counterexampleBindings": {
+          "x": -3
+        },
+        "estimatedSeconds": 30
+      },
+      "interactiveQuickCheck": {
+        "questionPrompt": "What is the solution set of |x - 4| = 3?",
+        "questionLatex": "|x - 4| = 3",
+        "options": [
+          {
+            "optionId": "A",
+            "latexOrText": "\\{7\\}",
+            "rationale": "Include the negative branch x - 4 = -3 as well.",
+            "isCorrect": false
+          },
+          {
+            "optionId": "B",
+            "latexOrText": "\\{1, 7\\}",
+            "rationale": "Spot on! Solving x - 4 = 3 and x - 4 = -3 yields both 7 and 1.",
+            "isCorrect": true
+          },
+          {
+            "optionId": "C",
+            "latexOrText": "\\{-1, 7\\}",
+            "rationale": "From x - 4 = -3, adding 4 gives x = +1.",
+            "isCorrect": false
+          }
+        ],
+        "correctOptionId": "B",
+        "estimatedSeconds": 30
+      },
+      "verificationStatus": "VERIFIED",
+      "verifierVersion": "sympy-1.12-v1",
+      "verificationHash": "97a755453902fbe5640933f826129a90c9927cf3bacbfa9a0bc9058589b960c1"
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "cardId": "00000000-0000-4000-8601-000000000021",
+      "mistakeCode": "FUNC_COMPOSITION_ORDER",
+      "locale": "tr-TR",
+      "title": "Bileşke Fonksiyonda İçten Dışa Uygulama Sırası",
+      "focusBadgeLabel": "Odak Noktası · Fonksiyon Bileşkesi",
+      "estimatedDurationSeconds": 90,
+      "coreRule": {
+        "ruleTitle": "(f ∘ g)(x) İfadesi Önce g(x), Sonra f İşlemini Uygular",
+        "conciseExplanation": "Bileşke işleminde sağdaki fonksiyon girdiyi alır: (f ∘ g)(x) = f(g(x)). Fonksiyonların sırası genellikle değişmeli değildir.",
+        "canonicalLatexFormula": "(f \\circ g)(x) = f(g(x)) \\neq g(f(x))",
+        "sympyCheckExpr": "2*(x**2) + 1 == 2*x**2 + 1",
+        "estimatedSeconds": 30
+      },
+      "brokenVsValidCounterexample": {
+        "promptLatex": "f(x) = 2x + 1, \\; g(x) = x^2 \\implies (f \\circ g)(x)",
+        "commonTrapLatex": "(2x + 1)^2",
+        "whyTrapFailsExplanation": "Sırayı ters alıp g(f(x)) hesaplamak (2x + 1)² verir; x = 1 için 3 yerine 9 üretir.",
+        "verifiedStepLatex": "2x^2 + 1",
+        "numericCounterexampleLatex": "x = 1 \\implies f(g(1)) = 2(1)^2 + 1 = 3 \\neq (2(1) + 1)^2 = 9",
+        "sympyEquivalenceCheckExpr": "simplify((2*(x**2) + 1) - (2*x**2 + 1)) == 0",
+        "sympyTargetExpr": "2*(x**2) + 1",
+        "sympyValidExpr": "2*x**2 + 1",
+        "sympyTrapExpr": "(2*x + 1)**2",
+        "counterexampleBindings": {
+          "x": 1
+        },
+        "estimatedSeconds": 30
+      },
+      "interactiveQuickCheck": {
+        "questionPrompt": "f(x) = x + 3 ve g(x) = 2x ise (f ∘ g)(5) kaçtır?",
+        "questionLatex": "(f \\circ g)(5), \\; f(x)=x+3, \\; g(x)=2x",
+        "options": [
+          {
+            "optionId": "A",
+            "latexOrText": "16",
+            "rationale": "16 değeri g(f(5)) = 2(5 + 3) sırasından gelir; önce g(5) hesaplanmalıdır.",
+            "isCorrect": false
+          },
+          {
+            "optionId": "B",
+            "latexOrText": "13",
+            "rationale": "Harika! Önce g(5) = 10, ardından f(10) = 10 + 3 = 13 bulundu.",
+            "isCorrect": true
+          },
+          {
+            "optionId": "C",
+            "latexOrText": "11",
+            "rationale": "f(g(5)) için g(5) = 10 sonucunu f(x) = x + 3 içine koymalısın.",
+            "isCorrect": false
+          }
+        ],
+        "correctOptionId": "B",
+        "estimatedSeconds": 30
+      },
+      "verificationStatus": "VERIFIED",
+      "verifierVersion": "sympy-1.12-v1",
+      "verificationHash": "423cd95420dd4731e94585b7f4ce290d6f5bb01091122b2470a7913213ba012c"
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "cardId": "00000000-0000-4000-8601-000000000022",
+      "mistakeCode": "FUNC_COMPOSITION_ORDER",
+      "locale": "en-US",
+      "title": "Evaluating Function Composition From Inside Out",
+      "focusBadgeLabel": "Focus Area · Function Composition",
+      "estimatedDurationSeconds": 90,
+      "coreRule": {
+        "ruleTitle": "(f ∘ g)(x) Means Apply g First, Then f",
+        "conciseExplanation": "Composition is not commutative: (f ∘ g)(x) = f(g(x)) feeds the output of the right-hand function g into f.",
+        "canonicalLatexFormula": "(f \\circ g)(x) = f(g(x)) \\neq g(f(x))",
+        "sympyCheckExpr": "2*(x**2) + 1 == 2*x**2 + 1",
+        "estimatedSeconds": 30
+      },
+      "brokenVsValidCounterexample": {
+        "promptLatex": "f(x) = 2x + 1, \\; g(x) = x^2 \\implies (f \\circ g)(x)",
+        "commonTrapLatex": "(2x + 1)^2",
+        "whyTrapFailsExplanation": "Reversing to g(f(x)) produces (2x + 1)², which gives 9 instead of 3 at x = 1.",
+        "verifiedStepLatex": "2x^2 + 1",
+        "numericCounterexampleLatex": "x = 1 \\implies f(g(1)) = 2(1)^2 + 1 = 3 \\neq (2(1) + 1)^2 = 9",
+        "sympyEquivalenceCheckExpr": "simplify((2*(x**2) + 1) - (2*x**2 + 1)) == 0",
+        "sympyTargetExpr": "2*(x**2) + 1",
+        "sympyValidExpr": "2*x**2 + 1",
+        "sympyTrapExpr": "(2*x + 1)**2",
+        "counterexampleBindings": {
+          "x": 1
+        },
+        "estimatedSeconds": 30
+      },
+      "interactiveQuickCheck": {
+        "questionPrompt": "Given f(x) = x + 3 and g(x) = 2x, what is (f ∘ g)(5)?",
+        "questionLatex": "(f \\circ g)(5), \\; f(x)=x+3, \\; g(x)=2x",
+        "options": [
+          {
+            "optionId": "A",
+            "latexOrText": "16",
+            "rationale": "16 comes from g(f(5)) = 2(5 + 3); evaluate the inner function g(5) first.",
+            "isCorrect": false
+          },
+          {
+            "optionId": "B",
+            "latexOrText": "13",
+            "rationale": "Spot on! g(5) = 10 first, then f(10) = 10 + 3 = 13.",
+            "isCorrect": true
+          },
+          {
+            "optionId": "C",
+            "latexOrText": "11",
+            "rationale": "Substitute g(5) = 10 into f(x) = x + 3.",
+            "isCorrect": false
+          }
+        ],
+        "correctOptionId": "B",
+        "estimatedSeconds": 30
+      },
+      "verificationStatus": "VERIFIED",
+      "verifierVersion": "sympy-1.12-v1",
+      "verificationHash": "9af3708fcff3e01834b5a9dec8c3d9611f1149b2d8851df4615be0b3e1b415a6"
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "cardId": "00000000-0000-4000-8601-000000000023",
+      "mistakeCode": "TRIG_PERIOD_OMITTED",
+      "locale": "tr-TR",
+      "title": "Trigonometrik Denklemlerde Periyodun Ölçeklenmesi",
+      "focusBadgeLabel": "Odak Noktası · Trigonometrik Periyot",
+      "estimatedDurationSeconds": 95,
+      "coreRule": {
+        "ruleTitle": "Katsayıya Bölerken Periyot Terimini (+2πk) de Böl",
+        "conciseExplanation": "sin(2x) = 1/2 denkleminde 2x = π/6 + 2πk yazıldıktan sonra iki taraf 2'ye bölünürse x = π/12 + πk olur; periyot π'ye iner.",
+        "canonicalLatexFormula": "\\sin(kx) \\text{ has period } \\frac{2\\pi}{|k|}",
+        "sympyCheckExpr": "sin(2*(x + pi)) == sin(2*x)",
+        "estimatedSeconds": 35
+      },
+      "brokenVsValidCounterexample": {
+        "promptLatex": "\\sin(2x)",
+        "commonTrapLatex": "\\sin\\left(2\\left(x + \\frac{\\pi}{2}\\right)\\right)",
+        "whyTrapFailsExplanation": "2πk yerine π/2 kayması eklemek sin(2(x + π/2)) = -sin(2x) üretir; oysa sin(2x) fonksiyonunun temel periyodu π'dir.",
+        "verifiedStepLatex": "\\sin(2(x + \\pi))",
+        "numericCounterexampleLatex": "x = 1 \\implies \\sin(2(1 + \\pi)) = \\sin(2) \\neq \\sin(2 + \\pi) = -\\sin(2)",
+        "sympyEquivalenceCheckExpr": "simplify(sin(2*(x + pi)) - sin(2*x)) == 0",
+        "sympyTargetExpr": "sin(2*x)",
+        "sympyValidExpr": "sin(2*(x + pi))",
+        "sympyTrapExpr": "sin(2*(x + pi/2))",
+        "counterexampleBindings": {
+          "x": 1
+        },
+        "estimatedSeconds": 30
+      },
+      "interactiveQuickCheck": {
+        "questionPrompt": "sin(2x) = 0 denkleminin [0, 2π) aralığında kaç farklı kökü vardır?",
+        "questionLatex": "\\sin(2x) = 0, \\quad x \\in [0, 2\\pi)",
+        "options": [
+          {
+            "optionId": "A",
+            "latexOrText": "2",
+            "rationale": "Periyot π olduğu için [0, 2π) aralığında kök sayısı iki katına çıkar.",
+            "isCorrect": false
+          },
+          {
+            "optionId": "B",
+            "latexOrText": "4",
+            "rationale": "Harika! 2x = πk ⇒ x = πk/2 olduğundan {0, π/2, π, 3π/2} şeklinde 4 kök vardır.",
+            "isCorrect": true
+          },
+          {
+            "optionId": "C",
+            "latexOrText": "1",
+            "rationale": "sin(2x) = 0 denklemi her π/2 adımda bir sıfırlanır.",
+            "isCorrect": false
+          }
+        ],
+        "correctOptionId": "B",
+        "estimatedSeconds": 30
+      },
+      "verificationStatus": "VERIFIED",
+      "verifierVersion": "sympy-1.12-v1",
+      "verificationHash": "cdeb956f1fd709db355bfb1c931178accf416fcf7f7a48321e193c513e64898b"
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "cardId": "00000000-0000-4000-8601-000000000024",
+      "mistakeCode": "TRIG_PERIOD_OMITTED",
+      "locale": "en-US",
+      "title": "Scaling the Period Term in Trigonometric Equations",
+      "focusBadgeLabel": "Focus Area · Trigonometric Period",
+      "estimatedDurationSeconds": 95,
+      "coreRule": {
+        "ruleTitle": "Divide +2πk by the Inner Frequency Coefficient",
+        "conciseExplanation": "When solving sin(2x) = c, writing 2x = α + 2πk and dividing by 2 scales the period to πk, not 2πk.",
+        "canonicalLatexFormula": "\\sin(kx) \\text{ has period } \\frac{2\\pi}{|k|}",
+        "sympyCheckExpr": "sin(2*(x + pi)) == sin(2*x)",
+        "estimatedSeconds": 35
+      },
+      "brokenVsValidCounterexample": {
+        "promptLatex": "\\sin(2x)",
+        "commonTrapLatex": "\\sin\\left(2\\left(x + \\frac{\\pi}{2}\\right)\\right)",
+        "whyTrapFailsExplanation": "Shifting by π/2 flips the sign to -sin(2x), whereas the true fundamental period of sin(2x) is π.",
+        "verifiedStepLatex": "\\sin(2(x + \\pi))",
+        "numericCounterexampleLatex": "x = 1 \\implies \\sin(2(1 + \\pi)) = \\sin(2) \\neq \\sin(2 + \\pi) = -\\sin(2)",
+        "sympyEquivalenceCheckExpr": "simplify(sin(2*(x + pi)) - sin(2*x)) == 0",
+        "sympyTargetExpr": "sin(2*x)",
+        "sympyValidExpr": "sin(2*(x + pi))",
+        "sympyTrapExpr": "sin(2*(x + pi/2))",
+        "counterexampleBindings": {
+          "x": 1
+        },
+        "estimatedSeconds": 30
+      },
+      "interactiveQuickCheck": {
+        "questionPrompt": "How many solutions does sin(2x) = 0 have on [0, 2π)?",
+        "questionLatex": "\\sin(2x) = 0, \\quad x \\in [0, 2\\pi)",
+        "options": [
+          {
+            "optionId": "A",
+            "latexOrText": "2",
+            "rationale": "Because the period halves to π, twice as many solutions appear in [0, 2π).",
+            "isCorrect": false
+          },
+          {
+            "optionId": "B",
+            "latexOrText": "4",
+            "rationale": "Spot on! 2x = πk gives x = πk/2, producing 4 solutions: 0, π/2, π, 3π/2.",
+            "isCorrect": true
+          },
+          {
+            "optionId": "C",
+            "latexOrText": "1",
+            "rationale": "Check x = π/2, π, and 3π/2 as well.",
+            "isCorrect": false
+          }
+        ],
+        "correctOptionId": "B",
+        "estimatedSeconds": 30
+      },
+      "verificationStatus": "VERIFIED",
+      "verifierVersion": "sympy-1.12-v1",
+      "verificationHash": "c020c32ee3a2548480888b6063bb29fcfbb6bf4b5a63033fd0535e461f9d3ed1"
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "cardId": "00000000-0000-4000-8601-000000000025",
+      "mistakeCode": "CALC_LIMIT_INDETERMINATE_SUB",
+      "locale": "tr-TR",
+      "title": "0/0 Belirsizliğinde Sadeleştirme Sonrası Limit",
+      "focusBadgeLabel": "Odak Noktası · Limit Belirsizliği",
+      "estimatedDurationSeconds": 90,
+      "coreRule": {
+        "ruleTitle": "0/0 Sonucu Cevap Değildir; Çarpanlara Ayırıp Sadeleştir",
+        "conciseExplanation": "Doğrudan yerine koyma 0/0 veriyorsa pay ve paydada sıfır yapan (x - a) çarpanını sadeleştirip ardından limiti hesapla.",
+        "canonicalLatexFormula": "\\lim_{x \\to a} \\frac{x^2 - a^2}{x - a} = \\lim_{x \\to a}(x + a) = 2a",
+        "sympyCheckExpr": "Limit((x**2 - 4)/(x - 2), x, 2) == 4",
+        "estimatedSeconds": 30
+      },
+      "brokenVsValidCounterexample": {
+        "promptLatex": "\\lim_{x \\to 2} \\frac{x^2 - 4}{x - 2}",
+        "commonTrapLatex": "0",
+        "whyTrapFailsExplanation": "0/0 belirsizliğini 0 veya tanımsız kabul etmek gerçek limit değerini kaçırır; (x - 2)(x + 2)/(x - 2) = x + 2 → 4 olur.",
+        "verifiedStepLatex": "\\lim_{x \\to 2}(x + 2) = 4",
+        "numericCounterexampleLatex": "x \\to 2 \\implies \\frac{(x-2)(x+2)}{x-2} = x + 2 \\to 4 \\neq 0",
+        "sympyEquivalenceCheckExpr": "Limit((x**2 - 4)/(x - 2), x, 2).doit() == 4",
+        "sympyTargetExpr": "Limit((x**2 - 4)/(x - 2), x, 2)",
+        "sympyValidExpr": "4",
+        "sympyTrapExpr": "0",
+        "counterexampleBindings": {},
+        "estimatedSeconds": 30
+      },
+      "interactiveQuickCheck": {
+        "questionPrompt": "lim_{x → 3} (x^2 - 9)/(x - 3) limitinin değeri kaçtır?",
+        "questionLatex": "\\lim_{x \\to 3} \\frac{x^2 - 9}{x - 3}",
+        "options": [
+          {
+            "optionId": "A",
+            "latexOrText": "0",
+            "rationale": "0/0 bir belirsizlik biçimidir; önce (x - 3) çarpanları sadeleştirilmelidir.",
+            "isCorrect": false
+          },
+          {
+            "optionId": "B",
+            "latexOrText": "6",
+            "rationale": "Harika! (x - 3)(x + 3)/(x - 3) = x + 3 olduğundan x → 3 için 3 + 3 = 6 bulunur.",
+            "isCorrect": true
+          },
+          {
+            "optionId": "C",
+            "latexOrText": "3",
+            "rationale": "Sadeleştirme sonrası kalan ifade x + 3 olur: 3 + 3 = 6.",
+            "isCorrect": false
+          }
+        ],
+        "correctOptionId": "B",
+        "estimatedSeconds": 30
+      },
+      "verificationStatus": "VERIFIED",
+      "verifierVersion": "sympy-1.12-v1",
+      "verificationHash": "33ec0d7dc94a9407b20c56a370359a172070f119e8928f8c354f7226ee0da97f"
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "cardId": "00000000-0000-4000-8601-000000000026",
+      "mistakeCode": "CALC_LIMIT_INDETERMINATE_SUB",
+      "locale": "en-US",
+      "title": "Resolving 0/0 Indeterminate Limits by Factoring",
+      "focusBadgeLabel": "Focus Area · Limits",
+      "estimatedDurationSeconds": 90,
+      "coreRule": {
+        "ruleTitle": "0/0 Signals Algebraic Cancellation, Not Zero",
+        "conciseExplanation": "When direct substitution produces 0/0, factor and cancel the common (x - a) factor before evaluating the limit.",
+        "canonicalLatexFormula": "\\lim_{x \\to a} \\frac{x^2 - a^2}{x - a} = \\lim_{x \\to a}(x + a) = 2a",
+        "sympyCheckExpr": "Limit((x**2 - 4)/(x - 2), x, 2) == 4",
+        "estimatedSeconds": 30
+      },
+      "brokenVsValidCounterexample": {
+        "promptLatex": "\\lim_{x \\to 2} \\frac{x^2 - 4}{x - 2}",
+        "commonTrapLatex": "0",
+        "whyTrapFailsExplanation": "Treating 0/0 as 0 overlooks that (x - 2)(x + 2)/(x - 2) equals x + 2 near 2, approaching 4.",
+        "verifiedStepLatex": "\\lim_{x \\to 2}(x + 2) = 4",
+        "numericCounterexampleLatex": "x \\to 2 \\implies \\frac{(x-2)(x+2)}{x-2} = x + 2 \\to 4 \\neq 0",
+        "sympyEquivalenceCheckExpr": "Limit((x**2 - 4)/(x - 2), x, 2).doit() == 4",
+        "sympyTargetExpr": "Limit((x**2 - 4)/(x - 2), x, 2)",
+        "sympyValidExpr": "4",
+        "sympyTrapExpr": "0",
+        "counterexampleBindings": {},
+        "estimatedSeconds": 30
+      },
+      "interactiveQuickCheck": {
+        "questionPrompt": "What is lim_{x → 3} (x^2 - 9)/(x - 3)?",
+        "questionLatex": "\\lim_{x \\to 3} \\frac{x^2 - 9}{x - 3}",
+        "options": [
+          {
+            "optionId": "A",
+            "latexOrText": "0",
+            "rationale": "0/0 is indeterminate; cancel the common (x - 3) factor first.",
+            "isCorrect": false
+          },
+          {
+            "optionId": "B",
+            "latexOrText": "6",
+            "rationale": "Spot on! Canceling (x - 3) leaves x + 3, which approaches 3 + 3 = 6.",
+            "isCorrect": true
+          },
+          {
+            "optionId": "C",
+            "latexOrText": "3",
+            "rationale": "After canceling (x - 3), substitute 3 into x + 3.",
+            "isCorrect": false
+          }
+        ],
+        "correctOptionId": "B",
+        "estimatedSeconds": 30
+      },
+      "verificationStatus": "VERIFIED",
+      "verifierVersion": "sympy-1.12-v1",
+      "verificationHash": "60d76d0a81aa78788b12af1c00f958db63080276685471f91cd98562bf05ab99"
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "cardId": "00000000-0000-4000-8601-000000000027",
+      "mistakeCode": "CALC_CHAIN_RULE_OMITTED",
+      "locale": "tr-TR",
+      "title": "Bileşke Türevde İç Fonksiyon Türevi (Zincir Kuralı)",
+      "focusBadgeLabel": "Odak Noktası · Zincir Kuralı",
+      "estimatedDurationSeconds": 90,
+      "coreRule": {
+        "ruleTitle": "Dış Türevin Ardından İç Fonksiyonun Türeviyle Çarp",
+        "conciseExplanation": "f(g(x)) türevlenirken yalnızca dış üs kuralı yetmez; sonuç mutlaka g'(x) iç türevi ile çarpılmalıdır.",
+        "canonicalLatexFormula": "\\frac{d}{dx}[f(g(x))] = f'(g(x)) \\cdot g'(x)",
+        "sympyCheckExpr": "diff((3*x + 1)**4, x) == 12*(3*x + 1)**3",
+        "estimatedSeconds": 30
+      },
+      "brokenVsValidCounterexample": {
+        "promptLatex": "\\frac{d}{dx}\\left[(3x + 1)^4\\right]",
+        "commonTrapLatex": "4(3x + 1)^3",
+        "whyTrapFailsExplanation": "İç türev olan 3 çarpanını unutmak 4(3x + 1)³ verir; x = 0 noktasında gerçek eğim 12 yerine 4 çıkar.",
+        "verifiedStepLatex": "12(3x + 1)^3",
+        "numericCounterexampleLatex": "x = 0 \\implies 12(1)^3 = 12 \\neq 4(1)^3 = 4",
+        "sympyEquivalenceCheckExpr": "simplify(diff((3*x + 1)**4, x) - 12*(3*x + 1)**3) == 0",
+        "sympyTargetExpr": "diff((3*x + 1)**4, x)",
+        "sympyValidExpr": "12*(3*x + 1)**3",
+        "sympyTrapExpr": "4*(3*x + 1)**3",
+        "counterexampleBindings": {
+          "x": 0
+        },
+        "estimatedSeconds": 30
+      },
+      "interactiveQuickCheck": {
+        "questionPrompt": "d/dx [(2x - 5)^3] türevi aşağıdakilerden hangisidir?",
+        "questionLatex": "\\frac{d}{dx}\\left[(2x - 5)^3\\right]",
+        "options": [
+          {
+            "optionId": "A",
+            "latexOrText": "3(2x - 5)^2",
+            "rationale": "İçteki (2x - 5) ifadesinin türevi olan 2 ile çarpmayı unutmayalım.",
+            "isCorrect": false
+          },
+          {
+            "optionId": "B",
+            "latexOrText": "6(2x - 5)^2",
+            "rationale": "Harika! Dış türev 3(2x - 5)² ile iç türev 2 çarpılarak 6(2x - 5)² elde edildi.",
+            "isCorrect": true
+          },
+          {
+            "optionId": "C",
+            "latexOrText": "6(2x - 5)^3",
+            "rationale": "Üs bir azalarak 3 - 1 = 2 olmalıdır.",
+            "isCorrect": false
+          }
+        ],
+        "correctOptionId": "B",
+        "estimatedSeconds": 30
+      },
+      "verificationStatus": "VERIFIED",
+      "verifierVersion": "sympy-1.12-v1",
+      "verificationHash": "2232ebf70cac468980d6301e3b02b2d60b9cdada68d9bd7a645affb755f48023"
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "cardId": "00000000-0000-4000-8601-000000000028",
+      "mistakeCode": "CALC_CHAIN_RULE_OMITTED",
+      "locale": "en-US",
+      "title": "Remembering the Inner Derivative in the Chain Rule",
+      "focusBadgeLabel": "Focus Area · Chain Rule",
+      "estimatedDurationSeconds": 90,
+      "coreRule": {
+        "ruleTitle": "Multiply Outer Derivative by Inner Derivative g'(x)",
+        "conciseExplanation": "When differentiating a composite function f(g(x)), always multiply the outer derivative f'(g(x)) by the inner derivative g'(x).",
+        "canonicalLatexFormula": "\\frac{d}{dx}[f(g(x))] = f'(g(x)) \\cdot g'(x)",
+        "sympyCheckExpr": "diff((3*x + 1)**4, x) == 12*(3*x + 1)**3",
+        "estimatedSeconds": 30
+      },
+      "brokenVsValidCounterexample": {
+        "promptLatex": "\\frac{d}{dx}\\left[(3x + 1)^4\\right]",
+        "commonTrapLatex": "4(3x + 1)^3",
+        "whyTrapFailsExplanation": "Omitting the inner derivative factor of 3 yields 4(3x + 1)³, giving slope 4 instead of 12 at x = 0.",
+        "verifiedStepLatex": "12(3x + 1)^3",
+        "numericCounterexampleLatex": "x = 0 \\implies 12(1)^3 = 12 \\neq 4(1)^3 = 4",
+        "sympyEquivalenceCheckExpr": "simplify(diff((3*x + 1)**4, x) - 12*(3*x + 1)**3) == 0",
+        "sympyTargetExpr": "diff((3*x + 1)**4, x)",
+        "sympyValidExpr": "12*(3*x + 1)**3",
+        "sympyTrapExpr": "4*(3*x + 1)**3",
+        "counterexampleBindings": {
+          "x": 0
+        },
+        "estimatedSeconds": 30
+      },
+      "interactiveQuickCheck": {
+        "questionPrompt": "What is d/dx [(2x - 5)^3]?",
+        "questionLatex": "\\frac{d}{dx}\\left[(2x - 5)^3\\right]",
+        "options": [
+          {
+            "optionId": "A",
+            "latexOrText": "3(2x - 5)^2",
+            "rationale": "Remember to multiply by the inner derivative d/dx(2x - 5) = 2.",
+            "isCorrect": false
+          },
+          {
+            "optionId": "B",
+            "latexOrText": "6(2x - 5)^2",
+            "rationale": "Spot on! 3(2x - 5)² · 2 = 6(2x - 5)².",
+            "isCorrect": true
+          },
+          {
+            "optionId": "C",
+            "latexOrText": "6(2x - 5)^3",
+            "rationale": "The outer power decreases from 3 to 2.",
+            "isCorrect": false
+          }
+        ],
+        "correctOptionId": "B",
+        "estimatedSeconds": 30
+      },
+      "verificationStatus": "VERIFIED",
+      "verifierVersion": "sympy-1.12-v1",
+      "verificationHash": "c8db219b6e78fb83b2ff3e70b0477f7d6d9bf741295e6da48d4b19f4c830b8ae"
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "cardId": "00000000-0000-4000-8601-000000000029",
+      "mistakeCode": "CALC_PRODUCT_QUOTIENT_NAIVE",
+      "locale": "tr-TR",
+      "title": "Çarpımın Türevi (f'g + fg') Kuralı",
+      "focusBadgeLabel": "Odak Noktası · Çarpım Türevi",
+      "estimatedDurationSeconds": 95,
+      "coreRule": {
+        "ruleTitle": "Çarpımın Türevi Türevlerin Çarpımı Değildir",
+        "conciseExplanation": "(f·g)' ifadesi f'·g' değil, sırayla birinin türevini alıp diğerini sabit tutarak toplanan f'g + fg' biçimindedir.",
+        "canonicalLatexFormula": "(f \\cdot g)' = f'g + fg'",
+        "sympyCheckExpr": "diff(x**2 * sin(x), x) == 2*x*sin(x) + x**2*cos(x)",
+        "estimatedSeconds": 30
+      },
+      "brokenVsValidCounterexample": {
+        "promptLatex": "\\frac{d}{dx}\\left[x^2 \\sin(x)\\right]",
+        "commonTrapLatex": "2x \\cos(x)",
+        "whyTrapFailsExplanation": "2x ile cos(x)'i doğrudan çarpmak f'g + fg' toplamındaki iki terimi bozar; x = 1 için 2sin(1)+cos(1) yerine 2cos(1) üretir.",
+        "verifiedStepLatex": "2x\\sin(x) + x^2\\cos(x)",
+        "numericCounterexampleLatex": "x = 1 \\implies 2\\sin(1) + \\cos(1) \\neq 2\\cos(1)",
+        "sympyEquivalenceCheckExpr": "simplify(diff(x**2 * sin(x), x) - (2*x*sin(x) + x**2*cos(x))) == 0",
+        "sympyTargetExpr": "diff(x**2 * sin(x), x)",
+        "sympyValidExpr": "2*x*sin(x) + x**2*cos(x)",
+        "sympyTrapExpr": "2*x*cos(x)",
+        "counterexampleBindings": {
+          "x": 1
+        },
+        "estimatedSeconds": 35
+      },
+      "interactiveQuickCheck": {
+        "questionPrompt": "d/dx [x · e^x] türevi hangisidir?",
+        "questionLatex": "\\frac{d}{dx}\\left[x \\cdot e^x\\right]",
+        "options": [
+          {
+            "optionId": "A",
+            "latexOrText": "e^x",
+            "rationale": "Çarpım türevi (1)·e^x + x·e^x toplamını gerektirir.",
+            "isCorrect": false
+          },
+          {
+            "optionId": "B",
+            "latexOrText": "(x + 1)e^x",
+            "rationale": "Harika! (x)'e^x + x(e^x)' = e^x + x·e^x = (x + 1)e^x.",
+            "isCorrect": true
+          },
+          {
+            "optionId": "C",
+            "latexOrText": "x e^x",
+            "rationale": "İlk terim olan (x)'·e^x = e^x eklenmelidir.",
+            "isCorrect": false
+          }
+        ],
+        "correctOptionId": "B",
+        "estimatedSeconds": 30
+      },
+      "verificationStatus": "VERIFIED",
+      "verifierVersion": "sympy-1.12-v1",
+      "verificationHash": "deddc1d64dc56a22693b3d5c2e3da5f1dc9ffe7022770e58e7adee7a9b7f6781"
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "cardId": "00000000-0000-4000-8601-000000000030",
+      "mistakeCode": "CALC_PRODUCT_QUOTIENT_NAIVE",
+      "locale": "en-US",
+      "title": "Applying the Product Rule Instead of Multiplying Derivatives",
+      "focusBadgeLabel": "Focus Area · Product Rule",
+      "estimatedDurationSeconds": 95,
+      "coreRule": {
+        "ruleTitle": "(fg)' Equals f'g + fg', Never f'g'",
+        "conciseExplanation": "Differentiating a product requires two terms: the first derivative times the second, plus the first times the second derivative.",
+        "canonicalLatexFormula": "(f \\cdot g)' = f'g + fg'",
+        "sympyCheckExpr": "diff(x**2 * sin(x), x) == 2*x*sin(x) + x**2*cos(x)",
+        "estimatedSeconds": 30
+      },
+      "brokenVsValidCounterexample": {
+        "promptLatex": "\\frac{d}{dx}\\left[x^2 \\sin(x)\\right]",
+        "commonTrapLatex": "2x \\cos(x)",
+        "whyTrapFailsExplanation": "Multiplying 2x by cos(x) skips the sum structure and evaluates to 2cos(1) instead of 2sin(1) + cos(1) at x = 1.",
+        "verifiedStepLatex": "2x\\sin(x) + x^2\\cos(x)",
+        "numericCounterexampleLatex": "x = 1 \\implies 2\\sin(1) + \\cos(1) \\neq 2\\cos(1)",
+        "sympyEquivalenceCheckExpr": "simplify(diff(x**2 * sin(x), x) - (2*x*sin(x) + x**2*cos(x))) == 0",
+        "sympyTargetExpr": "diff(x**2 * sin(x), x)",
+        "sympyValidExpr": "2*x*sin(x) + x**2*cos(x)",
+        "sympyTrapExpr": "2*x*cos(x)",
+        "counterexampleBindings": {
+          "x": 1
+        },
+        "estimatedSeconds": 35
+      },
+      "interactiveQuickCheck": {
+        "questionPrompt": "What is d/dx [x · e^x]?",
+        "questionLatex": "\\frac{d}{dx}\\left[x \\cdot e^x\\right]",
+        "options": [
+          {
+            "optionId": "A",
+            "latexOrText": "e^x",
+            "rationale": "Multiplying derivatives gives 1·e^x, missing the + x·e^x term.",
+            "isCorrect": false
+          },
+          {
+            "optionId": "B",
+            "latexOrText": "(x + 1)e^x",
+            "rationale": "Spot on! (1)e^x + x(e^x) = (x + 1)e^x.",
+            "isCorrect": true
+          },
+          {
+            "optionId": "C",
+            "latexOrText": "x e^x",
+            "rationale": "Include the first product-rule term (1)·e^x.",
+            "isCorrect": false
+          }
+        ],
+        "correctOptionId": "B",
+        "estimatedSeconds": 30
+      },
+      "verificationStatus": "VERIFIED",
+      "verifierVersion": "sympy-1.12-v1",
+      "verificationHash": "24d9d1217cae49f232b7d3a6da678737e13333470c63d581492afc1e94f299cb"
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "cardId": "00000000-0000-4000-8601-000000000031",
+      "mistakeCode": "CALC_INTEGRAL_BOUNDS_SWAPPED",
+      "locale": "tr-TR",
+      "title": "Belirli İntegralde Sınırların Yer Değiştirmesi",
+      "focusBadgeLabel": "Odak Noktası · İntegral Sınırları",
+      "estimatedDurationSeconds": 90,
+      "coreRule": {
+        "ruleTitle": "Alt ve Üst Sınır Yer Değiştirirse İşaret Ters Döner",
+        "conciseExplanation": "∫_a^b f(x)dx = F(b) - F(a) olduğundan sınırlar ters çevrildiğinde F(a) - F(b) = -∫_a^b f(x)dx elde edilir.",
+        "canonicalLatexFormula": "\\int_{b}^{a} f(x)\\,dx = -\\int_{a}^{b} f(x)\\,dx",
+        "sympyCheckExpr": "integrate(2*x, (x, 3, 1)) == -integrate(2*x, (x, 1, 3))",
+        "estimatedSeconds": 30
+      },
+      "brokenVsValidCounterexample": {
+        "promptLatex": "\\int_{3}^{1} 2x\\,dx",
+        "commonTrapLatex": "8",
+        "whyTrapFailsExplanation": "İşareti ters çevirmeyi unutmak +8 verir; oysa [x²]_3^1 = 1² - 3² = -8 olmalıdır.",
+        "verifiedStepLatex": "-8",
+        "numericCounterexampleLatex": "\\left[x^2\\right]_{3}^{1} = 1^2 - 3^2 = -8 \\neq 8",
+        "sympyEquivalenceCheckExpr": "integrate(2*x, (x, 3, 1)) == -8",
+        "sympyTargetExpr": "integrate(2*x, (x, 3, 1))",
+        "sympyValidExpr": "-8",
+        "sympyTrapExpr": "8",
+        "counterexampleBindings": {},
+        "estimatedSeconds": 30
+      },
+      "interactiveQuickCheck": {
+        "questionPrompt": "∫_4^1 2x dx belirli integralinin değeri kaçtır?",
+        "questionLatex": "\\int_{4}^{1} 2x\\,dx",
+        "options": [
+          {
+            "optionId": "A",
+            "latexOrText": "15",
+            "rationale": "Alt sınır 4 üst sınırdan büyük olduğu için sonuç negatif (-15) olmalıdır.",
+            "isCorrect": false
+          },
+          {
+            "optionId": "B",
+            "latexOrText": "-15",
+            "rationale": "Harika! [x²]_4^1 = 1² - 4² = 1 - 16 = -15.",
+            "isCorrect": true
+          },
+          {
+            "optionId": "C",
+            "latexOrText": "-17",
+            "rationale": "1² - 4² = 1 - 16 = -15 değerini kontrol edelim.",
+            "isCorrect": false
+          }
+        ],
+        "correctOptionId": "B",
+        "estimatedSeconds": 30
+      },
+      "verificationStatus": "VERIFIED",
+      "verifierVersion": "sympy-1.12-v1",
+      "verificationHash": "09f792c30b2208fb22566a298a1493714245b91da22712179a1cb04c0b6bee07"
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "cardId": "00000000-0000-4000-8601-000000000032",
+      "mistakeCode": "CALC_INTEGRAL_BOUNDS_SWAPPED",
+      "locale": "en-US",
+      "title": "Sign Flip When Definite Integral Limits Swap",
+      "focusBadgeLabel": "Focus Area · Integral Bounds",
+      "estimatedDurationSeconds": 90,
+      "coreRule": {
+        "ruleTitle": "Swapping Lower and Upper Bounds Negates the Integral",
+        "conciseExplanation": "By F(upper) - F(lower), reversing the limits negates the value: ∫_b^a f(x)dx = -∫_a^b f(x)dx.",
+        "canonicalLatexFormula": "\\int_{b}^{a} f(x)\\,dx = -\\int_{a}^{b} f(x)\\,dx",
+        "sympyCheckExpr": "integrate(2*x, (x, 3, 1)) == -integrate(2*x, (x, 1, 3))",
+        "estimatedSeconds": 30
+      },
+      "brokenVsValidCounterexample": {
+        "promptLatex": "\\int_{3}^{1} 2x\\,dx",
+        "commonTrapLatex": "8",
+        "whyTrapFailsExplanation": "Ignoring the reversed limits gives +8, whereas [x²]_3^1 = 1² - 3² = -8.",
+        "verifiedStepLatex": "-8",
+        "numericCounterexampleLatex": "\\left[x^2\\right]_{3}^{1} = 1^2 - 3^2 = -8 \\neq 8",
+        "sympyEquivalenceCheckExpr": "integrate(2*x, (x, 3, 1)) == -8",
+        "sympyTargetExpr": "integrate(2*x, (x, 3, 1))",
+        "sympyValidExpr": "-8",
+        "sympyTrapExpr": "8",
+        "counterexampleBindings": {},
+        "estimatedSeconds": 30
+      },
+      "interactiveQuickCheck": {
+        "questionPrompt": "What is the value of ∫_4^1 2x dx?",
+        "questionLatex": "\\int_{4}^{1} 2x\\,dx",
+        "options": [
+          {
+            "optionId": "A",
+            "latexOrText": "15",
+            "rationale": "Because the lower limit exceeds the upper limit, the integral is negated.",
+            "isCorrect": false
+          },
+          {
+            "optionId": "B",
+            "latexOrText": "-15",
+            "rationale": "Spot on! [x²]_4^1 = 1² - 4² = -15.",
+            "isCorrect": true
+          },
+          {
+            "optionId": "C",
+            "latexOrText": "-17",
+            "rationale": "Check the arithmetic: 1 - 16 = -15.",
+            "isCorrect": false
+          }
+        ],
+        "correctOptionId": "B",
+        "estimatedSeconds": 30
+      },
+      "verificationStatus": "VERIFIED",
+      "verifierVersion": "sympy-1.12-v1",
+      "verificationHash": "e28a3330199dc820705b1da0435db4348ecf461bc40df42ed1f653843ca7e602"
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "cardId": "00000000-0000-4000-8601-000000000033",
+      "mistakeCode": "WORD_VARIABLE_MISASSIGNMENT",
+      "locale": "tr-TR",
+      "title": "Problem Cümlesini Doğru Değişkene Bağlama",
+      "focusBadgeLabel": "Odak Noktası · Denklem Kurma",
+      "estimatedDurationSeconds": 90,
+      "coreRule": {
+        "ruleTitle": "Toplam İlişkisini Kurarken Tüm Terimleri Aynı Değişkenle Yaz",
+        "conciseExplanation": "'Ali'nin kitapları Ayşe'nin 3 katıdır ve toplam 48 kitap vardır' cümlesinde A = 3y ve A + y = 48 olur; toplamda 4y = 48 kurulur.",
+        "canonicalLatexFormula": "A = k\\,y \\land A + y = T \\implies (k + 1)y = T",
+        "sympyCheckExpr": "48/(1 + 3) == 12",
+        "estimatedSeconds": 30
+      },
+      "brokenVsValidCounterexample": {
+        "promptLatex": "A = 3y, \\; A + y = 48 \\implies y = ?",
+        "commonTrapLatex": "3y = 48 \\implies y = 16",
+        "whyTrapFailsExplanation": "Ayşe'nin payı y'yi toplam denklemden düşüp doğrudan 3y = 48 kurmak y = 16 verir; oysa 3(16) + 16 = 64 ≠ 48 olur.",
+        "verifiedStepLatex": "3y + y = 48 \\implies y = 12",
+        "numericCounterexampleLatex": "y = 16 \\implies 3(16) + 16 = 64 \\neq 48; \\; y = 12 \\implies 36 + 12 = 48",
+        "sympyEquivalenceCheckExpr": "48/(1 + 3) == 12",
+        "sympyTargetExpr": "48 / (1 + 3)",
+        "sympyValidExpr": "12",
+        "sympyTrapExpr": "16",
+        "counterexampleBindings": {},
+        "estimatedSeconds": 30
+      },
+      "interactiveQuickCheck": {
+        "questionPrompt": "Bir kutuda kırmızı bilye sayısı mavinin 4 katıdır. Toplam 60 bilye varsa kaç mavi bilye vardır?",
+        "questionLatex": "K = 4m, \\; K + m = 60",
+        "options": [
+          {
+            "optionId": "A",
+            "latexOrText": "15",
+            "rationale": "60/4 = 15 işleminde mavilerin kendi payı (+m) denkleme eklenmemiş olur.",
+            "isCorrect": false
+          },
+          {
+            "optionId": "B",
+            "latexOrText": "12",
+            "rationale": "Harika! 4m + m = 5m = 60 ⇒ m = 12 (kırmızı 48, toplam 60).",
+            "isCorrect": true
+          },
+          {
+            "optionId": "C",
+            "latexOrText": "48",
+            "rationale": "48 kırmızı bilye sayısıdır; soru mavi bilye sayısını (m) sormaktadır.",
+            "isCorrect": false
+          }
+        ],
+        "correctOptionId": "B",
+        "estimatedSeconds": 30
+      },
+      "verificationStatus": "VERIFIED",
+      "verifierVersion": "sympy-1.12-v1",
+      "verificationHash": "bc6843726440d7230a201e5c3f40d156673b714e15cb7006d2e4e70ff5f6a270"
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "cardId": "00000000-0000-4000-8601-000000000034",
+      "mistakeCode": "WORD_VARIABLE_MISASSIGNMENT",
+      "locale": "en-US",
+      "title": "Mapping Every Quantity in Word-Problem Equations",
+      "focusBadgeLabel": "Focus Area · Equation Modeling",
+      "estimatedDurationSeconds": 90,
+      "coreRule": {
+        "ruleTitle": "Include Both Parts in the Total Equation",
+        "conciseExplanation": "When one quantity is 3 times another (A = 3y) and their total is 48, substitute into A + y = 48 to get 4y = 48.",
+        "canonicalLatexFormula": "A = k\\,y \\land A + y = T \\implies (k + 1)y = T",
+        "sympyCheckExpr": "48/(1 + 3) == 12",
+        "estimatedSeconds": 30
+      },
+      "brokenVsValidCounterexample": {
+        "promptLatex": "A = 3y, \\; A + y = 48 \\implies y = ?",
+        "commonTrapLatex": "3y = 48 \\implies y = 16",
+        "whyTrapFailsExplanation": "Omitting + y and solving 3y = 48 gives y = 16, which produces 3(16) + 16 = 64 instead of 48.",
+        "verifiedStepLatex": "3y + y = 48 \\implies y = 12",
+        "numericCounterexampleLatex": "y = 16 \\implies 3(16) + 16 = 64 \\neq 48; \\; y = 12 \\implies 36 + 12 = 48",
+        "sympyEquivalenceCheckExpr": "48/(1 + 3) == 12",
+        "sympyTargetExpr": "48 / (1 + 3)",
+        "sympyValidExpr": "12",
+        "sympyTrapExpr": "16",
+        "counterexampleBindings": {},
+        "estimatedSeconds": 30
+      },
+      "interactiveQuickCheck": {
+        "questionPrompt": "Red marbles are 4 times blue marbles, and there are 60 in total. How many blue marbles are there?",
+        "questionLatex": "R = 4b, \\; R + b = 60",
+        "options": [
+          {
+            "optionId": "A",
+            "latexOrText": "15",
+            "rationale": "60/4 = 15 drops the +b term from R + b = 60.",
+            "isCorrect": false
+          },
+          {
+            "optionId": "B",
+            "latexOrText": "12",
+            "rationale": "Spot on! 4b + b = 5b = 60 gives b = 12 blue marbles (and 48 red).",
+            "isCorrect": true
+          },
+          {
+            "optionId": "C",
+            "latexOrText": "48",
+            "rationale": "48 is the red count; the question asks for blue marbles b.",
+            "isCorrect": false
+          }
+        ],
+        "correctOptionId": "B",
+        "estimatedSeconds": 30
+      },
+      "verificationStatus": "VERIFIED",
+      "verifierVersion": "sympy-1.12-v1",
+      "verificationHash": "8f4f43a371ea1d3fa94a59d966965ada8253fd375bcf773f2ffa899a4ccce31d"
+    }
+  ]
+}

@@ -1,9 +1,9 @@
 # Documentation Manifest
 
-Total Markdown files: **402**
+Total Markdown files: **404**
 
 - `00_MASTER_INDEX.md` — 588 lines — 52947 bytes
-- `DOCUMENTATION_MANIFEST.md` — 406 lines — 49676 bytes
+- `DOCUMENTATION_MANIFEST.md` — 408 lines — 49905 bytes
 - `DOCUMENTATION_V3_CHANGELOG.md` — 48 lines — 2266 bytes
 - `DOCUMENTATION_V4_CHANGELOG.md` — 29 lines — 1984 bytes
 - `DOCUMENTATION_V5_CHANGELOG.md` — 28 lines — 1154 bytes
@@ -115,7 +115,7 @@ Total Markdown files: **402**
 - `security/35_SECURITY_THREAT_MODEL.md` — 179 lines — 12434 bytes
 - `security/36_PRIVACY_AND_STUDENT_DATA_PROTECTION.md` — 150 lines — 13283 bytes
 - `security/89_STUDENT_COACH_PRIVACY_MINOR_SAFETY_AND_TEACHER_ACCESS.md` — 148 lines — 15773 bytes
-- `sprints/00_SPRINT_MASTER_PLAN.md` — 319 lines — 42173 bytes
+- `sprints/00_SPRINT_MASTER_PLAN.md` — 319 lines — 42345 bytes
 - `sprints/01_SPRINT_EXECUTION_STANDARD.md` — 120 lines — 3391 bytes
 - `sprints/02_FOCUSED_COMMERCIAL_WEDGE_SPRINT_PROGRAM.md` — 611 lines — 58224 bytes
 - `sprints/phase01_product_semantics_and_architecture/PHASE_01_EXECUTION_REPORT.md` — 423 lines — 22130 bytes
@@ -330,7 +330,9 @@ Total Markdown files: **402**
 - `sprints/phase08_adaptive_learning_and_study_planning/SPRINT_8.5_EXECUTION_REPORT.md` — 23 lines — 3531 bytes
 - `sprints/phase08_adaptive_learning_and_study_planning/SPRINT_8.5_FILE_MANIFEST.md` — 56 lines — 3853 bytes
 - `sprints/phase08_adaptive_learning_and_study_planning/SPRINT_8.5_MISSED_DAY_RECOVERY_AND_STUDY_PLAN_REBALANCING.md` — 465 lines — 22696 bytes
-- `sprints/phase08_adaptive_learning_and_study_planning/SPRINT_8.6_AI_MICRO_LESSONS_TRIGGERED_BY_DIAGNOSED_WEAKNESSES.md` — 448 lines — 21746 bytes
+- `sprints/phase08_adaptive_learning_and_study_planning/SPRINT_8.6_AI_MICRO_LESSONS_TRIGGERED_BY_DIAGNOSED_WEAKNESSES.md` — 448 lines — 22420 bytes
+- `sprints/phase08_adaptive_learning_and_study_planning/SPRINT_8.6_EXECUTION_REPORT.md` — 10 lines — 2609 bytes
+- `sprints/phase08_adaptive_learning_and_study_planning/SPRINT_8.6_FILE_MANIFEST.md` — 65 lines — 4480 bytes
 - `sprints/phase08_adaptive_learning_and_study_planning/SPRINT_8.7_STUDY_SESSION_ORCHESTRATION_AND_RESUME_SEMANTICS.md` — 460 lines — 22553 bytes
 - `sprints/phase08_adaptive_learning_and_study_planning/SPRINT_8.8_GOALS_STREAKS_ACHIEVEMENTS_AND_NON_MANIPULATIVE_GAMIFICATION.md` — 431 lines — 20496 bytes
 - `sprints/phase08_adaptive_learning_and_study_planning/SPRINT_8.9_WEEKLY_LEARNING_REPORT_AND_EXPLAINABLE_RECOMMENDATIONS.md` — 449 lines — 21871 bytes

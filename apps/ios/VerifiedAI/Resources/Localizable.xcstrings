@@ -13818,6 +13818,295 @@
           }
         }
       }
+    },
+    "micro_lesson.header.focus_opportunity": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Focus Opportunity"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Odak Noktası"
+          }
+        }
+      }
+    },
+    "micro_lesson.header.duration_badge": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "~%ds Micro-Lesson"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "~%d sn Mikro Ders"
+          }
+        }
+      }
+    },
+    "micro_lesson.beat1.tab_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Core Rule"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Temel Kural"
+          }
+        }
+      }
+    },
+    "micro_lesson.beat2.tab_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Contrast & Proof"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Karşıt Örnek"
+          }
+        }
+      }
+    },
+    "micro_lesson.beat2.common_trap_label": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Common Mix-Up"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yaygın Tuzak"
+          }
+        }
+      }
+    },
+    "micro_lesson.beat2.verified_step_label": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verified Step"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Doğrulanmış Adım"
+          }
+        }
+      }
+    },
+    "micro_lesson.beat2.counterexample_label": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quick Check with Numbers"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sayısal Kanıt"
+          }
+        }
+      }
+    },
+    "micro_lesson.beat3.tab_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quick Check"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hızlı Kontrol"
+          }
+        }
+      }
+    },
+    "micro_lesson.beat3.submit_cta": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check Answer"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yanıtı Kontrol Et"
+          }
+        }
+      }
+    },
+    "micro_lesson.beat3.success_feedback": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Great intuition! This rule is locked in."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Harika yaklaşım! Bu kural artık cepte."
+          }
+        }
+      }
+    },
+    "micro_lesson.beat3.retry_feedback": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Take another look at the numerical proof and try again."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sayısal kanıta tekrar göz atıp yeniden deneyebilirsin."
+          }
+        }
+      }
+    },
+    "micro_lesson.cta.back_to_twin": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continue Practice"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pratiğe Devam Et"
+          }
+        }
+      }
+    },
+    "micro_lesson.cta.next_beat": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Next Step"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sonraki Adım"
+          }
+        }
+      }
+    },
+    "micro_lesson.cta.prev_beat": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Previous Step"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Önceki Adım"
+          }
+        }
+      }
+    },
+    "micro_lesson.accessibility.drawer_label": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "3-step interactive micro-lesson drawer"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "3 adımlı etkileşimli mikro ders çekmecesi"
+          }
+        }
+      }
+    },
+    "micro_lesson.error.verification_unavailable": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This micro-lesson card is temporarily unavailable. Let's return to guided hints."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu mikro ders kartı şu anda doğrulanamıyor. Adım adım ipuçlarıyla devam edelim."
+          }
+        }
+      }
+    },
+    "micro_lesson.cta.open_lesson": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "90-Sec Micro-Lesson"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "90 sn Mikro Ders"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

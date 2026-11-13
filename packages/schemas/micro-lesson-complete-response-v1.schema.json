@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.verified-ai.com/micro-lesson-complete-response-v1.schema.json",
+  "title": "MicroLessonCompleteResponseV1",
+  "description": "Server-authoritative micro-lesson completion receipt contract (Sprint 8.6, INV-MICRO-004).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "completionId",
+    "cardId",
+    "mistakeCode",
+    "locale",
+    "quickCheckPassed",
+    "dwellTimeMs",
+    "completedAt",
+    "idempotentReplay",
+    "trainingEligible"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "completionId": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "cardId": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "mistakeCode": {
+      "type": "string",
+      "enum": [
+        "ALG_SIGN_FLIP_DISTRIBUTE",
+        "ALG_FRESHMAN_DREAM_POWER",
+        "ALG_FRACTION_ADD_DENOM",
+        "ALG_ROOT_LOST_BY_DIVISION",
+        "DOM_EXTRANEOUS_ROOT_DENOM",
+        "DOM_EVEN_ROOT_NEGATIVE",
+        "DOM_LOG_NON_POSITIVE",
+        "INEQ_NEGATIVE_MULT_NO_FLIP",
+        "INEQ_CROSS_MULT_VARIABLE",
+        "ABS_SINGLE_BRANCH_ONLY",
+        "FUNC_COMPOSITION_ORDER",
+        "TRIG_PERIOD_OMITTED",
+        "CALC_LIMIT_INDETERMINATE_SUB",
+        "CALC_CHAIN_RULE_OMITTED",
+        "CALC_PRODUCT_QUOTIENT_NAIVE",
+        "CALC_INTEGRAL_BOUNDS_SWAPPED",
+        "WORD_VARIABLE_MISASSIGNMENT"
+      ]
+    },
+    "locale": {
+      "type": "string",
+      "enum": ["tr-TR", "en-US"]
+    },
+    "quickCheckPassed": {
+      "type": "boolean"
+    },
+    "dwellTimeMs": {
+      "type": "integer",
+      "minimum": 1000,
+      "maximum": 600000
+    },
+    "completedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "idempotentReplay": {
+      "type": "boolean"
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    }
+  }
+}
