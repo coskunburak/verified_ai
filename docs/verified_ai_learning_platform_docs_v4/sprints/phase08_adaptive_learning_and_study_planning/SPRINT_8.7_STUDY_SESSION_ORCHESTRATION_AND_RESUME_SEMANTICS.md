@@ -85,9 +85,9 @@ The platform intentionally separates product semantics, learner state, AI-genera
 
 ### iOS files to review/create
 
-- `apps/ios/VerifiedLearning/Features/<Feature>/Domain/**`
-- `apps/ios/VerifiedLearning/Features/<Feature>/Data/**`
-- `apps/ios/VerifiedLearning/Features/<Feature>/Presentation/**`
+- `apps/ios/VerifiedAI/Features/<Feature>/Domain/**`
+- `apps/ios/VerifiedAI/Features/<Feature>/Data/**`
+- `apps/ios/VerifiedAI/Features/<Feature>/Presentation/**`
 - feature unit tests, accessibility coverage, and critical UI-flow tests.
 
 ## Data and persistence work
@@ -401,7 +401,7 @@ Codex must implement this sprint in small reviewable slices, re-reading the high
 ## 1. Sprint Metadata & Status
 - **Sprint ID:** `SPRINT_8.7`
 - **Canonical Title:** Study Session Orchestration, Offline-Safe Checkpoints & Interruption Recovery Semantics
-- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011)`
+- **Status:** `COMPLETED` (see `SPRINT_8.7_EXECUTION_REPORT.md` & `SPRINT_8.7_FILE_MANIFEST.md`)
 - **Primary Spec Reference:** `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md` (Screens 1, 2 & 5) & `architecture/13_ASYNC_PROCESSING_AND_JOB_ORCHESTRATION.md`
 
 ## 2. Strategic Learning OS Objective & User Value

@@ -1,0 +1,161 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.verified-ai.com/study-session-checkpoint-request-v1.schema.json",
+  "title": "StudySessionCheckpointRequestV1",
+  "description": "Idempotent study session step checkpoint request supporting offline-queued ordered replay (Sprint 8.7, INV-SESS-002..003).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sequence_number",
+    "step_index",
+    "step_type",
+    "step_status",
+    "reported_active_duration_seconds",
+    "offline_queued",
+    "client_recorded_at",
+    "idempotency_key",
+    "resume_snapshot"
+  ],
+  "$defs": {
+    "resumeSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "last_step_index",
+        "draft_step_notes",
+        "offline_queued_count"
+      ],
+      "properties": {
+        "last_step_index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 50
+        },
+        "draft_step_notes": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "offline_queued_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "active_sub_step": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 64
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ui_scroll_anchor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "mistake_code": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 64
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "properties": {
+    "sequence_number": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "step_index": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 50
+    },
+    "step_type": {
+      "type": "string",
+      "enum": [
+        "CONCEPT_PRIMER",
+        "MICRO_LESSON",
+        "SOLVE_ITEM",
+        "VERIFY_STEP",
+        "SPACED_RECALL",
+        "REFLECTION"
+      ]
+    },
+    "step_status": {
+      "type": "string",
+      "enum": [
+        "IN_PROGRESS",
+        "COMPLETED",
+        "SKIPPED"
+      ]
+    },
+    "reported_active_duration_seconds": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 14400
+    },
+    "offline_queued": {
+      "type": "boolean"
+    },
+    "client_recorded_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "idempotency_key": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9_.:-]+$"
+    },
+    "interruption_reason": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "USER_PAUSED",
+            "APP_BACKGROUNDED",
+            "NETWORK_LOST",
+            "PHONE_CALL",
+            "OS_TERMINATED",
+            "EXPIRED_INACTIVITY",
+            "SUPERSEDED_BY_NEW_SESSION"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "client_instance_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 128
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "resume_snapshot": {
+      "$ref": "#/$defs/resumeSnapshot"
+    }
+  }
+}

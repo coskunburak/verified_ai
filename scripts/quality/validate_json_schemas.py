@@ -89,6 +89,23 @@ def run_validation():
     micro_req_fixture_path = ROOT / "packages/schemas/fixtures/micro-lesson-complete-request-v1.valid.json"
     micro_res_fixture_path = ROOT / "packages/schemas/fixtures/micro-lesson-complete-response-v1.valid.json"
 
+    # Sprint 8.7 schemas & fixtures
+    ss_state_schema_path = ROOT / "packages/schemas/study-session-state-v1.schema.json"
+    ss_start_req_schema_path = ROOT / "packages/schemas/study-session-start-request-v1.schema.json"
+    ss_start_res_schema_path = ROOT / "packages/schemas/study-session-start-response-v1.schema.json"
+    ss_ckpt_req_schema_path = ROOT / "packages/schemas/study-session-checkpoint-request-v1.schema.json"
+    ss_ckpt_res_schema_path = ROOT / "packages/schemas/study-session-checkpoint-response-v1.schema.json"
+    ss_comp_req_schema_path = ROOT / "packages/schemas/study-session-complete-request-v1.schema.json"
+    ss_comp_res_schema_path = ROOT / "packages/schemas/study-session-complete-response-v1.schema.json"
+
+    ss_state_fixture_path = ROOT / "packages/schemas/fixtures/study-session-state-v1.valid.json"
+    ss_start_req_fixture_path = ROOT / "packages/schemas/fixtures/study-session-start-request-v1.valid.json"
+    ss_start_res_fixture_path = ROOT / "packages/schemas/fixtures/study-session-start-response-v1.valid.json"
+    ss_ckpt_req_fixture_path = ROOT / "packages/schemas/fixtures/study-session-checkpoint-request-v1.valid.json"
+    ss_ckpt_res_fixture_path = ROOT / "packages/schemas/fixtures/study-session-checkpoint-response-v1.valid.json"
+    ss_comp_req_fixture_path = ROOT / "packages/schemas/fixtures/study-session-complete-request-v1.valid.json"
+    ss_comp_res_fixture_path = ROOT / "packages/schemas/fixtures/study-session-complete-response-v1.valid.json"
+
     assert mistake_passport_schema_path.exists(), "Missing mistake-passport-v1.schema.json"
     assert mistake_passport_fixture_path.exists(), "Missing mistake-passport-v1.valid.json"
     assert counterexample_schema_path.exists(), "Missing counterexample-proof-card-v1.schema.json"
@@ -116,6 +133,24 @@ def run_validation():
     assert micro_card_en_fixture_path.exists(), "Missing micro-lesson-card-en-v1.valid.json"
     assert micro_req_fixture_path.exists(), "Missing micro-lesson-complete-request-v1.valid.json"
     assert micro_res_fixture_path.exists(), "Missing micro-lesson-complete-response-v1.valid.json"
+
+    for p in (
+        ss_state_schema_path,
+        ss_start_req_schema_path,
+        ss_start_res_schema_path,
+        ss_ckpt_req_schema_path,
+        ss_ckpt_res_schema_path,
+        ss_comp_req_schema_path,
+        ss_comp_res_schema_path,
+        ss_state_fixture_path,
+        ss_start_req_fixture_path,
+        ss_start_res_fixture_path,
+        ss_ckpt_req_fixture_path,
+        ss_ckpt_res_fixture_path,
+        ss_comp_req_fixture_path,
+        ss_comp_res_fixture_path,
+    ):
+        assert p.exists(), f"Missing Sprint 8.7 schema/fixture: {p}"
 
     mp_schema = json.loads(mistake_passport_schema_path.read_text(encoding="utf-8"))
     mp_fixture = json.loads(mistake_passport_fixture_path.read_text(encoding="utf-8"))
@@ -157,6 +192,38 @@ def run_validation():
     validate_schema_structure(ml_card_schema, "micro-lesson-card-v1.schema.json")
     validate_schema_structure(ml_req_schema, "micro-lesson-complete-request-v1.schema.json")
     validate_schema_structure(ml_res_schema, "micro-lesson-complete-response-v1.schema.json")
+
+    ss_state_schema = json.loads(ss_state_schema_path.read_text(encoding="utf-8"))
+    ss_start_req_schema = json.loads(ss_start_req_schema_path.read_text(encoding="utf-8"))
+    ss_start_res_schema = json.loads(ss_start_res_schema_path.read_text(encoding="utf-8"))
+    ss_ckpt_req_schema = json.loads(ss_ckpt_req_schema_path.read_text(encoding="utf-8"))
+    ss_ckpt_res_schema = json.loads(ss_ckpt_res_schema_path.read_text(encoding="utf-8"))
+    ss_comp_req_schema = json.loads(ss_comp_req_schema_path.read_text(encoding="utf-8"))
+    ss_comp_res_schema = json.loads(ss_comp_res_schema_path.read_text(encoding="utf-8"))
+
+    ss_state_fixture = json.loads(ss_state_fixture_path.read_text(encoding="utf-8"))
+    ss_start_req_fixture = json.loads(ss_start_req_fixture_path.read_text(encoding="utf-8"))
+    ss_start_res_fixture = json.loads(ss_start_res_fixture_path.read_text(encoding="utf-8"))
+    ss_ckpt_req_fixture = json.loads(ss_ckpt_req_fixture_path.read_text(encoding="utf-8"))
+    ss_ckpt_res_fixture = json.loads(ss_ckpt_res_fixture_path.read_text(encoding="utf-8"))
+    ss_comp_req_fixture = json.loads(ss_comp_req_fixture_path.read_text(encoding="utf-8"))
+    ss_comp_res_fixture = json.loads(ss_comp_res_fixture_path.read_text(encoding="utf-8"))
+
+    for schema_obj, schema_file in (
+        (ss_state_schema, "study-session-state-v1.schema.json"),
+        (ss_start_req_schema, "study-session-start-request-v1.schema.json"),
+        (ss_start_res_schema, "study-session-start-response-v1.schema.json"),
+        (ss_ckpt_req_schema, "study-session-checkpoint-request-v1.schema.json"),
+        (ss_ckpt_res_schema, "study-session-checkpoint-response-v1.schema.json"),
+        (ss_comp_req_schema, "study-session-complete-request-v1.schema.json"),
+        (ss_comp_res_schema, "study-session-complete-response-v1.schema.json"),
+    ):
+        validate_schema_structure(schema_obj, schema_file)
+        assert schema_obj.get("$schema") == "https://json-schema.org/draft/2020-12/schema", f"Not Draft 2020-12: {schema_file}"
+        assert schema_obj.get("additionalProperties") is False, f"Root additionalProperties!=false in {schema_file}"
+        for def_name, def_obj in schema_obj.get("$defs", {}).items():
+            if def_obj.get("type") == "object":
+                assert def_obj.get("additionalProperties") is False, f"$defs.{def_name} additionalProperties!=false in {schema_file}"
 
     sg_schema = json.loads(skill_graph_schema_path.read_text(encoding="utf-8"))
     sg_fixture = json.loads(skill_graph_fixture_path.read_text(encoding="utf-8"))
@@ -459,6 +526,59 @@ def run_validation():
         bad_ml_res = copy.deepcopy(ml_res_fixture)
         bad_ml_res["trainingEligible"] = True
         assert list(ml_res_val.iter_errors(bad_ml_res)), "Expected rejection when trainingEligible != false"
+
+        # Sprint 8.7 Draft 2020-12 positive & 6 negative mutation checks
+        ss_pairs = (
+            (ss_state_schema, ss_state_fixture, "study-session-state-v1"),
+            (ss_start_req_schema, ss_start_req_fixture, "study-session-start-request-v1"),
+            (ss_start_res_schema, ss_start_res_fixture, "study-session-start-response-v1"),
+            (ss_ckpt_req_schema, ss_ckpt_req_fixture, "study-session-checkpoint-request-v1"),
+            (ss_ckpt_res_schema, ss_ckpt_res_fixture, "study-session-checkpoint-response-v1"),
+            (ss_comp_req_schema, ss_comp_req_fixture, "study-session-complete-request-v1"),
+            (ss_comp_res_schema, ss_comp_res_fixture, "study-session-complete-response-v1"),
+        )
+        ss_vals = {}
+        for sc, fx, name in ss_pairs:
+            jsonschema.Draft202012Validator.check_schema(sc)
+            v = jsonschema.Draft202012Validator(sc, format_checker=jsonschema.FormatChecker())
+            v.validate(fx)
+            ss_vals[name] = v
+
+        # Negative mutation 1: training_eligible: true
+        bad_ss_1 = copy.deepcopy(ss_state_fixture)
+        bad_ss_1["training_eligible"] = True
+        assert list(ss_vals["study-session-state-v1"].iter_errors(bad_ss_1)), "Expected rejection when training_eligible=true"
+
+        # Negative mutation 2: reported_active_duration_seconds: 14401 / -1
+        bad_ss_2 = copy.deepcopy(ss_ckpt_req_fixture)
+        bad_ss_2["reported_active_duration_seconds"] = 14401
+        assert list(ss_vals["study-session-checkpoint-request-v1"].iter_errors(bad_ss_2)), "Expected rejection when reported_active_duration_seconds=14401"
+        bad_ss_2b = copy.deepcopy(ss_ckpt_req_fixture)
+        bad_ss_2b["reported_active_duration_seconds"] = -1
+        assert list(ss_vals["study-session-checkpoint-request-v1"].iter_errors(bad_ss_2b)), "Expected rejection when reported_active_duration_seconds=-1"
+
+        # Negative mutation 3: invalid state: TERMINATED
+        bad_ss_3 = copy.deepcopy(ss_state_fixture)
+        bad_ss_3["state"] = "TERMINATED"
+        assert list(ss_vals["study-session-state-v1"].iter_errors(bad_ss_3)), "Expected rejection when state=TERMINATED"
+
+        # Negative mutation 4: total_steps: 0 or 51
+        bad_ss_4a = copy.deepcopy(ss_start_req_fixture)
+        bad_ss_4a["total_steps"] = 0
+        assert list(ss_vals["study-session-start-request-v1"].iter_errors(bad_ss_4a)), "Expected rejection when total_steps=0"
+        bad_ss_4b = copy.deepcopy(ss_start_req_fixture)
+        bad_ss_4b["total_steps"] = 51
+        assert list(ss_vals["study-session-start-request-v1"].iter_errors(bad_ss_4b)), "Expected rejection when total_steps=51"
+
+        # Negative mutation 5: extra unexpected property
+        bad_ss_5 = copy.deepcopy(ss_ckpt_res_fixture)
+        bad_ss_5["unexpected_field"] = 123
+        assert list(ss_vals["study-session-checkpoint-response-v1"].iter_errors(bad_ss_5)), "Expected rejection on unexpected_field"
+
+        # Negative mutation 6: short idempotency_key
+        bad_ss_6 = copy.deepcopy(ss_ckpt_req_fixture)
+        bad_ss_6["idempotency_key"] = "short"
+        assert list(ss_vals["study-session-checkpoint-request-v1"].iter_errors(bad_ss_6)), "Expected rejection when idempotency_key < 16 chars"
     else:
         # Fallback pure-python verification of invariants
         assert sg_fixture["schemaVersion"] == "skill-graph-v1"
@@ -466,6 +586,84 @@ def run_validation():
         assert vt_fixture["trainingEligible"] is False
         assert sq_fixture["schemaVersion"] == "1.0.0"
         assert len(sq_fixture["items"]) <= 3
+
+    # Sprint 8.7 pure-python contract & negative-mutation checks (always verified)
+    def _validate_ss_object_keys(obj: dict, sc: dict, defs: dict) -> list[str]:
+        errs: list[str] = []
+        if sc.get("additionalProperties") is False:
+            extra = set(obj.keys()) - set(sc.get("properties", {}).keys())
+            if extra:
+                errs.append(f"Unexpected properties: {sorted(extra)}")
+        for req in sc.get("required", []):
+            if req not in obj:
+                errs.append(f"Missing required property: {req}")
+        for k, prop in sc.get("properties", {}).items():
+            if k not in obj:
+                continue
+            val = obj[k]
+            if "$ref" in prop and isinstance(val, dict):
+                ref_name = prop["$ref"].split("/")[-1]
+                errs.extend(_validate_ss_object_keys(val, defs[ref_name], defs))
+                continue
+            if "const" in prop and val is not prop["const"] and val != prop["const"]:
+                errs.append(f"{k} != {prop['const']}")
+            if prop.get("type") == "boolean" and not isinstance(val, bool):
+                errs.append(f"{k} not bool")
+            if prop.get("type") == "integer":
+                if isinstance(val, bool) or not isinstance(val, int):
+                    errs.append(f"{k} not int")
+                else:
+                    if "minimum" in prop and val < prop["minimum"]:
+                        errs.append(f"{k} < {prop['minimum']}")
+                    if "maximum" in prop and val > prop["maximum"]:
+                        errs.append(f"{k} > {prop['maximum']}")
+            if prop.get("type") == "string":
+                if not isinstance(val, str):
+                    errs.append(f"{k} not str")
+                else:
+                    if "enum" in prop and val not in prop["enum"]:
+                        errs.append(f"{k} invalid enum {val}")
+                    if "minLength" in prop and len(val) < prop["minLength"]:
+                        errs.append(f"{k} shorter than {prop['minLength']}")
+                    if "maxLength" in prop and len(val) > prop["maxLength"]:
+                        errs.append(f"{k} longer than {prop['maxLength']}")
+            if prop.get("type") == "array":
+                if not isinstance(val, list):
+                    errs.append(f"{k} not list")
+                else:
+                    if "minItems" in prop and len(val) < prop["minItems"]:
+                        errs.append(f"{k} fewer than minItems")
+                    if "maxItems" in prop and len(val) > prop["maxItems"]:
+                        errs.append(f"{k} more than maxItems")
+                    item_ref = prop.get("items", {}).get("$ref", "")
+                    if item_ref:
+                        ref_name = item_ref.split("/")[-1]
+                        for item in val:
+                            if isinstance(item, dict):
+                                errs.extend(_validate_ss_object_keys(item, defs[ref_name], defs))
+        return errs
+
+    for sc, fx, name in (
+        (ss_state_schema, ss_state_fixture, "study-session-state-v1"),
+        (ss_start_req_schema, ss_start_req_fixture, "study-session-start-request-v1"),
+        (ss_start_res_schema, ss_start_res_fixture, "study-session-start-response-v1"),
+        (ss_ckpt_req_schema, ss_ckpt_req_fixture, "study-session-checkpoint-request-v1"),
+        (ss_ckpt_res_schema, ss_ckpt_res_fixture, "study-session-checkpoint-response-v1"),
+        (ss_comp_req_schema, ss_comp_req_fixture, "study-session-complete-request-v1"),
+        (ss_comp_res_schema, ss_comp_res_fixture, "study-session-complete-response-v1"),
+    ):
+        errs = _validate_ss_object_keys(fx, sc, sc.get("$defs", {}))
+        assert not errs, f"Pure-python Sprint 8.7 validation failed for {name}: {errs}"
+
+    # Pure-python verification of the 6 required negative mutations
+    assert _validate_ss_object_keys({**ss_state_fixture, "training_eligible": True}, ss_state_schema, ss_state_schema.get("$defs", {})), "Expected training_eligible=True failure"
+    assert _validate_ss_object_keys({**ss_ckpt_req_fixture, "reported_active_duration_seconds": 14401}, ss_ckpt_req_schema, ss_ckpt_req_schema.get("$defs", {})), "Expected duration 14401 failure"
+    assert _validate_ss_object_keys({**ss_ckpt_req_fixture, "reported_active_duration_seconds": -1}, ss_ckpt_req_schema, ss_ckpt_req_schema.get("$defs", {})), "Expected duration -1 failure"
+    assert _validate_ss_object_keys({**ss_state_fixture, "state": "TERMINATED"}, ss_state_schema, ss_state_schema.get("$defs", {})), "Expected state=TERMINATED failure"
+    assert _validate_ss_object_keys({**ss_start_req_fixture, "total_steps": 0}, ss_start_req_schema, ss_start_req_schema.get("$defs", {})), "Expected total_steps=0 failure"
+    assert _validate_ss_object_keys({**ss_start_req_fixture, "total_steps": 51}, ss_start_req_schema, ss_start_req_schema.get("$defs", {})), "Expected total_steps=51 failure"
+    assert _validate_ss_object_keys({**ss_ckpt_res_fixture, "unexpected_field": 123}, ss_ckpt_res_schema, ss_ckpt_res_schema.get("$defs", {})), "Expected unexpected_field failure"
+    assert _validate_ss_object_keys({**ss_ckpt_req_fixture, "idempotency_key": "short"}, ss_ckpt_req_schema, ss_ckpt_req_schema.get("$defs", {})), "Expected short idempotency_key failure"
 
     # Sprint 8.6 pure-python schema & fixture invariants (always verified)
     for card_fx in (ml_card_tr_fixture, ml_card_en_fixture):
@@ -638,6 +836,36 @@ def run_validation():
             for code in ("200", "400", "401", "404", "422", "503"):
                 assert code in ml_post_op["responses"], f"HTTP {code} missing from completeMicroLesson in {spec_name}"
 
+            # Sprint 8.7 OpenAPI paths & component schemas
+            for schema_name in (
+                "StudySessionState",
+                "StudySessionStartRequest",
+                "StudySessionStartResponse",
+                "StudySessionCheckpointRequest",
+                "StudySessionCheckpointResponse",
+                "StudySessionPauseRequest",
+                "StudySessionResumeRequest",
+                "StudySessionCompleteRequest",
+                "StudySessionCompleteResponse",
+            ):
+                assert schema_name in spec_schemas, f"Missing Sprint 8.7 component schema {schema_name} in {spec_name}"
+
+            expected_ss_endpoints = {
+                "/v1/study-sessions/start": ("post", ("201", "400", "401", "409", "422", "503")),
+                "/v1/study-sessions/active": ("get", ("200", "401", "404", "503")),
+                "/v1/study-sessions/{sessionId}": ("get", ("200", "401", "404", "503")),
+                "/v1/study-sessions/{sessionId}/checkpoint": ("put", ("200", "400", "401", "404", "409", "422", "503")),
+                "/v1/study-sessions/{sessionId}/pause": ("post", ("200", "400", "401", "404", "409", "503")),
+                "/v1/study-sessions/{sessionId}/resume": ("post", ("200", "400", "401", "404", "409", "503")),
+                "/v1/study-sessions/{sessionId}/complete": ("post", ("200", "400", "401", "404", "409", "422", "503")),
+            }
+            for ss_path, (ss_method, expected_codes) in expected_ss_endpoints.items():
+                assert ss_path in spec_paths, f"Missing Sprint 8.7 path {ss_path} in {spec_name}"
+                ss_op = spec_paths[ss_path][ss_method]
+                assert ss_op["security"] == [{"bearerAuth": []}], f"Security bearerAuth missing on {ss_path} in {spec_name}"
+                for code in expected_codes:
+                    assert code in ss_op["responses"], f"HTTP {code} missing from {ss_path} in {spec_name}"
+
         assert openapi_path.read_bytes() == openapi_core_path.read_bytes(), "OpenAPI mirror public-api.yaml != verified-ai-core-api.yaml"
 
     # 3. iOS Localizable.xcstrings Key Verification
@@ -748,10 +976,24 @@ def run_validation():
         "micro_lesson.accessibility.drawer_label",
         "micro_lesson.error.verification_unavailable",
         "micro_lesson.cta.open_lesson",
+        "study_session.resume.banner_title",
+        "study_session.resume.banner_subtitle",
+        "study_session.resume.cta_continue",
+        "study_session.resume.cta_start_fresh",
+        "study_session.status.active",
+        "study_session.status.paused",
+        "study_session.status.completed",
+        "study_session.offline.saved_locally",
+        "study_session.offline.syncing",
+        "study_session.offline.synced",
+        "study_session.action.pause",
+        "study_session.action.complete",
+        "study_session.progress.step_format",
+        "study_session.complete.summary",
     ]
 
     banned_lexicon = re.compile(
-        r"\b(overdue|behind|fail|failure|failed|fail[s]?|punish|penalty|weak|weakness|weaknesses|poor|bad|stupid|dumb|incompetent|deficit|flaw|hopeless|remedial)\b",
+        r"\b(overdue|behind|fail|failure|failed|fail[s]?|punish|penalty|weak|weakness|weaknesses|poor|bad|stupid|dumb|incompetent|deficit|flaw|hopeless|remedial|abandoned|quitter|incomplete|streak)\b",
         re.IGNORECASE,
     )
 
@@ -762,11 +1004,11 @@ def run_validation():
             loc = entry.get("localizations", {}).get(lang, {}).get("stringUnit", {})
             val = loc.get("value")
             assert val and len(val.strip()) > 0, f"Missing {lang} translation for key: {key}"
-            if key.startswith("studyplan.rebalance.") or key.startswith("micro_lesson."):
+            if key.startswith("studyplan.rebalance.") or key.startswith("micro_lesson.") or key.startswith("study_session."):
                 m = banned_lexicon.search(val)
                 assert not m, f"Stigmatizing lexicon word '{m.group(0)}' in {key}[{lang}]: {val}"
 
-    print(f"PASS: Sprint 8.1..8.6 JSON schemas, negative mutations, OpenAPI 3.1 endpoints, and {len(required_keys)} EN/TR localizations verified.")
+    print(f"PASS: Sprint 8.1..8.7 JSON schemas, negative mutations, OpenAPI 3.1 endpoints, and {len(required_keys)} EN/TR localizations verified.")
 
 
 if __name__ == "__main__":

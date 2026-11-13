@@ -1,0 +1,15 @@
+# Sprint 8.7 Execution Report — Study Session Orchestration, Offline-Safe Checkpoints & Interruption Recovery
+
+- **Sprint:** `SPRINT_8.7`
+- **Status:** `COMPLETED`
+- **LLM / CAS Spend:** `$0.00` (100% deterministic server orchestration & local SQLite durability)
+- **Training Eligibility Flag:** `training_eligible = FALSE` enforced at PostgreSQL `CHECK` constraint, JSON Schema (`"const": false`), API DTO, and iOS SQLite layers (`ADR-006`).
+
+## Delivered Layers
+
+1. **PostgreSQL Persistence (`V050__study_session_orchestration.sql`)**: Created `study_sessions` and `study_session_checkpoints` with terminal/transition constraints, `training_eligible = FALSE` checks, FK `coach_session_id REFERENCES daily_coach_sessions(id) ON DELETE SET NULL`, unique idempotency & sequence constraints, and all 5 performance/expiry indexes.
+2. **Versioned Contracts & Localization**: Added 7 JSON Schema Draft 2020-12 files (`additionalProperties: false` across root and `$defs`), 7 deterministic synthetic fixtures (`00000000-0000-4000-8000-000000000870`..`879`), synchronized OpenAPI 3.1 endpoints & component schemas across `packages/contracts/openapi/public-api.yaml` and `packages/openapi/verified-ai-core-api.yaml`, added 14 supportive bilingual EN/TR keys under `study_session.*` in `apps/ios/VerifiedAI/Resources/Localizable.xcstrings`, and updated `scripts/quality/validate_json_schemas.py`.
+3. **Math-Verifier Determinism**: Verified zero modifications and zero LLM spend in `services/math-verifier/`.
+4. **Backend (`com.verifiedai.studyplan.session`)**: Implemented `StudySessionStateMachine` (`INV-SESS-001`..`003`), `StudySessionJdbcRepository`, `StudySessionOrchestrationService` (auto-pause/expiry, monotonic sequence guard, server active-duration clamping, BOLA isolation, kill-switch `503`), `StudySessionController` (`/v1/study-sessions` & `/api/v1/study-sessions`), `StudySessionPrivacyLifecycleContributor` (`@Order(29)`), updated `StudyPlanRebalancingService` Spring Boot 4 `ObjectProvider<ObjectMapper>`/`ObjectProvider<MeterRegistry>` wiring (with unit coverage in `StudyPlanRebalancingServiceTest`), and added 3 unit/service/controller test suites + Spring Modulith verification (`ModularityTest`, `ModularityTests`).
+5. **Native iOS (`apps/ios/VerifiedAI/Features/StudySession/`)**: Delivered `StudySessionModels.swift`, actor-isolated SQLite WAL `StudySessionOfflineCheckpointStore`, `@MainActor ObservableObject` `StudySessionCoordinator` (offline-first queue + `ScenePhase` interruption save + ordered reconnect replay), `StudySessionResumeView.swift` (`@ScaledMetric`, `ViewThatFits`, `@Environment(\.accessibilityReduceMotion)`), and 10 XCTests in `Sprint87StudySessionTests.swift`.
+6. **Acceptance Automation & Host Backend Verification**: Delivered executable 7-stage `scripts/quality/sprint_8_7_owner_acceptance.sh` supporting `--full`, `--quick`, and `--stage <1..7>`. Owner host `make test-api` run (`198` Surefire test classes against PostgreSQL/Flyway `V001..V050` + local MinIO Testcontainers): `1116` tests, `0` failures, `0` errors, `16` conditional env-gated skips (`VERIFIEDAI_MATH_WIRE`, `QWEN_OWNER_RUN`).

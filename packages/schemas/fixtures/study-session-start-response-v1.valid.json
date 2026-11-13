@@ -1,0 +1,68 @@
+{
+  "schema_version": "1.0.0",
+  "session": {
+    "schema_version": "1.0.0",
+    "session_id": "00000000-0000-4000-8000-000000000871",
+    "user_id": "00000000-0000-4000-8000-000000000870",
+    "coach_session_id": "00000000-0000-4000-8000-000000000872",
+    "source_context": "DAILY_COACH",
+    "topic_code": "math.calculus.derivative_chain_rule",
+    "locale": "tr-TR",
+    "state": "ACTIVE",
+    "total_steps": 3,
+    "current_step_index": 0,
+    "completed_steps_count": 0,
+    "last_sequence_number": 0,
+    "active_duration_seconds": 0,
+    "paused_duration_seconds": 0,
+    "client_instance_id": "ios-device-00000875",
+    "interruption_reason": null,
+    "step_blueprint": [
+      {
+        "step_index": 0,
+        "step_type": "CONCEPT_PRIMER",
+        "step_title": "Zincir Kuralı Temeli",
+        "estimated_seconds": 90,
+        "status": "IN_PROGRESS",
+        "target_skill_code": "CALC_CHAIN_RULE",
+        "problem_id": null
+      },
+      {
+        "step_index": 1,
+        "step_type": "SOLVE_ITEM",
+        "step_title": "Bileşke Fonksiyon Türevi",
+        "estimated_seconds": 180,
+        "status": "PENDING",
+        "target_skill_code": "CALC_CHAIN_RULE",
+        "problem_id": "prob-calc-0871"
+      },
+      {
+        "step_index": 2,
+        "step_type": "REFLECTION",
+        "step_title": "Kısa Değerlendirme",
+        "estimated_seconds": 60,
+        "status": "PENDING",
+        "target_skill_code": "CALC_CHAIN_RULE",
+        "problem_id": null
+      }
+    ],
+    "resume_snapshot": {
+      "last_step_index": 0,
+      "draft_step_notes": "",
+      "offline_queued_count": 0,
+      "active_sub_step": null,
+      "ui_scroll_anchor": "step-0-top",
+      "mistake_code": null
+    },
+    "started_at": "2026-11-13T07:00:00Z",
+    "last_checkpoint_at": null,
+    "paused_at": null,
+    "resumed_at": null,
+    "completed_at": null,
+    "expires_at": "2026-11-14T07:00:00Z",
+    "training_eligible": false
+  },
+  "auto_paused_prior_session_id": "00000000-0000-4000-8000-000000000873",
+  "expired_prior_session_id": null,
+  "training_eligible": false
+}

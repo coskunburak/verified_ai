@@ -3647,6 +3647,282 @@ paths:
         '503':
           $ref: '#/components/responses/ProblemServiceUnavailable'
 
+  /v1/study-sessions/start:
+    post:
+      operationId: startStudySession
+      tags:
+        - StudyPlan
+      summary: Start a server-orchestrated durable study session
+      description: >
+        Creates a new durable study session in ACTIVE state, auto-pausing any non-expired prior ACTIVE session
+        or marking an expired prior session ABANDONED (INV-SESS-001, INV-SESS-004).
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudySessionStartRequest'
+      responses:
+        '201':
+          description: Study session started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudySessionStartResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '409':
+          $ref: '#/components/responses/ProblemConflict'
+        '422':
+          $ref: '#/components/responses/ProblemUnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /v1/study-sessions/active:
+    get:
+      operationId: getActiveStudySession
+      tags:
+        - StudyPlan
+      summary: Fetch the authenticated learner's current resumable study session
+      description: >
+        Returns the latest non-expired ACTIVE or PAUSED study session owned by the authenticated learner,
+        expiring stale sessions into ABANDONED before responding (INV-SESS-001, INV-SESS-004).
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Resumable active or paused study session state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudySessionState'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /v1/study-sessions/{sessionId}:
+    get:
+      operationId: getStudySessionById
+      tags:
+        - StudyPlan
+      summary: Fetch study session state by session identifier
+      description: >
+        Returns authoritative study session state strictly scoped to the authenticated learner;
+        missing or cross-user sessions return indistinguishable 404 STUDY_SESSION_NOT_FOUND (INV-SESS-004).
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Durable study session state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudySessionState'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /v1/study-sessions/{sessionId}/checkpoint:
+    put:
+      operationId: checkpointStudySession
+      tags:
+        - StudyPlan
+      summary: Persist an idempotent monotonic study session checkpoint
+      description: >
+        Records offline-safe step progress with idempotency replay protection by (session_id, idempotency_key),
+        monotonic sequence_number guard, and server-authoritative active duration clamping (INV-SESS-002, INV-SESS-003).
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            minLength: 16
+            maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudySessionCheckpointRequest'
+      responses:
+        '200':
+          description: Checkpoint accepted, ignored as stale, or replayed idempotently
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudySessionCheckpointResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '409':
+          $ref: '#/components/responses/ProblemConflict'
+        '422':
+          $ref: '#/components/responses/ProblemUnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /v1/study-sessions/{sessionId}/pause:
+    post:
+      operationId: pauseStudySession
+      tags:
+        - StudyPlan
+      summary: Pause an active study session with interruption context
+      description: >
+        Transitions an ACTIVE study session to PAUSED, preserving latest resume snapshot and interruption reason (INV-SESS-001).
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudySessionPauseRequest'
+      responses:
+        '200':
+          description: Paused study session state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudySessionState'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '409':
+          $ref: '#/components/responses/ProblemConflict'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /v1/study-sessions/{sessionId}/resume:
+    post:
+      operationId: resumeStudySession
+      tags:
+        - StudyPlan
+      summary: Resume a paused study session safely across app interruptions
+      description: >
+        Transitions a PAUSED non-expired study session back to ACTIVE, accumulating paused duration seconds (INV-SESS-001).
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudySessionResumeRequest'
+      responses:
+        '200':
+          description: Resumed active study session state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudySessionState'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '409':
+          $ref: '#/components/responses/ProblemConflict'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /v1/study-sessions/{sessionId}/complete:
+    post:
+      operationId: completeStudySession
+      tags:
+        - StudyPlan
+      summary: Complete a study session idempotently
+      description: >
+        Transitions an ACTIVE or PAUSED study session to terminal COMPLETED state with server duration clamping
+        and idempotent replay support when retried with the same Idempotency-Key (INV-SESS-001, INV-SESS-003).
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            minLength: 16
+            maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudySessionCompleteRequest'
+      responses:
+        '200':
+          description: Completed study session summary response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudySessionCompleteResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '409':
+          $ref: '#/components/responses/ProblemConflict'
+        '422':
+          $ref: '#/components/responses/ProblemUnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -7982,3 +8258,120 @@ components:
 
     MicroLessonCompleteResponse:
       $ref: '../../schemas/micro-lesson-complete-response-v1.schema.json'
+
+    StudySessionState:
+      $ref: '../../schemas/study-session-state-v1.schema.json'
+
+    StudySessionStartRequest:
+      $ref: '../../schemas/study-session-start-request-v1.schema.json'
+
+    StudySessionStartResponse:
+      $ref: '../../schemas/study-session-start-response-v1.schema.json'
+
+    StudySessionCheckpointRequest:
+      $ref: '../../schemas/study-session-checkpoint-request-v1.schema.json'
+
+    StudySessionCheckpointResponse:
+      $ref: '../../schemas/study-session-checkpoint-response-v1.schema.json'
+
+    StudySessionCompleteRequest:
+      $ref: '../../schemas/study-session-complete-request-v1.schema.json'
+
+    StudySessionCompleteResponse:
+      $ref: '../../schemas/study-session-complete-response-v1.schema.json'
+
+    StudySessionPauseRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        interruption_reason:
+          type: string
+          enum:
+            - USER_PAUSED
+            - APP_BACKGROUNDED
+            - NETWORK_LOST
+            - PHONE_CALL
+            - OS_TERMINATED
+            - EXPIRED_INACTIVITY
+            - SUPERSEDED_BY_NEW_SESSION
+        reported_active_duration_seconds:
+          type: integer
+          minimum: 0
+          maximum: 14400
+        resume_snapshot:
+          type: object
+          additionalProperties: false
+          required:
+            - last_step_index
+            - draft_step_notes
+            - offline_queued_count
+          properties:
+            last_step_index:
+              type: integer
+              minimum: 0
+              maximum: 50
+            draft_step_notes:
+              type: string
+              maxLength: 2000
+            offline_queued_count:
+              type: integer
+              minimum: 0
+              maximum: 100
+            active_sub_step:
+              type:
+                - string
+                - 'null'
+              maxLength: 64
+            ui_scroll_anchor:
+              type:
+                - string
+                - 'null'
+              maxLength: 128
+            mistake_code:
+              type:
+                - string
+                - 'null'
+              maxLength: 64
+
+    StudySessionResumeRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        client_instance_id:
+          type: string
+          minLength: 4
+          maxLength: 128
+        resume_snapshot:
+          type: object
+          additionalProperties: false
+          required:
+            - last_step_index
+            - draft_step_notes
+            - offline_queued_count
+          properties:
+            last_step_index:
+              type: integer
+              minimum: 0
+              maximum: 50
+            draft_step_notes:
+              type: string
+              maxLength: 2000
+            offline_queued_count:
+              type: integer
+              minimum: 0
+              maximum: 100
+            active_sub_step:
+              type:
+                - string
+                - 'null'
+              maxLength: 64
+            ui_scroll_anchor:
+              type:
+                - string
+                - 'null'
+              maxLength: 128
+            mistake_code:
+              type:
+                - string
+                - 'null'
+              maxLength: 64

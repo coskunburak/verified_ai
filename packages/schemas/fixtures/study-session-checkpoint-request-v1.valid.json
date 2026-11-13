@@ -1,0 +1,20 @@
+{
+  "sequence_number": 2,
+  "step_index": 1,
+  "step_type": "SOLVE_ITEM",
+  "step_status": "IN_PROGRESS",
+  "reported_active_duration_seconds": 310,
+  "offline_queued": true,
+  "client_recorded_at": "2026-11-13T07:05:08Z",
+  "idempotency_key": "sess_00000871_step_01_seq_0002",
+  "interruption_reason": "NETWORK_LOST",
+  "client_instance_id": "ios-device-00000875",
+  "resume_snapshot": {
+    "last_step_index": 1,
+    "draft_step_notes": "d/dx [sin(3x^2)] = cos(3x^2) * 6x",
+    "offline_queued_count": 1,
+    "active_sub_step": "inner_derivative",
+    "ui_scroll_anchor": "step-1-workspace",
+    "mistake_code": null
+  }
+}

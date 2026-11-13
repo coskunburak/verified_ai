@@ -284,3 +284,7 @@ verifiedai:
     micro-lesson-max-dwell-ms: 600000
   studyplan:
     rebalancing-enabled: ${STUDYPLAN_REBALANCING_ENABLED:true}
+    session-orchestration-enabled: ${STUDYPLAN_SESSION_ORCHESTRATION_ENABLED:true}
+    session-inactivity-ttl-hours: 24
+    session-clock-skew-tolerance-seconds: 30
+    session-max-active-duration-seconds: 14400

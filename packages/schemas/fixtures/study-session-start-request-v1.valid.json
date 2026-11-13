@@ -1,0 +1,45 @@
+{
+  "coach_session_id": "00000000-0000-4000-8000-000000000872",
+  "source_context": "DAILY_COACH",
+  "topic_code": "math.calculus.derivative_chain_rule",
+  "locale": "tr-TR",
+  "total_steps": 3,
+  "client_instance_id": "ios-device-00000875",
+  "step_blueprint": [
+    {
+      "step_index": 0,
+      "step_type": "CONCEPT_PRIMER",
+      "step_title": "Zincir Kuralı Temeli",
+      "estimated_seconds": 90,
+      "status": "IN_PROGRESS",
+      "target_skill_code": "CALC_CHAIN_RULE",
+      "problem_id": null
+    },
+    {
+      "step_index": 1,
+      "step_type": "SOLVE_ITEM",
+      "step_title": "Bileşke Fonksiyon Türevi",
+      "estimated_seconds": 180,
+      "status": "PENDING",
+      "target_skill_code": "CALC_CHAIN_RULE",
+      "problem_id": "prob-calc-0871"
+    },
+    {
+      "step_index": 2,
+      "step_type": "REFLECTION",
+      "step_title": "Kısa Değerlendirme",
+      "estimated_seconds": 60,
+      "status": "PENDING",
+      "target_skill_code": "CALC_CHAIN_RULE",
+      "problem_id": null
+    }
+  ],
+  "resume_snapshot": {
+    "last_step_index": 0,
+    "draft_step_notes": "",
+    "offline_queued_count": 0,
+    "active_sub_step": null,
+    "ui_scroll_anchor": "step-0-top",
+    "mistake_code": null
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "final_step_index": 2,
+  "reported_active_duration_seconds": 540,
+  "idempotency_key": "sess_00000871_complete_v1_0003",
+  "completion_notes": "Completed all steps offline and synced cleanly.",
+  "resume_snapshot": {
+    "last_step_index": 2,
+    "draft_step_notes": "Verified final derivative 6x*cos(3x^2).",
+    "offline_queued_count": 0,
+    "active_sub_step": "reflection_done",
+    "ui_scroll_anchor": "step-2-summary",
+    "mistake_code": null
+  }
+}

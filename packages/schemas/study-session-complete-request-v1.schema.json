@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.verified-ai.com/study-session-complete-request-v1.schema.json",
+  "title": "StudySessionCompleteRequestV1",
+  "description": "Idempotent study session completion request (Sprint 8.7, INV-SESS-001, INV-SESS-003).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "final_step_index",
+    "reported_active_duration_seconds",
+    "idempotency_key"
+  ],
+  "$defs": {
+    "resumeSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "last_step_index",
+        "draft_step_notes",
+        "offline_queued_count"
+      ],
+      "properties": {
+        "last_step_index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 50
+        },
+        "draft_step_notes": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "offline_queued_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "active_sub_step": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 64
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ui_scroll_anchor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "mistake_code": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 64
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "properties": {
+    "final_step_index": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 50
+    },
+    "reported_active_duration_seconds": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 14400
+    },
+    "idempotency_key": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9_.:-]+$"
+    },
+    "completion_notes": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 500
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "resume_snapshot": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/resumeSnapshot"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+}

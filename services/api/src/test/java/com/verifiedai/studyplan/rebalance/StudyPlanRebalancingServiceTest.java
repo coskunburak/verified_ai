@@ -16,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.http.HttpStatus;
 
 import java.math.BigDecimal;
@@ -224,5 +225,24 @@ class StudyPlanRebalancingServiceTest {
         ApiProblemException ex = assertThrows(ApiProblemException.class, () -> disabledService.executeRebalance(userA, req));
         assertEquals(HttpStatus.CONFLICT, ex.status());
         assertEquals(ApiErrorCode.STUDY_PLAN_REBALANCING_DISABLED, ex.code());
+    }
+
+    @Test
+    @DisplayName("Spring Boot 4 wiring: StudyPlanRebalancingService initializes without a Jackson 2 ObjectMapper bean")
+    void testSpringWiringWithoutJackson2ObjectMapperBean() {
+        try (AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext()) {
+            ctx.registerBean(RebalanceEventRepository.class, () -> rebalanceEventRepository);
+            ctx.registerBean(DailyCoachSessionRepository.class, () -> coachSessionRepository);
+            ctx.registerBean(DailyCoachTaskRepository.class, () -> coachTaskRepository);
+            ctx.registerBean(SpacedReviewQueueRepository.class, () -> spacedReviewRepository);
+            ctx.registerBean(MissedDayRecoveryPolicy.class, MissedDayRecoveryPolicy::new);
+            ctx.registerBean(Clock.class, () -> fixedClock);
+            ctx.registerBean(StudyPlanRebalancingService.class);
+            ctx.refresh();
+
+            StudyPlanRebalancingService resolved = ctx.getBean(StudyPlanRebalancingService.class);
+            assertNotNull(resolved);
+            assertNotNull(resolved.getRecoveryStatus(userA, today));
+        }
     }
 }

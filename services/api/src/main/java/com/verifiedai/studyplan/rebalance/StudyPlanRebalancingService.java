@@ -18,6 +18,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -57,6 +58,32 @@ public class StudyPlanRebalancingService {
     private final Counter overloadPruningCounter;
 
     @Autowired
+    StudyPlanRebalancingService(
+            RebalanceEventRepository rebalanceEventRepository,
+            DailyCoachSessionRepository coachSessionRepository,
+            DailyCoachTaskRepository coachTaskRepository,
+            SpacedReviewQueueRepository spacedReviewRepository,
+            MissedDayRecoveryPolicy policy,
+            ApplicationEventPublisher eventPublisher,
+            ObjectProvider<MeterRegistry> meterRegistryProvider,
+            ObjectProvider<ObjectMapper> objectMapperProvider,
+            Clock clock,
+            @Value("${verifiedai.studyplan.rebalancing-enabled:true}") boolean rebalancingEnabled
+    ) {
+        this(
+                rebalanceEventRepository,
+                coachSessionRepository,
+                coachTaskRepository,
+                spacedReviewRepository,
+                policy,
+                eventPublisher,
+                meterRegistryProvider.getIfAvailable(SimpleMeterRegistry::new),
+                objectMapperProvider.getIfAvailable(() -> new ObjectMapper().findAndRegisterModules()),
+                clock,
+                rebalancingEnabled
+        );
+    }
+
     public StudyPlanRebalancingService(
             RebalanceEventRepository rebalanceEventRepository,
             DailyCoachSessionRepository coachSessionRepository,
@@ -67,7 +94,7 @@ public class StudyPlanRebalancingService {
             MeterRegistry meterRegistry,
             ObjectMapper objectMapper,
             Clock clock,
-            @Value("${verifiedai.studyplan.rebalancing-enabled:true}") boolean rebalancingEnabled
+            boolean rebalancingEnabled
     ) {
         this.rebalanceEventRepository = Objects.requireNonNull(rebalanceEventRepository, "rebalanceEventRepository cannot be null");
         this.coachSessionRepository = Objects.requireNonNull(coachSessionRepository, "coachSessionRepository cannot be null");

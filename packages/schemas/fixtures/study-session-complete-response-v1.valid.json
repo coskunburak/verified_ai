@@ -1,0 +1,70 @@
+{
+  "schema_version": "1.0.0",
+  "session": {
+    "schema_version": "1.0.0",
+    "session_id": "00000000-0000-4000-8000-000000000871",
+    "user_id": "00000000-0000-4000-8000-000000000870",
+    "coach_session_id": "00000000-0000-4000-8000-000000000872",
+    "source_context": "DAILY_COACH",
+    "topic_code": "math.calculus.derivative_chain_rule",
+    "locale": "tr-TR",
+    "state": "COMPLETED",
+    "total_steps": 3,
+    "current_step_index": 2,
+    "completed_steps_count": 3,
+    "last_sequence_number": 3,
+    "active_duration_seconds": 540,
+    "paused_duration_seconds": 0,
+    "client_instance_id": "ios-device-00000875",
+    "interruption_reason": null,
+    "step_blueprint": [
+      {
+        "step_index": 0,
+        "step_type": "CONCEPT_PRIMER",
+        "step_title": "Zincir Kuralı Temeli",
+        "estimated_seconds": 90,
+        "status": "COMPLETED",
+        "target_skill_code": "CALC_CHAIN_RULE",
+        "problem_id": null
+      },
+      {
+        "step_index": 1,
+        "step_type": "SOLVE_ITEM",
+        "step_title": "Bileşke Fonksiyon Türevi",
+        "estimated_seconds": 180,
+        "status": "COMPLETED",
+        "target_skill_code": "CALC_CHAIN_RULE",
+        "problem_id": "prob-calc-0871"
+      },
+      {
+        "step_index": 2,
+        "step_type": "REFLECTION",
+        "step_title": "Kısa Değerlendirme",
+        "estimated_seconds": 60,
+        "status": "COMPLETED",
+        "target_skill_code": "CALC_CHAIN_RULE",
+        "problem_id": null
+      }
+    ],
+    "resume_snapshot": {
+      "last_step_index": 2,
+      "draft_step_notes": "Verified final derivative 6x*cos(3x^2).",
+      "offline_queued_count": 0,
+      "active_sub_step": "reflection_done",
+      "ui_scroll_anchor": "step-2-summary",
+      "mistake_code": null
+    },
+    "started_at": "2026-11-13T07:00:00Z",
+    "last_checkpoint_at": "2026-11-13T07:09:00Z",
+    "paused_at": null,
+    "resumed_at": null,
+    "completed_at": "2026-11-13T07:09:00Z",
+    "expires_at": "2026-11-14T07:09:00Z",
+    "training_eligible": false
+  },
+  "accepted_active_duration_seconds": 540,
+  "duration_clamped": false,
+  "idempotent_replay": false,
+  "supportive_summary_key": "study_session.complete.summary",
+  "training_eligible": false
+}
