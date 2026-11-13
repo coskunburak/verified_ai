@@ -389,7 +389,7 @@ Codex must implement this sprint in small reviewable slices, re-reading the high
 ## 1. Sprint Metadata & Status
 - **Sprint ID:** `SPRINT_8.9`
 - **Canonical Title:** Weekly Learning Digest & Privacy-Safe 1-Click Tutor/Parent PDF Share Packet
-- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011)`
+- **Status:** `COMPLETED` (see `SPRINT_8.9_EXECUTION_REPORT.md` & `SPRINT_8.9_FILE_MANIFEST.md`)
 - **Primary Spec Reference:** `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md` (Screen 11), `security/89_STUDENT_COACH_PRIVACY_MINOR_SAFETY_AND_TEACHER_ACCESS.md`, and `product/81_LEARNING_OS_PRODUCT_VISION_AND_POSITIONING.md` (`H-06`)
 
 ## 2. Strategic Learning OS Objective & User Value
@@ -408,9 +408,9 @@ Generates the learner's deterministic **Weekly Verified Progress Report** and en
 ## 6. Python Math Verifier Impact
 - None (`100%` deterministic SQL/Java aggregation).
 
-## 7. Database Migration & Persistence Contract (`PLANNED V045`)
-- **Migration File:** `services/api/src/main/resources/db/migration/platform/V045__weekly_learner_digests.sql` *(PLANNED)*
-- **Table:** `weekly_learner_digests` (`id`, `user_id`, `week_iso`, `verified_attempts_count`, `independent_twins_passed`, `conquered_traps_delta`, `digest_payload_json`, `created_at`). Unique constraint on `(user_id, week_iso)`.
+## 7. Database Migration & Persistence Contract (`SHIPPED V052`)
+- **Migration File:** `services/api/src/main/resources/db/migration/platform/V052__weekly_learner_digests.sql` *(SHIPPED)*
+- **Table:** `weekly_learner_digests` (`digest_id`, `user_id`, `week_iso`, `week_start_date`, `week_end_date`, `locale`, `status`, `solved_attempts_count`, `independent_twins_solved_count`, `study_minutes`, `active_days_count`, `digest_payload_json`, `explainable_recommendations_json`, `training_eligible` `BOOLEAN NOT NULL DEFAULT FALSE CHECK (training_eligible = FALSE)`, `generated_at`, `updated_at`). Unique constraint on `(user_id, week_iso)`.
 
 ## 8. REST API Contracts (`CNT-LOS-09`)
 - `GET /v1/reports/weekly/{weekIso}` (`weekly-digest-v1`).

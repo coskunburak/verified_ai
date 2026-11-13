@@ -105,6 +105,7 @@ final class AttemptAnalysisUITests: XCTestCase {
     private func enterSteps(_ text: String, in editor: XCUIElement, app: XCUIApplication) {
         XCTAssertTrue(editor.waitForExistence(timeout: 5))
         XCTAssertEqual(editor.value as? String, "", "A fresh fixture scope must not restore another test's draft")
+        for _ in 0..<5 { if editor.isHittable { break }; app.swipeUp() }
         let editable = XCTNSPredicateExpectation(predicate: NSPredicate(format: "enabled == true AND hittable == true"), object: editor)
         XCTAssertEqual(XCTWaiter.wait(for: [editable], timeout: 5), .completed)
         editor.tap()
@@ -166,15 +167,15 @@ extension AttemptAnalysisUITests {
         }
         tap(solve, app); tap(app.buttons["attempt.open"], app)
         let editor = app.textViews["attempt.editor"]
-        tap(editor, app); editor.typeText("x=4")
+        enterSteps("x=4", in: editor, app: app)
         tap(app.buttons["attempt.keyboard.done"], app)
         for _ in 0..<6 { if app.buttons["attempt.work.start"].isHittable { break }; app.swipeDown() }
         tap(app.buttons["attempt.work.start"], app)
         for _ in 0..<8 { if app.buttons["attempt.submit"].isHittable { break }; app.swipeUp() }
         tap(app.buttons["attempt.submit"], app)
         let saved = app.descendants(matching: .any)["attempt.work.saved"].firstMatch
-        for _ in 0..<8 { if saved.isHittable { break }; app.swipeUp() }
         XCTAssertTrue(saved.waitForExistence(timeout: 5))
+        for _ in 0..<8 { if saved.isHittable { break }; app.swipeUp() }
         XCTAssertTrue(saved.label.contains(turkish ? "değerlendirilmedi" : "not assessed"))
         XCTAssertFalse(app.staticTexts["VERIFIED"].exists)
         XCTAssertFalse(app.textViews["attempt.editor"].exists, "Saved structured evidence must not reopen an empty manual composer")
@@ -183,15 +184,15 @@ extension AttemptAnalysisUITests {
             let action = app.buttons["attempt.evaluation.action"]
             tap(action, app)
             let final = app.descendants(matching: .any)["attempt.evaluation.final"].firstMatch
-            for _ in 0..<8 { if final.isHittable { break }; app.swipeUp() }
             XCTAssertTrue(final.waitForExistence(timeout: 5))
+            for _ in 0..<8 { if final.isHittable { break }; app.swipeUp() }
             XCTAssertTrue(final.label.contains(turkish ? "verilmedi" : "not provided"))
             XCTAssertTrue(app.descendants(matching: .any)["attempt.evaluation.step.1.UNCERTAIN"].exists)
             if classify {
                 tap(app.buttons["attempt.classification.action"], app)
                 let explanation = app.staticTexts["attempt.classification.explanation"]
-                for _ in 0..<8 { if explanation.isHittable { break }; app.swipeUp() }
                 XCTAssertTrue(explanation.waitForExistence(timeout: 5))
+                for _ in 0..<8 { if explanation.isHittable { break }; app.swipeUp() }
                 XCTAssertTrue(explanation.label.contains(turkish ? "güvenilir" : "reliably"))
                 XCTAssertEqual(app.staticTexts.matching(identifier: "attempt.classification.explanation").count, 1)
                 XCTAssertFalse(app.buttons["attempt.classification.action"].exists)

@@ -194,6 +194,7 @@ final class Sprint87StudySessionTests: XCTestCase {
         XCTAssertEqual(coordinator.completionSummaryKey, "study_session.complete.summary")
     }
 
+    @MainActor
     func testResumeAndCoordinatorViewsUseOnlyNonStigmatizingCopy() {
         let session = sampleSession(userId: userA, state: .paused)
         XCTAssertFalse(session.trainingEligible)

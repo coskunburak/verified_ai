@@ -111,26 +111,43 @@ struct AttemptMistakeResultsView: View {
     let value: AttemptMistakeView
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Label("attempt.classification.title", systemImage: "text.magnifyingglass").font(.headline)
-            if value.historical { Text("attempt.evaluation.historical") }
+            Label("attempt.classification.title", systemImage: "text.magnifyingglass")
+                .font(.headline)
+                .fixedSize(horizontal: false, vertical: true)
+            if value.historical {
+                Text("attempt.evaluation.historical")
+                    .fixedSize(horizontal: false, vertical: true)
+            }
             if let result = value.classification {
                 let decision = result.decision
                 if let category = decision.category {
-                    Text(LocalizedStringKey("attempt.classification.category." + category.rawValue)).font(.headline)
+                    Text(LocalizedStringKey("attempt.classification.category." + category.rawValue))
+                        .font(.headline)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 if let index = result.firstWrongStepIndex {
                     HStack { Text("attempt.classification.firstStep"); Text(verbatim: String(index)) }
                         .accessibilityElement(children: .combine)
                 }
                 Text(LocalizedStringKey(decision.explanationKey))
+                    .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("attempt.classification.explanation")
                 Text(LocalizedStringKey("attempt.classification.strength." + decision.evidenceStrength.rawValue))
+                    .fixedSize(horizontal: false, vertical: true)
                 Text(LocalizedStringKey("attempt.classification.review." + decision.reviewStatus.rawValue))
-                if let skill = decision.skillId { Text(LocalizedStringKey("attempt.classification.skill." + skill)) }
+                    .fixedSize(horizontal: false, vertical: true)
+                if let skill = decision.skillId {
+                    Text(LocalizedStringKey("attempt.classification.skill." + skill))
+                        .fixedSize(horizontal: false, vertical: true)
+                }
                 if decision.status == .signature, let code = decision.code {
                     Text(LocalizedStringKey("attempt.classification.correction." + code))
+                        .fixedSize(horizontal: false, vertical: true)
                 }
-            } else { Text("attempt.classification.NOT_CLASSIFIED") }
+            } else {
+                Text("attempt.classification.NOT_CLASSIFIED")
+                    .fixedSize(horizontal: false, vertical: true)
+            }
         }.padding().foregroundStyle(ColorTokens.textPrimary)
             .background(ColorTokens.surface, in: RoundedRectangle(cornerRadius: 12))
             .accessibilityElement(children: .contain)

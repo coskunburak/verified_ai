@@ -186,7 +186,22 @@ public enum RebalanceSQLiteCacheError: Error, Sendable {
 }
 
 public actor RebalanceSQLiteCache: RebalanceCacheStoreProtocol {
-    private var db: OpaquePointer?
+    private final class Connection {
+        let handle: OpaquePointer?
+
+        init(handle: OpaquePointer?) {
+            self.handle = handle
+        }
+
+        deinit {
+            if let handle {
+                sqlite3_close(handle)
+            }
+        }
+    }
+
+    private let connection: Connection
+    private var db: OpaquePointer? { connection.handle }
     private let databaseURL: URL
     private let encoder: JSONEncoder
     private let decoder: JSONDecoder
@@ -218,7 +233,7 @@ public actor RebalanceSQLiteCache: RebalanceCacheStoreProtocol {
             if let handle { sqlite3_close(handle) }
             throw RebalanceSQLiteCacheError.openError(msg)
         }
-        self.db = openedDB
+        self.connection = Connection(handle: openedDB)
         try Self.executeSQL(on: openedDB, sql: "PRAGMA journal_mode = WAL;")
         try Self.executeSQL(on: openedDB, sql: """
             CREATE TABLE IF NOT EXISTS rebalance_recovery_status (
@@ -236,12 +251,6 @@ public actor RebalanceSQLiteCache: RebalanceCacheStoreProtocol {
                 updated_at REAL NOT NULL
             );
             """)
-    }
-
-    deinit {
-        if let db {
-            sqlite3_close(db)
-        }
     }
 
     public func saveRecoveryStatus(_ status: StudyPlanRecoveryStatus, for userId: UUID) async {

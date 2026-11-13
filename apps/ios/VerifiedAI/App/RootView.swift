@@ -10,6 +10,7 @@ struct RootView: View {
     @State private var signInViewModel: SignInViewModel
     @State private var onboardingViewModel: OnboardingViewModel
     @State private var accountSettingsViewModel: AccountSettingsViewModel
+    @StateObject private var weeklyProgressReportViewModel: WeeklyProgressReportViewModel
     @State private var entitlementViewModel: EntitlementViewModel
     @State private var paywallViewModel: PaywallViewModel
     @State private var problemCaptureViewModel: ProblemCaptureViewModel
@@ -39,6 +40,9 @@ struct RootView: View {
             sessionStore: dependencies.authenticationSessionStore,
             networkMonitor: dependencies.networkMonitor,
             logger: dependencies.logger
+        ))
+        _weeklyProgressReportViewModel = StateObject(wrappedValue: WeeklyProgressReportViewModel(
+            service: dependencies.weeklyReportAPI
         ))
         _entitlementViewModel = State(initialValue: EntitlementViewModel(
             entitlementAPI: dependencies.entitlementAPI,
@@ -145,6 +149,7 @@ struct RootView: View {
             NavigationStack {
                 AccountSettingsView(
                     viewModel: accountSettingsViewModel,
+                    weeklyReportViewModel: weeklyProgressReportViewModel,
                     onAccountDeleted: handleAccountDeleted
                 )
                 .toolbar {
@@ -158,6 +163,7 @@ struct RootView: View {
         }
         .task(id: session.sessionId) {
             accountSettingsViewModel.reset()
+            weeklyProgressReportViewModel.reset()
             dependencies.storeKitTransactionObserver.start()
             await onboardingViewModel.bootstrap(userId: session.userId)
         }
@@ -292,6 +298,7 @@ struct RootView: View {
         isProblemCapturePresented = false
         onboardingViewModel.reset()
         accountSettingsViewModel.reset()
+        weeklyProgressReportViewModel.reset()
         entitlementViewModel.reset()
         paywallViewModel.reset()
         problemAssetUploadViewModel.reset()

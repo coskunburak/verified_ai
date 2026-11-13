@@ -14838,6 +14838,272 @@
           }
         }
       }
+    },
+    "weekly.report.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Weekly Learning Report" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Haftalık Öğrenme Raporu" } }
+      }
+    },
+    "weekly.report.entry.section": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Progress & Sharing" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "İlerleme ve Paylaşım" } }
+      }
+    },
+    "weekly.report.entry.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Weekly Progress Report" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Haftalık İlerleme Raporu" } }
+      }
+    },
+    "weekly.report.entry.subtitle": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Review wins, explainable recommendations, and create a privacy-safe tutor or parent PDF packet." } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Başarıları ve açıklanabilir önerileri inceleyin; eğitmen veya veli için gizlilik korumalı PDF özeti hazırlayın." } }
+      }
+    },
+    "weekly.report.previous_week": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Previous week" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Önceki hafta" } }
+      }
+    },
+    "weekly.report.next_week": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Next week" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Sonraki hafta" } }
+      }
+    },
+    "weekly.report.loading": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Preparing your weekly summary…" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Haftalık özetiniz hazırlanıyor…" } }
+      }
+    },
+    "weekly.report.retry": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Retry" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Yeniden Dene" } }
+      }
+    },
+    "weekly.report.close": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Close" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Kapat" } }
+      }
+    },
+    "weekly.report.empty_week.badge": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Fresh Start" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Taze Başlangıç" } }
+      }
+    },
+    "weekly.report.section.summary": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "WEEKLY SUMMARY" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "HAFTALIK ÖZET" } }
+      }
+    },
+    "weekly.report.section.wins": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Verified Wins" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Doğrulanmış Başarılar" } }
+      }
+    },
+    "weekly.report.section.momentum": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Consistency & Mastery Momentum" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Çalışma Ritmi ve Ustalık İvmesi" } }
+      }
+    },
+    "weekly.report.section.mistakes": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Focus Patterns" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Odak Temaları" } }
+      }
+    },
+    "weekly.report.section.recommendations": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Explainable Next Targets" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Açıklanabilir Sonraki Hedefler" } }
+      }
+    },
+    "weekly.report.kpi.solved": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Verified Attempts" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Doğrulanan Deneme" } }
+      }
+    },
+    "weekly.report.kpi.independent_twins": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Independent Twins" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Bağımsız İkizler" } }
+      }
+    },
+    "weekly.report.kpi.study_minutes": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Study Minutes" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Çalışma Dakikası" } }
+      }
+    },
+    "weekly.report.kpi.active_days": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Active Days" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Aktif Gün" } }
+      }
+    },
+    "weekly.recommendation.why_button": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Why this target?" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Neden bu hedef?" } }
+      }
+    },
+    "weekly.mistake.none": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "No repeated slip patterns recorded this week — smooth verification habits!" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Bu hafta tekrarlayan dikkat teması kaydedilmedi — doğrulama adımlarınız düzenli ilerliyor." } }
+      }
+    },
+    "weekly.mistake.trend.improving": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Improving" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Gelişiyor" } }
+      }
+    },
+    "weekly.mistake.trend.stable": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Steady" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Dengeli" } }
+      }
+    },
+    "weekly.mistake.trend.gentle_focus": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Needs Gentle Focus" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Nazik Odak Önerisi" } }
+      }
+    },
+    "weekly.share.card.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Share 1-Page Tutor or Parent Summary" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "1 Sayfalık Eğitmen veya Veli Özeti Paylaş" } }
+      }
+    },
+    "weekly.share.card.subtitle": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Generated locally on your device. Excludes tutor transcripts, photos, and personal identifiers." } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Cihazınızda yerel olarak üretilir. Eğitmen sohbetlerini, fotoğrafları ve kişisel kimlik bilgilerini içermez." } }
+      }
+    },
+    "weekly.share.button.preview": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Preview Share Scope & PDF" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Paylaşım Kapsamını ve PDF'i Önizle" } }
+      }
+    },
+    "weekly.share.sheet.nav_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Privacy-Safe Share Packet" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Gizlilik Korumalı Paylaşım" } }
+      }
+    },
+    "weekly.share.sheet.heading": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Choose Who Receives Your Summary" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Özetin Kiminle Paylaşılacağını Seçin" } }
+      }
+    },
+    "weekly.share.recipient_role": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Recipient" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Alıcı" } }
+      }
+    },
+    "weekly.share.role.tutor": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Tutor" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Eğitmen" } }
+      }
+    },
+    "weekly.share.role.parent": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Parent" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Veli" } }
+      }
+    },
+    "weekly.share.alias.placeholder": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Optional display initials (e.g. Deniz A.)" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "İsteğe bağlı görünen ad (ör. Deniz A.)" } }
+      }
+    },
+    "weekly.share.button.generate_pdf": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Create 1-Page A4 PDF" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "1 Sayfalık A4 PDF Oluştur" } }
+      }
+    },
+    "weekly.share.button.share_sheet": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Share PDF Packet" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "PDF Paketini Paylaş" } }
+      }
+    },
+    "weekly.privacy.attestation.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Privacy Boundary (G-PRIV-03)" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Gizlilik Sınırı (G-PRIV-03)" } }
+      }
+    },
+    "weekly.privacy.included_summary": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Includes mastery percentages, recurring themes, and explained next targets." } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Beceri yüzdelerini, odak temalarını ve açıklanabilir sonraki hedefleri içerir." } }
+      }
+    },
+    "weekly.privacy.excluded_raw": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Excludes tutor messages, photos, email addresses, and session clock times." } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Eğitmen mesajlarını, fotoğrafları, e-posta adreslerini ve saat kayıtlarını dışlar." } }
+      }
     }
   },
   "version": "1.0"

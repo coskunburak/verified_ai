@@ -104,7 +104,7 @@ final class Sprint84CoachHubTests: XCTestCase {
         XCTAssertTrue(viewModel.isOfflineBannerVisible)
         XCTAssertEqual(viewModel.summary?.isColdStart, true)
         XCTAssertEqual(viewModel.summary?.budgetMinutes, 15)
-        XCTAssertEqual(viewModel.summary?.tasks.count, 1)
+        XCTAssertEqual(viewModel.summary?.tasks.count, 3)
         XCTAssertNotNil(viewModel.summary?.coldStartDemo)
         XCTAssertFalse(viewModel.summary?.coldStartDemo?.samplePromptLatex.isEmpty ?? true)
     }

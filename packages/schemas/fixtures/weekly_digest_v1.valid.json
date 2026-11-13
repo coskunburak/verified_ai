@@ -1,0 +1,200 @@
+{
+  "schemaVersion": "weekly-digest-v1",
+  "digestId": "00000000-0000-4000-8000-000000000891",
+  "userId": "00000000-0000-4000-8000-000000000890",
+  "weekIso": "2026-W46",
+  "weekStartDate": "2026-11-09",
+  "weekEndDate": "2026-11-15",
+  "locale": "en",
+  "status": "GENERATED",
+  "training_eligible": false,
+  "generatedAt": "2026-11-13T10:30:00Z",
+  "executiveSummary": {
+    "headline": "Steady independent momentum across linear and quadratic foundations",
+    "encouragementNote": "You practiced across 4 days this week and verified 3 twin problems independently.",
+    "solvedAttemptsCount": 9,
+    "independentTwinsSolvedCount": 3,
+    "studyMinutes": 74,
+    "activeDaysCount": 4,
+    "independentShareRate": 0.67,
+    "completedPlanItemsCount": 5,
+    "currentStreakDays": 4
+  },
+  "wins": [
+    {
+      "winId": "win-twin-01",
+      "category": "INDEPENDENT_TRANSFER",
+      "title": "Independent Twin Transfer",
+      "detail": "Solved 3 counterfactual twin checks without step-by-step hints.",
+      "skillId": "MATH.EQUATIONS.LINEAR_ONE_VAR",
+      "metricDelta": "+3 verified",
+      "evidenceRef": "twin_attempt:00000000-0000-4000-8000-000000000892"
+    },
+    {
+      "winId": "win-mastery-02",
+      "category": "MASTERY_GAIN",
+      "title": "Growing Confidence in Fractions",
+      "detail": "Mastery climbed smoothly while resolving sign distribution slips.",
+      "skillId": "MATH.ARITHMETIC.FRACTIONS",
+      "metricDelta": "+14%",
+      "evidenceRef": "mastery:MATH.ARITHMETIC.FRACTIONS"
+    }
+  ],
+  "recurringMistakes": [
+    {
+      "mistakeCode": "SIGN_DISTRIBUTION_FLIP",
+      "label": "Distributing a negative sign across parentheses",
+      "skillId": "MATH.ALGEBRA.DISTRIBUTIVE_PROPERTY",
+      "skillTitle": "Distributive Property & Expanding Expressions",
+      "occurrenceCountThisWeek": 2,
+      "previousWeekOccurrenceCount": 4,
+      "trendDirection": "IMPROVING",
+      "microLessonCompleted": true,
+      "supportiveGuidance": "Pausing to rewrite -(a - b) as -a + b is cutting these slips in half.",
+      "evidenceRefs": [
+        "mistake_dna:SIGN_DISTRIBUTION_FLIP",
+        "micro_lesson:ML_SIGN_DISTRIBUTIVE_V1"
+      ]
+    }
+  ],
+  "masteryMomentum": {
+    "overallMasteryAvg": 0.68,
+    "overallRetentionAvg": 0.74,
+    "skillsImprovedCount": 3,
+    "skillsPracticedCount": 4,
+    "dueReviewsCount": 1,
+    "dailyActivityBuckets": [
+      {
+        "date": "2026-11-09",
+        "dayLabel": "Mon",
+        "studyMinutes": 18,
+        "solvedCount": 2,
+        "independentCount": 1,
+        "active": true
+      },
+      {
+        "date": "2026-11-10",
+        "dayLabel": "Tue",
+        "studyMinutes": 22,
+        "solvedCount": 3,
+        "independentCount": 1,
+        "active": true
+      },
+      {
+        "date": "2026-11-11",
+        "dayLabel": "Wed",
+        "studyMinutes": 0,
+        "solvedCount": 0,
+        "independentCount": 0,
+        "active": false
+      },
+      {
+        "date": "2026-11-12",
+        "dayLabel": "Thu",
+        "studyMinutes": 19,
+        "solvedCount": 2,
+        "independentCount": 1,
+        "active": true
+      },
+      {
+        "date": "2026-11-13",
+        "dayLabel": "Fri",
+        "studyMinutes": 15,
+        "solvedCount": 2,
+        "independentCount": 0,
+        "active": true
+      },
+      {
+        "date": "2026-11-14",
+        "dayLabel": "Sat",
+        "studyMinutes": 0,
+        "solvedCount": 0,
+        "independentCount": 0,
+        "active": false
+      },
+      {
+        "date": "2026-11-15",
+        "dayLabel": "Sun",
+        "studyMinutes": 0,
+        "solvedCount": 0,
+        "independentCount": 0,
+        "active": false
+      }
+    ],
+    "topSkillDeltas": [
+      {
+        "skillId": "MATH.EQUATIONS.LINEAR_ONE_VAR",
+        "skillTitle": "Single-Variable Linear Equations",
+        "masteryScore": 0.78,
+        "retentionScore": 0.81,
+        "masteryDelta": 0.14,
+        "independentEvidenceCount": 2
+      },
+      {
+        "skillId": "MATH.ALGEBRA.DISTRIBUTIVE_PROPERTY",
+        "skillTitle": "Distributive Property & Expanding Expressions",
+        "masteryScore": 0.56,
+        "retentionScore": 0.63,
+        "masteryDelta": 0.08,
+        "independentEvidenceCount": 1
+      }
+    ]
+  },
+  "recommendations": [
+    {
+      "recommendationId": "rec-01-distributive",
+      "targetSkillId": "MATH.ALGEBRA.DISTRIBUTIVE_PROPERTY",
+      "targetSkillTitle": "Distributive Property & Expanding Expressions",
+      "reasonCode": "RECURRING_MISTAKE_PATTERN",
+      "priorityScore": 0.6285,
+      "estimatedMinutes": 12,
+      "recommendedActionType": "TWIN_DRILL",
+      "headline": "Practice one short sign-check twin set",
+      "explanation": {
+        "summaryText": "Suggested because negative-sign distribution appeared twice this week and strengthening this unlocks multi-step linear equations.",
+        "factorBreakdown": {
+          "masteryGapWeight": 0.4,
+          "mistakeWeight": 0.25,
+          "retentionWeight": 0.2,
+          "prerequisiteWeight": 0.15,
+          "observedMasteryScore": 0.56,
+          "observedMistakeCount": 2,
+          "observedRetentionScore": 0.63,
+          "dependentBlockedSkillsCount": 2
+        }
+      },
+      "evidenceRefs": [
+        "mastery:MATH.ALGEBRA.DISTRIBUTIVE_PROPERTY",
+        "mistake_dna:SIGN_DISTRIBUTION_FLIP",
+        "prereq:MATH.EQUATIONS.LINEAR_ONE_VAR"
+      ]
+    },
+    {
+      "recommendationId": "rec-02-retention",
+      "targetSkillId": "MATH.ARITHMETIC.FRACTIONS",
+      "targetSkillTitle": "Fraction Operations & Equivalence",
+      "reasonCode": "RETENTION_DECAY_RISK",
+      "priorityScore": 0.346,
+      "estimatedMinutes": 10,
+      "recommendedActionType": "SPACED_REVIEW",
+      "headline": "Quick 10-minute fraction memory refresh",
+      "explanation": {
+        "summaryText": "A brief spaced check keeps your recent fraction mastery durable for rational expressions.",
+        "factorBreakdown": {
+          "masteryGapWeight": 0.4,
+          "mistakeWeight": 0.25,
+          "retentionWeight": 0.2,
+          "prerequisiteWeight": 0.15,
+          "observedMasteryScore": 0.72,
+          "observedMistakeCount": 0,
+          "observedRetentionScore": 0.66,
+          "dependentBlockedSkillsCount": 1
+        }
+      },
+      "evidenceRefs": [
+        "spaced_review:MATH.ARITHMETIC.FRACTIONS",
+        "mastery:MATH.ARITHMETIC.FRACTIONS"
+      ]
+    }
+  ]
+}

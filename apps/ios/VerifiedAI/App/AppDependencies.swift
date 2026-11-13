@@ -59,6 +59,9 @@ struct AppDependencies {
         #endif
         return TutorAPI(client: apiClient)
     }
+    var weeklyReportAPI: WeeklyReportServicing {
+        HTTPWeeklyReportService(apiClient: apiClient)
+    }
     let primarySolveAPI: PrimarySolveServicing
     let solveRecovery: SolveRecoveryStoring
     let solveEnabled: Bool

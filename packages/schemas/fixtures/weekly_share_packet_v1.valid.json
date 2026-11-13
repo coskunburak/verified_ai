@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "weekly-share-packet-v1",
+  "packetId": "00000000-0000-4000-8000-000000000893",
+  "digestId": "00000000-0000-4000-8000-000000000891",
+  "weekIso": "2026-W46",
+  "weekStartDate": "2026-11-09",
+  "weekEndDate": "2026-11-15",
+  "locale": "en",
+  "recipientRole": "TUTOR",
+  "displayAlias": "Learner A.",
+  "training_eligible": false,
+  "generatedAt": "2026-11-13T10:35:00Z",
+  "executiveMetrics": {
+    "solvedAttemptsCount": 9,
+    "independentTwinsSolvedCount": 3,
+    "studyMinutes": 74,
+    "activeDaysCount": 4,
+    "independentShareRate": 0.67
+  },
+  "masterySnapshot": [
+    {
+      "skillId": "MATH.EQUATIONS.LINEAR_ONE_VAR",
+      "skillTitle": "Single-Variable Linear Equations",
+      "masteryScore": 0.78,
+      "masteryDelta": 0.14
+    },
+    {
+      "skillId": "MATH.ALGEBRA.DISTRIBUTIVE_PROPERTY",
+      "skillTitle": "Distributive Property & Expanding Expressions",
+      "masteryScore": 0.56,
+      "masteryDelta": 0.08
+    }
+  ],
+  "focusThemes": [
+    {
+      "mistakeCode": "SIGN_DISTRIBUTION_FLIP",
+      "label": "Distributing a negative sign across parentheses",
+      "skillTitle": "Distributive Property & Expanding Expressions",
+      "trendDirection": "IMPROVING",
+      "guidance": "Encourage rewriting -(a - b) explicitly before combining terms."
+    }
+  ],
+  "recommendedNextActions": [
+    {
+      "recommendationId": "rec-01-distributive",
+      "targetSkillTitle": "Distributive Property & Expanding Expressions",
+      "reasonCode": "RECURRING_MISTAKE_PATTERN",
+      "priorityScore": 0.6285,
+      "estimatedMinutes": 12,
+      "headline": "Practice one short sign-check twin set",
+      "explanationSummary": "Negative-sign distribution appeared twice this week and unlocks multi-step linear equations.",
+      "evidenceRefs": [
+        "mastery:MATH.ALGEBRA.DISTRIBUTIVE_PROPERTY",
+        "mistake_dna:SIGN_DISTRIBUTION_FLIP",
+        "prereq:MATH.EQUATIONS.LINEAR_ONE_VAR"
+      ]
+    }
+  ],
+  "privacyAttestation": {
+    "policyId": "G-PRIV-03",
+    "piiExcluded": true,
+    "rawTutorTranscriptsIncluded": false,
+    "rawStudentPhotosIncluded": false,
+    "exactSessionTimestampsIncluded": false,
+    "trainingEligible": false,
+    "shareableScopeSummary": "Contains weekly skill mastery percentages, aggregate mistake themes, and explainable next-step targets only. Raw tutor turns, student photos, and direct identifiers are excluded."
+  }
+}

@@ -92,11 +92,11 @@ final class Sprint83SpacedRepetitionTests: XCTestCase {
     // MARK: - Test 2: SpacedReviewSQLiteCache Round-Trip, BOLA Isolation & Fast Purge
     func testSQLiteCachePersistenceAndFastPurge() async throws {
         let cache = SpacedReviewSQLiteCache(inMemory: true)
-        let userA = UUID.randomUUID()
-        let userB = UUID.randomUUID()
+        let userA = UUID()
+        let userB = UUID()
 
         let itemA = SpacedQueueItem(
-            itemId: UUID.randomUUID(),
+            itemId: UUID(),
             canonicalSkillCode: "MATH.ALG.QUADRATIC_DISCRIMINANT",
             skillDisplayName: "Quadratic Discriminant",
             triggerType: .trapImmunity7D,
@@ -142,14 +142,14 @@ final class Sprint83SpacedRepetitionTests: XCTestCase {
 
     // MARK: - Test 3: SpacedReviewViewModel 3-Item Cap & Completion Transitions
     func testViewModelCapAndStateTransitions() async throws {
-        let userId = UUID.randomUUID()
-        let itemId = UUID.randomUUID()
+        let userId = UUID()
+        let itemId = UUID()
 
         // Create 5 items to test client-side defensive 3-item cap
         var fiveItems: [SpacedQueueItem] = []
         for i in 0..<5 {
             fiveItems.append(SpacedQueueItem(
-                itemId: UUID.randomUUID(),
+                itemId: UUID(),
                 canonicalSkillCode: "MATH.SKILL_\(i)",
                 skillDisplayName: "Skill \(i)",
                 triggerType: .retentionDecay,
@@ -215,9 +215,10 @@ final class Sprint83SpacedRepetitionTests: XCTestCase {
     }
 
     // MARK: - Test 4: NativeMathLabel & Non-Stigmatizing Badge Keys
+    @MainActor
     func testNativeMathLabelAndBadgeKeys() throws {
         let itemImmunity = SpacedQueueItem(
-            itemId: UUID.randomUUID(),
+            itemId: UUID(),
             canonicalSkillCode: "MATH.ALG.QUADRATIC_DISCRIMINANT",
             skillDisplayName: "Quadratic Discriminant Analysis",
             triggerType: .trapImmunity7D,

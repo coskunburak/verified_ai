@@ -116,6 +116,19 @@ def run_validation():
         (gam_res_schema_path, gam_res_fixture_path, "gamification-summary-response"),
     )
 
+    # Sprint 8.9 schemas & fixtures
+    s89_digest_schema_path = ROOT / "packages/schemas/weekly-digest-v1.schema.json"
+    s89_share_schema_path = ROOT / "packages/schemas/weekly-share-packet-v1.schema.json"
+    s89_digest_fixture_path = ROOT / "packages/schemas/fixtures/weekly_digest_v1.valid.json"
+    s89_share_fixture_path = ROOT / "packages/schemas/fixtures/weekly_share_packet_v1.valid.json"
+    S89_SCHEMA_FIXTURE_PAIRS = (
+        (s89_digest_schema_path, s89_digest_fixture_path, "weekly-digest-v1"),
+        (s89_share_schema_path, s89_share_fixture_path, "weekly-share-packet-v1"),
+    )
+    for _p, _f, _name in S89_SCHEMA_FIXTURE_PAIRS:
+        assert _p.exists(), f"Missing Sprint 8.9 schema {_p}"
+        assert _f.exists(), f"Missing Sprint 8.9 fixture {_f}"
+
     assert mistake_passport_schema_path.exists(), "Missing mistake-passport-v1.schema.json"
     assert mistake_passport_fixture_path.exists(), "Missing mistake-passport-v1.valid.json"
     assert counterexample_schema_path.exists(), "Missing counterexample-proof-card-v1.schema.json"
@@ -258,6 +271,18 @@ def run_validation():
             if def_obj.get("type") == "object":
                 assert def_obj.get("additionalProperties") is False, f"$defs.{def_name} additionalProperties!=false in {s_path.name}"
         gam_loaded_pairs[pair_name] = (sc_obj, fx_obj)
+
+    s89_loaded_pairs = {}
+    for s_path, f_path, pair_name in S89_SCHEMA_FIXTURE_PAIRS:
+        sc_obj = json.loads(s_path.read_text(encoding="utf-8"))
+        fx_obj = json.loads(f_path.read_text(encoding="utf-8"))
+        validate_schema_structure(sc_obj, s_path.name)
+        assert sc_obj.get("$schema") == "https://json-schema.org/draft/2020-12/schema", f"Not Draft 2020-12: {s_path.name}"
+        assert sc_obj.get("additionalProperties") is False, f"Root additionalProperties!=false in {s_path.name}"
+        for def_name, def_obj in sc_obj.get("$defs", {}).items():
+            if def_obj.get("type") == "object":
+                assert def_obj.get("additionalProperties") is False, f"$defs.{def_name} additionalProperties!=false in {s_path.name}"
+        s89_loaded_pairs[pair_name] = (sc_obj, fx_obj)
 
     if jsonschema is not None:
         # Schema meta-checks
@@ -636,6 +661,41 @@ def run_validation():
         bad_gam_4 = copy.deepcopy(gam_req_fx)
         bad_gam_4["xpPoints"] = 100
         assert list(gam_vals["gamification-activity-record-request"].iter_errors(bad_gam_4)), "Expected rejection on extra property xpPoints"
+
+        # Sprint 8.9 Draft 2020-12 positive & negative mutation checks
+        s89_vals = {}
+        for pair_name, (sc_obj, fx_obj) in s89_loaded_pairs.items():
+            jsonschema.Draft202012Validator.check_schema(sc_obj)
+            v = jsonschema.Draft202012Validator(sc_obj, format_checker=jsonschema.FormatChecker())
+            v.validate(fx_obj)
+            s89_vals[pair_name] = v
+
+        _, s89_digest_fx = s89_loaded_pairs["weekly-digest-v1"]
+        _, s89_share_fx = s89_loaded_pairs["weekly-share-packet-v1"]
+
+        bad_s89_1 = copy.deepcopy(s89_digest_fx)
+        bad_s89_1["training_eligible"] = True
+        assert list(s89_vals["weekly-digest-v1"].iter_errors(bad_s89_1)), "Expected rejection when digest training_eligible=true"
+
+        bad_s89_2 = copy.deepcopy(s89_digest_fx)
+        bad_s89_2["weekIso"] = "2026-13"
+        assert list(s89_vals["weekly-digest-v1"].iter_errors(bad_s89_2)), "Expected rejection when weekIso=2026-13"
+
+        bad_s89_3 = copy.deepcopy(s89_digest_fx)
+        bad_s89_3["recommendations"][0]["evidenceRefs"] = []
+        assert list(s89_vals["weekly-digest-v1"].iter_errors(bad_s89_3)), "Expected rejection when recommendations[0].evidenceRefs is empty"
+
+        bad_s89_4a = copy.deepcopy(s89_share_fx)
+        bad_s89_4a["rawTutorTranscript"] = "leaked turn"
+        assert list(s89_vals["weekly-share-packet-v1"].iter_errors(bad_s89_4a)), "Expected rejection on extra property rawTutorTranscript"
+
+        bad_s89_4b = copy.deepcopy(s89_share_fx)
+        bad_s89_4b["studentEmail"] = "student@example.com"
+        assert list(s89_vals["weekly-share-packet-v1"].iter_errors(bad_s89_4b)), "Expected rejection on extra property studentEmail"
+
+        bad_s89_5 = copy.deepcopy(s89_share_fx)
+        bad_s89_5["privacyAttestation"]["rawTutorTranscriptsIncluded"] = True
+        assert list(s89_vals["weekly-share-packet-v1"].iter_errors(bad_s89_5)), "Expected rejection when privacyAttestation.rawTutorTranscriptsIncluded=true"
     else:
         # Fallback pure-python verification of invariants
         assert sg_fixture["schemaVersion"] == "skill-graph-v1"
@@ -793,6 +853,113 @@ def run_validation():
     assert _validate_gam_object_keys({**gam_res_fx, "streakFreezesRemaining": -1}, gam_res_sc, gam_res_sc.get("$defs", {})), "Expected streakFreezesRemaining=-1 failure"
     assert _validate_gam_object_keys({**gam_req_fx, "evidenceType": "UNSUPPORTED"}, gam_req_sc, gam_req_sc.get("$defs", {})), "Expected evidenceType=UNSUPPORTED failure"
     assert _validate_gam_object_keys({**gam_req_fx, "xpPoints": 100}, gam_req_sc, gam_req_sc.get("$defs", {})), "Expected extra xpPoints=100 failure"
+
+    # Sprint 8.9 pure-python contract & negative-mutation checks (always verified)
+    def _validate_s89_object_keys(obj: dict, sc: dict, defs: dict) -> list[str]:
+        errs: list[str] = []
+        if sc.get("additionalProperties") is False:
+            extra = set(obj.keys()) - set(sc.get("properties", {}).keys())
+            if extra:
+                errs.append(f"Unexpected properties: {sorted(extra)}")
+        for req in sc.get("required", []):
+            if req not in obj:
+                errs.append(f"Missing required property: {req}")
+        for k, prop in sc.get("properties", {}).items():
+            if k not in obj:
+                continue
+            val = obj[k]
+            if "$ref" in prop:
+                ref_name = prop["$ref"].split("/")[-1]
+                if not isinstance(val, dict):
+                    errs.append(f"{k} expected object for $ref {ref_name}")
+                else:
+                    errs.extend(_validate_s89_object_keys(val, defs[ref_name], defs))
+                continue
+            if "const" in prop:
+                expected_const = prop["const"]
+                if isinstance(expected_const, bool):
+                    if not isinstance(val, bool) or val is not expected_const:
+                        errs.append(f"{k} != {expected_const}")
+                elif val != expected_const:
+                    errs.append(f"{k} != {expected_const}")
+            ptype = prop.get("type")
+            if ptype == ["string", "null"]:
+                if val is not None and not isinstance(val, str):
+                    errs.append(f"{k} must be string or null")
+                elif isinstance(val, str) and "maxLength" in prop and len(val) > prop["maxLength"]:
+                    errs.append(f"{k} longer than {prop['maxLength']}")
+            elif ptype == "boolean":
+                if not isinstance(val, bool):
+                    errs.append(f"{k} not bool")
+            elif ptype == "integer":
+                if isinstance(val, bool) or not isinstance(val, int):
+                    errs.append(f"{k} not int")
+                else:
+                    if "minimum" in prop and val < prop["minimum"]:
+                        errs.append(f"{k} < {prop['minimum']}")
+                    if "maximum" in prop and val > prop["maximum"]:
+                        errs.append(f"{k} > {prop['maximum']}")
+            elif ptype == "number":
+                if isinstance(val, bool) or not isinstance(val, (int, float)):
+                    errs.append(f"{k} not number")
+                else:
+                    if "minimum" in prop and val < prop["minimum"]:
+                        errs.append(f"{k} < {prop['minimum']}")
+                    if "maximum" in prop and val > prop["maximum"]:
+                        errs.append(f"{k} > {prop['maximum']}")
+            elif ptype == "string":
+                if not isinstance(val, str):
+                    errs.append(f"{k} not str")
+                else:
+                    if "enum" in prop and val not in prop["enum"]:
+                        errs.append(f"{k} invalid enum {val}")
+                    if "minLength" in prop and len(val) < prop["minLength"]:
+                        errs.append(f"{k} shorter than {prop['minLength']}")
+                    if "maxLength" in prop and len(val) > prop["maxLength"]:
+                        errs.append(f"{k} longer than {prop['maxLength']}")
+                    if "pattern" in prop and not re.match(prop["pattern"], val):
+                        errs.append(f"{k} does not match pattern {prop['pattern']}")
+            elif ptype == "array":
+                if not isinstance(val, list):
+                    errs.append(f"{k} not list")
+                else:
+                    if "minItems" in prop and len(val) < prop["minItems"]:
+                        errs.append(f"{k} fewer than minItems")
+                    if "maxItems" in prop and len(val) > prop["maxItems"]:
+                        errs.append(f"{k} more than maxItems")
+                    items_schema = prop.get("items", {})
+                    item_ref = items_schema.get("$ref", "")
+                    if item_ref:
+                        ref_name = item_ref.split("/")[-1]
+                        for item in val:
+                            if not isinstance(item, dict):
+                                errs.append(f"{k} item not object")
+                            else:
+                                errs.extend(_validate_s89_object_keys(item, defs[ref_name], defs))
+                    elif items_schema.get("type") == "string":
+                        for item in val:
+                            if not isinstance(item, str):
+                                errs.append(f"{k} item not str")
+                            elif "minLength" in items_schema and len(item) < items_schema["minLength"]:
+                                errs.append(f"{k} item shorter than {items_schema['minLength']}")
+        return errs
+
+    for pair_name, (sc_obj, fx_obj) in s89_loaded_pairs.items():
+        errs = _validate_s89_object_keys(fx_obj, sc_obj, sc_obj.get("$defs", {}))
+        assert not errs, f"Pure-python Sprint 8.9 validation failed for {pair_name}: {errs}"
+
+    s89_dig_sc, s89_dig_fx = s89_loaded_pairs["weekly-digest-v1"]
+    s89_shr_sc, s89_shr_fx = s89_loaded_pairs["weekly-share-packet-v1"]
+    assert _validate_s89_object_keys({**s89_dig_fx, "training_eligible": True}, s89_dig_sc, s89_dig_sc.get("$defs", {})), "Expected digest training_eligible=True failure"
+    assert _validate_s89_object_keys({**s89_dig_fx, "weekIso": "2026-13"}, s89_dig_sc, s89_dig_sc.get("$defs", {})), "Expected weekIso=2026-13 failure"
+    mut_empty_refs = copy.deepcopy(s89_dig_fx)
+    mut_empty_refs["recommendations"][0]["evidenceRefs"] = []
+    assert _validate_s89_object_keys(mut_empty_refs, s89_dig_sc, s89_dig_sc.get("$defs", {})), "Expected empty evidenceRefs failure"
+    assert _validate_s89_object_keys({**s89_shr_fx, "rawTutorTranscript": "x"}, s89_shr_sc, s89_shr_sc.get("$defs", {})), "Expected extra rawTutorTranscript failure"
+    assert _validate_s89_object_keys({**s89_shr_fx, "studentEmail": "x@example.com"}, s89_shr_sc, s89_shr_sc.get("$defs", {})), "Expected extra studentEmail failure"
+    mut_attest = copy.deepcopy(s89_shr_fx)
+    mut_attest["privacyAttestation"]["rawTutorTranscriptsIncluded"] = True
+    assert _validate_s89_object_keys(mut_attest, s89_shr_sc, s89_shr_sc.get("$defs", {})), "Expected privacyAttestation.rawTutorTranscriptsIncluded=True failure"
 
     # Sprint 8.6 pure-python schema & fixture invariants (always verified)
     for card_fx in (ml_card_tr_fixture, ml_card_en_fixture):
@@ -1013,6 +1180,25 @@ def run_validation():
                 for code in expected_codes:
                     assert code in gam_op["responses"], f"HTTP {code} missing from {gam_path} in {spec_name}"
 
+            # Sprint 8.9 OpenAPI paths & component schemas
+            for schema_name in (
+                "WeeklyDigestV1",
+                "WeeklySharePacketV1",
+                "WeeklySharePacketRequest",
+            ):
+                assert schema_name in spec_schemas, f"Missing Sprint 8.9 component schema {schema_name} in {spec_name}"
+
+            expected_s89_endpoints = {
+                "/v1/reports/weekly/{weekIso}": ("get", ("200", "400", "401", "403", "404", "503")),
+                "/v1/reports/weekly/{weekIso}/share-packet": ("post", ("200", "400", "401", "403", "404", "503")),
+            }
+            for s89_path, (s89_method, expected_codes) in expected_s89_endpoints.items():
+                assert s89_path in spec_paths, f"Missing Sprint 8.9 path {s89_path} in {spec_name}"
+                s89_op = spec_paths[s89_path][s89_method]
+                assert s89_op["security"] == [{"bearerAuth": []}], f"Security bearerAuth missing on {s89_path} in {spec_name}"
+                for code in expected_codes:
+                    assert code in s89_op["responses"], f"HTTP {code} missing from {s89_path} in {spec_name}"
+
         assert openapi_path.read_bytes() == openapi_core_path.read_bytes(), "OpenAPI mirror public-api.yaml != verified-ai-core-api.yaml"
     else:
         openapi_bytes = openapi_path.read_bytes()
@@ -1025,13 +1211,19 @@ def run_validation():
             "GamificationSummaryResponse:",
             "GamificationSummaryResponse",
             "GamificationActivityRecordRequest",
+            "/v1/reports/weekly/{weekIso}:",
+            "/v1/reports/weekly/{weekIso}/share-packet:",
+            "WeeklyDigestV1:",
+            "WeeklySharePacketV1:",
+            "WeeklySharePacketRequest:",
             "ProblemBadRequest",
             "ProblemUnauthorized",
             "ProblemForbidden",
+            "ProblemNotFound",
             "ProblemUnprocessableEntity",
             "ProblemServiceUnavailable",
         ):
-            assert token in openapi_text, f"Missing Sprint 8.8 OpenAPI token in public-api.yaml: {token}"
+            assert token in openapi_text, f"Missing Sprint 8.8/8.9 OpenAPI token in public-api.yaml: {token}"
 
     # 3. iOS Localizable.xcstrings Key Verification
     xcstrings_data = json.loads(strings_path.read_text(encoding="utf-8"))
@@ -1184,6 +1376,44 @@ def run_validation():
         "gamification.badge.retention_guardian.description",
         "gamification.badge.concept_architect.title",
         "gamification.badge.concept_architect.description",
+        "weekly.report.title",
+        "weekly.report.entry.section",
+        "weekly.report.entry.title",
+        "weekly.report.entry.subtitle",
+        "weekly.report.previous_week",
+        "weekly.report.next_week",
+        "weekly.report.loading",
+        "weekly.report.retry",
+        "weekly.report.close",
+        "weekly.report.empty_week.badge",
+        "weekly.report.section.summary",
+        "weekly.report.section.wins",
+        "weekly.report.section.momentum",
+        "weekly.report.section.mistakes",
+        "weekly.report.section.recommendations",
+        "weekly.report.kpi.solved",
+        "weekly.report.kpi.independent_twins",
+        "weekly.report.kpi.study_minutes",
+        "weekly.report.kpi.active_days",
+        "weekly.recommendation.why_button",
+        "weekly.mistake.none",
+        "weekly.mistake.trend.improving",
+        "weekly.mistake.trend.stable",
+        "weekly.mistake.trend.gentle_focus",
+        "weekly.share.card.title",
+        "weekly.share.card.subtitle",
+        "weekly.share.button.preview",
+        "weekly.share.sheet.nav_title",
+        "weekly.share.sheet.heading",
+        "weekly.share.recipient_role",
+        "weekly.share.role.tutor",
+        "weekly.share.role.parent",
+        "weekly.share.alias.placeholder",
+        "weekly.share.button.generate_pdf",
+        "weekly.share.button.share_sheet",
+        "weekly.privacy.attestation.title",
+        "weekly.privacy.included_summary",
+        "weekly.privacy.excluded_raw",
     ]
 
     banned_lexicon = re.compile(
@@ -1205,11 +1435,11 @@ def run_validation():
             if key.startswith("studyplan.rebalance.") or key.startswith("micro_lesson.") or key.startswith("study_session."):
                 m = banned_lexicon.search(val)
                 assert not m, f"Stigmatizing lexicon word '{m.group(0)}' in {key}[{lang}]: {val}"
-            elif key.startswith("gamification."):
+            elif key.startswith("gamification.") or key.startswith("weekly."):
                 m = gamification_banned_lexicon.search(val)
-                assert not m, f"Stigmatizing gamification word '{m.group(0)}' in {key}[{lang}]: {val}"
+                assert not m, f"Stigmatizing lexicon word '{m.group(0)}' in {key}[{lang}]: {val}"
 
-    print(f"PASS: Sprint 8.1..8.8 JSON schemas, negative mutations, OpenAPI 3.1 endpoints, and {len(required_keys)} EN/TR localizations verified.")
+    print(f"PASS: Sprint 8.1..8.9 JSON schemas, negative mutations, OpenAPI 3.1 endpoints, and {len(required_keys)} EN/TR localizations verified.")
 
 
 if __name__ == "__main__":

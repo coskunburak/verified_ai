@@ -164,9 +164,7 @@ final class Sprint85RebalancingTests: XCTestCase {
 
     @MainActor
     func testDailyCoachViewModelApplyRebalancedPlanMiniMode() async throws {
-        let coachDB = makeTempDBURL(name: "coach")
-        defer { try? FileManager.default.removeItem(at: coachDB) }
-        let coachCache = try DailyCoachSQLiteCache(databaseURL: coachDB)
+        let coachCache = DailyCoachSQLiteCache(inMemory: true)
         let userId = UUID(uuidString: "00000000-0000-0000-0000-000000000101")!
         let sessionId = UUID(uuidString: "00000000-0000-0000-0000-000000000701")!
 

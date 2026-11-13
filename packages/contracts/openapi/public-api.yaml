@@ -3999,6 +3999,107 @@ paths:
         '503':
           $ref: '#/components/responses/ProblemServiceUnavailable'
 
+  /v1/reports/weekly/{weekIso}:
+    get:
+      operationId: getWeeklyLearningReport
+      tags:
+        - Analytics
+      summary: Read or compute privacy-safe weekly learner digest and explainable recommendations
+      description: >
+        Aggregates verified learning outcomes, mastery momentum, recurring mistake themes, and
+        explainable deterministic next-step recommendations for the authenticated learner and
+        requested ISO week (Sprint 8.9, ADR-006 training_eligible=false, BOLA-enforced).
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: weekIso
+          in: path
+          required: true
+          description: ISO-8601 week identifier (YYYY-Www)
+          schema:
+            type: string
+            pattern: '^[0-9]{4}-W(0[1-9]|[1-4][0-9]|5[0-3])$'
+          example: '2026-W46'
+        - name: locale
+          in: query
+          required: false
+          description: Preferred display language for digest narratives and recommendations
+          schema:
+            type: string
+            enum:
+              - en
+              - tr
+            default: en
+        - name: forceRefresh
+          in: query
+          required: false
+          description: Recompute weekly projection from underlying verified evidence tables
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Privacy-safe weekly learner digest and explainable recommendations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WeeklyDigestV1'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /v1/reports/weekly/{weekIso}/share-packet:
+    post:
+      operationId: createWeeklySharePacket
+      tags:
+        - Analytics
+      summary: Build strict allowlisted privacy-safe tutor or parent share packet
+      description: >
+        Projects a minimized, non-training-eligible summary packet suitable for client-side A4 PDF
+        generation (G-PRIV-03). Excludes raw TutorTurns, uncropped media, emails, and minute-level
+        timestamps.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: weekIso
+          in: path
+          required: true
+          description: ISO-8601 week identifier (YYYY-Www)
+          schema:
+            type: string
+            pattern: '^[0-9]{4}-W(0[1-9]|[1-4][0-9]|5[0-3])$'
+          example: '2026-W46'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WeeklySharePacketRequest'
+      responses:
+        '200':
+          description: Allowlisted privacy-safe weekly share packet with G-PRIV-03 attestation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WeeklySharePacketV1'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -8457,3 +8558,31 @@ components:
 
     GamificationSummaryResponse:
       $ref: '../../schemas/gamification-summary-response.schema.json'
+
+    WeeklySharePacketRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - recipientRole
+      properties:
+        recipientRole:
+          type: string
+          enum:
+            - TUTOR
+            - PARENT
+        displayAlias:
+          type: string
+          minLength: 2
+          maxLength: 40
+        locale:
+          type: string
+          enum:
+            - en
+            - tr
+          default: en
+
+    WeeklyDigestV1:
+      $ref: '../../schemas/weekly-digest-v1.schema.json'
+
+    WeeklySharePacketV1:
+      $ref: '../../schemas/weekly-share-packet-v1.schema.json'

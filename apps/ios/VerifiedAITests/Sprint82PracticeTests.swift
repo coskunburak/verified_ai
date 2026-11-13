@@ -119,14 +119,29 @@ final class Sprint82PracticeTests: XCTestCase {
     // MARK: - Test 3: Hint Lock Gating During Verification Window
     @MainActor
     func testHintLockGating() async {
+        final class HintRequestRecorder: @unchecked Sendable {
+            private let lock = NSLock()
+            private var requested = false
+            func markRequested() {
+                lock.lock()
+                requested = true
+                lock.unlock()
+            }
+            var wasRequested: Bool {
+                lock.lock()
+                defer { lock.unlock() }
+                return requested
+            }
+        }
+
         let userId = UUID()
-        var hintRequestedRemotely = false
+        let recorder = HintRequestRecorder()
 
         let vm = PracticeSessionViewModel(
             userId: userId,
             submitRemoteHandler: { sessionId, itemId, answer, elapsed, hintRequested in
                 if hintRequested {
-                    hintRequestedRemotely = true
+                    recorder.markRequested()
                 }
                 throw NSError(domain: "test", code: 1, userInfo: nil)
             }
@@ -137,7 +152,7 @@ final class Sprint82PracticeTests: XCTestCase {
 
         // While lock is active, requesting a hint should be ignored locally
         await vm.requestHint()
-        XCTAssertFalse(hintRequestedRemotely)
+        XCTAssertFalse(recorder.wasRequested)
     }
 
     // MARK: - Test 4: PracticeSQLiteCache Persistence and User Purge

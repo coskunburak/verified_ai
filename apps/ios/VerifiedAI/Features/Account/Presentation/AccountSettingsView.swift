@@ -2,6 +2,7 @@ import SwiftUI
 
 struct AccountSettingsView: View {
     @Bindable var viewModel: AccountSettingsViewModel
+    var weeklyReportViewModel: WeeklyProgressReportViewModel? = nil
     let onAccountDeleted: () -> Void
 
     @Environment(\.dismiss) private var dismiss
@@ -11,6 +12,9 @@ struct AccountSettingsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: SpacingTokens.lg) {
                 accountSection
+                if let weeklyReportViewModel {
+                    weeklyReportSection(weeklyReportViewModel)
+                }
                 exportSection
                 deletionSection
                 statusSection
@@ -47,6 +51,27 @@ struct AccountSettingsView: View {
                 ProgressView()
                     .accessibilityLabel("Loading account")
             }
+        }
+    }
+
+    private func weeklyReportSection(_ reportViewModel: WeeklyProgressReportViewModel) -> some View {
+        VStack(alignment: .leading, spacing: SpacingTokens.sm) {
+            Text(LocalizedStringKey("weekly.report.entry.section"))
+                .font(TypographyTokens.body)
+                .foregroundStyle(ColorTokens.textPrimary)
+
+            Text(LocalizedStringKey("weekly.report.entry.subtitle"))
+                .font(TypographyTokens.caption)
+                .foregroundStyle(ColorTokens.textSecondary)
+
+            NavigationLink {
+                WeeklyProgressReportView(viewModel: reportViewModel)
+            } label: {
+                Label(LocalizedStringKey("weekly.report.entry.title"), systemImage: "chart.bar.doc.horizontal")
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(ColorTokens.action)
+            .accessibilityIdentifier("account.weeklyReportLink")
         }
     }
 

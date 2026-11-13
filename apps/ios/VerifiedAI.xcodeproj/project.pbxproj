@@ -47,6 +47,43 @@
 		B88000000000000000000004 /* MilestoneSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A88000000000000000000004 /* MilestoneSheetView.swift */; };
 		B88000000000000000000005 /* Sprint88GamificationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A88000000000000000000005 /* Sprint88GamificationTests.swift */; };
 		B88000000000000000000006 /* gamification-summary-response.valid.json in Resources */ = {isa = PBXBuildFile; fileRef = A88000000000000000000006 /* gamification-summary-response.valid.json */; };
+		B89000000000000000000001 /* WeeklyReportModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89000000000000000000001 /* WeeklyReportModels.swift */; };
+		B89000000000000000000002 /* WeeklyReportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89000000000000000000002 /* WeeklyReportService.swift */; };
+		B89000000000000000000003 /* TutorSharePacketPDFRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89000000000000000000003 /* TutorSharePacketPDFRenderer.swift */; };
+		B89000000000000000000004 /* WeeklyProgressReportViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89000000000000000000004 /* WeeklyProgressReportViewModel.swift */; };
+		B89000000000000000000005 /* WeeklyProgressReportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89000000000000000000005 /* WeeklyProgressReportView.swift */; };
+		B89000000000000000000006 /* Sprint89WeeklyReportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89000000000000000000006 /* Sprint89WeeklyReportTests.swift */; };
+		B89500000000000000000001 /* DailyCoachSQLiteCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000001 /* DailyCoachSQLiteCache.swift */; };
+		B89500000000000000000002 /* RebalanceSQLiteCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000002 /* RebalanceSQLiteCache.swift */; };
+		B89500000000000000000003 /* CoachHubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000003 /* CoachHubView.swift */; };
+		B89500000000000000000004 /* DailyCoachViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000004 /* DailyCoachViewModel.swift */; };
+		B89500000000000000000005 /* DualModeSwitcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000005 /* DualModeSwitcher.swift */; };
+		B89500000000000000000006 /* PlanRebalanceNotificationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000006 /* PlanRebalanceNotificationSheet.swift */; };
+		B89500000000000000000007 /* StudyPlanRebalanceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000007 /* StudyPlanRebalanceViewModel.swift */; };
+		B89500000000000000000008 /* PracticeQuestionCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000008 /* PracticeQuestionCardView.swift */; };
+		B89500000000000000000009 /* PracticeSQLiteCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000009 /* PracticeSQLiteCache.swift */; };
+		B89500000000000000000010 /* PracticeSessionModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000010 /* PracticeSessionModels.swift */; };
+		B89500000000000000000011 /* PracticeSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000011 /* PracticeSessionView.swift */; };
+		B89500000000000000000012 /* PracticeSessionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000012 /* PracticeSessionViewModel.swift */; };
+		B89500000000000000000013 /* DailyStudyPlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000013 /* DailyStudyPlanView.swift */; };
+		B89500000000000000000014 /* SpacedReviewCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000014 /* SpacedReviewCardView.swift */; };
+		B89500000000000000000015 /* SpacedReviewModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000015 /* SpacedReviewModels.swift */; };
+		B89500000000000000000016 /* SpacedReviewSQLiteCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000016 /* SpacedReviewSQLiteCache.swift */; };
+		B89500000000000000000017 /* SpacedReviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000017 /* SpacedReviewViewModel.swift */; };
+		B89500000000000000000018 /* StudySessionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000018 /* StudySessionCoordinator.swift */; };
+		B89500000000000000000019 /* StudySessionModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000019 /* StudySessionModels.swift */; };
+		B89500000000000000000020 /* StudySessionOfflineCheckpointStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000020 /* StudySessionOfflineCheckpointStore.swift */; };
+		B89500000000000000000021 /* StudySessionResumeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000021 /* StudySessionResumeView.swift */; };
+		B89500000000000000000022 /* MicroLessonSQLiteCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000022 /* MicroLessonSQLiteCache.swift */; };
+		B89500000000000000000023 /* MicroLessonModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000023 /* MicroLessonModels.swift */; };
+		B89500000000000000000024 /* MicroLessonDrawerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000024 /* MicroLessonDrawerView.swift */; };
+		B89500000000000000000025 /* MicroLessonViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000025 /* MicroLessonViewModel.swift */; };
+		B89600000000000000000001 /* Sprint82PracticeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89600000000000000000001 /* Sprint82PracticeTests.swift */; };
+		B89600000000000000000002 /* Sprint83SpacedRepetitionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89600000000000000000002 /* Sprint83SpacedRepetitionTests.swift */; };
+		B89600000000000000000003 /* Sprint84CoachHubTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89600000000000000000003 /* Sprint84CoachHubTests.swift */; };
+		B89600000000000000000004 /* Sprint85RebalancingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89600000000000000000004 /* Sprint85RebalancingTests.swift */; };
+		B89600000000000000000005 /* Sprint86MicroLessonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89600000000000000000005 /* Sprint86MicroLessonTests.swift */; };
+		B89600000000000000000006 /* Sprint87StudySessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89600000000000000000006 /* Sprint87StudySessionTests.swift */; };
 		B74000000000000000000001 /* attempt-mistake-view-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = A74000000000000000000001 /* attempt-mistake-view-v1.json */; };
 		B73000000000000000000002 /* attempt-evaluation-work-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = A73000000000000000000002 /* attempt-evaluation-work-v1.json */; };
 		B73000000000000000000001 /* attempt-evaluation-view-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = A73000000000000000000001 /* attempt-evaluation-view-v1.json */; };
@@ -262,6 +299,43 @@
 		A88000000000000000000004 /* MilestoneSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Gamification/MilestoneSheetView.swift; sourceTree = SOURCE_ROOT; };
 		A88000000000000000000005 /* Sprint88GamificationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Sprint88GamificationTests.swift; sourceTree = SOURCE_ROOT; };
 		A88000000000000000000006 /* gamification-summary-response.valid.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/gamification-summary-response.valid.json; sourceTree = SOURCE_ROOT; };
+		A89000000000000000000001 /* WeeklyReportModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Reports/WeeklyReportModels.swift; sourceTree = SOURCE_ROOT; };
+		A89000000000000000000002 /* WeeklyReportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Reports/WeeklyReportService.swift; sourceTree = SOURCE_ROOT; };
+		A89000000000000000000003 /* TutorSharePacketPDFRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Reports/TutorSharePacketPDFRenderer.swift; sourceTree = SOURCE_ROOT; };
+		A89000000000000000000004 /* WeeklyProgressReportViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Reports/WeeklyProgressReportViewModel.swift; sourceTree = SOURCE_ROOT; };
+		A89000000000000000000005 /* WeeklyProgressReportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Reports/WeeklyProgressReportView.swift; sourceTree = SOURCE_ROOT; };
+		A89000000000000000000006 /* Sprint89WeeklyReportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Sprint89WeeklyReportTests.swift; sourceTree = SOURCE_ROOT; };
+		A89500000000000000000001 /* DailyCoachSQLiteCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Home/Data/DailyCoachSQLiteCache.swift; sourceTree = SOURCE_ROOT; };
+		A89500000000000000000002 /* RebalanceSQLiteCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Home/Data/RebalanceSQLiteCache.swift; sourceTree = SOURCE_ROOT; };
+		A89500000000000000000003 /* CoachHubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Home/Presentation/CoachHubView.swift; sourceTree = SOURCE_ROOT; };
+		A89500000000000000000004 /* DailyCoachViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Home/Presentation/DailyCoachViewModel.swift; sourceTree = SOURCE_ROOT; };
+		A89500000000000000000005 /* DualModeSwitcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Home/Presentation/DualModeSwitcher.swift; sourceTree = SOURCE_ROOT; };
+		A89500000000000000000006 /* PlanRebalanceNotificationSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Home/Presentation/PlanRebalanceNotificationSheet.swift; sourceTree = SOURCE_ROOT; };
+		A89500000000000000000007 /* StudyPlanRebalanceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Home/Presentation/StudyPlanRebalanceViewModel.swift; sourceTree = SOURCE_ROOT; };
+		A89500000000000000000008 /* PracticeQuestionCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/StudyPlan/Practice/PracticeQuestionCardView.swift; sourceTree = SOURCE_ROOT; };
+		A89500000000000000000009 /* PracticeSQLiteCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/StudyPlan/Practice/PracticeSQLiteCache.swift; sourceTree = SOURCE_ROOT; };
+		A89500000000000000000010 /* PracticeSessionModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/StudyPlan/Practice/PracticeSessionModels.swift; sourceTree = SOURCE_ROOT; };
+		A89500000000000000000011 /* PracticeSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/StudyPlan/Practice/PracticeSessionView.swift; sourceTree = SOURCE_ROOT; };
+		A89500000000000000000012 /* PracticeSessionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/StudyPlan/Practice/PracticeSessionViewModel.swift; sourceTree = SOURCE_ROOT; };
+		A89500000000000000000013 /* DailyStudyPlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/StudyPlan/Presentation/DailyStudyPlanView.swift; sourceTree = SOURCE_ROOT; };
+		A89500000000000000000014 /* SpacedReviewCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/StudyPlan/SpacedReview/SpacedReviewCardView.swift; sourceTree = SOURCE_ROOT; };
+		A89500000000000000000015 /* SpacedReviewModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/StudyPlan/SpacedReview/SpacedReviewModels.swift; sourceTree = SOURCE_ROOT; };
+		A89500000000000000000016 /* SpacedReviewSQLiteCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/StudyPlan/SpacedReview/SpacedReviewSQLiteCache.swift; sourceTree = SOURCE_ROOT; };
+		A89500000000000000000017 /* SpacedReviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/StudyPlan/SpacedReview/SpacedReviewViewModel.swift; sourceTree = SOURCE_ROOT; };
+		A89500000000000000000018 /* StudySessionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/StudySession/StudySessionCoordinator.swift; sourceTree = SOURCE_ROOT; };
+		A89500000000000000000019 /* StudySessionModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/StudySession/StudySessionModels.swift; sourceTree = SOURCE_ROOT; };
+		A89500000000000000000020 /* StudySessionOfflineCheckpointStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/StudySession/StudySessionOfflineCheckpointStore.swift; sourceTree = SOURCE_ROOT; };
+		A89500000000000000000021 /* StudySessionResumeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/StudySession/StudySessionResumeView.swift; sourceTree = SOURCE_ROOT; };
+		A89500000000000000000022 /* MicroLessonSQLiteCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Tutor/Data/MicroLessonSQLiteCache.swift; sourceTree = SOURCE_ROOT; };
+		A89500000000000000000023 /* MicroLessonModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Tutor/Domain/MicroLessonModels.swift; sourceTree = SOURCE_ROOT; };
+		A89500000000000000000024 /* MicroLessonDrawerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Tutor/Presentation/MicroLessonDrawerView.swift; sourceTree = SOURCE_ROOT; };
+		A89500000000000000000025 /* MicroLessonViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Tutor/Presentation/MicroLessonViewModel.swift; sourceTree = SOURCE_ROOT; };
+		A89600000000000000000001 /* Sprint82PracticeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Sprint82PracticeTests.swift; sourceTree = SOURCE_ROOT; };
+		A89600000000000000000002 /* Sprint83SpacedRepetitionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Sprint83SpacedRepetitionTests.swift; sourceTree = SOURCE_ROOT; };
+		A89600000000000000000003 /* Sprint84CoachHubTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Sprint84CoachHubTests.swift; sourceTree = SOURCE_ROOT; };
+		A89600000000000000000004 /* Sprint85RebalancingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Sprint85RebalancingTests.swift; sourceTree = SOURCE_ROOT; };
+		A89600000000000000000005 /* Sprint86MicroLessonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Sprint86MicroLessonTests.swift; sourceTree = SOURCE_ROOT; };
+		A89600000000000000000006 /* Sprint87StudySessionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Sprint87StudySessionTests.swift; sourceTree = SOURCE_ROOT; };
 		A74000000000000000000001 /* attempt-mistake-view-v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/attempt-mistake-view-v1.json; sourceTree = SOURCE_ROOT; };
 		A73000000000000000000002 /* attempt-evaluation-work-v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/attempt-evaluation-work-v1.json; sourceTree = SOURCE_ROOT; };
 		A73000000000000000000001 /* attempt-evaluation-view-v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/attempt-evaluation-view-v1.json; sourceTree = SOURCE_ROOT; };
@@ -1072,6 +1146,43 @@
 				A88000000000000000000004 /* MilestoneSheetView.swift */,
 				A88000000000000000000005 /* Sprint88GamificationTests.swift */,
 				A88000000000000000000006 /* gamification-summary-response.valid.json */,
+				A89000000000000000000001 /* WeeklyReportModels.swift */,
+				A89000000000000000000002 /* WeeklyReportService.swift */,
+				A89000000000000000000003 /* TutorSharePacketPDFRenderer.swift */,
+				A89000000000000000000004 /* WeeklyProgressReportViewModel.swift */,
+				A89000000000000000000005 /* WeeklyProgressReportView.swift */,
+				A89000000000000000000006 /* Sprint89WeeklyReportTests.swift */,
+				A89500000000000000000001 /* DailyCoachSQLiteCache.swift */,
+				A89500000000000000000002 /* RebalanceSQLiteCache.swift */,
+				A89500000000000000000003 /* CoachHubView.swift */,
+				A89500000000000000000004 /* DailyCoachViewModel.swift */,
+				A89500000000000000000005 /* DualModeSwitcher.swift */,
+				A89500000000000000000006 /* PlanRebalanceNotificationSheet.swift */,
+				A89500000000000000000007 /* StudyPlanRebalanceViewModel.swift */,
+				A89500000000000000000008 /* PracticeQuestionCardView.swift */,
+				A89500000000000000000009 /* PracticeSQLiteCache.swift */,
+				A89500000000000000000010 /* PracticeSessionModels.swift */,
+				A89500000000000000000011 /* PracticeSessionView.swift */,
+				A89500000000000000000012 /* PracticeSessionViewModel.swift */,
+				A89500000000000000000013 /* DailyStudyPlanView.swift */,
+				A89500000000000000000014 /* SpacedReviewCardView.swift */,
+				A89500000000000000000015 /* SpacedReviewModels.swift */,
+				A89500000000000000000016 /* SpacedReviewSQLiteCache.swift */,
+				A89500000000000000000017 /* SpacedReviewViewModel.swift */,
+				A89500000000000000000018 /* StudySessionCoordinator.swift */,
+				A89500000000000000000019 /* StudySessionModels.swift */,
+				A89500000000000000000020 /* StudySessionOfflineCheckpointStore.swift */,
+				A89500000000000000000021 /* StudySessionResumeView.swift */,
+				A89500000000000000000022 /* MicroLessonSQLiteCache.swift */,
+				A89500000000000000000023 /* MicroLessonModels.swift */,
+				A89500000000000000000024 /* MicroLessonDrawerView.swift */,
+				A89500000000000000000025 /* MicroLessonViewModel.swift */,
+				A89600000000000000000001 /* Sprint82PracticeTests.swift */,
+				A89600000000000000000002 /* Sprint83SpacedRepetitionTests.swift */,
+				A89600000000000000000003 /* Sprint84CoachHubTests.swift */,
+				A89600000000000000000004 /* Sprint85RebalancingTests.swift */,
+				A89600000000000000000005 /* Sprint86MicroLessonTests.swift */,
+				A89600000000000000000006 /* Sprint87StudySessionTests.swift */,
 				A74000000000000000000001 /* attempt-mistake-view-v1.json */,
 				A74000000000000000000002 /* attempt-mistake-evaluation-v1.json */,
 				A75000000000000000000001 /* mistake-dispute-result-v1.json */,
@@ -1300,6 +1411,36 @@
 				B88000000000000000000002 /* GamificationService.swift in Sources */,
 				B88000000000000000000003 /* StreakBadgeView.swift in Sources */,
 				B88000000000000000000004 /* MilestoneSheetView.swift in Sources */,
+				B89000000000000000000001 /* WeeklyReportModels.swift in Sources */,
+				B89000000000000000000002 /* WeeklyReportService.swift in Sources */,
+				B89000000000000000000003 /* TutorSharePacketPDFRenderer.swift in Sources */,
+				B89000000000000000000004 /* WeeklyProgressReportViewModel.swift in Sources */,
+				B89000000000000000000005 /* WeeklyProgressReportView.swift in Sources */,
+				B89500000000000000000001 /* DailyCoachSQLiteCache.swift in Sources */,
+				B89500000000000000000002 /* RebalanceSQLiteCache.swift in Sources */,
+				B89500000000000000000003 /* CoachHubView.swift in Sources */,
+				B89500000000000000000004 /* DailyCoachViewModel.swift in Sources */,
+				B89500000000000000000005 /* DualModeSwitcher.swift in Sources */,
+				B89500000000000000000006 /* PlanRebalanceNotificationSheet.swift in Sources */,
+				B89500000000000000000007 /* StudyPlanRebalanceViewModel.swift in Sources */,
+				B89500000000000000000008 /* PracticeQuestionCardView.swift in Sources */,
+				B89500000000000000000009 /* PracticeSQLiteCache.swift in Sources */,
+				B89500000000000000000010 /* PracticeSessionModels.swift in Sources */,
+				B89500000000000000000011 /* PracticeSessionView.swift in Sources */,
+				B89500000000000000000012 /* PracticeSessionViewModel.swift in Sources */,
+				B89500000000000000000013 /* DailyStudyPlanView.swift in Sources */,
+				B89500000000000000000014 /* SpacedReviewCardView.swift in Sources */,
+				B89500000000000000000015 /* SpacedReviewModels.swift in Sources */,
+				B89500000000000000000016 /* SpacedReviewSQLiteCache.swift in Sources */,
+				B89500000000000000000017 /* SpacedReviewViewModel.swift in Sources */,
+				B89500000000000000000018 /* StudySessionCoordinator.swift in Sources */,
+				B89500000000000000000019 /* StudySessionModels.swift in Sources */,
+				B89500000000000000000020 /* StudySessionOfflineCheckpointStore.swift in Sources */,
+				B89500000000000000000021 /* StudySessionResumeView.swift in Sources */,
+				B89500000000000000000022 /* MicroLessonSQLiteCache.swift in Sources */,
+				B89500000000000000000023 /* MicroLessonModels.swift in Sources */,
+				B89500000000000000000024 /* MicroLessonDrawerView.swift in Sources */,
+				B89500000000000000000025 /* MicroLessonViewModel.swift in Sources */,
 				B67900000000000000000001 /* NativeAttemptExtraction.swift in Sources */,
 				B67900000000000000000002 /* AttemptStepReviewView.swift in Sources */,
 				B67900000000000000000003 /* AttemptMathView.swift in Sources */,
@@ -1427,6 +1568,13 @@
 				B7A000000000000000000002 /* Sprint710MasteryCalibrationTests.swift in Sources */,
 				B81000000000000000000005 /* Sprint81RecommendationTests.swift in Sources */,
 				B88000000000000000000005 /* Sprint88GamificationTests.swift in Sources */,
+				B89000000000000000000006 /* Sprint89WeeklyReportTests.swift in Sources */,
+				B89600000000000000000001 /* Sprint82PracticeTests.swift in Sources */,
+				B89600000000000000000002 /* Sprint83SpacedRepetitionTests.swift in Sources */,
+				B89600000000000000000003 /* Sprint84CoachHubTests.swift in Sources */,
+				B89600000000000000000004 /* Sprint85RebalancingTests.swift in Sources */,
+				B89600000000000000000005 /* Sprint86MicroLessonTests.swift in Sources */,
+				B89600000000000000000006 /* Sprint87StudySessionTests.swift in Sources */,
 				B69000000000000000000004 /* MathVisualizationTests.swift in Sources */,
 				B54000000000000000000009 /* PrimarySolveContractTests.swift in Sources */,
 				B5400000000000000000000A /* MathPresentationTests.swift in Sources */,

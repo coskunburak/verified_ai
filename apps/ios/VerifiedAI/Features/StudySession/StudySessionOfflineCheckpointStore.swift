@@ -13,8 +13,22 @@ enum StudySessionStoreError: Error, Equatable {
 /// Actor-isolated SQLite WAL store guaranteeing offline checkpoints are persisted
 /// durably before any network attempt and scoped strictly by user_id (INV-SESS-002, INV-SESS-004).
 actor StudySessionOfflineCheckpointStore {
+    private final class Connection {
+        let handle: OpaquePointer?
 
-    private var db: OpaquePointer?
+        init(handle: OpaquePointer?) {
+            self.handle = handle
+        }
+
+        deinit {
+            if let handle {
+                sqlite3_close(handle)
+            }
+        }
+    }
+
+    private let connection: Connection
+    private var db: OpaquePointer? { connection.handle }
     private let encoder = StudySessionJSONCoding.makeEncoder()
     private let decoder = StudySessionJSONCoding.makeDecoder()
 
@@ -34,14 +48,8 @@ actor StudySessionOfflineCheckpointStore {
             if let handle { sqlite3_close(handle) }
             throw StudySessionStoreError.databaseOpenFailed
         }
-        self.db = handle
+        self.connection = Connection(handle: handle)
         try Self.configureSchema(on: handle)
-    }
-
-    deinit {
-        if let db {
-            sqlite3_close(db)
-        }
     }
 
     private static func configureSchema(on db: OpaquePointer?) throws {

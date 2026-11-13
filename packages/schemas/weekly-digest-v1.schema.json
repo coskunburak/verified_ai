@@ -1,0 +1,565 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/weekly-digest-v1.schema.json",
+  "title": "WeeklyDigestV1",
+  "description": "Weekly learner digest and explainable priority recommendations (Sprint 8.9, ADR-006 training_eligible=false, zero PII).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "digestId",
+    "userId",
+    "weekIso",
+    "weekStartDate",
+    "weekEndDate",
+    "locale",
+    "status",
+    "training_eligible",
+    "generatedAt",
+    "executiveSummary",
+    "wins",
+    "recurringMistakes",
+    "masteryMomentum",
+    "recommendations"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "weekly-digest-v1"
+    },
+    "digestId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "userId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "weekIso": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-W(0[1-9]|[1-4][0-9]|5[0-3])$"
+    },
+    "weekStartDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "weekEndDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "locale": {
+      "type": "string",
+      "enum": ["en", "tr"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["GENERATED", "EMPTY_WEEK", "DEGRADED"]
+    },
+    "training_eligible": {
+      "type": "boolean",
+      "const": false
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "executiveSummary": {
+      "$ref": "#/$defs/ExecutiveSummary"
+    },
+    "wins": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 10,
+      "items": {
+        "$ref": "#/$defs/WeeklyWinItem"
+      }
+    },
+    "recurringMistakes": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 8,
+      "items": {
+        "$ref": "#/$defs/WeeklyRecurringMistakeItem"
+      }
+    },
+    "masteryMomentum": {
+      "$ref": "#/$defs/MasteryMomentum"
+    },
+    "recommendations": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 5,
+      "items": {
+        "$ref": "#/$defs/ExplainableRecommendationItem"
+      }
+    }
+  },
+  "$defs": {
+    "ExecutiveSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "headline",
+        "encouragementNote",
+        "solvedAttemptsCount",
+        "independentTwinsSolvedCount",
+        "studyMinutes",
+        "activeDaysCount",
+        "independentShareRate",
+        "completedPlanItemsCount",
+        "currentStreakDays"
+      ],
+      "properties": {
+        "headline": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "encouragementNote": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 400
+        },
+        "solvedAttemptsCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "independentTwinsSolvedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "studyMinutes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "activeDaysCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 7
+        },
+        "independentShareRate": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "completedPlanItemsCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "currentStreakDays": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "WeeklyWinItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "winId",
+        "category",
+        "title",
+        "detail",
+        "skillId",
+        "metricDelta",
+        "evidenceRef"
+      ],
+      "properties": {
+        "winId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "MASTERY_GAIN",
+            "MISTAKE_RESOLVED",
+            "INDEPENDENT_TRANSFER",
+            "HABIT_CONTINUITY",
+            "RETENTION_CONFIRMED",
+            "GENTLE_START"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "detail": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 320
+        },
+        "skillId": {
+          "type": ["string", "null"],
+          "maxLength": 100
+        },
+        "metricDelta": {
+          "type": ["string", "null"],
+          "maxLength": 48
+        },
+        "evidenceRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        }
+      }
+    },
+    "WeeklyRecurringMistakeItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mistakeCode",
+        "label",
+        "skillId",
+        "skillTitle",
+        "occurrenceCountThisWeek",
+        "previousWeekOccurrenceCount",
+        "trendDirection",
+        "microLessonCompleted",
+        "supportiveGuidance",
+        "evidenceRefs"
+      ],
+      "properties": {
+        "mistakeCode": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 64
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "skillId": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100
+        },
+        "skillTitle": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "occurrenceCountThisWeek": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "previousWeekOccurrenceCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "trendDirection": {
+          "type": "string",
+          "enum": ["IMPROVING", "STABLE", "NEEDS_GENTLE_FOCUS"]
+        },
+        "microLessonCompleted": {
+          "type": "boolean"
+        },
+        "supportiveGuidance": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 320
+        },
+        "evidenceRefs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 5,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        }
+      }
+    },
+    "DailyActivityBucket": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "date",
+        "dayLabel",
+        "studyMinutes",
+        "solvedCount",
+        "independentCount",
+        "active"
+      ],
+      "properties": {
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "dayLabel": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 16
+        },
+        "studyMinutes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "solvedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "independentCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "active": {
+          "type": "boolean"
+        }
+      }
+    },
+    "SkillMomentumItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "skillId",
+        "skillTitle",
+        "masteryScore",
+        "retentionScore",
+        "masteryDelta",
+        "independentEvidenceCount"
+      ],
+      "properties": {
+        "skillId": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100
+        },
+        "skillTitle": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "masteryScore": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "retentionScore": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "masteryDelta": {
+          "type": "number",
+          "minimum": -1.0,
+          "maximum": 1.0
+        },
+        "independentEvidenceCount": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "MasteryMomentum": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "overallMasteryAvg",
+        "overallRetentionAvg",
+        "skillsImprovedCount",
+        "skillsPracticedCount",
+        "dueReviewsCount",
+        "dailyActivityBuckets",
+        "topSkillDeltas"
+      ],
+      "properties": {
+        "overallMasteryAvg": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "overallRetentionAvg": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "skillsImprovedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "skillsPracticedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "dueReviewsCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "dailyActivityBuckets": {
+          "type": "array",
+          "minItems": 7,
+          "maxItems": 7,
+          "items": {
+            "$ref": "#/$defs/DailyActivityBucket"
+          }
+        },
+        "topSkillDeltas": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 6,
+          "items": {
+            "$ref": "#/$defs/SkillMomentumItem"
+          }
+        }
+      }
+    },
+    "RecommendationFactorBreakdown": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "masteryGapWeight",
+        "mistakeWeight",
+        "retentionWeight",
+        "prerequisiteWeight",
+        "observedMasteryScore",
+        "observedMistakeCount",
+        "observedRetentionScore",
+        "dependentBlockedSkillsCount"
+      ],
+      "properties": {
+        "masteryGapWeight": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "mistakeWeight": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "retentionWeight": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "prerequisiteWeight": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "observedMasteryScore": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "observedMistakeCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "observedRetentionScore": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "dependentBlockedSkillsCount": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "RecommendationExplanation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "summaryText",
+        "factorBreakdown"
+      ],
+      "properties": {
+        "summaryText": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 320
+        },
+        "factorBreakdown": {
+          "$ref": "#/$defs/RecommendationFactorBreakdown"
+        }
+      }
+    },
+    "ExplainableRecommendationItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "recommendationId",
+        "targetSkillId",
+        "targetSkillTitle",
+        "reasonCode",
+        "priorityScore",
+        "estimatedMinutes",
+        "recommendedActionType",
+        "headline",
+        "explanation",
+        "evidenceRefs"
+      ],
+      "properties": {
+        "recommendationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "targetSkillId": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100
+        },
+        "targetSkillTitle": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "reasonCode": {
+          "type": "string",
+          "enum": [
+            "LOW_MASTERY_FOUNDATION",
+            "RECURRING_MISTAKE_PATTERN",
+            "RETENTION_DECAY_RISK",
+            "PREREQUISITE_BLOCKER",
+            "COLD_START_ONBOARDING"
+          ]
+        },
+        "priorityScore": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "estimatedMinutes": {
+          "type": "integer",
+          "minimum": 5,
+          "maximum": 60
+        },
+        "recommendedActionType": {
+          "type": "string",
+          "enum": [
+            "TWIN_DRILL",
+            "MICRO_LESSON",
+            "SPACED_REVIEW",
+            "CONCEPT_WARMUP",
+            "DIAGNOSTIC_CHECK"
+          ]
+        },
+        "headline": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "explanation": {
+          "$ref": "#/$defs/RecommendationExplanation"
+        },
+        "evidenceRefs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 5,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        }
+      }
+    }
+  }
+}

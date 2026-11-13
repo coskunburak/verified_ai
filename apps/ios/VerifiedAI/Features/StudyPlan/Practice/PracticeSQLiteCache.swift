@@ -9,7 +9,24 @@ public protocol PracticeCacheStoreProtocol: Sendable {
 }
 
 public actor PracticeSQLiteCache: PracticeCacheStoreProtocol {
-    private var db: OpaquePointer?
+    private final class Connection {
+        let handle: OpaquePointer?
+
+        init(path: String) {
+            var handle: OpaquePointer?
+            sqlite3_open(path, &handle)
+            self.handle = handle
+        }
+
+        deinit {
+            if let handle {
+                sqlite3_close(handle)
+            }
+        }
+    }
+
+    private let connection: Connection
+    private var db: OpaquePointer? { connection.handle }
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
 
@@ -18,24 +35,18 @@ public actor PracticeSQLiteCache: PracticeCacheStoreProtocol {
         decoder.dateDecodingStrategy = .iso8601
 
         if inMemory {
-            sqlite3_open(":memory:", &db)
+            connection = Connection(path: ":memory:")
         } else {
             let paths = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)
             let cacheDir = paths[0].appendingPathComponent("VerifiedAI", isDirectory: true)
             try? FileManager.default.createDirectory(at: cacheDir, withIntermediateDirectories: true)
             let fileUrl = cacheDir.appendingPathComponent("practice_cache.sqlite")
-            sqlite3_open(fileUrl.path, &db)
+            connection = Connection(path: fileUrl.path)
         }
-        createTablesIfNotExists()
+        Self.createTablesIfNotExists(on: connection.handle)
     }
 
-    deinit {
-        if let db = db {
-            sqlite3_close(db)
-        }
-    }
-
-    private func createTablesIfNotExists() {
+    private static func createTablesIfNotExists(on db: OpaquePointer?) {
         guard let db = db else { return }
         let createSql = """
         CREATE TABLE IF NOT EXISTS practice_sessions_cache (

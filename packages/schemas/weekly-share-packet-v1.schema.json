@@ -1,0 +1,319 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/weekly-share-packet-v1.schema.json",
+  "title": "WeeklySharePacketV1",
+  "description": "Strict allowlisted privacy-safe share packet for Tutor/Parent PDF export (Sprint 8.9, G-PRIV-03).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "packetId",
+    "digestId",
+    "weekIso",
+    "weekStartDate",
+    "weekEndDate",
+    "locale",
+    "recipientRole",
+    "displayAlias",
+    "training_eligible",
+    "generatedAt",
+    "executiveMetrics",
+    "masterySnapshot",
+    "focusThemes",
+    "recommendedNextActions",
+    "privacyAttestation"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "weekly-share-packet-v1"
+    },
+    "packetId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "digestId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "weekIso": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-W(0[1-9]|[1-4][0-9]|5[0-3])$"
+    },
+    "weekStartDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "weekEndDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "locale": {
+      "type": "string",
+      "enum": ["en", "tr"]
+    },
+    "recipientRole": {
+      "type": "string",
+      "enum": ["TUTOR", "PARENT"]
+    },
+    "displayAlias": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 40
+    },
+    "training_eligible": {
+      "type": "boolean",
+      "const": false
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "executiveMetrics": {
+      "$ref": "#/$defs/ShareExecutiveMetrics"
+    },
+    "masterySnapshot": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 6,
+      "items": {
+        "$ref": "#/$defs/ShareMasterySnapshotItem"
+      }
+    },
+    "focusThemes": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 5,
+      "items": {
+        "$ref": "#/$defs/ShareFocusThemeItem"
+      }
+    },
+    "recommendedNextActions": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 3,
+      "items": {
+        "$ref": "#/$defs/ShareRecommendedActionItem"
+      }
+    },
+    "privacyAttestation": {
+      "$ref": "#/$defs/PrivacyAttestation"
+    }
+  },
+  "$defs": {
+    "ShareExecutiveMetrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "solvedAttemptsCount",
+        "independentTwinsSolvedCount",
+        "studyMinutes",
+        "activeDaysCount",
+        "independentShareRate"
+      ],
+      "properties": {
+        "solvedAttemptsCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "independentTwinsSolvedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "studyMinutes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "activeDaysCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 7
+        },
+        "independentShareRate": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        }
+      }
+    },
+    "ShareMasterySnapshotItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "skillId",
+        "skillTitle",
+        "masteryScore",
+        "masteryDelta"
+      ],
+      "properties": {
+        "skillId": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100
+        },
+        "skillTitle": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "masteryScore": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "masteryDelta": {
+          "type": "number",
+          "minimum": -1.0,
+          "maximum": 1.0
+        }
+      }
+    },
+    "ShareFocusThemeItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mistakeCode",
+        "label",
+        "skillTitle",
+        "trendDirection",
+        "guidance"
+      ],
+      "properties": {
+        "mistakeCode": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 64
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "skillTitle": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "trendDirection": {
+          "type": "string",
+          "enum": ["IMPROVING", "STABLE", "NEEDS_GENTLE_FOCUS"]
+        },
+        "guidance": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 320
+        }
+      }
+    },
+    "ShareRecommendedActionItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "recommendationId",
+        "targetSkillTitle",
+        "reasonCode",
+        "priorityScore",
+        "estimatedMinutes",
+        "headline",
+        "explanationSummary",
+        "evidenceRefs"
+      ],
+      "properties": {
+        "recommendationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "targetSkillTitle": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "reasonCode": {
+          "type": "string",
+          "enum": [
+            "LOW_MASTERY_FOUNDATION",
+            "RECURRING_MISTAKE_PATTERN",
+            "RETENTION_DECAY_RISK",
+            "PREREQUISITE_BLOCKER",
+            "COLD_START_ONBOARDING"
+          ]
+        },
+        "priorityScore": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "estimatedMinutes": {
+          "type": "integer",
+          "minimum": 5,
+          "maximum": 60
+        },
+        "headline": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "explanationSummary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 320
+        },
+        "evidenceRefs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 5,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        }
+      }
+    },
+    "PrivacyAttestation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policyId",
+        "piiExcluded",
+        "rawTutorTranscriptsIncluded",
+        "rawStudentPhotosIncluded",
+        "exactSessionTimestampsIncluded",
+        "trainingEligible",
+        "shareableScopeSummary"
+      ],
+      "properties": {
+        "policyId": {
+          "type": "string",
+          "const": "G-PRIV-03"
+        },
+        "piiExcluded": {
+          "type": "boolean",
+          "const": true
+        },
+        "rawTutorTranscriptsIncluded": {
+          "type": "boolean",
+          "const": false
+        },
+        "rawStudentPhotosIncluded": {
+          "type": "boolean",
+          "const": false
+        },
+        "exactSessionTimestampsIncluded": {
+          "type": "boolean",
+          "const": false
+        },
+        "trainingEligible": {
+          "type": "boolean",
+          "const": false
+        },
+        "shareableScopeSummary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        }
+      }
+    }
+  }
+}

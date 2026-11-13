@@ -45,10 +45,10 @@ public actor SpacedReviewSQLiteCache: SpacedReviewCacheStoreProtocol {
             let fileUrl = cacheDir.appendingPathComponent("spaced_review_cache.sqlite")
             connection = Connection(path: fileUrl.path)
         }
-        createTableIfNotExists()
+        Self.createTableIfNotExists(on: connection.handle)
     }
 
-    private func createTableIfNotExists() {
+    private static func createTableIfNotExists(on db: OpaquePointer?) {
         guard let db else { return }
         let createSql = """
         CREATE TABLE IF NOT EXISTS spaced_review_cache (
