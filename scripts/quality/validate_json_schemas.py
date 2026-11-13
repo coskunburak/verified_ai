@@ -68,6 +68,10 @@ def run_validation():
     spaced_queue_fixture_path = ROOT / "packages/schemas/studyplan/fixtures/spaced-queue-v1.valid.json"
     spaced_queue_example_path = ROOT / "packages/schemas/studyplan/examples/spaced-queue-v1.valid.json"
 
+    # Sprint 8.4 Files
+    daily_coach_schema_path = ROOT / "packages/schemas/coach/daily-coach-v1.schema.json"
+    daily_coach_fixture_path = ROOT / "packages/schemas/coach/fixtures/daily-coach-v1.valid.json"
+
     assert mistake_passport_schema_path.exists(), "Missing mistake-passport-v1.schema.json"
     assert mistake_passport_fixture_path.exists(), "Missing mistake-passport-v1.valid.json"
     assert counterexample_schema_path.exists(), "Missing counterexample-proof-card-v1.schema.json"
@@ -81,6 +85,8 @@ def run_validation():
     assert spaced_queue_schema_path.exists(), "Missing spaced-queue-v1.schema.json"
     assert spaced_queue_fixture_path.exists(), "Missing spaced-queue-v1.valid.json"
     assert spaced_queue_example_path.exists(), "Missing spaced-queue-v1 example"
+    assert daily_coach_schema_path.exists(), "Missing daily-coach-v1.schema.json"
+    assert daily_coach_fixture_path.exists(), "Missing daily-coach-v1.valid.json"
 
     mp_schema = json.loads(mistake_passport_schema_path.read_text(encoding="utf-8"))
     mp_fixture = json.loads(mistake_passport_fixture_path.read_text(encoding="utf-8"))
@@ -95,6 +101,8 @@ def run_validation():
     sq_schema = json.loads(spaced_queue_schema_path.read_text(encoding="utf-8"))
     sq_fixture = json.loads(spaced_queue_fixture_path.read_text(encoding="utf-8"))
     sq_example = json.loads(spaced_queue_example_path.read_text(encoding="utf-8"))
+    dc_schema = json.loads(daily_coach_schema_path.read_text(encoding="utf-8"))
+    dc_fixture = json.loads(daily_coach_fixture_path.read_text(encoding="utf-8"))
 
     validate_schema_structure(mp_schema, "mistake-passport-v1.schema.json")
     validate_schema_structure(ce_schema, "counterexample-proof-card-v1.schema.json")
@@ -102,6 +110,7 @@ def run_validation():
     validate_schema_structure(rec_schema, "learner-recommendations-v1.schema.json")
     validate_schema_structure(ps_schema, "practice-session-v1.schema.json")
     validate_schema_structure(sq_schema, "spaced-queue-v1.schema.json")
+    validate_schema_structure(dc_schema, "daily-coach-v1.schema.json")
 
     sg_schema = json.loads(skill_graph_schema_path.read_text(encoding="utf-8"))
     sg_fixture = json.loads(skill_graph_fixture_path.read_text(encoding="utf-8"))
@@ -288,6 +297,40 @@ def run_validation():
         bad_sq_5 = copy.deepcopy(sq_fixture)
         bad_sq_5["items"][0]["itemId"] = "not-a-valid-uuid"
         assert list(sq_val.iter_errors(bad_sq_5)), "Expected failure when itemId is not a valid UUID"
+
+        # Sprint 8.4 Daily Coach Schema & Negative Mutations
+        jsonschema.Draft202012Validator.check_schema(dc_schema)
+        dc_val = jsonschema.Draft202012Validator(dc_schema, format_checker=jsonschema.FormatChecker())
+        assert list(dc_val.iter_errors(dc_fixture)) == [], f"daily-coach fixture validation errors: {list(dc_val.iter_errors(dc_fixture))}"
+
+        # Mutation 1: invalid budgetMinutes (12 not in [5, 10, 15, 20, 30])
+        bad_dc_1 = copy.deepcopy(dc_fixture)
+        bad_dc_1["budgetMinutes"] = 12
+        assert list(dc_val.iter_errors(bad_dc_1)), "Expected validation rejection when budgetMinutes = 12"
+
+        # Mutation 2: invalid preferredMode enum
+        bad_dc_2 = copy.deepcopy(dc_fixture)
+        bad_dc_2["preferredMode"] = "PASSIVE_CHAT_MODE"
+        assert list(dc_val.iter_errors(bad_dc_2)), "Expected validation rejection when preferredMode = PASSIVE_CHAT_MODE"
+
+        # Mutation 3: invalid taskType enum
+        bad_dc_3 = copy.deepcopy(dc_fixture)
+        bad_dc_3["tasks"][0]["taskType"] = "RANDOM_DRILL"
+        assert list(dc_val.iter_errors(bad_dc_3)), "Expected validation rejection when taskType = RANDOM_DRILL"
+
+        # Mutation 4: taskOrder out of [1..5] bounds
+        bad_dc_4a = copy.deepcopy(dc_fixture)
+        bad_dc_4a["tasks"][0]["taskOrder"] = 0
+        assert list(dc_val.iter_errors(bad_dc_4a)), "Expected validation rejection when taskOrder = 0"
+
+        bad_dc_4b = copy.deepcopy(dc_fixture)
+        bad_dc_4b["tasks"][0]["taskOrder"] = 6
+        assert list(dc_val.iter_errors(bad_dc_4b)), "Expected validation rejection when taskOrder = 6"
+
+        # Mutation 5: additional property on root object
+        bad_dc_5 = copy.deepcopy(dc_fixture)
+        bad_dc_5["extraField"] = True
+        assert list(dc_val.iter_errors(bad_dc_5)), "Expected validation rejection when root has extraField"
     else:
         # Fallback pure-python verification of invariants
         assert sg_fixture["schemaVersion"] == "skill-graph-v1"
@@ -396,6 +439,19 @@ def run_validation():
         assert "401" in sq_dismiss["responses"], "HTTP 401 Unauthorized missing from dismiss spaced item"
         assert "404" in sq_dismiss["responses"], "HTTP 404 Not Found missing from dismiss spaced item"
 
+        # Sprint 8.4 Daily Coach Endpoints
+        for coach_path, method in (
+            ("/v1/coach/today-summary", "get"),
+            ("/v1/coach/preferences", "patch"),
+            ("/v1/coach/missions/{id}/complete", "post"),
+            ("/v1/coach/missions/{id}/downshift", "post"),
+        ):
+            assert coach_path in paths, f"Missing {coach_path} endpoint in OpenAPI spec"
+            op = paths[coach_path][method]
+            assert op["security"] == [{"bearerAuth": []}], f"Security bearerAuth missing on {coach_path}"
+            assert "200" in op["responses"], f"HTTP 200 OK missing from {coach_path}"
+            assert "401" in op["responses"], f"HTTP 401 Unauthorized missing from {coach_path}"
+
     # 3. iOS Localizable.xcstrings Key Verification
     xcstrings_data = json.loads(strings_path.read_text(encoding="utf-8"))
     strings = xcstrings_data.get("strings", {})
@@ -444,6 +500,40 @@ def run_validation():
         "studyplan.spaced.retention.pill",
         "studyplan.spaced.empty.title",
         "studyplan.spaced.action.start",
+        "coach.hub.exam_target",
+        "coach.hub.streak_days",
+        "coach.hub.offline_banner",
+        "coach.hub.mission_title",
+        "coach.hub.budget_15",
+        "coach.hub.preview_label",
+        "coach.hub.start_mission_cta",
+        "coach.hub.coldstart_title",
+        "coach.hub.coldstart_cta",
+        "coach.hub.capture_title",
+        "coach.hub.capture_subtitle",
+        "coach.hub.capture_cta",
+        "coach.hub.radar_title",
+        "coach.hub.badge.growth_opportunity",
+        "coach.hub.badge.retention_refresh",
+        "coach.hub.badge.immunity_check",
+        "coach.mode.solver.title",
+        "coach.mode.solver.subtitle",
+        "coach.mode.socratic.title",
+        "coach.mode.socratic.subtitle",
+        "coach.plan.title",
+        "coach.plan.subtitle",
+        "coach.plan.why_this_task",
+        "coach.plan.complete_task_cta",
+        "coach.plan.block.trap_repair",
+        "coach.plan.block.spaced_retention",
+        "coach.plan.block.exam_synthesis",
+        "coach.plan.status.completed",
+        "coach.plan.status.skipped",
+        "coach.plan.status.pending",
+        "coach.downshift.badge",
+        "coach.downshift.title",
+        "coach.downshift.subtitle",
+        "coach.downshift.button",
     ]
 
     for key in required_keys:
@@ -454,7 +544,7 @@ def run_validation():
             val = loc.get("value")
             assert val and len(val.strip()) > 0, f"Missing {lang} translation for key: {key}"
 
-    print(f"PASS: Sprint 8.1, 8.2 & 8.3 JSON schemas, negative mutations, OpenAPI 3.1 endpoints, and {len(required_keys)} EN/TR localizations verified.")
+    print(f"PASS: Sprint 8.1, 8.2, 8.3 & 8.4 JSON schemas, negative mutations, OpenAPI 3.1 endpoints, and {len(required_keys)} EN/TR localizations verified.")
 
 
 if __name__ == "__main__":

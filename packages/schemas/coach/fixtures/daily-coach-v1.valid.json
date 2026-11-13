@@ -1,0 +1,72 @@
+{
+  "sessionId": "84000000-1111-4444-8888-000000000001",
+  "userId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+  "localDate": "2026-11-13",
+  "budgetMinutes": 15,
+  "status": "IN_PROGRESS",
+  "isDownshifted": false,
+  "isColdStart": false,
+  "completedTasksCount": 0,
+  "totalTasksCount": 3,
+  "briefingText": "Bugün 15 dakikada 1 aktif tuzak onarımı, 1 aralıklı tekrar ve 1 sınav sentezi göreviyle ivmeni koruyoruz.",
+  "preferredMode": "SOCRATIC_COACH_MODE",
+  "streakDays": 5,
+  "tasks": [
+    {
+      "taskId": "84000000-2222-4444-8888-000000000001",
+      "taskOrder": 1,
+      "taskType": "TRAP_REPAIR",
+      "targetSkillCode": "MATH.ALG.RATIONAL_EQ",
+      "targetMistakeCode": "ALG_DOMAIN_EXCLUSION_MISSED",
+      "assignedTwinId": "twin_84_a1b2c3d4e5f6",
+      "estimatedMinutes": 5,
+      "whyThisTaskRationale": "growth_opportunity: Rasyonel sadeleştirme adımlarında payda kısıtını (x ≠ 2) doğrulamak AYT netlerini güçlendirir.",
+      "promptPreviewLatex": "\\frac{x^2 - 4}{x - 2} = x + 2, \\quad x \\neq 2",
+      "status": "PENDING",
+      "completedAt": null
+    },
+    {
+      "taskId": "84000000-2222-4444-8888-000000000002",
+      "taskOrder": 2,
+      "taskType": "SPACED_RETENTION",
+      "targetSkillCode": "MATH.ALG.QUADRATIC_DISCRIMINANT",
+      "targetMistakeCode": "TRAP_SIGN_DISTRIB_NEG",
+      "assignedTwinId": "twin_84_b2c3d4e5f6a1",
+      "estimatedMinutes": 5,
+      "whyThisTaskRationale": "immunity_check: 7 günlük kalıcılık kontrolü ile diskriminant işaret dağılımını pekiştiriyoruz.",
+      "promptPreviewLatex": "2x^2 - 5x - 3 = 0 \\implies \\Delta = (-5)^2 - 4(2)(-3)",
+      "status": "PENDING",
+      "completedAt": null
+    },
+    {
+      "taskId": "84000000-2222-4444-8888-000000000003",
+      "taskOrder": 3,
+      "taskType": "EXAM_SYNTHESIS",
+      "targetSkillCode": "MATH.CALC.CHAIN_RULE_COMPOSITE",
+      "targetMistakeCode": null,
+      "assignedTwinId": "twin_84_c3d4e5f6a1b2",
+      "estimatedMinutes": 5,
+      "whyThisTaskRationale": "retention_refresh: AYT yüksek getirili bileşke fonksiyon türevi sentezi.",
+      "promptPreviewLatex": "\\frac{d}{dx}\\left[(3x^2 + 1)^4\\right] = 24x(3x^2 + 1)^3",
+      "status": "PENDING",
+      "completedAt": null
+    }
+  ],
+  "activeTrapRadar": [
+    {
+      "skillCode": "MATH.ALG.RATIONAL_EQ",
+      "mistakeCode": "ALG_DOMAIN_EXCLUSION_MISSED",
+      "title": "Payda Tanım Kümesi Kısıtı",
+      "badgeKey": "growth_opportunity",
+      "statusLabel": "active_trap_pattern"
+    },
+    {
+      "skillCode": "MATH.ALG.QUADRATIC_DISCRIMINANT",
+      "mistakeCode": "TRAP_SIGN_DISTRIB_NEG",
+      "title": "Diskriminant İşaret Dağılımı",
+      "badgeKey": "immunity_check",
+      "statusLabel": "strengthening"
+    }
+  ],
+  "coldStartDemo": null
+}

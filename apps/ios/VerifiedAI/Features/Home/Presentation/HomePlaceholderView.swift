@@ -15,12 +15,16 @@ struct HomePlaceholderView: View {
     var reviewViewModel: ProblemReviewViewModel? = nil
     var coachHubViewModel: CoachHubViewModel? = nil
     var spacedReviewViewModel: SpacedReviewViewModel? = nil
+    var dailyCoachViewModel: DailyCoachViewModel? = nil
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: SpacingTokens.lg) {
                 header
                 if isSolveFixture { Label("solve.fixture", systemImage: "testtube.2").foregroundStyle(ColorTokens.warning) }
+                if let dailyCoachViewModel {
+                    CoachHubView(viewModel: dailyCoachViewModel, onStartCapture: startProblemCapture)
+                }
                 primaryAction
                 if let problemHistoryViewModel {
                     ProblemHistorySectionView(

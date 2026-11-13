@@ -3352,6 +3352,136 @@ paths:
         '404':
           $ref: '#/components/responses/ProblemNotFound'
 
+  /v1/coach/today-summary:
+    get:
+      operationId: getDailyCoachTodaySummary
+      tags:
+        - StudyPlan
+      summary: Get or deterministically synthesize today's daily coach mission
+      description: >
+        Returns the idempotent daily coach mission for (userId, localDate) at $0.00 LLM token cost, assembling Block 1 (TRAP_REPAIR), Block 2 (SPACED_RETENTION), and Block 3 (EXAM_SYNTHESIS), or a 3-step cold-start readiness mission (INV-COACH-001, INV-COACH-004, INV-COACH-006).
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: localDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+          description: Optional ISO-8601 calendar date (YYYY-MM-DD); defaults to server UTC date.
+      responses:
+        '200':
+          description: Daily coach summary retrieved or created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '../../schemas/coach/daily-coach-v1.schema.json'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+
+  /v1/coach/preferences:
+    patch:
+      operationId: updateDailyCoachPreferences
+      tags:
+        - StudyPlan
+      summary: Update daily coach dual-mode preference and time budget
+      description: >
+        Switches top-level coaching mode between SOLVER_MODE and SOCRATIC_COACH_MODE and updates daily budget minutes (INV-COACH-003).
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DailyCoachPreferencesRequest'
+      responses:
+        '200':
+          description: Daily coach preferences updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '../../schemas/coach/daily-coach-v1.schema.json'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+
+  /v1/coach/missions/{id}/complete:
+    post:
+      operationId: completeDailyCoachTask
+      tags:
+        - StudyPlan
+      summary: Complete a task within a daily coach mission
+      description: >
+        Marks the specified daily coach task COMPLETED idempotently and transitions the mission to COMPLETED when all active tasks finish. Enforces BOLA 404 isolation (INV-COACH-005).
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Daily coach session ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DailyCoachTaskCompleteRequest'
+      responses:
+        '200':
+          description: Daily coach task completed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '../../schemas/coach/daily-coach-v1.schema.json'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+
+  /v1/coach/missions/{id}/downshift:
+    post:
+      operationId: downshiftDailyCoachMission
+      tags:
+        - StudyPlan
+      summary: Busy-day 5-minute mini streak downshift
+      description: >
+        Dynamically contracts an active daily mission to budgetMinutes = 5, keeping Task 1 (TRAP_REPAIR) active and marking remaining non-completed tasks SKIPPED so the learner preserves their daily streak (INV-COACH-002, INV-COACH-005).
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Daily coach session ID
+      responses:
+        '200':
+          description: Daily coach mission downshifted successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '../../schemas/coach/daily-coach-v1.schema.json'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -7542,3 +7672,101 @@ components:
         pedagogicalBadgeKey:
           type: string
           enum: [studyplan.spaced.badge.retention_refresh, studyplan.spaced.badge.trap_immunity_7d]
+
+    DailyCoachPreferencesRequest:
+      type: object
+      additionalProperties: false
+      required: [preferredMode, budgetMinutes]
+      properties:
+        preferredMode:
+          type: string
+          enum: [SOLVER_MODE, SOCRATIC_COACH_MODE]
+        budgetMinutes:
+          type: integer
+          enum: [5, 10, 15, 25]
+
+    DailyCoachTaskCompleteRequest:
+      type: object
+      additionalProperties: false
+      required: [taskId, verifiedIndependentSolve, durationSeconds]
+      properties:
+        taskId:
+          type: string
+          format: uuid
+        verifiedIndependentSolve:
+          type: boolean
+        durationSeconds:
+          type: integer
+          minimum: 0
+
+    DailyCoachTaskDto:
+      type: object
+      additionalProperties: false
+      required: [taskId, taskOrder, taskType, targetSkillCode, assignedTwinId, estimatedMinutes, whyThisTaskRationale, promptPreviewLatex, status]
+      properties:
+        taskId:
+          type: string
+          format: uuid
+        taskOrder:
+          type: integer
+          minimum: 1
+          maximum: 5
+        taskType:
+          type: string
+          enum: [TRAP_REPAIR, SPACED_RETENTION, EXAM_SYNTHESIS]
+        targetSkillCode:
+          type: string
+        targetMistakeCode:
+          type: [string, "null"]
+        assignedTwinId:
+          type: string
+        estimatedMinutes:
+          type: integer
+          minimum: 1
+          maximum: 15
+        whyThisTaskRationale:
+          type: string
+        promptPreviewLatex:
+          type: string
+        status:
+          type: string
+          enum: [PENDING, COMPLETED, SKIPPED]
+        completedAt:
+          type: [string, "null"]
+          format: date-time
+
+    TrapRadarPreviewDto:
+      type: object
+      additionalProperties: false
+      required: [skillCode, mistakeCode, title, badgeKey, statusLabel]
+      properties:
+        skillCode:
+          type: string
+        mistakeCode:
+          type: string
+        title:
+          type: string
+        badgeKey:
+          type: string
+          enum: [growth_opportunity, retention_refresh, immunity_check]
+        statusLabel:
+          type: string
+
+    ColdStartDemoCardDto:
+      type: object
+      additionalProperties: false
+      required: [title, samplePromptLatex, correctStepLatex, focusStepLatex, hintText]
+      properties:
+        title:
+          type: string
+        samplePromptLatex:
+          type: string
+        correctStepLatex:
+          type: string
+        focusStepLatex:
+          type: string
+        hintText:
+          type: string
+
+    DailyCoachSummaryResponse:
+      $ref: '../../schemas/coach/daily-coach-v1.schema.json'

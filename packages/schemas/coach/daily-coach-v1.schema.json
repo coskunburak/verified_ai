@@ -1,0 +1,251 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/coach/daily-coach-v1.schema.json",
+  "title": "DailyCoachSummaryV1",
+  "description": "Deterministic Daily Coach Hub and Study Plan Mission Contract (DOC-85 Screen 1 & Screen 8, INV-COACH-001..006).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sessionId",
+    "userId",
+    "localDate",
+    "budgetMinutes",
+    "status",
+    "isDownshifted",
+    "isColdStart",
+    "completedTasksCount",
+    "totalTasksCount",
+    "briefingText",
+    "preferredMode",
+    "streakDays",
+    "tasks",
+    "activeTrapRadar"
+  ],
+  "properties": {
+    "sessionId": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "userId": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "localDate": {
+      "type": "string",
+      "format": "date",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "budgetMinutes": {
+      "type": "integer",
+      "enum": [5, 10, 15, 25]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["IN_PROGRESS", "COMPLETED"]
+    },
+    "isDownshifted": {
+      "type": "boolean"
+    },
+    "isColdStart": {
+      "type": "boolean"
+    },
+    "completedTasksCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 5
+    },
+    "totalTasksCount": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "briefingText": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 320
+    },
+    "preferredMode": {
+      "type": "string",
+      "enum": ["SOLVER_MODE", "SOCRATIC_COACH_MODE"]
+    },
+    "streakDays": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "tasks": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 5,
+      "items": {
+        "$ref": "#/$defs/TaskItem"
+      }
+    },
+    "activeTrapRadar": {
+      "type": "array",
+      "maxItems": 3,
+      "items": {
+        "$ref": "#/$defs/TrapRadarPreviewItem"
+      }
+    },
+    "coldStartDemo": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/ColdStartDemoCard" }
+      ]
+    }
+  },
+  "$defs": {
+    "TaskItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "taskId",
+        "taskOrder",
+        "taskType",
+        "targetSkillCode",
+        "targetMistakeCode",
+        "assignedTwinId",
+        "estimatedMinutes",
+        "whyThisTaskRationale",
+        "promptPreviewLatex",
+        "status",
+        "completedAt"
+      ],
+      "properties": {
+        "taskId": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+        },
+        "taskOrder": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "taskType": {
+          "type": "string",
+          "enum": ["TRAP_REPAIR", "SPACED_RETENTION", "EXAM_SYNTHESIS"]
+        },
+        "targetSkillCode": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 128,
+          "pattern": "^[A-Z0-9_.-]+$"
+        },
+        "targetMistakeCode": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "string", "minLength": 3, "maxLength": 128 }
+          ]
+        },
+        "assignedTwinId": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 128
+        },
+        "estimatedMinutes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 15
+        },
+        "whyThisTaskRationale": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 500
+        },
+        "promptPreviewLatex": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "status": {
+          "type": "string",
+          "enum": ["PENDING", "COMPLETED", "SKIPPED"]
+        },
+        "completedAt": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "string", "format": "date-time" }
+          ]
+        }
+      }
+    },
+    "TrapRadarPreviewItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "skillCode",
+        "mistakeCode",
+        "title",
+        "badgeKey",
+        "statusLabel"
+      ],
+      "properties": {
+        "skillCode": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 128
+        },
+        "mistakeCode": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 128
+        },
+        "title": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 160
+        },
+        "badgeKey": {
+          "type": "string",
+          "enum": ["growth_opportunity", "retention_refresh", "immunity_check"]
+        },
+        "statusLabel": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 64
+        }
+      }
+    },
+    "ColdStartDemoCard": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "samplePromptLatex",
+        "correctStepLatex",
+        "focusStepLatex",
+        "hintText"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 160
+        },
+        "samplePromptLatex": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "correctStepLatex": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "focusStepLatex": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "hintText": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 320
+        }
+      }
+    }
+  }
+}
