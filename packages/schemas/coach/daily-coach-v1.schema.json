@@ -39,7 +39,7 @@
     },
     "budgetMinutes": {
       "type": "integer",
-      "enum": [5, 10, 15, 25]
+      "enum": [5, 10, 15, 20, 25]
     },
     "status": {
       "type": "string",

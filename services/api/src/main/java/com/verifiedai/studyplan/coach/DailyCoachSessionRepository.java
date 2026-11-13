@@ -23,6 +23,12 @@ public interface DailyCoachSessionRepository extends JpaRepository<DailyCoachSes
 
     Optional<DailyCoachSessionEntity> findFirstByUserIdOrderByLocalDateDesc(UUID userId);
 
+    List<DailyCoachSessionEntity> findByUserIdAndLocalDateBeforeAndStatusIn(
+            UUID userId,
+            LocalDate localDate,
+            java.util.Collection<DailyCoachSessionStatus> statuses
+    );
+
     @Modifying
     @Query("""
             UPDATE DailyCoachSessionEntity s

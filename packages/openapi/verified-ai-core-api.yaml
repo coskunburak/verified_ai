@@ -3482,6 +3482,72 @@ paths:
         '404':
           $ref: '#/components/responses/ProblemNotFound'
 
+  /v1/study-plan/recovery-status:
+    get:
+      operationId: getStudyPlanRecoveryStatus
+      tags:
+        - StudyPlan
+      summary: Evaluate non-punitive missed-day recovery status
+      description: >
+        Read-only evaluation of missed study days, remaining exam horizon, cognitive-load bounded daily budget recommendation (<= 25 min), and streamlined active task count (<= 3) without mutating state (INV-REBAL-001..006).
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: as_of_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+          description: Optional ISO-8601 calendar date (YYYY-MM-DD); defaults to server UTC date.
+      responses:
+        '200':
+          description: Recovery status evaluated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudyPlanRecoveryStatusResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+
+  /v1/study-plan/rebalance:
+    post:
+      operationId: rebalanceStudyPlan
+      tags:
+        - StudyPlan
+      summary: Execute idempotent non-punitive study plan rebalancing
+      description: >
+        Deterministically clears prior-day uncompleted tasks, shifts overflow spaced reviews into future dates, caps active daily missions at <= 3, and adjusts daily budget within [5, 25] minutes or downshifts to 5-Minute Mini Mode (INV-REBAL-001..006).
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudyPlanRebalanceRequest'
+      responses:
+        '200':
+          description: Study plan rebalanced successfully (or idempotent replay returned).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudyPlanRebalanceResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '409':
+          $ref: '#/components/responses/ProblemConflict'
+        '422':
+          $ref: '#/components/responses/ProblemUnprocessableEntity'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -7683,7 +7749,7 @@ components:
           enum: [SOLVER_MODE, SOCRATIC_COACH_MODE]
         budgetMinutes:
           type: integer
-          enum: [5, 10, 15, 25]
+          enum: [5, 10, 15, 20, 25]
 
     DailyCoachTaskCompleteRequest:
       type: object
@@ -7770,3 +7836,36 @@ components:
 
     DailyCoachSummaryResponse:
       $ref: '../../schemas/coach/daily-coach-v1.schema.json'
+
+    StudyPlanRecoveryStatusResponse:
+      $ref: '../../schemas/studyplan/recovery-status-v1.schema.json'
+
+    StudyPlanRebalanceRequest:
+      type: object
+      additionalProperties: false
+      required: [trigger_type]
+      properties:
+        trigger_type:
+          type: string
+          enum: [MISSED_DAYS, PACE_CHANGE, EXAM_DATE_SHIFT, MANUAL_RESET, MINI_MODE_DOWNSHIFT]
+        missed_days_override:
+          type: [integer, "null"]
+          minimum: 0
+          maximum: 365
+        days_until_exam_override:
+          type: [integer, "null"]
+          minimum: 1
+          maximum: 730
+        prefer_mini_mode:
+          type: boolean
+          default: false
+        idempotency_key:
+          type: [string, "null"]
+          minLength: 1
+          maxLength: 128
+        as_of_date:
+          type: [string, "null"]
+          format: date
+
+    StudyPlanRebalanceResponse:
+      $ref: '../../schemas/studyplan/rebalance-response-v1.schema.json'

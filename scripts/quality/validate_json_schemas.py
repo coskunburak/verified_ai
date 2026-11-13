@@ -5,6 +5,7 @@ Validates JSON Schema Draft 2020-12 invariants, negative fixtures, OpenAPI 3.1 s
 """
 import copy
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -72,6 +73,13 @@ def run_validation():
     daily_coach_schema_path = ROOT / "packages/schemas/coach/daily-coach-v1.schema.json"
     daily_coach_fixture_path = ROOT / "packages/schemas/coach/fixtures/daily-coach-v1.valid.json"
 
+    # Sprint 8.5 Files
+    recovery_status_schema_path = ROOT / "packages/schemas/studyplan/recovery-status-v1.schema.json"
+    recovery_status_fixture_path = ROOT / "packages/schemas/studyplan/fixtures/recovery-status-v1.valid.json"
+    rebalance_response_schema_path = ROOT / "packages/schemas/studyplan/rebalance-response-v1.schema.json"
+    rebalance_response_fixture_path = ROOT / "packages/schemas/studyplan/fixtures/rebalance-response-v1.valid.json"
+    openapi_core_path = ROOT / "packages/openapi/verified-ai-core-api.yaml"
+
     assert mistake_passport_schema_path.exists(), "Missing mistake-passport-v1.schema.json"
     assert mistake_passport_fixture_path.exists(), "Missing mistake-passport-v1.valid.json"
     assert counterexample_schema_path.exists(), "Missing counterexample-proof-card-v1.schema.json"
@@ -87,6 +95,11 @@ def run_validation():
     assert spaced_queue_example_path.exists(), "Missing spaced-queue-v1 example"
     assert daily_coach_schema_path.exists(), "Missing daily-coach-v1.schema.json"
     assert daily_coach_fixture_path.exists(), "Missing daily-coach-v1.valid.json"
+    assert recovery_status_schema_path.exists(), "Missing recovery-status-v1.schema.json"
+    assert recovery_status_fixture_path.exists(), "Missing recovery-status-v1.valid.json"
+    assert rebalance_response_schema_path.exists(), "Missing rebalance-response-v1.schema.json"
+    assert rebalance_response_fixture_path.exists(), "Missing rebalance-response-v1.valid.json"
+    assert openapi_core_path.exists(), "Missing verified-ai-core-api.yaml"
 
     mp_schema = json.loads(mistake_passport_schema_path.read_text(encoding="utf-8"))
     mp_fixture = json.loads(mistake_passport_fixture_path.read_text(encoding="utf-8"))
@@ -103,6 +116,10 @@ def run_validation():
     sq_example = json.loads(spaced_queue_example_path.read_text(encoding="utf-8"))
     dc_schema = json.loads(daily_coach_schema_path.read_text(encoding="utf-8"))
     dc_fixture = json.loads(daily_coach_fixture_path.read_text(encoding="utf-8"))
+    rs_schema = json.loads(recovery_status_schema_path.read_text(encoding="utf-8"))
+    rs_fixture = json.loads(recovery_status_fixture_path.read_text(encoding="utf-8"))
+    rr_schema = json.loads(rebalance_response_schema_path.read_text(encoding="utf-8"))
+    rr_fixture = json.loads(rebalance_response_fixture_path.read_text(encoding="utf-8"))
 
     validate_schema_structure(mp_schema, "mistake-passport-v1.schema.json")
     validate_schema_structure(ce_schema, "counterexample-proof-card-v1.schema.json")
@@ -111,6 +128,8 @@ def run_validation():
     validate_schema_structure(ps_schema, "practice-session-v1.schema.json")
     validate_schema_structure(sq_schema, "spaced-queue-v1.schema.json")
     validate_schema_structure(dc_schema, "daily-coach-v1.schema.json")
+    validate_schema_structure(rs_schema, "recovery-status-v1.schema.json")
+    validate_schema_structure(rr_schema, "rebalance-response-v1.schema.json")
 
     sg_schema = json.loads(skill_graph_schema_path.read_text(encoding="utf-8"))
     sg_fixture = json.loads(skill_graph_fixture_path.read_text(encoding="utf-8"))
@@ -331,6 +350,60 @@ def run_validation():
         bad_dc_5 = copy.deepcopy(dc_fixture)
         bad_dc_5["extraField"] = True
         assert list(dc_val.iter_errors(bad_dc_5)), "Expected validation rejection when root has extraField"
+
+        # Sprint 8.5 Recovery Status Schema & 5 Negative Mutations
+        jsonschema.Draft202012Validator.check_schema(rs_schema)
+        rs_val = jsonschema.Draft202012Validator(rs_schema, format_checker=jsonschema.FormatChecker())
+        assert list(rs_val.iter_errors(rs_fixture)) == [], f"recovery-status fixture errors: {list(rs_val.iter_errors(rs_fixture))}"
+
+        bad_rs_1 = copy.deepcopy(rs_fixture)
+        bad_rs_1["recommended_daily_budget_minutes"] = 30
+        assert list(rs_val.iter_errors(bad_rs_1)), "Expected rejection when recommended_daily_budget_minutes = 30"
+
+        bad_rs_2 = copy.deepcopy(rs_fixture)
+        bad_rs_2["active_today_tasks_count"] = 4
+        assert list(rs_val.iter_errors(bad_rs_2)), "Expected rejection when active_today_tasks_count = 4"
+
+        bad_rs_3 = copy.deepcopy(rs_fixture)
+        bad_rs_3["missed_days_count"] = -1
+        assert list(rs_val.iter_errors(bad_rs_3)), "Expected rejection when missed_days_count = -1"
+
+        bad_rs_4 = copy.deepcopy(rs_fixture)
+        bad_rs_4["prune_reason_code"] = "UNKNOWN_PRUNE_REASON"
+        assert list(rs_val.iter_errors(bad_rs_4)), "Expected rejection when prune_reason_code is invalid"
+
+        bad_rs_5 = copy.deepcopy(rs_fixture)
+        bad_rs_5["unexpected_extra_field"] = True
+        assert list(rs_val.iter_errors(bad_rs_5)), "Expected rejection when recovery-status has additional property"
+
+        # Sprint 8.5 Rebalance Response Schema & 5+ Negative Mutations
+        jsonschema.Draft202012Validator.check_schema(rr_schema)
+        rr_val = jsonschema.Draft202012Validator(rr_schema, format_checker=jsonschema.FormatChecker())
+        assert list(rr_val.iter_errors(rr_fixture)) == [], f"rebalance-response fixture errors: {list(rr_val.iter_errors(rr_fixture))}"
+
+        bad_rr_1 = copy.deepcopy(rr_fixture)
+        bad_rr_1["rebalanced_daily_budget_minutes"] = 30
+        assert list(rr_val.iter_errors(bad_rr_1)), "Expected rejection when rebalanced_daily_budget_minutes = 30"
+
+        bad_rr_2 = copy.deepcopy(rr_fixture)
+        bad_rr_2["active_today_tasks_count"] = 4
+        assert list(rr_val.iter_errors(bad_rr_2)), "Expected rejection when active_today_tasks_count = 4"
+
+        bad_rr_3 = copy.deepcopy(rr_fixture)
+        bad_rr_3["missed_days_count"] = -1
+        assert list(rr_val.iter_errors(bad_rr_3)), "Expected rejection when missed_days_count = -1"
+
+        bad_rr_4 = copy.deepcopy(rr_fixture)
+        bad_rr_4["trigger_type"] = "INVALID_TRIGGER"
+        assert list(rr_val.iter_errors(bad_rr_4)), "Expected rejection when trigger_type is invalid"
+
+        bad_rr_5 = copy.deepcopy(rr_fixture)
+        bad_rr_5["unexpected_extra_field"] = "disallowed"
+        assert list(rr_val.iter_errors(bad_rr_5)), "Expected rejection when rebalance-response has additional property"
+
+        bad_rr_6 = copy.deepcopy(rr_fixture)
+        bad_rr_6["pruned_concept_ids"] = ["MATH.ALG.LINEAR_EQ", "MATH.ALG.LINEAR_EQ"]
+        assert list(rr_val.iter_errors(bad_rr_6)), "Expected rejection when pruned_concept_ids contains duplicates"
     else:
         # Fallback pure-python verification of invariants
         assert sg_fixture["schemaVersion"] == "skill-graph-v1"
@@ -452,6 +525,31 @@ def run_validation():
             assert "200" in op["responses"], f"HTTP 200 OK missing from {coach_path}"
             assert "401" in op["responses"], f"HTTP 401 Unauthorized missing from {coach_path}"
 
+        # Sprint 8.5 Study Plan Rebalancing Endpoints across BOTH OpenAPI mirrors
+        core_spec = yaml.safe_load(openapi_core_path.read_text(encoding="utf-8"))
+        for spec_name, loaded_spec in (("public-api.yaml", spec), ("verified-ai-core-api.yaml", core_spec)):
+            spec_paths = loaded_spec.get("paths", {})
+            spec_schemas = loaded_spec.get("components", {}).get("schemas", {})
+
+            assert "/v1/study-plan/recovery-status" in spec_paths, f"Missing /v1/study-plan/recovery-status in {spec_name}"
+            rec_op = spec_paths["/v1/study-plan/recovery-status"]["get"]
+            assert rec_op["security"] == [{"bearerAuth": []}], f"Security bearerAuth missing on recovery-status in {spec_name}"
+            for code in ("200", "400", "401", "404"):
+                assert code in rec_op["responses"], f"HTTP {code} missing from recovery-status in {spec_name}"
+
+            assert "/v1/study-plan/rebalance" in spec_paths, f"Missing /v1/study-plan/rebalance in {spec_name}"
+            reb_op = spec_paths["/v1/study-plan/rebalance"]["post"]
+            assert reb_op["security"] == [{"bearerAuth": []}], f"Security bearerAuth missing on rebalance in {spec_name}"
+            for code in ("200", "400", "401", "404", "409", "422"):
+                assert code in reb_op["responses"], f"HTTP {code} missing from rebalance in {spec_name}"
+
+            for schema_name in (
+                "StudyPlanRecoveryStatusResponse",
+                "StudyPlanRebalanceRequest",
+                "StudyPlanRebalanceResponse",
+            ):
+                assert schema_name in spec_schemas, f"Missing component schema {schema_name} in {spec_name}"
+
     # 3. iOS Localizable.xcstrings Key Verification
     xcstrings_data = json.loads(strings_path.read_text(encoding="utf-8"))
     strings = xcstrings_data.get("strings", {})
@@ -534,7 +632,21 @@ def run_validation():
         "coach.downshift.title",
         "coach.downshift.subtitle",
         "coach.downshift.button",
+        "studyplan.rebalance.sheet_title",
+        "studyplan.rebalance.welcome_recovered",
+        "studyplan.rebalance.welcome_mini_mode",
+        "studyplan.rebalance.welcome_steady",
+        "studyplan.rebalance.no_backlog_badge",
+        "studyplan.rebalance.cta_accept_plan",
+        "studyplan.rebalance.cta_mini_mode",
+        "studyplan.rebalance.summary_budget_label",
+        "studyplan.rebalance.summary_tasks_label",
     ]
+
+    banned_lexicon = re.compile(
+        r"\b(overdue|behind|fail|failure|punish|penalty|weak|weakness|poor|bad|stupid|dumb|incompetent|deficit|flaw|hopeless)\b",
+        re.IGNORECASE,
+    )
 
     for key in required_keys:
         assert key in strings, f"Missing localization key: {key}"
@@ -543,8 +655,11 @@ def run_validation():
             loc = entry.get("localizations", {}).get(lang, {}).get("stringUnit", {})
             val = loc.get("value")
             assert val and len(val.strip()) > 0, f"Missing {lang} translation for key: {key}"
+            if key.startswith("studyplan.rebalance."):
+                m = banned_lexicon.search(val)
+                assert not m, f"Stigmatizing lexicon word '{m.group(0)}' in {key}[{lang}]: {val}"
 
-    print(f"PASS: Sprint 8.1, 8.2, 8.3 & 8.4 JSON schemas, negative mutations, OpenAPI 3.1 endpoints, and {len(required_keys)} EN/TR localizations verified.")
+    print(f"PASS: Sprint 8.1, 8.2, 8.3, 8.4 & 8.5 JSON schemas, negative mutations, OpenAPI 3.1 endpoints, and {len(required_keys)} EN/TR localizations verified.")
 
 
 if __name__ == "__main__":

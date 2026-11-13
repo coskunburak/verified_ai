@@ -13631,6 +13631,193 @@
           }
         }
       }
+    },
+    "studyplan.rebalance.sheet_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fresh Start Ready"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yeni Başlangıç Hazır"
+          }
+        }
+      }
+    },
+    "studyplan.rebalance.welcome_recovered": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Welcome back! Previous days are cleared—let's focus on today's streamlined mission."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hoş geldin! Birikmiş ödev yok, bugünün dengelenmiş görevine odaklanalım."
+          }
+        }
+      }
+    },
+    "studyplan.rebalance.welcome_mini_mode": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Welcome back! Let's restart gently with a single 5-minute focus mission."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hoş geldin! 5 dakikalık tek odaklı Mini Mod ile ritmini kolayca yakalayalım."
+          }
+        }
+      }
+    },
+    "studyplan.rebalance.welcome_steady": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your study rhythm is steady—today's focused plan is ready."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çalışma ritmin dengede—bugünün odaklı planı hazır."
+          }
+        }
+      }
+    },
+    "studyplan.rebalance.no_backlog_badge": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fresh Start Ready"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Birikmiş Görev Yok"
+          }
+        }
+      }
+    },
+    "studyplan.rebalance.cta_accept_plan": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start Today's Plan (%lld min)"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bugünün Planına Başla (%lld dk)"
+          }
+        }
+      }
+    },
+    "studyplan.rebalance.cta_mini_mode": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start Easy with 5-Min Mini Mode"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "5 Dakikalık Mini Mod ile Başla"
+          }
+        }
+      }
+    },
+    "studyplan.rebalance.summary_budget_label": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Today's Adjusted Focus"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bugünkü Odak Süresi"
+          }
+        }
+      }
+    },
+    "studyplan.rebalance.summary_tasks_label": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Today's Missions"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bugünün Görevleri"
+          }
+        }
+      }
+    },
+    "studyplan.rebalance.summary_streamlined_label": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Streamlined Topics"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Düzenlenen Konular"
+          }
+        }
+      }
+    },
+    "studyplan.rebalance.banner_cta": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Review Fresh Start"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yeni Başlangıcı Gör"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

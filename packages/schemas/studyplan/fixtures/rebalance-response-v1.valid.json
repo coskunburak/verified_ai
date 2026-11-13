@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0.0",
+  "rebalance_event_id": "00000000-0000-0000-0000-000000000851",
+  "user_id": "00000000-0000-0000-0000-000000000101",
+  "recovery_date": "2026-11-13",
+  "trigger_type": "MISSED_DAYS",
+  "missed_days_count": 3,
+  "days_until_exam": 30,
+  "previous_daily_budget_minutes": 15,
+  "rebalanced_daily_budget_minutes": 20,
+  "pruned_tasks_count": 4,
+  "rescheduled_reviews_count": 2,
+  "active_today_tasks_count": 3,
+  "mini_mode_activated": false,
+  "prune_reason_code": "BUDGET_CEILING_LOW_ROI_PRUNED",
+  "pruned_concept_ids": [
+    "MATH.GEO.CIRCLE_SECANT_INTRO",
+    "MATH.PROB.COMBINATIONS_WARMUP"
+  ],
+  "welcome_message_key": "studyplan.rebalance.welcome_recovered",
+  "idempotent_replay": false,
+  "created_at": "2026-11-13T09:30:00Z"
+}

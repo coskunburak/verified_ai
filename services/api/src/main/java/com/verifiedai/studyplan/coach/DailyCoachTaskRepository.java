@@ -40,4 +40,13 @@ public interface DailyCoachTaskRepository extends JpaRepository<DailyCoachTaskEn
             @Param("sessionId") UUID sessionId,
             @Param("maxOrder") int maxOrder
     );
+
+    @Modifying
+    @Query("""
+            UPDATE DailyCoachTaskEntity t
+            SET t.status = com.verifiedai.studyplan.coach.DailyCoachTaskStatus.SKIPPED
+            WHERE t.sessionId = :sessionId
+              AND t.status = com.verifiedai.studyplan.coach.DailyCoachTaskStatus.PENDING
+            """)
+    int skipAllPendingTasksBySessionId(@Param("sessionId") UUID sessionId);
 }

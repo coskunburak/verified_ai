@@ -161,6 +161,34 @@ public final class DailyCoachViewModel: ObservableObject {
         }
     }
 
+    public func applyRebalancedPlan(_ response: StudyPlanRebalanceResponse) async {
+        guard response.userId == userId else { return }
+        guard var current = summary else { return }
+
+        current.budgetMinutes = response.rebalancedDailyBudgetMinutes
+        current.isDownshifted = response.miniModeActivated || current.isDownshifted
+
+        let activeCap = response.miniModeActivated
+            ? 1
+            : max(0, min(3, response.activeTodayTasksCount))
+
+        var keptCount = 0
+        for index in current.tasks.indices {
+            if current.tasks[index].status == .completed {
+                continue
+            }
+            if keptCount < activeCap {
+                keptCount += 1
+            } else {
+                current.tasks[index].status = .skipped
+            }
+        }
+        current.totalTasksCount = response.activeTodayTasksCount
+
+        self.summary = current
+        await cacheStore.saveSummary(current, for: userId)
+    }
+
     private static func todayDateString() -> String {
         let formatter = DateFormatter()
         formatter.calendar = Calendar(identifier: .gregorian)

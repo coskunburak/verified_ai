@@ -2,15 +2,18 @@ import SwiftUI
 
 public struct CoachHubView: View {
     @ObservedObject public var viewModel: DailyCoachViewModel
+    public var rebalanceViewModel: StudyPlanRebalanceViewModel?
     public let onStartCapture: () -> Void
     public let onOpenTask: (DailyCoachTaskModel) -> Void
 
     public init(
         viewModel: DailyCoachViewModel,
+        rebalanceViewModel: StudyPlanRebalanceViewModel? = nil,
         onStartCapture: @escaping () -> Void = {},
         onOpenTask: @escaping (DailyCoachTaskModel) -> Void = { _ in }
     ) {
         self.viewModel = viewModel
+        self.rebalanceViewModel = rebalanceViewModel
         self.onStartCapture = onStartCapture
         self.onOpenTask = onOpenTask
     }
@@ -22,6 +25,17 @@ public struct CoachHubView: View {
 
                 if viewModel.isOfflineBannerVisible {
                     offlineBanner
+                }
+
+                if let rebalanceViewModel {
+                    RebalanceCoachHubSection(
+                        rebalanceViewModel: rebalanceViewModel,
+                        onPlanAccepted: { response in
+                            Task {
+                                await viewModel.applyRebalancedPlan(response)
+                            }
+                        }
+                    )
                 }
 
                 DualModeSwitcher(
@@ -317,6 +331,57 @@ public struct CoachHubView: View {
             return LocalizedStringKey("coach.hub.badge.immunity_check")
         default:
             return LocalizedStringKey("coach.hub.badge.growth_opportunity")
+        }
+    }
+}
+
+private struct RebalanceCoachHubSection: View {
+    @ObservedObject var rebalanceViewModel: StudyPlanRebalanceViewModel
+    let onPlanAccepted: (StudyPlanRebalanceResponse) -> Void
+
+    var body: some View {
+        Group {
+            if let status = rebalanceViewModel.recoveryStatus, status.recoveryNeeded {
+                HStack(spacing: 12) {
+                    Image(systemName: "leaf.circle.fill")
+                        .font(.title3)
+                        .foregroundStyle(Color.teal)
+                        .accessibilityHidden(true)
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("studyplan.rebalance.no_backlog_badge")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(Color.teal)
+                        Text(LocalizedStringKey(status.welcomeMessageKey))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(2)
+                    }
+
+                    Spacer()
+
+                    Button {
+                        rebalanceViewModel.isPresentingRecoverySheet = true
+                    } label: {
+                        Text("studyplan.rebalance.banner_cta")
+                            .font(.caption.weight(.semibold))
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 6)
+                            .background(Color.teal, in: Capsule())
+                            .foregroundStyle(.white)
+                    }
+                    .accessibilityIdentifier("rebalance.banner.openSheet")
+                }
+                .padding(12)
+                .background(Color.teal.opacity(0.10), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                .accessibilityElement(children: .contain)
+            }
+        }
+        .sheet(isPresented: $rebalanceViewModel.isPresentingRecoverySheet) {
+            PlanRebalanceNotificationSheet(
+                viewModel: rebalanceViewModel,
+                onPlanAccepted: onPlanAccepted
+            )
         }
     }
 }

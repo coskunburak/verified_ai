@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0.0",
+  "user_id": "00000000-0000-0000-0000-000000000101",
+  "as_of_date": "2026-11-13",
+  "recovery_needed": true,
+  "missed_days_count": 3,
+  "days_until_exam": 30,
+  "previous_daily_budget_minutes": 15,
+  "recommended_daily_budget_minutes": 20,
+  "mini_mode_recommended": false,
+  "active_today_tasks_count": 3,
+  "pruned_tasks_count": 4,
+  "rescheduled_reviews_count": 2,
+  "prune_reason_code": "MISSED_DAY_WINDOW_RESET",
+  "welcome_message_key": "studyplan.rebalance.welcome_recovered",
+  "last_rebalance_event_id": null
+}

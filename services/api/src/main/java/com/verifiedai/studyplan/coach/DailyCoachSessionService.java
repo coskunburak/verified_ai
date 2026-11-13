@@ -21,7 +21,7 @@ import java.util.*;
 @Service
 public class DailyCoachSessionService {
 
-    private static final Set<Integer> ALLOWED_BUDGET_MINUTES = Set.of(5, 10, 15, 25);
+    private static final Set<Integer> ALLOWED_BUDGET_MINUTES = Set.of(5, 10, 15, 20, 25);
 
     private final DailyCoachSessionRepository sessionRepository;
     private final DailyCoachTaskRepository taskRepository;
@@ -84,7 +84,7 @@ public class DailyCoachSessionService {
             throw new ApiProblemException(
                     HttpStatus.BAD_REQUEST,
                     ApiErrorCode.REQUEST_VALIDATION_FAILED,
-                    "budgetMinutes must be one of 5, 10, 15, or 25",
+                    "budgetMinutes must be one of 5, 10, 15, 20, or 25",
                     true,
                     "SELECT_VALID_BUDGET_MINUTES"
             );
