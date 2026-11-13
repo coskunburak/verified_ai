@@ -3,17 +3,22 @@ import SwiftUI
 public struct CoachHubView: View {
     @ObservedObject public var viewModel: DailyCoachViewModel
     public var rebalanceViewModel: StudyPlanRebalanceViewModel?
+    public var gamificationViewModel: GamificationViewModel?
     public let onStartCapture: () -> Void
     public let onOpenTask: (DailyCoachTaskModel) -> Void
+
+    @State private var isFallbackMilestoneSheetPresented: Bool = false
 
     public init(
         viewModel: DailyCoachViewModel,
         rebalanceViewModel: StudyPlanRebalanceViewModel? = nil,
+        gamificationViewModel: GamificationViewModel? = nil,
         onStartCapture: @escaping () -> Void = {},
         onOpenTask: @escaping (DailyCoachTaskModel) -> Void = { _ in }
     ) {
         self.viewModel = viewModel
         self.rebalanceViewModel = rebalanceViewModel
+        self.gamificationViewModel = gamificationViewModel
         self.onStartCapture = onStartCapture
         self.onOpenTask = onOpenTask
     }
@@ -96,20 +101,44 @@ public struct CoachHubView: View {
 
             Spacer()
 
-            let streakDays = viewModel.summary?.streakDays ?? 0
-            HStack(spacing: 4) {
-                Text("🔥")
-                Text("\(streakDays)")
-                    .font(.caption.weight(.bold))
-                Text(LocalizedStringKey("coach.hub.streak_days"))
-                    .font(.caption.weight(.semibold))
+            let activeSummary = resolvedGamificationSummary
+            StreakBadgeView(
+                streakDays: activeSummary.currentStreakDays,
+                freezesRemaining: activeSummary.streakFreezesRemaining,
+                streakStatus: activeSummary.streakStatus
+            ) {
+                if let gamificationViewModel {
+                    gamificationViewModel.isMilestoneSheetPresented = true
+                } else {
+                    isFallbackMilestoneSheetPresented = true
+                }
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(Color.orange.opacity(0.16))
-            .foregroundColor(.orange)
-            .clipShape(Capsule())
         }
+        .sheet(isPresented: milestoneSheetBinding) {
+            MilestoneSheetView(summary: resolvedGamificationSummary)
+        }
+        .task {
+            if let gamificationViewModel {
+                await gamificationViewModel.loadSummary()
+            }
+        }
+    }
+
+    private var resolvedGamificationSummary: GamificationSummaryResponse {
+        if let loadedSummary = gamificationViewModel?.summary {
+            return loadedSummary
+        }
+        return GamificationSummaryResponse.defaultCatalogue(streakDays: viewModel.summary?.streakDays ?? 0)
+    }
+
+    private var milestoneSheetBinding: Binding<Bool> {
+        if let gamificationViewModel {
+            return Binding(
+                get: { gamificationViewModel.isMilestoneSheetPresented },
+                set: { gamificationViewModel.isMilestoneSheetPresented = $0 }
+            )
+        }
+        return $isFallbackMilestoneSheetPresented
     }
 
     private var offlineBanner: some View {

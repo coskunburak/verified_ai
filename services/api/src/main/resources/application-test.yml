@@ -13,6 +13,7 @@ app:
 verifiedai:
   studyplan:
     session-orchestration-enabled: true
+    gamification-enabled: true
     session-inactivity-ttl-hours: 24
     session-clock-skew-tolerance-seconds: 30
     session-max-active-duration-seconds: 14400

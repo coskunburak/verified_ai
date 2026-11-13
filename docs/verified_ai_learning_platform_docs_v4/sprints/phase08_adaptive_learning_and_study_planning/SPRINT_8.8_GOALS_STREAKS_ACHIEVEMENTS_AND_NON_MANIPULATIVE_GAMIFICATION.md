@@ -372,7 +372,7 @@ Codex must implement this sprint in small reviewable slices, re-reading the high
 ## 1. Sprint Metadata & Status
 - **Sprint ID:** `SPRINT_8.8`
 - **Canonical Title:** Verified Independent Streaks, Shame-Free Habit Maintenance & Pedagogical Achievements
-- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011)`
+- **Status:** `COMPLETED` (see `SPRINT_8.8_EXECUTION_REPORT.md` & `SPRINT_8.8_FILE_MANIFEST.md`)
 - **Primary Spec Reference:** `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md` (Screen 1 Status Bar) & `learning/84_VERIFIED_TWIN_PRACTICE_AND_INDEPENDENT_LEARNING_ENGINE.md`
 
 ## 2. Strategic Learning OS Objective & User Value
@@ -382,36 +382,39 @@ Builds a healthy, non-manipulative motivation architecture that reinforces true 
 - `ADR-011` `GO` decision recorded; `Sprint 8.7` accepted.
 
 ## 4. Domain Invariants & Gamification Rules
-1. **Independent Verification Streak Law (`INV-GAMIF-001`):** A daily streak increment requires at least 1 `INDEPENDENT` verified twin pass on that local calendar day. Sokratik hints or solution views (`HINT_ASSISTED`) preserve habit continuity but DO NOT advance streak counts without an independent twin.
-2. **Shame-Free Streak Freezes:** Every learner is granted 2 automatic streak freezes per month. Missed days consume a freeze silently without guilt banners, shame emojis, or manipulative notifications.
-3. **Pedagogical Badges Only:** Badges represent genuine cognitive milestones (e.g., *"Domain Guardian: 5 consecutive rational equations without domain exclusion errors"*, *"Chain Rule Virtuoso"*), never vanity metrics like total minutes or open-ended chat counts.
+1. **Independent Verification Streak Law (`INV-GAMIF-001`):** A daily streak increment requires at least 1 `INDEPENDENT` verified twin pass on that local calendar day. Socratic hints or solution views (`HINT_ASSISTED`, `SOLUTION_REVEALED_ASSISTED`) preserve habit continuity (`CONTINUITY_PRESERVED_TODAY`) but DO NOT advance streak counts without an independent twin.
+2. **Shame-Free Streak Freezes:** Every learner is granted 2 automatic streak freezes per calendar month (`streak_freezes_remaining` bounded `0..2`). Missed days consume a freeze silently without guilt banners, shame emojis, or manipulative notifications; exhausting monthly freezes resets cleanly to `FRESH_START_READY`.
+3. **Pedagogical Badges Only:** Badges represent genuine cognitive milestones (`FIRST_INDEPENDENT_TWIN`, `THREE_DAY_INDEPENDENT_STREAK`, `SEVEN_DAY_INDEPENDENT_STREAK`, `MISCONCEPTION_OVERCOME`, `RETENTION_GUARDIAN`, `CONCEPT_ARCHITECT`), never vanity metrics like XP points, total minutes, or open-ended chat counts.
 
 ## 5. Owning Spring Modulith Backend Modules & Classes
-- `com.verifiedai.studyplan`: `GamificationPolicyService.java`, `LearnerStreak.java`, `AchievementBadge.java`, `GamificationController.java`.
+- `com.verifiedai.studyplan.gamification`: `GamificationPolicyService.java`, `GamificationController.java`, `JdbcGamificationRepository.java`, `GamificationModels.java`, `GamificationDtos.java`, `GamificationExceptions.java`, `GamificationEvidenceType.java`, `StreakStatus.java`, `DailyStreakStatus.java`, `PedagogicalBadgeCategory.java`, `PedagogicalBadgeCode.java`.
+- `com.verifiedai.studyplan.privacy`: `GamificationPrivacyContributor.java` (`@Order(30)`).
 
 ## 6. Python Math Verifier Impact
-- None (`100%` server-authoritative rule evaluation).
+- None (`100%` server-authoritative rule evaluation; `services/math-verifier/` unmodified).
 
 ## 7. Database Migration & Persistence Contract
-- **Tables:** `learner_streaks` (`user_id`, `current_streak_days`, `longest_streak_days`, `last_activity_date`, `streak_freezes_remaining`, `updated_at`), `learner_achievements` (`id`, `user_id`, `badge_code`, `unlocked_at`, `evidence_reference`).
+- **Flyway Migration:** `V051__gamification_streaks_and_achievements.sql`
+- **Tables:** `learner_streaks`, `learner_daily_streak_ledger` (`UNIQUE (user_id, activity_local_date)`, `chk_ledger_freeze_exclusivity`), and `learner_achievements` (`UNIQUE (user_id, badge_code)`), all enforcing `CHECK (training_eligible = FALSE)`.
 
 ## 8. REST API Contracts
-- `GET /v1/gamification/summary` (`gamification-summary-v1`).
+- `GET /v1/gamification/summary` (also aliased under `/api/v1/gamification/summary`) -> `gamification-summary-response`
+- `POST /v1/gamification/activity` (also aliased under `/api/v1/gamification/activity`) -> `gamification-activity-record-request` / `gamification-summary-response`
 
 ## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
-- Renders `StreakBadgeView.swift` in Coach Hub top status bar and celebratory `MilestoneSheetView.swift`.
+- Renders `StreakBadgeView.swift` and `MilestoneSheetView.swift` (`apps/ios/VerifiedAI/Features/Gamification/`) integrated into `CoachHubView.swift` top status bar with `@Observable GamificationViewModel`.
 
 ## 10. AI Capability & Unit Economics Guardrail
 - **`$0.00` LLM token cost** (pure deterministic rules).
 
 ## 11. Privacy, Safety & Compliance
-- Purged on account deletion via `StudyPlanPrivacyLifecycleContributor`.
+- Exported and purged on account deletion via `GamificationPrivacyContributor` (`@Order(30)`).
 
 ## 12. Telemetry & Observability
-- Emits `streak_incremented`, `streak_freeze_applied`, `achievement_unlocked`.
+- Emits Micrometer counters `gamification.streak.incremented.total`, `gamification.streak.assisted_continuity.total`, `gamification.streak.freeze.applied.total`, and `gamification.achievement.unlocked.total`.
 
 ## 13. Feature Flags & Rollback Plan
-- `verifiedai.studyplan.gamification-enabled: false`.
+- `verifiedai.studyplan.gamification-enabled` (defaults `true`; set `false` for `503 GAMIFICATION_FEATURE_DISABLED` rollback).
 
 ## 14. Automated Test Matrix (Categories A–F)
 - Tests timezone boundary streak calculations, freeze consumption, and asserts assisted solves never increment streaks.

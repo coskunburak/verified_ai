@@ -3923,6 +3923,82 @@ paths:
         '503':
           $ref: '#/components/responses/ProblemServiceUnavailable'
 
+  /v1/gamification/summary:
+    get:
+      operationId: getGamificationSummary
+      tags:
+        - StudyPlan
+      summary: Read learner streak continuity, monthly freeze allowance, and pedagogical milestones
+      description: >
+        Evaluates timezone-aware local date, applies monthly freeze rollover and silent freeze protection
+        when missed days fall within remaining monthly quota, and returns all six pedagogical achievement
+        items without LLM usage (INV-GAMIF-002, INV-GAMIF-003).
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: timezone
+          in: query
+          required: false
+          description: IANA timezone identifier for local day evaluation
+          schema:
+            type: string
+            minLength: 3
+            maxLength: 64
+            default: UTC
+          example: Europe/Istanbul
+      responses:
+        '200':
+          description: Learner gamification streak and pedagogical milestone summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GamificationSummaryResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /v1/gamification/activity:
+    post:
+      operationId: recordGamificationActivity
+      tags:
+        - StudyPlan
+      summary: Record verified independent or assisted learning evidence for streak and achievement evaluation
+      description: >
+        Advances verified independent streak at most once per learner local day when evidenceType is
+        INDEPENDENT, preserves habit continuity without incrementing streak days on HINT_ASSISTED or
+        SOLUTION_REVEALED_ASSISTED evidence, and unlocks qualifying pedagogical badges idempotently
+        (INV-GAMIF-001, INV-GAMIF-003).
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GamificationActivityRecordRequest'
+      responses:
+        '200':
+          description: Updated learner gamification streak and pedagogical milestone summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GamificationSummaryResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '422':
+          $ref: '#/components/responses/ProblemUnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -8375,3 +8451,9 @@ components:
                 - string
                 - 'null'
               maxLength: 64
+
+    GamificationActivityRecordRequest:
+      $ref: '../../schemas/gamification-activity-record-request.schema.json'
+
+    GamificationSummaryResponse:
+      $ref: '../../schemas/gamification-summary-response.schema.json'

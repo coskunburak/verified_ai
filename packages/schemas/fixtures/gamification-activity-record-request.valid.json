@@ -1,0 +1,11 @@
+{
+  "idempotencyKey": "00000000-0000-4000-8000-000000000881",
+  "evidenceType": "INDEPENDENT",
+  "evidenceReference": "twin_attempt:00000000-0000-4000-8000-000000000882",
+  "learnerTimezone": "Europe/Istanbul",
+  "occurredAtUtc": "2026-11-10T17:15:00Z",
+  "conceptId": "algebra.linear_equations.single_variable",
+  "misconceptionRepaired": true,
+  "spacedReviewCompleted": false,
+  "verifiedMasteredConceptCount": 2
+}

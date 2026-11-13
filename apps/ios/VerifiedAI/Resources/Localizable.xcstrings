@@ -14345,6 +14345,499 @@
           }
         }
       }
+    },
+    "gamification.streak.badge.days_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld d"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld g"
+          }
+        }
+      }
+    },
+    "gamification.streak.badge.accessibility_label": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verified independent learning streak"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Doğrulanmış bağımsız öğrenme serisi"
+          }
+        }
+      }
+    },
+    "gamification.streak.badge.accessibility_hint": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Double tap to view your streak continuity, monthly freezes, and learning milestones"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seri sürekliliğinizi, aylık korumalarınızı ve öğrenme dönüm noktalarınızı görmek için çift dokunun"
+          }
+        }
+      }
+    },
+    "gamification.streak.status.active_verified_today.headline": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verified Independent Step Complete"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Doğrulanmış Bağımsız Adım Tamamlandı"
+          }
+        }
+      }
+    },
+    "gamification.streak.status.active_verified_today.body": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your independent reasoning advanced your verified streak today."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bağımsız çözümünüz bugün doğrulanmış serinizi ilerletti."
+          }
+        }
+      }
+    },
+    "gamification.streak.status.continuity_preserved_today.headline": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Habit Continuity Preserved"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çalışma Sürekliliği Korundu"
+          }
+        }
+      }
+    },
+    "gamification.streak.status.continuity_preserved_today.body": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guided practice kept your habit active today. Complete one independent twin to advance your verified streak."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rehberli pratik bugün alışkanlığınızı aktif tuttu. Doğrulanmış serinizi ilerletmek için bir bağımsız ikiz soru tamamlayın."
+          }
+        }
+      }
+    },
+    "gamification.streak.status.freeze_protected.headline": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rest Day Covered Automatically"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dinlenme Günü Otomatik Korundu"
+          }
+        }
+      }
+    },
+    "gamification.streak.status.freeze_protected.body": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your monthly streak freeze quietly protected your progress while you rested."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aylık seri korumanız siz dinlenirken ilerlemenizi sessizce korudu."
+          }
+        }
+      }
+    },
+    "gamification.streak.status.at_risk_today.headline": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ready for Today's Independent Twin"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bugünün Bağımsız İkiz Sorusuna Hazır"
+          }
+        }
+      }
+    },
+    "gamification.streak.status.at_risk_today.body": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Complete one verified independent problem today to add another day to your streak."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Serinize yeni bir gün eklemek için bugün doğrulanmış bir bağımsız soru tamamlayın."
+          }
+        }
+      }
+    },
+    "gamification.streak.status.fresh_start_ready.headline": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ready Whenever You Are"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hazır Olduğunuzda Başlayalım"
+          }
+        }
+      }
+    },
+    "gamification.streak.status.fresh_start_ready.body": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Every verified independent solution starts or grows a steady mathematical habit."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Her doğrulanmış bağımsız çözüm, kalıcı bir matematik alışkanlığını başlatır ve güçlendirir."
+          }
+        }
+      }
+    },
+    "gamification.sheet.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Habit Continuity & Milestones"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alışkanlık Sürekliliği ve Dönüm Noktaları"
+          }
+        }
+      }
+    },
+    "gamification.sheet.freezes_remaining_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld of %lld monthly rest freezes available"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu ay %lld / %lld dinlenme koruması kullanılabilir"
+          }
+        }
+      }
+    },
+    "gamification.sheet.section.ledger": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recent Daily Continuity"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Son Günlük Süreklilik"
+          }
+        }
+      }
+    },
+    "gamification.sheet.section.achievements": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pedagogical Milestones"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pedagojik Dönüm Noktaları"
+          }
+        }
+      }
+    },
+    "gamification.badge.first_independent_twin.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Independent First Step"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bağımsız İlk Adım"
+          }
+        }
+      }
+    },
+    "gamification.badge.first_independent_twin.description": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solved an isomorphic twin problem completely independently and passed symbolic verification."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eşbiçimli ikiz soruyu tamamen bağımsız çözerek sembolik doğrulamayı geçti."
+          }
+        }
+      }
+    },
+    "gamification.badge.three_day_independent_streak.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Steady Three-Day Rhythm"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Üç Günlük İstikrarlı Ritim"
+          }
+        }
+      }
+    },
+    "gamification.badge.three_day_independent_streak.description": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Completed verified independent practice across three consecutive active days."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Üç ardışık aktif günde doğrulanmış bağımsız pratik tamamladı."
+          }
+        }
+      }
+    },
+    "gamification.badge.seven_day_independent_streak.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seven-Day Independent Habit"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yedi Günlük Bağımsız Alışkanlık"
+          }
+        }
+      }
+    },
+    "gamification.badge.seven_day_independent_streak.description": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sustained verified independent mathematical reasoning across a full seven-day stretch."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yedi günlük tam bir dönemde doğrulanmış bağımsız matematik akıl yürütmesini sürdürdü."
+          }
+        }
+      }
+    },
+    "gamification.badge.misconception_overcome.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trap Turner"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tuzak Aşıldı"
+          }
+        }
+      }
+    },
+    "gamification.badge.misconception_overcome.description": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Repaired a recurring misconception and confirmed mastery on an independent twin."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tekrarlayan bir kavram yanılgısını onardı ve bağımsız ikiz soruda ustalığını doğruladı."
+          }
+        }
+      }
+    },
+    "gamification.badge.retention_guardian.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Memory Anchor"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kalıcı Hafıza Çıpası"
+          }
+        }
+      }
+    },
+    "gamification.badge.retention_guardian.description": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Completed a spaced retention check independently after time elapsed."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zaman geçtikten sonra aralıklı tekrar kontrolünü bağımsız olarak tamamladı."
+          }
+        }
+      }
+    },
+    "gamification.badge.concept_architect.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Concept Architect"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kavram Mimarı"
+          }
+        }
+      }
+    },
+    "gamification.badge.concept_architect.description": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Demonstrated verified independent mastery across five or more curriculum concepts."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beş veya daha fazla müfredat kavramında doğrulanmış bağımsız ustalık gösterdi."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

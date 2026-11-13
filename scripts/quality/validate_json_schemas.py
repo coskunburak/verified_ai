@@ -106,6 +106,16 @@ def run_validation():
     ss_comp_req_fixture_path = ROOT / "packages/schemas/fixtures/study-session-complete-request-v1.valid.json"
     ss_comp_res_fixture_path = ROOT / "packages/schemas/fixtures/study-session-complete-response-v1.valid.json"
 
+    # Sprint 8.8 schemas & fixtures
+    gam_req_schema_path = ROOT / "packages/schemas/gamification-activity-record-request.schema.json"
+    gam_res_schema_path = ROOT / "packages/schemas/gamification-summary-response.schema.json"
+    gam_req_fixture_path = ROOT / "packages/schemas/fixtures/gamification-activity-record-request.valid.json"
+    gam_res_fixture_path = ROOT / "packages/schemas/fixtures/gamification-summary-response.valid.json"
+    SCHEMA_FIXTURE_PAIRS = (
+        (gam_req_schema_path, gam_req_fixture_path, "gamification-activity-record-request"),
+        (gam_res_schema_path, gam_res_fixture_path, "gamification-summary-response"),
+    )
+
     assert mistake_passport_schema_path.exists(), "Missing mistake-passport-v1.schema.json"
     assert mistake_passport_fixture_path.exists(), "Missing mistake-passport-v1.valid.json"
     assert counterexample_schema_path.exists(), "Missing counterexample-proof-card-v1.schema.json"
@@ -151,6 +161,10 @@ def run_validation():
         ss_comp_res_fixture_path,
     ):
         assert p.exists(), f"Missing Sprint 8.7 schema/fixture: {p}"
+
+    for s_path, f_path, pair_name in SCHEMA_FIXTURE_PAIRS:
+        assert s_path.exists(), f"Missing Sprint 8.8 schema ({pair_name}): {s_path}"
+        assert f_path.exists(), f"Missing Sprint 8.8 fixture ({pair_name}): {f_path}"
 
     mp_schema = json.loads(mistake_passport_schema_path.read_text(encoding="utf-8"))
     mp_fixture = json.loads(mistake_passport_fixture_path.read_text(encoding="utf-8"))
@@ -232,6 +246,18 @@ def run_validation():
 
     validate_schema_structure(sg_schema, "skill-graph-v1.schema.json")
     validate_schema_structure(vt_schema, "verified-twin-v1.schema.json")
+
+    gam_loaded_pairs = {}
+    for s_path, f_path, pair_name in SCHEMA_FIXTURE_PAIRS:
+        sc_obj = json.loads(s_path.read_text(encoding="utf-8"))
+        fx_obj = json.loads(f_path.read_text(encoding="utf-8"))
+        validate_schema_structure(sc_obj, s_path.name)
+        assert sc_obj.get("$schema") == "https://json-schema.org/draft/2020-12/schema", f"Not Draft 2020-12: {s_path.name}"
+        assert sc_obj.get("additionalProperties") is False, f"Root additionalProperties!=false in {s_path.name}"
+        for def_name, def_obj in sc_obj.get("$defs", {}).items():
+            if def_obj.get("type") == "object":
+                assert def_obj.get("additionalProperties") is False, f"$defs.{def_name} additionalProperties!=false in {s_path.name}"
+        gam_loaded_pairs[pair_name] = (sc_obj, fx_obj)
 
     if jsonschema is not None:
         # Schema meta-checks
@@ -579,6 +605,37 @@ def run_validation():
         bad_ss_6 = copy.deepcopy(ss_ckpt_req_fixture)
         bad_ss_6["idempotency_key"] = "short"
         assert list(ss_vals["study-session-checkpoint-request-v1"].iter_errors(bad_ss_6)), "Expected rejection when idempotency_key < 16 chars"
+
+        # Sprint 8.8 Draft 2020-12 positive & negative mutation checks
+        gam_vals = {}
+        for pair_name, (sc_obj, fx_obj) in gam_loaded_pairs.items():
+            jsonschema.Draft202012Validator.check_schema(sc_obj)
+            v = jsonschema.Draft202012Validator(sc_obj, format_checker=jsonschema.FormatChecker())
+            v.validate(fx_obj)
+            gam_vals[pair_name] = v
+
+        gam_req_sc, gam_req_fx = gam_loaded_pairs["gamification-activity-record-request"]
+        gam_res_sc, gam_res_fx = gam_loaded_pairs["gamification-summary-response"]
+
+        bad_gam_1 = copy.deepcopy(gam_res_fx)
+        bad_gam_1["trainingEligible"] = True
+        assert list(gam_vals["gamification-summary-response"].iter_errors(bad_gam_1)), "Expected rejection when trainingEligible=true"
+
+        bad_gam_2a = copy.deepcopy(gam_res_fx)
+        bad_gam_2a["streakFreezesRemaining"] = 3
+        assert list(gam_vals["gamification-summary-response"].iter_errors(bad_gam_2a)), "Expected rejection when streakFreezesRemaining=3"
+
+        bad_gam_2b = copy.deepcopy(gam_res_fx)
+        bad_gam_2b["streakFreezesRemaining"] = -1
+        assert list(gam_vals["gamification-summary-response"].iter_errors(bad_gam_2b)), "Expected rejection when streakFreezesRemaining=-1"
+
+        bad_gam_3 = copy.deepcopy(gam_req_fx)
+        bad_gam_3["evidenceType"] = "UNSUPPORTED"
+        assert list(gam_vals["gamification-activity-record-request"].iter_errors(bad_gam_3)), "Expected rejection when evidenceType=UNSUPPORTED"
+
+        bad_gam_4 = copy.deepcopy(gam_req_fx)
+        bad_gam_4["xpPoints"] = 100
+        assert list(gam_vals["gamification-activity-record-request"].iter_errors(bad_gam_4)), "Expected rejection on extra property xpPoints"
     else:
         # Fallback pure-python verification of invariants
         assert sg_fixture["schemaVersion"] == "skill-graph-v1"
@@ -664,6 +721,78 @@ def run_validation():
     assert _validate_ss_object_keys({**ss_start_req_fixture, "total_steps": 51}, ss_start_req_schema, ss_start_req_schema.get("$defs", {})), "Expected total_steps=51 failure"
     assert _validate_ss_object_keys({**ss_ckpt_res_fixture, "unexpected_field": 123}, ss_ckpt_res_schema, ss_ckpt_res_schema.get("$defs", {})), "Expected unexpected_field failure"
     assert _validate_ss_object_keys({**ss_ckpt_req_fixture, "idempotency_key": "short"}, ss_ckpt_req_schema, ss_ckpt_req_schema.get("$defs", {})), "Expected short idempotency_key failure"
+
+    # Sprint 8.8 pure-python contract & negative-mutation checks (always verified)
+    def _validate_gam_object_keys(obj: dict, sc: dict, defs: dict) -> list[str]:
+        errs: list[str] = []
+        if sc.get("additionalProperties") is False:
+            extra = set(obj.keys()) - set(sc.get("properties", {}).keys())
+            if extra:
+                errs.append(f"Unexpected properties: {sorted(extra)}")
+        for req in sc.get("required", []):
+            if req not in obj:
+                errs.append(f"Missing required property: {req}")
+        for k, prop in sc.get("properties", {}).items():
+            if k not in obj:
+                continue
+            val = obj[k]
+            if "const" in prop and (val is not prop["const"] and val != prop["const"]):
+                errs.append(f"{k} != {prop['const']}")
+            ptype = prop.get("type")
+            if ptype == ["string", "null"]:
+                if val is not None and not isinstance(val, str):
+                    errs.append(f"{k} must be string or null")
+                elif "enum" in prop and val not in prop["enum"]:
+                    errs.append(f"{k} invalid enum {val}")
+            elif ptype == "boolean" and not isinstance(val, bool):
+                errs.append(f"{k} not bool")
+            elif ptype == "integer":
+                if isinstance(val, bool) or not isinstance(val, int):
+                    errs.append(f"{k} not int")
+                else:
+                    if "minimum" in prop and val < prop["minimum"]:
+                        errs.append(f"{k} < {prop['minimum']}")
+                    if "maximum" in prop and val > prop["maximum"]:
+                        errs.append(f"{k} > {prop['maximum']}")
+            elif ptype == "string":
+                if not isinstance(val, str):
+                    errs.append(f"{k} not str")
+                else:
+                    if "enum" in prop and val not in prop["enum"]:
+                        errs.append(f"{k} invalid enum {val}")
+                    if "minLength" in prop and len(val) < prop["minLength"]:
+                        errs.append(f"{k} shorter than {prop['minLength']}")
+                    if "maxLength" in prop and len(val) > prop["maxLength"]:
+                        errs.append(f"{k} longer than {prop['maxLength']}")
+                    if "pattern" in prop and not re.match(prop["pattern"], val):
+                        errs.append(f"{k} does not match pattern {prop['pattern']}")
+            elif ptype == "array":
+                if not isinstance(val, list):
+                    errs.append(f"{k} not list")
+                else:
+                    if "minItems" in prop and len(val) < prop["minItems"]:
+                        errs.append(f"{k} fewer than minItems")
+                    if "maxItems" in prop and len(val) > prop["maxItems"]:
+                        errs.append(f"{k} more than maxItems")
+                    item_ref = prop.get("items", {}).get("$ref", "")
+                    if item_ref:
+                        ref_name = item_ref.split("/")[-1]
+                        for item in val:
+                            if isinstance(item, dict):
+                                errs.extend(_validate_gam_object_keys(item, defs[ref_name], defs))
+        return errs
+
+    for pair_name, (sc_obj, fx_obj) in gam_loaded_pairs.items():
+        errs = _validate_gam_object_keys(fx_obj, sc_obj, sc_obj.get("$defs", {}))
+        assert not errs, f"Pure-python Sprint 8.8 validation failed for {pair_name}: {errs}"
+
+    gam_req_sc, gam_req_fx = gam_loaded_pairs["gamification-activity-record-request"]
+    gam_res_sc, gam_res_fx = gam_loaded_pairs["gamification-summary-response"]
+    assert _validate_gam_object_keys({**gam_res_fx, "trainingEligible": True}, gam_res_sc, gam_res_sc.get("$defs", {})), "Expected trainingEligible=True failure"
+    assert _validate_gam_object_keys({**gam_res_fx, "streakFreezesRemaining": 3}, gam_res_sc, gam_res_sc.get("$defs", {})), "Expected streakFreezesRemaining=3 failure"
+    assert _validate_gam_object_keys({**gam_res_fx, "streakFreezesRemaining": -1}, gam_res_sc, gam_res_sc.get("$defs", {})), "Expected streakFreezesRemaining=-1 failure"
+    assert _validate_gam_object_keys({**gam_req_fx, "evidenceType": "UNSUPPORTED"}, gam_req_sc, gam_req_sc.get("$defs", {})), "Expected evidenceType=UNSUPPORTED failure"
+    assert _validate_gam_object_keys({**gam_req_fx, "xpPoints": 100}, gam_req_sc, gam_req_sc.get("$defs", {})), "Expected extra xpPoints=100 failure"
 
     # Sprint 8.6 pure-python schema & fixture invariants (always verified)
     for card_fx in (ml_card_tr_fixture, ml_card_en_fixture):
@@ -866,7 +995,43 @@ def run_validation():
                 for code in expected_codes:
                     assert code in ss_op["responses"], f"HTTP {code} missing from {ss_path} in {spec_name}"
 
+            # Sprint 8.8 OpenAPI paths & component schemas
+            for schema_name in (
+                "GamificationActivityRecordRequest",
+                "GamificationSummaryResponse",
+            ):
+                assert schema_name in spec_schemas, f"Missing Sprint 8.8 component schema {schema_name} in {spec_name}"
+
+            expected_gam_endpoints = {
+                "/v1/gamification/summary": ("get", ("200", "400", "401", "403", "503")),
+                "/v1/gamification/activity": ("post", ("200", "400", "401", "403", "422", "503")),
+            }
+            for gam_path, (gam_method, expected_codes) in expected_gam_endpoints.items():
+                assert gam_path in spec_paths, f"Missing Sprint 8.8 path {gam_path} in {spec_name}"
+                gam_op = spec_paths[gam_path][gam_method]
+                assert gam_op["security"] == [{"bearerAuth": []}], f"Security bearerAuth missing on {gam_path} in {spec_name}"
+                for code in expected_codes:
+                    assert code in gam_op["responses"], f"HTTP {code} missing from {gam_path} in {spec_name}"
+
         assert openapi_path.read_bytes() == openapi_core_path.read_bytes(), "OpenAPI mirror public-api.yaml != verified-ai-core-api.yaml"
+    else:
+        openapi_bytes = openapi_path.read_bytes()
+        assert openapi_bytes == openapi_core_path.read_bytes(), "OpenAPI mirror public-api.yaml != verified-ai-core-api.yaml"
+        openapi_text = openapi_bytes.decode("utf-8")
+        for token in (
+            "/v1/gamification/summary:",
+            "/v1/gamification/activity:",
+            "GamificationActivityRecordRequest:",
+            "GamificationSummaryResponse:",
+            "GamificationSummaryResponse",
+            "GamificationActivityRecordRequest",
+            "ProblemBadRequest",
+            "ProblemUnauthorized",
+            "ProblemForbidden",
+            "ProblemUnprocessableEntity",
+            "ProblemServiceUnavailable",
+        ):
+            assert token in openapi_text, f"Missing Sprint 8.8 OpenAPI token in public-api.yaml: {token}"
 
     # 3. iOS Localizable.xcstrings Key Verification
     xcstrings_data = json.loads(strings_path.read_text(encoding="utf-8"))
@@ -990,10 +1155,43 @@ def run_validation():
         "study_session.action.complete",
         "study_session.progress.step_format",
         "study_session.complete.summary",
+        "gamification.streak.badge.days_format",
+        "gamification.streak.badge.accessibility_label",
+        "gamification.streak.badge.accessibility_hint",
+        "gamification.streak.status.active_verified_today.headline",
+        "gamification.streak.status.active_verified_today.body",
+        "gamification.streak.status.continuity_preserved_today.headline",
+        "gamification.streak.status.continuity_preserved_today.body",
+        "gamification.streak.status.freeze_protected.headline",
+        "gamification.streak.status.freeze_protected.body",
+        "gamification.streak.status.at_risk_today.headline",
+        "gamification.streak.status.at_risk_today.body",
+        "gamification.streak.status.fresh_start_ready.headline",
+        "gamification.streak.status.fresh_start_ready.body",
+        "gamification.sheet.title",
+        "gamification.sheet.freezes_remaining_format",
+        "gamification.sheet.section.ledger",
+        "gamification.sheet.section.achievements",
+        "gamification.badge.first_independent_twin.title",
+        "gamification.badge.first_independent_twin.description",
+        "gamification.badge.three_day_independent_streak.title",
+        "gamification.badge.three_day_independent_streak.description",
+        "gamification.badge.seven_day_independent_streak.title",
+        "gamification.badge.seven_day_independent_streak.description",
+        "gamification.badge.misconception_overcome.title",
+        "gamification.badge.misconception_overcome.description",
+        "gamification.badge.retention_guardian.title",
+        "gamification.badge.retention_guardian.description",
+        "gamification.badge.concept_architect.title",
+        "gamification.badge.concept_architect.description",
     ]
 
     banned_lexicon = re.compile(
         r"\b(overdue|behind|fail|failure|failed|fail[s]?|punish|penalty|weak|weakness|weaknesses|poor|bad|stupid|dumb|incompetent|deficit|flaw|hopeless|remedial|abandoned|quitter|incomplete|streak)\b",
+        re.IGNORECASE,
+    )
+    gamification_banned_lexicon = re.compile(
+        r"\b(overdue|behind|fail|failure|failed|fail[s]?|punish|penalty|shame|guilt|slacker|lazy|weak|weakness|weaknesses|stupid|dumb|incompetent|hopeless|quitter|broken streak|lost streak|you broke|lose your|hurry|last chance|kaybettin|bozuldu|ceza|utanç|tembel|başarısız|yetersiz)\b",
         re.IGNORECASE,
     )
 
@@ -1007,8 +1205,11 @@ def run_validation():
             if key.startswith("studyplan.rebalance.") or key.startswith("micro_lesson.") or key.startswith("study_session."):
                 m = banned_lexicon.search(val)
                 assert not m, f"Stigmatizing lexicon word '{m.group(0)}' in {key}[{lang}]: {val}"
+            elif key.startswith("gamification."):
+                m = gamification_banned_lexicon.search(val)
+                assert not m, f"Stigmatizing gamification word '{m.group(0)}' in {key}[{lang}]: {val}"
 
-    print(f"PASS: Sprint 8.1..8.7 JSON schemas, negative mutations, OpenAPI 3.1 endpoints, and {len(required_keys)} EN/TR localizations verified.")
+    print(f"PASS: Sprint 8.1..8.8 JSON schemas, negative mutations, OpenAPI 3.1 endpoints, and {len(required_keys)} EN/TR localizations verified.")
 
 
 if __name__ == "__main__":

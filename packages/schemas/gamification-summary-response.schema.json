@@ -1,0 +1,316 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/gamification-summary-response.schema.json",
+  "title": "GamificationSummaryResponse",
+  "description": "Learner streak continuity, monthly freeze allowance, and pedagogical achievements summary.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "userId",
+    "learnerTimezone",
+    "serverLocalDate",
+    "currentStreakDays",
+    "longestStreakDays",
+    "streakFreezesRemaining",
+    "maxMonthlyStreakFreezes",
+    "freezesUsedThisMonth",
+    "freezeQuotaMonth",
+    "streakStatus",
+    "verifiedToday",
+    "continuityPreservedToday",
+    "freezeAppliedOnEvaluation",
+    "streakIncrementedOnEvaluation",
+    "totalIndependentDays",
+    "totalAssistedContinuityDays",
+    "supportiveHeadlineKey",
+    "supportiveBodyKey",
+    "recentDailyLedger",
+    "achievements",
+    "newlyUnlockedBadgeCodes",
+    "trainingEligible",
+    "evaluatedAtUtc"
+  ],
+  "properties": {
+    "userId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "learnerTimezone": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 64
+    },
+    "serverLocalDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "currentStreakDays": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "longestStreakDays": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "streakFreezesRemaining": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2
+    },
+    "maxMonthlyStreakFreezes": {
+      "type": "integer",
+      "const": 2
+    },
+    "freezesUsedThisMonth": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2
+    },
+    "freezeQuotaMonth": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+    },
+    "streakStatus": {
+      "type": "string",
+      "enum": [
+        "ACTIVE_VERIFIED_TODAY",
+        "CONTINUITY_PRESERVED_TODAY",
+        "FREEZE_PROTECTED",
+        "AT_RISK_TODAY",
+        "FRESH_START_READY"
+      ]
+    },
+    "verifiedToday": {
+      "type": "boolean"
+    },
+    "continuityPreservedToday": {
+      "type": "boolean"
+    },
+    "freezeAppliedOnEvaluation": {
+      "type": "boolean"
+    },
+    "streakIncrementedOnEvaluation": {
+      "type": "boolean"
+    },
+    "lastVerifiedIndependentDate": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date"
+    },
+    "lastActivityLocalDate": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date"
+    },
+    "lastActivityEvidenceType": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "INDEPENDENT",
+        "HINT_ASSISTED",
+        "SOLUTION_REVEALED_ASSISTED",
+        null
+      ]
+    },
+    "totalIndependentDays": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "totalAssistedContinuityDays": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "supportiveHeadlineKey": {
+      "type": "string",
+      "minLength": 1
+    },
+    "supportiveBodyKey": {
+      "type": "string",
+      "minLength": 1
+    },
+    "recentDailyLedger": {
+      "type": "array",
+      "maxItems": 14,
+      "items": {
+        "$ref": "#/$defs/DailyStreakLedgerEntry"
+      }
+    },
+    "achievements": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": {
+        "$ref": "#/$defs/PedagogicalAchievementItem"
+      }
+    },
+    "newlyUnlockedBadgeCodes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "FIRST_INDEPENDENT_TWIN",
+          "THREE_DAY_INDEPENDENT_STREAK",
+          "SEVEN_DAY_INDEPENDENT_STREAK",
+          "MISCONCEPTION_OVERCOME",
+          "RETENTION_GUARDIAN",
+          "CONCEPT_ARCHITECT"
+        ]
+      }
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    },
+    "evaluatedAtUtc": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "$defs": {
+    "DailyStreakLedgerEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "activityLocalDate",
+        "dailyStatus",
+        "highestEvidenceType",
+        "independentActivityCount",
+        "assistedActivityCount",
+        "streakIncremented",
+        "freezeConsumed",
+        "streakDaysSnapshot",
+        "evidenceReference"
+      ],
+      "properties": {
+        "activityLocalDate": {
+          "type": "string",
+          "format": "date"
+        },
+        "dailyStatus": {
+          "type": "string",
+          "enum": [
+            "VERIFIED_INDEPENDENT",
+            "ASSISTED_CONTINUITY",
+            "FREEZE_APPLIED"
+          ]
+        },
+        "highestEvidenceType": {
+          "type": "string",
+          "enum": [
+            "INDEPENDENT",
+            "HINT_ASSISTED",
+            "SOLUTION_REVEALED_ASSISTED",
+            "FREEZE_SYSTEM"
+          ]
+        },
+        "independentActivityCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "assistedActivityCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "streakIncremented": {
+          "type": "boolean"
+        },
+        "freezeConsumed": {
+          "type": "boolean"
+        },
+        "streakDaysSnapshot": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "evidenceReference": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        }
+      }
+    },
+    "PedagogicalAchievementItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "badgeCode",
+        "badgeCategory",
+        "titleKey",
+        "descriptionKey",
+        "unlocked",
+        "achievementId",
+        "evidenceReference",
+        "unlockedLocalDate",
+        "unlockedAtUtc"
+      ],
+      "properties": {
+        "badgeCode": {
+          "type": "string",
+          "enum": [
+            "FIRST_INDEPENDENT_TWIN",
+            "THREE_DAY_INDEPENDENT_STREAK",
+            "SEVEN_DAY_INDEPENDENT_STREAK",
+            "MISCONCEPTION_OVERCOME",
+            "RETENTION_GUARDIAN",
+            "CONCEPT_ARCHITECT"
+          ]
+        },
+        "badgeCategory": {
+          "type": "string",
+          "enum": [
+            "INDEPENDENT_TRANSFER",
+            "HABIT_CONSISTENCY",
+            "MISCONCEPTION_REPAIR",
+            "SPACED_RETENTION",
+            "CONCEPT_MASTERY"
+          ]
+        },
+        "titleKey": {
+          "type": "string",
+          "minLength": 1
+        },
+        "descriptionKey": {
+          "type": "string",
+          "minLength": 1
+        },
+        "unlocked": {
+          "type": "boolean"
+        },
+        "achievementId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uuid"
+        },
+        "evidenceReference": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "unlockedLocalDate": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "unlockedAtUtc": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

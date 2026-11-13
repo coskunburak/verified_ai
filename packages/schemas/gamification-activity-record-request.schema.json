@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/gamification-activity-record-request.schema.json",
+  "title": "GamificationActivityRecordRequest",
+  "description": "Verified evidence event for Sprint 8.8 streak and pedagogical achievement evaluation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "idempotencyKey",
+    "evidenceType",
+    "evidenceReference",
+    "learnerTimezone"
+  ],
+  "properties": {
+    "idempotencyKey": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 128
+    },
+    "evidenceType": {
+      "type": "string",
+      "enum": [
+        "INDEPENDENT",
+        "HINT_ASSISTED",
+        "SOLUTION_REVEALED_ASSISTED"
+      ]
+    },
+    "evidenceReference": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 160
+    },
+    "learnerTimezone": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 64
+    },
+    "occurredAtUtc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "conceptId": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 128
+    },
+    "misconceptionRepaired": {
+      "type": "boolean",
+      "default": false
+    },
+    "spacedReviewCompleted": {
+      "type": "boolean",
+      "default": false
+    },
+    "verifiedMasteredConceptCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000,
+      "default": 0
+    }
+  }
+}

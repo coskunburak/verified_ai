@@ -1,0 +1,132 @@
+{
+  "userId": "00000000-0000-4000-8000-000000000880",
+  "learnerTimezone": "Europe/Istanbul",
+  "serverLocalDate": "2026-11-10",
+  "currentStreakDays": 3,
+  "longestStreakDays": 5,
+  "streakFreezesRemaining": 1,
+  "maxMonthlyStreakFreezes": 2,
+  "freezesUsedThisMonth": 1,
+  "freezeQuotaMonth": "2026-11",
+  "streakStatus": "ACTIVE_VERIFIED_TODAY",
+  "verifiedToday": true,
+  "continuityPreservedToday": true,
+  "freezeAppliedOnEvaluation": false,
+  "streakIncrementedOnEvaluation": true,
+  "lastVerifiedIndependentDate": "2026-11-10",
+  "lastActivityLocalDate": "2026-11-10",
+  "lastActivityEvidenceType": "INDEPENDENT",
+  "totalIndependentDays": 5,
+  "totalAssistedContinuityDays": 1,
+  "supportiveHeadlineKey": "gamification.streak.status.active_verified_today.headline",
+  "supportiveBodyKey": "gamification.streak.status.active_verified_today.body",
+  "recentDailyLedger": [
+    {
+      "activityLocalDate": "2026-11-10",
+      "dailyStatus": "VERIFIED_INDEPENDENT",
+      "highestEvidenceType": "INDEPENDENT",
+      "independentActivityCount": 1,
+      "assistedActivityCount": 0,
+      "streakIncremented": true,
+      "freezeConsumed": false,
+      "streakDaysSnapshot": 3,
+      "evidenceReference": "twin_attempt:00000000-0000-4000-8000-000000000882"
+    },
+    {
+      "activityLocalDate": "2026-11-09",
+      "dailyStatus": "FREEZE_APPLIED",
+      "highestEvidenceType": "FREEZE_SYSTEM",
+      "independentActivityCount": 0,
+      "assistedActivityCount": 0,
+      "streakIncremented": false,
+      "freezeConsumed": true,
+      "streakDaysSnapshot": 2,
+      "evidenceReference": "system:freeze:2026-11-09"
+    },
+    {
+      "activityLocalDate": "2026-11-08",
+      "dailyStatus": "VERIFIED_INDEPENDENT",
+      "highestEvidenceType": "INDEPENDENT",
+      "independentActivityCount": 1,
+      "assistedActivityCount": 0,
+      "streakIncremented": true,
+      "freezeConsumed": false,
+      "streakDaysSnapshot": 2,
+      "evidenceReference": "twin_attempt:00000000-0000-4000-8000-000000000881"
+    }
+  ],
+  "achievements": [
+    {
+      "badgeCode": "FIRST_INDEPENDENT_TWIN",
+      "badgeCategory": "INDEPENDENT_TRANSFER",
+      "titleKey": "gamification.badge.first_independent_twin.title",
+      "descriptionKey": "gamification.badge.first_independent_twin.description",
+      "unlocked": true,
+      "achievementId": "00000000-0000-4000-8000-000000000883",
+      "evidenceReference": "twin_attempt:00000000-0000-4000-8000-000000000881",
+      "unlockedLocalDate": "2026-11-08",
+      "unlockedAtUtc": "2026-11-08T16:10:00Z"
+    },
+    {
+      "badgeCode": "THREE_DAY_INDEPENDENT_STREAK",
+      "badgeCategory": "HABIT_CONSISTENCY",
+      "titleKey": "gamification.badge.three_day_independent_streak.title",
+      "descriptionKey": "gamification.badge.three_day_independent_streak.description",
+      "unlocked": true,
+      "achievementId": "00000000-0000-4000-8000-000000000884",
+      "evidenceReference": "twin_attempt:00000000-0000-4000-8000-000000000882",
+      "unlockedLocalDate": "2026-11-10",
+      "unlockedAtUtc": "2026-11-10T17:15:00Z"
+    },
+    {
+      "badgeCode": "SEVEN_DAY_INDEPENDENT_STREAK",
+      "badgeCategory": "HABIT_CONSISTENCY",
+      "titleKey": "gamification.badge.seven_day_independent_streak.title",
+      "descriptionKey": "gamification.badge.seven_day_independent_streak.description",
+      "unlocked": false,
+      "achievementId": null,
+      "evidenceReference": null,
+      "unlockedLocalDate": null,
+      "unlockedAtUtc": null
+    },
+    {
+      "badgeCode": "MISCONCEPTION_OVERCOME",
+      "badgeCategory": "MISCONCEPTION_REPAIR",
+      "titleKey": "gamification.badge.misconception_overcome.title",
+      "descriptionKey": "gamification.badge.misconception_overcome.description",
+      "unlocked": true,
+      "achievementId": "00000000-0000-4000-8000-000000000885",
+      "evidenceReference": "twin_attempt:00000000-0000-4000-8000-000000000882",
+      "unlockedLocalDate": "2026-11-10",
+      "unlockedAtUtc": "2026-11-10T17:15:00Z"
+    },
+    {
+      "badgeCode": "RETENTION_GUARDIAN",
+      "badgeCategory": "SPACED_RETENTION",
+      "titleKey": "gamification.badge.retention_guardian.title",
+      "descriptionKey": "gamification.badge.retention_guardian.description",
+      "unlocked": false,
+      "achievementId": null,
+      "evidenceReference": null,
+      "unlockedLocalDate": null,
+      "unlockedAtUtc": null
+    },
+    {
+      "badgeCode": "CONCEPT_ARCHITECT",
+      "badgeCategory": "CONCEPT_MASTERY",
+      "titleKey": "gamification.badge.concept_architect.title",
+      "descriptionKey": "gamification.badge.concept_architect.description",
+      "unlocked": false,
+      "achievementId": null,
+      "evidenceReference": null,
+      "unlockedLocalDate": null,
+      "unlockedAtUtc": null
+    }
+  ],
+  "newlyUnlockedBadgeCodes": [
+    "THREE_DAY_INDEPENDENT_STREAK",
+    "MISCONCEPTION_OVERCOME"
+  ],
+  "trainingEligible": false,
+  "evaluatedAtUtc": "2026-11-10T17:15:01Z"
+}
