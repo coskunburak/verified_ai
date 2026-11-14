@@ -15398,6 +15398,251 @@
         "en": { "stringUnit": { "state": "translated", "value": "Retry Sync" } },
         "tr": { "stringUnit": { "state": "translated", "value": "Eşitlemeyi Yinele" } }
       }
+    },
+    "exam.catalog.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Exam Blueprints & Targets" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Sınav Planları ve Hedefler" } }
+      }
+    },
+    "exam.catalog.subtitle": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Inspect official topic weights and pin your versioned target." } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Resmi konu ağırlıklarını incele ve sürümlenmiş hedefini sabitle." } }
+      }
+    },
+    "exam.catalog.filter.all": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "All" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Tümü" } }
+      }
+    },
+    "exam.catalog.filter.tr": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "TR" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "TR" } }
+      }
+    },
+    "exam.catalog.filter.intl": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "INTL" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "ULUSLARARASI" } }
+      }
+    },
+    "exam.catalog.offline_banner": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Offline mode: showing cached exam blueprints." } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Çevrimdışı mod: önbellekteki sınav planları gösteriliyor." } }
+      }
+    },
+    "exam.catalog.feature_disabled": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Exam catalog is currently disabled." } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Sınav kataloğu şu anda devre dışı." } }
+      }
+    },
+    "exam.catalog.questions_count": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "%d Questions" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "%d Soru" } }
+      }
+    },
+    "exam.catalog.minutes_count": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "%d min" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "%d dk" } }
+      }
+    },
+    "exam.catalog.topic_weights_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Curriculum Topic Weights" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Müfredat Konu Ağırlıkları" } }
+      }
+    },
+    "exam.catalog.hash_label": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Blueprint Hash" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Plan Özeti" } }
+      }
+    },
+    "exam.target.section_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Bind Exam Target" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Sınav Hedefini Bağla" } }
+      }
+    },
+    "exam.target.score_label": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Target Score" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Hedef Puan" } }
+      }
+    },
+    "exam.target.date_label": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Target Exam Date" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Hedef Sınav Tarihi" } }
+      }
+    },
+    "exam.target.save_button": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Save Primary Target" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Ana Hedefi Kaydet" } }
+      }
+    },
+    "exam.target.saving_button": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Saving Target..." } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Hedef Kaydediliyor..." } }
+      }
+    },
+    "exam.target.saved_banner": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Target pinned to verified blueprint snapshot." } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Hedef doğrulanmış sınav planı anlık görüntüsüne sabitlendi." } }
+      }
+    },
+    "exam.target.active_badge": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "ACTIVE" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "AKTİF" } }
+      }
+    },
+    "exam.target.superseded_badge": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "SUPERSEDED" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "YENİLENDİ" } }
+      }
+    },
+    "exam.target.readiness_gap_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Readiness Gap Preview" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Hazırbulunuşluk Farkı Önizlemesi" } }
+      }
+    },
+    "exam.target.estimated_score_label": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Preliminary Est." } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Ön Tahmin" } }
+      }
+    },
+    "exam.target.gap_points_label": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Target Gap" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Hedef Farkı" } }
+      }
+    },
+    "exam.target.zero_cost_note": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "100% deterministic blueprint check • $0 LLM cost" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "%100 deterministik plan kontrolü • 0 LLM maliyeti" } }
+      }
+    },
+    "exam.target.score_out_of_range": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Please enter a target score within the exam's valid range." } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Lütfen sınavın geçerli aralığında bir hedef puan girin." } }
+      }
+    },
+    "exam.target.keyboard_done": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Done" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Bitti" } }
+      }
+    },
+    "exam.scoring.CORRECT_MINUS_QUARTER_WRONG": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Correct − 0.25 × Wrong" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Doğru − 0.25 × Yanlış" } }
+      }
+    },
+    "exam.scoring.RAW_CORRECT_ONLY": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Scaled Correct Only" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Yalnızca Doğru (Ölçekli)" } }
+      }
+    },
+    "exam.scoring.WEIGHTED_SECTION_RUBRIC": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Weighted Section Rubric" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Ağırlıklı Bölüm Rubriği" } }
+      }
+    },
+    "exam.error.version_conflict": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Blueprint version changed. Refreshing exam catalog." } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Sınav planı sürümü değişti. Katalog yenileniyor." } }
+      }
+    },
+    "exam.error.forbidden": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Access to this exam target is not allowed." } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Bu sınav hedefine erişim izni yok." } }
+      }
+    },
+    "exam.error.not_found": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Exam definition or target not found." } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Sınav tanımı veya hedef bulunamadı." } }
+      }
+    },
+    "exam.error.unexpected": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Could not complete exam catalog request." } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Sınav kataloğu isteği tamamlanamadı." } }
+      }
+    },
+    "home.exam_catalog.card_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Exam Blueprints & Targets" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Sınav Planları ve Hedefler" } }
+      }
+    },
+    "home.exam_catalog.card_subtitle": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Choose YKS, SAT, AP, or IB blueprint and set your score goal." } },
+        "tr": { "stringUnit": { "state": "translated", "value": "YKS, SAT, AP veya IB sınav planını seç ve hedef puanını belirle." } }
+      }
+    },
+    "home.exam_catalog.open_button": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Exam Blueprints & Target" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Sınav Planları ve Hedef" } }
+      }
     }
   },
   "version": "1.0"

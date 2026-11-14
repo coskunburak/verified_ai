@@ -292,3 +292,7 @@ verifiedai:
     session-max-active-duration-seconds: 14400
   analytics:
     weekly-digest-enabled: ${VERIFIEDAI_ANALYTICS_WEEKLY_DIGEST_ENABLED:true}
+  exam:
+    catalog-enabled: ${VERIFIEDAI_EXAM_CATALOG_ENABLED:false}
+    target-binding-enabled: ${VERIFIEDAI_EXAM_TARGET_BINDING_ENABLED:false}
+    default-jurisdiction: ${VERIFIEDAI_EXAM_DEFAULT_JURISDICTION:TR}

@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "exam-definition-detail-v1",
+  "examDefinitionId": "91000000-0000-4000-8000-000000000103",
+  "examCode": "TR_YKS_AYT_MATH",
+  "examVersion": "2026.1",
+  "jurisdiction": "TR",
+  "examFamily": "YKS",
+  "titleEn": "YKS Field Qualification Test (AYT) Mathematics",
+  "titleTr": "YKS Alan Yeterlilik Testi (AYT) Matematik",
+  "status": "ACTIVE",
+  "totalQuestions": 40,
+  "durationMinutes": 90,
+  "scoringFormulaType": "CORRECT_MINUS_QUARTER_WRONG",
+  "wrongPenaltyFactor": 0.25,
+  "minScore": -10.0,
+  "maxScore": 40.0,
+  "navigationPolicy": "FREE_JUMP",
+  "blueprintHash": "3cd5cb6fc93ee2533f544d2f24ce04922674c06a4e81073a410dcd94e4e9ceb8",
+  "effectiveFrom": "2026-01-01T00:00:00Z",
+  "deprecatedAt": null,
+  "supersededByVersion": null,
+  "sections": [
+    {
+      "sectionCode": "AYT_MATH",
+      "titleEn": "AYT Mathematics",
+      "titleTr": "AYT Matematik",
+      "questionCount": 40,
+      "durationMinutes": 90,
+      "order": 1
+    }
+  ],
+  "scoringParameters": {
+    "scaleMin": null,
+    "scaleMax": null,
+    "moduleCount": 1,
+    "rubricScaleMin": null,
+    "rubricScaleMax": null,
+    "sectionWeights": []
+  },
+  "topicWeights": [
+    {"sectionCode": "AYT_MATH", "skillId": "MATH.ALGEBRA.FACTORING", "domainCode": "MATH.ALGEBRA", "questionCountWeight": 2.0, "minQuestions": 1, "maxQuestions": 3, "cognitiveLevelMix": {"recall": 0.15, "application": 0.55, "analysis": 0.3}, "sortOrder": 1},
+    {"sectionCode": "AYT_MATH", "skillId": "MATH.EQUATIONS.QUADRATIC_SOLVING", "domainCode": "MATH.EQUATIONS", "questionCountWeight": 4.0, "minQuestions": 3, "maxQuestions": 5, "cognitiveLevelMix": {"recall": 0.15, "application": 0.55, "analysis": 0.3}, "sortOrder": 2},
+    {"sectionCode": "AYT_MATH", "skillId": "MATH.EQUATIONS.INEQUALITIES_BASIC", "domainCode": "MATH.EQUATIONS", "questionCountWeight": 2.0, "minQuestions": 1, "maxQuestions": 3, "cognitiveLevelMix": {"recall": 0.15, "application": 0.5, "analysis": 0.35}, "sortOrder": 3},
+    {"sectionCode": "AYT_MATH", "skillId": "MATH.FUNCTIONS.COMPOSITION", "domainCode": "MATH.FUNCTIONS", "questionCountWeight": 3.0, "minQuestions": 2, "maxQuestions": 4, "cognitiveLevelMix": {"recall": 0.15, "application": 0.5, "analysis": 0.35}, "sortOrder": 4},
+    {"sectionCode": "AYT_MATH", "skillId": "MATH.FUNCTIONS.INVERSE_BASIC", "domainCode": "MATH.FUNCTIONS", "questionCountWeight": 3.0, "minQuestions": 2, "maxQuestions": 4, "cognitiveLevelMix": {"recall": 0.15, "application": 0.5, "analysis": 0.35}, "sortOrder": 5},
+    {"sectionCode": "AYT_MATH", "skillId": "MATH.FUNCTIONS.GRAPH_FEATURES", "domainCode": "MATH.FUNCTIONS", "questionCountWeight": 2.0, "minQuestions": 1, "maxQuestions": 3, "cognitiveLevelMix": {"recall": 0.1, "application": 0.45, "analysis": 0.45}, "sortOrder": 6},
+    {"sectionCode": "AYT_MATH", "skillId": "MATH.CALCULUS.LIMITS.DIRECT_SUBSTITUTION", "domainCode": "MATH.CALCULUS.LIMITS", "questionCountWeight": 2.0, "minQuestions": 1, "maxQuestions": 3, "cognitiveLevelMix": {"recall": 0.25, "application": 0.55, "analysis": 0.2}, "sortOrder": 7},
+    {"sectionCode": "AYT_MATH", "skillId": "MATH.CALCULUS.LIMITS.FACTOR_AND_CANCEL", "domainCode": "MATH.CALCULUS.LIMITS", "questionCountWeight": 2.0, "minQuestions": 1, "maxQuestions": 3, "cognitiveLevelMix": {"recall": 0.15, "application": 0.55, "analysis": 0.3}, "sortOrder": 8},
+    {"sectionCode": "AYT_MATH", "skillId": "MATH.CALCULUS.LIMITS.ONE_SIDED_BASIC", "domainCode": "MATH.CALCULUS.LIMITS", "questionCountWeight": 2.0, "minQuestions": 1, "maxQuestions": 3, "cognitiveLevelMix": {"recall": 0.15, "application": 0.5, "analysis": 0.35}, "sortOrder": 9},
+    {"sectionCode": "AYT_MATH", "skillId": "MATH.CALCULUS.DIFFERENTIATION.POWER_RULE", "domainCode": "MATH.CALCULUS.DIFFERENTIATION", "questionCountWeight": 2.0, "minQuestions": 1, "maxQuestions": 3, "cognitiveLevelMix": {"recall": 0.25, "application": 0.55, "analysis": 0.2}, "sortOrder": 10},
+    {"sectionCode": "AYT_MATH", "skillId": "MATH.CALCULUS.DIFFERENTIATION.PRODUCT_RULE", "domainCode": "MATH.CALCULUS.DIFFERENTIATION", "questionCountWeight": 2.0, "minQuestions": 1, "maxQuestions": 3, "cognitiveLevelMix": {"recall": 0.2, "application": 0.55, "analysis": 0.25}, "sortOrder": 11},
+    {"sectionCode": "AYT_MATH", "skillId": "MATH.CALCULUS.DIFFERENTIATION.QUOTIENT_RULE", "domainCode": "MATH.CALCULUS.DIFFERENTIATION", "questionCountWeight": 2.0, "minQuestions": 1, "maxQuestions": 3, "cognitiveLevelMix": {"recall": 0.2, "application": 0.5, "analysis": 0.3}, "sortOrder": 12},
+    {"sectionCode": "AYT_MATH", "skillId": "MATH.CALCULUS.DIFFERENTIATION.CHAIN_RULE", "domainCode": "MATH.CALCULUS.DIFFERENTIATION", "questionCountWeight": 3.0, "minQuestions": 2, "maxQuestions": 4, "cognitiveLevelMix": {"recall": 0.15, "application": 0.5, "analysis": 0.35}, "sortOrder": 13},
+    {"sectionCode": "AYT_MATH", "skillId": "MATH.CALCULUS.DIFFERENTIATION.TRIG_BASIC", "domainCode": "MATH.CALCULUS.DIFFERENTIATION", "questionCountWeight": 2.0, "minQuestions": 1, "maxQuestions": 3, "cognitiveLevelMix": {"recall": 0.2, "application": 0.5, "analysis": 0.3}, "sortOrder": 14},
+    {"sectionCode": "AYT_MATH", "skillId": "MATH.CALCULUS.INTEGRATION.POWER_RULE", "domainCode": "MATH.CALCULUS.INTEGRATION", "questionCountWeight": 2.0, "minQuestions": 1, "maxQuestions": 3, "cognitiveLevelMix": {"recall": 0.25, "application": 0.55, "analysis": 0.2}, "sortOrder": 15},
+    {"sectionCode": "AYT_MATH", "skillId": "MATH.CALCULUS.INTEGRATION.BASIC_SUBSTITUTION", "domainCode": "MATH.CALCULUS.INTEGRATION", "questionCountWeight": 3.0, "minQuestions": 2, "maxQuestions": 4, "cognitiveLevelMix": {"recall": 0.15, "application": 0.5, "analysis": 0.35}, "sortOrder": 16},
+    {"sectionCode": "AYT_MATH", "skillId": "MATH.CALCULUS.INTEGRATION.CONSTANT_OF_INTEGRATION", "domainCode": "MATH.CALCULUS.INTEGRATION", "questionCountWeight": 2.0, "minQuestions": 1, "maxQuestions": 3, "cognitiveLevelMix": {"recall": 0.2, "application": 0.5, "analysis": 0.3}, "sortOrder": 17}
+  ],
+  "trainingEligible": false,
+  "llmTokensUsed": 0
+}

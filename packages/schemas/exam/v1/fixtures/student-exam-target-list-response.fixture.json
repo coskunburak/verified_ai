@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "student-exam-target-list-v1",
+  "userId": "91000000-0000-4000-8000-000000000a01",
+  "targets": [
+    {
+      "schemaVersion": "student-exam-target-v1",
+      "targetId": "91000000-0000-4000-8000-000000000901",
+      "userId": "91000000-0000-4000-8000-000000000a01",
+      "examDefinitionId": "91000000-0000-4000-8000-000000000101",
+      "examCode": "TR_YKS_TYT_MATH",
+      "examVersion": "2026.1",
+      "blueprintHash": "c1cb8c26245fdee1b53c164a94e35a6cecbde8bae6ece948e60f577df53e1391",
+      "targetScore": 36.25,
+      "targetDate": "2027-06-20",
+      "priorityRank": 1,
+      "targetStatus": "ACTIVE",
+      "isPrimary": true,
+      "idempotencyKey": "fixture-bind-tyt-math-001",
+      "readinessGapPreview": {
+        "schemaVersion": "readiness-gap-preview-v1",
+        "currentEstimatedScore": 20.0,
+        "targetScore": 36.25,
+        "gapPoints": 16.25,
+        "estimationBasis": "BLUEPRINT_MIDPOINT_PRELIMINARY",
+        "llmTokensUsed": 0,
+        "trainingEligible": false
+      },
+      "pinnedBlueprint": {
+        "examDefinitionId": "91000000-0000-4000-8000-000000000101",
+        "examCode": "TR_YKS_TYT_MATH",
+        "examVersion": "2026.1",
+        "jurisdiction": "TR",
+        "examFamily": "YKS",
+        "titleEn": "YKS Basic Proficiency Test (TYT) Mathematics",
+        "titleTr": "YKS Temel Yeterlilik Testi (TYT) Matematik",
+        "totalQuestions": 40,
+        "durationMinutes": 65,
+        "scoringFormulaType": "CORRECT_MINUS_QUARTER_WRONG",
+        "wrongPenaltyFactor": 0.25,
+        "minScore": -10.0,
+        "maxScore": 40.0,
+        "navigationPolicy": "FREE_JUMP",
+        "blueprintHash": "c1cb8c26245fdee1b53c164a94e35a6cecbde8bae6ece948e60f577df53e1391",
+        "effectiveFrom": "2026-01-01T00:00:00Z",
+        "sections": [
+          {"sectionCode": "TYT_MATH", "titleEn": "TYT Mathematics", "titleTr": "TYT Matematik", "questionCount": 40, "durationMinutes": 65, "order": 1}
+        ],
+        "scoringParameters": {
+          "scaleMin": null,
+          "scaleMax": null,
+          "moduleCount": 1,
+          "rubricScaleMin": null,
+          "rubricScaleMax": null,
+          "sectionWeights": []
+        },
+        "topicWeights": [
+          {"sectionCode": "TYT_MATH", "skillId": "MATH.ARITHMETIC.INTEGER_OPERATIONS", "domainCode": "MATH.ARITHMETIC", "questionCountWeight": 5.0, "minQuestions": 4, "maxQuestions": 7, "cognitiveLevelMix": {"recall": 0.3, "application": 0.5, "analysis": 0.2}, "sortOrder": 1}
+        ],
+        "trainingEligible": false
+      },
+      "supersededAt": null,
+      "idempotentReplay": false,
+      "llmTokensUsed": 0,
+      "trainingEligible": false,
+      "createdAt": "2026-11-14T10:00:00Z",
+      "updatedAt": "2026-11-14T10:00:00Z"
+    }
+  ],
+  "totalCount": 1,
+  "llmTokensUsed": 0,
+  "trainingEligible": false
+}

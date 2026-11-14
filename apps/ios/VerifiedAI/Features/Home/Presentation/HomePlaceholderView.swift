@@ -17,6 +17,7 @@ struct HomePlaceholderView: View {
     var spacedReviewViewModel: SpacedReviewViewModel? = nil
     var dailyCoachViewModel: DailyCoachViewModel? = nil
     var coldStartViewModel: ColdStartDiagnosticViewModel? = nil
+    var examViewModel: ExamCatalogAndTargetViewModel? = nil
 
     var body: some View {
         ScrollView {
@@ -27,10 +28,16 @@ struct HomePlaceholderView: View {
                     CoachHubView(
                         viewModel: dailyCoachViewModel,
                         coldStartViewModel: coldStartViewModel,
+                        examViewModel: examViewModel,
                         onStartCapture: startProblemCapture
                     )
-                } else if let coldStartViewModel, !coldStartViewModel.isFeatureDisabled {
-                    ColdStartDiagnosticCardView(viewModel: coldStartViewModel)
+                } else {
+                    if let coldStartViewModel, !coldStartViewModel.isFeatureDisabled {
+                        ColdStartDiagnosticCardView(viewModel: coldStartViewModel)
+                    }
+                    if let examViewModel, !examViewModel.isFeatureDisabled {
+                        examCatalogEntryCard(examViewModel: examViewModel)
+                    }
                 }
                 primaryAction
                 if let problemHistoryViewModel {
@@ -66,6 +73,39 @@ struct HomePlaceholderView: View {
                 }
             }
         )
+    }
+
+    private func examCatalogEntryCard(examViewModel: ExamCatalogAndTargetViewModel) -> some View {
+        NavigationLink {
+            ExamCatalogAndTargetView(viewModel: examViewModel)
+        } label: {
+            VStack(alignment: .leading, spacing: SpacingTokens.sm) {
+                HStack {
+                    Label(LocalizedStringKey("home.exam_catalog.card_title"), systemImage: "checklist")
+                        .font(.headline)
+                        .foregroundStyle(ColorTokens.textPrimary)
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(ColorTokens.textSecondary)
+                }
+                Text(LocalizedStringKey("home.exam_catalog.card_subtitle"))
+                    .font(TypographyTokens.caption)
+                    .foregroundStyle(ColorTokens.textSecondary)
+                    .multilineTextAlignment(.leading)
+
+                if let activeTarget = examViewModel.primaryActiveTarget {
+                    Text("\(activeTarget.examCode) • v\(activeTarget.examVersion)")
+                        .font(.caption.monospaced().weight(.semibold))
+                        .foregroundStyle(ColorTokens.accent)
+                }
+            }
+            .padding(SpacingTokens.md)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(ColorTokens.surfaceElevated)
+            .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium))
+        }
+        .accessibilityIdentifier("home.examCatalog.button")
     }
 
     @ViewBuilder

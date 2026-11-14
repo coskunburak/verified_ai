@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "student-exam-target-request-v1",
+  "examCode": "TR_YKS_TYT_MATH",
+  "examVersion": "2026.1",
+  "expectedBlueprintHash": "c1cb8c26245fdee1b53c164a94e35a6cecbde8bae6ece948e60f577df53e1391",
+  "targetScore": 36.25,
+  "targetDate": "2027-06-20",
+  "priorityRank": 1,
+  "isPrimary": true,
+  "idempotencyKey": "fixture-bind-tyt-math-001"
+}

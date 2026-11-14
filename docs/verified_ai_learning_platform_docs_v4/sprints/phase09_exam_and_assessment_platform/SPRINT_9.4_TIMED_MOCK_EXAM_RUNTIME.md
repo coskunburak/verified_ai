@@ -421,7 +421,7 @@ Delivers a resilient timed exam execution environment with server-authoritative 
 ## 6. Python Math Verifier Impact
 - Batch-processes scratchpad work photos submitted at exam completion.
 
-## 7. Database Migration & Persistence Contract (`PLANNED V046`)
+## 7. Database Migration & Persistence Contract (`PLANNED V057`)
 - **Tables:** `exam_sessions` (`id`, `user_id`, `exam_code`, `exam_version`, `session_type`, `status`, `started_at`, `submitted_at`, `net_score`, `total_questions`, `correct_count`, `wrong_count`, `blank_count`), `exam_session_items` (`id`, `session_id`, `question_index`, `canonical_skill_code`, `selected_option`, `is_correct`, `duration_seconds`).
 
 ## 8. REST API Contracts (`CNT-LOS-10`)

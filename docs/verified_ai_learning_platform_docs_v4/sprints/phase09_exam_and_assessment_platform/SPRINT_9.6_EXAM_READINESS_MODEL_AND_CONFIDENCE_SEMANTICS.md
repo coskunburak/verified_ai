@@ -70,7 +70,7 @@ The platform intentionally separates product semantics, learner state, AI-genera
 - `services/api/src/main/java/com/verifiedai/exam/**`
 - `services/api/src/main/java/com/verifiedai/mastery/**`
 - `services/api/src/main/java/com/verifiedai/mistake/**`
-- `services/api/src/main/resources/db/migration/platform/V047__exam_readiness_projections.sql` *(PLANNED)*
+- `services/api/src/main/resources/db/migration/platform/V059__exam_readiness_projections.sql` *(PLANNED; builds on `V054` exam definitions & targets)*
 - corresponding module tests and `ModularityTests`.
 
 ## Data and persistence work
@@ -425,8 +425,8 @@ Computes the learner's **Projected Exam Net Score Interval ($[\text{Net}_{\text{
 ## 6. Python Math Verifier Impact
 - None (`100%` deterministic psychometric calculation in Java).
 
-## 7. Database Migration & Persistence Contract (`PLANNED V047`)
-- **Migration File:** `services/api/src/main/resources/db/migration/platform/V047__exam_readiness_projections.sql` *(PLANNED)*
+## 7. Database Migration & Persistence Contract (`PLANNED V059`)
+- **Migration File:** `services/api/src/main/resources/db/migration/platform/V059__exam_readiness_projections.sql` *(PLANNED; builds on `V054`)*
 - **Table:** `exam_readiness_projections` (`id`, `user_id`, `exam_code`, `exam_version`, `estimated_net_low`, `estimated_net_mid`, `estimated_net_high`, `net_lost_to_traps`, `epistemic_confidence`, `confidence_tier`, `high_roi_allocations_json`, `computed_at`).
 
 ## 8. REST API Contracts (`CNT-LOS-11`)

@@ -382,7 +382,7 @@ and ranks study recommendations by **Expected Net Gain per Study Hour ($\Delta\t
 - Uses `attempt_verification_v2.py` and `attempt_diagnosis.py` on submitted mock scratchpad work.
 
 ## 7. Database Migration & Persistence Contract
-- Stores item-level attribution on `exam_session_items` (`V046`) and net-gain allocations on `exam_readiness_projections` (`V047`).
+- Stores item-level attribution on `exam_session_items` (`PLANNED V057`, referencing `V054` `exam_definitions`) and net-gain allocations on `exam_readiness_projections` (`PLANNED V059`).
 
 ## 8. REST API Contracts (`CNT-LOS-10` & `CNT-LOS-11`)
 - `GET /v1/exams/sessions/{id}/attribution-report` and `GET /v1/exams/readiness`.

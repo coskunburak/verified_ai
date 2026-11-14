@@ -69,8 +69,8 @@ The platform intentionally separates product semantics, learner state, AI-genera
 
 - `services/api/src/main/java/com/verifiedai/exam/**`
 - `services/api/src/main/java/com/verifiedai/curriculum/**`
-- `services/api/src/main/resources/db/migration/platform/V046__exam_definitions_and_sessions.sql` *(PLANNED)*
-- corresponding module tests and `ModularityTests`.
+- `services/api/src/main/resources/db/migration/platform/V054__exam_definitions_curriculum_mapping_and_versioning.sql`
+- corresponding module tests and `ModularityTest`.
 
 ## Data and persistence work
 
@@ -382,8 +382,8 @@ Codex must implement this sprint in small reviewable slices, re-reading the high
 
 ## 1. Sprint Metadata & Status
 - **Sprint ID:** `SPRINT_9.1`
-- **Canonical Title:** Declarative Exam Definitions (`TR_YKS_TYT_MATH`, `TR_YKS_AYT_MATH`, `IB`, `AP`, `SAT`), Topic Weight Vectors & Versioning
-- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011)`
+- **Canonical Title:** Declarative Exam Definitions (`TR_YKS_TYT_MATH`, `TR_YKS_TYT_MATH@2025.2`, `TR_YKS_AYT_MATH`, `INTL_SAT_MATH`, `INTL_AP_CALC_BC`, `INTL_IB_MATH_AA_HL`), Topic Weight Vectors & Versioning
+- **Status:** `LOCAL_ACCEPTANCE_PASSED` (owner host run `2026-11-15`; feature-flagged behind `verifiedai.exam.* = false` per `ADR-011`; see `SPRINT_9.1_EXECUTION_REPORT.md` & `SPRINT_9.1_FILE_MANIFEST.md`)
 - **Primary Spec Reference:** `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md` (Section 7) & `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md`
 
 ## 2. Strategic Learning OS Objective & User Value
@@ -402,12 +402,12 @@ Establishes the declarative `ExamDefinition` catalog in `com.verifiedai.exam` ma
 ## 6. Python Math Verifier Impact
 - None (`100%` backend domain model).
 
-## 7. Database Migration & Persistence Contract (`PLANNED V046`)
-- **Migration File:** `services/api/src/main/resources/db/migration/platform/V046__exam_definitions_and_sessions.sql` *(PLANNED)*
-- **Tables:** `exam_definitions` (`exam_code`, `exam_version`, `locale`, `total_questions`, `duration_minutes`, `wrong_answer_penalty_factor`), `exam_topic_weights` (`exam_code`, `exam_version`, `canonical_skill_code`, `question_weight`), `exam_sessions` (`id`, `user_id`, `exam_code`, `exam_version`, `session_type`, `status`, `started_at`, `submitted_at`, `net_score`).
+## 7. Database Migration & Persistence Contract (`V054`)
+- **Migration File:** `services/api/src/main/resources/db/migration/platform/V054__exam_definitions_curriculum_mapping_and_versioning.sql` (implemented; supersedes historical `PLANNED V046` placeholder)
+- **Tables:** `exam_definitions`, `exam_topic_weights`, and `student_exam_targets` (`user_id REFERENCES users(id) ON DELETE CASCADE`, partial unique single-active-primary index, `llm_tokens_used = 0`, `training_eligible = FALSE`).
 
 ## 8. REST API Contracts (`CNT-LOS-10`)
-- `GET /v1/exams/catalog`, `POST /v1/exams/sessions`, and `POST /v1/exams/sessions/{id}/submit`.
+- `GET /v1/exams/definitions`, `GET /v1/exams/definitions/{examCode}`, `GET /v1/exams/definitions/{examCode}/versions/{examVersion}`, `POST /v1/exams/targets`, `GET /v1/exams/targets`, `GET /v1/exams/targets/{targetId}` (also mounted under `/api/v1/exams/**`).
 
 ## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
 - Powers the Exam Target Selector and Timed Diagnostic screen (`Screen 10` in `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md`).
@@ -439,4 +439,13 @@ Establishes the declarative `ExamDefinition` catalog in `com.verifiedai.exam` ma
 ## 18. Canonical Cross-References
 - `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md`
 - `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md`
+- `sprints/phase09_exam_and_assessment_platform/SPRINT_9.1_EXECUTION_REPORT.md`
+- `sprints/phase09_exam_and_assessment_platform/SPRINT_9.1_FILE_MANIFEST.md`
 <!-- LEARNING_OS_PRODUCTION_SPEC_V1:END -->
+
+## Implementation Reconciliation (Sprint 9.1 Shipped Contracts)
+
+- **Flyway Migration (`V054`):** `services/api/src/main/resources/db/migration/platform/V054__exam_definitions_curriculum_mapping_and_versioning.sql` creates `exam_definitions`, `exam_topic_weights`, and `student_exam_targets` (`training_eligible = FALSE`, `llm_tokens_used = 0`) and seeds 6 mathematically conserved canonical blueprints (`TR_YKS_TYT_MATH@2026.1`, `TR_YKS_TYT_MATH@2025.2` `DEPRECATED`, `TR_YKS_AYT_MATH@2026.1`, `INTL_SAT_MATH@2026.1`, `INTL_AP_CALC_BC@2026.1`, `INTL_IB_MATH_AA_HL@2026.1`) mapped exclusively to active `StaticCurriculumTaxonomyCatalog` skills.
+- **Spring Modulith Backend (`com.verifiedai.exam`):** `ExamModels`, `ExamBlueprintHashCalculator`, `ScoringFormulaPolicy`, `ExamBlueprintValidator`, `ExamCatalogService`, `StudentExamTargetService`, `ExamJdbcRepository` (Jackson 3 `tools.jackson.*`), `ExamPrivacyLifecycleContributor` (`category() = "exam"`), and `ExamPlatformController` (`/v1/exams/**` & `/api/v1/exams/**`) behind `verifiedai.exam.catalog-enabled: false` and `verifiedai.exam.target-binding-enabled: false`.
+- **Schemas & OpenAPI 3.1 Mirrors:** 5 Draft 2020-12 JSON schemas (`packages/schemas/exam/v1/*.schema.json`), 7 fixtures, and byte-identical `packages/contracts/openapi/public-api.yaml` / `packages/openapi/verified-ai-core-api.yaml`.
+- **iOS Swift 6 Client & Offline Cache:** `apps/ios/VerifiedAI/Features/Exam/` (`ExamModels.swift`, `ExamOfflineSQLiteStore.swift` with `purgeUserData(userId:)`, `ExamAPIService.swift`, `ExamCatalogAndTargetViewModel.swift`, `ExamCatalogAndTargetView.swift`) integrated into `CoachHubView.swift`, `HomePlaceholderView.swift`, `AppDependencies.swift`, and `RootView.swift` with 35 EN/TR `Localizable.xcstrings` keys.

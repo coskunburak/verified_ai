@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/exam/v1/upsert-student-exam-target-request.schema.json",
+  "title": "UpsertStudentExamTargetRequest",
+  "description": "Idempotent learner request binding a target score and date to a versioned exam blueprint (Sprint 9.1).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "examCode",
+    "targetScore",
+    "targetDate",
+    "idempotencyKey"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "student-exam-target-request-v1"
+    },
+    "examCode": {
+      "type": "string",
+      "pattern": "^[A-Z0-9_]{3,64}$"
+    },
+    "examVersion": {
+      "type": ["string", "null"],
+      "pattern": "^[A-Za-z0-9._-]{1,32}$"
+    },
+    "expectedBlueprintHash": {
+      "type": ["string", "null"],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "targetScore": {
+      "type": "number",
+      "minimum": -100,
+      "maximum": 2000
+    },
+    "targetDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "priorityRank": {
+      "type": ["integer", "null"],
+      "minimum": 1,
+      "maximum": 5
+    },
+    "isPrimary": {
+      "type": ["boolean", "null"]
+    },
+    "idempotencyKey": {
+      "type": "string",
+      "minLength": 4,
+      "maxLength": 128
+    }
+  }
+}

@@ -65,6 +65,60 @@ struct AppDependencies {
     var coldStartDiagnosticAPI: ColdStartDiagnosticServicing {
         HTTPColdStartDiagnosticService(apiClient: apiClient)
     }
+    let examCacheStore: ExamOfflineSQLiteStore
+    var examAPI: ExamAPIServicing {
+        #if DEBUG
+        if solveFixture && ProcessInfo.processInfo.arguments.contains("--exam-fixture") {
+            let simulateOffline = ProcessInfo.processInfo.arguments.contains("--exam-offline")
+            return FixtureExamAPIService(simulateOffline: simulateOffline)
+        }
+        #endif
+        return HTTPExamAPIService(apiClient: apiClient)
+    }
+
+    #if DEBUG
+    func seedOfflineExamFixturesIfNeeded() async {
+        let defs = FixtureExamAPIService.seedDefinitions()
+        let summaries = defs.map { def in
+            ExamDefinitionSummaryModel(
+                examDefinitionId: def.examDefinitionId,
+                examCode: def.examCode,
+                examVersion: def.examVersion,
+                jurisdiction: def.jurisdiction,
+                examFamily: def.examFamily,
+                titleEn: def.titleEn,
+                titleTr: def.titleTr,
+                status: def.status,
+                totalQuestions: def.totalQuestions,
+                durationMinutes: def.durationMinutes,
+                scoringFormulaType: def.scoringFormulaType,
+                wrongPenaltyFactor: def.wrongPenaltyFactor,
+                minScore: def.minScore,
+                maxScore: def.maxScore,
+                navigationPolicy: def.navigationPolicy,
+                blueprintHash: def.blueprintHash,
+                effectiveFrom: def.effectiveFrom,
+                deprecatedAt: def.deprecatedAt,
+                supersededByVersion: def.supersededByVersion,
+                sectionCount: def.sections.count,
+                topicWeightCount: def.topicWeights.count,
+                trainingEligible: false
+            )
+        }
+        let catalog = ExamDefinitionCatalogResponse(
+            schemaVersion: "exam-definition-catalog-v1",
+            definitions: summaries,
+            totalCount: summaries.count,
+            includeDeprecated: false,
+            trainingEligible: false,
+            llmTokensUsed: 0
+        )
+        await examCacheStore.saveCatalog(catalog)
+        for def in defs {
+            await examCacheStore.saveDefinitionDetail(def)
+        }
+    }
+    #endif
     let primarySolveAPI: PrimarySolveServicing
     let solveRecovery: SolveRecoveryStoring
     let solveEnabled: Bool
@@ -178,6 +232,7 @@ struct AppDependencies {
         }
         let router = AppRouter()
         let deepLinkRouter = DeepLinkRouter()
+        let examCacheStore = ExamOfflineSQLiteStore()
 
         return AppDependencies(
             apiClient: apiClient,
@@ -199,6 +254,7 @@ struct AppDependencies {
             problemSessionHistoryAPI: problemSessionHistoryAPI,
             problemSessionCache: problemSessionCache,
             attemptPending: attemptPending,
+            examCacheStore: examCacheStore,
             primarySolveAPI: primarySolveAPI,
             solveRecovery: solveRecovery,
             solveEnabled: solveEnabled,

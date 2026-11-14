@@ -189,7 +189,7 @@ Phase overview: `sprints/phase08_adaptive_learning_and_study_planning/PHASE_08_A
 
 Phase overview: `sprints/phase09_exam_and_assessment_platform/PHASE_09_EXAM_AND_ASSESSMENT_PLATFORM.md`
 
-- `Sprint 9.1` — **Exam Definitions, Curriculum Mapping, and Versioning** — `phase09_exam_and_assessment_platform/SPRINT_9.1_EXAM_DEFINITIONS_CURRICULUM_MAPPING_AND_VERSIONING.md`
+- `Sprint 9.1` — **Exam Definitions, Curriculum Mapping, and Versioning** — `phase09_exam_and_assessment_platform/SPRINT_9.1_EXAM_DEFINITIONS_CURRICULUM_MAPPING_AND_VERSIONING.md` (`V054`; see `phase09_exam_and_assessment_platform/SPRINT_9.1_EXECUTION_REPORT.md` & `phase09_exam_and_assessment_platform/SPRINT_9.1_FILE_MANIFEST.md`)
 - `Sprint 9.2` — **Learner Exam Goal Setup and Candidate Profile (Snap-to-Plan Syllabus Ingestion)** — `phase09_exam_and_assessment_platform/SPRINT_9.2_LEARNER_EXAM_GOAL_SETUP_AND_CANDIDATE_PROFILE.md`
 - `Sprint 9.3` — **Question Bank, Blueprint, and Assessment Assembly Rules** — `phase09_exam_and_assessment_platform/SPRINT_9.3_QUESTION_BANK_BLUEPRINT_AND_ASSESSMENT_ASSEMBLY_RULES.md`
 - `Sprint 9.4` — **Timed Mock Exam Runtime** — `phase09_exam_and_assessment_platform/SPRINT_9.4_TIMED_MOCK_EXAM_RUNTIME.md`

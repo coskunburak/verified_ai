@@ -5,6 +5,7 @@ public struct CoachHubView: View {
     public var rebalanceViewModel: StudyPlanRebalanceViewModel?
     public var gamificationViewModel: GamificationViewModel?
     public var coldStartViewModel: ColdStartDiagnosticViewModel?
+    public var examViewModel: ExamCatalogAndTargetViewModel?
     public let onStartCapture: () -> Void
     public let onOpenTask: (DailyCoachTaskModel) -> Void
 
@@ -16,6 +17,7 @@ public struct CoachHubView: View {
         rebalanceViewModel: StudyPlanRebalanceViewModel? = nil,
         gamificationViewModel: GamificationViewModel? = nil,
         coldStartViewModel: ColdStartDiagnosticViewModel? = nil,
+        examViewModel: ExamCatalogAndTargetViewModel? = nil,
         onStartCapture: @escaping () -> Void = {},
         onOpenTask: @escaping (DailyCoachTaskModel) -> Void = { _ in }
     ) {
@@ -23,6 +25,7 @@ public struct CoachHubView: View {
         self.rebalanceViewModel = rebalanceViewModel
         self.gamificationViewModel = gamificationViewModel
         self.coldStartViewModel = coldStartViewModel
+        self.examViewModel = examViewModel
         self.onStartCapture = onStartCapture
         self.onOpenTask = onOpenTask
     }
@@ -61,6 +64,24 @@ public struct CoachHubView: View {
                        !coldStartViewModel.isFeatureDisabled,
                        (summary.isColdStart || coldStartViewModel.requiresRevalidation || coldStartViewModel.latestResult != nil) {
                         ColdStartDiagnosticCardView(viewModel: coldStartViewModel)
+                    }
+                    if let examViewModel, !examViewModel.isFeatureDisabled {
+                        NavigationLink {
+                            ExamCatalogAndTargetView(viewModel: examViewModel)
+                        } label: {
+                            HStack {
+                                Label(LocalizedStringKey("home.exam_catalog.open_button"), systemImage: "checklist")
+                                    .font(.subheadline.weight(.semibold))
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .font(.caption.weight(.semibold))
+                            }
+                            .padding(12)
+                            .frame(maxWidth: .infinity)
+                            .background(Color(UIColor.secondarySystemBackground))
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                        }
+                        .accessibilityIdentifier("home.examCatalog.button")
                     }
                     if summary.isColdStart {
                         coldStartHeroCard(summary: summary)

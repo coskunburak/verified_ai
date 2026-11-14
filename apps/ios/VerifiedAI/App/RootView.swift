@@ -12,6 +12,7 @@ struct RootView: View {
     @State private var accountSettingsViewModel: AccountSettingsViewModel
     @StateObject private var weeklyProgressReportViewModel: WeeklyProgressReportViewModel
     @StateObject private var coldStartDiagnosticViewModel: ColdStartDiagnosticViewModel
+    @StateObject private var examCatalogViewModel: ExamCatalogAndTargetViewModel
     @State private var entitlementViewModel: EntitlementViewModel
     @State private var paywallViewModel: PaywallViewModel
     @State private var problemCaptureViewModel: ProblemCaptureViewModel
@@ -47,6 +48,10 @@ struct RootView: View {
         ))
         _coldStartDiagnosticViewModel = StateObject(wrappedValue: ColdStartDiagnosticViewModel(
             service: dependencies.coldStartDiagnosticAPI
+        ))
+        _examCatalogViewModel = StateObject(wrappedValue: ExamCatalogAndTargetViewModel(
+            service: dependencies.examAPI,
+            cacheStore: dependencies.examCacheStore
         ))
         _entitlementViewModel = State(initialValue: EntitlementViewModel(
             entitlementAPI: dependencies.entitlementAPI,
@@ -169,10 +174,20 @@ struct RootView: View {
             accountSettingsViewModel.reset()
             weeklyProgressReportViewModel.reset()
             coldStartDiagnosticViewModel.updateLearnerId(session.userId)
+            examCatalogViewModel.updateLearnerId(session.userId)
             dependencies.storeKitTransactionObserver.start()
             await onboardingViewModel.bootstrap(userId: session.userId)
             if !ProcessInfo.processInfo.arguments.contains("--ui-testing") {
                 await coldStartDiagnosticViewModel.load()
+            }
+            #if DEBUG
+            if ProcessInfo.processInfo.arguments.contains("--exam-fixture"),
+               ProcessInfo.processInfo.arguments.contains("--exam-offline") {
+                await dependencies.seedOfflineExamFixturesIfNeeded()
+            }
+            #endif
+            if !ProcessInfo.processInfo.arguments.contains("--ui-testing") || ProcessInfo.processInfo.arguments.contains("--exam-fixture") {
+                await examCatalogViewModel.loadCatalogAndTargets()
             }
         }
         .onChange(of: onboardingViewModel.state) { previous, state in
@@ -243,7 +258,8 @@ struct RootView: View {
                         isFixture: dependencies.solveFixture, profileModel: onboardingViewModel, logger: dependencies.logger)
                 } : nil,
                 reviewViewModel: dependencies.solveFixture ? nil : problemReviewViewModel,
-                coldStartViewModel: coldStartDiagnosticViewModel
+                coldStartViewModel: coldStartDiagnosticViewModel,
+                examViewModel: examCatalogViewModel
             )
             .navigationTitle("Verified AI")
             .sheet(isPresented: $isPaywallPresented, onDismiss: {
@@ -309,6 +325,7 @@ struct RootView: View {
         accountSettingsViewModel.reset()
         weeklyProgressReportViewModel.reset()
         Task { await coldStartDiagnosticViewModel.purgeCurrentLearnerAndReset() }
+        Task { await examCatalogViewModel.purgeUserDataAndReset() }
         entitlementViewModel.reset()
         paywallViewModel.reset()
         problemAssetUploadViewModel.reset()

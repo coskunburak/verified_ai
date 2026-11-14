@@ -402,7 +402,7 @@ Hardens the entire exam engine against accidental data loss, timer tampering, ne
 ## 4. Domain Invariants & Integrity Rules
 1. **Cryptographic Submission Integrity (`INV-EXAM-006`):** Final answer packets are signed with `HMAC-SHA256` using the user's ephemeral session token and server timestamp, preventing packet tampering, replay attacks, or intercepted option alterations.
 2. **Universal Spoken Math Accessibility (`ADR-010`):** Every mathematical formula in exam questions must render with native Dynamic Type (`xSmall` to `AX3`) and emit correct semantic VoiceOver speech strings in `tr-TR` (e.g., $\int_0^1 x^2 \, dx$ spoken as *"sıfırdan bire x kare d x integrali"*).
-3. **Phase 9 Exit Gate Certification:** Formally validates that `CNT-LOS-10` (Exam Sessions) and `CNT-LOS-11` (Readiness Projection) execute with $< 350\text{ms}$ SLA, zero P0/P1 defects, and full database migration integrity (`V046`/`V047`).
+3. **Phase 9 Exit Gate Certification:** Formally validates that `CNT-LOS-10` (Exam Sessions) and `CNT-LOS-11` (Readiness Projection) execute with $< 350\text{ms}$ SLA, zero P0/P1 defects, and full database migration integrity (`V054`–`V062`).
 
 ## 5. Owning Spring Modulith Backend Modules & Classes
 - `com.verifiedai.exam`: `AssessmentIntegrityGuard.java`, `ExamQualityGateService.java`, `AdminExamQualityGateController.java`.

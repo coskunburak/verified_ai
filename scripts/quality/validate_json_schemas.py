@@ -905,6 +905,9 @@ def run_validation():
             elif ptype == ["boolean", "null"]:
                 if val is not None and not isinstance(val, bool):
                     errs.append(f"{k} must be boolean or null")
+            elif ptype == ["number", "null"]:
+                if val is not None and (isinstance(val, bool) or not isinstance(val, (int, float))):
+                    errs.append(f"{k} must be number or null")
             elif ptype == "boolean":
                 if not isinstance(val, bool):
                     errs.append(f"{k} not bool")
@@ -1031,6 +1034,78 @@ def run_validation():
         (s810_qual_sc, {**s810_qual_fx, "rawLearnerId": "abc"}, "quality report extra rawLearnerId"),
     ]
     for neg_sc, neg_payload, label in s810_negative_cases:
+        if jsonschema is not None:
+            try:
+                jsonschema.Draft202012Validator(neg_sc).validate(neg_payload)
+                raise AssertionError(f"Expected jsonschema failure for {label}")
+            except jsonschema.exceptions.ValidationError:
+                pass
+        assert _validate_s89_object_keys(neg_payload, neg_sc, neg_sc.get("$defs", {})), f"Expected pure-python failure for {label}"
+
+    # Sprint 9.1 Exam Definitions, Curriculum Mapping & Versioning Contracts
+    s91_schema_files = {
+        "exam-catalog": schemas_dir / "exam/v1/exam-definition-catalog-response.schema.json",
+        "exam-detail": schemas_dir / "exam/v1/exam-definition-detail-response.schema.json",
+        "exam-target-request": schemas_dir / "exam/v1/upsert-student-exam-target-request.schema.json",
+        "exam-target-response": schemas_dir / "exam/v1/student-exam-target-response.schema.json",
+        "exam-target-list": schemas_dir / "exam/v1/student-exam-target-list-response.schema.json",
+    }
+    s91_fixture_bindings = [
+        ("exam-catalog", schemas_dir / "exam/v1/fixtures/exam-catalog-response.fixture.json"),
+        ("exam-detail", schemas_dir / "exam/v1/fixtures/exam-detail-tyt-math.fixture.json"),
+        ("exam-detail", schemas_dir / "exam/v1/fixtures/exam-detail-ayt-math.fixture.json"),
+        ("exam-detail", schemas_dir / "exam/v1/fixtures/exam-detail-sat-math.fixture.json"),
+        ("exam-target-request", schemas_dir / "exam/v1/fixtures/upsert-student-exam-target-request.fixture.json"),
+        ("exam-target-response", schemas_dir / "exam/v1/fixtures/student-exam-target-response.fixture.json"),
+        ("exam-target-list", schemas_dir / "exam/v1/fixtures/student-exam-target-list-response.fixture.json"),
+    ]
+    s91_schemas: dict[str, dict] = {}
+    s91_fixtures: dict[str, dict] = {}
+    for key, schema_file in s91_schema_files.items():
+        assert schema_file.exists(), f"Missing Sprint 9.1 schema file: {schema_file}"
+        sc_obj = json.loads(schema_file.read_text(encoding="utf-8"))
+        assert sc_obj.get("$schema") == "https://json-schema.org/draft/2020-12/schema", f"Non-2020-12 schema: {schema_file}"
+        assert sc_obj.get("additionalProperties") is False, f"additionalProperties must be false on {schema_file}"
+        if jsonschema is not None:
+            jsonschema.Draft202012Validator.check_schema(sc_obj)
+        s91_schemas[key] = sc_obj
+
+    for schema_key, fixture_file in s91_fixture_bindings:
+        assert fixture_file.exists(), f"Missing Sprint 9.1 fixture file: {fixture_file}"
+        sc_obj = s91_schemas[schema_key]
+        fx_obj = json.loads(fixture_file.read_text(encoding="utf-8"))
+        if jsonschema is not None:
+            jsonschema.Draft202012Validator(sc_obj).validate(fx_obj)
+        errs = _validate_s89_object_keys(fx_obj, sc_obj, sc_obj.get("$defs", {}))
+        assert not errs, f"Sprint 9.1 pure-python schema check failed for {fixture_file.name}: {errs}"
+        s91_fixtures[fixture_file.name] = fx_obj
+
+    s91_catalog_sc = s91_schemas["exam-catalog"]
+    s91_catalog_fx = s91_fixtures["exam-catalog-response.fixture.json"]
+    s91_detail_sc = s91_schemas["exam-detail"]
+    s91_detail_fx = s91_fixtures["exam-detail-tyt-math.fixture.json"]
+    s91_req_sc = s91_schemas["exam-target-request"]
+    s91_req_fx = s91_fixtures["upsert-student-exam-target-request.fixture.json"]
+    s91_res_sc = s91_schemas["exam-target-response"]
+    s91_res_fx = s91_fixtures["student-exam-target-response.fixture.json"]
+    s91_list_sc = s91_schemas["exam-target-list"]
+    s91_list_fx = s91_fixtures["student-exam-target-list-response.fixture.json"]
+
+    mut_bad_jurisdiction = copy.deepcopy(s91_detail_fx)
+    mut_bad_jurisdiction["jurisdiction"] = "MARS"
+    s91_negative_cases = [
+        (s91_catalog_sc, {**s91_catalog_fx, "trainingEligible": True}, "exam catalog trainingEligible=True"),
+        (s91_catalog_sc, {**s91_catalog_fx, "llmTokensUsed": 5}, "exam catalog llmTokensUsed!=0"),
+        (s91_detail_sc, mut_bad_jurisdiction, "exam detail unknown jurisdiction"),
+        (s91_detail_sc, {**s91_detail_fx, "blueprintHash": "a" * 63}, "exam detail invalid 63-char blueprintHash"),
+        (s91_detail_sc, {**s91_detail_fx, "llmTokensUsed": 2}, "exam detail llmTokensUsed!=0"),
+        (s91_req_sc, {**s91_req_fx, "targetScore": -150.0}, "exam target request targetScore < -100"),
+        (s91_req_sc, {**s91_req_fx, "studentEmail": "x@example.com"}, "exam target request extra studentEmail PII"),
+        (s91_res_sc, {**s91_res_fx, "trainingEligible": True}, "exam target response trainingEligible=True"),
+        (s91_res_sc, {**s91_res_fx, "llmTokensUsed": 9}, "exam target response llmTokensUsed!=0"),
+        (s91_list_sc, {**s91_list_fx, "trainingEligible": True}, "exam target list trainingEligible=True"),
+    ]
+    for neg_sc, neg_payload, label in s91_negative_cases:
         if jsonschema is not None:
             try:
                 jsonschema.Draft202012Validator(neg_sc).validate(neg_payload)
@@ -1298,6 +1373,32 @@ def run_validation():
                 for code in expected_codes:
                     assert code in s810_op["responses"], f"HTTP {code} missing from {s810_path} {s810_method} in {spec_name}"
 
+            # Sprint 9.1 OpenAPI paths & component schemas
+            for schema_name in (
+                "ExamDefinitionCatalogResponse",
+                "ExamDefinitionDetailResponse",
+                "UpsertStudentExamTargetRequest",
+                "StudentExamTargetResponse",
+                "StudentExamTargetListResponse",
+            ):
+                assert schema_name in spec_schemas, f"Missing Sprint 9.1 component schema {schema_name} in {spec_name}"
+
+            expected_s91_endpoints = {
+                ("/v1/exams/definitions", "get"): ("200", "400", "401", "403", "503"),
+                ("/v1/exams/definitions/{examCode}", "get"): ("200", "400", "401", "403", "404", "503"),
+                ("/v1/exams/definitions/{examCode}/versions/{examVersion}", "get"): ("200", "400", "401", "403", "404", "503"),
+                ("/v1/exams/targets", "post"): ("200", "201", "400", "401", "403", "404", "409", "422", "503"),
+                ("/v1/exams/targets", "get"): ("200", "400", "401", "403", "503"),
+                ("/v1/exams/targets/{targetId}", "get"): ("200", "400", "401", "403", "404", "503"),
+            }
+            for (s91_path, s91_method), expected_codes in expected_s91_endpoints.items():
+                assert s91_path in spec_paths, f"Missing Sprint 9.1 path {s91_path} in {spec_name}"
+                assert s91_method in spec_paths[s91_path], f"Missing method {s91_method} on {s91_path} in {spec_name}"
+                s91_op = spec_paths[s91_path][s91_method]
+                assert s91_op["security"] == [{"bearerAuth": []}], f"Security bearerAuth missing on {s91_path} in {spec_name}"
+                for code in expected_codes:
+                    assert code in s91_op["responses"], f"HTTP {code} missing from {s91_path} {s91_method} in {spec_name}"
+
         assert openapi_path.read_bytes() == openapi_core_path.read_bytes(), "OpenAPI mirror public-api.yaml != verified-ai-core-api.yaml"
     else:
         openapi_bytes = openapi_path.read_bytes()
@@ -1320,6 +1421,16 @@ def run_validation():
             "ColdStartDiagnosticRequestV1:",
             "ColdStartDiagnosticResultV1:",
             "StudyPlanQualityGateReportV1:",
+            "/v1/exams/definitions:",
+            "/v1/exams/definitions/{examCode}:",
+            "/v1/exams/definitions/{examCode}/versions/{examVersion}:",
+            "/v1/exams/targets:",
+            "/v1/exams/targets/{targetId}:",
+            "ExamDefinitionCatalogResponse:",
+            "ExamDefinitionDetailResponse:",
+            "UpsertStudentExamTargetRequest:",
+            "StudentExamTargetResponse:",
+            "StudentExamTargetListResponse:",
             "ProblemBadRequest",
             "ProblemUnauthorized",
             "ProblemForbidden",
@@ -1327,7 +1438,7 @@ def run_validation():
             "ProblemUnprocessableEntity",
             "ProblemServiceUnavailable",
         ):
-            assert token in openapi_text, f"Missing Sprint 8.8/8.9 OpenAPI token in public-api.yaml: {token}"
+            assert token in openapi_text, f"Missing Sprint 8.8..9.1 OpenAPI token in public-api.yaml: {token}"
 
     # 3. iOS Localizable.xcstrings Key Verification
     xcstrings_data = json.loads(strings_path.read_text(encoding="utf-8"))
@@ -1560,6 +1671,41 @@ def run_validation():
         "cold_start.result.zero_cost_note",
         "cold_start.offline.saved_message",
         "cold_start.error.retry",
+        "exam.catalog.title",
+        "exam.catalog.subtitle",
+        "exam.catalog.filter.all",
+        "exam.catalog.filter.tr",
+        "exam.catalog.filter.intl",
+        "exam.catalog.offline_banner",
+        "exam.catalog.feature_disabled",
+        "exam.catalog.questions_count",
+        "exam.catalog.minutes_count",
+        "exam.catalog.topic_weights_title",
+        "exam.catalog.hash_label",
+        "exam.target.section_title",
+        "exam.target.score_label",
+        "exam.target.date_label",
+        "exam.target.save_button",
+        "exam.target.saving_button",
+        "exam.target.saved_banner",
+        "exam.target.active_badge",
+        "exam.target.superseded_badge",
+        "exam.target.readiness_gap_title",
+        "exam.target.estimated_score_label",
+        "exam.target.gap_points_label",
+        "exam.target.zero_cost_note",
+        "exam.target.score_out_of_range",
+        "exam.target.keyboard_done",
+        "exam.scoring.CORRECT_MINUS_QUARTER_WRONG",
+        "exam.scoring.RAW_CORRECT_ONLY",
+        "exam.scoring.WEIGHTED_SECTION_RUBRIC",
+        "exam.error.version_conflict",
+        "exam.error.forbidden",
+        "exam.error.not_found",
+        "exam.error.unexpected",
+        "home.exam_catalog.card_title",
+        "home.exam_catalog.card_subtitle",
+        "home.exam_catalog.open_button",
     ]
 
     banned_lexicon = re.compile(
@@ -1585,7 +1731,7 @@ def run_validation():
                 m = gamification_banned_lexicon.search(val)
                 assert not m, f"Stigmatizing lexicon word '{m.group(0)}' in {key}[{lang}]: {val}"
 
-    print(f"PASS: Sprint 8.1..8.10 JSON schemas, negative mutations, OpenAPI 3.1 endpoints, and {len(required_keys)} EN/TR localizations verified.")
+    print(f"PASS: Sprint 8.1..9.1 JSON schemas, negative mutations, OpenAPI 3.1 endpoints, and {len(required_keys)} EN/TR localizations verified.")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,174 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/exam/v1/exam-definition-catalog-response.schema.json",
+  "title": "ExamDefinitionCatalogResponse",
+  "description": "Catalog response for versioned national & international exam blueprints (Sprint 9.1, ADR-011, ADR-006 trainingEligible=false, llmTokensUsed=0).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "definitions",
+    "totalCount",
+    "includeDeprecated",
+    "trainingEligible",
+    "llmTokensUsed"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "exam-definition-catalog-v1"
+    },
+    "definitions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/ExamDefinitionSummaryDto"
+      }
+    },
+    "totalCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "includeDeprecated": {
+      "type": "boolean"
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    },
+    "llmTokensUsed": {
+      "type": "integer",
+      "const": 0
+    }
+  },
+  "$defs": {
+    "ExamDefinitionSummaryDto": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "examDefinitionId",
+        "examCode",
+        "examVersion",
+        "jurisdiction",
+        "examFamily",
+        "titleEn",
+        "titleTr",
+        "status",
+        "totalQuestions",
+        "durationMinutes",
+        "scoringFormulaType",
+        "wrongPenaltyFactor",
+        "minScore",
+        "maxScore",
+        "navigationPolicy",
+        "blueprintHash",
+        "effectiveFrom",
+        "deprecatedAt",
+        "supersededByVersion",
+        "sectionCount",
+        "topicWeightCount",
+        "trainingEligible"
+      ],
+      "properties": {
+        "examDefinitionId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "examCode": {
+          "type": "string",
+          "pattern": "^[A-Z0-9_]{3,64}$"
+        },
+        "examVersion": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9._-]{1,32}$"
+        },
+        "jurisdiction": {
+          "type": "string",
+          "enum": ["TR", "INTL"]
+        },
+        "examFamily": {
+          "type": "string",
+          "enum": ["YKS", "LGS", "SAT", "AP", "IB"]
+        },
+        "titleEn": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "titleTr": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "status": {
+          "type": "string",
+          "enum": ["DRAFT", "ACTIVE", "DEPRECATED", "ARCHIVED"]
+        },
+        "totalQuestions": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 500
+        },
+        "durationMinutes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 600
+        },
+        "scoringFormulaType": {
+          "type": "string",
+          "enum": [
+            "CORRECT_MINUS_QUARTER_WRONG",
+            "RAW_CORRECT_ONLY",
+            "WEIGHTED_SECTION_RUBRIC"
+          ]
+        },
+        "wrongPenaltyFactor": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "minScore": {
+          "type": "number",
+          "minimum": -100,
+          "maximum": 2000
+        },
+        "maxScore": {
+          "type": "number",
+          "minimum": -100,
+          "maximum": 2000
+        },
+        "navigationPolicy": {
+          "type": "string",
+          "enum": ["FREE_JUMP", "SECTION_LOCKED", "LINEAR_ONLY"]
+        },
+        "blueprintHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "effectiveFrom": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deprecatedAt": {
+          "type": ["string", "null"],
+          "format": "date-time"
+        },
+        "supersededByVersion": {
+          "type": ["string", "null"],
+          "maxLength": 32
+        },
+        "sectionCount": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "topicWeightCount": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "trainingEligible": {
+          "type": "boolean",
+          "const": false
+        }
+      }
+    }
+  }
+}

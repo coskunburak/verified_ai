@@ -1,0 +1,229 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/exam/v1/student-exam-target-list-response.schema.json",
+  "title": "StudentExamTargetListResponse",
+  "description": "Learner-scoped list of active and superseded student exam targets (Sprint 9.1).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "userId",
+    "targets",
+    "totalCount",
+    "llmTokensUsed",
+    "trainingEligible"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "student-exam-target-list-v1"
+    },
+    "userId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "targets": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/StudentExamTargetItem"
+      }
+    },
+    "totalCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "llmTokensUsed": {
+      "type": "integer",
+      "const": 0
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    }
+  },
+  "$defs": {
+    "ReadinessGapPreview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "currentEstimatedScore",
+        "targetScore",
+        "gapPoints",
+        "estimationBasis",
+        "llmTokensUsed",
+        "trainingEligible"
+      ],
+      "properties": {
+        "schemaVersion": {"type": "string", "const": "readiness-gap-preview-v1"},
+        "currentEstimatedScore": {"type": "number"},
+        "targetScore": {"type": "number"},
+        "gapPoints": {"type": "number"},
+        "estimationBasis": {"type": "string", "minLength": 3, "maxLength": 64},
+        "llmTokensUsed": {"type": "integer", "const": 0},
+        "trainingEligible": {"type": "boolean", "const": false}
+      }
+    },
+    "ExamSectionSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sectionCode", "titleEn", "titleTr", "questionCount", "durationMinutes", "order"],
+      "properties": {
+        "sectionCode": {"type": "string", "pattern": "^[A-Z0-9_]{2,48}$"},
+        "titleEn": {"type": "string", "minLength": 1, "maxLength": 160},
+        "titleTr": {"type": "string", "minLength": 1, "maxLength": 160},
+        "questionCount": {"type": "integer", "minimum": 1, "maximum": 500},
+        "durationMinutes": {"type": "integer", "minimum": 1, "maximum": 600},
+        "order": {"type": "integer", "minimum": 1}
+      }
+    },
+    "SectionWeightEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sectionCode", "weight"],
+      "properties": {
+        "sectionCode": {"type": "string", "pattern": "^[A-Z0-9_]{2,48}$"},
+        "weight": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    },
+    "ScoringParameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scaleMin", "scaleMax", "moduleCount", "rubricScaleMin", "rubricScaleMax", "sectionWeights"],
+      "properties": {
+        "scaleMin": {"type": ["number", "null"]},
+        "scaleMax": {"type": ["number", "null"]},
+        "moduleCount": {"type": ["integer", "null"], "minimum": 1},
+        "rubricScaleMin": {"type": ["integer", "null"]},
+        "rubricScaleMax": {"type": ["integer", "null"]},
+        "sectionWeights": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/SectionWeightEntry"}
+        }
+      }
+    },
+    "CognitiveLevelMix": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recall", "application", "analysis"],
+      "properties": {
+        "recall": {"type": "number", "minimum": 0, "maximum": 1},
+        "application": {"type": "number", "minimum": 0, "maximum": 1},
+        "analysis": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    },
+    "ExamTopicWeightDto": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sectionCode", "skillId", "domainCode", "questionCountWeight", "minQuestions", "maxQuestions", "cognitiveLevelMix", "sortOrder"],
+      "properties": {
+        "sectionCode": {"type": "string", "pattern": "^[A-Z0-9_]{2,48}$"},
+        "skillId": {"type": "string", "pattern": "^[A-Z0-9_.]{3,128}$"},
+        "domainCode": {"type": "string", "pattern": "^[A-Z0-9_.]{3,64}$"},
+        "questionCountWeight": {"type": "number", "minimum": 0, "maximum": 500},
+        "minQuestions": {"type": "integer", "minimum": 0},
+        "maxQuestions": {"type": "integer", "minimum": 0},
+        "cognitiveLevelMix": {"$ref": "#/$defs/CognitiveLevelMix"},
+        "sortOrder": {"type": "integer", "minimum": 0}
+      }
+    },
+    "PinnedBlueprintSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "examDefinitionId",
+        "examCode",
+        "examVersion",
+        "jurisdiction",
+        "examFamily",
+        "titleEn",
+        "titleTr",
+        "totalQuestions",
+        "durationMinutes",
+        "scoringFormulaType",
+        "wrongPenaltyFactor",
+        "minScore",
+        "maxScore",
+        "navigationPolicy",
+        "blueprintHash",
+        "effectiveFrom",
+        "sections",
+        "scoringParameters",
+        "topicWeights",
+        "trainingEligible"
+      ],
+      "properties": {
+        "examDefinitionId": {"type": "string", "format": "uuid"},
+        "examCode": {"type": "string", "pattern": "^[A-Z0-9_]{3,64}$"},
+        "examVersion": {"type": "string", "pattern": "^[A-Za-z0-9._-]{1,32}$"},
+        "jurisdiction": {"type": "string", "enum": ["TR", "INTL"]},
+        "examFamily": {"type": "string", "enum": ["YKS", "LGS", "SAT", "AP", "IB"]},
+        "titleEn": {"type": "string", "minLength": 1, "maxLength": 160},
+        "titleTr": {"type": "string", "minLength": 1, "maxLength": 160},
+        "totalQuestions": {"type": "integer", "minimum": 1, "maximum": 500},
+        "durationMinutes": {"type": "integer", "minimum": 1, "maximum": 600},
+        "scoringFormulaType": {"type": "string", "enum": ["CORRECT_MINUS_QUARTER_WRONG", "RAW_CORRECT_ONLY", "WEIGHTED_SECTION_RUBRIC"]},
+        "wrongPenaltyFactor": {"type": "number", "minimum": 0, "maximum": 1},
+        "minScore": {"type": "number", "minimum": -100, "maximum": 2000},
+        "maxScore": {"type": "number", "minimum": -100, "maximum": 2000},
+        "navigationPolicy": {"type": "string", "enum": ["FREE_JUMP", "SECTION_LOCKED", "LINEAR_ONLY"]},
+        "blueprintHash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "effectiveFrom": {"type": "string", "format": "date-time"},
+        "sections": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/ExamSectionSpec"}},
+        "scoringParameters": {"$ref": "#/$defs/ScoringParameters"},
+        "topicWeights": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/ExamTopicWeightDto"}},
+        "trainingEligible": {"type": "boolean", "const": false}
+      }
+    },
+    "StudentExamTargetItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "targetId",
+        "userId",
+        "examDefinitionId",
+        "examCode",
+        "examVersion",
+        "blueprintHash",
+        "targetScore",
+        "targetDate",
+        "priorityRank",
+        "targetStatus",
+        "isPrimary",
+        "idempotencyKey",
+        "readinessGapPreview",
+        "pinnedBlueprint",
+        "supersededAt",
+        "idempotentReplay",
+        "llmTokensUsed",
+        "trainingEligible",
+        "createdAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "schemaVersion": {"type": "string", "const": "student-exam-target-v1"},
+        "targetId": {"type": "string", "format": "uuid"},
+        "userId": {"type": "string", "format": "uuid"},
+        "examDefinitionId": {"type": "string", "format": "uuid"},
+        "examCode": {"type": "string", "pattern": "^[A-Z0-9_]{3,64}$"},
+        "examVersion": {"type": "string", "pattern": "^[A-Za-z0-9._-]{1,32}$"},
+        "blueprintHash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "targetScore": {"type": "number", "minimum": -100, "maximum": 2000},
+        "targetDate": {"type": "string", "format": "date"},
+        "priorityRank": {"type": "integer", "minimum": 1, "maximum": 5},
+        "targetStatus": {"type": "string", "enum": ["ACTIVE", "SUPERSEDED", "ACHIEVED", "ARCHIVED"]},
+        "isPrimary": {"type": "boolean"},
+        "idempotencyKey": {"type": "string", "minLength": 4, "maxLength": 128},
+        "readinessGapPreview": {"$ref": "#/$defs/ReadinessGapPreview"},
+        "pinnedBlueprint": {"$ref": "#/$defs/PinnedBlueprintSnapshot"},
+        "supersededAt": {"type": ["string", "null"], "format": "date-time"},
+        "idempotentReplay": {"type": "boolean"},
+        "llmTokensUsed": {"type": "integer", "const": 0},
+        "trainingEligible": {"type": "boolean", "const": false},
+        "createdAt": {"type": "string", "format": "date-time"},
+        "updatedAt": {"type": "string", "format": "date-time"}
+      }
+    }
+  }
+}

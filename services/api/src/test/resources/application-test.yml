@@ -1,0 +1,5 @@
+verifiedai:
+  exam:
+    catalog-enabled: true
+    target-binding-enabled: true
+    default-jurisdiction: TR

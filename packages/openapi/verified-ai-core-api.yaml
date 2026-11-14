@@ -4205,6 +4205,233 @@ paths:
         '503':
           $ref: '#/components/responses/ProblemServiceUnavailable'
 
+  /v1/exams/definitions:
+    get:
+      summary: List versioned national and international exam definitions
+      description: Returns deterministic exam blueprints filtered by optional jurisdiction, examFamily, and includeDeprecated flag (default false) with $0.00 LLM cost and trainingEligible=false.
+      operationId: listExamDefinitions
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: jurisdiction
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - TR
+              - INTL
+        - name: examFamily
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - YKS
+              - LGS
+              - SAT
+              - AP
+              - IB
+        - name: includeDeprecated
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Versioned exam definition catalog
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamDefinitionCatalogResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /v1/exams/definitions/{examCode}:
+    get:
+      summary: Get active exam definition and curriculum topic weights by exam code
+      description: Returns the active exam blueprint, sections, scoring parameters, and weight-conserving curriculum skill weights with deterministic SHA-256 blueprintHash.
+      operationId: getActiveExamDefinition
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: examCode
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[A-Za-z0-9_]{3,64}$'
+      responses:
+        '200':
+          description: Active exam definition detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamDefinitionDetailResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /v1/exams/definitions/{examCode}/versions/{examVersion}:
+    get:
+      summary: Get a specific exam definition version (active or deprecated)
+      description: Returns a specific immutable exam blueprint version by examCode and examVersion for auditability and historical replay.
+      operationId: getVersionedExamDefinition
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: examCode
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[A-Za-z0-9_]{3,64}$'
+        - name: examVersion
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[A-Za-z0-9._-]{1,32}$'
+      responses:
+        '200':
+          description: Versioned exam definition detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamDefinitionDetailResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /v1/exams/targets:
+    post:
+      summary: Idempotently bind or update learner exam target
+      description: Validates targetScore bounds and blueprintHash against the active exam version, supersedes prior active primary targets, pins an immutable blueprint snapshot, and computes Readiness Gap preview at $0.00 LLM cost.
+      operationId: upsertStudentExamTarget
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertStudentExamTargetRequest'
+      responses:
+        '200':
+          description: Idempotent replay of an existing exam target binding
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentExamTargetResponse'
+        '201':
+          description: Newly bound student exam target with pinned blueprint snapshot
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentExamTargetResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '409':
+          $ref: '#/components/responses/ProblemConflict'
+        '422':
+          $ref: '#/components/responses/ProblemUnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+    get:
+      summary: List authenticated learner exam targets
+      description: Returns active and superseded exam targets scoped strictly to the authenticated learner with pinned immutable blueprint snapshots.
+      operationId: listStudentExamTargets
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Learner exam target list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentExamTargetListResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /v1/exams/targets/{targetId}:
+    get:
+      summary: Get a specific learner exam target by targetId
+      description: Returns the target and pinned blueprint snapshot after strict BOLA ownership verification (403 EXAM_ACCESS_DENIED on cross-learner access).
+      operationId: getStudentExamTarget
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: targetId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Owned student exam target response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentExamTargetResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -8700,3 +8927,18 @@ components:
 
     StudyPlanQualityGateReportV1:
       $ref: '../../schemas/analytics/study-plan-quality-v1.schema.json'
+
+    ExamDefinitionCatalogResponse:
+      $ref: '../../schemas/exam/v1/exam-definition-catalog-response.schema.json'
+
+    ExamDefinitionDetailResponse:
+      $ref: '../../schemas/exam/v1/exam-definition-detail-response.schema.json'
+
+    UpsertStudentExamTargetRequest:
+      $ref: '../../schemas/exam/v1/upsert-student-exam-target-request.schema.json'
+
+    StudentExamTargetResponse:
+      $ref: '../../schemas/exam/v1/student-exam-target-response.schema.json'
+
+    StudentExamTargetListResponse:
+      $ref: '../../schemas/exam/v1/student-exam-target-list-response.schema.json'

@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "exam-definition-detail-v1",
+  "examDefinitionId": "91000000-0000-4000-8000-000000000101",
+  "examCode": "TR_YKS_TYT_MATH",
+  "examVersion": "2026.1",
+  "jurisdiction": "TR",
+  "examFamily": "YKS",
+  "titleEn": "YKS Basic Proficiency Test (TYT) Mathematics",
+  "titleTr": "YKS Temel Yeterlilik Testi (TYT) Matematik",
+  "status": "ACTIVE",
+  "totalQuestions": 40,
+  "durationMinutes": 65,
+  "scoringFormulaType": "CORRECT_MINUS_QUARTER_WRONG",
+  "wrongPenaltyFactor": 0.25,
+  "minScore": -10.0,
+  "maxScore": 40.0,
+  "navigationPolicy": "FREE_JUMP",
+  "blueprintHash": "c1cb8c26245fdee1b53c164a94e35a6cecbde8bae6ece948e60f577df53e1391",
+  "effectiveFrom": "2026-01-01T00:00:00Z",
+  "deprecatedAt": null,
+  "supersededByVersion": null,
+  "sections": [
+    {
+      "sectionCode": "TYT_MATH",
+      "titleEn": "TYT Mathematics",
+      "titleTr": "TYT Matematik",
+      "questionCount": 40,
+      "durationMinutes": 65,
+      "order": 1
+    }
+  ],
+  "scoringParameters": {
+    "scaleMin": null,
+    "scaleMax": null,
+    "moduleCount": 1,
+    "rubricScaleMin": null,
+    "rubricScaleMax": null,
+    "sectionWeights": []
+  },
+  "topicWeights": [
+    {"sectionCode": "TYT_MATH", "skillId": "MATH.ARITHMETIC.INTEGER_OPERATIONS", "domainCode": "MATH.ARITHMETIC", "questionCountWeight": 5.0, "minQuestions": 4, "maxQuestions": 7, "cognitiveLevelMix": {"recall": 0.3, "application": 0.5, "analysis": 0.2}, "sortOrder": 1},
+    {"sectionCode": "TYT_MATH", "skillId": "MATH.ARITHMETIC.FRACTIONS", "domainCode": "MATH.ARITHMETIC", "questionCountWeight": 4.0, "minQuestions": 3, "maxQuestions": 5, "cognitiveLevelMix": {"recall": 0.25, "application": 0.55, "analysis": 0.2}, "sortOrder": 2},
+    {"sectionCode": "TYT_MATH", "skillId": "MATH.ARITHMETIC.PERCENTAGES", "domainCode": "MATH.ARITHMETIC", "questionCountWeight": 5.0, "minQuestions": 4, "maxQuestions": 7, "cognitiveLevelMix": {"recall": 0.2, "application": 0.55, "analysis": 0.25}, "sortOrder": 3},
+    {"sectionCode": "TYT_MATH", "skillId": "MATH.ARITHMETIC.ORDER_OF_OPERATIONS", "domainCode": "MATH.ARITHMETIC", "questionCountWeight": 3.0, "minQuestions": 2, "maxQuestions": 4, "cognitiveLevelMix": {"recall": 0.35, "application": 0.5, "analysis": 0.15}, "sortOrder": 4},
+    {"sectionCode": "TYT_MATH", "skillId": "MATH.ALGEBRA.SIMPLIFY_EXPRESSIONS", "domainCode": "MATH.ALGEBRA", "questionCountWeight": 3.0, "minQuestions": 2, "maxQuestions": 4, "cognitiveLevelMix": {"recall": 0.25, "application": 0.55, "analysis": 0.2}, "sortOrder": 5},
+    {"sectionCode": "TYT_MATH", "skillId": "MATH.ALGEBRA.FACTORING", "domainCode": "MATH.ALGEBRA", "questionCountWeight": 3.0, "minQuestions": 2, "maxQuestions": 4, "cognitiveLevelMix": {"recall": 0.2, "application": 0.55, "analysis": 0.25}, "sortOrder": 6},
+    {"sectionCode": "TYT_MATH", "skillId": "MATH.ALGEBRA.EXPONENT_RULES", "domainCode": "MATH.ALGEBRA", "questionCountWeight": 3.0, "minQuestions": 2, "maxQuestions": 4, "cognitiveLevelMix": {"recall": 0.25, "application": 0.5, "analysis": 0.25}, "sortOrder": 7},
+    {"sectionCode": "TYT_MATH", "skillId": "MATH.ALGEBRA.RADICALS", "domainCode": "MATH.ALGEBRA", "questionCountWeight": 3.0, "minQuestions": 2, "maxQuestions": 4, "cognitiveLevelMix": {"recall": 0.2, "application": 0.55, "analysis": 0.25}, "sortOrder": 8},
+    {"sectionCode": "TYT_MATH", "skillId": "MATH.EQUATIONS.LINEAR_ONE_VARIABLE", "domainCode": "MATH.EQUATIONS", "questionCountWeight": 3.0, "minQuestions": 2, "maxQuestions": 4, "cognitiveLevelMix": {"recall": 0.2, "application": 0.55, "analysis": 0.25}, "sortOrder": 9},
+    {"sectionCode": "TYT_MATH", "skillId": "MATH.EQUATIONS.LINEAR_SYSTEMS", "domainCode": "MATH.EQUATIONS", "questionCountWeight": 2.0, "minQuestions": 1, "maxQuestions": 3, "cognitiveLevelMix": {"recall": 0.2, "application": 0.5, "analysis": 0.3}, "sortOrder": 10},
+    {"sectionCode": "TYT_MATH", "skillId": "MATH.EQUATIONS.INEQUALITIES_BASIC", "domainCode": "MATH.EQUATIONS", "questionCountWeight": 2.0, "minQuestions": 1, "maxQuestions": 3, "cognitiveLevelMix": {"recall": 0.2, "application": 0.5, "analysis": 0.3}, "sortOrder": 11},
+    {"sectionCode": "TYT_MATH", "skillId": "MATH.FUNCTIONS.NOTATION", "domainCode": "MATH.FUNCTIONS", "questionCountWeight": 2.0, "minQuestions": 1, "maxQuestions": 3, "cognitiveLevelMix": {"recall": 0.25, "application": 0.5, "analysis": 0.25}, "sortOrder": 12},
+    {"sectionCode": "TYT_MATH", "skillId": "MATH.FUNCTIONS.GRAPH_FEATURES", "domainCode": "MATH.FUNCTIONS", "questionCountWeight": 2.0, "minQuestions": 1, "maxQuestions": 3, "cognitiveLevelMix": {"recall": 0.15, "application": 0.5, "analysis": 0.35}, "sortOrder": 13}
+  ],
+  "trainingEligible": false,
+  "llmTokensUsed": 0
+}

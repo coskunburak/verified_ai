@@ -84,8 +84,8 @@ The phase exit review must include:
 # Phase Production Execution Contract v7 — YKS Readiness Credible Intervals & Net-Gain Simulator (`2026-11-07`)
 
 ## 1. Entry Gate & Package Ownership (`ADR-011`)
-- Phase 9 remains **BLOCKED_BY_ENTRY_GATE (`ADR-011`)** until the Focused Commercial Wedge records an owner `GO` decision.
-- All backend exam domain models, session timers, and readiness projections belong to `com.verifiedai.exam` (`services/api/src/main/java/com/verifiedai/exam/`), consuming `com.verifiedai.mastery` (`bkt-lite-v1`/`v2`) and `com.verifiedai.mistake` (`V036`/`V037`), with persistence in **`PLANNED V046–V047`** (`architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md`).
+- Phase 9 production rollout remains **gated behind `ADR-011`** (`verifiedai.exam.*` feature flags default to `false`), while `Sprint 9.1` foundation implementation is reconciled on `V054` with `LOCAL_ACCEPTANCE_PASSED` (owner host run `2026-11-15`; see `SPRINT_9.1_EXECUTION_REPORT.md` & `SPRINT_9.1_FILE_MANIFEST.md`).
+- All backend exam domain models, targets, session timers, and readiness projections belong to `com.verifiedai.exam` (`services/api/src/main/java/com/verifiedai/exam/`), consuming `com.verifiedai.curriculum`, `com.verifiedai.mastery` (`bkt-lite-v1`/`v2`), and `com.verifiedai.mistake` (`V036`/`V037`), with Phase 9 persistence reconciled at **`V054` (implemented) and `PLANNED V055–V062`** (superseding historical `V046–V047` placeholders).
 
 ## 2. Learning OS Canonical Specifications Governed by Phase 9
 - `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md` (Quantity 5: Expected Net Score $\widehat{\text{Net}}_{u,E}$ with mandatory 90% credible interval $[\text{Net}_{\text{low}}, \text{Net}_{\text{high}}]$ and active-trap penalty $\sum \beta_m \theta_{u,m}$)

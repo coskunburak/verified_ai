@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "exam-definition-detail-v1",
+  "examDefinitionId": "91000000-0000-4000-8000-000000000104",
+  "examCode": "INTL_SAT_MATH",
+  "examVersion": "2026.1",
+  "jurisdiction": "INTL",
+  "examFamily": "SAT",
+  "titleEn": "Digital SAT Mathematics (Adaptive Modules 1 & 2)",
+  "titleTr": "Dijital SAT Matematik (Uyarlanabilir Modül 1 ve 2)",
+  "status": "ACTIVE",
+  "totalQuestions": 44,
+  "durationMinutes": 70,
+  "scoringFormulaType": "RAW_CORRECT_ONLY",
+  "wrongPenaltyFactor": 0.0,
+  "minScore": 200.0,
+  "maxScore": 800.0,
+  "navigationPolicy": "SECTION_LOCKED",
+  "blueprintHash": "89063bfc449a4000bb05154fceff8c9ebbb81446ae2cafc41c46adfeeaff29dd",
+  "effectiveFrom": "2026-01-01T00:00:00Z",
+  "deprecatedAt": null,
+  "supersededByVersion": null,
+  "sections": [
+    {"sectionCode": "SAT_MOD_1", "titleEn": "Math Module 1", "titleTr": "Matematik Modül 1", "questionCount": 22, "durationMinutes": 35, "order": 1},
+    {"sectionCode": "SAT_MOD_2", "titleEn": "Math Module 2", "titleTr": "Matematik Modül 2", "questionCount": 22, "durationMinutes": 35, "order": 2}
+  ],
+  "scoringParameters": {
+    "scaleMin": 200.0,
+    "scaleMax": 800.0,
+    "moduleCount": 2,
+    "rubricScaleMin": null,
+    "rubricScaleMax": null,
+    "sectionWeights": []
+  },
+  "topicWeights": [
+    {"sectionCode": "SAT_MOD_1", "skillId": "MATH.ARITHMETIC.PERCENTAGES", "domainCode": "MATH.ARITHMETIC", "questionCountWeight": 4.0, "minQuestions": 3, "maxQuestions": 5, "cognitiveLevelMix": {"recall": 0.25, "application": 0.55, "analysis": 0.2}, "sortOrder": 1},
+    {"sectionCode": "SAT_MOD_1", "skillId": "MATH.ALGEBRA.SIMPLIFY_EXPRESSIONS", "domainCode": "MATH.ALGEBRA", "questionCountWeight": 4.0, "minQuestions": 3, "maxQuestions": 5, "cognitiveLevelMix": {"recall": 0.25, "application": 0.55, "analysis": 0.2}, "sortOrder": 2},
+    {"sectionCode": "SAT_MOD_1", "skillId": "MATH.ALGEBRA.EXPONENT_RULES", "domainCode": "MATH.ALGEBRA", "questionCountWeight": 3.0, "minQuestions": 2, "maxQuestions": 4, "cognitiveLevelMix": {"recall": 0.25, "application": 0.55, "analysis": 0.2}, "sortOrder": 3},
+    {"sectionCode": "SAT_MOD_1", "skillId": "MATH.EQUATIONS.LINEAR_ONE_VARIABLE", "domainCode": "MATH.EQUATIONS", "questionCountWeight": 4.0, "minQuestions": 3, "maxQuestions": 5, "cognitiveLevelMix": {"recall": 0.2, "application": 0.6, "analysis": 0.2}, "sortOrder": 4},
+    {"sectionCode": "SAT_MOD_1", "skillId": "MATH.EQUATIONS.LINEAR_SYSTEMS", "domainCode": "MATH.EQUATIONS", "questionCountWeight": 4.0, "minQuestions": 3, "maxQuestions": 5, "cognitiveLevelMix": {"recall": 0.2, "application": 0.55, "analysis": 0.25}, "sortOrder": 5},
+    {"sectionCode": "SAT_MOD_1", "skillId": "MATH.FUNCTIONS.NOTATION", "domainCode": "MATH.FUNCTIONS", "questionCountWeight": 3.0, "minQuestions": 2, "maxQuestions": 4, "cognitiveLevelMix": {"recall": 0.25, "application": 0.5, "analysis": 0.25}, "sortOrder": 6},
+    {"sectionCode": "SAT_MOD_2", "skillId": "MATH.ALGEBRA.FACTORING", "domainCode": "MATH.ALGEBRA", "questionCountWeight": 4.0, "minQuestions": 3, "maxQuestions": 5, "cognitiveLevelMix": {"recall": 0.15, "application": 0.55, "analysis": 0.3}, "sortOrder": 7},
+    {"sectionCode": "SAT_MOD_2", "skillId": "MATH.ALGEBRA.RADICALS", "domainCode": "MATH.ALGEBRA", "questionCountWeight": 3.0, "minQuestions": 2, "maxQuestions": 4, "cognitiveLevelMix": {"recall": 0.2, "application": 0.5, "analysis": 0.3}, "sortOrder": 8},
+    {"sectionCode": "SAT_MOD_2", "skillId": "MATH.EQUATIONS.QUADRATIC_SOLVING", "domainCode": "MATH.EQUATIONS", "questionCountWeight": 5.0, "minQuestions": 4, "maxQuestions": 6, "cognitiveLevelMix": {"recall": 0.15, "application": 0.5, "analysis": 0.35}, "sortOrder": 9},
+    {"sectionCode": "SAT_MOD_2", "skillId": "MATH.EQUATIONS.INEQUALITIES_BASIC", "domainCode": "MATH.EQUATIONS", "questionCountWeight": 4.0, "minQuestions": 3, "maxQuestions": 5, "cognitiveLevelMix": {"recall": 0.15, "application": 0.5, "analysis": 0.35}, "sortOrder": 10},
+    {"sectionCode": "SAT_MOD_2", "skillId": "MATH.FUNCTIONS.GRAPH_FEATURES", "domainCode": "MATH.FUNCTIONS", "questionCountWeight": 4.0, "minQuestions": 3, "maxQuestions": 5, "cognitiveLevelMix": {"recall": 0.15, "application": 0.45, "analysis": 0.4}, "sortOrder": 11},
+    {"sectionCode": "SAT_MOD_2", "skillId": "MATH.FUNCTIONS.COMPOSITION", "domainCode": "MATH.FUNCTIONS", "questionCountWeight": 2.0, "minQuestions": 1, "maxQuestions": 3, "cognitiveLevelMix": {"recall": 0.15, "application": 0.45, "analysis": 0.4}, "sortOrder": 12}
+  ],
+  "trainingEligible": false,
+  "llmTokensUsed": 0
+}
