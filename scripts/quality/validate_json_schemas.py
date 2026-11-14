@@ -880,14 +880,31 @@ def run_validation():
                 if isinstance(expected_const, bool):
                     if not isinstance(val, bool) or val is not expected_const:
                         errs.append(f"{k} != {expected_const}")
+                elif isinstance(expected_const, int):
+                    if isinstance(val, bool) or val != expected_const:
+                        errs.append(f"{k} != {expected_const}")
                 elif val != expected_const:
                     errs.append(f"{k} != {expected_const}")
             ptype = prop.get("type")
             if ptype == ["string", "null"]:
                 if val is not None and not isinstance(val, str):
                     errs.append(f"{k} must be string or null")
-                elif isinstance(val, str) and "maxLength" in prop and len(val) > prop["maxLength"]:
-                    errs.append(f"{k} longer than {prop['maxLength']}")
+                elif isinstance(val, str):
+                    if "enum" in prop and val not in prop["enum"]:
+                        errs.append(f"{k} invalid enum {val}")
+                    if "maxLength" in prop and len(val) > prop["maxLength"]:
+                        errs.append(f"{k} longer than {prop['maxLength']}")
+            elif ptype == ["integer", "null"]:
+                if val is not None and (isinstance(val, bool) or not isinstance(val, int)):
+                    errs.append(f"{k} must be integer or null")
+                elif isinstance(val, int):
+                    if "minimum" in prop and val < prop["minimum"]:
+                        errs.append(f"{k} < {prop['minimum']}")
+                    if "maximum" in prop and val > prop["maximum"]:
+                        errs.append(f"{k} > {prop['maximum']}")
+            elif ptype == ["boolean", "null"]:
+                if val is not None and not isinstance(val, bool):
+                    errs.append(f"{k} must be boolean or null")
             elif ptype == "boolean":
                 if not isinstance(val, bool):
                     errs.append(f"{k} not bool")
@@ -942,6 +959,8 @@ def run_validation():
                                 errs.append(f"{k} item not str")
                             elif "minLength" in items_schema and len(item) < items_schema["minLength"]:
                                 errs.append(f"{k} item shorter than {items_schema['minLength']}")
+                            elif "enum" in items_schema and item not in items_schema["enum"]:
+                                errs.append(f"{k} item invalid enum {item}")
         return errs
 
     for pair_name, (sc_obj, fx_obj) in s89_loaded_pairs.items():
@@ -960,6 +979,65 @@ def run_validation():
     mut_attest = copy.deepcopy(s89_shr_fx)
     mut_attest["privacyAttestation"]["rawTutorTranscriptsIncluded"] = True
     assert _validate_s89_object_keys(mut_attest, s89_shr_sc, s89_shr_sc.get("$defs", {})), "Expected privacyAttestation.rawTutorTranscriptsIncluded=True failure"
+
+    # Sprint 8.10 Cold-Start Calibration & Study-Plan Quality Gate Contracts
+    schemas_dir = ROOT / "packages/schemas"
+    s810_pairs = [
+        (
+            "cold-start-request-v1",
+            schemas_dir / "studyplan/cold-start-request-v1.schema.json",
+            schemas_dir / "studyplan/fixtures/cold-start-request-v1.valid.json",
+        ),
+        (
+            "cold-start-v1",
+            schemas_dir / "studyplan/cold-start-v1.schema.json",
+            schemas_dir / "studyplan/fixtures/cold-start-v1.valid.json",
+        ),
+        (
+            "study-plan-quality-v1",
+            schemas_dir / "analytics/study-plan-quality-v1.schema.json",
+            schemas_dir / "analytics/fixtures/study-plan-quality-v1.valid.json",
+        ),
+    ]
+    s810_loaded: dict[str, tuple[dict, dict]] = {}
+    for pair_name, schema_file, fixture_file in s810_pairs:
+        assert schema_file.exists(), f"Missing schema file: {schema_file}"
+        assert fixture_file.exists(), f"Missing fixture file: {fixture_file}"
+        sc_obj = json.loads(schema_file.read_text(encoding="utf-8"))
+        fx_obj = json.loads(fixture_file.read_text(encoding="utf-8"))
+        if jsonschema is not None:
+            jsonschema.Draft202012Validator.check_schema(sc_obj)
+            jsonschema.Draft202012Validator(sc_obj).validate(fx_obj)
+        errs = _validate_s89_object_keys(fx_obj, sc_obj, sc_obj.get("$defs", {}))
+        assert not errs, f"Sprint 8.10 pure-python schema check failed for {pair_name}: {errs}"
+        s810_loaded[pair_name] = (sc_obj, fx_obj)
+
+    s810_req_sc, s810_req_fx = s810_loaded["cold-start-request-v1"]
+    s810_res_sc, s810_res_fx = s810_loaded["cold-start-v1"]
+    s810_qual_sc, s810_qual_fx = s810_loaded["study-plan-quality-v1"]
+
+    s810_negative_cases = [
+        (s810_req_sc, {**s810_req_fx, "locale": "de-DE"}, "cold-start request invalid locale"),
+        (s810_req_sc, {**s810_req_fx, "unexpectedPii": "secret"}, "cold-start request additionalProperties"),
+        (s810_req_sc, {**s810_req_fx, "responses": s810_req_fx["responses"][:2]}, "cold-start request <3 items"),
+        (s810_res_sc, {**s810_res_fx, "trainingEligible": True}, "cold-start response trainingEligible=True"),
+        (s810_res_sc, {**s810_res_fx, "llmTokensUsed": 5}, "cold-start response llmTokensUsed!=0"),
+        (s810_res_sc, {**s810_res_fx, "totalItems": 4}, "cold-start response totalItems!=3"),
+        (s810_res_sc, {**s810_res_fx, "studentEmail": "x@example.com"}, "cold-start response extra PII field"),
+        (s810_res_sc, {**s810_res_fx, "detectedTrapArchetypes": ["UNLISTED_TRAP"]}, "cold-start response unknown trap enum"),
+        (s810_qual_sc, {**s810_qual_fx, "trainingEligible": True}, "quality report trainingEligible=True"),
+        (s810_qual_sc, {**s810_qual_fx, "llmTokensUsed": 1}, "quality report llmTokensUsed!=0"),
+        (s810_qual_sc, {**s810_qual_fx, "overallStatus": "SKIP"}, "quality report invalid overallStatus"),
+        (s810_qual_sc, {**s810_qual_fx, "rawLearnerId": "abc"}, "quality report extra rawLearnerId"),
+    ]
+    for neg_sc, neg_payload, label in s810_negative_cases:
+        if jsonschema is not None:
+            try:
+                jsonschema.Draft202012Validator(neg_sc).validate(neg_payload)
+                raise AssertionError(f"Expected jsonschema failure for {label}")
+            except jsonschema.exceptions.ValidationError:
+                pass
+        assert _validate_s89_object_keys(neg_payload, neg_sc, neg_sc.get("$defs", {})), f"Expected pure-python failure for {label}"
 
     # Sprint 8.6 pure-python schema & fixture invariants (always verified)
     for card_fx in (ml_card_tr_fixture, ml_card_en_fixture):
@@ -1199,6 +1277,27 @@ def run_validation():
                 for code in expected_codes:
                     assert code in s89_op["responses"], f"HTTP {code} missing from {s89_path} in {spec_name}"
 
+            # Sprint 8.10 OpenAPI paths & component schemas
+            for schema_name in (
+                "ColdStartDiagnosticRequestV1",
+                "ColdStartDiagnosticResultV1",
+                "StudyPlanQualityGateReportV1",
+            ):
+                assert schema_name in spec_schemas, f"Missing Sprint 8.10 component schema {schema_name} in {spec_name}"
+
+            expected_s810_endpoints = {
+                ("/v1/study-plan/cold-start", "get"): ("200", "400", "401", "403", "404", "503"),
+                ("/v1/study-plan/cold-start", "post"): ("200", "400", "401", "403", "422", "503"),
+                ("/v1/admin/study-plan/quality-gate", "get"): ("200", "401", "403", "503"),
+            }
+            for (s810_path, s810_method), expected_codes in expected_s810_endpoints.items():
+                assert s810_path in spec_paths, f"Missing Sprint 8.10 path {s810_path} in {spec_name}"
+                assert s810_method in spec_paths[s810_path], f"Missing method {s810_method} on {s810_path} in {spec_name}"
+                s810_op = spec_paths[s810_path][s810_method]
+                assert s810_op["security"] == [{"bearerAuth": []}], f"Security bearerAuth missing on {s810_path} in {spec_name}"
+                for code in expected_codes:
+                    assert code in s810_op["responses"], f"HTTP {code} missing from {s810_path} {s810_method} in {spec_name}"
+
         assert openapi_path.read_bytes() == openapi_core_path.read_bytes(), "OpenAPI mirror public-api.yaml != verified-ai-core-api.yaml"
     else:
         openapi_bytes = openapi_path.read_bytes()
@@ -1216,6 +1315,11 @@ def run_validation():
             "WeeklyDigestV1:",
             "WeeklySharePacketV1:",
             "WeeklySharePacketRequest:",
+            "/v1/study-plan/cold-start:",
+            "/v1/admin/study-plan/quality-gate:",
+            "ColdStartDiagnosticRequestV1:",
+            "ColdStartDiagnosticResultV1:",
+            "StudyPlanQualityGateReportV1:",
             "ProblemBadRequest",
             "ProblemUnauthorized",
             "ProblemForbidden",
@@ -1414,6 +1518,48 @@ def run_validation():
         "weekly.privacy.attestation.title",
         "weekly.privacy.included_summary",
         "weekly.privacy.excluded_raw",
+        "cold_start.card.badge.exploration",
+        "cold_start.card.badge.preliminary",
+        "cold_start.card.badge.calibrated",
+        "cold_start.card.badge.revalidation",
+        "cold_start.card.title",
+        "cold_start.card.subtitle",
+        "cold_start.card.cta.start",
+        "cold_start.card.cta.retake",
+        "cold_start.card.cta.offline_pending",
+        "cold_start.confidence.preliminary",
+        "cold_start.confidence.calibrated",
+        "cold_start.conflict.resolved",
+        "cold_start.revalidation.banner",
+        "cold_start.flow.title",
+        "cold_start.flow.step_counter",
+        "cold_start.flow.timer_remaining",
+        "cold_start.flow.setup_title",
+        "cold_start.flow.exam_target",
+        "cold_start.flow.daily_budget",
+        "cold_start.flow.modality",
+        "cold_start.flow.modality_override",
+        "cold_start.flow.button.begin",
+        "cold_start.flow.button.next",
+        "cold_start.flow.button.finish",
+        "cold_start.flow.button.skip",
+        "cold_start.flow.button.done",
+        "cold_start.tier.FOUNDATION_SOLID",
+        "cold_start.tier.CALIBRATED_MIXED",
+        "cold_start.tier.FOUNDATION_REPAIR",
+        "cold_start.modality.PRACTICE_FIRST",
+        "cold_start.modality.SOCRATIC_COACH",
+        "cold_start.modality.MIXED",
+        "cold_start.modality.VIDEO_HINTS_OFF",
+        "cold_start.item.DIAG_ITEM_1_NUMBER_SENSE.title",
+        "cold_start.item.DIAG_ITEM_2_QUADRATIC_INEQUALITY.title",
+        "cold_start.item.DIAG_ITEM_3_FUNCTION_COMPOSITION.title",
+        "cold_start.result.header",
+        "cold_start.result.priors_title",
+        "cold_start.result.rationales_title",
+        "cold_start.result.zero_cost_note",
+        "cold_start.offline.saved_message",
+        "cold_start.error.retry",
     ]
 
     banned_lexicon = re.compile(
@@ -1435,11 +1581,11 @@ def run_validation():
             if key.startswith("studyplan.rebalance.") or key.startswith("micro_lesson.") or key.startswith("study_session."):
                 m = banned_lexicon.search(val)
                 assert not m, f"Stigmatizing lexicon word '{m.group(0)}' in {key}[{lang}]: {val}"
-            elif key.startswith("gamification.") or key.startswith("weekly."):
+            elif key.startswith("gamification.") or key.startswith("weekly.") or key.startswith("cold_start."):
                 m = gamification_banned_lexicon.search(val)
                 assert not m, f"Stigmatizing lexicon word '{m.group(0)}' in {key}[{lang}]: {val}"
 
-    print(f"PASS: Sprint 8.1..8.9 JSON schemas, negative mutations, OpenAPI 3.1 endpoints, and {len(required_keys)} EN/TR localizations verified.")
+    print(f"PASS: Sprint 8.1..8.10 JSON schemas, negative mutations, OpenAPI 3.1 endpoints, and {len(required_keys)} EN/TR localizations verified.")
 
 
 if __name__ == "__main__":

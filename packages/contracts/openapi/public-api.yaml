@@ -4100,6 +4100,111 @@ paths:
         '503':
           $ref: '#/components/responses/ProblemServiceUnavailable'
 
+  /v1/study-plan/cold-start:
+    get:
+      summary: Get learner cold-start baseline calibration state
+      description: Returns the latest deterministic cold-start calibration result, preliminary priors, and revalidation requirement with strict learner BOLA enforcement and $0.00 LLM cost.
+      operationId: getColdStartCalibration
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: daysInactive
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 3650
+      responses:
+        '200':
+          description: Latest cold-start diagnostic calibration state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ColdStartDiagnosticResultV1'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+    post:
+      summary: Submit 3-question cold-start diagnostic & preference calibration
+      description: Deterministically grades the 3 canonical cold-start items with SymPy-equivalent rules ($0.00 LLM spend), initializes BKT priors in [0.15, 0.65], resolves goal-capacity conflicts, applies >=14d inactivity decay, and persists non-training calibration metadata idempotently.
+      operationId: submitColdStartCalibration
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ColdStartDiagnosticRequestV1'
+      responses:
+        '200':
+          description: Deterministic cold-start calibration receipt (or idempotent replay)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ColdStartDiagnosticResultV1'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '409':
+          $ref: '#/components/responses/ProblemConflict'
+        '422':
+          $ref: '#/components/responses/ProblemUnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /v1/admin/study-plan/quality-gate:
+    get:
+      summary: Evaluate Phase 08 Exit Gate study plan quality checks
+      description: Admin-only (ROLE_ADMIN) deterministic evaluation across CNT-LOS-06..09 with zero PII and $0.00 LLM spend.
+      operationId: getStudyPlanQualityGateReport
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: persistSnapshot
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Phase 08 deterministic recommendation and learning quality gate report
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudyPlanQualityGateReportV1'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -8586,3 +8691,12 @@ components:
 
     WeeklySharePacketV1:
       $ref: '../../schemas/weekly-share-packet-v1.schema.json'
+
+    ColdStartDiagnosticRequestV1:
+      $ref: '../../schemas/studyplan/cold-start-request-v1.schema.json'
+
+    ColdStartDiagnosticResultV1:
+      $ref: '../../schemas/studyplan/cold-start-v1.schema.json'
+
+    StudyPlanQualityGateReportV1:
+      $ref: '../../schemas/analytics/study-plan-quality-v1.schema.json'

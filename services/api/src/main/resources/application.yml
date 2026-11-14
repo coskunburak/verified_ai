@@ -286,6 +286,7 @@ verifiedai:
     rebalancing-enabled: ${STUDYPLAN_REBALANCING_ENABLED:true}
     session-orchestration-enabled: ${STUDYPLAN_SESSION_ORCHESTRATION_ENABLED:true}
     gamification-enabled: ${STUDYPLAN_GAMIFICATION_ENABLED:true}
+    cold-start-enabled: ${STUDYPLAN_COLD_START_ENABLED:false}
     session-inactivity-ttl-hours: 24
     session-clock-skew-tolerance-seconds: 30
     session-max-active-duration-seconds: 14400

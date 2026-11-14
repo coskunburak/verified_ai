@@ -1,0 +1,99 @@
+{
+  "schemaVersion": "cold-start-v1",
+  "diagnosticId": "81000000-0000-4000-8000-000000000001",
+  "learnerId": "81000000-0000-4000-8000-000000000002",
+  "locale": "en-US",
+  "status": "COMPLETED",
+  "baselineTier": "CALIBRATED_MIXED",
+  "correctCount": 2,
+  "totalItems": 3,
+  "calibrationMode": "EXPLORATION",
+  "confidenceTier": "PRELIMINARY",
+  "goalConflictResolved": true,
+  "recommendedDailyBudgetMinutes": 10,
+  "inactiveDecayApplied": false,
+  "explicitPreferenceOverride": true,
+  "declaredExamTarget": "AYT",
+  "declaredDailyBudgetMinutes": 10,
+  "preferredModality": "SOCRATIC_COACH",
+  "revalidationPromptKey": null,
+  "detectedTrapArchetypes": [
+    "INEQUALITY_POLARITY_TRAP"
+  ],
+  "itemOutcomes": [
+    {
+      "itemId": "DIAG_ITEM_1_NUMBER_SENSE",
+      "skillCode": "MATH.ARITHMETIC.ORDER_OF_OPERATIONS",
+      "correct": true,
+      "verdict": "CORRECT_FAST",
+      "detectedTrapArchetype": null,
+      "assignedPrior": 0.65,
+      "elapsedSeconds": 32
+    },
+    {
+      "itemId": "DIAG_ITEM_2_QUADRATIC_INEQUALITY",
+      "skillCode": "MATH.EQUATIONS.INEQUALITIES_BASIC",
+      "correct": false,
+      "verdict": "TRAP_DISTRACTOR",
+      "detectedTrapArchetype": "INEQUALITY_POLARITY_TRAP",
+      "assignedPrior": 0.15,
+      "elapsedSeconds": 48
+    },
+    {
+      "itemId": "DIAG_ITEM_3_FUNCTION_COMPOSITION",
+      "skillCode": "MATH.FUNCTIONS.COMPOSITION",
+      "correct": true,
+      "verdict": "CORRECT_SLOW",
+      "detectedTrapArchetype": null,
+      "assignedPrior": 0.50,
+      "elapsedSeconds": 82
+    }
+  ],
+  "initializedPriors": [
+    {
+      "skillCode": "MATH.ARITHMETIC.ORDER_OF_OPERATIONS",
+      "priorProbability": 0.65,
+      "evidenceCount": 1,
+      "confidenceTier": "PRELIMINARY",
+      "decayApplied": false
+    },
+    {
+      "skillCode": "MATH.EQUATIONS.INEQUALITIES_BASIC",
+      "priorProbability": 0.15,
+      "evidenceCount": 1,
+      "confidenceTier": "PRELIMINARY",
+      "decayApplied": false
+    },
+    {
+      "skillCode": "MATH.FUNCTIONS.COMPOSITION",
+      "priorProbability": 0.50,
+      "evidenceCount": 1,
+      "confidenceTier": "PRELIMINARY",
+      "decayApplied": false
+    }
+  ],
+  "rationales": [
+    {
+      "code": "PRELIMINARY_SPARSE_EVIDENCE",
+      "localizedMessage": "Preliminary calibration is active while verified evidence builds across your first three attempts per skill."
+    },
+    {
+      "code": "GOAL_CAPACITY_CONFLICT_RESOLVED",
+      "localizedMessage": "Your AYT goal has been paced into focused single-skill 10-minute daily blocks so momentum stays sustainable."
+    },
+    {
+      "code": "TRAP_SEEDED_WARMUP",
+      "localizedMessage": "Added a quick inequality sign-flip check-in to protect accuracy when multiplying or dividing by negatives."
+    },
+    {
+      "code": "EXPLICIT_PREFERENCE_OVERRIDE",
+      "localizedMessage": "Applied your selected study modality and daily time budget preference."
+    }
+  ],
+  "attemptDurationSeconds": 162,
+  "llmTokensUsed": 0,
+  "trainingEligible": false,
+  "idempotentReplay": false,
+  "createdAt": "2026-11-13T12:00:00Z",
+  "updatedAt": "2026-11-13T12:00:00Z"
+}

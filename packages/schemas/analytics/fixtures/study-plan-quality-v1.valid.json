@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "study-plan-quality-v1",
+  "snapshotId": "81000000-0000-4000-8000-000000000901",
+  "evaluatedAt": "2026-11-13T12:00:00Z",
+  "overallStatus": "PASS",
+  "p0RegressionCount": 0,
+  "p1RegressionCount": 0,
+  "llmTokensUsed": 0,
+  "trainingEligible": false,
+  "contractChecks": [
+    {
+      "contractId": "CNT-LOS-06",
+      "title": "Explainable Recommendation & Cold-Start Calibration",
+      "status": "PASS",
+      "severity": "P0",
+      "observedValue": 1.0,
+      "thresholdDescription": ">= 0.99 explainability and $0.00 LLM cost",
+      "details": "All cold-start baseline calibrations and recommendation rationales generated deterministically with zero LLM spend."
+    },
+    {
+      "contractId": "CNT-LOS-07",
+      "title": "Spaced Repetition, Daily Coach & Study Session Recovery",
+      "status": "PASS",
+      "severity": "P0",
+      "observedValue": 1.0,
+      "thresholdDescription": ">= 0.95 recovery integrity and bounded interval scheduling",
+      "details": "Spaced review due queues, daily mission composition, and session resume checkpoints passed invariants."
+    },
+    {
+      "contractId": "CNT-LOS-08",
+      "title": "Adaptive Rebalance & Micro-Lesson Pedagogy",
+      "status": "PASS",
+      "severity": "P0",
+      "observedValue": 1.0,
+      "thresholdDescription": ">= 0.95 verified micro-lesson and shame-free rebalancing",
+      "details": "Rebalance events and localized EN/TR micro-lessons satisfied shame-free language and 5-25 min pacing rules."
+    },
+    {
+      "contractId": "CNT-LOS-09",
+      "title": "Verified Habit Continuity, Weekly Digest & Zero-PII Share Gate",
+      "status": "PASS",
+      "severity": "P0",
+      "observedValue": 1.0,
+      "thresholdDescription": "100% G-PRIV-03 zero-PII and trainingEligible=false",
+      "details": "Verified independent streak separation and G-PRIV-03 share packet privacy attestations verified."
+    }
+  ],
+  "telemetryMetrics": {
+    "coldStartCompletionCount": 12,
+    "coldStartZeroCostComplianceRate": 1.0,
+    "recommendationExplainabilityRate": 1.0,
+    "spacedReviewOnTimeCompletionRate": 0.96,
+    "dailyCoachCompletionRate": 0.92,
+    "rebalanceRecoveryRate": 0.94,
+    "microLessonCompletionRate": 0.95,
+    "studySessionRecoverySuccessRate": 1.0,
+    "independentStreakRetentionRate": 0.91,
+    "weeklyDigestZeroPiiComplianceRate": 1.0,
+    "piiViolationCount": 0
+  }
+}

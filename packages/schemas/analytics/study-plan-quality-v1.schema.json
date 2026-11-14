@@ -1,0 +1,186 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/analytics/study-plan-quality-v1.schema.json",
+  "title": "StudyPlanQualityGateReportV1",
+  "description": "Deterministic Sprint 8.10 Phase 08 Exit Gate quality report across CNT-LOS-06..09 with zero PII and $0.00 LLM cost.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "snapshotId",
+    "evaluatedAt",
+    "overallStatus",
+    "p0RegressionCount",
+    "p1RegressionCount",
+    "llmTokensUsed",
+    "trainingEligible",
+    "contractChecks",
+    "telemetryMetrics"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "study-plan-quality-v1"
+    },
+    "snapshotId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "evaluatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "overallStatus": {
+      "type": "string",
+      "enum": ["PASS", "WARN", "FAIL"]
+    },
+    "p0RegressionCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "p1RegressionCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "llmTokensUsed": {
+      "type": "integer",
+      "const": 0
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    },
+    "contractChecks": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 16,
+      "items": {
+        "$ref": "#/$defs/ContractGateCheck"
+      }
+    },
+    "telemetryMetrics": {
+      "$ref": "#/$defs/QualityTelemetryMetrics"
+    }
+  },
+  "$defs": {
+    "ContractGateCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contractId",
+        "title",
+        "status",
+        "severity",
+        "observedValue",
+        "thresholdDescription",
+        "details"
+      ],
+      "properties": {
+        "contractId": {
+          "type": "string",
+          "enum": ["CNT-LOS-06", "CNT-LOS-07", "CNT-LOS-08", "CNT-LOS-09"]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 160
+        },
+        "status": {
+          "type": "string",
+          "enum": ["PASS", "WARN", "FAIL"]
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["P0", "P1"]
+        },
+        "observedValue": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1000000.0
+        },
+        "thresholdDescription": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 128
+        },
+        "details": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 512
+        }
+      }
+    },
+    "QualityTelemetryMetrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "coldStartCompletionCount",
+        "coldStartZeroCostComplianceRate",
+        "recommendationExplainabilityRate",
+        "spacedReviewOnTimeCompletionRate",
+        "dailyCoachCompletionRate",
+        "rebalanceRecoveryRate",
+        "microLessonCompletionRate",
+        "studySessionRecoverySuccessRate",
+        "independentStreakRetentionRate",
+        "weeklyDigestZeroPiiComplianceRate",
+        "piiViolationCount"
+      ],
+      "properties": {
+        "coldStartCompletionCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "coldStartZeroCostComplianceRate": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "recommendationExplainabilityRate": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "spacedReviewOnTimeCompletionRate": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "dailyCoachCompletionRate": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "rebalanceRecoveryRate": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "microLessonCompletionRate": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "studySessionRecoverySuccessRate": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "independentStreakRetentionRate": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "weeklyDigestZeroPiiComplianceRate": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "piiViolationCount": {
+          "type": "integer",
+          "const": 0
+        }
+      }
+    }
+  }
+}

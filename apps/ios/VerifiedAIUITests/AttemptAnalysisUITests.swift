@@ -79,8 +79,7 @@ final class AttemptAnalysisUITests: XCTestCase {
         XCTAssertTrue(app.descendants(matching: .any)["attempt.handwriting.unavailable"].waitForExistence(timeout: 6))
         let editor = app.textViews["attempt.editor"]
         enterSteps("x=5", in: editor, app: app)
-        let done = app.buttons["attempt.keyboard.done"]
-        XCTAssertTrue(done.waitForExistence(timeout: 5)); done.tap()
+        dismissKeyboardWithDoneButton(app)
         let dismissed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: app.keyboards.firstMatch)
         XCTAssertEqual(XCTWaiter.wait(for: [dismissed], timeout: 5), .completed)
         tap(app.buttons["attempt.submit"], app)
@@ -119,6 +118,29 @@ final class AttemptAnalysisUITests: XCTestCase {
         editor.typeText(text)
         XCTAssertEqual(editor.value as? String, text, "The submitted learner text must match the typed input")
     }
+    private func dismissKeyboardOnboardingIfNeeded(_ app: XCUIApplication, blockedControl: XCUIElement) {
+        let tipLabels = ["Continue", "Devam", "Devam Et"]
+        let minY = max(app.windows.firstMatch.frame.height * 0.45, 320)
+        for _ in 0..<2 where !blockedControl.isHittable {
+            let match = app.buttons.matching(NSPredicate(format: "label IN %@", tipLabels))
+                .allElementsBoundByIndex
+                .first { $0.exists && $0.isHittable && !$0.identifier.contains(".") && $0.frame.minY >= minY }
+            guard let match else { break }
+            match.tap()
+            let becameHittable = XCTNSPredicateExpectation(predicate: NSPredicate(format: "hittable == true"), object: blockedControl)
+            _ = XCTWaiter.wait(for: [becameHittable], timeout: 2)
+        }
+    }
+
+    private func dismissKeyboardWithDoneButton(_ app: XCUIApplication) {
+        let done = app.buttons["attempt.keyboard.done"]
+        XCTAssertTrue(done.waitForExistence(timeout: 6))
+        dismissKeyboardOnboardingIfNeeded(app, blockedControl: done)
+        let ready = XCTNSPredicateExpectation(predicate: NSPredicate(format: "enabled == true AND hittable == true"), object: done)
+        XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 6), .completed)
+        done.tap()
+    }
+
     private func tap(_ item: XCUIElement, _ app: XCUIApplication) {
         XCTAssertTrue(item.waitForExistence(timeout: 6))
         for _ in 0..<5 { if item.isHittable { break }; app.swipeUp() }
@@ -168,7 +190,7 @@ extension AttemptAnalysisUITests {
         tap(solve, app); tap(app.buttons["attempt.open"], app)
         let editor = app.textViews["attempt.editor"]
         enterSteps("x=4", in: editor, app: app)
-        tap(app.buttons["attempt.keyboard.done"], app)
+        dismissKeyboardWithDoneButton(app)
         for _ in 0..<6 { if app.buttons["attempt.work.start"].isHittable { break }; app.swipeDown() }
         tap(app.buttons["attempt.work.start"], app)
         for _ in 0..<8 { if app.buttons["attempt.submit"].isHittable { break }; app.swipeUp() }

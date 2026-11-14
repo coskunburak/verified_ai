@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "cold-start-v1",
+  "idempotencyKey": "cold-start-demo-fixture-0001",
+  "locale": "en-US",
+  "declaredExamTarget": "AYT",
+  "declaredDailyBudgetMinutes": 10,
+  "preferredModality": "SOCRATIC_COACH",
+  "explicitPreferenceOverride": true,
+  "daysSinceLastVerifiedAttempt": 0,
+  "responses": [
+    {
+      "itemId": "DIAG_ITEM_1_NUMBER_SENSE",
+      "selectedOptionId": "A",
+      "answer": "23/20",
+      "elapsedSeconds": 32,
+      "timedOut": false,
+      "skipped": false
+    },
+    {
+      "itemId": "DIAG_ITEM_2_QUADRATIC_INEQUALITY",
+      "selectedOptionId": "B",
+      "answer": "x <= 2 or x >= 3",
+      "elapsedSeconds": 48,
+      "timedOut": false,
+      "skipped": false
+    },
+    {
+      "itemId": "DIAG_ITEM_3_FUNCTION_COMPOSITION",
+      "selectedOptionId": "A",
+      "answer": "21",
+      "elapsedSeconds": 82,
+      "timedOut": false,
+      "skipped": false
+    }
+  ]
+}

@@ -149,3 +149,9 @@ returns BLOCKED/nonzero; failing checks return FAIL/nonzero. Independent gates c
 The authored local 30-attempt synthetic rollback p95 test targets <250 ms; staging/production latency and cohort accuracy
 remain separate unverified gates. No numerical classification confidence or mastery/remediation success is inferred.
 Agent status: NOT RUN — MANUAL OWNER EXECUTION REQUIRED.
+
+## Sprint 8.10 Phase 8 Exit Gate Implementation
+
+- **Automated Exit Gate Endpoint:** `GET /v1/admin/study-plan/quality-gate` (`AdminQualityGateController`, `@PreAuthorize("hasRole('ADMIN')")`) backed by `PlannerQualityGateService` evaluates `CNT-LOS-06`, `CNT-LOS-07`, `CNT-LOS-08`, and `CNT-LOS-09` into `planner_quality_gate_snapshots` (`study-plan-quality-v1`, `llmTokensUsed == 0`, `trainingEligible == false`).
+- **Owner Acceptance Runner:** `scripts/quality/sprint_8_10_owner_acceptance.sh` executes Categories A–G across docs/contracts, SymPy math verifier, Spring backend/Modulith/Testcontainers, and iOS XCTest/XCUITest suites.
+- **Documentation Evidence:** Recorded in `sprints/phase08_adaptive_learning_and_study_planning/SPRINT_8.10_EXECUTION_REPORT.md` and `sprints/phase08_adaptive_learning_and_study_planning/SPRINT_8.10_FILE_MANIFEST.md`.

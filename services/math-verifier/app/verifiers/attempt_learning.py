@@ -331,3 +331,21 @@ def execute_comparison(request):
     except (ValueError,TypeError,NotImplementedError,ZeroDivisionError,s.PolynomialError):
         return ComparisonResult(executionId=request.executionId,correlationId=request.correlationId,source=request.source,
             status='UNSUPPORTED',reasonCode='UNSUPPORTED_SOURCE')
+
+
+from app.verifiers.cold_start_diagnostic import (  # noqa: F401
+    BASE_COLD_START_PRIOR,
+    CANONICAL_ITEM_ORDER,
+    COLD_START_SCHEMA_VERSION,
+    EVIDENCE_CALIBRATED_MIN,
+    FAST_CORRECT_PRIOR,
+    FAST_RESPONSE_THRESHOLD_SECONDS,
+    ITEM_SPECS,
+    OTHER_INCORRECT_PRIOR,
+    SLOW_CORRECT_PRIOR,
+    SLOW_RESPONSE_THRESHOLD_SECONDS,
+    TRAP_DISTRACTOR_PRIOR,
+    ColdStartItemSpec,
+    verify_cold_start_diagnostic,
+    verify_cold_start_item,
+)

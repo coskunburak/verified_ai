@@ -239,5 +239,12 @@ When `Sprint 12.10` unlocks after iOS V1 validation:
 Sprint 7.7. The actual taxonomy remains mistake-category-v1 (17 codes/five direct skills); deterministic evidence bands
 replace unsupported numerical confidence claims. The attempt-owned adapter validates immutable evidence and exact
 source skill provenance; mistake owns aggregation and append-only exclusion. Synchronous DB-only refresh uses the shared
-account lock; evaluation network calls remain outside transactions. See Sprint 7.5's execution report under phase07 for
+account lock; evaluation network calls remain outside transactions. The authored local 30-attempt synthetic rollback p95 test targets <250 ms; staging/production latency and cohort accuracy
+remain separate unverified gates. See Sprint 7.5's execution report under phase07 for
 source/test ownership. All execution-dependent acceptance remains pending; no new module dependency points back to attempt.
+
+## Sprint 8.10 implementation reconciliation (Phase 8 Exit Contracts)
+
+- **Contracts & Schemas:** Added Draft 2020-12 strict schemas `packages/schemas/studyplan/cold-start-request-v1.schema.json`, `packages/schemas/studyplan/cold-start-v1.schema.json`, and `packages/schemas/analytics/study-plan-quality-v1.schema.json`, plus OpenAPI 3.1 endpoints (`/v1/study-plan/cold-start`, `/v1/admin/study-plan/quality-gate`) mirrored byte-identically across `packages/contracts/openapi/public-api.yaml` and `packages/openapi/verified-ai-core-api.yaml`.
+- **Modulith & Jackson 3 Compliance:** `ColdStartCalibrationService`, `PlannerQualityGateService`, and `StudyPlanPrivacyLifecycleContributor` reside inside `com.verifiedai.studyplan`, read/write PostgreSQL via `JdbcClient` + `tools.jackson.*` (zero `com.fasterxml.jackson.*` imports), and preserve Spring Modulith `ModularityTest` / `ModularityTests`.
+- **Economics & Privacy Invariants:** All cold-start baseline diagnostics and `study-plan-quality-v1` snapshots enforce `llmTokensUsed == 0` (`$0.00`) and `trainingEligible == false` with full GDPR export and cascade delete support.

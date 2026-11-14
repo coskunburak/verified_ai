@@ -15104,6 +15104,300 @@
         "en": { "stringUnit": { "state": "translated", "value": "Excludes tutor messages, photos, email addresses, and session clock times." } },
         "tr": { "stringUnit": { "state": "translated", "value": "Eğitmen mesajlarını, fotoğrafları, e-posta adreslerini ve saat kayıtlarını dışlar." } }
       }
+    },
+    "cold_start.card.badge.exploration": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Exploration" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Keşif Modu" } }
+      }
+    },
+    "cold_start.card.badge.preliminary": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Preliminary Calibration" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Ön Kalibrasyon" } }
+      }
+    },
+    "cold_start.card.badge.calibrated": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Baseline Ready" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Başlangıç Profili Hazır" } }
+      }
+    },
+    "cold_start.card.badge.revalidation": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Quick Refresh" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Hızlı Yenileme" } }
+      }
+    },
+    "cold_start.card.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "3-Minute Baseline Check-In" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "3 Dakikalık Başlangıç Kontrolü" } }
+      }
+    },
+    "cold_start.card.subtitle": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Three quick deterministic problems shape your starting plan with zero pressure." } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Üç kısa soruyla başlangıç çalışma planını baskı olmadan şekillendir." } }
+      }
+    },
+    "cold_start.card.cta.start": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Start 3-Min Check-In" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "3 Dk Kontrolü Başlat" } }
+      }
+    },
+    "cold_start.card.cta.retake": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Refresh Check-In" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Kontrolü Yenile" } }
+      }
+    },
+    "cold_start.card.cta.offline_pending": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Saved Offline • Sync Pending" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Çevrimdışı Kaydedildi • Eşitleme Bekliyor" } }
+      }
+    },
+    "cold_start.confidence.preliminary": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Preliminary until 3 verified attempts per skill" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Her beceride 3 doğrulanmış denemeye kadar ön tahmin" } }
+      }
+    },
+    "cold_start.confidence.calibrated": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Calibrated with verified evidence" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Doğrulanmış kanıtlarla kalibre edildi" } }
+      }
+    },
+    "cold_start.conflict.resolved": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Daily blocks paced to fit your schedule" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Günlük oturumlar zamanına uyacak şekilde dengelendi" } }
+      }
+    },
+    "cold_start.revalidation.banner": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Welcome back — want a quick 3-minute refresh so your plan fits today's pace?" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Tekrar hoş geldin — planının bugünkü tempona uyması için 3 dakikalık hızlı bir yenileme ister misin?" } }
+      }
+    },
+    "cold_start.flow.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Baseline Calibration" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Başlangıç Kalibrasyonu" } }
+      }
+    },
+    "cold_start.flow.step_counter": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Question %lld of %lld" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Soru %lld / %lld" } }
+      }
+    },
+    "cold_start.flow.timer_remaining": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "%lld:%02lld left" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "%lld:%02lld kaldı" } }
+      }
+    },
+    "cold_start.flow.setup_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Tune Your Study Preferences" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Çalışma Tercihlerini Ayarla" } }
+      }
+    },
+    "cold_start.flow.exam_target": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Goal Focus" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Hedef Odak" } }
+      }
+    },
+    "cold_start.flow.daily_budget": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Daily Study Budget" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Günlük Çalışma Süresi" } }
+      }
+    },
+    "cold_start.flow.modality": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Guidance Style" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Rehberlik Stili" } }
+      }
+    },
+    "cold_start.flow.modality_override": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Keep my chosen pace and modality" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Seçtiğim tempo ve stili koru" } }
+      }
+    },
+    "cold_start.flow.button.begin": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Begin 3 Questions" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "3 Soruya Başla" } }
+      }
+    },
+    "cold_start.flow.button.next": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Next Question" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Sonraki Soru" } }
+      }
+    },
+    "cold_start.flow.button.finish": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Build My Starting Plan" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Başlangıç Planımı Oluştur" } }
+      }
+    },
+    "cold_start.flow.button.skip": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Skip for Now" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Şimdilik Atla" } }
+      }
+    },
+    "cold_start.flow.button.done": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Done" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Tamam" } }
+      }
+    },
+    "cold_start.tier.FOUNDATION_SOLID": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Solid Foundation" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Güçlü Temel" } }
+      }
+    },
+    "cold_start.tier.CALIBRATED_MIXED": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Balanced Explorer" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Dengeli Keşif" } }
+      }
+    },
+    "cold_start.tier.FOUNDATION_REPAIR": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Steady Groundwork" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Adım Adım Temel" } }
+      }
+    },
+    "cold_start.modality.PRACTICE_FIRST": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Practice First" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Önce Pratik" } }
+      }
+    },
+    "cold_start.modality.SOCRATIC_COACH": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Socratic Coach" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Sokratik Koç" } }
+      }
+    },
+    "cold_start.modality.MIXED": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Balanced Mix" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Dengeli Karışım" } }
+      }
+    },
+    "cold_start.modality.VIDEO_HINTS_OFF": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Quiet Focus" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Sade Odak" } }
+      }
+    },
+    "cold_start.item.DIAG_ITEM_1_NUMBER_SENSE.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Signed Fraction Arithmetic" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "İşaretli Kesir İşlemi" } }
+      }
+    },
+    "cold_start.item.DIAG_ITEM_2_QUADRATIC_INEQUALITY.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Quadratic Inequality" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "İkinci Dereceden Eşitsizlik" } }
+      }
+    },
+    "cold_start.item.DIAG_ITEM_3_FUNCTION_COMPOSITION.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Function Composition" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Fonksiyon Bileşkesi" } }
+      }
+    },
+    "cold_start.result.header": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Your Starting Profile" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Başlangıç Profilin" } }
+      }
+    },
+    "cold_start.result.priors_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Initial Skill Priors" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Başlangıç Beceri Tahminleri" } }
+      }
+    },
+    "cold_start.result.rationales_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Why This Plan Fits" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Bu Plan Neden Sana Uygun" } }
+      }
+    },
+    "cold_start.result.zero_cost_note": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "100% deterministic verification • $0 LLM cost" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "%100 deterministik doğrulama • 0 LLM maliyeti" } }
+      }
+    },
+    "cold_start.offline.saved_message": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Calibration preview saved locally and queued to sync automatically when online." } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Kalibrasyon önizlemesi yerel olarak kaydedildi ve çevrimiçi olunca otomatik eşitlenecek." } }
+      }
+    },
+    "cold_start.error.retry": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Retry Sync" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Eşitlemeyi Yinele" } }
+      }
     }
   },
   "version": "1.0"

@@ -422,4 +422,13 @@ Hardens the study planner against cold-start sparsity, conflicting goals, inacti
 ## 18. Canonical Cross-References
 - `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md`
 - `quality/91_LEARNING_OS_PRODUCT_LEARNING_AND_RELEASE_ACCEPTANCE_GATES.md`
+- `sprints/phase08_adaptive_learning_and_study_planning/SPRINT_8.10_EXECUTION_REPORT.md`
+- `sprints/phase08_adaptive_learning_and_study_planning/SPRINT_8.10_FILE_MANIFEST.md`
 <!-- LEARNING_OS_PRODUCTION_SPEC_V1:END -->
+
+## Implementation Reconciliation (Sprint 8.10 Shipped Contracts)
+
+- **Flyway Migration (`V053`):** `services/api/src/main/resources/db/migration/platform/V053__cold_start_diagnostics_and_quality_gates.sql` creates `cold_start_diagnostics` and `planner_quality_gate_snapshots` with `llm_tokens_used = 0` and `training_eligible = FALSE` constraints.
+- **Deterministic Verifier:** `services/math-verifier/app/verifiers/cold_start_diagnostic.py` (re-exported via `attempt_learning.py`) evaluates `DIAG_ITEM_1_NUMBER_SENSE`, `DIAG_ITEM_2_QUADRATIC_INEQUALITY`, and `DIAG_ITEM_3_FUNCTION_COMPOSITION` with `$0.00` LLM spend, bounded priors ($[0.15, 0.65]$), trap archetype attribution, and `PRELIMINARY` confidence labeling while `evidence_count < 3`.
+- **Spring Modulith Backend (`com.verifiedai.studyplan`):** `ColdStartCalibrationService` / `ColdStartCalibrationController` (`/v1/study-plan/cold-start`), `DefaultNextBestActionSignalProvider` cold-start fallback integration, `PlannerQualityGateService` / `AdminQualityGateController` (`/v1/admin/study-plan/quality-gate`), and `StudyPlanPrivacyLifecycleContributor` GDPR export/deletion.
+- **iOS Coach Hub UI & Offline Queue:** `ColdStartDiagnosticModels.swift`, `ColdStartSQLiteCache.swift`, `ColdStartDiagnosticService.swift`, `ColdStartDiagnosticViewModel.swift`, `ColdStartDiagnosticCardView.swift`, and `ColdStartDiagnosticFlowView.swift` integrated in `CoachHubView.swift`, `HomePlaceholderView.swift`, `AppDependencies.swift`, and `RootView.swift` with EN/TR copy in `Localizable.xcstrings`.

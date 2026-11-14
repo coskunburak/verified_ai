@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/studyplan/cold-start-request-v1.schema.json",
+  "title": "ColdStartDiagnosticRequestV1",
+  "description": "3-item deterministic cold-start baseline diagnostic submission and preference calibration request (Sprint 8.10, cold-start-v1).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "idempotencyKey",
+    "locale",
+    "responses"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "cold-start-v1"
+    },
+    "idempotencyKey": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 128
+    },
+    "locale": {
+      "type": "string",
+      "enum": ["en-US", "tr-TR"]
+    },
+    "declaredExamTarget": {
+      "type": ["string", "null"],
+      "enum": ["TYT", "AYT", "LGS", "SAT", "GENERAL", null]
+    },
+    "declaredDailyBudgetMinutes": {
+      "type": ["integer", "null"],
+      "minimum": 5,
+      "maximum": 240
+    },
+    "preferredModality": {
+      "type": ["string", "null"],
+      "enum": ["PRACTICE_FIRST", "SOCRATIC_COACH", "MIXED", "VIDEO_HINTS_OFF", null]
+    },
+    "explicitPreferenceOverride": {
+      "type": ["boolean", "null"]
+    },
+    "daysSinceLastVerifiedAttempt": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "maximum": 3650
+    },
+    "responses": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "$ref": "#/$defs/DiagnosticItemSubmission"
+      }
+    }
+  },
+  "$defs": {
+    "DiagnosticItemSubmission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "itemId",
+        "elapsedSeconds",
+        "timedOut",
+        "skipped"
+      ],
+      "properties": {
+        "itemId": {
+          "type": "string",
+          "enum": [
+            "DIAG_ITEM_1_NUMBER_SENSE",
+            "DIAG_ITEM_2_QUADRATIC_INEQUALITY",
+            "DIAG_ITEM_3_FUNCTION_COMPOSITION"
+          ]
+        },
+        "selectedOptionId": {
+          "type": ["string", "null"],
+          "maxLength": 32
+        },
+        "answer": {
+          "type": ["string", "null"],
+          "maxLength": 128
+        },
+        "elapsedSeconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1800
+        },
+        "timedOut": {
+          "type": "boolean"
+        },
+        "skipped": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

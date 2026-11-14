@@ -11,6 +11,7 @@ struct RootView: View {
     @State private var onboardingViewModel: OnboardingViewModel
     @State private var accountSettingsViewModel: AccountSettingsViewModel
     @StateObject private var weeklyProgressReportViewModel: WeeklyProgressReportViewModel
+    @StateObject private var coldStartDiagnosticViewModel: ColdStartDiagnosticViewModel
     @State private var entitlementViewModel: EntitlementViewModel
     @State private var paywallViewModel: PaywallViewModel
     @State private var problemCaptureViewModel: ProblemCaptureViewModel
@@ -43,6 +44,9 @@ struct RootView: View {
         ))
         _weeklyProgressReportViewModel = StateObject(wrappedValue: WeeklyProgressReportViewModel(
             service: dependencies.weeklyReportAPI
+        ))
+        _coldStartDiagnosticViewModel = StateObject(wrappedValue: ColdStartDiagnosticViewModel(
+            service: dependencies.coldStartDiagnosticAPI
         ))
         _entitlementViewModel = State(initialValue: EntitlementViewModel(
             entitlementAPI: dependencies.entitlementAPI,
@@ -164,8 +168,12 @@ struct RootView: View {
         .task(id: session.sessionId) {
             accountSettingsViewModel.reset()
             weeklyProgressReportViewModel.reset()
+            coldStartDiagnosticViewModel.updateLearnerId(session.userId)
             dependencies.storeKitTransactionObserver.start()
             await onboardingViewModel.bootstrap(userId: session.userId)
+            if !ProcessInfo.processInfo.arguments.contains("--ui-testing") {
+                await coldStartDiagnosticViewModel.load()
+            }
         }
         .onChange(of: onboardingViewModel.state) { previous, state in
             if case .ready = previous { return }
@@ -234,7 +242,8 @@ struct RootView: View {
                             }),
                         isFixture: dependencies.solveFixture, profileModel: onboardingViewModel, logger: dependencies.logger)
                 } : nil,
-                reviewViewModel: dependencies.solveFixture ? nil : problemReviewViewModel
+                reviewViewModel: dependencies.solveFixture ? nil : problemReviewViewModel,
+                coldStartViewModel: coldStartDiagnosticViewModel
             )
             .navigationTitle("Verified AI")
             .sheet(isPresented: $isPaywallPresented, onDismiss: {
@@ -299,6 +308,7 @@ struct RootView: View {
         onboardingViewModel.reset()
         accountSettingsViewModel.reset()
         weeklyProgressReportViewModel.reset()
+        Task { await coldStartDiagnosticViewModel.purgeCurrentLearnerAndReset() }
         entitlementViewModel.reset()
         paywallViewModel.reset()
         problemAssetUploadViewModel.reset()

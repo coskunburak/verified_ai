@@ -16,6 +16,7 @@ struct HomePlaceholderView: View {
     var coachHubViewModel: CoachHubViewModel? = nil
     var spacedReviewViewModel: SpacedReviewViewModel? = nil
     var dailyCoachViewModel: DailyCoachViewModel? = nil
+    var coldStartViewModel: ColdStartDiagnosticViewModel? = nil
 
     var body: some View {
         ScrollView {
@@ -23,7 +24,13 @@ struct HomePlaceholderView: View {
                 header
                 if isSolveFixture { Label("solve.fixture", systemImage: "testtube.2").foregroundStyle(ColorTokens.warning) }
                 if let dailyCoachViewModel {
-                    CoachHubView(viewModel: dailyCoachViewModel, onStartCapture: startProblemCapture)
+                    CoachHubView(
+                        viewModel: dailyCoachViewModel,
+                        coldStartViewModel: coldStartViewModel,
+                        onStartCapture: startProblemCapture
+                    )
+                } else if let coldStartViewModel, !coldStartViewModel.isFeatureDisabled {
+                    ColdStartDiagnosticCardView(viewModel: coldStartViewModel)
                 }
                 primaryAction
                 if let problemHistoryViewModel {
@@ -43,6 +50,22 @@ struct HomePlaceholderView: View {
         }
         .background(ColorTokens.background.ignoresSafeArea())
         .preferredColorScheme(.dark)
+        .sheet(isPresented: coldStartFlowBinding) {
+            if let coldStartViewModel {
+                ColdStartDiagnosticFlowView(viewModel: coldStartViewModel)
+            }
+        }
+    }
+
+    private var coldStartFlowBinding: Binding<Bool> {
+        Binding(
+            get: { dailyCoachViewModel == nil && (coldStartViewModel?.isFlowPresented ?? false) },
+            set: { newValue in
+                if dailyCoachViewModel == nil {
+                    coldStartViewModel?.isFlowPresented = newValue
+                }
+            }
+        )
     }
 
     @ViewBuilder

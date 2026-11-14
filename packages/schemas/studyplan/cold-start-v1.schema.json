@@ -1,0 +1,304 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/studyplan/cold-start-v1.schema.json",
+  "title": "ColdStartDiagnosticResultV1",
+  "description": "Deterministic 3-minute cold-start calibration baseline, preliminary BKT priors, trap archetype seeding, goal conflict resolution, and inactivity decay contract (Sprint 8.10, ADR-006 trainingEligible=false, llmTokensUsed=0).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "diagnosticId",
+    "learnerId",
+    "locale",
+    "status",
+    "baselineTier",
+    "correctCount",
+    "totalItems",
+    "calibrationMode",
+    "confidenceTier",
+    "goalConflictResolved",
+    "recommendedDailyBudgetMinutes",
+    "inactiveDecayApplied",
+    "explicitPreferenceOverride",
+    "declaredExamTarget",
+    "declaredDailyBudgetMinutes",
+    "preferredModality",
+    "revalidationPromptKey",
+    "detectedTrapArchetypes",
+    "itemOutcomes",
+    "initializedPriors",
+    "rationales",
+    "attemptDurationSeconds",
+    "llmTokensUsed",
+    "trainingEligible",
+    "idempotentReplay",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "cold-start-v1"
+    },
+    "diagnosticId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "learnerId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "locale": {
+      "type": "string",
+      "enum": ["en-US", "tr-TR"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["COMPLETED", "REVALIDATION_REQUIRED"]
+    },
+    "baselineTier": {
+      "type": "string",
+      "enum": ["FOUNDATION_SOLID", "CALIBRATED_MIXED", "FOUNDATION_REPAIR"]
+    },
+    "correctCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3
+    },
+    "totalItems": {
+      "type": "integer",
+      "const": 3
+    },
+    "calibrationMode": {
+      "type": "string",
+      "enum": ["EXPLORATION", "ACTIVE_CALIBRATED", "REVALIDATION_REQUIRED"]
+    },
+    "confidenceTier": {
+      "type": "string",
+      "enum": ["PRELIMINARY", "CALIBRATED"]
+    },
+    "goalConflictResolved": {
+      "type": "boolean"
+    },
+    "recommendedDailyBudgetMinutes": {
+      "type": "integer",
+      "minimum": 5,
+      "maximum": 240
+    },
+    "inactiveDecayApplied": {
+      "type": "boolean"
+    },
+    "explicitPreferenceOverride": {
+      "type": "boolean"
+    },
+    "declaredExamTarget": {
+      "type": ["string", "null"],
+      "enum": ["TYT", "AYT", "LGS", "SAT", "GENERAL", null]
+    },
+    "declaredDailyBudgetMinutes": {
+      "type": ["integer", "null"],
+      "minimum": 5,
+      "maximum": 240
+    },
+    "preferredModality": {
+      "type": ["string", "null"],
+      "enum": ["PRACTICE_FIRST", "SOCRATIC_COACH", "MIXED", "VIDEO_HINTS_OFF", null]
+    },
+    "revalidationPromptKey": {
+      "type": ["string", "null"],
+      "maxLength": 128
+    },
+    "detectedTrapArchetypes": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 6,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "SIGN_INVERSION_TRAP",
+          "FRACTION_DENOMINATOR_TRAP",
+          "INEQUALITY_POLARITY_TRAP",
+          "ROOT_BOUNDARY_TRAP",
+          "COMPOSITION_ORDER_TRAP",
+          "COMPOSITION_LINEARITY_TRAP"
+        ]
+      }
+    },
+    "itemOutcomes": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "$ref": "#/$defs/ColdStartItemOutcome"
+      }
+    },
+    "initializedPriors": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "$ref": "#/$defs/ColdStartSkillPrior"
+      }
+    },
+    "rationales": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10,
+      "items": {
+        "$ref": "#/$defs/ColdStartRationale"
+      }
+    },
+    "attemptDurationSeconds": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1800
+    },
+    "llmTokensUsed": {
+      "type": "integer",
+      "const": 0
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    },
+    "idempotentReplay": {
+      "type": "boolean"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "$defs": {
+    "ColdStartItemOutcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "itemId",
+        "skillCode",
+        "correct",
+        "verdict",
+        "detectedTrapArchetype",
+        "assignedPrior",
+        "elapsedSeconds"
+      ],
+      "properties": {
+        "itemId": {
+          "type": "string",
+          "enum": [
+            "DIAG_ITEM_1_NUMBER_SENSE",
+            "DIAG_ITEM_2_QUADRATIC_INEQUALITY",
+            "DIAG_ITEM_3_FUNCTION_COMPOSITION"
+          ]
+        },
+        "skillCode": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 128
+        },
+        "correct": {
+          "type": "boolean"
+        },
+        "verdict": {
+          "type": "string",
+          "enum": [
+            "CORRECT_FAST",
+            "CORRECT_SLOW",
+            "TRAP_DISTRACTOR",
+            "INCORRECT_OTHER",
+            "TIMED_OUT",
+            "SKIPPED"
+          ]
+        },
+        "detectedTrapArchetype": {
+          "type": ["string", "null"],
+          "enum": [
+            "SIGN_INVERSION_TRAP",
+            "FRACTION_DENOMINATOR_TRAP",
+            "INEQUALITY_POLARITY_TRAP",
+            "ROOT_BOUNDARY_TRAP",
+            "COMPOSITION_ORDER_TRAP",
+            "COMPOSITION_LINEARITY_TRAP",
+            null
+          ]
+        },
+        "assignedPrior": {
+          "type": "number",
+          "minimum": 0.15,
+          "maximum": 0.65
+        },
+        "elapsedSeconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1800
+        }
+      }
+    },
+    "ColdStartSkillPrior": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "skillCode",
+        "priorProbability",
+        "evidenceCount",
+        "confidenceTier",
+        "decayApplied"
+      ],
+      "properties": {
+        "skillCode": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 128
+        },
+        "priorProbability": {
+          "type": "number",
+          "minimum": 0.15,
+          "maximum": 0.65
+        },
+        "evidenceCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "confidenceTier": {
+          "type": "string",
+          "enum": ["PRELIMINARY", "CALIBRATED"]
+        },
+        "decayApplied": {
+          "type": "boolean"
+        }
+      }
+    },
+    "ColdStartRationale": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "localizedMessage"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "enum": [
+            "PRELIMINARY_SPARSE_EVIDENCE",
+            "GOAL_CAPACITY_CONFLICT_RESOLVED",
+            "INACTIVE_DECAY_APPLIED",
+            "EXPLICIT_PREFERENCE_OVERRIDE",
+            "TRAP_SEEDED_WARMUP",
+            "BASELINE_SOLID_ACCELERATED",
+            "BASELINE_REPAIR_FOUNDATION"
+          ]
+        },
+        "localizedMessage": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 512
+        }
+      }
+    }
+  }
+}

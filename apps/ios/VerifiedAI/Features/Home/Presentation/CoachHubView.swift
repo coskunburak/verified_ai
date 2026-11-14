@@ -4,21 +4,25 @@ public struct CoachHubView: View {
     @ObservedObject public var viewModel: DailyCoachViewModel
     public var rebalanceViewModel: StudyPlanRebalanceViewModel?
     public var gamificationViewModel: GamificationViewModel?
+    public var coldStartViewModel: ColdStartDiagnosticViewModel?
     public let onStartCapture: () -> Void
     public let onOpenTask: (DailyCoachTaskModel) -> Void
 
     @State private var isFallbackMilestoneSheetPresented: Bool = false
+    @State private var isUnusedColdStartSheetPresented: Bool = false
 
     public init(
         viewModel: DailyCoachViewModel,
         rebalanceViewModel: StudyPlanRebalanceViewModel? = nil,
         gamificationViewModel: GamificationViewModel? = nil,
+        coldStartViewModel: ColdStartDiagnosticViewModel? = nil,
         onStartCapture: @escaping () -> Void = {},
         onOpenTask: @escaping (DailyCoachTaskModel) -> Void = { _ in }
     ) {
         self.viewModel = viewModel
         self.rebalanceViewModel = rebalanceViewModel
         self.gamificationViewModel = gamificationViewModel
+        self.coldStartViewModel = coldStartViewModel
         self.onStartCapture = onStartCapture
         self.onOpenTask = onOpenTask
     }
@@ -53,6 +57,11 @@ public struct CoachHubView: View {
                 )
 
                 if let summary = viewModel.summary {
+                    if let coldStartViewModel,
+                       !coldStartViewModel.isFeatureDisabled,
+                       (summary.isColdStart || coldStartViewModel.requiresRevalidation || coldStartViewModel.latestResult != nil) {
+                        ColdStartDiagnosticCardView(viewModel: coldStartViewModel)
+                    }
                     if summary.isColdStart {
                         coldStartHeroCard(summary: summary)
                     } else {
@@ -78,9 +87,17 @@ public struct CoachHubView: View {
                 onSelectTask: onOpenTask
             )
         }
+        .sheet(isPresented: coldStartSheetBinding) {
+            if let coldStartViewModel {
+                ColdStartDiagnosticFlowView(viewModel: coldStartViewModel)
+            }
+        }
         .task {
             if viewModel.summary == nil {
                 await viewModel.loadTodaySummary()
+            }
+            if let coldStartViewModel, coldStartViewModel.latestResult == nil {
+                await coldStartViewModel.load()
             }
         }
     }
@@ -139,6 +156,16 @@ public struct CoachHubView: View {
             )
         }
         return $isFallbackMilestoneSheetPresented
+    }
+
+    private var coldStartSheetBinding: Binding<Bool> {
+        if let coldStartViewModel {
+            return Binding(
+                get: { coldStartViewModel.isFlowPresented },
+                set: { coldStartViewModel.isFlowPresented = $0 }
+            )
+        }
+        return $isUnusedColdStartSheetPresented
     }
 
     private var offlineBanner: some View {

@@ -39,6 +39,37 @@ final class VerifiedAIUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Problem asset ready"].exists)
     }
 
+    func testColdStartBaselineDiagnosticCardAndThreeStepFlow() {
+        let app = launchAuthenticatedApp()
+
+        let card = app.descendants(matching: .any)["coachHub.coldStartDiagnosticCard"]
+        XCTAssertTrue(card.waitForExistence(timeout: 6))
+
+        let startCTA = app.buttons["coldStart.card.cta"]
+        XCTAssertTrue(startCTA.waitForExistence(timeout: 4))
+        startCTA.tap()
+
+        let beginButton = app.buttons["coldStart.flow.begin"]
+        XCTAssertTrue(beginButton.waitForExistence(timeout: 4))
+        beginButton.tap()
+
+        for optionId in ["A", "B", "A"] {
+            let optionButton = app.buttons["coldStart.option.\(optionId)"]
+            XCTAssertTrue(optionButton.waitForExistence(timeout: 4))
+            optionButton.tap()
+
+            let nextOrFinish = app.buttons["coldStart.flow.nextOrFinish"]
+            XCTAssertTrue(nextOrFinish.isEnabled)
+            nextOrFinish.tap()
+        }
+
+        let doneButton = app.buttons["coldStart.result.done"]
+        XCTAssertTrue(doneButton.waitForExistence(timeout: 5))
+        doneButton.tap()
+
+        XCTAssertTrue(card.waitForExistence(timeout: 4))
+    }
+
     private func launchAuthenticatedApp(extraArguments: [String] = []) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["--ui-testing", "--ui-testing-authenticated"] + extraArguments

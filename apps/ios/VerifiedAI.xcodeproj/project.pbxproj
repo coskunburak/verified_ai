@@ -53,6 +53,13 @@
 		B89000000000000000000004 /* WeeklyProgressReportViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89000000000000000000004 /* WeeklyProgressReportViewModel.swift */; };
 		B89000000000000000000005 /* WeeklyProgressReportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89000000000000000000005 /* WeeklyProgressReportView.swift */; };
 		B89000000000000000000006 /* Sprint89WeeklyReportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89000000000000000000006 /* Sprint89WeeklyReportTests.swift */; };
+		B8A100000000000000000001 /* ColdStartDiagnosticModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8A100000000000000000001 /* ColdStartDiagnosticModels.swift */; };
+		B8A100000000000000000002 /* ColdStartSQLiteCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8A100000000000000000002 /* ColdStartSQLiteCache.swift */; };
+		B8A100000000000000000003 /* ColdStartDiagnosticService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8A100000000000000000003 /* ColdStartDiagnosticService.swift */; };
+		B8A100000000000000000004 /* ColdStartDiagnosticViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8A100000000000000000004 /* ColdStartDiagnosticViewModel.swift */; };
+		B8A100000000000000000005 /* ColdStartDiagnosticCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8A100000000000000000005 /* ColdStartDiagnosticCardView.swift */; };
+		B8A100000000000000000006 /* ColdStartDiagnosticFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8A100000000000000000006 /* ColdStartDiagnosticFlowView.swift */; };
+		B8A100000000000000000007 /* Sprint810ColdStartCalibrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8A100000000000000000007 /* Sprint810ColdStartCalibrationTests.swift */; };
 		B89500000000000000000001 /* DailyCoachSQLiteCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000001 /* DailyCoachSQLiteCache.swift */; };
 		B89500000000000000000002 /* RebalanceSQLiteCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000002 /* RebalanceSQLiteCache.swift */; };
 		B89500000000000000000003 /* CoachHubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000003 /* CoachHubView.swift */; };
@@ -305,6 +312,13 @@
 		A89000000000000000000004 /* WeeklyProgressReportViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Reports/WeeklyProgressReportViewModel.swift; sourceTree = SOURCE_ROOT; };
 		A89000000000000000000005 /* WeeklyProgressReportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Reports/WeeklyProgressReportView.swift; sourceTree = SOURCE_ROOT; };
 		A89000000000000000000006 /* Sprint89WeeklyReportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Sprint89WeeklyReportTests.swift; sourceTree = SOURCE_ROOT; };
+		A8A100000000000000000001 /* ColdStartDiagnosticModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Home/Domain/ColdStartDiagnosticModels.swift; sourceTree = SOURCE_ROOT; };
+		A8A100000000000000000002 /* ColdStartSQLiteCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Home/Data/ColdStartSQLiteCache.swift; sourceTree = SOURCE_ROOT; };
+		A8A100000000000000000003 /* ColdStartDiagnosticService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Home/Data/ColdStartDiagnosticService.swift; sourceTree = SOURCE_ROOT; };
+		A8A100000000000000000004 /* ColdStartDiagnosticViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Home/Presentation/ColdStartDiagnosticViewModel.swift; sourceTree = SOURCE_ROOT; };
+		A8A100000000000000000005 /* ColdStartDiagnosticCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Home/Presentation/ColdStartDiagnosticCardView.swift; sourceTree = SOURCE_ROOT; };
+		A8A100000000000000000006 /* ColdStartDiagnosticFlowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Home/Presentation/ColdStartDiagnosticFlowView.swift; sourceTree = SOURCE_ROOT; };
+		A8A100000000000000000007 /* Sprint810ColdStartCalibrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Sprint810ColdStartCalibrationTests.swift; sourceTree = SOURCE_ROOT; };
 		A89500000000000000000001 /* DailyCoachSQLiteCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Home/Data/DailyCoachSQLiteCache.swift; sourceTree = SOURCE_ROOT; };
 		A89500000000000000000002 /* RebalanceSQLiteCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Home/Data/RebalanceSQLiteCache.swift; sourceTree = SOURCE_ROOT; };
 		A89500000000000000000003 /* CoachHubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Home/Presentation/CoachHubView.swift; sourceTree = SOURCE_ROOT; };
@@ -1152,6 +1166,13 @@
 				A89000000000000000000004 /* WeeklyProgressReportViewModel.swift */,
 				A89000000000000000000005 /* WeeklyProgressReportView.swift */,
 				A89000000000000000000006 /* Sprint89WeeklyReportTests.swift */,
+				A8A100000000000000000001 /* ColdStartDiagnosticModels.swift */,
+				A8A100000000000000000002 /* ColdStartSQLiteCache.swift */,
+				A8A100000000000000000003 /* ColdStartDiagnosticService.swift */,
+				A8A100000000000000000004 /* ColdStartDiagnosticViewModel.swift */,
+				A8A100000000000000000005 /* ColdStartDiagnosticCardView.swift */,
+				A8A100000000000000000006 /* ColdStartDiagnosticFlowView.swift */,
+				A8A100000000000000000007 /* Sprint810ColdStartCalibrationTests.swift */,
 				A89500000000000000000001 /* DailyCoachSQLiteCache.swift */,
 				A89500000000000000000002 /* RebalanceSQLiteCache.swift */,
 				A89500000000000000000003 /* CoachHubView.swift */,
@@ -1416,6 +1437,12 @@
 				B89000000000000000000003 /* TutorSharePacketPDFRenderer.swift in Sources */,
 				B89000000000000000000004 /* WeeklyProgressReportViewModel.swift in Sources */,
 				B89000000000000000000005 /* WeeklyProgressReportView.swift in Sources */,
+				B8A100000000000000000001 /* ColdStartDiagnosticModels.swift in Sources */,
+				B8A100000000000000000002 /* ColdStartSQLiteCache.swift in Sources */,
+				B8A100000000000000000003 /* ColdStartDiagnosticService.swift in Sources */,
+				B8A100000000000000000004 /* ColdStartDiagnosticViewModel.swift in Sources */,
+				B8A100000000000000000005 /* ColdStartDiagnosticCardView.swift in Sources */,
+				B8A100000000000000000006 /* ColdStartDiagnosticFlowView.swift in Sources */,
 				B89500000000000000000001 /* DailyCoachSQLiteCache.swift in Sources */,
 				B89500000000000000000002 /* RebalanceSQLiteCache.swift in Sources */,
 				B89500000000000000000003 /* CoachHubView.swift in Sources */,
@@ -1569,6 +1596,7 @@
 				B81000000000000000000005 /* Sprint81RecommendationTests.swift in Sources */,
 				B88000000000000000000005 /* Sprint88GamificationTests.swift in Sources */,
 				B89000000000000000000006 /* Sprint89WeeklyReportTests.swift in Sources */,
+				B8A100000000000000000007 /* Sprint810ColdStartCalibrationTests.swift in Sources */,
 				B89600000000000000000001 /* Sprint82PracticeTests.swift in Sources */,
 				B89600000000000000000002 /* Sprint83SpacedRepetitionTests.swift in Sources */,
 				B89600000000000000000003 /* Sprint84CoachHubTests.swift in Sources */,

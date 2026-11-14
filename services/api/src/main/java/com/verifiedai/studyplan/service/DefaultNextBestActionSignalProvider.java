@@ -5,6 +5,8 @@ import com.verifiedai.curriculum.api.CurriculumGraphQueryPort;
 import com.verifiedai.studyplan.engine.SkillCandidateSignal;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -168,12 +170,57 @@ public class DefaultNextBestActionSignalProvider implements NextBestActionSignal
             }
         }
 
-        // If signals are empty (cold start learner), seed high-ROI foundational curriculum topics
+        // If signals are empty (cold start learner), load calibrated Sprint 8.10 priors if present
+        // or seed high-ROI foundational curriculum topics
         if (signals.isEmpty()) {
-            signals.addAll(createColdStartBaselineSignals());
+            List<SkillCandidateSignal> calibratedColdStart = fetchCalibratedColdStartSignals(userId);
+            if (!calibratedColdStart.isEmpty()) {
+                signals.addAll(calibratedColdStart);
+            } else {
+                signals.addAll(createColdStartBaselineSignals());
+            }
         }
 
         return signals;
+    }
+
+    private List<SkillCandidateSignal> fetchCalibratedColdStartSignals(UUID userId) {
+        try {
+            String outcomesJson = jdbcClient.sql("""
+                    SELECT item_outcomes_json::text
+                    FROM cold_start_diagnostics
+                    WHERE learner_id = :userId
+                    ORDER BY created_at DESC
+                    LIMIT 1
+                    """)
+                    .param("userId", userId)
+                    .query(String.class)
+                    .optional()
+                    .orElse(null);
+            if (outcomesJson == null || outcomesJson.isBlank()) {
+                return List.of();
+            }
+            JsonMapper mapper = JsonMapper.builder().findAndAddModules().build();
+            List<Map<String, Object>> outcomes = mapper.readValue(outcomesJson, new TypeReference<>() {});
+            List<SkillCandidateSignal> list = new ArrayList<>();
+            for (Map<String, Object> row : outcomes) {
+                Object skillObj = row.get("skillCode");
+                if (!(skillObj instanceof String skillCode) || skillCode.isBlank()) {
+                    continue;
+                }
+                double prior = row.get("assignedPrior") instanceof Number n ? n.doubleValue() : 0.25;
+                String trap = row.get("detectedTrapArchetype") instanceof String t && !t.isBlank() ? t : null;
+                list.add(SkillCandidateSignal.builder(skillCode)
+                        .dominantMistake(trap, trap != null ? new BigDecimal("50.0000") : BigDecimal.ZERO, trap != null ? 1 : 0)
+                        .retention(BigDecimal.valueOf(prior).setScale(4, RoundingMode.HALF_UP), new BigDecimal("7.00"))
+                        .independentMastery(BigDecimal.valueOf(prior).setScale(4, RoundingMode.HALF_UP))
+                        .exam("AYT_MAT_2026", new BigDecimal("0.8500"))
+                        .build());
+            }
+            return list;
+        } catch (Exception ignored) {
+            return List.of();
+        }
     }
 
     private List<SkillCandidateSignal> createColdStartBaselineSignals() {

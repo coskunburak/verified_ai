@@ -73,6 +73,8 @@ class StudyPlanPrivacyLifecycleContributorTest {
 
         assertThat(exported.get("category")).isEqualTo("study_plan");
         assertThat(exported.get("recordCount")).isEqualTo(1);
+        assertThat(exported.get("coldStartDiagnosticCount")).isEqualTo(0);
+        assertThat(exported.get("coldStartDiagnostics")).isEqualTo(List.of());
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> recs = (List<Map<String, Object>>) exported.get("recommendations");
         assertThat(recs).hasSize(1);

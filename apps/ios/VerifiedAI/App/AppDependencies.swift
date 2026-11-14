@@ -62,6 +62,9 @@ struct AppDependencies {
     var weeklyReportAPI: WeeklyReportServicing {
         HTTPWeeklyReportService(apiClient: apiClient)
     }
+    var coldStartDiagnosticAPI: ColdStartDiagnosticServicing {
+        HTTPColdStartDiagnosticService(apiClient: apiClient)
+    }
     let primarySolveAPI: PrimarySolveServicing
     let solveRecovery: SolveRecoveryStoring
     let solveEnabled: Bool
