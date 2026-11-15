@@ -45,6 +45,7 @@ public struct CandidateGoalSetupView: View {
             .padding()
         }
         .scrollDismissesKeyboard(.interactively)
+        .background(ColorTokens.canvas.ignoresSafeArea())
         .navigationTitle(Text("exam.candidate.title"))
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) {
@@ -71,11 +72,11 @@ public struct CandidateGoalSetupView: View {
         VStack(alignment: .leading, spacing: 6) {
             Text("exam.candidate.subtitle")
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(ColorTokens.textSecondary)
             if viewModel.isOfflineFallback {
                 Label("exam.catalog.offline_banner", systemImage: "icloud.slash")
                     .font(.caption)
-                    .foregroundStyle(.orange)
+                    .foregroundStyle(ColorTokens.warning)
                     .accessibilityIdentifier("candidate.profile.offlineBanner")
             }
         }
@@ -86,10 +87,10 @@ public struct CandidateGoalSetupView: View {
         if let errKey = viewModel.errorLocalizationKey {
             Text(LocalizedStringKey(errKey))
                 .font(.callout)
-                .foregroundStyle(.red)
+                .foregroundStyle(ColorTokens.danger)
                 .padding(10)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.red.opacity(0.10), in: RoundedRectangle(cornerRadius: 10))
+                .background(ColorTokens.dangerSoft, in: RoundedRectangle(cornerRadius: RadiusTokens.sm))
                 .accessibilityIdentifier("candidate.profile.errorBanner")
         } else if let errMsg = viewModel.errorMessage {
             Text(errMsg)
@@ -235,10 +236,10 @@ public struct CandidateGoalSetupView: View {
 
     private func feasibilityTint(_ status: CandidateFeasibilityStatus) -> Color {
         switch status {
-        case .optimal: .green
-        case .stretch: .blue
-        case .atRisk: .orange
-        case .unrealistic: .red
+        case .optimal: return ColorTokens.success
+        case .stretch: return ColorTokens.stepHighlight
+        case .atRisk: return ColorTokens.warning
+        case .unrealistic: return ColorTokens.danger
         }
     }
 
@@ -259,8 +260,8 @@ public struct CandidateGoalSetupView: View {
             .accessibilityIdentifier("candidate.profile.extraTimePicker")
 
             Text("Adjusted section timer: \(adjusted) min (base \(selectedExamBaseMinutes) min)")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                .font(.caption.monospacedDigit())
+                .foregroundStyle(ColorTokens.textSecondary)
                 .accessibilityIdentifier("candidate.profile.adjustedTimerLabel")
 
             Toggle(isOn: $viewModel.highContrastEnabled) {
@@ -279,7 +280,11 @@ public struct CandidateGoalSetupView: View {
             .accessibilityIdentifier("candidate.profile.reducedMotionToggle")
         }
         .padding()
-        .background(cardBackground, in: RoundedRectangle(cornerRadius: 14))
+        .background(cardBackground, in: RoundedRectangle(cornerRadius: RadiusTokens.md))
+        .overlay(
+            RoundedRectangle(cornerRadius: RadiusTokens.md)
+                .stroke(ColorTokens.borderSubtle, lineWidth: 1)
+        )
     }
 
     private var actionButtonsSection: some View {
@@ -297,6 +302,7 @@ public struct CandidateGoalSetupView: View {
                 .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
+            .tint(ColorTokens.action)
             .disabled(viewModel.isSaving)
             .animation(effectiveReduceMotion ? nil : .easeInOut(duration: 0.2), value: viewModel.isSaving)
             .accessibilityIdentifier("candidate.profile.saveButton")
@@ -309,6 +315,7 @@ public struct CandidateGoalSetupView: View {
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.bordered)
+            .tint(ColorTokens.stepHighlight)
             .accessibilityIdentifier("candidate.profile.openSyllabusSheetButton")
         }
     }
@@ -319,26 +326,32 @@ public struct CandidateGoalSetupView: View {
             VStack(alignment: .leading, spacing: 10) {
                 Text("exam.candidate.history_title")
                     .font(.headline)
+                    .foregroundStyle(ColorTokens.textPrimary)
                 ForEach(viewModel.historyEntries.prefix(5)) { item in
                     VStack(alignment: .leading, spacing: 2) {
                         Text("\(item.examCode) • \(item.newTargetDate)")
-                            .font(.subheadline.bold())
+                            .font(.subheadline.bold().monospacedDigit())
+                            .foregroundStyle(ColorTokens.textPrimary)
                         Text("\(item.newDailyMinutes) min/d • \(item.changeReason) • \(item.feasibilityStatus.rawValue)")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .font(.caption.monospacedDigit())
+                            .foregroundStyle(ColorTokens.textSecondary)
                     }
                     Divider()
                 }
             }
             .padding()
-            .background(cardBackground, in: RoundedRectangle(cornerRadius: 14))
+            .background(cardBackground, in: RoundedRectangle(cornerRadius: RadiusTokens.md))
+            .overlay(
+                RoundedRectangle(cornerRadius: RadiusTokens.md)
+                    .stroke(ColorTokens.borderSubtle, lineWidth: 1)
+            )
             .accessibilityIdentifier("candidate.profile.historyCard")
         }
     }
 
     private var cardBackground: Color {
         viewModel.highContrastEnabled
-            ? Color.primary.opacity(0.08)
-            : Color.secondary.opacity(0.08)
+            ? ColorTokens.surfacePressed
+            : ColorTokens.surfaceElevated
     }
 }

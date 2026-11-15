@@ -24,24 +24,27 @@ struct AttemptStepReviewView: View {
                         if line.regionReliable, let preview, let image = UIImage(data: preview) {
                             Image(uiImage: image).resizable().scaledToFit()
                                 .overlay { GeometryReader { geometry in
-                                    Rectangle().stroke(.orange, lineWidth: 2)
+                                    Rectangle().stroke(ColorTokens.warning, lineWidth: 2)
                                         .frame(width: geometry.size.width * line.box.width, height: geometry.size.height * line.box.height)
                                         .position(x: geometry.size.width * line.box.midX, y: geometry.size.height * (1 - line.box.midY))
                                 } }
                                 .accessibilityLabel("attempt.work.sourceRegion")
                         }
-                        if !line.regionReliable { Text("attempt.work.regionUnknown").font(.caption) }
-                        Text(verbatim: line.raw).font(.caption).textSelection(.enabled)
+                        if !line.regionReliable { Text("attempt.work.regionUnknown").font(TypographyTokens.caption).foregroundStyle(ColorTokens.textSecondary) }
+                        Text(verbatim: line.raw).font(TypographyTokens.caption).textSelection(.enabled)
                         TextField("attempt.editor.label", text: $line.text, axis: .vertical)
                             .autocorrectionDisabled().textInputAutocapitalization(.never)
                             .onChange(of: line.text) { _, _ in line.confirmed = false }
-                        if line.confidence < 0.85 { Label("attempt.ocr.lowConfidence", systemImage: "exclamationmark.triangle") }
-                        Toggle("attempt.ocr.lineConfirmed", isOn: $line.confirmed)
+                        if line.confidence < 0.85 { Label("attempt.ocr.lowConfidence", systemImage: "exclamationmark.triangle").foregroundStyle(ColorTokens.warning) }
+                        Toggle("attempt.ocr.lineConfirmed", isOn: $line.confirmed).tint(ColorTokens.action)
                     }
                 }
                 Button(LocalizedStringKey(structured ? "attempt.work.continueReview" : "attempt.ocr.confirm"), action: confirm)
+                    .buttonStyle(AppPrimaryButtonStyle())
                     .disabled(!canContinue)
             }
+            .scrollContentBackground(.hidden)
+            .background(ColorTokens.canvas)
             .navigationTitle("attempt.ocr.review")
             .toolbar { ToolbarItem(placement: .cancellationAction) { Button("attempt.ocr.cancel", action: cancel) } }
         }

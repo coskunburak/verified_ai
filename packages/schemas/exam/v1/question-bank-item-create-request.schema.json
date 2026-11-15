@@ -1,0 +1,264 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/exam/v1/question-bank-item-create-request.schema.json",
+  "title": "QuestionBankItemCreateRequest",
+  "description": "SME-authored question bank item creation payload with psychometrics, accessibility alt-text invariants, and provenance metadata (Sprint 9.3).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "examVersionNumber",
+    "questionCode",
+    "topicCode",
+    "itemFormat",
+    "difficultyBand",
+    "difficultyBValue",
+    "discriminationAValue",
+    "guessingCValue",
+    "cognitiveLevel",
+    "stemMarkdown",
+    "hasVisualDiagram",
+    "solutionExplanationMarkdown",
+    "estimatedTimeSeconds",
+    "maxPoints",
+    "negativeMarkingWeight",
+    "options",
+    "provenance",
+    "trainingEligible"
+  ],
+  "properties": {
+    "examVersionNumber": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    },
+    "examSectionId": {
+      "type": ["string", "null"],
+      "format": "uuid"
+    },
+    "questionCode": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 64
+    },
+    "topicCode": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 128
+    },
+    "subtopicCode": {
+      "type": ["string", "null"],
+      "maxLength": 128
+    },
+    "itemFormat": {
+      "type": "string",
+      "enum": [
+        "SINGLE_CHOICE_MCQ",
+        "MULTI_SELECT_MCQ",
+        "NUMERIC_GRID_IN",
+        "SHORT_STRUCTURED_RESPONSE"
+      ]
+    },
+    "difficultyBand": {
+      "type": "string",
+      "enum": ["EASY", "MEDIUM", "HARD", "EXPERT"]
+    },
+    "difficultyBValue": {
+      "type": "number",
+      "minimum": -3.0,
+      "maximum": 3.0
+    },
+    "discriminationAValue": {
+      "type": "number",
+      "minimum": 0.2,
+      "maximum": 2.5
+    },
+    "guessingCValue": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 0.35
+    },
+    "cognitiveLevel": {
+      "type": "string",
+      "enum": ["RECALL", "COMPREHENSION", "APPLICATION", "ANALYSIS", "EVALUATION"]
+    },
+    "stemMarkdown": {
+      "type": "string",
+      "minLength": 10
+    },
+    "stemLatex": {
+      "type": ["string", "null"]
+    },
+    "altTextDescription": {
+      "type": ["string", "null"],
+      "minLength": 10
+    },
+    "hasVisualDiagram": {
+      "type": "boolean"
+    },
+    "numericCorrectAnswer": {
+      "type": ["number", "null"]
+    },
+    "numericTolerance": {
+      "type": ["number", "null"],
+      "minimum": 0.0
+    },
+    "structuredRubric": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "solutionExplanationMarkdown": {
+      "type": "string",
+      "minLength": 10
+    },
+    "estimatedTimeSeconds": {
+      "type": "integer",
+      "minimum": 15,
+      "maximum": 1800
+    },
+    "maxPoints": {
+      "type": "number",
+      "minimum": 0.1,
+      "maximum": 100.0
+    },
+    "negativeMarkingWeight": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "options": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 5,
+      "items": {
+        "$ref": "#/$defs/QuestionOptionInput"
+      }
+    },
+    "provenance": {
+      "$ref": "#/$defs/QuestionProvenanceInput"
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    }
+  },
+  "if": {
+    "properties": {
+      "hasVisualDiagram": {
+        "const": true
+      }
+    },
+    "required": ["hasVisualDiagram"]
+  },
+  "then": {
+    "required": ["altTextDescription"],
+    "properties": {
+      "altTextDescription": {
+        "type": "string",
+        "minLength": 10
+      }
+    }
+  },
+  "$defs": {
+    "QuestionOptionInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "optionKey",
+        "displayOrder",
+        "contentMarkdown",
+        "isCorrect",
+        "trainingEligible"
+      ],
+      "properties": {
+        "optionKey": {
+          "type": "string",
+          "enum": ["A", "B", "C", "D", "E"]
+        },
+        "displayOrder": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "contentMarkdown": {
+          "type": "string",
+          "minLength": 1
+        },
+        "contentLatex": {
+          "type": ["string", "null"]
+        },
+        "isCorrect": {
+          "type": "boolean"
+        },
+        "distractorRationale": {
+          "type": ["string", "null"]
+        },
+        "trainingEligible": {
+          "type": "boolean",
+          "const": false
+        }
+      }
+    },
+    "QuestionProvenanceInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceType",
+        "licenseClassification",
+        "copyrightHolder",
+        "sourceReference",
+        "authorId",
+        "reviewerId",
+        "verificationStatus",
+        "trainingEligible"
+      ],
+      "properties": {
+        "sourceType": {
+          "type": "string",
+          "enum": [
+            "ORIGINAL_AUTHORED",
+            "PUBLIC_DOMAIN_PAST_PAPER",
+            "LICENSED_PUBLISHER_BANK",
+            "SME_CURATED_SYNTHETIC"
+          ]
+        },
+        "licenseClassification": {
+          "type": "string",
+          "enum": [
+            "PROPRIETARY_INTERNAL",
+            "CC_BY_SA_4_0",
+            "PUBLIC_DOMAIN",
+            "COMMERCIAL_LICENSED"
+          ]
+        },
+        "copyrightHolder": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 160
+        },
+        "sourceReference": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 255
+        },
+        "authorId": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 128
+        },
+        "reviewerId": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 128
+        },
+        "verificationStatus": {
+          "type": "string",
+          "enum": ["PENDING", "VERIFIED", "REJECTED", "REVOKED"]
+        },
+        "trainingEligible": {
+          "type": "boolean",
+          "const": false
+        }
+      }
+    }
+  }
+}

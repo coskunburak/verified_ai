@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/exam/v1/assessment-assembly-request.schema.json",
+  "title": "AssessmentAssemblyRequest",
+  "description": "Deterministic assessment assembly request with seed and optional accessibility accommodation overrides (Sprint 9.3).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "userId",
+    "blueprintId",
+    "assemblySeed",
+    "trainingEligible"
+  ],
+  "properties": {
+    "userId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "candidateProfileId": {
+      "type": ["string", "null"],
+      "format": "uuid"
+    },
+    "blueprintId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "assemblySeed": {
+      "type": "string",
+      "minLength": 4,
+      "maxLength": 128
+    },
+    "overrideTimeMultiplier": {
+      "type": ["number", "null"],
+      "minimum": 1.0,
+      "maximum": 2.0
+    },
+    "highContrastMode": {
+      "type": ["boolean", "null"]
+    },
+    "screenReaderOptimized": {
+      "type": ["boolean", "null"]
+    },
+    "extendedBreakPrompts": {
+      "type": ["boolean", "null"]
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    }
+  }
+}

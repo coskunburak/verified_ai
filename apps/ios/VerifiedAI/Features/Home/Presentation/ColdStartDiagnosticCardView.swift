@@ -8,13 +8,13 @@ public struct ColdStartDiagnosticCardView: View {
     }
 
     public var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 8) {
+        AppSurfaceCard(isSelected: true) {
+            HStack(spacing: SpacingTokens.xs) {
                 badgePill
                 Spacer()
                 if viewModel.hasPendingOfflineSync {
                     Label(LocalizedStringKey("cold_start.card.cta.offline_pending"), systemImage: "icloud.and.arrow.up")
-                        .font(.caption2.weight(.semibold))
+                        .font(TypographyTokens.microLabel)
                         .foregroundStyle(ColorTokens.warning)
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
@@ -22,33 +22,22 @@ public struct ColdStartDiagnosticCardView: View {
             }
 
             Text(LocalizedStringKey("cold_start.card.title"))
-                .font(.headline)
-                .foregroundStyle(Color.primary)
+                .font(TypographyTokens.cardTitle)
+                .foregroundStyle(ColorTokens.textPrimary)
 
             if let result = viewModel.latestResult {
                 calibratedSummaryView(result: result)
             } else {
                 Text(LocalizedStringKey("cold_start.card.subtitle"))
-                    .font(.subheadline)
-                    .foregroundStyle(Color.secondary)
+                    .font(TypographyTokens.body)
+                    .foregroundStyle(ColorTokens.textSecondary)
             }
 
             if viewModel.requiresRevalidation {
-                HStack(alignment: .top, spacing: 8) {
-                    Image(systemName: "leaf.arrow.triangle.circlepath")
-                        .foregroundStyle(Color.teal)
-                        .accessibilityHidden(true)
-                    Text(LocalizedStringKey("cold_start.revalidation.banner"))
-                        .font(.caption)
-                        .foregroundStyle(Color.primary)
-                }
-                .padding(10)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.teal.opacity(0.12))
-                .clipShape(RoundedRectangle(cornerRadius: 10))
+                AppNoticeBanner("cold_start.revalidation.banner", systemImage: "leaf.arrow.triangle.circlepath", tone: .action)
             }
 
-            HStack(spacing: 10) {
+            HStack(spacing: SpacingTokens.sm) {
                 Button {
                     viewModel.startDiagnosticFlow()
                 } label: {
@@ -56,10 +45,8 @@ public struct ColdStartDiagnosticCardView: View {
                         LocalizedStringKey(viewModel.latestResult == nil ? "cold_start.card.cta.start" : "cold_start.card.cta.retake"),
                         systemImage: viewModel.latestResult == nil ? "sparkles" : "arrow.clockwise"
                     )
-                    .font(.subheadline.weight(.semibold))
-                    .frame(maxWidth: .infinity, minHeight: 44)
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(AppPrimaryButtonStyle())
                 .accessibilityIdentifier("coldStart.card.cta")
 
                 if viewModel.hasPendingOfflineSync {
@@ -69,20 +56,11 @@ public struct ColdStartDiagnosticCardView: View {
                         }
                     } label: {
                         Text(LocalizedStringKey("cold_start.error.retry"))
-                            .font(.subheadline.weight(.semibold))
-                            .frame(minHeight: 44)
                     }
-                    .buttonStyle(.bordered)
+                    .buttonStyle(AppSecondaryButtonStyle())
                     .accessibilityIdentifier("coldStart.card.retrySync")
                 }
             }
-        }
-        .padding(16)
-        .background(Color(UIColor.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .overlay {
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(Color.accentColor.opacity(0.24), lineWidth: 1)
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("coachHub.coldStartDiagnosticCard")
@@ -90,50 +68,45 @@ public struct ColdStartDiagnosticCardView: View {
 
     private var badgePill: some View {
         let badgeKey: String
-        let badgeColor: Color
+        let tone: AppBadgeTone
         if viewModel.requiresRevalidation {
             badgeKey = "cold_start.card.badge.revalidation"
-            badgeColor = .teal
+            tone = .action
         } else if let result = viewModel.latestResult {
             badgeKey = result.confidenceTier == .preliminary
                 ? "cold_start.card.badge.preliminary"
                 : "cold_start.card.badge.calibrated"
-            badgeColor = result.confidenceTier == .preliminary ? .orange : .green
+            tone = result.confidenceTier == .preliminary ? .warning : .success
         } else {
             badgeKey = "cold_start.card.badge.exploration"
-            badgeColor = .accentColor
+            tone = .action
         }
 
-        return Text(LocalizedStringKey(badgeKey))
-            .font(.caption.weight(.semibold))
-            .padding(.horizontal, 10)
-            .padding(.vertical, 5)
-            .background(badgeColor.opacity(0.16))
-            .foregroundStyle(badgeColor)
-            .clipShape(Capsule())
+        return AppStatusBadge(LocalizedStringKey(badgeKey), tone: tone)
     }
 
     @ViewBuilder
     private func calibratedSummaryView(result: ColdStartDiagnosticResult) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: SpacingTokens.xs) {
             HStack {
                 Text(LocalizedStringKey(result.baselineTier.localizationKey))
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(Color.primary)
+                    .font(TypographyTokens.cardTitle)
+                    .foregroundStyle(ColorTokens.textPrimary)
                 Spacer()
                 Text("\(result.correctCount)/\(result.totalItems)")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(Color.accentColor)
+                    .font(TypographyTokens.sectionTitle)
+                    .monospacedDigit()
+                    .foregroundStyle(ColorTokens.action)
             }
 
             Text(LocalizedStringKey(result.confidenceTier.localizationKey))
-                .font(.caption)
-                .foregroundStyle(Color.secondary)
+                .font(TypographyTokens.caption)
+                .foregroundStyle(ColorTokens.textSecondary)
 
             if result.goalConflictResolved {
                 Label(LocalizedStringKey("cold_start.conflict.resolved"), systemImage: "calendar.badge.clock")
-                    .font(.caption2.weight(.medium))
-                    .foregroundStyle(Color.teal)
+                    .font(TypographyTokens.microLabel)
+                    .foregroundStyle(ColorTokens.action)
             }
         }
     }

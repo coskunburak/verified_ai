@@ -27,40 +27,42 @@ public struct DualRingSkillNodeView: View {
             ZStack {
                 // Outer Ring: R_{u,s}(t) Retention Probability
                 Circle()
-                    .stroke(Color.teal.opacity(0.2), lineWidth: 6)
+                    .stroke(ColorTokens.successSoft, lineWidth: 6)
                     .frame(width: 76, height: 76)
 
                 Circle()
                     .trim(from: 0, to: CGFloat(metrics.retentionProbability))
-                    .stroke(Color.teal, style: StrokeStyle(lineWidth: 6, lineCap: .round))
+                    .stroke(ColorTokens.success, style: StrokeStyle(lineWidth: 6, lineCap: .round))
                     .rotationEffect(.degrees(-90))
                     .frame(width: 76, height: 76)
 
                 // Inner Ring: M_{u,s} Posterior Mastery Probability
                 Circle()
-                    .stroke(Color.indigo.opacity(0.2), lineWidth: 8)
+                    .stroke(ColorTokens.actionSoft, lineWidth: 8)
                     .frame(width: 56, height: 56)
 
                 Circle()
                     .trim(from: 0, to: CGFloat(metrics.posteriorMasteryProbability))
-                    .stroke(Color.indigo, style: StrokeStyle(lineWidth: 8, lineCap: .round))
+                    .stroke(ColorTokens.action, style: StrokeStyle(lineWidth: 8, lineCap: .round))
                     .rotationEffect(.degrees(-90))
                     .frame(width: 56, height: 56)
 
                 // Center percentage text
                 Text("\(Int((metrics.posteriorMasteryProbability * 100).rounded()))%")
-                    .font(.caption2.bold())
-                    .foregroundStyle(.primary)
+                    .font(TypographyTokens.microLabel)
+                    .monospacedDigit()
+                    .foregroundStyle(ColorTokens.textPrimary)
 
                 // Active Exam Trap Radar Badge
                 if activeExamTrapCount > 0 {
                     ZStack {
                         Circle()
-                            .fill(Color.orange)
+                            .fill(ColorTokens.accent)
                             .frame(width: 24, height: 24)
                         Text("\(activeExamTrapCount)")
-                            .font(.caption2.bold())
-                            .foregroundStyle(.white)
+                            .font(TypographyTokens.microLabel)
+                            .monospacedDigit()
+                            .foregroundStyle(ColorTokens.actionForeground)
                     }
                     .offset(x: 28, y: -28)
                     .accessibilityIdentifier("dual_ring_active_trap_badge_\(skillNodeId)")

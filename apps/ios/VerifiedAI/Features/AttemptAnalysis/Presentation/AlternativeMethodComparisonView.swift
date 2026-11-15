@@ -28,15 +28,15 @@ struct AlternativeMethodComparisonView: View {
                     if let analysis = attempt.analysis {
                         if analysis.firstWrongStepIndex != nil || analysis.outcome == .error {
                             Label("attempt.methods.learnerInvalid", systemImage: "xmark.circle")
-                                .foregroundColor(.red)
+                                .foregroundColor(ColorTokens.danger)
                                 .accessibilityIdentifier("attempt.methods.learnerInvalid")
                         } else if analysis.outcome == .progress {
                             Label("attempt.methods.learnerVerified", systemImage: "checkmark.circle")
-                                .foregroundColor(.green)
+                                .foregroundColor(ColorTokens.success)
                                 .accessibilityIdentifier("attempt.methods.learnerVerified")
                         } else {
                             Label("attempt.methods.learnerNeedsReview", systemImage: "questionmark.circle")
-                                .foregroundColor(.orange)
+                                .foregroundColor(ColorTokens.warning)
                                 .accessibilityIdentifier("attempt.methods.learnerNeedsReview")
                         }
                     }
@@ -65,16 +65,37 @@ struct AlternativeMethodComparisonView: View {
                     ForEach(c.domainCautions, id: \.self) { Label(LocalizedStringKey("attempt.methods." + $0), systemImage: "exclamationmark.triangle") }
                 }
                 ForEach(method.indices(compact: compact), id: \.self) { index in
-                    VStack(alignment: .leading) {
-                        if let reasons = method.stepReasons { Text(LocalizedStringKey("attempt.methods.step." + reasons[index])).font(.callout) }
+                    VStack(alignment: .leading, spacing: SpacingTokens.xs) {
+                        if let reasons = method.stepReasons {
+                            Text(LocalizedStringKey("attempt.methods.step." + reasons[index]))
+                                .font(TypographyTokens.caption.weight(.semibold))
+                                .foregroundStyle(ColorTokens.textSecondary)
+                        }
                         math(method.steps[index])
-                    }.accessibilityIdentifier("attempt.methods.step.\(index)")
+                    }
+                    .padding(SpacingTokens.compact)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(ColorTokens.surfaceElevated, in: RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                            .stroke(ColorTokens.borderSubtle, lineWidth: 1)
+                    )
+                    .accessibilityIdentifier("attempt.methods.step.\(index)")
                 }
                 Label("attempt.methods.exactEvidence", systemImage: "checkmark.shield")
+                    .foregroundStyle(ColorTokens.success)
                     .accessibilityIdentifier("attempt.methods.evidence")
-                Text("attempt.methods.heuristic").font(.caption)
+                Text("attempt.methods.heuristic")
+                    .font(TypographyTokens.caption)
+                    .foregroundStyle(ColorTokens.textSecondary)
             }
         }
+        .padding(SpacingTokens.md)
+        .background(ColorTokens.surface, in: RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous)
+                .stroke(ColorTokens.borderSubtle, lineWidth: 1)
+        )
         .onAppear { selected = evidence.methods.first?.id ?? "" }
         .onChange(of: evidence.executionId) { _, _ in selected = evidence.methods.first?.id ?? "" }
     }

@@ -2,18 +2,14 @@ package com.verifiedai.exam.infrastructure.privacy;
 
 import com.verifiedai.exam.application.CandidateProfileRepository;
 import com.verifiedai.exam.application.ExamRepository;
+import com.verifiedai.exam.domain.AssembledAssessment;
+import com.verifiedai.exam.domain.AssembledAssessmentItem;
+import com.verifiedai.exam.domain.AssembledAssessmentRepository;
 import com.verifiedai.exam.domain.CandidateProfileModels.CandidateHorizonHistoryEntry;
 import com.verifiedai.exam.domain.CandidateProfileModels.CandidateProfileRecord;
 import com.verifiedai.exam.domain.CandidateProfileModels.SyllabusUploadRecord;
 import com.verifiedai.exam.domain.ExamModels.StudentExamTargetRecord;
 import com.verifiedai.sharedkernel.privacy.AccountDataLifecycleContributor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-
 import java.time.Clock;
 import java.time.Instant;
 import java.util.LinkedHashMap;
@@ -22,10 +18,17 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 /**
  * GDPR / KVKK Article 17 lifecycle contributor for exam targets, pinned snapshots,
- * candidate profiles, horizon history, and ephemeral syllabus ingestion metadata.
+ * candidate profiles, horizon history, ephemeral syllabus ingestion metadata,
+ * and assembled assessments.
  */
 @Component
 public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleContributor {
@@ -35,26 +38,34 @@ public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleCont
 
     private final ExamRepository examRepository;
     private final CandidateProfileRepository candidateProfileRepository;
+    private final AssembledAssessmentRepository assembledAssessmentRepository;
     private final Clock clock;
 
     @Autowired
     public ExamPrivacyLifecycleContributor(
             ExamRepository examRepository,
             ObjectProvider<CandidateProfileRepository> candidateProfileRepositoryProvider,
+            ObjectProvider<AssembledAssessmentRepository> assembledAssessmentRepositoryProvider,
             ObjectProvider<Clock> clockProvider
     ) {
         this(
                 examRepository,
                 candidateProfileRepositoryProvider.getIfAvailable(),
+                assembledAssessmentRepositoryProvider.getIfAvailable(),
                 clockProvider.getIfAvailable(Clock::systemUTC)
         );
     }
 
     public ExamPrivacyLifecycleContributor(
             ExamRepository examRepository,
-            CandidateProfileRepository candidateProfileRepository
+            CandidateProfileRepository candidateProfileRepository,
+            AssembledAssessmentRepository assembledAssessmentRepository,
+            Clock clock
     ) {
-        this(examRepository, candidateProfileRepository, Clock.systemUTC());
+        this.examRepository = Objects.requireNonNull(examRepository, "examRepository cannot be null");
+        this.candidateProfileRepository = candidateProfileRepository;
+        this.assembledAssessmentRepository = assembledAssessmentRepository;
+        this.clock = Objects.requireNonNull(clock, "clock cannot be null");
     }
 
     public ExamPrivacyLifecycleContributor(
@@ -62,13 +73,18 @@ public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleCont
             CandidateProfileRepository candidateProfileRepository,
             Clock clock
     ) {
-        this.examRepository = Objects.requireNonNull(examRepository, "examRepository cannot be null");
-        this.candidateProfileRepository = candidateProfileRepository;
-        this.clock = Objects.requireNonNull(clock, "clock cannot be null");
+        this(examRepository, candidateProfileRepository, null, clock);
+    }
+
+    public ExamPrivacyLifecycleContributor(
+            ExamRepository examRepository,
+            CandidateProfileRepository candidateProfileRepository
+    ) {
+        this(examRepository, candidateProfileRepository, null, Clock.systemUTC());
     }
 
     public ExamPrivacyLifecycleContributor(ExamRepository examRepository) {
-        this(examRepository, null, Clock.systemUTC());
+        this(examRepository, null, null, Clock.systemUTC());
     }
 
     @Override
@@ -126,6 +142,15 @@ public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleCont
             exportMap.put("syllabusUploads", exportedUploads);
         }
 
+        if (assembledAssessmentRepository != null) {
+            List<AssembledAssessment> assembled = assembledAssessmentRepository.findByUserId(userId, EXPORT_HISTORY_LIMIT);
+            List<Map<String, Object>> exportedAssembled = assembled.stream()
+                    .map(ExamPrivacyLifecycleContributor::mapAssembledAssessment)
+                    .toList();
+            exportMap.put("assembledAssessmentCount", exportedAssembled.size());
+            exportMap.put("assembledAssessments", exportedAssembled);
+        }
+
         exportMap.put("llmTokensUsed", 0);
         exportMap.put("trainingEligible", false);
         return exportMap;
@@ -133,14 +158,19 @@ public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleCont
 
     @Override
     public void deleteUserData(UUID userId, Instant now) {
+        // FK-safe order: assembled assessments & items -> candidate profiles -> exam targets
+        int deletedAssembled = assembledAssessmentRepository == null
+                ? 0
+                : assembledAssessmentRepository.deleteByUserId(userId);
         int deletedCandidateRows = candidateProfileRepository == null
                 ? 0
                 : candidateProfileRepository.deleteAllCandidateDataForUser(userId);
         int deletedTargets = examRepository.deleteTargetsByUserId(userId);
         LOG.info(
-                "Privacy purge completed for exam module: deletedTargets={} deletedCandidateRows={}",
-                deletedTargets,
-                deletedCandidateRows
+                "Privacy purge completed for exam module: deletedAssembled={} deletedCandidateRows={} deletedTargets={}",
+                deletedAssembled,
+                deletedCandidateRows,
+                deletedTargets
         );
     }
 
@@ -224,6 +254,45 @@ public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleCont
         m.put("expiresAt", upload.expiresAt().toString());
         m.put("confirmedAt", upload.confirmedAt() != null ? upload.confirmedAt().toString() : null);
         m.put("createdAt", upload.createdAt().toString());
+        return m;
+    }
+
+    private static Map<String, Object> mapAssembledAssessment(AssembledAssessment a) {
+        Map<String, Object> m = new LinkedHashMap<>();
+        m.put("assessmentId", a.id().toString());
+        m.put("blueprintId", a.blueprintId().toString());
+        m.put("blueprintCode", a.blueprintCode());
+        m.put("examDefinitionId", a.examDefinitionId().toString());
+        m.put("examVersionNumber", a.examVersionNumber());
+        m.put("assemblySeed", a.assemblySeed());
+        m.put("reproducibilityHash", a.reproducibilityHash());
+        m.put("totalQuestionCount", a.totalQuestionCount());
+        m.put("baseDurationSeconds", a.baseDurationSeconds());
+        m.put("timeMultiplier", a.timeMultiplier());
+        m.put("effectiveDurationSeconds", a.effectiveDurationSeconds());
+        m.put("status", a.status().name());
+        m.put("assembledAt", a.assembledAt().toString());
+        m.put("expiresAt", a.expiresAt().toString());
+        m.put("trainingEligible", false);
+        List<Map<String, Object>> itemList = a.items().stream()
+                .map(ExamPrivacyLifecycleContributor::mapAssembledItem)
+                .toList();
+        m.put("items", itemList);
+        return m;
+    }
+
+    private static Map<String, Object> mapAssembledItem(AssembledAssessmentItem item) {
+        Map<String, Object> m = new LinkedHashMap<>();
+        m.put("itemId", item.id().toString());
+        m.put("questionItemId", item.questionItemId().toString());
+        m.put("questionCode", item.questionCode());
+        m.put("sequenceNumber", item.sequenceNumber());
+        m.put("topicCode", item.topicCode());
+        m.put("difficultyBand", item.difficultyBand().name());
+        m.put("cognitiveLevel", item.cognitiveLevel().name());
+        m.put("optionOrder", item.optionOrder());
+        m.put("allocatedPoints", item.allocatedPoints());
+        m.put("trainingEligible", false);
         return m;
     }
 }

@@ -332,6 +332,8 @@ public final class CandidateProfileViewModel: ObservableObject {
                 errorLocalizationKey = "exam.syllabus.error.media_unsupported"
             case .disambiguationRequired:
                 errorLocalizationKey = "exam.syllabus.error.disambiguation_required"
+            case .poolInsufficient:
+                errorLocalizationKey = "exam.assembly.error.pool_insufficient"
             case .unexpected(let msg):
                 errorMessage = msg
             }

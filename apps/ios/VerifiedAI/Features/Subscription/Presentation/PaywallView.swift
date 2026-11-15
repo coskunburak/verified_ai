@@ -8,6 +8,7 @@ struct PaywallView: View {
         NavigationStack {
             content
                 .navigationTitle("Subscription")
+                .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .topBarLeading) {
                         Button {
@@ -38,13 +39,15 @@ struct PaywallView: View {
         switch viewModel.state {
         case .idle, .loadingProducts:
             ProgressView()
+                .tint(ColorTokens.action)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(ColorTokens.background)
+                .background(ColorTokens.canvas.ignoresSafeArea())
         case .ready, .cancelled, .failed:
             productList
         case .purchasing, .verifyingDeviceTransactions, .submittingToBackend, .refreshingEntitlement:
             VStack(spacing: SpacingTokens.md) {
                 ProgressView()
+                    .tint(ColorTokens.action)
                 if let message = viewModel.message {
                     Text(message)
                         .font(TypographyTokens.caption)
@@ -52,7 +55,7 @@ struct PaywallView: View {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(ColorTokens.background)
+            .background(ColorTokens.canvas.ignoresSafeArea())
         case .pending:
             statusView(icon: "hourglass", title: "Purchase pending", actionTitle: "Done") {
                 dismiss()
@@ -73,67 +76,87 @@ struct PaywallView: View {
     }
 
     private var productList: some View {
-        List {
-            ForEach(viewModel.products) { product in
-                VStack(alignment: .leading, spacing: SpacingTokens.sm) {
-                    HStack(alignment: .firstTextBaseline) {
-                        Text(product.displayName)
-                            .font(TypographyTokens.body.weight(.semibold))
-                            .foregroundStyle(ColorTokens.textPrimary)
-                        Spacer()
-                        Text(product.displayPrice)
-                            .font(TypographyTokens.body)
+        ScrollView {
+            VStack(alignment: .leading, spacing: SpacingTokens.lg) {
+                AppSurfaceCard {
+                    HStack(spacing: SpacingTokens.compact) {
+                        Image(systemName: "checkmark.seal.fill")
+                            .font(.title2.weight(.semibold))
                             .foregroundStyle(ColorTokens.action)
+                            .frame(width: 44, height: 44)
+                            .background(ColorTokens.actionSoft)
+                            .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Verified AI Pro")
+                                .font(TypographyTokens.sectionTitle)
+                                .foregroundStyle(ColorTokens.textPrimary)
+                            Text("Full formal verification, unlimited tutoring, and exam blueprint drills.")
+                                .font(TypographyTokens.caption)
+                                .foregroundStyle(ColorTokens.textSecondary)
+                        }
                     }
-                    Text(product.description)
-                        .font(TypographyTokens.caption)
-                        .foregroundStyle(ColorTokens.textSecondary)
-                    if let period = product.subscriptionPeriod {
-                        Text(period)
+                }
+
+                if let message = viewModel.message {
+                    AppNoticeBanner(LocalizedStringKey(stringLiteral: message), systemImage: "info.circle", tone: .warning)
+                }
+
+                ForEach(viewModel.products) { product in
+                    AppSurfaceCard {
+                        HStack(alignment: .firstTextBaseline) {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(product.displayName)
+                                    .font(TypographyTokens.sectionTitle)
+                                    .foregroundStyle(ColorTokens.textPrimary)
+                                if let period = product.subscriptionPeriod {
+                                    Text(period)
+                                        .font(TypographyTokens.caption)
+                                        .foregroundStyle(ColorTokens.textSecondary)
+                                }
+                            }
+                            Spacer()
+                            Text(product.displayPrice)
+                                .font(TypographyTokens.metricValue)
+                                .foregroundStyle(ColorTokens.action)
+                        }
+
+                        Text(product.description)
                             .font(TypographyTokens.caption)
                             .foregroundStyle(ColorTokens.textSecondary)
+                            .fixedSize(horizontal: false, vertical: true)
+
+                        Button {
+                            Task { await viewModel.purchase(product) }
+                        } label: {
+                            Label("Choose \(product.displayName)", systemImage: "cart.badge.plus")
+                        }
+                        .buttonStyle(AppPrimaryButtonStyle())
+                        .disabled(viewModel.state.isBusy)
                     }
-                    Button {
-                        Task { await viewModel.purchase(product) }
-                    } label: {
-                        Label("Choose \(product.displayName)", systemImage: "cart.badge.plus")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .disabled(viewModel.state.isBusy)
                 }
-                .padding(.vertical, SpacingTokens.sm)
             }
+            .padding(SpacingTokens.lg)
         }
-        .scrollContentBackground(.hidden)
-        .background(ColorTokens.background)
-        .safeAreaInset(edge: .bottom) {
-            if let message = viewModel.message {
-                Text(message)
-                    .font(TypographyTokens.caption)
-                    .foregroundStyle(ColorTokens.textSecondary)
-                    .padding(SpacingTokens.md)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(ColorTokens.surface)
-            }
-        }
+        .background(ColorTokens.canvas.ignoresSafeArea())
     }
 
     private func statusView(icon: String, title: String, actionTitle: String, action: @escaping () -> Void) -> some View {
         VStack(alignment: .leading, spacing: SpacingTokens.md) {
-            Label(title, systemImage: icon)
-                .font(TypographyTokens.body.weight(.semibold))
-                .foregroundStyle(ColorTokens.textPrimary)
-            if let message = viewModel.message {
-                Text(message)
-                    .font(TypographyTokens.caption)
-                    .foregroundStyle(ColorTokens.textSecondary)
+            AppSurfaceCard {
+                Label(title, systemImage: icon)
+                    .font(TypographyTokens.sectionTitle)
+                    .foregroundStyle(ColorTokens.textPrimary)
+                if let message = viewModel.message {
+                    Text(message)
+                        .font(TypographyTokens.caption)
+                        .foregroundStyle(ColorTokens.textSecondary)
+                }
+                Button(actionTitle, action: action)
+                    .buttonStyle(AppPrimaryButtonStyle())
             }
-            Button(actionTitle, action: action)
-                .buttonStyle(.borderedProminent)
         }
         .padding(SpacingTokens.lg)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(ColorTokens.background)
+        .background(ColorTokens.canvas.ignoresSafeArea())
     }
 }

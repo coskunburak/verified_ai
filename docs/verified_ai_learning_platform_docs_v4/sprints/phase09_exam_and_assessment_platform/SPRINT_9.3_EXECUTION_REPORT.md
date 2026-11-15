@@ -1,0 +1,24 @@
+# Sprint 9.3 Execution Report — Question Bank, Blueprint, and Assessment Assembly Rules
+
+## Executive Summary
+- **Status:** `LOCAL_ACCEPTANCE_PASSED` (`2026-11-15`; production rollout remains safely feature-flagged behind `verifiedai.exam.question-bank-enabled: false`, `verifiedai.exam.blueprint-management-enabled: false`, and `verifiedai.exam.assessment-assembly-enabled: false` in `services/api/src/main/resources/application.yml` per `ADR-011`).
+- Sprint 9.3 delivers the `V056` question bank, SME provenance verification, blueprint distribution rules, and deterministic seed-driven assessment assembly engine across Spring Modulith Java 21 (`com.verifiedai.exam`), Draft 2020-12 JSON schemas and byte-identical OpenAPI 3.1 contracts (`/v1/exams/**` and `/api/v1/exams/**`), and native Swift 6 iOS flows (`Features/Exam/`).
+
+## Implemented Invariants & Guardrails
+- **Question Bank & SME Provenance (`QuestionBankItem`, `QuestionProvenanceRecord`):** Enforces 4–5 options with exactly 1 correct answer (`SINGLE_CHOICE_5_OPTION` / `SINGLE_CHOICE_4_OPTION`), visual diagram accessibility alt-text (`>= 15` chars when `hasVisualDiagram = true`, `422 EXAM_QUESTION_ALT_TEXT_REQUIRED`), SME author/reviewer separation (`authorId != reviewerId`), SHA-256 `provenance_hash` (`^[0-9a-f]{64}$`), and `VERIFIED` status before `PUBLISHED` transition (`422 EXAM_QUESTION_PROVENANCE_UNVERIFIED`).
+- **Assessment Blueprint Conservation (`AssessmentBlueprint`, `BlueprintTopicRule`):** Enforces difficulty basis-point sum conservation (`easyTargetBps + mediumTargetBps + hardTargetBps + expertTargetBps == 10000`, `422 EXAM_BLUEPRINT_DIFFICULTY_SUM_INVALID`), topic min/max bounds (`sum(minQuestionCount) <= totalQuestionCount <= sum(maxQuestionCount)` and `sum(targetQuestionCount) == totalQuestionCount`, `422 EXAM_BLUEPRINT_TOPIC_BOUNDS_INVALID`), and active exam version pinning.
+- **Deterministic Seed-Driven Assembly (`DeterministicAssessmentAssemblyEngine`):** Pure Java 21 `$0.00` LLM spend constraint-satisfaction selector using `SHA-256(assemblySeed + ":" + blueprintId + ":" + examVersionNumber + ":" + topicCode + ":" + slotIndex)`. Enforces recently seen cooldown window (`allowRecentlySeenCooldownDays`), applies `V055` candidate extra-time multipliers (`ceil(baseDurationSeconds * timeMultiplier)`), computes SHA-256 `reproducibilityHash`, and supports idempotent `(user_id, blueprint_id, assembly_seed)` replay.
+- **Database & Privacy Hardening (`V056`, `ExamPrivacyLifecycleContributor`):** Enforces `CHECK (training_eligible = FALSE)` across all 5 Sprint 9.3 tables (`ADR-006`), seeds 12 published `TR_YKS_TYT_MATH` items (`60` options, `12` SME provenance records) and 2 active blueprints (`BP-TYT-MATH-DIAG-2026-V1`, `BP-TYT-MATH-DRILL-ALG-2026-V1`), and isolates user deletion so `deleteUserData(userId)` purges only that learner's assembled assessments while preserving global question bank and blueprint catalogs.
+- **Native Swift 6 iOS Experience:** Implements `ExamBlueprintAssemblyViewModel`, `ExamBlueprintAssemblyView`, `ExamOfflineSQLiteStore` (`cached_exam_blueprints` and user-scoped `cached_assembled_assessments`), and 16 neutral, non-stigmatizing EN/TR `Localizable.xcstrings` keys.
+
+## Verification Results Observed in Workspace Sandbox (`BypassSandbox: false`)
+- **Backend Unit, WebMvc, SQL Consistency, Privacy & Modulith/AI Boundary Suite:**
+  - Command: `mvn -f services/api/pom.xml -Dtest=V056MigrationSqlConsistencyTest,QuestionBankItemDomainTest,AssessmentBlueprintDomainTest,DeterministicAssessmentAssemblyEngineTest,ExamAssessmentAssemblyControllerTest,ExamPrivacyLifecycleContributorTest,ModularityTest,ModulithArchitectureTest,AiProviderBoundaryTest,RepositoryHierarchyTest test`
+  - Result: **24 / 24 test classes/cases passed, 0 failures, 0 errors, 0 skipped (`BUILD SUCCESS`).**
+- **Schemas, Negative Mutations, OpenAPI Mirrors & Localization:**
+  - `python3 scripts/quality/validate_json_schemas.py`: **PASS** (`Sprint 8.1..9.3 JSON schemas, negative mutations, OpenAPI 3.1 endpoints, and 321 EN/TR localizations verified`).
+  - `cmp -s packages/contracts/openapi/public-api.yaml packages/openapi/verified-ai-core-api.yaml`: **0 bytes diff.**
+  - `python3 scripts/quality/check_contracts.py`, `python3 scripts/quality/check_prompt_immutability.py --base-ref HEAD`, `bash scripts/quality/secret_scan.sh`, & `python3 scripts/quality/docs_check.py`: **PASS.**
+- **Swift 6 Compilation, Strict-Concurrency Typecheck & Runtime Verification:**
+  - `xcrun --sdk iphonesimulator swiftc -typecheck -strict-concurrency=complete` across all iOS Exam & Core sources, `ExamBlueprintAssemblyViewModelTests.swift`, `ExamOfflineSQLiteStoreTests.swift`, `CandidateProfileViewModelTests.swift`, `Sprint91ExamCatalogAndTargetTests.swift`, and `ExamCatalogUITests.swift`: **0 errors, 0 warnings.**
+  - Acceptance runner: `./scripts/quality/sprint_9_3_owner_acceptance.sh` completed cleanly and printed `LOCAL_ACCEPTANCE_PASSED`.

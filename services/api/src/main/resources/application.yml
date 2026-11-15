@@ -302,3 +302,6 @@ verifiedai:
     syllabus-similarity-threshold: ${VERIFIEDAI_EXAM_SYLLABUS_SIMILARITY_THRESHOLD:0.70}
     syllabus-live-ai-enabled: ${VERIFIEDAI_EXAM_SYLLABUS_LIVE_AI_ENABLED:false}
     default-jurisdiction: ${VERIFIEDAI_EXAM_DEFAULT_JURISDICTION:TR}
+    question-bank-enabled: ${VERIFIEDAI_EXAM_QUESTION_BANK_ENABLED:false}
+    blueprint-management-enabled: ${VERIFIEDAI_EXAM_BLUEPRINT_MANAGEMENT_ENABLED:false}
+    assessment-assembly-enabled: ${VERIFIEDAI_EXAM_ASSESSMENT_ASSEMBLY_ENABLED:false}

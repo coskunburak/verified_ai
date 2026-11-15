@@ -93,7 +93,7 @@ public struct StreakBadgeView: View {
         case .continuityPreservedToday:
             return ColorTokens.action
         case .freezeProtected:
-            return Color.indigo
+            return ColorTokens.action
         case .atRiskToday, .freshStartReady:
             return ColorTokens.textSecondary
         }
@@ -102,11 +102,11 @@ public struct StreakBadgeView: View {
     private var statusBackgroundColor: Color {
         switch streakStatus {
         case .activeVerifiedToday:
-            return ColorTokens.warning.opacity(0.14)
+            return ColorTokens.warningSoft
         case .continuityPreservedToday:
-            return ColorTokens.action.opacity(0.12)
+            return ColorTokens.actionSoft
         case .freezeProtected:
-            return Color.indigo.opacity(0.12)
+            return ColorTokens.actionSoft
         case .atRiskToday, .freshStartReady:
             return ColorTokens.surface
         }
@@ -119,9 +119,9 @@ public struct StreakBadgeView: View {
         case .continuityPreservedToday:
             return ColorTokens.action.opacity(0.25)
         case .freezeProtected:
-            return Color.indigo.opacity(0.25)
+            return ColorTokens.action.opacity(0.25)
         case .atRiskToday, .freshStartReady:
-            return ColorTokens.border
+            return ColorTokens.borderSubtle
         }
     }
 }

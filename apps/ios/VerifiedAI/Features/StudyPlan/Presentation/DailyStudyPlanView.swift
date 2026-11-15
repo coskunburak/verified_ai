@@ -17,7 +17,7 @@ public struct DailyStudyPlanView: View {
     public var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
+                VStack(alignment: .leading, spacing: SpacingTokens.md) {
                     if let summary = viewModel.summary {
                         planHeaderCard(summary: summary)
 
@@ -34,75 +34,62 @@ public struct DailyStudyPlanView: View {
                             .padding(.vertical, 32)
                     }
                 }
-                .padding(16)
+                .padding(SpacingTokens.lg)
             }
+            .background(ColorTokens.canvas)
             .navigationTitle(Text(LocalizedStringKey("coach.plan.title")))
             .navigationBarTitleDisplayMode(.inline)
         }
     }
 
     private func planHeaderCard(summary: DailyCoachSummaryModel) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+        AppSurfaceCard(elevated: true) {
             HStack {
                 Text(LocalizedStringKey("coach.plan.subtitle"))
-                    .font(.headline)
+                    .font(TypographyTokens.cardTitle)
+                    .foregroundStyle(ColorTokens.textPrimary)
                 Spacer()
-                Text("\(summary.budgetMinutes) dk")
-                    .font(.caption.weight(.bold))
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 4)
-                    .background(Color.accentColor.opacity(0.16))
-                    .foregroundColor(.accentColor)
-                    .clipShape(Capsule())
+                AppStatusBadge(verbatimTitle: "\(summary.budgetMinutes) dk", systemImage: "clock", tone: .action)
+                    .monospacedDigit()
             }
 
             Text(summary.briefingText)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+                .font(TypographyTokens.body)
+                .foregroundStyle(ColorTokens.textSecondary)
         }
-        .padding(14)
-        .background(Color(UIColor.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 
     private func taskRowCard(task: DailyCoachTaskModel) -> some View {
         let isExpanded = expandedTaskIds.contains(task.taskId)
 
-        return VStack(alignment: .leading, spacing: 10) {
+        return AppSurfaceCard {
             HStack(alignment: .center) {
-                Text(taskBlockLabel(task.taskType))
-                    .font(.caption.weight(.semibold))
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Color.accentColor.opacity(0.14))
-                    .foregroundColor(.accentColor)
-                    .clipShape(Capsule())
+                AppStatusBadge(taskBlockLabel(task.taskType), tone: .action)
 
                 Spacer()
 
                 Text("\(task.estimatedMinutes) dk")
-                    .font(.caption.weight(.medium))
-                    .foregroundColor(.secondary)
+                    .font(TypographyTokens.caption.weight(.medium))
+                    .monospacedDigit()
+                    .foregroundStyle(ColorTokens.textSecondary)
 
                 statusBadge(task.status)
             }
 
             Text(task.targetSkillCode)
-                .font(.subheadline.weight(.semibold))
-                .foregroundColor(.primary)
+                .font(TypographyTokens.cardTitle)
+                .foregroundStyle(ColorTokens.textPrimary)
 
-            ScrollView(.horizontal, showsIndicators: false) {
-                NativeMathLabel(
-                    latex: task.promptPreviewLatex,
-                    fallback: task.promptPreviewLatex,
-                    pointSize: 16
-                )
-                .fixedSize()
+            AppFormulaBox(accentColor: ColorTokens.stepHighlight) {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    NativeMathLabel(
+                        latex: task.promptPreviewLatex,
+                        fallback: task.promptPreviewLatex,
+                        pointSize: 16
+                    )
+                    .fixedSize()
+                }
             }
-            .padding(10)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color(UIColor.tertiarySystemBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 10))
 
             Button {
                 if isExpanded {
@@ -112,55 +99,55 @@ public struct DailyStudyPlanView: View {
                 }
             } label: {
                 HStack(spacing: 6) {
-                    Image(systemName: isExpanded ? "chevron.up" : "info.circle")
+                    Image(systemName: isExpanded ? "chevron.up" : "questionmark.circle.fill")
                     Text(LocalizedStringKey("coach.plan.why_this_task"))
-                        .font(.caption.weight(.semibold))
+                        .font(TypographyTokens.caption.weight(.semibold))
                 }
-                .foregroundColor(.accentColor)
+                .foregroundStyle(ColorTokens.stepHighlight)
+                .padding(.horizontal, SpacingTokens.sm)
                 .frame(minHeight: 36)
+                .background(ColorTokens.stepHighlightSoft)
+                .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.sm, style: .continuous))
             }
             .buttonStyle(.plain)
 
             if isExpanded {
                 Text(task.whyThisTaskRationale)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .padding(10)
+                    .font(TypographyTokens.caption)
+                    .foregroundStyle(ColorTokens.textPrimary)
+                    .padding(SpacingTokens.compact)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color(UIColor.tertiarySystemBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .background(ColorTokens.stepHighlightSoft)
+                    .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                            .stroke(ColorTokens.stepHighlight.opacity(0.24), lineWidth: 1)
+                    )
             }
 
             if task.status == .pending {
-                HStack(spacing: 10) {
-                    Button {
-                        onSelectTask(task)
-                        Task {
-                            await viewModel.completeTask(taskId: task.taskId)
-                        }
-                    } label: {
-                        Label(LocalizedStringKey("coach.plan.complete_task_cta"), systemImage: "checkmark.circle.fill")
-                            .font(.subheadline.weight(.semibold))
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 44)
+                Button {
+                    onSelectTask(task)
+                    Task {
+                        await viewModel.completeTask(taskId: task.taskId)
                     }
-                    .buttonStyle(.borderedProminent)
+                } label: {
+                    Label(LocalizedStringKey("coach.plan.complete_task_cta"), systemImage: "checkmark.circle.fill")
                 }
+                .buttonStyle(AppPrimaryButtonStyle())
             }
         }
-        .padding(14)
-        .background(Color(UIColor.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 16))
         .opacity(task.status == .skipped ? 0.55 : 1.0)
     }
 
     private var downshiftCard: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        AppSurfaceCard(elevated: true) {
             Text(LocalizedStringKey("coach.downshift.title"))
-                .font(.subheadline.weight(.semibold))
+                .font(TypographyTokens.cardTitle)
+                .foregroundStyle(ColorTokens.textPrimary)
             Text(LocalizedStringKey("coach.downshift.subtitle"))
-                .font(.caption)
-                .foregroundColor(.secondary)
+                .font(TypographyTokens.caption)
+                .foregroundStyle(ColorTokens.textSecondary)
 
             Button {
                 Task {
@@ -168,17 +155,14 @@ public struct DailyStudyPlanView: View {
                 }
             } label: {
                 Label(LocalizedStringKey("coach.downshift.button"), systemImage: "clock.arrow.circlepath")
-                    .font(.subheadline.weight(.semibold))
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 44)
             }
-            .buttonStyle(.bordered)
-            .tint(.orange)
+            .buttonStyle(AppSecondaryButtonStyle())
             .accessibilityIdentifier("coach.plan.downshiftButton")
         }
-        .padding(14)
-        .background(Color.orange.opacity(0.10))
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .overlay(
+            RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous)
+                .stroke(ColorTokens.warning.opacity(0.45), lineWidth: 1)
+        )
     }
 
     private func taskBlockLabel(_ type: DailyCoachTaskType) -> LocalizedStringKey {
@@ -193,21 +177,19 @@ public struct DailyStudyPlanView: View {
     }
 
     private func statusBadge(_ status: DailyCoachTaskStatus) -> some View {
-        let color: Color
+        let tone: AppBadgeTone
         let labelKey: String
         switch status {
         case .completed:
-            color = .green
+            tone = .success
             labelKey = "coach.plan.status.completed"
         case .skipped:
-            color = .secondary
+            tone = .neutral
             labelKey = "coach.plan.status.skipped"
         case .pending:
-            color = .accentColor
+            tone = .action
             labelKey = "coach.plan.status.pending"
         }
-        return Text(LocalizedStringKey(labelKey))
-            .font(.caption2.weight(.semibold))
-            .foregroundColor(color)
+        return AppStatusBadge(LocalizedStringKey(labelKey), tone: tone)
     }
 }

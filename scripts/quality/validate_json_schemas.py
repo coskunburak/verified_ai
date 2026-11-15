@@ -892,6 +892,8 @@ def run_validation():
                 elif isinstance(val, str):
                     if "enum" in prop and val not in prop["enum"]:
                         errs.append(f"{k} invalid enum {val}")
+                    if "minLength" in prop and len(val) < prop["minLength"]:
+                        errs.append(f"{k} shorter than {prop['minLength']}")
                     if "maxLength" in prop and len(val) > prop["maxLength"]:
                         errs.append(f"{k} longer than {prop['maxLength']}")
             elif ptype == ["integer", "null"]:
@@ -908,6 +910,16 @@ def run_validation():
             elif ptype == ["number", "null"]:
                 if val is not None and (isinstance(val, bool) or not isinstance(val, (int, float))):
                     errs.append(f"{k} must be number or null")
+                elif val is not None and isinstance(val, (int, float)):
+                    if "minimum" in prop and val < prop["minimum"]:
+                        errs.append(f"{k} < {prop['minimum']}")
+                    if "maximum" in prop and val > prop["maximum"]:
+                        errs.append(f"{k} > {prop['maximum']}")
+            elif ptype == "object":
+                if not isinstance(val, dict):
+                    errs.append(f"{k} not object")
+                else:
+                    errs.extend(_validate_s89_object_keys(val, prop, defs))
             elif ptype == "boolean":
                 if not isinstance(val, bool):
                     errs.append(f"{k} not bool")
@@ -956,6 +968,12 @@ def run_validation():
                                 errs.append(f"{k} item not object")
                             else:
                                 errs.extend(_validate_s89_object_keys(item, defs[ref_name], defs))
+                    elif items_schema.get("type") == "object":
+                        for item in val:
+                            if not isinstance(item, dict):
+                                errs.append(f"{k} item not object")
+                            else:
+                                errs.extend(_validate_s89_object_keys(item, items_schema, defs))
                     elif items_schema.get("type") == "string":
                         for item in val:
                             if not isinstance(item, str):
@@ -964,6 +982,28 @@ def run_validation():
                                 errs.append(f"{k} item shorter than {items_schema['minLength']}")
                             elif "enum" in items_schema and item not in items_schema["enum"]:
                                 errs.append(f"{k} item invalid enum {item}")
+        for clause in [*sc.get("allOf", []), sc]:
+            if_block = clause.get("if", {})
+            then_block = clause.get("then", {})
+            if if_block and then_block:
+                if_props = if_block.get("properties", {})
+                matched = True
+                for ik, iprop in if_props.items():
+                    if "const" in iprop:
+                        if obj.get(ik) != iprop["const"]:
+                            matched = False
+                            break
+                if matched:
+                    for req_k in then_block.get("required", []):
+                        if req_k not in obj or obj[req_k] is None:
+                            errs.append(f"Conditional required property missing or null: {req_k}")
+                    for tk, tprop in then_block.get("properties", {}).items():
+                        tval = obj.get(tk)
+                        if tprop.get("type") == "string":
+                            if not isinstance(tval, str):
+                                errs.append(f"Conditional {tk} must be string")
+                            elif "minLength" in tprop and len(tval) < tprop["minLength"]:
+                                errs.append(f"Conditional {tk} shorter than {tprop['minLength']}")
         return errs
 
     for pair_name, (sc_obj, fx_obj) in s89_loaded_pairs.items():
@@ -1196,6 +1236,90 @@ def run_validation():
             "syllabus ingestion text/html mimeType",
         ):
             assert _validate_s89_object_keys(neg_payload, neg_sc, neg_sc.get("$defs", {})), f"Expected pure-python failure for {label}"
+
+    # Sprint 9.3 Question Bank, Blueprint, and Assessment Assembly Rules Contracts
+    s93_schema_files = {
+        "qbank-create": schemas_dir / "exam/v1/question-bank-item-create-request.schema.json",
+        "qbank-response": schemas_dir / "exam/v1/question-bank-item-response.schema.json",
+        "blueprint-create": schemas_dir / "exam/v1/assessment-blueprint-create-request.schema.json",
+        "blueprint-response": schemas_dir / "exam/v1/assessment-blueprint-response.schema.json",
+        "assembly-request": schemas_dir / "exam/v1/assessment-assembly-request.schema.json",
+        "assembled-response": schemas_dir / "exam/v1/assembled-assessment-response.schema.json",
+    }
+    s93_fixture_bindings = [
+        ("qbank-create", schemas_dir / "exam/v1/fixtures/question-bank-item-create-request.valid.json"),
+        ("qbank-response", schemas_dir / "exam/v1/fixtures/question-bank-item-response.valid.json"),
+        ("blueprint-create", schemas_dir / "exam/v1/fixtures/assessment-blueprint-create-request.valid.json"),
+        ("blueprint-response", schemas_dir / "exam/v1/fixtures/assessment-blueprint-response.valid.json"),
+        ("assembly-request", schemas_dir / "exam/v1/fixtures/assessment-assembly-request.valid.json"),
+        ("assembled-response", schemas_dir / "exam/v1/fixtures/assembled-assessment-response.valid.json"),
+    ]
+    s93_schemas: dict[str, dict] = {}
+    s93_fixtures: dict[str, dict] = {}
+    for key, schema_file in s93_schema_files.items():
+        assert schema_file.exists(), f"Missing Sprint 9.3 schema file: {schema_file}"
+        sc_obj = json.loads(schema_file.read_text(encoding="utf-8"))
+        assert sc_obj.get("$schema") == "https://json-schema.org/draft/2020-12/schema", f"Non-2020-12 schema: {schema_file}"
+        assert sc_obj.get("additionalProperties") is False, f"additionalProperties must be false on {schema_file}"
+        if jsonschema is not None:
+            jsonschema.Draft202012Validator.check_schema(sc_obj)
+        s93_schemas[key] = sc_obj
+
+    for schema_key, fixture_file in s93_fixture_bindings:
+        assert fixture_file.exists(), f"Missing Sprint 9.3 fixture file: {fixture_file}"
+        sc_obj = s93_schemas[schema_key]
+        fx_obj = json.loads(fixture_file.read_text(encoding="utf-8"))
+        if jsonschema is not None:
+            jsonschema.Draft202012Validator(sc_obj).validate(fx_obj)
+        errs = _validate_s89_object_keys(fx_obj, sc_obj, sc_obj.get("$defs", {}))
+        assert not errs, f"Sprint 9.3 pure-python schema check failed for {fixture_file.name}: {errs}"
+        s93_fixtures[fixture_file.name] = fx_obj
+
+    s93_qc_sc = s93_schemas["qbank-create"]
+    s93_qc_fx = s93_fixtures["question-bank-item-create-request.valid.json"]
+    s93_qr_sc = s93_schemas["qbank-response"]
+    s93_qr_fx = s93_fixtures["question-bank-item-response.valid.json"]
+    s93_bc_sc = s93_schemas["blueprint-create"]
+    s93_bc_fx = s93_fixtures["assessment-blueprint-create-request.valid.json"]
+    s93_br_sc = s93_schemas["blueprint-response"]
+    s93_br_fx = s93_fixtures["assessment-blueprint-response.valid.json"]
+    s93_ar_sc = s93_schemas["assembly-request"]
+    s93_ar_fx = s93_fixtures["assessment-assembly-request.valid.json"]
+    s93_as_sc = s93_schemas["assembled-response"]
+    s93_as_fx = s93_fixtures["assembled-assessment-response.valid.json"]
+
+    mut_visual_no_alt = copy.deepcopy(s93_qc_fx)
+    mut_visual_no_alt["hasVisualDiagram"] = True
+    mut_visual_no_alt["altTextDescription"] = "short"
+
+    mut_leaked_answer = copy.deepcopy(s93_as_fx)
+    mut_leaked_answer["items"] = copy.deepcopy(s93_as_fx["items"])
+    mut_leaked_answer["items"][0]["isCorrect"] = True
+
+    s93_negative_cases = [
+        (s93_qc_sc, {**s93_qc_fx, "trainingEligible": True}, "qbank create trainingEligible=True"),
+        (s93_qc_sc, {**s93_qc_fx, "difficultyBValue": 4.25}, "qbank create difficultyBValue > 3.0"),
+        (s93_qc_sc, mut_visual_no_alt, "qbank create hasVisualDiagram=True with short altTextDescription"),
+        (s93_qc_sc, {**s93_qc_fx, "unexpectedField": "x"}, "qbank create additionalProperties"),
+        (s93_qr_sc, {**s93_qr_fx, "trainingEligible": True}, "qbank response trainingEligible=True"),
+        (s93_qr_sc, {**s93_qr_fx, "contentSha256": "invalid-sha"}, "qbank response malformed contentSha256"),
+        (s93_bc_sc, {**s93_bc_fx, "totalQuestionCount": 3}, "blueprint create totalQuestionCount < 5"),
+        (s93_bc_sc, {**s93_bc_fx, "topicRules": []}, "blueprint create empty topicRules"),
+        (s93_br_sc, {**s93_br_fx, "blueprintHash": "12345"}, "blueprint response malformed blueprintHash"),
+        (s93_ar_sc, {**s93_ar_fx, "assemblySeed": "abc"}, "assembly request assemblySeed < 4 chars"),
+        (s93_ar_sc, {**s93_ar_fx, "overrideTimeMultiplier": 2.50}, "assembly request overrideTimeMultiplier > 2.0"),
+        (s93_as_sc, {**s93_as_fx, "trainingEligible": True}, "assembled response trainingEligible=True"),
+        (s93_as_sc, {**s93_as_fx, "reproducibilityHash": "bad-hash"}, "assembled response malformed reproducibilityHash"),
+        (s93_as_sc, mut_leaked_answer, "assembled response leaked answer key property on item"),
+    ]
+    for neg_sc, neg_payload, label in s93_negative_cases:
+        if jsonschema is not None:
+            try:
+                jsonschema.Draft202012Validator(neg_sc).validate(neg_payload)
+                raise AssertionError(f"Expected jsonschema failure for {label}")
+            except jsonschema.exceptions.ValidationError:
+                pass
+        assert _validate_s89_object_keys(neg_payload, neg_sc, neg_sc.get("$defs", {})), f"Expected pure-python failure for {label}"
     for card_fx in (ml_card_tr_fixture, ml_card_en_fixture):
         assert card_fx["schemaVersion"] == "1.0.0"
         assert card_fx["verificationStatus"] == "VERIFIED"
@@ -1508,6 +1632,35 @@ def run_validation():
                 for code in expected_codes:
                     assert code in s92_op["responses"], f"HTTP {code} missing from {s92_path} {s92_method} in {spec_name}"
 
+            # Sprint 9.3 OpenAPI paths & component schemas
+            for schema_name in (
+                "QuestionBankItemCreateRequest",
+                "QuestionBankItemResponse",
+                "AssessmentBlueprintCreateRequest",
+                "AssessmentBlueprintResponse",
+                "AssessmentAssemblyRequest",
+                "AssembledAssessmentResponse",
+            ):
+                assert schema_name in spec_schemas, f"Missing Sprint 9.3 component schema {schema_name} in {spec_name}"
+
+            expected_s93_endpoints = {
+                ("/v1/exams/{examDefinitionId}/question-bank/items", "post"): ("201", "400", "401", "403", "404", "409", "422", "503"),
+                ("/v1/exams/{examDefinitionId}/question-bank/items", "get"): ("200", "400", "401", "403", "503"),
+                ("/v1/exams/{examDefinitionId}/question-bank/items/{itemId}/publish", "post"): ("200", "400", "401", "403", "404", "422", "503"),
+                ("/v1/exams/{examDefinitionId}/blueprints", "post"): ("201", "400", "401", "403", "404", "409", "422", "503"),
+                ("/v1/exams/{examDefinitionId}/blueprints", "get"): ("200", "400", "401", "403", "503"),
+                ("/v1/exams/{examDefinitionId}/blueprints/{blueprintId}/activate", "post"): ("200", "400", "401", "403", "404", "422", "503"),
+                ("/v1/exams/{examDefinitionId}/assessments/assemble", "post"): ("200", "201", "400", "401", "403", "404", "422", "503"),
+                ("/v1/exams/candidates/{userId}/assessments/{assessmentId}", "get"): ("200", "400", "401", "403", "404", "503"),
+            }
+            for (s93_path, s93_method), expected_codes in expected_s93_endpoints.items():
+                assert s93_path in spec_paths, f"Missing Sprint 9.3 path {s93_path} in {spec_name}"
+                assert s93_method in spec_paths[s93_path], f"Missing method {s93_method} on {s93_path} in {spec_name}"
+                s93_op = spec_paths[s93_path][s93_method]
+                assert s93_op["security"] == [{"bearerAuth": []}], f"Security bearerAuth missing on {s93_path} in {spec_name}"
+                for code in expected_codes:
+                    assert code in s93_op["responses"], f"HTTP {code} missing from {s93_path} {s93_method} in {spec_name}"
+
         assert openapi_path.read_bytes() == openapi_core_path.read_bytes(), "OpenAPI mirror public-api.yaml != verified-ai-core-api.yaml"
     else:
         openapi_bytes = openapi_path.read_bytes()
@@ -1540,6 +1693,18 @@ def run_validation():
             "UpsertStudentExamTargetRequest:",
             "StudentExamTargetResponse:",
             "StudentExamTargetListResponse:",
+            "/v1/exams/{examDefinitionId}/question-bank/items:",
+            "/v1/exams/{examDefinitionId}/question-bank/items/{itemId}/publish:",
+            "/v1/exams/{examDefinitionId}/blueprints:",
+            "/v1/exams/{examDefinitionId}/blueprints/{blueprintId}/activate:",
+            "/v1/exams/{examDefinitionId}/assessments/assemble:",
+            "/v1/exams/candidates/{userId}/assessments/{assessmentId}:",
+            "QuestionBankItemCreateRequest:",
+            "QuestionBankItemResponse:",
+            "AssessmentBlueprintCreateRequest:",
+            "AssessmentBlueprintResponse:",
+            "AssessmentAssemblyRequest:",
+            "AssembledAssessmentResponse:",
             "ProblemBadRequest",
             "ProblemUnauthorized",
             "ProblemForbidden",
@@ -1547,7 +1712,7 @@ def run_validation():
             "ProblemUnprocessableEntity",
             "ProblemServiceUnavailable",
         ):
-            assert token in openapi_text, f"Missing Sprint 8.8..9.1 OpenAPI token in public-api.yaml: {token}"
+            assert token in openapi_text, f"Missing Sprint 8.8..9.3 OpenAPI token in public-api.yaml: {token}"
 
     # 3. iOS Localizable.xcstrings Key Verification
     xcstrings_data = json.loads(strings_path.read_text(encoding="utf-8"))
@@ -1859,6 +2024,22 @@ def run_validation():
         "exam.syllabus.error.quota_exceeded",
         "exam.syllabus.error.media_unsupported",
         "exam.syllabus.error.disambiguation_required",
+        "exam.assembly.title",
+        "exam.assembly.blueprint.section_header",
+        "exam.assembly.mode.diagnostic",
+        "exam.assembly.mode.section_drill",
+        "exam.assembly.mode.full_simulation",
+        "exam.assembly.mode.topic_mastery",
+        "exam.assembly.duration.base",
+        "exam.assembly.duration.effective_accommodated",
+        "exam.assembly.distribution.topics",
+        "exam.assembly.distribution.difficulty",
+        "exam.assembly.seed.label",
+        "exam.assembly.reproducibility_hash.label",
+        "exam.assembly.action.assemble",
+        "exam.assembly.status.ready",
+        "exam.assembly.offline.cached_banner",
+        "exam.assembly.error.pool_insufficient",
     ]
 
     banned_lexicon = re.compile(
@@ -1880,11 +2061,11 @@ def run_validation():
             if key.startswith("studyplan.rebalance.") or key.startswith("micro_lesson.") or key.startswith("study_session."):
                 m = banned_lexicon.search(val)
                 assert not m, f"Stigmatizing lexicon word '{m.group(0)}' in {key}[{lang}]: {val}"
-            elif key.startswith("gamification.") or key.startswith("weekly.") or key.startswith("cold_start.") or key.startswith("exam.candidate.") or key.startswith("exam.syllabus.") or key.startswith("home.candidate_profile."):
+            elif key.startswith("gamification.") or key.startswith("weekly.") or key.startswith("cold_start.") or key.startswith("exam.candidate.") or key.startswith("exam.syllabus.") or key.startswith("home.candidate_profile.") or key.startswith("exam.assembly."):
                 m = gamification_banned_lexicon.search(val)
                 assert not m, f"Stigmatizing lexicon word '{m.group(0)}' in {key}[{lang}]: {val}"
 
-    print(f"PASS: Sprint 8.1..9.2 JSON schemas, negative mutations, OpenAPI 3.1 endpoints, and {len(required_keys)} EN/TR localizations verified.")
+    print(f"PASS: Sprint 8.1..9.3 JSON schemas, negative mutations, OpenAPI 3.1 endpoints, and {len(required_keys)} EN/TR localizations verified.")
 
 
 if __name__ == "__main__":

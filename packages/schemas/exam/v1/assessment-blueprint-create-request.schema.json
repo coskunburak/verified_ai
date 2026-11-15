@@ -1,0 +1,207 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/exam/v1/assessment-blueprint-create-request.schema.json",
+  "title": "AssessmentBlueprintCreateRequest",
+  "description": "Assessment blueprint creation request specifying topic weight basis points, difficulty bands, and cognitive levels (Sprint 9.3).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "examVersionNumber",
+    "blueprintCode",
+    "title",
+    "blueprintMode",
+    "totalQuestionCount",
+    "baseDurationSeconds",
+    "easyTargetBps",
+    "mediumTargetBps",
+    "hardTargetBps",
+    "expertTargetBps",
+    "difficultyToleranceBps",
+    "recallTargetBps",
+    "comprehensionTargetBps",
+    "applicationTargetBps",
+    "analysisTargetBps",
+    "evaluationTargetBps",
+    "allowRecentlySeenCooldownDays",
+    "shuffleQuestions",
+    "shuffleOptions",
+    "topicRules",
+    "trainingEligible"
+  ],
+  "properties": {
+    "examVersionNumber": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    },
+    "examSectionId": {
+      "type": ["string", "null"],
+      "format": "uuid"
+    },
+    "blueprintCode": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 64
+    },
+    "title": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 160
+    },
+    "description": {
+      "type": ["string", "null"],
+      "maxLength": 1000
+    },
+    "blueprintMode": {
+      "type": "string",
+      "enum": [
+        "DIAGNOSTIC_BASELINE",
+        "SECTION_DRILL",
+        "FULL_SIMULATION",
+        "TOPIC_MASTERY_CHECK"
+      ]
+    },
+    "totalQuestionCount": {
+      "type": "integer",
+      "minimum": 5,
+      "maximum": 200
+    },
+    "baseDurationSeconds": {
+      "type": "integer",
+      "minimum": 300,
+      "maximum": 21600
+    },
+    "easyTargetBps": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "mediumTargetBps": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "hardTargetBps": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "expertTargetBps": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "difficultyToleranceBps": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2000
+    },
+    "recallTargetBps": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "comprehensionTargetBps": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "applicationTargetBps": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "analysisTargetBps": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "evaluationTargetBps": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "allowRecentlySeenCooldownDays": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 365
+    },
+    "shuffleQuestions": {
+      "type": "boolean"
+    },
+    "shuffleOptions": {
+      "type": "boolean"
+    },
+    "topicRules": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50,
+      "items": {
+        "$ref": "#/$defs/BlueprintTopicRuleInput"
+      }
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    }
+  },
+  "$defs": {
+    "BlueprintTopicRuleInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "topicCode",
+        "targetWeightBps",
+        "minQuestionCount",
+        "maxQuestionCount",
+        "requiredItemFormats",
+        "ruleOrder",
+        "trainingEligible"
+      ],
+      "properties": {
+        "topicCode": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 128
+        },
+        "targetWeightBps": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 10000
+        },
+        "minQuestionCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 200
+        },
+        "maxQuestionCount": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "requiredItemFormats": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "enum": [
+              "SINGLE_CHOICE_MCQ",
+              "MULTI_SELECT_MCQ",
+              "NUMERIC_GRID_IN",
+              "SHORT_STRUCTURED_RESPONSE"
+            ]
+          }
+        },
+        "ruleOrder": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "trainingEligible": {
+          "type": "boolean",
+          "const": false
+        }
+      }
+    }
+  }
+}

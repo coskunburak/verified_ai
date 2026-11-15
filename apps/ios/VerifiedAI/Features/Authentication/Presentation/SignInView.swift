@@ -13,44 +13,48 @@ struct SignInView: View {
                 guestAccess
             }
             .padding(.horizontal, SpacingTokens.lg)
-            .padding(.vertical, 34)
+            .padding(.vertical, SpacingTokens.xxl)
         }
         .scrollDismissesKeyboard(.interactively)
-        .background(ColorTokens.background.ignoresSafeArea())
-        .preferredColorScheme(.dark)
+        .background(ColorTokens.canvas.ignoresSafeArea())
     }
 
     private var header: some View {
         VStack(alignment: .leading, spacing: SpacingTokens.md) {
-            HStack(spacing: SpacingTokens.sm) {
+            HStack(spacing: SpacingTokens.compact) {
                 Image(systemName: "checkmark.seal.fill")
-                    .font(.system(size: 25, weight: .semibold))
-                    .foregroundStyle(ColorTokens.action)
+                    .font(.system(size: 22, weight: .semibold))
+                    .foregroundStyle(ColorTokens.actionForeground)
                     .frame(width: 44, height: 44)
-                    .background(ColorTokens.surfaceElevated)
-                    .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium))
+                    .background(ColorTokens.action)
+                    .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
 
-                Text("Verified AI")
-                    .font(.system(size: 34, weight: .semibold, design: .rounded))
-                    .foregroundStyle(ColorTokens.textPrimary)
-                    .accessibilityIdentifier("appTitle")
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Verified AI")
+                        .font(TypographyTokens.heroTitle)
+                        .foregroundStyle(ColorTokens.textPrimary)
+                        .accessibilityIdentifier("appTitle")
+                    Text("Formal Mathematical Tutor")
+                        .font(TypographyTokens.caption)
+                        .foregroundStyle(ColorTokens.textSecondary)
+                }
             }
 
-            Text("A secure study workspace for scanned problems, verified reasoning, and progress that stays tied to your account.")
-                .font(.body)
+            Text("A clean, distraction-free workspace for scanned problems, formal verification, and adaptive exam preparation.")
+                .font(TypographyTokens.body)
                 .foregroundStyle(ColorTokens.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
 
             HStack(spacing: SpacingTokens.sm) {
-                StatusPill(title: "Secure", systemImage: "lock.shield")
-                StatusPill(title: "Fast", systemImage: "bolt.fill")
-                StatusPill(title: "Private", systemImage: "eye.slash")
+                AppStatusBadge(verbatimTitle: "Verified", systemImage: "checkmark.seal", tone: .action)
+                AppStatusBadge(verbatimTitle: "Private", systemImage: "lock.shield", tone: .neutral)
+                AppStatusBadge(verbatimTitle: "Offline Ready", systemImage: "icloud.slash", tone: .neutral)
             }
         }
     }
 
     private var authPanel: some View {
-        VStack(alignment: .leading, spacing: SpacingTokens.md) {
+        AppSurfaceCard {
             modePicker
 
             VStack(spacing: SpacingTokens.sm) {
@@ -90,19 +94,16 @@ struct SignInView: View {
                 focusedField = nil
                 viewModel.submitEmail()
             } label: {
-                HStack {
+                HStack(spacing: SpacingTokens.sm) {
                     if isBusy {
                         ProgressView()
                             .controlSize(.small)
+                            .tint(ColorTokens.actionForeground)
                     }
                     Text(viewModel.mode == .signIn ? "Sign In" : "Create Account")
-                        .font(.headline)
                 }
-                .frame(maxWidth: .infinity)
-                .frame(height: 52)
             }
-            .buttonStyle(.borderedProminent)
-            .tint(ColorTokens.action)
+            .buttonStyle(AppPrimaryButtonStyle())
             .disabled(primaryActionDisabled)
 
             /*
@@ -120,34 +121,35 @@ struct SignInView: View {
              .disabled(isBusy)
              */
         }
-        .padding(SpacingTokens.md)
-        .background(ColorTokens.surface)
-        .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium))
-        .overlay {
-            RoundedRectangle(cornerRadius: RadiusTokens.medium)
-                .stroke(ColorTokens.border, lineWidth: 1)
-        }
     }
 
     private var modePicker: some View {
-        HStack(spacing: SpacingTokens.sm) {
+        HStack(spacing: SpacingTokens.xs) {
             ForEach(EmailAuthenticationMode.allCases) { mode in
+                let selected = viewModel.mode == mode
                 Button {
                     withAnimation(.snappy(duration: 0.2)) {
                         viewModel.mode = mode
                     }
                 } label: {
                     Label(mode.title, systemImage: mode == .signIn ? "person.crop.circle" : "person.badge.plus")
-                        .font(.subheadline.weight(.semibold))
+                        .font(TypographyTokens.cardTitle)
                         .frame(maxWidth: .infinity)
-                        .frame(height: 42)
-                        .foregroundStyle(viewModel.mode == mode ? ColorTokens.background : ColorTokens.textSecondary)
+                        .frame(height: 40)
+                        .foregroundStyle(selected ? ColorTokens.textPrimary : ColorTokens.textSecondary)
                 }
                 .buttonStyle(.plain)
-                .background(viewModel.mode == mode ? ColorTokens.textPrimary : ColorTokens.surfaceElevated)
-                .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium))
+                .background(selected ? ColorTokens.surface : Color.clear)
+                .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.small, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: RadiusTokens.small, style: .continuous)
+                        .stroke(selected ? ColorTokens.borderStrong : Color.clear, lineWidth: 1)
+                )
             }
         }
+        .padding(SpacingTokens.xs)
+        .background(ColorTokens.surfaceElevated)
+        .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
     }
 
     private var guestAccess: some View {
@@ -157,15 +159,11 @@ struct SignInView: View {
                 viewModel.continueAsGuest()
             } label: {
                 Label("Continue Without Account", systemImage: "arrow.right.circle")
-                    .font(.headline)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 52)
             }
-            .buttonStyle(.bordered)
-            .tint(ColorTokens.textPrimary)
+            .buttonStyle(AppSecondaryButtonStyle())
             .disabled(isBusy)
 
-            Text("Guest sessions are private to this device and can be upgraded later by creating an account.")
+            Text("Guest sessions stay private on this device and can be upgraded anytime.")
                 .font(TypographyTokens.caption)
                 .foregroundStyle(ColorTokens.textTertiary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -244,7 +242,7 @@ private struct AuthTextField: View {
         HStack(spacing: SpacingTokens.sm) {
             Image(systemName: systemImage)
                 .foregroundStyle(ColorTokens.textTertiary)
-                .frame(width: 22)
+                .frame(width: 20)
             TextField(title, text: $text)
                 .textContentType(contentType)
                 .keyboardType(keyboardType)
@@ -253,9 +251,13 @@ private struct AuthTextField: View {
                 .foregroundStyle(ColorTokens.textPrimary)
         }
         .padding(.horizontal, SpacingTokens.md)
-        .frame(height: 52)
+        .frame(height: 50)
         .background(ColorTokens.surfaceElevated)
-        .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium))
+        .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                .stroke(ColorTokens.borderSubtle, lineWidth: 1)
+        )
     }
 }
 
@@ -268,29 +270,18 @@ private struct AuthSecureField: View {
         HStack(spacing: SpacingTokens.sm) {
             Image(systemName: systemImage)
                 .foregroundStyle(ColorTokens.textTertiary)
-                .frame(width: 22)
+                .frame(width: 20)
             SecureField(title, text: $text)
                 .textContentType(.password)
                 .foregroundStyle(ColorTokens.textPrimary)
         }
         .padding(.horizontal, SpacingTokens.md)
-        .frame(height: 52)
+        .frame(height: 50)
         .background(ColorTokens.surfaceElevated)
-        .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium))
-    }
-}
-
-private struct StatusPill: View {
-    let title: String
-    let systemImage: String
-
-    var body: some View {
-        Label(title, systemImage: systemImage)
-            .font(.caption.weight(.semibold))
-            .foregroundStyle(ColorTokens.textSecondary)
-            .padding(.horizontal, 10)
-            .padding(.vertical, 7)
-            .background(ColorTokens.surfaceElevated)
-            .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.small))
+        .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                .stroke(ColorTokens.borderSubtle, lineWidth: 1)
+        )
     }
 }

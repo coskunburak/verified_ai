@@ -7,13 +7,14 @@ struct ProblemRevisionHistoryView: View {
         VStack(alignment: .leading, spacing: SpacingTokens.md) {
             HStack {
                 Label("Revision History", systemImage: "clock.arrow.circlepath")
-                    .font(TypographyTokens.body.weight(.semibold))
+                    .font(TypographyTokens.cardTitle)
                     .foregroundStyle(ColorTokens.textPrimary)
                 Spacer()
                 Button {
                     Task { await viewModel.refreshHistory() }
                 } label: {
                     Image(systemName: "arrow.clockwise")
+                        .foregroundStyle(ColorTokens.action)
                 }
                 .accessibilityLabel("Refresh revision history")
             }
@@ -37,11 +38,10 @@ struct ProblemRevisionHistoryView: View {
             HStack {
                 Label("Revision \(revision.revision)", systemImage: revision.selected ? "checkmark.circle.fill" : "circle")
                     .font(TypographyTokens.body.weight(.semibold))
+                    .monospacedDigit()
                     .foregroundStyle(revision.selected ? ColorTokens.action : ColorTokens.textPrimary)
                 Spacer()
-                Text(revision.source)
-                    .font(TypographyTokens.caption)
-                    .foregroundStyle(ColorTokens.textSecondary)
+                AppStatusBadge(verbatimTitle: revision.source, tone: revision.selected ? .action : .neutral)
             }
 
             if let reason = revision.correctionReason {
@@ -57,5 +57,10 @@ struct ProblemRevisionHistoryView: View {
             }
         }
         .padding(.vertical, SpacingTokens.sm)
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(ColorTokens.borderSubtle)
+                .frame(height: 1)
+        }
     }
 }

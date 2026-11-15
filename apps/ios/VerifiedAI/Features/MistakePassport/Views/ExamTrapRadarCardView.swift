@@ -11,12 +11,12 @@ public struct ExamTrapRadarCardView: View {
     }
 
     public var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: SpacingTokens.compact) {
             // Header: Category Pill & Status Badge
-            HStack(spacing: 8) {
+            HStack(spacing: SpacingTokens.sm) {
                 Text(LocalizedStringKey(trap.localizedTrapTitleKey))
-                    .font(.headline)
-                    .foregroundStyle(.primary)
+                    .font(TypographyTokens.sectionTitle)
+                    .foregroundStyle(ColorTokens.textPrimary)
 
                 Spacer()
 
@@ -25,28 +25,29 @@ public struct ExamTrapRadarCardView: View {
 
             // Non-stigmatizing coaching framing description
             Text(LocalizedStringKey(trap.localizedCoachingFramingKey))
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .font(TypographyTokens.bodyMedium)
+                .foregroundStyle(ColorTokens.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
 
             Divider()
+                .overlay(ColorTokens.borderSubtle)
 
             // 5-Metric mini indicators (Transfer Rate, Posterior Mastery, Retention)
-            HStack(spacing: 16) {
+            HStack(spacing: SpacingTokens.md) {
                 metricColumn(
                     title: "Transfer",
                     value: trap.skillMetrics.independentCompetenceScore,
-                    color: .teal
+                    color: ColorTokens.action
                 )
                 metricColumn(
                     title: "Mastery",
                     value: trap.skillMetrics.posteriorMasteryProbability,
-                    color: .indigo
+                    color: ColorTokens.success
                 )
                 metricColumn(
                     title: "Retention",
                     value: trap.skillMetrics.retentionProbability,
-                    color: .blue
+                    color: ColorTokens.textPrimary
                 )
             }
 
@@ -54,20 +55,28 @@ public struct ExamTrapRadarCardView: View {
             if let counterexample = trap.latestCounterexample {
                 HStack(spacing: 6) {
                     Image(systemName: "function")
-                        .font(.caption)
-                        .foregroundStyle(.orange)
+                        .font(TypographyTokens.caption)
+                        .foregroundStyle(ColorTokens.accent)
                     Text(counterexample.witnessSubstitutionLatex)
-                        .font(.caption.monospaced())
-                        .foregroundStyle(.secondary)
+                        .font(TypographyTokens.monoCode)
+                        .foregroundStyle(ColorTokens.textSecondary)
                     Spacer()
                     Text(counterexample.cardId)
-                        .font(.caption2.bold())
+                        .font(TypographyTokens.microLabel)
+                        .foregroundStyle(ColorTokens.accent)
                         .padding(.horizontal, 6)
                         .padding(.vertical, 2)
-                        .background(Color.orange.opacity(0.12), in: Capsule())
+                        .background(ColorTokens.accentSoft, in: Capsule())
                 }
-                .padding(8)
-                .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 8))
+                .padding(SpacingTokens.sm)
+                .background(
+                    ColorTokens.surfaceElevated,
+                    in: RoundedRectangle(cornerRadius: RadiusTokens.small, style: .continuous)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: RadiusTokens.small, style: .continuous)
+                        .stroke(ColorTokens.borderSubtle, lineWidth: 1)
+                )
             }
 
             // Active Twin Remediation Link CTA
@@ -77,22 +86,16 @@ public struct ExamTrapRadarCardView: View {
                         LocalizedStringKey("counterexample.card.cta.prove_it_solo"),
                         systemImage: "shield.lefthalf.filled.badge.checkmark"
                     )
-                    .font(.subheadline.weight(.semibold))
-                    .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(.indigo)
+                .buttonStyle(AppPrimaryButtonStyle())
                 .accessibilityIdentifier("trap_card_launch_twin_\(trap.mistakeCode)")
             }
         }
-        .padding(16)
-        .background(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(Color(.systemBackground))
-                .shadow(color: .black.opacity(0.04), radius: 6, y: 3)
-        )
+        .padding(SpacingTokens.md)
+        .background(ColorTokens.surface)
+        .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
+            RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous)
                 .strokeBorder(cardBorderColor(trap.lifecycleStatus), lineWidth: 1)
         )
         .accessibilityElement(children: .contain)
@@ -102,10 +105,11 @@ public struct ExamTrapRadarCardView: View {
     private func metricColumn(title: String, value: Double, color: Color) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(title)
-                .font(.caption2)
-                .foregroundStyle(.secondary)
+                .font(TypographyTokens.microLabel)
+                .foregroundStyle(ColorTokens.textSecondary)
             Text("\(Int((value * 100).rounded()))%")
-                .font(.caption.weight(.semibold))
+                .font(TypographyTokens.cardTitle)
+                .monospacedDigit()
                 .foregroundStyle(color)
         }
     }
@@ -114,37 +118,46 @@ public struct ExamTrapRadarCardView: View {
         HStack(spacing: 4) {
             if status == .stableResolved {
                 Image(systemName: "checkmark.seal.fill")
-                    .font(.caption2)
+                    .font(TypographyTokens.microLabel)
             } else if status == .resolvedPendingRetention {
                 Image(systemName: "lock.clock.fill")
-                    .font(.caption2)
+                    .font(TypographyTokens.microLabel)
             }
 
             Text(LocalizedStringKey(status.localizedKey))
-                .font(.caption2.bold())
+                .font(TypographyTokens.microLabel)
         }
-        .padding(.horizontal, 8)
+        .padding(.horizontal, SpacingTokens.sm)
         .padding(.vertical, 4)
-        .background(badgeColor(status).opacity(0.15))
+        .background(badgeBackground(status))
         .foregroundStyle(badgeColor(status))
         .clipShape(Capsule())
     }
 
     private func badgeColor(_ status: TrapLifecycleStatus) -> Color {
         switch status {
-        case .recurringPattern: return .orange
-        case .inRemediation: return .purple
-        case .resolvedPendingRetention: return .blue
-        case .stableResolved: return .green
+        case .recurringPattern: return ColorTokens.accent
+        case .inRemediation: return ColorTokens.action
+        case .resolvedPendingRetention: return ColorTokens.textPrimary
+        case .stableResolved: return ColorTokens.success
+        }
+    }
+
+    private func badgeBackground(_ status: TrapLifecycleStatus) -> Color {
+        switch status {
+        case .recurringPattern: return ColorTokens.accentSoft
+        case .inRemediation: return ColorTokens.actionSoft
+        case .resolvedPendingRetention: return ColorTokens.surfaceElevated
+        case .stableResolved: return ColorTokens.successSoft
         }
     }
 
     private func cardBorderColor(_ status: TrapLifecycleStatus) -> Color {
         switch status {
-        case .recurringPattern: return Color.orange.opacity(0.3)
-        case .inRemediation: return Color.purple.opacity(0.3)
-        case .resolvedPendingRetention: return Color.blue.opacity(0.2)
-        case .stableResolved: return Color.green.opacity(0.25)
+        case .recurringPattern: return ColorTokens.accent.opacity(0.32)
+        case .inRemediation: return ColorTokens.action.opacity(0.32)
+        case .resolvedPendingRetention: return ColorTokens.borderStrong
+        case .stableResolved: return ColorTokens.success.opacity(0.32)
         }
     }
 }

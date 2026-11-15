@@ -3,15 +3,20 @@ import SwiftUI
 struct AccountSettingsView: View {
     @Bindable var viewModel: AccountSettingsViewModel
     var weeklyReportViewModel: WeeklyProgressReportViewModel? = nil
+    var environmentName: String? = nil
+    var entitlement: Entitlement? = nil
     let onAccountDeleted: () -> Void
+    var onSignOut: (() -> Void)? = nil
 
     @Environment(\.dismiss) private var dismiss
     @State private var confirmationText = ""
+    @AppStorage("verifiedai.theme_preference") private var themePreferenceRaw: String = AppThemePreference.light.rawValue
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: SpacingTokens.lg) {
                 accountSection
+                appearanceSection
                 if let weeklyReportViewModel {
                     weeklyReportSection(weeklyReportViewModel)
                 }
@@ -22,7 +27,7 @@ struct AccountSettingsView: View {
             .padding(SpacingTokens.lg)
             .frame(maxWidth: 620, alignment: .leading)
         }
-        .background(ColorTokens.background)
+        .background(ColorTokens.canvas.ignoresSafeArea())
         .navigationTitle("Account")
         .navigationBarTitleDisplayMode(.inline)
         .task {
@@ -39,54 +44,96 @@ struct AccountSettingsView: View {
     }
 
     private var accountSection: some View {
-        VStack(alignment: .leading, spacing: SpacingTokens.sm) {
-            Text("Account")
-                .font(TypographyTokens.title)
-                .foregroundStyle(ColorTokens.textPrimary)
+        AppSurfaceCard {
+            AppSectionHeader("Account", subtitle: "Workspace identity & session state")
 
             if let account = viewModel.account {
                 row("Status", account.status.title)
                 row("User ID", account.userId.uuidString)
             } else if viewModel.state == .loading {
                 ProgressView()
+                    .tint(ColorTokens.textSecondary)
                     .accessibilityLabel("Loading account")
+            }
+
+            if let entitlement {
+                row("Plan", entitlement.tier.title)
+            }
+            if let environmentName {
+                row("Environment", environmentName)
+            }
+
+            if let onSignOut {
+                Button(role: .destructive) {
+                    dismiss()
+                    onSignOut()
+                } label: {
+                    Label(LocalizedStringKey("account.sign_out"), systemImage: "rectangle.portrait.and.arrow.right")
+                }
+                .buttonStyle(AppSecondaryButtonStyle())
+                .accessibilityIdentifier("account.signOutButton")
+            }
+        }
+    }
+
+    private var appearanceSection: some View {
+        AppSurfaceCard {
+            AppSectionHeader("Appearance", subtitle: "Photomath Editorial Crisp — live canvas theme")
+            Picker("Appearance", selection: $themePreferenceRaw) {
+                ForEach(AppThemePreference.allCases) { option in
+                    Text(option.title).tag(option.rawValue)
+                }
+            }
+            .pickerStyle(.segmented)
+            .accessibilityIdentifier("account.themePicker")
+
+            HStack(spacing: SpacingTokens.xs) {
+                Circle()
+                    .fill(ColorTokens.canvas)
+                    .frame(width: 14, height: 14)
+                    .overlay(Circle().stroke(ColorTokens.borderStrong, lineWidth: 1))
+                Circle()
+                    .fill(ColorTokens.action)
+                    .frame(width: 14, height: 14)
+                Circle()
+                    .fill(ColorTokens.stepHighlight)
+                    .frame(width: 14, height: 14)
+                Text((AppThemePreference(rawValue: themePreferenceRaw) ?? .light) == .dark
+                     ? "Carbon Crisp (#121316 + Coral Rose + Sky Blue)"
+                     : "Editorial Paper (#F4F5F7 + Signal Crimson + Royal Blue)")
+                    .font(TypographyTokens.caption)
+                    .foregroundStyle(ColorTokens.textSecondary)
             }
         }
     }
 
     private func weeklyReportSection(_ reportViewModel: WeeklyProgressReportViewModel) -> some View {
-        VStack(alignment: .leading, spacing: SpacingTokens.sm) {
-            Text(LocalizedStringKey("weekly.report.entry.section"))
-                .font(TypographyTokens.body)
-                .foregroundStyle(ColorTokens.textPrimary)
-
-            Text(LocalizedStringKey("weekly.report.entry.subtitle"))
-                .font(TypographyTokens.caption)
-                .foregroundStyle(ColorTokens.textSecondary)
+        AppSurfaceCard {
+            AppSectionHeader(
+                LocalizedStringKey("weekly.report.entry.section"),
+                subtitle: LocalizedStringKey("weekly.report.entry.subtitle")
+            )
 
             NavigationLink {
                 WeeklyProgressReportView(viewModel: reportViewModel)
             } label: {
                 Label(LocalizedStringKey("weekly.report.entry.title"), systemImage: "chart.bar.doc.horizontal")
             }
-            .buttonStyle(.borderedProminent)
-            .tint(ColorTokens.action)
+            .buttonStyle(AppSecondaryButtonStyle())
             .accessibilityIdentifier("account.weeklyReportLink")
         }
     }
 
     private var exportSection: some View {
-        VStack(alignment: .leading, spacing: SpacingTokens.sm) {
-            Text("Data Export")
-                .font(TypographyTokens.body)
-                .foregroundStyle(ColorTokens.textPrimary)
+        AppSurfaceCard {
+            AppSectionHeader("Data Export", subtitle: "Request a portable archive of your study data")
 
             Button {
                 Task { await viewModel.requestDataExport() }
             } label: {
                 Label("Export Data", systemImage: "square.and.arrow.down")
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(AppSecondaryButtonStyle())
             .disabled(viewModel.state.isBusy)
 
             if let exportRecord = viewModel.exportRecord {
@@ -100,31 +147,36 @@ struct AccountSettingsView: View {
     }
 
     private var deletionSection: some View {
-        VStack(alignment: .leading, spacing: SpacingTokens.sm) {
-            Text("Deletion")
-                .font(TypographyTokens.body)
-                .foregroundStyle(ColorTokens.textPrimary)
+        AppSurfaceCard {
+            AppSectionHeader("Account Deletion", subtitle: "Permanently remove workspace & records")
 
             Button(role: .destructive) {
                 Task { await viewModel.requestDeletion() }
             } label: {
                 Label("Request Deletion", systemImage: "trash")
             }
-            .buttonStyle(.bordered)
+            .buttonStyle(AppSecondaryButtonStyle())
             .disabled(viewModel.state.isBusy || viewModel.deletionRequest?.status == .deleted)
 
             if viewModel.deletionRequest?.status == .deletionRequested || viewModel.state == .deletionRequested {
                 TextField("DELETE", text: $confirmationText)
                     .textInputAutocapitalization(.characters)
                     .autocorrectionDisabled()
-                    .textFieldStyle(.roundedBorder)
+                    .padding(.horizontal, SpacingTokens.compact)
+                    .frame(height: 44)
+                    .background(ColorTokens.surfaceElevated)
+                    .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.small, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: RadiusTokens.small, style: .continuous)
+                            .stroke(ColorTokens.borderSubtle, lineWidth: 1)
+                    )
 
                 Button(role: .destructive) {
                     Task { await viewModel.confirmDeletion(confirmationText: confirmationText) }
                 } label: {
                     Label("Confirm Deletion", systemImage: "checkmark.seal")
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(AppPrimaryButtonStyle())
                 .disabled(viewModel.state.isBusy || confirmationText.isEmpty)
             }
         }
@@ -133,9 +185,11 @@ struct AccountSettingsView: View {
     @ViewBuilder
     private var statusSection: some View {
         if let message = viewModel.message {
-            Label(message, systemImage: statusIcon)
-                .font(TypographyTokens.caption)
-                .foregroundStyle(statusColor)
+            AppNoticeBanner(
+                LocalizedStringKey(stringLiteral: message),
+                systemImage: statusIcon,
+                tone: viewModel.state == .failed || viewModel.state == .offline ? .warning : .neutral
+            )
         }
     }
 
@@ -150,15 +204,6 @@ struct AccountSettingsView: View {
         }
     }
 
-    private var statusColor: Color {
-        switch viewModel.state {
-        case .failed, .offline:
-            return ColorTokens.warning
-        default:
-            return ColorTokens.textSecondary
-        }
-    }
-
     private func row(_ label: String, _ value: String) -> some View {
         HStack(alignment: .top, spacing: SpacingTokens.md) {
             Text(label)
@@ -166,7 +211,7 @@ struct AccountSettingsView: View {
                 .foregroundStyle(ColorTokens.textSecondary)
                 .frame(width: 96, alignment: .leading)
             Text(value)
-                .font(TypographyTokens.caption)
+                .font(TypographyTokens.monoCode)
                 .foregroundStyle(ColorTokens.textPrimary)
                 .textSelection(.enabled)
                 .frame(maxWidth: .infinity, alignment: .leading)

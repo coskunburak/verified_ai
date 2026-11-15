@@ -12,6 +12,7 @@ private struct MicroLessonFormulaView: View {
         #else
         Text(latex.isEmpty ? fallback : latex)
             .font(.system(size: pointSize, design: .monospaced))
+            .foregroundStyle(ColorTokens.textPrimary)
             .frame(maxWidth: .infinity, alignment: .leading)
             .accessibilityLabel(fallback)
         #endif
@@ -26,7 +27,6 @@ public struct MicroLessonDrawerView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dismiss) private var dismiss
     @ScaledMetric(relativeTo: .body) private var formulaPointSize: CGFloat = 18
-    @ScaledMetric(relativeTo: .title3) private var cardCornerRadius: CGFloat = 16
 
     public init(
         viewModel: MicroLessonViewModel,
@@ -51,6 +51,7 @@ public struct MicroLessonDrawerView: View {
                     lessonContent(card: card)
                 }
             }
+            .background(ColorTokens.canvas)
             .navigationTitle(LocalizedStringKey("micro_lesson.header.focus_opportunity"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -59,6 +60,7 @@ public struct MicroLessonDrawerView: View {
                         dismiss()
                     } label: {
                         Image(systemName: "xmark.circle.fill")
+                            .foregroundStyle(ColorTokens.textSecondary)
                             .frame(minWidth: 44, minHeight: 44)
                     }
                     .accessibilityLabel(LocalizedStringKey("micro_lesson.cta.back_to_twin"))
@@ -72,7 +74,7 @@ public struct MicroLessonDrawerView: View {
 
     private func lessonContent(card: MicroLessonCard) -> some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: SpacingTokens.md) {
                 headerBanner(card: card)
                 beatSegmentedControl
 
@@ -90,37 +92,35 @@ public struct MicroLessonDrawerView: View {
 
                 navigationFooter
             }
-            .padding()
+            .padding(SpacingTokens.lg)
         }
     }
 
     private func headerBanner(card: MicroLessonCard) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 8) {
-                Text(card.focusBadgeLabel)
-                    .font(.caption.weight(.semibold))
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 5)
-                    .background(Color.accentColor.opacity(0.14), in: Capsule())
+        AppSurfaceCard(elevated: true) {
+            HStack(spacing: SpacingTokens.sm) {
+                AppStatusBadge(verbatimTitle: card.focusBadgeLabel, systemImage: "scope", tone: .action)
                     .accessibilityIdentifier("micro_lesson.focus_badge")
 
                 Spacer()
 
                 Text("~\(card.estimatedDurationSeconds)s")
-                    .font(.caption.weight(.medium))
-                    .foregroundStyle(.secondary)
+                    .font(TypographyTokens.caption.weight(.semibold))
+                    .monospacedDigit()
+                    .foregroundStyle(ColorTokens.textSecondary)
                     .accessibilityIdentifier("micro_lesson.duration_badge")
             }
 
             Text(card.title)
-                .font(.title3.bold())
+                .font(TypographyTokens.sectionTitle)
+                .foregroundStyle(ColorTokens.textPrimary)
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityIdentifier("micro_lesson.title")
         }
     }
 
     private var beatSegmentedControl: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: SpacingTokens.xs) {
             ForEach(MicroLessonBeat.allCases, id: \.rawValue) { beat in
                 let isSelected = viewModel.currentBeat == beat
                 Button {
@@ -128,16 +128,22 @@ public struct MicroLessonDrawerView: View {
                 } label: {
                     VStack(spacing: 4) {
                         Text("\(beat.rawValue + 1)")
-                            .font(.caption.bold())
+                            .font(TypographyTokens.caption.bold())
+                            .monospacedDigit()
                         Text(LocalizedStringKey(beat.titleKey))
-                            .font(.caption2)
+                            .font(TypographyTokens.microLabel)
                             .multilineTextAlignment(.center)
                     }
+                    .foregroundStyle(isSelected ? ColorTokens.action : ColorTokens.textSecondary)
                     .frame(maxWidth: .infinity, minHeight: 44)
                     .padding(.vertical, 6)
                     .background(
-                        isSelected ? Color.accentColor.opacity(0.18) : Color.secondary.opacity(0.08),
-                        in: RoundedRectangle(cornerRadius: 12)
+                        isSelected ? ColorTokens.actionSoft : ColorTokens.surfaceElevated,
+                        in: RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                            .stroke(isSelected ? ColorTokens.action.opacity(0.6) : ColorTokens.borderSubtle, lineWidth: 1)
                     )
                 }
                 .buttonStyle(.plain)
@@ -148,14 +154,15 @@ public struct MicroLessonDrawerView: View {
     }
 
     private func beatOneCoreRule(card: MicroLessonCard) -> some View {
-        VStack(alignment: .leading, spacing: 14) {
+        AppSurfaceCard {
             Text(card.coreRule.ruleTitle)
-                .font(.headline)
+                .font(TypographyTokens.cardTitle)
+                .foregroundStyle(ColorTokens.textPrimary)
                 .fixedSize(horizontal: false, vertical: true)
 
             Text(card.coreRule.conciseExplanation)
-                .font(.body)
-                .foregroundStyle(.secondary)
+                .font(TypographyTokens.body)
+                .foregroundStyle(ColorTokens.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
 
             MicroLessonFormulaView(
@@ -163,8 +170,12 @@ public struct MicroLessonDrawerView: View {
                 fallback: card.coreRule.canonicalLatexFormula,
                 pointSize: formulaPointSize
             )
-            .padding()
-            .background(Color.accentColor.opacity(0.08), in: RoundedRectangle(cornerRadius: cardCornerRadius))
+            .padding(SpacingTokens.compact)
+            .background(ColorTokens.actionSoft, in: RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                    .stroke(ColorTokens.action.opacity(0.35), lineWidth: 1)
+            )
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("micro_lesson.beat1")
@@ -172,59 +183,76 @@ public struct MicroLessonDrawerView: View {
 
     private func beatTwoCounterexample(card: MicroLessonCard) -> some View {
         let ce = card.brokenVsValidCounterexample
-        return VStack(alignment: .leading, spacing: 14) {
+        return AppSurfaceCard {
             MicroLessonFormulaView(
                 latex: ce.promptLatex,
                 fallback: ce.promptLatex,
                 pointSize: formulaPointSize
             )
-            .padding(12)
-            .background(Color.secondary.opacity(0.08), in: RoundedRectangle(cornerRadius: 12))
+            .padding(SpacingTokens.compact)
+            .background(ColorTokens.surfaceElevated, in: RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                    .stroke(ColorTokens.borderSubtle, lineWidth: 1)
+            )
 
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: SpacingTokens.xs) {
                 Text(LocalizedStringKey("micro_lesson.beat2.common_trap_label"))
-                    .font(.caption.bold())
-                    .foregroundStyle(.orange)
+                    .font(TypographyTokens.microLabel)
+                    .foregroundStyle(ColorTokens.warning)
                 MicroLessonFormulaView(
                     latex: ce.commonTrapLatex,
                     fallback: ce.commonTrapLatex,
                     pointSize: formulaPointSize
                 )
             }
-            .padding(12)
+            .padding(SpacingTokens.compact)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color.orange.opacity(0.10), in: RoundedRectangle(cornerRadius: 12))
+            .background(ColorTokens.warningSoft, in: RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                    .stroke(ColorTokens.warning.opacity(0.45), lineWidth: 1)
+            )
 
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: SpacingTokens.xs) {
                 Text(LocalizedStringKey("micro_lesson.beat2.verified_step_label"))
-                    .font(.caption.bold())
-                    .foregroundStyle(.green)
+                    .font(TypographyTokens.microLabel)
+                    .foregroundStyle(ColorTokens.success)
                 MicroLessonFormulaView(
                     latex: ce.verifiedStepLatex,
                     fallback: ce.verifiedStepLatex,
                     pointSize: formulaPointSize
                 )
             }
-            .padding(12)
+            .padding(SpacingTokens.compact)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color.green.opacity(0.10), in: RoundedRectangle(cornerRadius: 12))
+            .background(ColorTokens.successSoft, in: RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                    .stroke(ColorTokens.success.opacity(0.45), lineWidth: 1)
+            )
 
             Text(ce.whyTrapFailsExplanation)
-                .font(.body)
+                .font(TypographyTokens.body)
+                .foregroundStyle(ColorTokens.textPrimary)
                 .fixedSize(horizontal: false, vertical: true)
 
-            VStack(alignment: .leading, spacing: 6) {
+            VStack(alignment: .leading, spacing: SpacingTokens.xs) {
                 Text(LocalizedStringKey("micro_lesson.beat2.counterexample_label"))
-                    .font(.caption.bold())
-                    .foregroundStyle(.secondary)
+                    .font(TypographyTokens.microLabel)
+                    .foregroundStyle(ColorTokens.textSecondary)
                 MicroLessonFormulaView(
                     latex: ce.numericCounterexampleLatex,
                     fallback: ce.numericCounterexampleLatex,
                     pointSize: max(14, formulaPointSize - 2)
                 )
             }
-            .padding(12)
-            .background(Color.secondary.opacity(0.08), in: RoundedRectangle(cornerRadius: 12))
+            .padding(SpacingTokens.compact)
+            .background(ColorTokens.surfaceElevated, in: RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                    .stroke(ColorTokens.borderSubtle, lineWidth: 1)
+            )
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("micro_lesson.beat2")
@@ -232,9 +260,10 @@ public struct MicroLessonDrawerView: View {
 
     private func beatThreeQuickCheck(card: MicroLessonCard) -> some View {
         let qc = card.interactiveQuickCheck
-        return VStack(alignment: .leading, spacing: 14) {
+        return AppSurfaceCard {
             Text(qc.questionPrompt)
-                .font(.headline)
+                .font(TypographyTokens.cardTitle)
+                .foregroundStyle(ColorTokens.textPrimary)
                 .fixedSize(horizontal: false, vertical: true)
 
             MicroLessonFormulaView(
@@ -242,23 +271,28 @@ public struct MicroLessonDrawerView: View {
                 fallback: qc.questionLatex,
                 pointSize: formulaPointSize
             )
-            .padding(12)
-            .background(Color.secondary.opacity(0.08), in: RoundedRectangle(cornerRadius: 12))
+            .padding(SpacingTokens.compact)
+            .background(ColorTokens.surfaceElevated, in: RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                    .stroke(ColorTokens.borderSubtle, lineWidth: 1)
+            )
 
             ForEach(qc.options) { option in
                 let isSelected = viewModel.selectedOptionId == option.optionId
                 Button {
                     viewModel.selectedOptionId = option.optionId
                 } label: {
-                    HStack(spacing: 12) {
+                    HStack(spacing: SpacingTokens.compact) {
                         Text(option.optionId)
-                            .font(.subheadline.bold())
+                            .font(TypographyTokens.caption.bold())
+                            .monospacedDigit()
                             .frame(width: 28, height: 28)
                             .background(
-                                isSelected ? Color.accentColor : Color.secondary.opacity(0.18),
+                                isSelected ? ColorTokens.action : ColorTokens.surfacePressed,
                                 in: Circle()
                             )
-                            .foregroundStyle(isSelected ? Color.white : Color.primary)
+                            .foregroundStyle(isSelected ? ColorTokens.actionForeground : ColorTokens.textPrimary)
 
                         MicroLessonFormulaView(
                             latex: option.latexOrText,
@@ -266,15 +300,15 @@ public struct MicroLessonDrawerView: View {
                             pointSize: max(15, formulaPointSize - 1)
                         )
                     }
-                    .padding(12)
+                    .padding(SpacingTokens.compact)
                     .frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
                     .background(
-                        isSelected ? Color.accentColor.opacity(0.14) : Color.secondary.opacity(0.07),
-                        in: RoundedRectangle(cornerRadius: 12)
+                        isSelected ? ColorTokens.actionSoft : ColorTokens.surfaceElevated,
+                        in: RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
                     )
                     .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 1.5)
+                        RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                            .stroke(isSelected ? ColorTokens.action : ColorTokens.borderSubtle, lineWidth: isSelected ? 1.5 : 1)
                     )
                 }
                 .buttonStyle(.plain)
@@ -287,14 +321,13 @@ public struct MicroLessonDrawerView: View {
                 Task { await viewModel.submitQuickCheck() }
             } label: {
                 Text(LocalizedStringKey("micro_lesson.beat3.submit_cta"))
-                    .frame(maxWidth: .infinity, minHeight: 44)
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(AppPrimaryButtonStyle())
             .disabled(viewModel.selectedOptionId == nil || viewModel.isSubmitting)
             .accessibilityIdentifier("micro_lesson.quick_check.submit")
 
             if viewModel.hasSubmittedQuickCheck {
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: SpacingTokens.sm) {
                     Text(
                         LocalizedStringKey(
                             viewModel.quickCheckPassed
@@ -302,12 +335,13 @@ public struct MicroLessonDrawerView: View {
                                 : "micro_lesson.beat3.retry_feedback"
                         )
                     )
-                    .font(.subheadline.bold())
-                    .foregroundStyle(viewModel.quickCheckPassed ? .green : .orange)
+                    .font(TypographyTokens.cardTitle)
+                    .foregroundStyle(viewModel.quickCheckPassed ? ColorTokens.success : ColorTokens.warning)
 
                     if let rationale = viewModel.selectedOption?.rationale {
                         Text(rationale)
-                            .font(.body)
+                            .font(TypographyTokens.body)
+                            .foregroundStyle(ColorTokens.textPrimary)
                             .fixedSize(horizontal: false, vertical: true)
                     }
 
@@ -316,15 +350,18 @@ public struct MicroLessonDrawerView: View {
                         onReturnToPractice()
                     } label: {
                         Text(LocalizedStringKey("micro_lesson.cta.back_to_twin"))
-                            .frame(maxWidth: .infinity, minHeight: 44)
                     }
-                    .buttonStyle(.bordered)
+                    .buttonStyle(AppSecondaryButtonStyle())
                     .accessibilityIdentifier("micro_lesson.cta.back_to_twin")
                 }
-                .padding(12)
+                .padding(SpacingTokens.compact)
                 .background(
-                    (viewModel.quickCheckPassed ? Color.green : Color.orange).opacity(0.10),
-                    in: RoundedRectangle(cornerRadius: 12)
+                    viewModel.quickCheckPassed ? ColorTokens.successSoft : ColorTokens.warningSoft,
+                    in: RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                        .stroke((viewModel.quickCheckPassed ? ColorTokens.success : ColorTokens.warning).opacity(0.5), lineWidth: 1)
                 )
             }
         }
@@ -333,51 +370,46 @@ public struct MicroLessonDrawerView: View {
     }
 
     private var navigationFooter: some View {
-        HStack {
+        HStack(spacing: SpacingTokens.sm) {
             if viewModel.currentBeat != .coreRule {
                 Button {
                     viewModel.previousBeat()
                 } label: {
                     Text(LocalizedStringKey("micro_lesson.cta.prev_beat"))
-                        .frame(minHeight: 44)
                 }
-                .buttonStyle(.bordered)
+                .buttonStyle(AppSecondaryButtonStyle())
                 .accessibilityIdentifier("micro_lesson.cta.prev_beat")
             }
-
-            Spacer()
 
             if viewModel.currentBeat != .quickCheck {
                 Button {
                     viewModel.nextBeat()
                 } label: {
                     Text(LocalizedStringKey("micro_lesson.cta.next_beat"))
-                        .frame(minHeight: 44)
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(AppPrimaryButtonStyle())
                 .accessibilityIdentifier("micro_lesson.cta.next_beat")
             }
         }
-        .padding(.top, 8)
+        .padding(.top, SpacingTokens.sm)
     }
 
     private func fallbackView(errorKey: String) -> some View {
-        VStack(spacing: 16) {
+        AppSurfaceCard(elevated: true) {
             Text(LocalizedStringKey(errorKey))
-                .font(.body)
+                .font(TypographyTokens.body)
+                .foregroundStyle(ColorTokens.textSecondary)
                 .multilineTextAlignment(.center)
-                .padding()
 
             Button {
                 dismiss()
                 onFallbackToHints()
             } label: {
                 Text(LocalizedStringKey("micro_lesson.cta.back_to_twin"))
-                    .frame(minHeight: 44)
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(AppPrimaryButtonStyle())
         }
-        .padding()
+        .padding(SpacingTokens.lg)
         .accessibilityIdentifier("micro_lesson.fallback")
     }
 }

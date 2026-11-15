@@ -1,0 +1,353 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/exam/v1/assembled-assessment-response.schema.json",
+  "title": "AssembledAssessmentResponse",
+  "description": "Immutable candidate-facing assembled assessment instance with SHA-256 reproducibility hash, accommodation scaling, and answer-key-free question sequence (Sprint 9.3).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "userId",
+    "blueprintId",
+    "blueprintCode",
+    "blueprintTitle",
+    "blueprintMode",
+    "examDefinitionId",
+    "examVersionNumber",
+    "assemblySeed",
+    "reproducibilityHash",
+    "totalQuestionCount",
+    "baseDurationSeconds",
+    "timeMultiplier",
+    "effectiveDurationSeconds",
+    "accommodationsSnapshot",
+    "distributionSummary",
+    "status",
+    "assembledAt",
+    "expiresAt",
+    "items",
+    "trainingEligible"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "userId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "candidateProfileId": {
+      "type": ["string", "null"],
+      "format": "uuid"
+    },
+    "blueprintId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "blueprintCode": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 64
+    },
+    "blueprintTitle": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 160
+    },
+    "blueprintMode": {
+      "type": "string",
+      "enum": [
+        "DIAGNOSTIC_BASELINE",
+        "SECTION_DRILL",
+        "FULL_SIMULATION",
+        "TOPIC_MASTERY_CHECK"
+      ]
+    },
+    "examDefinitionId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "examVersionNumber": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    },
+    "assemblySeed": {
+      "type": "string",
+      "minLength": 4,
+      "maxLength": 128
+    },
+    "reproducibilityHash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "totalQuestionCount": {
+      "type": "integer",
+      "minimum": 5,
+      "maximum": 200
+    },
+    "baseDurationSeconds": {
+      "type": "integer",
+      "minimum": 300,
+      "maximum": 21600
+    },
+    "timeMultiplier": {
+      "type": "number",
+      "minimum": 1.0,
+      "maximum": 2.0
+    },
+    "effectiveDurationSeconds": {
+      "type": "integer",
+      "minimum": 300,
+      "maximum": 43200
+    },
+    "accommodationsSnapshot": {
+      "$ref": "#/$defs/AppliedAccommodationSnapshot"
+    },
+    "distributionSummary": {
+      "$ref": "#/$defs/AssemblyDistributionSummary"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["ASSEMBLED", "LAUNCHED", "COMPLETED", "EXPIRED"]
+    },
+    "assembledAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "items": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 200,
+      "items": {
+        "$ref": "#/$defs/AssembledAssessmentItemResponse"
+      }
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    }
+  },
+  "$defs": {
+    "AppliedAccommodationSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "timeMultiplier",
+        "highContrastMode",
+        "screenReaderOptimized",
+        "extendedBreakPrompts"
+      ],
+      "properties": {
+        "timeMultiplier": {
+          "type": "number",
+          "minimum": 1.0,
+          "maximum": 2.0
+        },
+        "highContrastMode": {
+          "type": "boolean"
+        },
+        "screenReaderOptimized": {
+          "type": "boolean"
+        },
+        "extendedBreakPrompts": {
+          "type": "boolean"
+        }
+      }
+    },
+    "AssemblyDistributionSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "topicCounts",
+        "difficultyCounts",
+        "difficultyRealizedBps",
+        "cognitiveCounts",
+        "maxDifficultyDeviationBps"
+      ],
+      "properties": {
+        "topicCounts": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "difficultyCounts": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "difficultyRealizedBps": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          }
+        },
+        "cognitiveCounts": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "maxDifficultyDeviationBps": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2000
+        }
+      }
+    },
+    "AssembledAssessmentItemResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "questionItemId",
+        "questionCode",
+        "sequenceNumber",
+        "topicCode",
+        "itemFormat",
+        "difficultyBand",
+        "cognitiveLevel",
+        "stemMarkdown",
+        "hasVisualDiagram",
+        "optionOrder",
+        "options",
+        "allocatedPoints",
+        "estimatedTimeSeconds",
+        "trainingEligible"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "questionItemId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "questionCode": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 64
+        },
+        "sequenceNumber": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "topicCode": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 128
+        },
+        "subtopicCode": {
+          "type": ["string", "null"],
+          "maxLength": 128
+        },
+        "itemFormat": {
+          "type": "string",
+          "enum": [
+            "SINGLE_CHOICE_MCQ",
+            "MULTI_SELECT_MCQ",
+            "NUMERIC_GRID_IN",
+            "SHORT_STRUCTURED_RESPONSE"
+          ]
+        },
+        "difficultyBand": {
+          "type": "string",
+          "enum": ["EASY", "MEDIUM", "HARD", "EXPERT"]
+        },
+        "cognitiveLevel": {
+          "type": "string",
+          "enum": ["RECALL", "COMPREHENSION", "APPLICATION", "ANALYSIS", "EVALUATION"]
+        },
+        "stemMarkdown": {
+          "type": "string",
+          "minLength": 10
+        },
+        "stemLatex": {
+          "type": ["string", "null"]
+        },
+        "altTextDescription": {
+          "type": ["string", "null"],
+          "minLength": 10
+        },
+        "hasVisualDiagram": {
+          "type": "boolean"
+        },
+        "optionOrder": {
+          "type": "array",
+          "maxItems": 5,
+          "items": {
+            "type": "string",
+            "enum": ["A", "B", "C", "D", "E"]
+          }
+        },
+        "options": {
+          "type": "array",
+          "maxItems": 5,
+          "items": {
+            "$ref": "#/$defs/CandidateQuestionOptionResponse"
+          }
+        },
+        "allocatedPoints": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 100.0
+        },
+        "estimatedTimeSeconds": {
+          "type": "integer",
+          "minimum": 15,
+          "maximum": 1800
+        },
+        "trainingEligible": {
+          "type": "boolean",
+          "const": false
+        }
+      }
+    },
+    "CandidateQuestionOptionResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "optionKey",
+        "displayOrder",
+        "contentMarkdown",
+        "trainingEligible"
+      ],
+      "properties": {
+        "optionKey": {
+          "type": "string",
+          "enum": ["A", "B", "C", "D", "E"]
+        },
+        "displayOrder": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "contentMarkdown": {
+          "type": "string",
+          "minLength": 1
+        },
+        "contentLatex": {
+          "type": ["string", "null"]
+        },
+        "trainingEligible": {
+          "type": "boolean",
+          "const": false
+        }
+      }
+    }
+  }
+}

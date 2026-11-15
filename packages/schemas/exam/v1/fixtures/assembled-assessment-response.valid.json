@@ -1,0 +1,187 @@
+{
+  "id": "95000000-0000-4000-8000-000000000101",
+  "userId": "99999999-1111-4222-8333-444444444444",
+  "candidateProfileId": "66666666-7777-4888-8999-000000000000",
+  "blueprintId": "94000000-0000-4000-8000-000000000101",
+  "blueprintCode": "BP-TYT-MATH-DIAG-2026-V1",
+  "blueprintTitle": "TYT Mathematics Diagnostic Baseline (8 Items)",
+  "blueprintMode": "DIAGNOSTIC_BASELINE",
+  "examDefinitionId": "91000000-0000-4000-8000-000000000101",
+  "examVersionNumber": 1,
+  "assemblySeed": "tyt-2026-diagnostic-seed-01",
+  "reproducibilityHash": "4040404040404040404040404040404040404040404040404040404040404001",
+  "totalQuestionCount": 5,
+  "baseDurationSeconds": 900,
+  "timeMultiplier": 1.25,
+  "effectiveDurationSeconds": 1125,
+  "accommodationsSnapshot": {
+    "timeMultiplier": 1.25,
+    "highContrastMode": true,
+    "screenReaderOptimized": true,
+    "extendedBreakPrompts": true
+  },
+  "distributionSummary": {
+    "topicCounts": {
+      "MATH.ARITHMETIC.INTEGER_OPERATIONS": 2,
+      "MATH.ARITHMETIC.FRACTIONS": 1,
+      "MATH.ARITHMETIC.PERCENTAGES": 1,
+      "MATH.ALGEBRA.FACTORING": 1
+    },
+    "difficultyCounts": {
+      "EASY": 1,
+      "MEDIUM": 3,
+      "HARD": 1,
+      "EXPERT": 0
+    },
+    "difficultyRealizedBps": {
+      "EASY": 2000,
+      "MEDIUM": 6000,
+      "HARD": 2000,
+      "EXPERT": 0
+    },
+    "cognitiveCounts": {
+      "RECALL": 1,
+      "COMPREHENSION": 1,
+      "APPLICATION": 2,
+      "ANALYSIS": 1,
+      "EVALUATION": 0
+    },
+    "maxDifficultyDeviationBps": 500
+  },
+  "status": "ASSEMBLED",
+  "assembledAt": "2026-03-01T10:00:00Z",
+  "expiresAt": "2026-03-08T10:00:00Z",
+  "items": [
+    {
+      "id": "95100000-0000-4000-8000-000000000101",
+      "questionItemId": "93000000-0000-4000-8000-000000000101",
+      "questionCode": "TYT-MATH-2026-INT-001",
+      "sequenceNumber": 1,
+      "topicCode": "MATH.ARITHMETIC.INTEGER_OPERATIONS",
+      "subtopicCode": "SIGNED_INTEGERS",
+      "itemFormat": "SINGLE_CHOICE_MCQ",
+      "difficultyBand": "EASY",
+      "cognitiveLevel": "RECALL",
+      "stemMarkdown": "Evaluate the integer expression (-18) + 27 - (-9) and choose the resulting value.",
+      "stemLatex": "(-18) + 27 - (-9)",
+      "altTextDescription": null,
+      "hasVisualDiagram": false,
+      "optionOrder": ["A", "B", "C", "D", "E"],
+      "options": [
+        {"optionKey": "A", "displayOrder": 1, "contentMarkdown": "0", "contentLatex": "0", "trainingEligible": false},
+        {"optionKey": "B", "displayOrder": 2, "contentMarkdown": "9", "contentLatex": "9", "trainingEligible": false},
+        {"optionKey": "C", "displayOrder": 3, "contentMarkdown": "18", "contentLatex": "18", "trainingEligible": false},
+        {"optionKey": "D", "displayOrder": 4, "contentMarkdown": "36", "contentLatex": "36", "trainingEligible": false},
+        {"optionKey": "E", "displayOrder": 5, "contentMarkdown": "-18", "contentLatex": "-18", "trainingEligible": false}
+      ],
+      "allocatedPoints": 1.00,
+      "estimatedTimeSeconds": 60,
+      "trainingEligible": false
+    },
+    {
+      "id": "95100000-0000-4000-8000-000000000102",
+      "questionItemId": "93000000-0000-4000-8000-000000000102",
+      "questionCode": "TYT-MATH-2026-INT-002",
+      "sequenceNumber": 2,
+      "topicCode": "MATH.ARITHMETIC.INTEGER_OPERATIONS",
+      "subtopicCode": "DIVISIBILITY_PARITY",
+      "itemFormat": "SINGLE_CHOICE_MCQ",
+      "difficultyBand": "MEDIUM",
+      "cognitiveLevel": "COMPREHENSION",
+      "stemMarkdown": "If a and b are consecutive odd integers with a < b and a + b = 48, what is the product a * b?",
+      "stemLatex": "a < b, a + b = 48",
+      "altTextDescription": null,
+      "hasVisualDiagram": false,
+      "optionOrder": ["A", "B", "C", "D", "E"],
+      "options": [
+        {"optionKey": "A", "displayOrder": 1, "contentMarkdown": "572", "contentLatex": "572", "trainingEligible": false},
+        {"optionKey": "B", "displayOrder": 2, "contentMarkdown": "575", "contentLatex": "575", "trainingEligible": false},
+        {"optionKey": "C", "displayOrder": 3, "contentMarkdown": "576", "contentLatex": "576", "trainingEligible": false},
+        {"optionKey": "D", "displayOrder": 4, "contentMarkdown": "525", "contentLatex": "525", "trainingEligible": false},
+        {"optionKey": "E", "displayOrder": 5, "contentMarkdown": "625", "contentLatex": "625", "trainingEligible": false}
+      ],
+      "allocatedPoints": 1.00,
+      "estimatedTimeSeconds": 75,
+      "trainingEligible": false
+    },
+    {
+      "id": "95100000-0000-4000-8000-000000000103",
+      "questionItemId": "93000000-0000-4000-8000-000000000106",
+      "questionCode": "TYT-MATH-2026-FRC-002",
+      "sequenceNumber": 3,
+      "topicCode": "MATH.ARITHMETIC.FRACTIONS",
+      "subtopicCode": "COMPOUND_FRACTIONS",
+      "itemFormat": "SINGLE_CHOICE_MCQ",
+      "difficultyBand": "MEDIUM",
+      "cognitiveLevel": "APPLICATION",
+      "stemMarkdown": "Simplify the compound fraction (1 - 1/3) / (1 + 1/3) to its lowest terms.",
+      "stemLatex": "(1 - 1/3)/(1 + 1/3)",
+      "altTextDescription": null,
+      "hasVisualDiagram": false,
+      "optionOrder": ["A", "B", "C", "D", "E"],
+      "options": [
+        {"optionKey": "A", "displayOrder": 1, "contentMarkdown": "1/4", "contentLatex": "1/4", "trainingEligible": false},
+        {"optionKey": "B", "displayOrder": 2, "contentMarkdown": "1/3", "contentLatex": "1/3", "trainingEligible": false},
+        {"optionKey": "C", "displayOrder": 3, "contentMarkdown": "1/2", "contentLatex": "1/2", "trainingEligible": false},
+        {"optionKey": "D", "displayOrder": 4, "contentMarkdown": "2/3", "contentLatex": "2/3", "trainingEligible": false},
+        {"optionKey": "E", "displayOrder": 5, "contentMarkdown": "2", "contentLatex": "2", "trainingEligible": false}
+      ],
+      "allocatedPoints": 1.00,
+      "estimatedTimeSeconds": 75,
+      "trainingEligible": false
+    },
+    {
+      "id": "95100000-0000-4000-8000-000000000104",
+      "questionItemId": "93000000-0000-4000-8000-000000000111",
+      "questionCode": "TYT-MATH-2026-PCT-003",
+      "sequenceNumber": 4,
+      "topicCode": "MATH.ARITHMETIC.PERCENTAGES",
+      "subtopicCode": "MIXTURE_PERCENTAGES",
+      "itemFormat": "SINGLE_CHOICE_MCQ",
+      "difficultyBand": "HARD",
+      "cognitiveLevel": "ANALYSIS",
+      "stemMarkdown": "According to the diagram, 300g of a 20% salt solution is mixed with 200g of a 45% salt solution. What is the resulting concentration?",
+      "stemLatex": "(300(0.20)+200(0.45))/500",
+      "altTextDescription": "Bar chart comparing two containers: Container A with 300g at 20 percent concentration and Container B with 200g at 45 percent concentration.",
+      "hasVisualDiagram": true,
+      "optionOrder": ["A", "B", "C", "D", "E"],
+      "options": [
+        {"optionKey": "A", "displayOrder": 1, "contentMarkdown": "25%", "contentLatex": "25%", "trainingEligible": false},
+        {"optionKey": "B", "displayOrder": 2, "contentMarkdown": "28%", "contentLatex": "28%", "trainingEligible": false},
+        {"optionKey": "C", "displayOrder": 3, "contentMarkdown": "30%", "contentLatex": "30%", "trainingEligible": false},
+        {"optionKey": "D", "displayOrder": 4, "contentMarkdown": "32.5%", "contentLatex": "32.5%", "trainingEligible": false},
+        {"optionKey": "E", "displayOrder": 5, "contentMarkdown": "35%", "contentLatex": "35%", "trainingEligible": false}
+      ],
+      "allocatedPoints": 1.00,
+      "estimatedTimeSeconds": 110,
+      "trainingEligible": false
+    },
+    {
+      "id": "95100000-0000-4000-8000-000000000105",
+      "questionItemId": "93000000-0000-4000-8000-000000000114",
+      "questionCode": "TYT-MATH-2026-FAC-002",
+      "sequenceNumber": 5,
+      "topicCode": "MATH.ALGEBRA.FACTORING",
+      "subtopicCode": "QUADRATIC_SIMPLIFICATION",
+      "itemFormat": "SINGLE_CHOICE_MCQ",
+      "difficultyBand": "MEDIUM",
+      "cognitiveLevel": "APPLICATION",
+      "stemMarkdown": "For x not in {2, 5}, simplify ((x^2 - 7x + 10)/(x^2 - 4)) * ((x + 2)/(x - 5)).",
+      "stemLatex": "((x-2)(x-5))/((x-2)(x+2)) * (x+2)/(x-5)",
+      "altTextDescription": null,
+      "hasVisualDiagram": false,
+      "optionOrder": ["A", "B", "C", "D", "E"],
+      "options": [
+        {"optionKey": "A", "displayOrder": 1, "contentMarkdown": "1", "contentLatex": "1", "trainingEligible": false},
+        {"optionKey": "B", "displayOrder": 2, "contentMarkdown": "-1", "contentLatex": "-1", "trainingEligible": false},
+        {"optionKey": "C", "displayOrder": 3, "contentMarkdown": "(x-5)/(x+2)", "contentLatex": "(x-5)/(x+2)", "trainingEligible": false},
+        {"optionKey": "D", "displayOrder": 4, "contentMarkdown": "(x-2)/(x+2)", "contentLatex": "(x-2)/(x+2)", "trainingEligible": false},
+        {"optionKey": "E", "displayOrder": 5, "contentMarkdown": "x - 2", "contentLatex": "x - 2", "trainingEligible": false}
+      ],
+      "allocatedPoints": 1.00,
+      "estimatedTimeSeconds": 85,
+      "trainingEligible": false
+    }
+  ],
+  "trainingEligible": false
+}

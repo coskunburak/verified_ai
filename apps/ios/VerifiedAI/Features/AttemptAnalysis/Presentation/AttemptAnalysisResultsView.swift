@@ -15,21 +15,39 @@ struct AttemptAnalysisResultsView: View {
                     if analysis.domainBasis == "REVIEWED_REAL_TASK" { Text("attempt.domain.reviewed").font(.caption) }
                 }
                 ForEach(analysis.steps) { step in
-                    VStack(alignment: .leading, spacing: 8) {
+                    let isWrong = step.verdict == .wrong
+                    VStack(alignment: .leading, spacing: SpacingTokens.sm) {
                         Label(LocalizedStringKey(step.verdict.titleKey), systemImage: step.verdict.symbol)
-                            .foregroundStyle(step.verdict == .wrong ? Color.red : Color.primary)
+                            .font(TypographyTokens.cardTitle)
+                            .foregroundStyle(isWrong ? ColorTokens.danger : ColorTokens.success)
                             .accessibilityIdentifier("attempt.step.\(step.index).\(step.verdict.rawValue)")
                         let submitted = attempt.steps[step.index - 1]
                         if let normalized = submitted.normalizedStatement {
                             AttemptMathView(json: normalized, fallback: submitted.content,
                                 highlight: step.diagnosis?.displayFallback == "SUBEXPRESSION" ? step.diagnosis?.changedExpressionPath : nil)
-                        } else { Text(verbatim: submitted.content).font(.body.monospaced()).textSelection(.enabled) }
-                        if step.verdict == .wrong {
+                        } else {
+                            Text(verbatim: submitted.content)
+                                .font(.body.monospaced())
+                                .foregroundStyle(ColorTokens.textPrimary)
+                                .textSelection(.enabled)
+                        }
+                        if isWrong {
                             FirstWrongStepDiffView(code: step.mistakeCode ?? "ALG_TRANSFORMATION_INVALID")
                             if let proof = step.counterexample { AttemptCounterexampleProofCardView(proof: proof) }
-                            else { Text("attempt.counterexample.unavailable") }
+                            else {
+                                Text("attempt.counterexample.unavailable")
+                                    .font(TypographyTokens.caption)
+                                    .foregroundStyle(ColorTokens.textSecondary)
+                            }
                         }
-                    }.padding().background(.quaternary, in: RoundedRectangle(cornerRadius: 12))
+                    }
+                    .padding(SpacingTokens.md)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(isWrong ? ColorTokens.dangerSoft : ColorTokens.surface, in: RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous)
+                            .stroke(isWrong ? ColorTokens.danger.opacity(0.6) : ColorTokens.borderSubtle, lineWidth: isWrong ? 1.5 : 1)
+                    )
                 }
             } else if attempt.finalAnswer != nil {
                 Label("attempt.answer.saved", systemImage: "tray.and.arrow.down")

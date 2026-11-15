@@ -22,30 +22,22 @@ public struct PracticeQuestionCardView: View {
     }
 
     public var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            // Header: Slot Role & Difficulty Badge
+        AppSurfaceCard {
             HStack {
-                Text(LocalizedStringKey(item.slotRole.localizedTitleKey))
-                    .font(.caption.bold())
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 4)
-                    .background(slotBadgeColor.opacity(0.15))
-                    .foregroundColor(slotBadgeColor)
-                    .clipShape(Capsule())
+                AppStatusBadge(LocalizedStringKey(item.slotRole.localizedTitleKey), tone: slotBadgeTone)
 
                 Spacer()
 
                 Text(String(format: "ZPD: %.2f - %.2f", item.zpdWindow.lowerBound, item.zpdWindow.upperBound))
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                    .font(TypographyTokens.caption.monospacedDigit())
+                    .foregroundStyle(ColorTokens.textSecondary)
             }
 
-            // 60-Second Independent Verification Lock Banner (if twin)
             if item.isTwinVerification {
-                HStack(spacing: 12) {
+                HStack(spacing: SpacingTokens.compact) {
                     ZStack {
                         Circle()
-                            .stroke(Color.secondary.opacity(0.2), lineWidth: 3)
+                            .stroke(ColorTokens.borderStrong, lineWidth: 3)
                             .frame(width: 36, height: 36)
 
                         if isLockActive {
@@ -57,23 +49,24 @@ public struct PracticeQuestionCardView: View {
 
                             Text("\(remainingLockSeconds)")
                                 .font(.system(size: 13, weight: .bold, design: .monospaced))
-                                .foregroundColor(timerColor)
+                                .monospacedDigit()
+                                .foregroundStyle(timerColor)
                         } else {
                             Image(systemName: "checkmark")
-                                .font(.caption.bold())
-                                .foregroundColor(.green)
+                                .font(TypographyTokens.caption.bold())
+                                .foregroundStyle(ColorTokens.success)
                         }
                     }
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text(isLockActive ? LocalizedStringKey("practice.lock.active") : LocalizedStringKey("practice.lock.unlocked"))
-                            .font(.subheadline.bold())
-                            .foregroundColor(isLockActive ? .primary : .secondary)
+                            .font(TypographyTokens.cardTitle)
+                            .foregroundStyle(isLockActive ? ColorTokens.textPrimary : ColorTokens.textSecondary)
 
                         if isLockActive {
                             Text("Independent reasoning window")
-                                .font(.caption2)
-                                .foregroundColor(.secondary)
+                                .font(TypographyTokens.microLabel)
+                                .foregroundStyle(ColorTokens.textSecondary)
                         }
                     }
 
@@ -84,60 +77,62 @@ public struct PracticeQuestionCardView: View {
                             Image(systemName: isLockActive ? "lock.fill" : "lightbulb.fill")
                             Text(LocalizedStringKey("practice.action.hint"))
                         }
-                        .font(.caption.bold())
-                        .padding(.horizontal, 10)
+                        .font(TypographyTokens.caption.bold())
+                        .padding(.horizontal, SpacingTokens.compact)
                         .padding(.vertical, 6)
-                        .background(isLockActive ? Color.secondary.opacity(0.1) : Color.orange.opacity(0.15))
-                        .foregroundColor(isLockActive ? .secondary : .orange)
+                        .background(isLockActive ? ColorTokens.surfacePressed : ColorTokens.warningSoft)
+                        .foregroundStyle(isLockActive ? ColorTokens.textSecondary : ColorTokens.warning)
                         .clipShape(Capsule())
                     }
                     .disabled(isLockActive)
                 }
-                .padding(12)
-                .background(Color(UIColor.secondarySystemBackground))
-                .cornerRadius(12)
+                .padding(SpacingTokens.compact)
+                .background(ColorTokens.surfaceElevated)
+                .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                        .stroke(ColorTokens.borderSubtle, lineWidth: 1)
+                )
             }
 
-            // Instruction
             Text(item.promptInstructionEn)
-                .font(.body)
-                .foregroundColor(.secondary)
+                .font(TypographyTokens.body)
+                .foregroundStyle(ColorTokens.textSecondary)
 
-            // LaTeX Math Problem Rendering via NativeMathLabel (ADR-010 Zero-WebView)
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: SpacingTokens.xs) {
                 NativeMathLabel(
                     latex: item.promptLatex,
                     fallback: item.promptLatex,
                     pointSize: 20
                 )
                 .frame(minHeight: 50)
-                .padding(.vertical, 8)
+                .padding(.vertical, SpacingTokens.xs)
             }
-            .padding()
+            .padding(SpacingTokens.compact)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color(UIColor.tertiarySystemBackground))
-            .cornerRadius(12)
+            .background(ColorTokens.surfaceElevated)
+            .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                    .stroke(ColorTokens.borderSubtle, lineWidth: 1)
+            )
         }
-        .padding(16)
-        .background(Color(UIColor.systemBackground))
-        .cornerRadius(16)
-        .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
     }
 
-    private var slotBadgeColor: Color {
+    private var slotBadgeTone: AppBadgeTone {
         switch item.slotRole {
-        case .trapClosure: return .purple
-        case .spacedDrill: return .blue
-        case .examSynthesis: return .green
+        case .trapClosure: return .warning
+        case .spacedDrill: return .action
+        case .examSynthesis: return .success
         }
     }
 
     private var timerColor: Color {
         switch urgencyPhase {
-        case .calm: return .blue
-        case .focused: return .orange
-        case .finalCountdown: return .red
-        case .unlocked: return .green
+        case .calm: return ColorTokens.action
+        case .focused: return ColorTokens.warning
+        case .finalCountdown: return ColorTokens.danger
+        case .unlocked: return ColorTokens.success
         }
     }
 }

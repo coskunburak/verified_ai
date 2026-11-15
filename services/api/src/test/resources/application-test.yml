@@ -9,3 +9,6 @@ verifiedai:
     syllabus-similarity-threshold: 0.70
     syllabus-live-ai-enabled: false
     default-jurisdiction: TR
+    question-bank-enabled: true
+    blueprint-management-enabled: true
+    assessment-assembly-enabled: true

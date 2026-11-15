@@ -1,4 +1,5 @@
 #include "Base.xcconfig"
 APP_ENVIRONMENT = development
-// Simulator uses localhost. For a physical iPhone, replace localhost with the Mac LAN IP.
-API_BASE_URL = http:/$()/192.168.1.126:8080
+// Simulator connects to local Docker (127.0.0.1:8080); physical iPhone uses Mac LAN IP.
+API_BASE_URL[sdk=iphonesimulator*] = http:/$()/localhost:8080
+API_BASE_URL[sdk=iphoneos*] = http:/$()/192.168.1.126:8080

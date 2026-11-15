@@ -19,12 +19,12 @@ public struct PlanRebalanceNotificationSheet: View {
     public var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 18) {
+                VStack(alignment: .leading, spacing: SpacingTokens.lg) {
                     noBacklogBadge
 
                     Text(LocalizedStringKey(viewModel.recoveryStatus?.welcomeMessageKey ?? "studyplan.rebalance.welcome_recovered"))
-                        .font(.title3.weight(.semibold))
-                        .foregroundStyle(.primary)
+                        .font(TypographyTokens.sectionTitle)
+                        .foregroundStyle(ColorTokens.textPrimary)
                         .fixedSize(horizontal: false, vertical: true)
 
                     summaryPillRow
@@ -33,14 +33,14 @@ public struct PlanRebalanceNotificationSheet: View {
                 }
                 .padding(cardPadding)
             }
-            .background(Color(.systemGroupedBackground))
+            .background(ColorTokens.canvas)
             .navigationTitle(Text("studyplan.rebalance.sheet_title"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(action: { dismiss() }) {
                         Image(systemName: "xmark.circle.fill")
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(ColorTokens.textSecondary)
                     }
                     .accessibilityLabel(Text("Close"))
                 }
@@ -52,18 +52,8 @@ public struct PlanRebalanceNotificationSheet: View {
     }
 
     private var noBacklogBadge: some View {
-        HStack(spacing: 8) {
-            Image(systemName: "sparkles")
-                .foregroundStyle(Color.teal)
-                .accessibilityHidden(true)
-            Text("studyplan.rebalance.no_backlog_badge")
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(Color.teal)
-        }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 6)
-        .background(Color.teal.opacity(0.14), in: Capsule())
-        .accessibilityAddTraits(.isStaticText)
+        AppStatusBadge("studyplan.rebalance.no_backlog_badge", systemImage: "sparkles", tone: .action)
+            .accessibilityAddTraits(.isStaticText)
     }
 
     private var summaryPillRow: some View {
@@ -72,37 +62,42 @@ public struct PlanRebalanceNotificationSheet: View {
         let activeTasks = status?.activeTodayTasksCount ?? 3
         let streamlined = (status?.prunedTasksCount ?? 0) + (status?.rescheduledReviewsCount ?? 0)
 
-        return HStack(spacing: 10) {
+        return HStack(spacing: SpacingTokens.sm) {
             summaryPill(
                 titleKey: "studyplan.rebalance.summary_budget_label",
                 valueText: "\(budget) min",
-                tint: .teal
+                tone: .action
             )
             summaryPill(
                 titleKey: "studyplan.rebalance.summary_tasks_label",
                 valueText: "\(activeTasks)",
-                tint: .mint
+                tone: .success
             )
             summaryPill(
                 titleKey: "studyplan.rebalance.summary_streamlined_label",
                 valueText: "\(streamlined)",
-                tint: .cyan
+                tone: .neutral
             )
         }
     }
 
-    private func summaryPill(titleKey: String, valueText: String, tint: Color) -> some View {
+    private func summaryPill(titleKey: String, valueText: String, tone: AppBadgeTone) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(LocalizedStringKey(titleKey))
-                .font(.caption2.weight(.medium))
-                .foregroundStyle(.secondary)
+                .font(TypographyTokens.microLabel)
+                .foregroundStyle(ColorTokens.textSecondary)
             Text(valueText)
-                .font(.headline.monospacedDigit())
-                .foregroundStyle(.primary)
+                .font(TypographyTokens.sectionTitle)
+                .monospacedDigit()
+                .foregroundStyle(tone == .neutral ? ColorTokens.textPrimary : ColorTokens.action)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(12)
-        .background(tint.opacity(0.10), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .padding(SpacingTokens.compact)
+        .background(ColorTokens.surface, in: RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                .stroke(ColorTokens.borderSubtle, lineWidth: 1)
+        )
         .accessibilityElement(children: .combine)
     }
 
@@ -111,7 +106,7 @@ public struct PlanRebalanceNotificationSheet: View {
         let acceptFormat = NSLocalizedString("studyplan.rebalance.cta_accept_plan", comment: "")
         let acceptTitle = String(format: acceptFormat, budget)
 
-        return VStack(spacing: 12) {
+        return VStack(spacing: SpacingTokens.compact) {
             Button {
                 Task {
                     if let response = await viewModel.acceptRebalancedPlan() {
@@ -122,16 +117,12 @@ public struct PlanRebalanceNotificationSheet: View {
                 HStack {
                     if viewModel.isRebalancing {
                         ProgressView()
-                            .tint(.white)
+                            .tint(ColorTokens.actionForeground)
                     }
                     Text(acceptTitle)
-                        .font(.headline)
-                        .frame(maxWidth: .infinity)
                 }
-                .padding(.vertical, 14)
-                .foregroundStyle(.white)
-                .background(Color.teal, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
             }
+            .buttonStyle(AppPrimaryButtonStyle())
             .disabled(viewModel.isRebalancing)
             .accessibilityIdentifier("rebalance.cta.accept")
             .accessibilityLabel(Text(acceptTitle))
@@ -145,12 +136,8 @@ public struct PlanRebalanceNotificationSheet: View {
                 }
             } label: {
                 Text("studyplan.rebalance.cta_mini_mode")
-                    .font(.subheadline.weight(.semibold))
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
-                    .foregroundStyle(Color.teal)
-                    .background(Color.teal.opacity(0.12), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
             }
+            .buttonStyle(AppSecondaryButtonStyle())
             .disabled(viewModel.isRebalancing)
             .accessibilityIdentifier("rebalance.cta.miniMode")
             .accessibilityLabel(Text("studyplan.rebalance.cta_mini_mode"))

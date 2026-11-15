@@ -4719,6 +4719,363 @@ paths:
         '503':
           $ref: '#/components/responses/ProblemServiceUnavailable'
 
+  /v1/exams/{examDefinitionId}/question-bank/items:
+    post:
+      summary: Create a draft question bank item with options and SME provenance metadata
+      operationId: createExamQuestionBankItem
+      tags:
+        - Exams
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: examDefinitionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuestionBankItemCreateRequest'
+      responses:
+        '201':
+          description: Draft question bank item created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuestionBankItemResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '409':
+          $ref: '#/components/responses/ProblemConflict'
+        '422':
+          $ref: '#/components/responses/ProblemUnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+    get:
+      summary: List question bank items for an exam definition with optional filters
+      operationId: listExamQuestionBankItems
+      tags:
+        - Exams
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: examDefinitionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: examVersionNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [DRAFT, UNDER_REVIEW, PUBLISHED, RETIRED]
+        - name: topicCode
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: difficultyBand
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [EASY, MEDIUM, HARD, EXPERT]
+      responses:
+        '200':
+          description: Question bank items matching the query filters
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/QuestionBankItemResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /v1/exams/{examDefinitionId}/question-bank/items/{itemId}/publish:
+    post:
+      summary: Publish a question bank item after verifying SME provenance
+      operationId: publishExamQuestionBankItem
+      tags:
+        - Exams
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: examDefinitionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Question bank item published
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuestionBankItemResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '422':
+          $ref: '#/components/responses/ProblemUnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /v1/exams/{examDefinitionId}/blueprints:
+    post:
+      summary: Create a draft assessment blueprint with topic, difficulty, and cognitive targets
+      operationId: createExamAssessmentBlueprint
+      tags:
+        - Exams
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: examDefinitionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssessmentBlueprintCreateRequest'
+      responses:
+        '201':
+          description: Draft assessment blueprint created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssessmentBlueprintResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '409':
+          $ref: '#/components/responses/ProblemConflict'
+        '422':
+          $ref: '#/components/responses/ProblemUnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+    get:
+      summary: List assessment blueprints for an exam definition
+      operationId: listExamAssessmentBlueprints
+      tags:
+        - Exams
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: examDefinitionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: examVersionNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [DRAFT, ACTIVE, ARCHIVED]
+        - name: blueprintMode
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [DIAGNOSTIC_BASELINE, SECTION_DRILL, FULL_SIMULATION, TOPIC_MASTERY_CHECK]
+      responses:
+        '200':
+          description: Assessment blueprints matching the query filters
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AssessmentBlueprintResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /v1/exams/{examDefinitionId}/blueprints/{blueprintId}/activate:
+    post:
+      summary: Activate an assessment blueprint for candidate assessment assembly
+      operationId: activateExamAssessmentBlueprint
+      tags:
+        - Exams
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: examDefinitionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: blueprintId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Assessment blueprint activated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssessmentBlueprintResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '422':
+          $ref: '#/components/responses/ProblemUnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /v1/exams/{examDefinitionId}/assessments/assemble:
+    post:
+      summary: Assemble a deterministic, seed-reproducible assessment instance for a candidate
+      operationId: assembleCandidateExamAssessment
+      tags:
+        - Exams
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: examDefinitionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssessmentAssemblyRequest'
+      responses:
+        '200':
+          description: Idempotent replay of previously assembled assessment for the same seed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssembledAssessmentResponse'
+        '201':
+          description: Newly assembled deterministic assessment instance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssembledAssessmentResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '422':
+          $ref: '#/components/responses/ProblemUnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /v1/exams/candidates/{userId}/assessments/{assessmentId}:
+    get:
+      summary: Retrieve a candidate's assembled assessment instance with BOLA verification
+      operationId: getCandidateAssembledExamAssessment
+      tags:
+        - Exams
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: assessmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Candidate assembled assessment instance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssembledAssessmentResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -9262,3 +9619,21 @@ components:
 
     SyllabusConfirmRequest:
       $ref: '../../schemas/exam/v1/syllabus-confirm-request.schema.json'
+
+    QuestionBankItemCreateRequest:
+      $ref: '../../schemas/exam/v1/question-bank-item-create-request.schema.json'
+
+    QuestionBankItemResponse:
+      $ref: '../../schemas/exam/v1/question-bank-item-response.schema.json'
+
+    AssessmentBlueprintCreateRequest:
+      $ref: '../../schemas/exam/v1/assessment-blueprint-create-request.schema.json'
+
+    AssessmentBlueprintResponse:
+      $ref: '../../schemas/exam/v1/assessment-blueprint-response.schema.json'
+
+    AssessmentAssemblyRequest:
+      $ref: '../../schemas/exam/v1/assessment-assembly-request.schema.json'
+
+    AssembledAssessmentResponse:
+      $ref: '../../schemas/exam/v1/assembled-assessment-response.schema.json'

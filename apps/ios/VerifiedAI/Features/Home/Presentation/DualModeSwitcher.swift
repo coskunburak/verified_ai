@@ -13,8 +13,8 @@ public struct DualModeSwitcher: View {
     }
 
     public var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack(spacing: 8) {
+        VStack(alignment: .leading, spacing: SpacingTokens.compact) {
+            HStack(spacing: SpacingTokens.sm) {
                 modeButton(
                     mode: .solverMode,
                     titleKey: "coach.mode.solver.title",
@@ -28,18 +28,26 @@ public struct DualModeSwitcher: View {
                     accessibilityId: "coach.mode.socratic"
                 )
             }
-            .padding(4)
-            .background(Color(UIColor.tertiarySystemBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .padding(SpacingTokens.xs)
+            .background(ColorTokens.surfaceElevated)
+            .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                    .stroke(ColorTokens.borderSubtle, lineWidth: 1)
+            )
 
             Text(LocalizedStringKey(subtitleKey))
-                .font(.caption)
-                .foregroundColor(.secondary)
+                .font(TypographyTokens.caption)
+                .foregroundStyle(ColorTokens.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
         }
-        .padding(14)
-        .background(Color(UIColor.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .padding(SpacingTokens.compact)
+        .background(ColorTokens.surface)
+        .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous)
+                .stroke(ColorTokens.borderSubtle, lineWidth: 1)
+        )
         .accessibilityElement(children: .contain)
     }
 
@@ -63,13 +71,13 @@ public struct DualModeSwitcher: View {
             onSelectMode(mode)
         } label: {
             Text(LocalizedStringKey(titleKey))
-                .font(.caption.weight(.semibold))
+                .font(TypographyTokens.microLabel)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity, minHeight: 44)
-                .padding(.horizontal, 8)
-                .foregroundColor(isSelected ? .white : .primary)
-                .background(isSelected ? Color.accentColor : Color.clear)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .padding(.horizontal, SpacingTokens.sm)
+                .foregroundStyle(isSelected ? ColorTokens.actionForeground : ColorTokens.textPrimary)
+                .background(isSelected ? ColorTokens.action : Color.clear)
+                .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.small, style: .continuous))
         }
         .buttonStyle(.plain)
         .accessibilityLabel(Text(fallbackTitle))

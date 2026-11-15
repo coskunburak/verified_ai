@@ -1,0 +1,11 @@
+{
+  "userId": "99999999-1111-4222-8333-444444444444",
+  "candidateProfileId": "66666666-7777-4888-8999-000000000000",
+  "blueprintId": "94000000-0000-4000-8000-000000000101",
+  "assemblySeed": "tyt-2026-diagnostic-seed-01",
+  "overrideTimeMultiplier": 1.25,
+  "highContrastMode": true,
+  "screenReaderOptimized": true,
+  "extendedBreakPrompts": true,
+  "trainingEligible": false
+}

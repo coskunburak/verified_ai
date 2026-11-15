@@ -4,9 +4,21 @@ struct AttemptStepEditorView: View {
     let locked: Bool
     @FocusState private var focused: Bool
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: SpacingTokens.xs) {
             Text("attempt.editor.help")
-            TextEditor(text: $text).font(.body.monospaced()).frame(minHeight: 180)
+                .font(TypographyTokens.caption)
+                .foregroundStyle(ColorTokens.textSecondary)
+            TextEditor(text: $text)
+                .font(.body.monospaced())
+                .frame(minHeight: 180)
+                .padding(SpacingTokens.sm)
+                .scrollContentBackground(.hidden)
+                .background(ColorTokens.surfaceElevated)
+                .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                        .stroke(ColorTokens.borderStrong, lineWidth: 1)
+                )
                 .focused($focused).onChange(of: locked) { _, value in if value { focused = false } }
                 .autocorrectionDisabled().textInputAutocapitalization(.never).disabled(locked)
                 .accessibilityLabel("attempt.editor.label").accessibilityIdentifier("attempt.editor")
@@ -51,27 +63,51 @@ struct AttemptStructuredEditorView: View {
             ForEach(model.workSteps) { step in
                 let binding = stepBinding(step)
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("attempt.work.reviewed").font(.headline)
-                    TextEditor(text: binding.text).font(.body.monospaced()).frame(minHeight: 90)
+                    Text("attempt.work.reviewed")
+                        .font(TypographyTokens.cardTitle)
+                        .foregroundStyle(ColorTokens.textPrimary)
+                    TextEditor(text: binding.text)
+                        .font(.body.monospaced())
+                        .frame(minHeight: 90)
+                        .padding(SpacingTokens.xs)
+                        .scrollContentBackground(.hidden)
+                        .background(ColorTokens.surface)
+                        .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.small, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: RadiusTokens.small, style: .continuous)
+                                .stroke(ColorTokens.borderStrong, lineWidth: 1)
+                        )
                         .autocorrectionDisabled().textInputAutocapitalization(.never)
                         .accessibilityLabel("attempt.work.reviewed").accessibilityIdentifier("attempt.work.step.\(step.id)")
                     Picker("attempt.work.role", selection: binding.role) {
                         ForEach(AttemptWorkRequest.Role.allCases, id: \.self) { role in Text(LocalizedStringKey("attempt.work.role." + role.rawValue)).tag(role) }
                     }
                     Toggle("attempt.ocr.lineConfirmed", isOn: binding.confirmed)
+                        .tint(ColorTokens.action)
                     if !step.confirmed || step.role == .ambiguous || step.text.contains("\n") {
                         Label("attempt.work.REVIEW_REQUIRED", systemImage: "exclamationmark.triangle")
+                            .font(TypographyTokens.caption.weight(.semibold))
+                            .foregroundStyle(ColorTokens.warning)
                     }
                     HStack {
                         Button { model.moveWorkStep(step.id, by: -1) } label: { Image(systemName: "arrow.up") }.accessibilityLabel("attempt.work.moveUp")
                         Button { model.moveWorkStep(step.id, by: 1) } label: { Image(systemName: "arrow.down") }.accessibilityLabel("attempt.work.moveDown")
-                    }.buttonStyle(.bordered).frame(minHeight: 44)
+                    }.buttonStyle(AppSecondaryButtonStyle())
                     Button("attempt.work.split") { model.splitWorkStep(step.id) }
+                        .buttonStyle(AppSecondaryButtonStyle())
                     Button("attempt.work.merge") { model.mergeWorkStep(step.id) }
+                        .buttonStyle(AppSecondaryButtonStyle())
                     if model.workDraft?.engine == "MANUAL" && model.workSteps.count > 1 {
                         Button("attempt.work.remove", role: .destructive) { model.removeWorkStep(step.id) }
+                            .buttonStyle(AppSecondaryButtonStyle())
                     }
-                }.padding().background(.quaternary, in: RoundedRectangle(cornerRadius: 12))
+                }
+                .padding(SpacingTokens.md)
+                .background(ColorTokens.surfaceElevated, in: RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                        .stroke(ColorTokens.borderSubtle, lineWidth: 1)
+                )
             }
             if model.workDraft?.engine == "MANUAL" {
                 Button("attempt.work.add") { model.addWorkStep() }.disabled(model.workSteps.count >= 12)

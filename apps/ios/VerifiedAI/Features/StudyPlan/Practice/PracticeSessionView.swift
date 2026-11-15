@@ -11,74 +11,42 @@ public struct PracticeSessionView: View {
     public var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 20) {
-                    // 1-2-1 Session Progress Bar
+                VStack(spacing: SpacingTokens.lg) {
                     sessionProgressBar
 
-                    // Offline Banner
                     if viewModel.isOffline {
-                        HStack {
-                            Image(systemName: "wifi.slash")
-                            Text(LocalizedStringKey("coach.nba.offline.banner"))
-                                .font(.caption)
-                        }
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                        .background(Color.secondary.opacity(0.1))
-                        .cornerRadius(8)
+                        AppNoticeBanner("coach.nba.offline.banner", systemImage: "wifi.slash", tone: .warning)
                     }
 
-                    // Rapid Guess Warning Banner (INV-PRAC-004)
                     if viewModel.rapidGuessWarningActive {
-                        HStack(spacing: 12) {
-                            Image(systemName: "hand.raised.fill")
-                                .foregroundColor(.orange)
-                            Text(LocalizedStringKey("practice.rapid_guess.warning"))
-                                .font(.subheadline)
-                                .foregroundColor(.primary)
-                        }
-                        .padding()
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.orange.opacity(0.12))
-                        .cornerRadius(12)
+                        AppNoticeBanner("practice.rapid_guess.warning", systemImage: "hand.raised.fill", tone: .warning)
                     }
 
-                    // Trap Focus Area Diagnostic Feedback
                     if let feedback = viewModel.trapFeedback {
-                        HStack(spacing: 12) {
-                            Image(systemName: "exclamationmark.triangle.fill")
-                                .foregroundColor(.purple)
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(LocalizedStringKey("practice.trap.detected"))
-                                    .font(.subheadline.bold())
-                                    .foregroundColor(.purple)
-                                Text(feedback)
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
+                        AppSurfaceCard(elevated: true) {
+                            HStack(spacing: SpacingTokens.compact) {
+                                Image(systemName: "exclamationmark.triangle.fill")
+                                    .foregroundStyle(ColorTokens.warning)
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(LocalizedStringKey("practice.trap.detected"))
+                                        .font(TypographyTokens.cardTitle)
+                                        .foregroundStyle(ColorTokens.warning)
+                                    Text(feedback)
+                                        .font(TypographyTokens.caption)
+                                        .foregroundStyle(ColorTokens.textSecondary)
+                                }
                             }
                         }
-                        .padding()
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.purple.opacity(0.1))
-                        .cornerRadius(12)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous)
+                                .stroke(ColorTokens.warning.opacity(0.45), lineWidth: 1)
+                        )
                     }
 
-                    // Trap Closure Celebration
                     if viewModel.trapClosureCelebration {
-                        HStack(spacing: 12) {
-                            Image(systemName: "sparkles")
-                                .foregroundColor(.green)
-                            Text("Trap focus area conquered autonomously!")
-                                .font(.subheadline.bold())
-                                .foregroundColor(.green)
-                        }
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color.green.opacity(0.12))
-                        .cornerRadius(12)
+                        AppNoticeBanner("Trap focus area conquered autonomously!", systemImage: "sparkles", tone: .success)
                     }
 
-                    // Active Question Card
                     if let item = viewModel.currentItem {
                         PracticeQuestionCardView(
                             item: item,
@@ -92,7 +60,6 @@ public struct PracticeSessionView: View {
                             }
                         )
 
-                        // Answer Composer
                         if item.itemStatus == .pending {
                             answerComposerSection
                         } else {
@@ -102,16 +69,17 @@ public struct PracticeSessionView: View {
                         sessionCompletedSection
                     }
                 }
-                .padding()
+                .padding(SpacingTokens.lg)
             }
+            .background(ColorTokens.canvas)
             .navigationTitle(Text(LocalizedStringKey("practice.session.title")))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(action: { showingAbandonConfirmation = true }) {
                         Text(LocalizedStringKey("practice.action.abandon"))
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                            .font(TypographyTokens.caption.weight(.semibold))
+                            .foregroundStyle(ColorTokens.textSecondary)
                     }
                 }
             }
@@ -133,33 +101,38 @@ public struct PracticeSessionView: View {
     private var sessionProgressBar: some View {
         HStack(spacing: 6) {
             ForEach(0..<viewModel.totalItemsCount, id: \.self) { index in
-                Rectangle()
+                RoundedRectangle(cornerRadius: 3, style: .continuous)
                     .fill(progressColor(for: index))
                     .frame(height: 6)
-                    .cornerRadius(3)
             }
         }
-        .padding(.horizontal, 4)
+        .padding(.horizontal, SpacingTokens.xs)
     }
 
     private func progressColor(for index: Int) -> Color {
         guard let s = viewModel.session, index < s.items.count else {
-            return Color.secondary.opacity(0.2)
+            return ColorTokens.surfaceElevated
         }
         let item = s.items[index]
         switch item.itemStatus {
-        case .submittedCorrect: return .green
-        case .submittedIncorrect: return .orange
-        case .skipped: return .secondary
+        case .submittedCorrect: return ColorTokens.success
+        case .submittedIncorrect: return ColorTokens.warning
+        case .skipped: return ColorTokens.textTertiary
         case .pending:
-            return index == viewModel.currentItemIndex ? .blue : Color.secondary.opacity(0.2)
+            return index == viewModel.currentItemIndex ? ColorTokens.action : ColorTokens.surfaceElevated
         }
     }
 
     private var answerComposerSection: some View {
-        VStack(spacing: 12) {
+        AppSurfaceCard {
             TextField("Your answer (e.g. 3, x > -4, 24x...)", text: $viewModel.submittedAnswer)
-                .textFieldStyle(.roundedBorder)
+                .padding(SpacingTokens.compact)
+                .background(ColorTokens.surfaceElevated)
+                .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                        .stroke(ColorTokens.borderStrong, lineWidth: 1)
+                )
                 .autocorrectionDisabled()
                 .textInputAutocapitalization(.never)
 
@@ -170,82 +143,65 @@ public struct PracticeSessionView: View {
             }) {
                 HStack {
                     if viewModel.isSubmitting {
-                        ProgressView().tint(.white)
+                        ProgressView().tint(ColorTokens.actionForeground)
                     } else {
                         Text(LocalizedStringKey("practice.action.submit"))
                     }
                 }
-                .font(.body.bold())
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(Color.blue)
-                .foregroundColor(.white)
-                .cornerRadius(12)
             }
+            .buttonStyle(AppPrimaryButtonStyle())
             .disabled(viewModel.isSubmitting || viewModel.submittedAnswer.trimmingCharacters(in: .whitespaces).isEmpty)
         }
-        .padding()
-        .background(Color(UIColor.secondarySystemBackground))
-        .cornerRadius(16)
     }
 
     private func resultAndNextSection(item: PracticeSessionItem) -> some View {
-        VStack(spacing: 12) {
-            HStack {
+        AppSurfaceCard(elevated: true) {
+            HStack(spacing: SpacingTokens.sm) {
                 Image(systemName: item.itemStatus == .submittedCorrect ? "checkmark.circle.fill" : "xmark.circle.fill")
-                    .foregroundColor(item.itemStatus == .submittedCorrect ? .green : .orange)
+                    .foregroundStyle(item.itemStatus == .submittedCorrect ? ColorTokens.success : ColorTokens.warning)
                     .font(.title2)
 
                 Text(item.itemStatus == .submittedCorrect ? "Verified Correct!" : "Opportunity for calibration")
-                    .font(.headline)
+                    .font(TypographyTokens.cardTitle)
+                    .foregroundStyle(ColorTokens.textPrimary)
             }
 
             if viewModel.currentItemIndex + 1 < viewModel.totalItemsCount {
                 Button(action: { viewModel.moveToNextQuestion() }) {
                     Text("Next Question")
-                        .font(.body.bold())
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(12)
                 }
+                .buttonStyle(AppPrimaryButtonStyle())
             } else {
                 Text("Session Complete")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .font(TypographyTokens.caption)
+                    .foregroundStyle(ColorTokens.textSecondary)
             }
         }
-        .padding()
-        .frame(maxWidth: .infinity)
-        .background(Color(UIColor.secondarySystemBackground))
-        .cornerRadius(16)
     }
 
     private var sessionCompletedSection: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "trophy.fill")
-                .font(.system(size: 48))
-                .foregroundColor(.yellow)
+        AppSurfaceCard {
+            VStack(spacing: SpacingTokens.md) {
+                Image(systemName: "trophy.fill")
+                    .font(.system(size: 44))
+                    .foregroundStyle(ColorTokens.action)
 
-            Text("Session Completed!")
-                .font(.title2.bold())
+                Text("Session Completed!")
+                    .font(TypographyTokens.sectionTitle)
+                    .foregroundStyle(ColorTokens.textPrimary)
 
-            if let s = viewModel.session {
-                Text(String(format: "%d of %d items verified correct", s.verifiedCorrectItems, s.totalItems))
-                    .font(.body)
-                    .foregroundColor(.secondary)
+                if let s = viewModel.session {
+                    Text(String(format: "%d of %d items verified correct", s.verifiedCorrectItems, s.totalItems))
+                        .font(TypographyTokens.body.monospacedDigit())
+                        .foregroundStyle(ColorTokens.textSecondary)
 
-                if s.trapClosureAchieved {
-                    Text("Target trap successfully closed!")
-                        .font(.subheadline.bold())
-                        .foregroundColor(.green)
+                    if s.trapClosureAchieved {
+                        AppStatusBadge(verbatimTitle: "Target trap closed", systemImage: "checkmark.seal.fill", tone: .success)
+                    }
                 }
             }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, SpacingTokens.lg)
         }
-        .padding(32)
-        .frame(maxWidth: .infinity)
-        .background(Color(UIColor.secondarySystemBackground))
-        .cornerRadius(20)
     }
 }

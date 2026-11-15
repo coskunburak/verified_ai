@@ -14,6 +14,9 @@
         }
       }
     },
+    "#%lld" : {
+
+    },
     "%@ – %@" : {
       "localizations" : {
         "en" : {
@@ -40,6 +43,16 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "%1$@ (%2$lld – %3$lld)"
+          }
+        }
+      }
+    },
+    "%@ (%lld–%lld)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ (%2$lld–%3$lld)"
           }
         }
       }
@@ -74,6 +87,16 @@
         }
       }
     },
+    "%@ • %@ • Options: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ • %2$@ • Options: %3$@"
+          }
+        }
+      }
+    },
     "%@ • %@ • v%@" : {
       "localizations" : {
         "en" : {
@@ -94,18 +117,18 @@
         }
       }
     },
-    "%@ • v%@" : {
+    "%@ required" : {
+
+    },
+    "%@ target %lld percent" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "%1$@ • v%2$@"
+            "value" : "%1$@ target %2$lld percent"
           }
         }
       }
-    },
-    "%@ required" : {
-
     },
     "%@ v%@ • %@" : {
       "localizations" : {
@@ -123,6 +146,26 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "%1$@, %2$lld "
+          }
+        }
+      }
+    },
+    "%@, %lld questions, %lld minutes" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@, %2$lld questions, %3$lld minutes"
+          }
+        }
+      }
+    },
+    "%@, weight %lld percent, %lld to %lld questions" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@, weight %2$lld percent, %3$lld to %4$lld questions"
           }
         }
       }
@@ -182,6 +225,16 @@
     "%lld min" : {
 
     },
+    "%lld min (%llds)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld min (%2$llds)"
+          }
+        }
+      }
+    },
     "%lld min/d • %@ • %@" : {
       "localizations" : {
         "en" : {
@@ -192,11 +245,18 @@
         }
       }
     },
-    "%lld minutes per day" : {
-
-    },
     "%lld percent" : {
 
+    },
+    "%lld Q • %lld min" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld Q • %2$lld min"
+          }
+        }
+      }
     },
     "%lld/%lld" : {
       "localizations" : {
@@ -215,6 +275,9 @@
 
     },
     "%lldm" : {
+
+    },
+    "• v%lld" : {
 
     },
     "+%lld" : {
@@ -244,14 +307,79 @@
     "168h Verified" : {
 
     },
-    "A secure study workspace for scanned problems, verified reasoning, and progress that stays tied to your account." : {
+    "A clean, distraction-free workspace for scanned problems, formal verification, and adaptive exam preparation." : {
 
     },
-    "Access is loading" : {
+    "A difference of two squares a² - b² always factors symmetrically into (a - b)(a + b) with cancelling cross terms." : {
 
     },
     "Account" : {
-
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Account"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hesap"
+          }
+        }
+      }
+    },
+    "Account Deletion" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Account Deletion"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hesap Silme"
+          }
+        }
+      }
+    },
+    "account.sign_out" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign Out"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çıkış Yap"
+          }
+        }
+      }
+    },
+    "Active Target" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Active Target"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktif Hedef"
+          }
+        }
+      }
     },
     "Add assumption" : {
 
@@ -268,6 +396,23 @@
     "Adjust crop" : {
 
     },
+    "Adjust Study Budget & Syllabus" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adjust Study Budget & Syllabus"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çalışma Programı ve Müfredatı Ayarla"
+          }
+        }
+      }
+    },
     "Adjusted section timer: %lld min (base %lld min)" : {
       "localizations" : {
         "en" : {
@@ -280,6 +425,23 @@
     },
     "Advance synthetic job" : {
 
+    },
+    "Appearance" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appearance"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Görünüm"
+          }
+        }
+      }
     },
     "Are you sure you want to end this practice session?" : {
 
@@ -6570,6 +6732,40 @@
     "Best verified run" : {
 
     },
+    "Blueprints" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blueprints"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Planlar"
+          }
+        }
+      }
+    },
+    "Budget & Drills" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Budget & Drills"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Program ve Pratik"
+          }
+        }
+      }
+    },
     "Camera preview" : {
 
     },
@@ -6595,13 +6791,13 @@
     "Capture" : {
 
     },
-    "Capture homework, crop it, and prepare it for verification." : {
-
-    },
     "Capture looks usable for the next step." : {
 
     },
     "Captured problem preview" : {
+
+    },
+    "Carbon Crisp (#121316 + Coral Rose + Sky Blue)" : {
 
     },
     "Category" : {
@@ -8143,7 +8339,21 @@
 
     },
     "Confirm Deletion" : {
-
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirm Deletion"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Silmeyi Onayla"
+          }
+        }
+      }
     },
     "Consecutive Failures" : {
 
@@ -8274,11 +8484,76 @@
     "Crop preview" : {
 
     },
-    "Dashboard" : {
+    "Daily Budget & Target" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Daily Budget & Target"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Günlük Çalışma ve Hedef"
+          }
+        }
+      }
+    },
+    "Daily Coach" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Daily Coach"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Günlük Koç"
+          }
+        }
+      }
+    },
+    "Daily Goal" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Daily Goal"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Günlük Hedef"
+          }
+        }
+      }
+    },
+    "Daily study target" : {
 
     },
     "Data Export" : {
-
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Data Export"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Veri Dışa Aktarma"
+          }
+        }
+      }
     },
     "Deep" : {
       "extractionState" : "stale",
@@ -8300,7 +8575,10 @@
     "DELETE" : {
 
     },
-    "Deletion" : {
+    "Design System 2.1" : {
+
+    },
+    "Deterministic check" : {
 
     },
     "Difficulty %@" : {
@@ -8310,9 +8588,26 @@
 
     },
     "Done" : {
-
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Done"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bitti"
+          }
+        }
+      }
     },
     "Edit Crop" : {
+
+    },
+    "Editorial Paper (#F4F5F7 + Signal Crimson + Royal Blue)" : {
 
     },
     "Education level" : {
@@ -8326,6 +8621,295 @@
     },
     "English" : {
 
+    },
+    "Environment" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Environment"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ortam"
+          }
+        }
+      }
+    },
+    "exam.assembly.action.assemble" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Assemble Assessment"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Değerlendirmeyi Oluştur"
+          }
+        }
+      }
+    },
+    "exam.assembly.blueprint.section_header" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Assessment Blueprint"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Değerlendirme Planı"
+          }
+        }
+      }
+    },
+    "exam.assembly.distribution.difficulty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Difficulty Balance"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zorluk Dengesi"
+          }
+        }
+      }
+    },
+    "exam.assembly.distribution.topics" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Topic Coverage"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Konu Dağılımı"
+          }
+        }
+      }
+    },
+    "exam.assembly.duration.base" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standard Duration"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standart Süre"
+          }
+        }
+      }
+    },
+    "exam.assembly.duration.effective_accommodated" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adjusted Duration (Extra Time Applied)"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uyarlanmış Süre (Ek Süre Uygulandı)"
+          }
+        }
+      }
+    },
+    "exam.assembly.error.pool_insufficient" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Additional verified questions are being prepared for this blueprint."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu plan için ek doğrulanmış sorular hazırlanıyor."
+          }
+        }
+      }
+    },
+    "exam.assembly.mode.diagnostic" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diagnostic Baseline"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tanısal Başlangıç"
+          }
+        }
+      }
+    },
+    "exam.assembly.mode.full_simulation" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Full Simulation"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tam Sınav Simülasyonu"
+          }
+        }
+      }
+    },
+    "exam.assembly.mode.section_drill" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Section Drill"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bölüm Antrenmanı"
+          }
+        }
+      }
+    },
+    "exam.assembly.mode.topic_mastery" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Topic Mastery Check"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Konu Yetkinlik Kontrolü"
+          }
+        }
+      }
+    },
+    "exam.assembly.offline.cached_banner" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Viewing offline cached assessment blueprint"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çevrimdışı önbellekteki değerlendirme planı görüntüleniyor"
+          }
+        }
+      }
+    },
+    "exam.assembly.reproducibility_hash.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verification Hash"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doğrulama Özeti"
+          }
+        }
+      }
+    },
+    "exam.assembly.seed.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reproducibility Seed"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tekrarlanabilirlik Anahtarı"
+          }
+        }
+      }
+    },
+    "exam.assembly.status.ready" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Assessment Assembled & Ready"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Değerlendirme Hazır"
+          }
+        }
+      }
+    },
+    "exam.assembly.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Assessment Assembly & Blueprint"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Değerlendirme Planı ve Hazırlığı"
+          }
+        }
+      }
     },
     "exam.candidate.accommodations_section" : {
       "extractionState" : "manual",
@@ -10110,8 +10694,25 @@
         }
       }
     },
-    "Export Data" : {
+    "Explore Alternative Method" : {
 
+    },
+    "Export Data" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export Data"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verileri Dışa Aktar"
+          }
+        }
+      }
     },
     "Expressions" : {
 
@@ -10122,7 +10723,13 @@
     "Finish" : {
 
     },
-    "Fit the full problem here" : {
+    "Fit the full problem inside brackets" : {
+
+    },
+    "Formal Mathematical Tutor" : {
+
+    },
+    "Full formal verification, unlimited tutoring, and exam blueprint drills." : {
 
     },
     "Full Image" : {
@@ -10621,7 +11228,24 @@
         }
       }
     },
-    "Guest sessions are private to this device and can be upgraded later by creating an account." : {
+    "Go to Solve Tab" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Go to Solve Tab"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çöz Sekmesine Git"
+          }
+        }
+      }
+    },
+    "Guest sessions stay private on this device and can be upgraded anytime." : {
 
     },
     "home.candidate_profile.card_subtitle" : {
@@ -10726,13 +11350,166 @@
         }
       }
     },
+    "home.hero.prompt" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What would you like to solve?"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ne çözmek istiyorsun?"
+          }
+        }
+      }
+    },
+    "home.hero.subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scan any math problem for verified step-by-step reasoning."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adım adım doğrulanmış çözüm için bir matematik sorusu tara."
+          }
+        }
+      }
+    },
+    "home.quick.file" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import File"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dosya Ekle"
+          }
+        }
+      }
+    },
+    "home.quick.photo" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose Photo"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fotoğraf Seç"
+          }
+        }
+      }
+    },
+    "home.recent.empty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No problem sessions yet."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Henüz çözülmüş soru yok."
+          }
+        }
+      }
+    },
+    "home.recent.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Problem History"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Soru Geçmişi"
+          }
+        }
+      }
+    },
+    "home.scan.cta" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start Capture"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Taramayı Başlat"
+          }
+        }
+      }
+    },
+    "home.scan.subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Capture homework or an exam problem for step-by-step formal verification."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adım adım doğrulanmış çözüm için ödev veya sınav sorusunu tara."
+          }
+        }
+      }
+    },
+    "home.scan.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scan a Problem"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Soru Tara"
+          }
+        }
+      }
+    },
     "How should explanations feel?" : {
 
     },
     "Independent reasoning window" : {
 
     },
-    "Keep the entire problem inside the frame. Avoid glare and cut-off edges." : {
+    "Keep the entire problem inside the corner brackets. Avoid glare and cut-off edges." : {
 
     },
     "Keep the full problem visible. You can review, crop, retake, or replace it before the next step." : {
@@ -10747,11 +11524,42 @@
     "LaTeX" : {
 
     },
+    "Launch Timed Diagnostic Drill" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Launch Timed Diagnostic Drill"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Süreli Deneme Başlat"
+          }
+        }
+      }
+    },
     "Learning goal" : {
 
     },
     "Load More" : {
-
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Load More"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Daha Fazla Yükle"
+          }
+        }
+      }
     },
     "Loading" : {
 
@@ -10761,6 +11569,40 @@
     },
     "Loading profile" : {
 
+    },
+    "Mastery" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mastery"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hakimiyet"
+          }
+        }
+      }
+    },
+    "Mastery Graph Sync Pending" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mastery Graph Sync Pending"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hakimiyet Grafiği Eşitlemesi Bekleniyor"
+          }
+        }
+      }
     },
     "mastery.graph.at_risk" : {
       "extractionState" : "manual",
@@ -11136,7 +11978,27 @@
         }
       }
     },
+    "Mistake Passport Sync Pending" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mistake Passport Sync Pending"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hata Pasaportu Eşitlemesi Bekleniyor"
+          }
+        }
+      }
+    },
     "Next Question" : {
+
+    },
+    "No gradients or drop shadows. Signal Crimson drives primary actions; Royal Blue anchors math steps." : {
 
     },
     "No Graph Data" : {
@@ -11151,8 +12013,28 @@
     "Normalized text" : {
 
     },
+    "Notice how checking x = 3 and x = -3 confirms both roots satisfy the original equation." : {
+
+    },
     "Open Settings" : {
 
+    },
+    "Open Weekly Report" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Weekly Report"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haftalık Raporu Aç"
+          }
+        }
+      }
     },
     "Opportunity for calibration" : {
 
@@ -11405,14 +12287,51 @@
         }
       }
     },
+    "Permanently remove workspace & records" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permanently remove workspace & records"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çalışma alanını ve tüm kayıtları kalıcı olarak sil"
+          }
+        }
+      }
+    },
     "Photo" : {
+
+    },
+    "Photomath Editorial Crisp — Flat Tonal & 1pt Hairline" : {
+
+    },
+    "Photomath Editorial Crisp — live canvas theme" : {
 
     },
     "Place the full math problem inside the guide, then use the shutter button." : {
 
     },
-    "Plan Access" : {
-
+    "Plan" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plan"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plan"
+          }
+        }
+      }
     },
     "Practice Remediation Drill" : {
 
@@ -11628,9 +12547,6 @@
     "Problem Capture" : {
 
     },
-    "Problem History" : {
-
-    },
     "Problem Review" : {
 
     },
@@ -11642,6 +12558,16 @@
     },
     "Protected" : {
 
+    },
+    "Question %lld, %@, topic %@, difficulty %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Question %1$lld, %2$@, topic %3$@, difficulty %4$@"
+          }
+        }
+      }
     },
     "Quick" : {
       "extractionState" : "stale",
@@ -11656,6 +12582,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Kısa"
+          }
+        }
+      }
+    },
+    "Quick Actions" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quick Actions"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hızlı İşlemler"
           }
         }
       }
@@ -11675,8 +12618,22 @@
     "Recognition input %@" : {
 
     },
-    "Refresh problem history" : {
-
+    "Recurring exam trap telemetry connects when the Mistake Passport API feed is enabled. Scan a worked attempt in Solve to analyze steps immediately." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recurring exam trap telemetry connects when the Mistake Passport API feed is enabled. Scan a worked attempt in Solve to analyze steps immediately."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tekrarlanan sınav tuzakları Mistake Passport bağlantısı etkinleştirildiğinde eşitlenir. Adımlarını hemen incelemek için Çöz sekmesinden bir çözüm tara."
+          }
+        }
+      }
     },
     "Refresh revision history" : {
 
@@ -11708,8 +12665,56 @@
     "Replace" : {
 
     },
+    "Report" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Report"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapor"
+          }
+        }
+      }
+    },
+    "Request a portable archive of your study data" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Request a portable archive of your study data"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çalışma verilerinin taşınabilir bir arşivini iste"
+          }
+        }
+      }
+    },
     "Request Deletion" : {
-
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Request Deletion"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hesap Silme Talebi"
+          }
+        }
+      }
     },
     "Required ~%lld min/day vs capacity %lld min/day (%lld days remaining)" : {
       "localizations" : {
@@ -11731,7 +12736,21 @@
 
     },
     "Retry" : {
-
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retry"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tekrar Dene"
+          }
+        }
+      }
     },
     "Return to Review" : {
 
@@ -11742,21 +12761,8 @@
     "Review Problem" : {
 
     },
-    "Review section" : {
-
-    },
     "Revision %lld" : {
 
-    },
-    "Revision %lld · %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Revision %1$lld · %2$@"
-          }
-        }
-      }
     },
     "Revision History" : {
 
@@ -11773,8 +12779,25 @@
     "Saving profile" : {
 
     },
-    "Scan a Problem" : {
+    "Scan & Verify Problem" : {
 
+    },
+    "Scan a Problem Now" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scan a Problem Now"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Şimdi Soru Tara"
+          }
+        }
+      }
     },
     "Scan or import a math problem" : {
 
@@ -11785,8 +12808,28 @@
     "segment" : {
 
     },
-    "Session" : {
+    "Selects this blueprint for deterministic assessment assembly" : {
 
+    },
+    "Semantic badge tones and flat CTAs" : {
+
+    },
+    "Session" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Session"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oturum"
+          }
+        }
+      }
     },
     "Session Complete" : {
 
@@ -11794,10 +12837,30 @@
     "Session Completed!" : {
 
     },
+    "SHA-256: %@…" : {
+
+    },
     "Sign In" : {
 
     },
-    "Sign Out" : {
+    "Skill Retention and Transfer rings sync once your backend Mastery Graph client feed is provisioned on this build. Your weekly mastery momentum remains available in Report." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skill Retention and Transfer rings sync once your backend Mastery Graph client feed is provisioned on this build. Your weekly mastery momentum remains available in Report."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beceri kalıcılığı ve transfer verileri bu derlemede Mastery Graph akışı bağlandığında eşitlenir. Haftalık ilerlemeni Rapor sekmesinden görebilirsin."
+          }
+        }
+      }
+    },
+    "Socratic Tutor" : {
 
     },
     "Solution Revealed" : {
@@ -13305,14 +14368,65 @@
         }
       }
     },
-    "Start Capture" : {
-
+    "Start Focused 1-on-1 Practice" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start Focused 1-on-1 Practice"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Birebir Odaklı Pratik Başlat"
+          }
+        }
+      }
     },
     "Start Practice" : {
 
     },
+    "Status" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Status"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Durum"
+          }
+        }
+      }
+    },
     "Status %@" : {
 
+    },
+    "Step Timeline Connector" : {
+
+    },
+    "Structured around your exam horizon" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Structured around your exam horizon"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sınav tarihine göre düzenlendi"
+          }
+        }
+      }
     },
     "study_session.action.complete" : {
       "extractionState" : "manual",
@@ -13847,10 +14961,75 @@
     "Symbol" : {
 
     },
-    "Target Skill: %@" : {
-
+    "tab.exams" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exams"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sınavlar"
+          }
+        }
+      }
     },
-    "Target trap successfully closed!" : {
+    "tab.plan" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plan"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plan"
+          }
+        }
+      }
+    },
+    "tab.progress" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Progress"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İlerleme"
+          }
+        }
+      }
+    },
+    "tab.solve" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solve"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çöz"
+          }
+        }
+      }
+    },
+    "Target Skill: %@" : {
 
     },
     "Task type" : {
@@ -13889,11 +15068,45 @@
     "Timezone" : {
 
     },
-    "Today" : {
+    "Timing" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Timing"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Süre"
+          }
+        }
+      }
+    },
+    "Tokens & Buttons" : {
 
     },
     "Trap focus area conquered autonomously!" : {
 
+    },
+    "Trap Radar" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trap Radar"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tuzak Radarı"
+          }
+        }
+      }
     },
     "trap.alg_sign_distribution.coaching_framing" : {
       "extractionState" : "manual",
@@ -15373,6 +16586,9 @@
         }
       }
     },
+    "TYT-DIAG-SEED-2026-ALPHA" : {
+
+    },
     "UI Sample Ambiguous Syllabus PDF" : {
 
     },
@@ -15399,6 +16615,23 @@
     },
     "Used silently" : {
 
+    },
+    "User ID" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "User ID"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kullanıcı Kimliği"
+          }
+        }
+      }
     },
     "v%@" : {
 
@@ -16834,10 +18067,16 @@
     "Verified AI" : {
 
     },
+    "Verified AI Pro" : {
+
+    },
     "Verified Correct!" : {
 
     },
     "Verifying upload" : {
+
+    },
+    "Vertical 1pt rail + formula focus + collapsible rationale" : {
 
     },
     "visualization.approximate" : {
@@ -17743,6 +18982,23 @@
     "W%lld" : {
 
     },
+    "Weekly" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weekly"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haftalık"
+          }
+        }
+      }
+    },
     "weekly.mistake.none" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -18394,6 +19650,29 @@
     },
     "What level are you studying?" : {
 
+    },
+    "Why does x² - 9 factor this way?" : {
+
+    },
+    "Why?" : {
+
+    },
+    "Workspace identity & session state" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Workspace identity & session state"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hesap kimliği ve oturum durumu"
+          }
+        }
+      }
     },
     "x" : {
 

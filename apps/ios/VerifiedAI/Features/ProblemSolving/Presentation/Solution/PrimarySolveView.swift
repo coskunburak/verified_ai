@@ -18,26 +18,10 @@ struct PrimarySolveView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: SpacingTokens.lg) {
                 if viewModel.isFixture || viewModel.snapshot?.candidate?.generationOrigin == .localFixture {
-                    Label("solve.fixture", systemImage: "testtube.2")
-                        .font(.callout.weight(.semibold)).foregroundStyle(ColorTokens.warning)
+                    AppNoticeBanner("solve.fixture", systemImage: "testtube.2", tone: .warning)
                         .accessibilityIdentifier("solve.fixture")
                 }
-                if let tutor = viewModel.tutorModel {
-                    NavigationLink("tutor.title") { TutorView(viewModel: tutor) }
-                        .accessibilityIdentifier("tutor.open")
-                }
-                if let attempt = viewModel.attemptModel {
-                    NavigationLink("attempt.title") { AnalyzeMyWorkCaptureView(viewModel: attempt, tutor: viewModel.tutorModel) }
-                        .accessibilityIdentifier("attempt.open")
-                }
-                if let learning = viewModel.attemptModel?.learning {
-                    NavigationLink("attempt.methods.title") { SourceMethodComparisonView(model: learning, visualization: viewModel.visualizationModel) }
-                        .accessibilityIdentifier("attempt.methods.open")
-                }
-                if let visualization = viewModel.visualizationModel {
-                    NavigationLink("visualization.title") { MathVisualizationView(model: visualization) }
-                        .accessibilityIdentifier("visualization.open")
-                }
+                solveToolsGrid
                 statusCard
                 #if DEBUG
                 if let state = viewModel.controlledFixtureState {
@@ -203,15 +187,13 @@ struct PrimarySolveView: View {
 
             VStack(alignment: .leading, spacing: SpacingTokens.sm) {
                 Text("solve.proposedAnswer")
-                    .font(.headline)
+                    .font(TypographyTokens.cardTitle)
                     .foregroundStyle(ColorTokens.textSecondary)
-                MathematicalExpressionView(statement: candidate.finalAnswer, style: .prominent)
-                    .accessibilityIdentifier("solve.answer")
+                AppFormulaBox(accentColor: ColorTokens.stepHighlight) {
+                    MathematicalExpressionView(statement: candidate.finalAnswer, style: .prominent)
+                        .accessibilityIdentifier("solve.answer")
+                }
             }
-            .padding(SpacingTokens.md)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(ColorTokens.surfaceElevated)
-            .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.small))
 
             adaptiveRow {
                 Text("solve.methodLabel")
@@ -254,9 +236,14 @@ struct PrimarySolveView: View {
 
         if let explanation = viewModel.explanationPresentation {
             explanationControls(explanation)
-            Text("solve.steps").font(.title2.weight(.semibold))
-            ForEach(showsAllSteps ? candidate.steps : explanation.visibleSteps) { step in
-                explanationStep(step, presentation: explanation)
+            Text("solve.steps")
+                .font(TypographyTokens.screenTitle)
+                .foregroundStyle(ColorTokens.textPrimary)
+            let visibleSteps = showsAllSteps ? candidate.steps : explanation.visibleSteps
+            VStack(alignment: .leading, spacing: 0) {
+                ForEach(Array(visibleSteps.enumerated()), id: \.element.id) { index, step in
+                    explanationStep(step, presentation: explanation, isLast: index == visibleSteps.count - 1)
+                }
             }
         }
 
@@ -332,72 +319,141 @@ struct PrimarySolveView: View {
         .accessibilityIdentifier("explanation.selector")
     }
 
-    private func explanationStep(_ step: SolutionStep, presentation: ExplanationPresentation) -> some View {
-        VStack(alignment: .leading, spacing: SpacingTokens.md) {
-            adaptiveRow {
-                Text("solve.step \(step.order)").font(.headline)
-                Spacer()
-                Text(LocalizedStringKey(step.category.titleKey))
-                    .font(TypographyTokens.caption.weight(.semibold))
-                    .foregroundStyle(ColorTokens.textSecondary)
-                    .padding(.horizontal, SpacingTokens.sm)
-                    .padding(.vertical, SpacingTokens.xs)
-                    .background(ColorTokens.surfaceElevated)
-                    .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.small))
-                    .accessibilityIdentifier("solve.step.\(step.order).category")
-            }
-            MathematicalExpressionView(statement: step.claim, style: .step)
-            if presentation.usesIndividualDisclosure {
-                let expanded = expandedExplanationIDs.contains(step.id)
-                // Keep the control and content as siblings: DisclosureGroup can propagate
-                // its accessibility identifier over the expanded content's own identifier.
-                Button {
-                    if expanded { expandedExplanationIDs.remove(step.id) }
-                    else { expandedExplanationIDs.insert(step.id) }
-                } label: {
-                    HStack(spacing: SpacingTokens.sm) {
-                        Text("explanation.step.show \(step.order)")
-                        Spacer()
-                        Image(systemName: expanded ? "chevron.up" : "chevron.down")
-                            .accessibilityHidden(true)
-                    }
-                    .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
-                    .contentShape(Rectangle())
+    private func explanationStep(_ step: SolutionStep, presentation: ExplanationPresentation, isLast: Bool) -> some View {
+        HStack(alignment: .top, spacing: SpacingTokens.sm) {
+            VStack(spacing: 0) {
+                Text("\(step.order)")
+                    .font(TypographyTokens.stepNumber)
+                    .foregroundStyle(ColorTokens.stepHighlight)
+                    .frame(width: 28, height: 28)
+                    .background(ColorTokens.stepHighlightSoft)
+                    .clipShape(Circle())
+                    .overlay(
+                        Circle()
+                            .stroke(ColorTokens.stepHighlight.opacity(0.32), lineWidth: 1)
+                    )
+
+                if !isLast {
+                    Rectangle()
+                        .fill(ColorTokens.borderStrong)
+                        .frame(width: 1)
+                        .frame(maxHeight: .infinity)
+                        .padding(.top, 4)
                 }
-                .buttonStyle(.plain)
-                .foregroundStyle(ColorTokens.action)
-                .accessibilityValue(LocalizedStringKey(expanded ? "explanation.expanded" : "explanation.collapsed"))
-                .accessibilityIdentifier("explanation.disclosure.\(step.order)")
-                if expanded {
+            }
+            .frame(width: 28)
+            .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: SpacingTokens.compact) {
+                adaptiveRow {
+                    Text("solve.step \(step.order)")
+                        .font(TypographyTokens.sectionTitle)
+                        .foregroundStyle(ColorTokens.textPrimary)
+                    Spacer()
+                    AppStatusBadge(
+                        LocalizedStringKey(step.category.titleKey),
+                        tone: .stepHighlight
+                    )
+                    .accessibilityIdentifier("solve.step.\(step.order).category")
+                }
+
+                AppFormulaBox(accentColor: ColorTokens.stepHighlight) {
+                    MathematicalExpressionView(statement: step.claim, style: .step)
+                }
+
+                if presentation.usesIndividualDisclosure {
+                    let expanded = expandedExplanationIDs.contains(step.id)
+                    // Keep the control and content as siblings: DisclosureGroup can propagate
+                    // its accessibility identifier over the expanded content's own identifier.
+                    Button {
+                        if expanded { expandedExplanationIDs.remove(step.id) }
+                        else { expandedExplanationIDs.insert(step.id) }
+                    } label: {
+                        HStack(spacing: SpacingTokens.xs) {
+                            Image(systemName: "questionmark.circle.fill")
+                                .font(TypographyTokens.microLabel)
+                            Text("explanation.step.show \(step.order)")
+                                .font(TypographyTokens.caption.weight(.semibold))
+                            Spacer()
+                            Image(systemName: expanded ? "chevron.up" : "chevron.down")
+                                .font(TypographyTokens.microLabel)
+                                .accessibilityHidden(true)
+                        }
+                        .padding(.horizontal, SpacingTokens.sm)
+                        .frame(maxWidth: .infinity, minHeight: 40, alignment: .leading)
+                        .background(ColorTokens.stepHighlightSoft)
+                        .foregroundStyle(ColorTokens.stepHighlight)
+                        .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.sm, style: .continuous))
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityValue(LocalizedStringKey(expanded ? "explanation.expanded" : "explanation.collapsed"))
+                    .accessibilityIdentifier("explanation.disclosure.\(step.order)")
+
+                    if expanded {
+                        Text(verbatim: step.explanation)
+                            .font(TypographyTokens.body)
+                            .foregroundStyle(ColorTokens.textPrimary)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .padding(SpacingTokens.sm)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(ColorTokens.stepHighlightSoft)
+                            .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.sm, style: .continuous))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: RadiusTokens.sm, style: .continuous)
+                                    .stroke(ColorTokens.stepHighlight.opacity(0.24), lineWidth: 1)
+                            )
+                            .accessibilityIdentifier("explanation.content.\(step.order)")
+                    }
+                } else {
                     Text(verbatim: step.explanation)
+                        .font(TypographyTokens.body)
+                        .foregroundStyle(ColorTokens.textPrimary)
                         .fixedSize(horizontal: false, vertical: true)
+                        .padding(SpacingTokens.sm)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(ColorTokens.stepHighlightSoft)
+                        .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.sm, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: RadiusTokens.sm, style: .continuous)
+                                .stroke(ColorTokens.stepHighlight.opacity(0.24), lineWidth: 1)
+                        )
                         .accessibilityIdentifier("explanation.content.\(step.order)")
                 }
-            } else {
-                Text(verbatim: step.explanation)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .accessibilityIdentifier("explanation.content.\(step.order)")
-            }
-            if let numbers = presentation.candidate.dependencyNumbers(for: step) {
-                Text("solve.depends \(numbers)")
-                    .font(.caption)
-                    .foregroundStyle(ColorTokens.textSecondary)
-            }
-            if presentation.mode == .deep {
-                VStack(alignment: .leading, spacing: SpacingTokens.sm) {
-                    Text("explanation.dependencies").font(.subheadline.weight(.semibold))
-                    let dependencies = presentation.dependencies(for: step)
-                    if dependencies.isEmpty { Text("explanation.dependencies.none") }
-                    ForEach(dependencies) { dependency in
-                        Text("solve.step \(dependency.order)").font(.caption)
-                        MathematicalExpressionView(statement: dependency.claim)
-                    }
+
+                if let numbers = presentation.candidate.dependencyNumbers(for: step) {
+                    Text("solve.depends \(numbers)")
+                        .font(TypographyTokens.caption)
+                        .monospacedDigit()
+                        .foregroundStyle(ColorTokens.textSecondary)
                 }
-                .accessibilityElement(children: .contain)
-                .accessibilityIdentifier("explanation.dependencies.\(step.order)")
+                if presentation.mode == .deep {
+                    VStack(alignment: .leading, spacing: SpacingTokens.sm) {
+                        Text("explanation.dependencies")
+                            .font(TypographyTokens.cardTitle)
+                            .foregroundStyle(ColorTokens.textPrimary)
+                        let dependencies = presentation.dependencies(for: step)
+                        if dependencies.isEmpty {
+                            Text("explanation.dependencies.none")
+                                .font(TypographyTokens.caption)
+                                .foregroundStyle(ColorTokens.textSecondary)
+                        }
+                        ForEach(dependencies) { dependency in
+                            Text("solve.step \(dependency.order)")
+                                .font(TypographyTokens.microLabel)
+                                .foregroundStyle(ColorTokens.stepHighlight)
+                            AppFormulaBox(accentColor: ColorTokens.borderStrong) {
+                                MathematicalExpressionView(statement: dependency.claim)
+                            }
+                        }
+                    }
+                    .accessibilityElement(children: .contain)
+                    .accessibilityIdentifier("explanation.dependencies.\(step.order)")
+                }
             }
+            .solvePanel()
+            .padding(.bottom, isLast ? 0 : SpacingTokens.compact)
         }
-        .solvePanel()
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("solve.step.\(step.order)")
     }
@@ -589,8 +645,8 @@ struct PrimarySolveView: View {
     private func verificationColor(for severity: VerificationEvidencePresentation.Severity) -> Color {
         switch severity {
         case .verified: return ColorTokens.success
-        case .caution: return ColorTokens.accent
-        case .warning: return ColorTokens.warning
+        case .caution: return ColorTokens.warning
+        case .warning: return ColorTokens.danger
         case .neutral: return ColorTokens.textSecondary
         }
     }
@@ -614,8 +670,66 @@ struct PrimarySolveView: View {
                 .frame(maxWidth: .infinity, minHeight: 44)
                 .contentShape(Rectangle())
         }
-        .buttonStyle(.bordered)
-        .tint(ColorTokens.action)
+        .buttonStyle(AppSecondaryButtonStyle())
+        .accessibilityIdentifier(id)
+    }
+
+    @ViewBuilder
+    private var solveToolsGrid: some View {
+        let hasAnyTool = viewModel.tutorModel != nil || viewModel.attemptModel != nil || viewModel.visualizationModel != nil
+        if hasAnyTool {
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: SpacingTokens.sm) {
+                if let tutor = viewModel.tutorModel {
+                    solveToolTile(title: "tutor.title", systemImage: "sparkles", tone: .action, id: "tutor.open") {
+                        TutorView(viewModel: tutor)
+                    }
+                }
+                if let attempt = viewModel.attemptModel {
+                    solveToolTile(title: "attempt.title", systemImage: "doc.text.magnifyingglass", tone: .stepHighlight, id: "attempt.open") {
+                        AnalyzeMyWorkCaptureView(viewModel: attempt, tutor: viewModel.tutorModel)
+                    }
+                }
+                if let learning = viewModel.attemptModel?.learning {
+                    solveToolTile(title: "attempt.methods.title", systemImage: "arrow.triangle.branch", tone: .stepHighlight, id: "attempt.methods.open") {
+                        SourceMethodComparisonView(model: learning, visualization: viewModel.visualizationModel)
+                    }
+                }
+                if let visualization = viewModel.visualizationModel {
+                    solveToolTile(title: "visualization.title", systemImage: "chart.xyaxis.line", tone: .stepHighlight, id: "visualization.open") {
+                        MathVisualizationView(model: visualization)
+                    }
+                }
+            }
+        }
+    }
+
+    private func solveToolTile<Destination: View>(
+        title: LocalizedStringKey,
+        systemImage: String,
+        tone: AppBadgeTone = .stepHighlight,
+        id: String,
+        @ViewBuilder destination: () -> Destination
+    ) -> some View {
+        NavigationLink {
+            destination()
+        } label: {
+            AppSurfaceCard(elevated: true, cornerRadius: RadiusTokens.medium, padding: SpacingTokens.compact) {
+                HStack(spacing: SpacingTokens.sm) {
+                    Image(systemName: systemImage)
+                        .font(TypographyTokens.cardTitle)
+                        .foregroundStyle(tone.foreground)
+                        .frame(width: 28, height: 28)
+                        .background(tone.background)
+                        .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.small, style: .continuous))
+                    Text(title)
+                        .font(TypographyTokens.cardTitle)
+                        .foregroundStyle(ColorTokens.textPrimary)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+                }
+            }
+        }
+        .buttonStyle(.plain)
         .accessibilityIdentifier(id)
     }
 }
@@ -624,7 +738,7 @@ private extension View {
     func solvePanel() -> some View {
         padding(SpacingTokens.md).frame(maxWidth: .infinity, alignment: .leading)
             .background(ColorTokens.surface)
-            .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium))
-            .overlay(RoundedRectangle(cornerRadius: RadiusTokens.medium).stroke(ColorTokens.border, lineWidth: 1))
+            .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous).stroke(ColorTokens.borderSubtle, lineWidth: 1))
     }
 }

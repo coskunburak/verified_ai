@@ -71,6 +71,10 @@
 		B92000000000000000000002 /* CandidateGoalSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A92000000000000000000002 /* CandidateGoalSetupView.swift */; };
 		B92000000000000000000003 /* SyllabusSnapToPlanSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A92000000000000000000003 /* SyllabusSnapToPlanSheet.swift */; };
 		B92000000000000000000004 /* CandidateProfileViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A92000000000000000000004 /* CandidateProfileViewModelTests.swift */; };
+		B93000000000000000000001 /* ExamBlueprintAssemblyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A93000000000000000000001 /* ExamBlueprintAssemblyViewModel.swift */; };
+		B93000000000000000000002 /* ExamBlueprintAssemblyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A93000000000000000000002 /* ExamBlueprintAssemblyView.swift */; };
+		B93000000000000000000003 /* ExamBlueprintAssemblyViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A93000000000000000000003 /* ExamBlueprintAssemblyViewModelTests.swift */; };
+		B93000000000000000000004 /* ExamOfflineSQLiteStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A93000000000000000000004 /* ExamOfflineSQLiteStoreTests.swift */; };
 		B89500000000000000000001 /* DailyCoachSQLiteCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000001 /* DailyCoachSQLiteCache.swift */; };
 		B89500000000000000000002 /* RebalanceSQLiteCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000002 /* RebalanceSQLiteCache.swift */; };
 		B89500000000000000000003 /* CoachHubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000003 /* CoachHubView.swift */; };
@@ -165,6 +169,9 @@
 		100000000000000000000006 /* AppLifecycleHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000006 /* AppLifecycleHandler.swift */; };
 		100000000000000000000007 /* AppLaunchState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000007 /* AppLaunchState.swift */; };
 		100000000000000000000008 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000008 /* RootView.swift */; };
+		B94000000000000000000001 /* DesignSystemComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94000000000000000000001 /* DesignSystemComponents.swift */; };
+		B94000000000000000000002 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94000000000000000000002 /* MainTabView.swift */; };
+		B94000000000000000000003 /* DesignSystemGalleryPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94000000000000000000003 /* DesignSystemGalleryPreview.swift */; };
 		100000000000000000000009 /* HTTPMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000009 /* HTTPMethod.swift */; };
 		10000000000000000000000A /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000000A /* Endpoint.swift */; };
 		10000000000000000000000B /* HTTPRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000000B /* HTTPRequest.swift */; };
@@ -341,6 +348,10 @@
 		A92000000000000000000002 /* CandidateGoalSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Exam/Presentation/CandidateGoalSetupView.swift; sourceTree = SOURCE_ROOT; };
 		A92000000000000000000003 /* SyllabusSnapToPlanSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Exam/Presentation/SyllabusSnapToPlanSheet.swift; sourceTree = SOURCE_ROOT; };
 		A92000000000000000000004 /* CandidateProfileViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Exam/CandidateProfileViewModelTests.swift; sourceTree = SOURCE_ROOT; };
+		A93000000000000000000001 /* ExamBlueprintAssemblyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Exam/Presentation/ExamBlueprintAssemblyViewModel.swift; sourceTree = SOURCE_ROOT; };
+		A93000000000000000000002 /* ExamBlueprintAssemblyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Exam/Presentation/ExamBlueprintAssemblyView.swift; sourceTree = SOURCE_ROOT; };
+		A93000000000000000000003 /* ExamBlueprintAssemblyViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Exam/ExamBlueprintAssemblyViewModelTests.swift; sourceTree = SOURCE_ROOT; };
+		A93000000000000000000004 /* ExamOfflineSQLiteStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Exam/ExamOfflineSQLiteStoreTests.swift; sourceTree = SOURCE_ROOT; };
 		A89500000000000000000001 /* DailyCoachSQLiteCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Home/Data/DailyCoachSQLiteCache.swift; sourceTree = SOURCE_ROOT; };
 		A89500000000000000000002 /* RebalanceSQLiteCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Home/Data/RebalanceSQLiteCache.swift; sourceTree = SOURCE_ROOT; };
 		A89500000000000000000003 /* CoachHubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Home/Presentation/CoachHubView.swift; sourceTree = SOURCE_ROOT; };
@@ -434,6 +445,9 @@
 		200000000000000000000006 /* AppLifecycleHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLifecycleHandler.swift; sourceTree = "<group>"; };
 		200000000000000000000007 /* AppLaunchState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunchState.swift; sourceTree = "<group>"; };
 		200000000000000000000008 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		A94000000000000000000001 /* DesignSystemComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystemComponents.swift; sourceTree = "<group>"; };
+		A94000000000000000000002 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		A94000000000000000000003 /* DesignSystemGalleryPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystemGalleryPreview.swift; sourceTree = "<group>"; };
 		200000000000000000000009 /* HTTPMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPMethod.swift; sourceTree = "<group>"; };
 		20000000000000000000000A /* Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
 		20000000000000000000000B /* HTTPRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPRequest.swift; sourceTree = "<group>"; };
@@ -648,6 +662,7 @@
 				200000000000000000000006 /* AppLifecycleHandler.swift */,
 				200000000000000000000007 /* AppLaunchState.swift */,
 				200000000000000000000008 /* RootView.swift */,
+				A94000000000000000000002 /* MainTabView.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -755,6 +770,8 @@
 		71000000000000000000000B /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				A94000000000000000000001 /* DesignSystemComponents.swift */,
+				A94000000000000000000003 /* DesignSystemGalleryPreview.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -1206,6 +1223,10 @@
 				A92000000000000000000002 /* CandidateGoalSetupView.swift */,
 				A92000000000000000000003 /* SyllabusSnapToPlanSheet.swift */,
 				A92000000000000000000004 /* CandidateProfileViewModelTests.swift */,
+				A93000000000000000000001 /* ExamBlueprintAssemblyViewModel.swift */,
+				A93000000000000000000002 /* ExamBlueprintAssemblyView.swift */,
+				A93000000000000000000003 /* ExamBlueprintAssemblyViewModelTests.swift */,
+				A93000000000000000000004 /* ExamOfflineSQLiteStoreTests.swift */,
 				A89500000000000000000001 /* DailyCoachSQLiteCache.swift */,
 				A89500000000000000000002 /* RebalanceSQLiteCache.swift */,
 				A89500000000000000000003 /* CoachHubView.swift */,
@@ -1484,6 +1505,8 @@
 				B92000000000000000000001 /* CandidateProfileViewModel.swift in Sources */,
 				B92000000000000000000002 /* CandidateGoalSetupView.swift in Sources */,
 				B92000000000000000000003 /* SyllabusSnapToPlanSheet.swift in Sources */,
+				B93000000000000000000001 /* ExamBlueprintAssemblyViewModel.swift in Sources */,
+				B93000000000000000000002 /* ExamBlueprintAssemblyView.swift in Sources */,
 				B89500000000000000000001 /* DailyCoachSQLiteCache.swift in Sources */,
 				B89500000000000000000002 /* RebalanceSQLiteCache.swift in Sources */,
 				B89500000000000000000003 /* CoachHubView.swift in Sources */,
@@ -1566,6 +1589,9 @@
 				100000000000000000000015 /* AppLogger.swift in Sources */,
 				100000000000000000000016 /* CorrelationContext.swift in Sources */,
 				100000000000000000000017 /* ColorTokens.swift in Sources */,
+				B94000000000000000000001 /* DesignSystemComponents.swift in Sources */,
+				B94000000000000000000002 /* MainTabView.swift in Sources */,
+				B94000000000000000000003 /* DesignSystemGalleryPreview.swift in Sources */,
 				100000000000000000000018 /* TypographyTokens.swift in Sources */,
 				100000000000000000000019 /* SpacingTokens.swift in Sources */,
 				10000000000000000000001A /* RadiusTokens.swift in Sources */,
@@ -1640,6 +1666,8 @@
 				B8A100000000000000000007 /* Sprint810ColdStartCalibrationTests.swift in Sources */,
 				B91000000000000000000006 /* Sprint91ExamCatalogAndTargetTests.swift in Sources */,
 				B92000000000000000000004 /* CandidateProfileViewModelTests.swift in Sources */,
+				B93000000000000000000003 /* ExamBlueprintAssemblyViewModelTests.swift in Sources */,
+				B93000000000000000000004 /* ExamOfflineSQLiteStoreTests.swift in Sources */,
 				B89600000000000000000001 /* Sprint82PracticeTests.swift in Sources */,
 				B89600000000000000000002 /* Sprint83SpacedRepetitionTests.swift in Sources */,
 				B89600000000000000000003 /* Sprint84CoachHubTests.swift in Sources */,

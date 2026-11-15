@@ -11,12 +11,12 @@ public enum MathHighlightRole: String, Sendable, CaseIterable {
 
     public var tintColor: Color {
         switch self {
-        case .witness: return .purple
-        case .verifiedCorrect: return .green
-        case .trapStepDiff: return .orange
-        case .contradiction: return .red
-        case .verifiedRule: return .indigo
-        case .downstreamPropagation: return .blue
+        case .witness: return ColorTokens.warning
+        case .verifiedCorrect: return ColorTokens.success
+        case .trapStepDiff: return ColorTokens.warning
+        case .contradiction: return ColorTokens.danger
+        case .verifiedRule: return ColorTokens.stepHighlight
+        case .downstreamPropagation: return ColorTokens.stepHighlight
         }
     }
 

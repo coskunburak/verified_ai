@@ -166,6 +166,18 @@ final class Sprint91ExamCatalogAndTargetTests: XCTestCase {
             func confirmSyllabusDisambiguation(uploadId: String, mappings: [SyllabusMappingConfirmation]) async throws -> SyllabusIngestionResponse {
                 throw ExamServiceError.featureDisabled
             }
+            func fetchBlueprints(examDefinitionId: UUID, examVersionNumber: Int?) async throws -> [ExamBlueprintDTO] {
+                throw ExamServiceError.featureDisabled
+            }
+            func assembleAssessment(examDefinitionId: UUID, request: AssessmentAssemblyRequestDTO) async throws -> AssembledAssessmentDTO {
+                throw ExamServiceError.featureDisabled
+            }
+            func fetchAssembledAssessment(userId: UUID, assessmentId: UUID) async throws -> AssembledAssessmentDTO {
+                throw ExamServiceError.featureDisabled
+            }
+            func fetchAssembledAssessments(userId: UUID, examDefinitionId: UUID?) async throws -> [AssembledAssessmentDTO] {
+                throw ExamServiceError.featureDisabled
+            }
         }
 
         let store = ExamOfflineSQLiteStore(inMemory: true)

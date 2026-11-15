@@ -15,57 +15,69 @@ public struct CounterexampleProofCardView: View {
     }
 
     public var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            HStack(spacing: 8) {
+        VStack(alignment: .leading, spacing: SpacingTokens.compact) {
+            HStack(spacing: SpacingTokens.xs) {
                 Image(systemName: "function")
-                    .font(.headline)
-                    .foregroundStyle(.orange)
+                    .font(TypographyTokens.cardTitle)
+                    .foregroundStyle(ColorTokens.warning)
                 Text(LocalizedStringKey("counterexample.card.header.title"))
-                    .font(.subheadline.weight(.semibold))
+                    .font(TypographyTokens.cardTitle)
+                    .foregroundStyle(ColorTokens.textPrimary)
                 Spacer()
                 Text(snapshot.cardId)
-                    .font(.caption2.monospaced())
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .background(Color.orange.opacity(0.15), in: Capsule())
+                    .font(TypographyTokens.microLabel.monospaced())
+                    .foregroundStyle(ColorTokens.warning)
+                    .padding(.horizontal, SpacingTokens.xs)
+                    .padding(.vertical, 3)
+                    .background(ColorTokens.warningSoft, in: Capsule())
             }
 
             VStack(alignment: .leading, spacing: 6) {
                 Text(LocalizedStringKey("counterexample.card.witness.prompt"))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(TypographyTokens.caption)
+                    .foregroundStyle(ColorTokens.textSecondary)
                 Native2DMathExpressionView(latex: snapshot.witnessSubstitutionLatex, highlightRole: .witness)
             }
 
-            Divider()
+            Rectangle()
+                .fill(ColorTokens.borderSubtle)
+                .frame(height: 1)
 
-            HStack(alignment: .top, spacing: 12) {
+            HStack(alignment: .top, spacing: SpacingTokens.sm) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(LocalizedStringKey("counterexample.card.lhs.actual"))
-                        .font(.caption2.weight(.medium))
-                        .foregroundStyle(.green)
+                        .font(TypographyTokens.microLabel)
+                        .foregroundStyle(ColorTokens.success)
                     Native2DMathExpressionView(latex: snapshot.lhsEvaluatedLatex, highlightRole: .verifiedCorrect)
                 }
+                .padding(SpacingTokens.sm)
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .background(ColorTokens.successSoft, in: RoundedRectangle(cornerRadius: RadiusTokens.small, style: .continuous))
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(LocalizedStringKey("counterexample.card.rhs.trap"))
-                        .font(.caption2.weight(.medium))
-                        .foregroundStyle(.orange)
+                        .font(TypographyTokens.microLabel)
+                        .foregroundStyle(ColorTokens.danger)
                     Native2DMathExpressionView(latex: snapshot.rhsFaultyEvaluatedLatex, highlightRole: .trapStepDiff)
                 }
+                .padding(SpacingTokens.sm)
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .background(ColorTokens.dangerSoft, in: RoundedRectangle(cornerRadius: RadiusTokens.small, style: .continuous))
             }
 
             VStack(alignment: .leading, spacing: 6) {
                 Native2DMathExpressionView(latex: snapshot.contradictionStatementLatex, highlightRole: .contradiction)
                 Text(LocalizedStringKey("counterexample.card.valid_rule.label"))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(TypographyTokens.caption)
+                    .foregroundStyle(ColorTokens.textSecondary)
                 Native2DMathExpressionView(latex: snapshot.validStepLatex, highlightRole: .verifiedRule)
             }
-            .padding(10)
-            .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 10))
+            .padding(SpacingTokens.compact)
+            .background(ColorTokens.surfaceElevated, in: RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                    .stroke(ColorTokens.borderSubtle, lineWidth: 1)
+            )
 
             if let onLaunchTwinChallenge {
                 Button(action: onLaunchTwinChallenge) {
@@ -73,23 +85,19 @@ public struct CounterexampleProofCardView: View {
                         LocalizedStringKey("counterexample.card.cta.prove_it_solo"),
                         systemImage: "shield.lefthalf.filled.badge.checkmark"
                     )
-                    .font(.subheadline.weight(.semibold))
-                    .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(.indigo)
+                .buttonStyle(AppPrimaryButtonStyle())
                 .accessibilityIdentifier("counterexample_launch_twin_cta")
             }
         }
-        .padding(16)
+        .padding(SpacingTokens.md)
         .background(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(Color(.systemBackground))
-                .shadow(color: .black.opacity(0.06), radius: 8, y: 4)
+            RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous)
+                .fill(ColorTokens.surface)
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .strokeBorder(Color.orange.opacity(0.35), lineWidth: 1)
+            RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous)
+                .strokeBorder(ColorTokens.warning.opacity(0.45), lineWidth: 1)
         )
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("counterexample_proof_card_H01")

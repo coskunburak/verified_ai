@@ -23,7 +23,7 @@ public struct MilestoneSheetView: View {
                 }
                 .padding(SpacingTokens.md)
             }
-            .background(ColorTokens.background)
+            .background(ColorTokens.canvas)
             .navigationTitle(LocalizedStringKey("gamification.sheet.title"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -90,7 +90,7 @@ public struct MilestoneSheetView: View {
         VStack(alignment: .leading, spacing: SpacingTokens.sm) {
             HStack(spacing: SpacingTokens.sm) {
                 Image(systemName: "shield.lefthalf.filled")
-                    .foregroundStyle(Color.indigo)
+                    .foregroundStyle(ColorTokens.action)
                 Text(freezeRemainingText)
                     .font(TypographyTokens.body.weight(.semibold))
                     .foregroundStyle(ColorTokens.textPrimary)
@@ -110,10 +110,10 @@ public struct MilestoneSheetView: View {
                     } icon: {
                         Image(systemName: isAvailable ? "snowflake.circle.fill" : "checkmark.circle")
                     }
-                    .foregroundStyle(isAvailable ? Color.indigo : ColorTokens.textSecondary)
+                    .foregroundStyle(isAvailable ? ColorTokens.action : ColorTokens.textSecondary)
                     .padding(.horizontal, SpacingTokens.sm)
                     .padding(.vertical, SpacingTokens.xs)
-                    .background((isAvailable ? Color.indigo : ColorTokens.textSecondary).opacity(0.1))
+                    .background(isAvailable ? ColorTokens.actionSoft : ColorTokens.surface)
                     .clipShape(Capsule())
                 }
             }
@@ -126,10 +126,10 @@ public struct MilestoneSheetView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(ColorTokens.surfaceElevated)
         .overlay(
-            RoundedRectangle(cornerRadius: RadiusTokens.medium)
-                .strokeBorder(Color.indigo.opacity(0.22), lineWidth: 1)
+            RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous)
+                .strokeBorder(ColorTokens.action.opacity(0.35), lineWidth: 1)
         )
-        .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium))
+        .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous))
         .accessibilityElement(children: .combine)
         .accessibilityIdentifier("gamification.freezeStatusCard")
     }
@@ -176,7 +176,7 @@ public struct MilestoneSheetView: View {
                             } else if entry.freezeConsumed {
                                 Image(systemName: "shield.fill")
                                     .font(.caption)
-                                    .foregroundStyle(Color.indigo)
+                                    .foregroundStyle(ColorTokens.action)
                             } else {
                                 Text("Continuity")
                                     .font(.caption2.weight(.medium))
@@ -274,7 +274,7 @@ public struct MilestoneSheetView: View {
         case .assistedContinuity:
             return ColorTokens.action
         case .freezeApplied:
-            return Color.indigo
+            return ColorTokens.action
         }
     }
 

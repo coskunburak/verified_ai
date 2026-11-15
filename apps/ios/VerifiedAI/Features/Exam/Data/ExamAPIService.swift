@@ -14,8 +14,11 @@ public enum ExamServiceError: Error, Equatable, Sendable {
     case quotaExceeded
     case mediaUnsupported
     case disambiguationRequired
+    case poolInsufficient
     case unexpected(String)
 }
+
+public typealias ExamAPIServiceProtocol = ExamAPIServicing
 
 public protocol ExamAPIServicing: Sendable {
     func fetchDefinitions(
@@ -46,6 +49,25 @@ public protocol ExamAPIServicing: Sendable {
         uploadId: String,
         mappings: [SyllabusMappingConfirmation]
     ) async throws -> SyllabusIngestionResponse
+    func fetchBlueprints(examDefinitionId: UUID, examVersionNumber: Int?) async throws -> [ExamBlueprintDTO]
+    func assembleAssessment(examDefinitionId: UUID, request: AssessmentAssemblyRequestDTO) async throws -> AssembledAssessmentDTO
+    func fetchAssembledAssessment(userId: UUID, assessmentId: UUID) async throws -> AssembledAssessmentDTO
+    func fetchAssembledAssessments(userId: UUID, examDefinitionId: UUID?) async throws -> [AssembledAssessmentDTO]
+}
+
+public extension ExamAPIServicing {
+    func fetchBlueprints(examDefinitionId: UUID) async throws -> [ExamBlueprintDTO] {
+        try await fetchBlueprints(examDefinitionId: examDefinitionId, examVersionNumber: nil)
+    }
+
+    func assembleAssessment(userId: UUID, request: AssessmentAssemblyRequestDTO) async throws -> AssembledAssessmentDTO {
+        let defaultDefId = UUID(uuidString: "91000000-0000-4000-8000-000000000101")!
+        return try await assembleAssessment(examDefinitionId: defaultDefId, request: request)
+    }
+
+    func fetchAssembledAssessment(userId: UUID, assembledAssessmentId: UUID) async throws -> AssembledAssessmentDTO {
+        try await fetchAssembledAssessment(userId: userId, assessmentId: assembledAssessmentId)
+    }
 }
 
 final class HTTPExamAPIService: ExamAPIServicing, @unchecked Sendable {
@@ -244,13 +266,97 @@ final class HTTPExamAPIService: ExamAPIServicing, @unchecked Sendable {
         }
     }
 
+    func fetchBlueprints(examDefinitionId: UUID, examVersionNumber: Int? = nil) async throws -> [ExamBlueprintDTO] {
+        var queryItems: [URLQueryItem] = [URLQueryItem(name: "status", value: "ACTIVE")]
+        if let examVersionNumber {
+            queryItems.append(URLQueryItem(name: "examVersionNumber", value: String(examVersionNumber)))
+        }
+        let endpoint = Endpoint(
+            path: "/v1/exams/\(examDefinitionId.uuidString.lowercased())/blueprints",
+            method: .get,
+            queryItems: queryItems
+        )
+        let httpRequest = HTTPRequest<[ExamBlueprintDTO]>(
+            endpoint: endpoint,
+            allowsAuthRefreshRetry: true
+        )
+        do {
+            return try await apiClient.send(httpRequest).body
+        } catch let error as NetworkError {
+            throw mapNetworkError(error)
+        }
+    }
+
+    func assembleAssessment(examDefinitionId: UUID, request: AssessmentAssemblyRequestDTO) async throws -> AssembledAssessmentDTO {
+        let bodyData = try encoder.encode(request)
+        let endpoint = Endpoint(
+            path: "/v1/exams/\(examDefinitionId.uuidString.lowercased())/assessments/assemble",
+            method: .post
+        )
+        let httpRequest = HTTPRequest<AssembledAssessmentDTO>(
+            endpoint: endpoint,
+            body: bodyData,
+            idempotencyKey: "asm-\(request.blueprintId.uuidString.lowercased())-\(request.assemblySeed)",
+            allowsAuthRefreshRetry: true
+        )
+        do {
+            return try await apiClient.send(httpRequest).body
+        } catch let error as NetworkError {
+            throw mapNetworkError(error)
+        }
+    }
+
+    func fetchAssembledAssessment(userId: UUID, assessmentId: UUID) async throws -> AssembledAssessmentDTO {
+        let endpoint = Endpoint(
+            path: "/v1/exams/candidates/\(userId.uuidString.lowercased())/assessments/\(assessmentId.uuidString.lowercased())",
+            method: .get
+        )
+        let httpRequest = HTTPRequest<AssembledAssessmentDTO>(
+            endpoint: endpoint,
+            allowsAuthRefreshRetry: true
+        )
+        do {
+            return try await apiClient.send(httpRequest).body
+        } catch let error as NetworkError {
+            throw mapNetworkError(error)
+        }
+    }
+
+    func fetchAssembledAssessments(userId: UUID, examDefinitionId: UUID? = nil) async throws -> [AssembledAssessmentDTO] {
+        var queryItems: [URLQueryItem] = []
+        if let examDefinitionId {
+            queryItems.append(URLQueryItem(name: "examDefinitionId", value: examDefinitionId.uuidString.lowercased()))
+        }
+        let endpoint = Endpoint(
+            path: "/v1/exams/candidates/\(userId.uuidString.lowercased())/assessments",
+            method: .get,
+            queryItems: queryItems
+        )
+        let httpRequest = HTTPRequest<[AssembledAssessmentDTO]>(
+            endpoint: endpoint,
+            allowsAuthRefreshRetry: true
+        )
+        do {
+            return try await apiClient.send(httpRequest).body
+        } catch let error as NetworkError {
+            throw mapNetworkError(error)
+        }
+    }
+
     private func mapNetworkError(_ error: NetworkError) -> ExamServiceError {
         switch error {
         case .server(let problem):
-            if problem.status == 503 || problem.code == "EXAM_FEATURE_DISABLED" {
+            if problem.status == 503
+                || problem.code == "EXAM_FEATURE_DISABLED"
+                || problem.code == "EXAM_QUESTION_BANK_DISABLED"
+                || problem.code == "EXAM_BLUEPRINT_DISABLED"
+                || problem.code == "EXAM_ASSESSMENT_ASSEMBLY_DISABLED" {
                 return .featureDisabled
             }
-            if problem.status == 403 || problem.code == "EXAM_ACCESS_DENIED" || problem.code == "CANDIDATE_PROFILE_ACCESS_DENIED" {
+            if problem.status == 403
+                || problem.code == "EXAM_ACCESS_DENIED"
+                || problem.code == "CANDIDATE_PROFILE_ACCESS_DENIED"
+                || problem.code == "EXAM_CANDIDATE_ACCESS_DENIED" {
                 return .forbidden
             }
             if problem.status == 404
@@ -258,11 +364,24 @@ final class HTTPExamAPIService: ExamAPIServicing, @unchecked Sendable {
                 || problem.code == "EXAM_VERSION_NOT_FOUND"
                 || problem.code == "EXAM_TARGET_NOT_FOUND"
                 || problem.code == "CANDIDATE_PROFILE_NOT_FOUND"
-                || problem.code == "SYLLABUS_UPLOAD_NOT_FOUND" {
+                || problem.code == "SYLLABUS_UPLOAD_NOT_FOUND"
+                || problem.code == "EXAM_QUESTION_ITEM_NOT_FOUND"
+                || problem.code == "EXAM_BLUEPRINT_NOT_FOUND"
+                || problem.code == "EXAM_ASSEMBLED_ASSESSMENT_NOT_FOUND" {
                 return .notFound
             }
-            if problem.status == 409 || problem.code == "EXAM_VERSION_CONFLICT" {
+            if problem.status == 409
+                || problem.code == "EXAM_VERSION_CONFLICT"
+                || problem.code == "EXAM_BLUEPRINT_VERSION_MISMATCH"
+                || problem.code == "EXAM_QUESTION_CODE_CONFLICT"
+                || problem.code == "EXAM_BLUEPRINT_CODE_CONFLICT" {
                 return .versionConflict
+            }
+            if problem.code == "EXAM_QUESTION_POOL_INSUFFICIENT"
+                || problem.code == "EXAM_ASSEMBLY_DIFFICULTY_TOLERANCE_EXCEEDED"
+                || problem.code == "EXAM_BLUEPRINT_DISTRIBUTION_INVALID"
+                || problem.code == "EXAM_QUESTION_PROVENANCE_UNVERIFIED" {
+                return .poolInsufficient
             }
             if problem.code == "EXAM_TARGET_SCORE_OUT_OF_RANGE" {
                 return .scoreOutOfRange
@@ -314,6 +433,7 @@ final class FixtureExamAPIService: ExamAPIServicing, @unchecked Sendable {
     private var storedProfile: CandidateProfileResponse?
     private var storedHistory: [CandidateHorizonHistoryEntry] = []
     private var storedUploads: [SyllabusIngestionResponse] = []
+    private var storedAssembledAssessments: [AssembledAssessmentDTO] = []
 
     init(simulateOffline: Bool = false, userId: UUID = UUID(uuidString: "91000000-0000-4000-8000-000000000a01")!) {
         self.simulateOffline = simulateOffline
@@ -762,6 +882,274 @@ final class FixtureExamAPIService: ExamAPIServicing, @unchecked Sendable {
         )
         storedUploads[idx] = confirmed
         return confirmed
+    }
+
+    func fetchBlueprints(examDefinitionId: UUID, examVersionNumber: Int? = nil) async throws -> [ExamBlueprintDTO] {
+        if simulateOffline { throw ExamServiceError.offline }
+        let all = Self.seedBlueprints()
+        return all.filter { bp in
+            bp.examDefinitionId == examDefinitionId &&
+            (examVersionNumber == nil || bp.examVersionNumber == examVersionNumber) &&
+            bp.status == .active
+        }
+    }
+
+    func assembleAssessment(examDefinitionId: UUID, request: AssessmentAssemblyRequestDTO) async throws -> AssembledAssessmentDTO {
+        if simulateOffline { throw ExamServiceError.offline }
+        guard request.assemblySeed.trimmingCharacters(in: .whitespacesAndNewlines).count >= 4 else {
+            throw ExamServiceError.unexpected("assemblySeed must be at least 4 characters")
+        }
+        guard let blueprint = Self.seedBlueprints().first(where: { $0.id == request.blueprintId }) else {
+            throw ExamServiceError.notFound
+        }
+        if let existing = storedAssembledAssessments.first(where: {
+            $0.userId == request.userId && $0.blueprintId == request.blueprintId && $0.assemblySeed == request.assemblySeed
+        }) {
+            return existing
+        }
+
+        let multiplier = request.overrideTimeMultiplier
+            ?? storedProfile?.accommodations.extraTimeMultiplier
+            ?? 1.00
+        guard [1.00, 1.25, 1.50, 2.00].contains(multiplier) else {
+            throw ExamServiceError.accommodationInvalid
+        }
+        let effectiveDurationSeconds = Int(ceil(Double(blueprint.baseDurationSeconds) * multiplier))
+        let accommodations = AppliedAccommodationSnapshotDTO(
+            extraTimeMultiplier: multiplier,
+            highContrastMode: request.highContrastMode || (storedProfile?.accommodations.highContrastEnabled ?? false),
+            screenReaderOptimized: request.screenReaderOptimized || (storedProfile?.accommodations.screenReaderOptimized ?? false),
+            extendedBreakPrompts: request.extendedBreakPrompts || multiplier > 1.0
+        )
+
+        let baseItems = Self.buildFixtureItems(for: blueprint, seed: request.assemblySeed)
+        let canonicalPayload = "\(blueprint.id.uuidString.lowercased())|\(blueprint.blueprintHash)|\(request.assemblySeed)|\(String(format: "%.2f", multiplier))|" +
+            baseItems.map { "\($0.sequenceNumber):\($0.questionItemId.uuidString.lowercased()):\($0.optionOrder.joined(separator: ","))" }.joined(separator: ";")
+        let reproHash = SHA256.hash(data: Data(canonicalPayload.utf8)).map { String(format: "%02x", $0) }.joined()
+
+        var topicCounts: [String: Int] = [:]
+        var diffCounts: [String: Int] = ["EASY": 0, "MEDIUM": 0, "HARD": 0, "EXPERT": 0]
+        var cogCounts: [String: Int] = [:]
+        for item in baseItems {
+            topicCounts[item.topicCode, default: 0] += 1
+            diffCounts[item.difficultyBand.rawValue, default: 0] += 1
+            cogCounts[item.cognitiveLevel.rawValue, default: 0] += 1
+        }
+        let total = max(1, baseItems.count)
+        let summary = AssemblyDistributionSummaryDTO(
+            topicCounts: topicCounts,
+            difficultyCounts: diffCounts,
+            cognitiveCounts: cogCounts,
+            easyActualBps: (diffCounts["EASY", default: 0] * 10000) / total,
+            mediumActualBps: (diffCounts["MEDIUM", default: 0] * 10000) / total,
+            hardActualBps: (diffCounts["HARD", default: 0] * 10000) / total,
+            expertActualBps: (diffCounts["EXPERT", default: 0] * 10000) / total
+        )
+
+        let assembled = AssembledAssessmentDTO(
+            id: UUID(),
+            userId: request.userId,
+            candidateProfileId: request.candidateProfileId,
+            blueprintId: blueprint.id,
+            blueprintCode: blueprint.blueprintCode,
+            blueprintTitle: blueprint.title,
+            blueprintMode: blueprint.blueprintMode,
+            examDefinitionId: blueprint.examDefinitionId,
+            examVersionNumber: blueprint.examVersionNumber,
+            assemblySeed: request.assemblySeed,
+            reproducibilityHash: reproHash,
+            totalQuestionCount: baseItems.count,
+            baseDurationSeconds: blueprint.baseDurationSeconds,
+            timeMultiplier: multiplier,
+            effectiveDurationSeconds: effectiveDurationSeconds,
+            accommodationsSnapshot: accommodations,
+            distributionSummary: summary,
+            status: .ready,
+            assembledAt: "2026-11-15T12:00:00Z",
+            expiresAt: "2026-11-22T12:00:00Z",
+            items: baseItems,
+            trainingEligible: false
+        )
+        storedAssembledAssessments.insert(assembled, at: 0)
+        return assembled
+    }
+
+    func fetchAssembledAssessment(userId: UUID, assessmentId: UUID) async throws -> AssembledAssessmentDTO {
+        if simulateOffline { throw ExamServiceError.offline }
+        guard let found = storedAssembledAssessments.first(where: { $0.id == assessmentId }) else {
+            throw ExamServiceError.notFound
+        }
+        guard found.userId == userId else {
+            throw ExamServiceError.forbidden
+        }
+        return found
+    }
+
+    func fetchAssembledAssessments(userId: UUID, examDefinitionId: UUID? = nil) async throws -> [AssembledAssessmentDTO] {
+        if simulateOffline { throw ExamServiceError.offline }
+        return storedAssembledAssessments.filter { a in
+            a.userId == userId && (examDefinitionId == nil || a.examDefinitionId == examDefinitionId)
+        }
+    }
+
+    static func seedBlueprints() -> [ExamBlueprintDTO] {
+        let tytDefId = UUID(uuidString: "91000000-0000-4000-8000-000000000101")!
+        let sectionId = UUID(uuidString: "92000000-0000-4000-8000-000000000101")!
+        return [
+            ExamBlueprintDTO(
+                id: UUID(uuidString: "94000000-0000-4000-8000-000000000101")!,
+                examDefinitionId: tytDefId,
+                examVersionNumber: 1,
+                examSectionId: sectionId,
+                blueprintCode: "BP-TYT-MATH-DIAG-2026-V1",
+                title: "TYT Mathematics Diagnostic Baseline (8 Items)",
+                description: "Deterministic 8-question diagnostic baseline across core arithmetic and algebra foundations.",
+                blueprintMode: .diagnostic,
+                totalQuestionCount: 8,
+                baseDurationSeconds: 900,
+                easyTargetBps: 2500,
+                mediumTargetBps: 5000,
+                hardTargetBps: 2500,
+                expertTargetBps: 0,
+                difficultyToleranceBps: 500,
+                recallTargetBps: 2500,
+                comprehensionTargetBps: 2500,
+                applicationTargetBps: 2500,
+                analysisTargetBps: 2500,
+                evaluationTargetBps: 0,
+                allowRecentlySeenCooldownDays: 14,
+                shuffleQuestions: true,
+                shuffleOptions: true,
+                status: .active,
+                blueprintHash: "3030303030303030303030303030303030303030303030303030303030303001",
+                topicRules: [
+                    ExamBlueprintTopicRuleDTO(id: UUID(uuidString: "94100000-0000-4000-8000-000000000101")!, topicCode: "MATH.ARITHMETIC.INTEGER_OPERATIONS", targetWeightBps: 2500, minQuestionCount: 1, maxQuestionCount: 3, requiredItemFormats: [.singleChoiceMcq], ruleOrder: 1),
+                    ExamBlueprintTopicRuleDTO(id: UUID(uuidString: "94100000-0000-4000-8000-000000000102")!, topicCode: "MATH.ARITHMETIC.FRACTIONS", targetWeightBps: 2500, minQuestionCount: 1, maxQuestionCount: 3, requiredItemFormats: [.singleChoiceMcq], ruleOrder: 2),
+                    ExamBlueprintTopicRuleDTO(id: UUID(uuidString: "94100000-0000-4000-8000-000000000103")!, topicCode: "MATH.ARITHMETIC.PERCENTAGES", targetWeightBps: 2500, minQuestionCount: 1, maxQuestionCount: 3, requiredItemFormats: [.singleChoiceMcq], ruleOrder: 3),
+                    ExamBlueprintTopicRuleDTO(id: UUID(uuidString: "94100000-0000-4000-8000-000000000104")!, topicCode: "MATH.ALGEBRA.FACTORING", targetWeightBps: 2500, minQuestionCount: 1, maxQuestionCount: 3, requiredItemFormats: [.singleChoiceMcq], ruleOrder: 4)
+                ],
+                trainingEligible: false,
+                createdAt: "2026-01-15T09:00:00Z",
+                updatedAt: "2026-01-15T09:00:00Z"
+            ),
+            ExamBlueprintDTO(
+                id: UUID(uuidString: "94000000-0000-4000-8000-000000000102")!,
+                examDefinitionId: tytDefId,
+                examVersionNumber: 1,
+                examSectionId: sectionId,
+                blueprintCode: "BP-TYT-MATH-DRILL-2026-V1",
+                title: "TYT Mathematics Section Drill (10 Items)",
+                description: "Deterministic 10-question timed section drill covering integer operations, fractions, percentages, and factoring.",
+                blueprintMode: .sectionDrill,
+                totalQuestionCount: 10,
+                baseDurationSeconds: 1200,
+                easyTargetBps: 2000,
+                mediumTargetBps: 4000,
+                hardTargetBps: 3000,
+                expertTargetBps: 1000,
+                difficultyToleranceBps: 500,
+                recallTargetBps: 2000,
+                comprehensionTargetBps: 2000,
+                applicationTargetBps: 3000,
+                analysisTargetBps: 2000,
+                evaluationTargetBps: 1000,
+                allowRecentlySeenCooldownDays: 14,
+                shuffleQuestions: true,
+                shuffleOptions: true,
+                status: .active,
+                blueprintHash: "3030303030303030303030303030303030303030303030303030303030303002",
+                topicRules: [
+                    ExamBlueprintTopicRuleDTO(id: UUID(uuidString: "94100000-0000-4000-8000-000000000201")!, topicCode: "MATH.ARITHMETIC.INTEGER_OPERATIONS", targetWeightBps: 3000, minQuestionCount: 2, maxQuestionCount: 4, requiredItemFormats: [.singleChoiceMcq], ruleOrder: 1),
+                    ExamBlueprintTopicRuleDTO(id: UUID(uuidString: "94100000-0000-4000-8000-000000000202")!, topicCode: "MATH.ARITHMETIC.FRACTIONS", targetWeightBps: 3000, minQuestionCount: 2, maxQuestionCount: 4, requiredItemFormats: [.singleChoiceMcq], ruleOrder: 2),
+                    ExamBlueprintTopicRuleDTO(id: UUID(uuidString: "94100000-0000-4000-8000-000000000203")!, topicCode: "MATH.ARITHMETIC.PERCENTAGES", targetWeightBps: 2000, minQuestionCount: 1, maxQuestionCount: 3, requiredItemFormats: [.singleChoiceMcq], ruleOrder: 3),
+                    ExamBlueprintTopicRuleDTO(id: UUID(uuidString: "94100000-0000-4000-8000-000000000204")!, topicCode: "MATH.ALGEBRA.FACTORING", targetWeightBps: 2000, minQuestionCount: 1, maxQuestionCount: 3, requiredItemFormats: [.singleChoiceMcq], ruleOrder: 4)
+                ],
+                trainingEligible: false,
+                createdAt: "2026-01-15T09:00:00Z",
+                updatedAt: "2026-01-15T09:00:00Z"
+            )
+        ]
+    }
+
+    private static func buildFixtureItems(for blueprint: ExamBlueprintDTO, seed: String) -> [AssembledAssessmentItemDTO] {
+        let topics = [
+            "MATH.ARITHMETIC.INTEGER_OPERATIONS",
+            "MATH.ARITHMETIC.FRACTIONS",
+            "MATH.ARITHMETIC.PERCENTAGES",
+            "MATH.ALGEBRA.FACTORING"
+        ]
+        let bands: [ExamDifficultyBand] = [.easy, .medium, .hard, .easy, .medium, .hard, .easy, .medium, .easy, .medium, .hard, .expert]
+        let cognitives: [ExamCognitiveLevel] = [.recall, .comprehension, .application, .analysis]
+
+        var rawItems: [(uuid: UUID, code: String, topic: String, band: ExamDifficultyBand, cog: ExamCognitiveLevel, stem: String, weight: String)] = []
+        for idx in 1...blueprint.totalQuestionCount {
+            let qUuid = UUID(uuidString: String(format: "93000000-0000-4000-8000-%012d", 100 + idx))!
+            let topic = topics[(idx - 1) % topics.count]
+            let band = bands[(idx - 1) % bands.count]
+            let cog = cognitives[(idx - 1) % cognitives.count]
+            let rank = SHA256.hash(data: Data("\(seed):item:\(qUuid.uuidString.lowercased())".utf8)).map { String(format: "%02x", $0) }.joined()
+            rawItems.append((
+                uuid: qUuid,
+                code: String(format: "TYT-MATH-2026-Q%03d", idx),
+                topic: topic,
+                band: band,
+                cog: cog,
+                stem: "Evaluate the algebraic expression for question \(idx) under topic \(topic).",
+                weight: rank
+            ))
+        }
+        let ordered = blueprint.shuffleQuestions ? rawItems.sorted(by: { $0.weight < $1.weight }) : rawItems
+
+        return ordered.enumerated().map { offset, entry in
+            let seq = offset + 1
+            let baseOptions = ["A", "B", "C", "D", "E"]
+            let orderedKeys = blueprint.shuffleOptions
+                ? baseOptions.sorted { lhs, rhs in
+                    let lh = SHA256.hash(data: Data("\(seed):opt:\(entry.uuid.uuidString.lowercased()):\(lhs)".utf8)).map { String(format: "%02x", $0) }.joined()
+                    let rh = SHA256.hash(data: Data("\(seed):opt:\(entry.uuid.uuidString.lowercased()):\(rhs)".utf8)).map { String(format: "%02x", $0) }.joined()
+                    return lh < rh
+                }
+                : baseOptions
+            let opts = orderedKeys.enumerated().map { optIdx, key in
+                AssembledQuestionOptionDTO(
+                    optionKey: key,
+                    displayOrder: optIdx + 1,
+                    contentMarkdown: "Choice \(key) for \(entry.code)",
+                    contentLatex: "\(optIdx + 1)x",
+                    trainingEligible: false
+                )
+            }
+            let itemDigest = SHA256.hash(data: Data("asm-item:\(blueprint.id.uuidString):\(seed):\(seq)".utf8))
+            var uuidBytes = Array(itemDigest.prefix(16))
+            uuidBytes[6] = (uuidBytes[6] & 0x0F) | 0x40
+            uuidBytes[8] = (uuidBytes[8] & 0x3F) | 0x80
+            let itemId = UUID(uuid: (
+                uuidBytes[0], uuidBytes[1], uuidBytes[2], uuidBytes[3],
+                uuidBytes[4], uuidBytes[5], uuidBytes[6], uuidBytes[7],
+                uuidBytes[8], uuidBytes[9], uuidBytes[10], uuidBytes[11],
+                uuidBytes[12], uuidBytes[13], uuidBytes[14], uuidBytes[15]
+            ))
+            return AssembledAssessmentItemDTO(
+                id: itemId,
+                questionItemId: entry.uuid,
+                questionCode: entry.code,
+                sequenceNumber: seq,
+                topicCode: entry.topic,
+                subtopicCode: nil,
+                itemFormat: .singleChoiceMcq,
+                difficultyBand: entry.band,
+                cognitiveLevel: entry.cog,
+                stemMarkdown: entry.stem,
+                stemLatex: "f(x) = x^2 + \(seq)",
+                altTextDescription: nil,
+                hasVisualDiagram: false,
+                optionOrder: orderedKeys,
+                options: opts,
+                allocatedPoints: 1.0,
+                estimatedTimeSeconds: 90,
+                trainingEligible: false
+            )
+        }
     }
 
     static func seedDefinitions() -> [ExamDefinitionModel] {

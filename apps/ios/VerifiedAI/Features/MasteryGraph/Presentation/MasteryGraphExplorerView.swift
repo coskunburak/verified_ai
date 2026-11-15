@@ -17,28 +17,32 @@ public struct MasteryGraphExplorerView: View {
             Group {
                 if viewModel.isLoading {
                     ProgressView()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .accessibilityIdentifier("mastery.graph.loading")
                 } else if let errorKey = viewModel.errorMessageKey {
-                    VStack(spacing: 16) {
+                    AppSurfaceCard(elevated: true) {
                         Image(systemName: "exclamationmark.triangle")
                             .font(.largeTitle)
-                            .foregroundStyle(.orange)
+                            .foregroundStyle(ColorTokens.warning)
                         Text(LocalizedStringKey(errorKey))
+                            .font(TypographyTokens.body)
+                            .foregroundStyle(ColorTokens.textPrimary)
                             .multilineTextAlignment(.center)
                         Button(action: { viewModel.loadGraph() }) {
                             Text("Retry")
                         }
-                        .buttonStyle(.borderedProminent)
+                        .buttonStyle(AppPrimaryButtonStyle())
                     }
-                    .padding()
+                    .padding(SpacingTokens.lg)
                 } else if let projection = viewModel.projection {
                     ScrollView {
-                        LazyVStack(alignment: .leading, spacing: 20) {
+                        LazyVStack(alignment: .leading, spacing: SpacingTokens.lg) {
                             ForEach(groupedGenerations(nodes: projection.nodes), id: \.generation) { group in
-                                VStack(alignment: .leading, spacing: 8) {
+                                VStack(alignment: .leading, spacing: SpacingTokens.xs) {
                                     Text("Tier \(group.generation)")
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                        .font(TypographyTokens.microLabel)
+                                        .monospacedDigit()
+                                        .foregroundStyle(ColorTokens.textSecondary)
                                         .textCase(.uppercase)
 
                                     ForEach(group.nodes) { node in
@@ -50,16 +54,17 @@ public struct MasteryGraphExplorerView: View {
                                 }
                             }
                         }
-                        .padding()
+                        .padding(SpacingTokens.lg)
                     }
                 } else {
-                    ContentUnavailableView(
-                        "No Graph Data",
+                    AppEmptyState(
                         systemImage: "network",
-                        description: Text("No skills found for this curriculum.")
+                        title: "No Graph Data",
+                        subtitle: "No skills found for this curriculum."
                     )
                 }
             }
+            .background(ColorTokens.canvas)
             .navigationTitle(Text("mastery.graph.title"))
             .accessibilityIdentifier("mastery.graph.root")
             .sheet(item: Binding(
@@ -78,7 +83,7 @@ public struct MasteryGraphExplorerView: View {
     }
 
     private func skillNodeCard(_ node: SkillGraphNode) -> some View {
-        HStack(spacing: 16) {
+        HStack(spacing: SpacingTokens.md) {
             DualRingSkillNodeView(
                 skillNodeId: node.skillCode,
                 skillTitle: node.displayName,
@@ -95,74 +100,80 @@ public struct MasteryGraphExplorerView: View {
                 }
             )
 
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: SpacingTokens.xs) {
                 Text(node.displayName)
-                    .font(.headline)
+                    .font(TypographyTokens.cardTitle)
+                    .foregroundStyle(ColorTokens.textPrimary)
 
-                HStack(spacing: 8) {
-                    Text(LocalizedStringKey(node.status.localizedKey))
-                        .font(.caption2.bold())
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(statusBackgroundColor(node.status))
-                        .cornerRadius(6)
+                HStack(spacing: SpacingTokens.xs) {
+                    AppStatusBadge(LocalizedStringKey(node.status.localizedKey), tone: statusTone(node.status))
 
                     if node.blockedByPrerequisiteBottleneck {
-                        HStack(spacing: 4) {
-                            Image(systemName: "exclamationmark.triangle.fill")
-                            Text(LocalizedStringKey("mastery.graph.blocked_bottleneck"))
-                        }
-                        .font(.caption2.bold())
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(Color.orange.opacity(0.2))
-                        .foregroundStyle(.orange)
-                        .cornerRadius(6)
+                        AppStatusBadge(
+                            LocalizedStringKey("mastery.graph.blocked_bottleneck"),
+                            systemImage: "exclamationmark.triangle.fill",
+                            tone: .warning
+                        )
                         .accessibilityIdentifier("mastery.graph.bottleneck.\(node.skillCode)")
                     }
                 }
             }
             Spacer()
         }
-        .padding()
-        .background(Color(uiColor: .secondarySystemGroupedBackground))
-        .cornerRadius(12)
+        .padding(SpacingTokens.md)
+        .background(ColorTokens.surface)
+        .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(node.blockedByPrerequisiteBottleneck ? Color.orange : Color.clear, lineWidth: 1.5)
+            RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous)
+                .stroke(
+                    node.blockedByPrerequisiteBottleneck ? ColorTokens.warning.opacity(0.6) : ColorTokens.borderSubtle,
+                    lineWidth: node.blockedByPrerequisiteBottleneck ? 1.5 : 1
+                )
         )
         .accessibilityIdentifier("mastery.graph.node.\(node.skillCode)")
     }
 
     private func skillDetailSheet(_ node: SkillGraphNode) -> some View {
         NavigationStack {
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: SpacingTokens.md) {
                 Text(node.displayName)
-                    .font(.title2.bold())
+                    .font(TypographyTokens.sectionTitle)
+                    .foregroundStyle(ColorTokens.textPrimary)
 
                 Text(node.skillCode)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(TypographyTokens.caption.monospaced())
+                    .foregroundStyle(ColorTokens.textSecondary)
 
-                Divider()
+                Rectangle()
+                    .fill(ColorTokens.borderSubtle)
+                    .frame(height: 1)
 
-                HStack {
-                    Text("Effective Mastery")
-                    Spacer()
-                    Text(String(format: "%.2f", node.effectiveMastery))
-                        .bold()
-                }
+                AppSurfaceCard(elevated: true) {
+                    HStack {
+                        Text("Effective Mastery")
+                            .foregroundStyle(ColorTokens.textSecondary)
+                        Spacer()
+                        Text(String(format: "%.2f", node.effectiveMastery))
+                            .font(TypographyTokens.cardTitle)
+                            .monospacedDigit()
+                            .foregroundStyle(ColorTokens.action)
+                    }
 
-                HStack {
-                    Text("Direct Practice Count")
-                    Spacer()
-                    Text("\(node.directPracticeCount)")
-                }
+                    HStack {
+                        Text("Direct Practice Count")
+                            .foregroundStyle(ColorTokens.textSecondary)
+                        Spacer()
+                        Text("\(node.directPracticeCount)")
+                            .monospacedDigit()
+                    }
 
-                HStack {
-                    Text("Consecutive Failures")
-                    Spacer()
-                    Text("\(node.consecutiveFailures)")
+                    HStack {
+                        Text("Consecutive Failures")
+                            .foregroundStyle(ColorTokens.textSecondary)
+                        Spacer()
+                        Text("\(node.consecutiveFailures)")
+                            .monospacedDigit()
+                    }
                 }
 
                 if node.status == .atRiskRemediationRequired || node.blockedByPrerequisiteBottleneck {
@@ -171,22 +182,22 @@ public struct MasteryGraphExplorerView: View {
                         onLaunchTwinRemediation?(node.skillCode)
                     }) {
                         Label("Practice Remediation Drill", systemImage: "bolt.fill")
-                            .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.borderedProminent)
-                    .tint(.orange)
-                    .padding(.top, 16)
+                    .buttonStyle(AppPrimaryButtonStyle())
+                    .padding(.top, SpacingTokens.sm)
                     .accessibilityIdentifier("mastery.graph.remediate_button")
                 }
 
                 Spacer()
             }
-            .padding()
+            .padding(SpacingTokens.lg)
+            .background(ColorTokens.canvas)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Done") {
                         viewModel.selectNode(nil)
                     }
+                    .foregroundStyle(ColorTokens.action)
                 }
             }
         }
@@ -205,18 +216,12 @@ public struct MasteryGraphExplorerView: View {
         }
     }
 
-    private func masteryColor(_ score: Double) -> Color {
-        if score >= 0.85 { return .green }
-        if score >= 0.50 { return .blue }
-        return .orange
-    }
-
-    private func statusBackgroundColor(_ status: SkillMasteryStatus) -> Color {
+    private func statusTone(_ status: SkillMasteryStatus) -> AppBadgeTone {
         switch status {
-        case .mastered: return Color.green.opacity(0.15)
-        case .practicing: return Color.blue.opacity(0.15)
-        case .introduced: return Color.gray.opacity(0.15)
-        case .atRiskRemediationRequired: return Color.red.opacity(0.15)
+        case .mastered: return .success
+        case .practicing: return .action
+        case .introduced: return .neutral
+        case .atRiskRemediationRequired: return .danger
         }
     }
 }

@@ -12,21 +12,17 @@ struct ProblemHistorySectionView: View {
     @State private var presentedDetail: ProblemSessionDetail?
 
     var body: some View {
-        VStack(alignment: .leading, spacing: SpacingTokens.md) {
-            HStack {
-                Label("Problem History", systemImage: "clock.arrow.circlepath")
-                    .font(.headline)
-                    .foregroundStyle(ColorTokens.textPrimary)
+        VStack(alignment: .leading, spacing: SpacingTokens.compact) {
+            HStack(spacing: SpacingTokens.xs) {
+                Text(LocalizedStringKey("home.recent.title"))
+                    .font(TypographyTokens.caption.weight(.semibold))
+                    .foregroundStyle(ColorTokens.textSecondary)
                 Spacer()
-                Button {
-                    Task { await viewModel.refresh() }
-                } label: {
-                    Image(systemName: "arrow.clockwise")
-                        .frame(width: 36, height: 36)
+                if viewModel.state == .loading {
+                    ProgressView()
+                        .controlSize(.small)
+                        .tint(ColorTokens.textSecondary)
                 }
-                .buttonStyle(.bordered)
-                .tint(ColorTokens.textSecondary)
-                .accessibilityLabel("Refresh problem history")
             }
 
             if let message = viewModel.message {
@@ -42,7 +38,6 @@ struct ProblemHistorySectionView: View {
                 historyRows
             }
         }
-        .problemHistoryPanel()
         .task {
             await viewModel.bootstrap()
         }
@@ -78,12 +73,12 @@ struct ProblemHistorySectionView: View {
         switch viewModel.state {
         case .idle, .loading:
             ProgressView()
-                .tint(ColorTokens.action)
-                .frame(maxWidth: .infinity, minHeight: 96)
+                .tint(ColorTokens.textSecondary)
+                .frame(maxWidth: .infinity, minHeight: 56)
         case .failed(let text):
-            ProblemHistoryEmptyView(text: text, startProblemCapture: startProblemCapture)
+            ProblemHistoryEmptyView(verbatimText: text)
         case .ready, .offline:
-            ProblemHistoryEmptyView(text: "No problem sessions yet.", startProblemCapture: startProblemCapture)
+            ProblemHistoryEmptyView(resourceKey: "home.recent.empty")
         }
     }
 
@@ -145,13 +140,17 @@ private struct ProblemHistoryRow: View {
 
                 Text(item.nextAction.buttonTitle)
                     .font(.caption.weight(.semibold))
-                    .foregroundStyle(ColorTokens.action)
+                    .foregroundStyle(ColorTokens.stepHighlight)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
             }
             .padding(SpacingTokens.sm)
-            .background(ColorTokens.surfaceElevated)
-            .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.small))
+            .background(ColorTokens.surface)
+            .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                    .stroke(ColorTokens.borderSubtle, lineWidth: 1)
+            )
             // A plain button must also accept taps between its text and icon content.
             .contentShape(Rectangle())
         }
@@ -319,36 +318,34 @@ private struct RecoveryDetailRow: View {
 }
 
 private struct ProblemHistoryEmptyView: View {
-    let text: String
-    let startProblemCapture: () -> Void
+    private let resourceKey: String?
+    private let verbatimText: String?
+
+    init(resourceKey: String) {
+        self.resourceKey = resourceKey
+        self.verbatimText = nil
+    }
+
+    init(verbatimText: String) {
+        self.resourceKey = nil
+        self.verbatimText = verbatimText
+    }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: SpacingTokens.md) {
-            Label(text, systemImage: "tray")
-                .font(TypographyTokens.caption)
-                .foregroundStyle(ColorTokens.textSecondary)
-            Button(action: startProblemCapture) {
-                Label("Start Capture", systemImage: "camera.viewfinder")
-                    .frame(maxWidth: .infinity)
+        Group {
+            if let resourceKey {
+                Text(LocalizedStringKey(resourceKey))
+            } else if let verbatimText {
+                Text(verbatimText)
             }
-            .buttonStyle(.bordered)
         }
+        .font(TypographyTokens.caption)
+        .foregroundStyle(ColorTokens.textTertiary)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, SpacingTokens.sm)
     }
 }
 
 extension ProblemSessionDetail: Identifiable {
     var id: UUID { problemSessionId }
-}
-
-private extension View {
-    func problemHistoryPanel() -> some View {
-        padding(SpacingTokens.md)
-            .background(ColorTokens.surface)
-            .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium))
-            .overlay {
-                RoundedRectangle(cornerRadius: RadiusTokens.medium)
-                    .stroke(ColorTokens.border, lineWidth: 1)
-                    .allowsHitTesting(false)
-            }
-    }
 }

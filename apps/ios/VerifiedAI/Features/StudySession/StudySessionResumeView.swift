@@ -33,6 +33,7 @@ struct StudySessionResumeBannerView: View {
                         session.totalSteps
                     ))
                     .font(TypographyTokens.caption)
+                    .monospacedDigit()
                     .foregroundStyle(ColorTokens.textSecondary)
                 }
             }
@@ -62,7 +63,7 @@ struct StudySessionResumeBannerView: View {
         .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                .stroke(ColorTokens.border, lineWidth: 1)
+                .stroke(ColorTokens.borderSubtle, lineWidth: 1)
         )
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: session.sessionId)
         .accessibilityElement(children: .contain)
@@ -71,12 +72,12 @@ struct StudySessionResumeBannerView: View {
     private var continueButton: some View {
         Button(action: onContinue) {
             Text(LocalizedStringKey("study_session.resume.cta_continue"))
-                .font(.subheadline.weight(.semibold))
+                .font(TypographyTokens.cardTitle)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, SpacingTokens.sm)
                 .padding(.horizontal, SpacingTokens.md)
                 .background(ColorTokens.action)
-                .foregroundStyle(Color.white)
+                .foregroundStyle(ColorTokens.actionForeground)
                 .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
         }
         .buttonStyle(.plain)
@@ -85,13 +86,17 @@ struct StudySessionResumeBannerView: View {
     private var startFreshButton: some View {
         Button(action: onStartFresh) {
             Text(LocalizedStringKey("study_session.resume.cta_start_fresh"))
-                .font(.subheadline.weight(.medium))
+                .font(TypographyTokens.bodyMedium)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, SpacingTokens.sm)
                 .padding(.horizontal, SpacingTokens.md)
                 .background(ColorTokens.surfaceElevated)
                 .foregroundStyle(ColorTokens.textPrimary)
                 .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                        .stroke(ColorTokens.borderSubtle, lineWidth: 1)
+                )
         }
         .buttonStyle(.plain)
     }
@@ -133,10 +138,10 @@ struct StudySessionOrchestratorBarView: View {
         }
         .padding(barPadding)
         .background(ColorTokens.surface)
-        .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
-                .stroke(ColorTokens.border, lineWidth: 1)
+            RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous)
+                .stroke(ColorTokens.borderSubtle, lineWidth: 1)
         )
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: coordinator.syncState)
     }
@@ -144,7 +149,7 @@ struct StudySessionOrchestratorBarView: View {
     private func statusHeader(session: StudySessionStateModel) -> some View {
         VStack(alignment: .leading, spacing: SpacingTokens.xs) {
             Text(LocalizedStringKey(statusLocalizationKey(for: session.state)))
-                .font(.subheadline.weight(.semibold))
+                .font(TypographyTokens.cardTitle)
                 .foregroundStyle(ColorTokens.textPrimary)
 
             HStack(spacing: SpacingTokens.sm) {
@@ -154,6 +159,7 @@ struct StudySessionOrchestratorBarView: View {
                     session.totalSteps
                 ))
                 .font(TypographyTokens.caption)
+                .monospacedDigit()
                 .foregroundStyle(ColorTokens.textSecondary)
 
                 Text(LocalizedStringKey(syncLocalizationKey))
@@ -168,22 +174,26 @@ struct StudySessionOrchestratorBarView: View {
         HStack(spacing: SpacingTokens.sm) {
             Button(action: onPause) {
                 Text(LocalizedStringKey("study_session.action.pause"))
-                    .font(.caption.weight(.medium))
+                    .font(TypographyTokens.microLabel)
                     .padding(.vertical, SpacingTokens.xs)
                     .padding(.horizontal, SpacingTokens.sm)
                     .background(ColorTokens.surfaceElevated)
                     .foregroundStyle(ColorTokens.textPrimary)
                     .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.small, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: RadiusTokens.small, style: .continuous)
+                            .stroke(ColorTokens.borderSubtle, lineWidth: 1)
+                    )
             }
             .buttonStyle(.plain)
 
             Button(action: onComplete) {
                 Text(LocalizedStringKey("study_session.action.complete"))
-                    .font(.caption.weight(.semibold))
+                    .font(TypographyTokens.microLabel)
                     .padding(.vertical, SpacingTokens.xs)
                     .padding(.horizontal, SpacingTokens.sm)
                     .background(ColorTokens.action)
-                    .foregroundStyle(Color.white)
+                    .foregroundStyle(ColorTokens.actionForeground)
                     .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.small, style: .continuous))
             }
             .buttonStyle(.plain)

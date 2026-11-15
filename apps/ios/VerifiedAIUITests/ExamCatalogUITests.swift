@@ -17,6 +17,7 @@ final class ExamCatalogUITests: XCTestCase {
             "--exam-fixture"
         ]
         app.launch()
+        openExamsTab(app)
 
         let entryButton = app.buttons["home.examCatalog.button"]
         XCTAssertTrue(entryButton.waitForExistence(timeout: 8))
@@ -73,6 +74,7 @@ final class ExamCatalogUITests: XCTestCase {
             "--exam-offline"
         ]
         app.launch()
+        openExamsTab(app)
 
         let entryButton = app.buttons["home.examCatalog.button"]
         XCTAssertTrue(entryButton.waitForExistence(timeout: 8))
@@ -96,6 +98,7 @@ final class ExamCatalogUITests: XCTestCase {
             "--ui-testing-candidate-profile"
         ]
         app.launch()
+        openExamsTab(app)
 
         let entryButton = app.buttons["home.candidateProfile.button"]
         XCTAssertTrue(entryButton.waitForExistence(timeout: 8))
@@ -126,6 +129,7 @@ final class ExamCatalogUITests: XCTestCase {
             "--ui-testing-candidate-profile"
         ]
         app.launch()
+        openExamsTab(app)
 
         let entryButton = app.buttons["home.candidateProfile.button"]
         XCTAssertTrue(entryButton.waitForExistence(timeout: 8))
@@ -154,5 +158,61 @@ final class ExamCatalogUITests: XCTestCase {
             app.swipeDown()
         }
         XCTAssertTrue(statusBanner.waitForExistence(timeout: 5))
+    }
+
+    func testBlueprintSelectionAndDeterministicAssemblyPreview() {
+        let app = XCUIApplication()
+        app.launchArguments = [
+            "--ui-testing",
+            "--ui-testing-authenticated",
+            "--solve-fixture",
+            "--solve-reset",
+            "--exam-fixture"
+        ]
+        app.launch()
+        openExamsTab(app)
+
+        let entryButton = app.buttons["home.blueprintAssembly.button"]
+        for _ in 0..<3 where !entryButton.exists || !entryButton.isHittable {
+            app.swipeUp()
+        }
+        XCTAssertTrue(entryButton.waitForExistence(timeout: 8))
+        entryButton.tap()
+
+        let diagCard = app.buttons["exam.assembly.blueprintCard.BP-TYT-MATH-DIAG-2026-V1"]
+        XCTAssertTrue(diagCard.waitForExistence(timeout: 5))
+        diagCard.tap()
+
+        let assembleButton = app.buttons["exam.assembly.assembleButton"]
+        for _ in 0..<4 where !assembleButton.exists || !assembleButton.isHittable {
+            app.swipeUp()
+        }
+        XCTAssertTrue(assembleButton.waitForExistence(timeout: 5))
+        assembleButton.tap()
+
+        let readyBanner = app.descendants(matching: .any)["exam.assembly.statusReadyBanner"]
+        for _ in 0..<3 where !readyBanner.exists {
+            app.swipeUp()
+        }
+        XCTAssertTrue(readyBanner.waitForExistence(timeout: 5))
+
+        let hashLabel = app.descendants(matching: .any)["exam.assembly.reproducibilityHashLabel"]
+        XCTAssertTrue(hashLabel.waitForExistence(timeout: 5))
+    }
+
+    private func openExamsTab(_ app: XCUIApplication) {
+        let examsTab = app.tabBars.buttons["Exams"]
+        if examsTab.waitForExistence(timeout: 4) {
+            examsTab.tap()
+        } else {
+            let trTab = app.tabBars.buttons["Sınavlar"]
+            if trTab.waitForExistence(timeout: 2) {
+                trTab.tap()
+            } else {
+                let byIndex = app.tabBars.buttons.element(boundBy: 2)
+                XCTAssertTrue(byIndex.waitForExistence(timeout: 5))
+                byIndex.tap()
+            }
+        }
     }
 }

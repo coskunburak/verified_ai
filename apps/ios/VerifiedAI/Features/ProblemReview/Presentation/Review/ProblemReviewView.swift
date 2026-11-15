@@ -9,7 +9,7 @@ struct ProblemReviewView: View {
 
     var body: some View {
         content
-            .background(ColorTokens.background.ignoresSafeArea())
+            .background(ColorTokens.canvas.ignoresSafeArea())
             .navigationTitle("Problem Review")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -62,21 +62,22 @@ struct ProblemReviewView: View {
                     header(review)
                 }
 
-                Picker("Review section", selection: $selection) {
-                    ForEach(ProblemReviewSelection.allCases) { selection in
-                        Text(selection.title).tag(selection)
+                AppSegmentedPill(
+                    selection: $selection,
+                    options: ProblemReviewSelection.allCases.map {
+                        .init(selection: $0, title: $0.title)
                     }
-                }
-                .pickerStyle(.segmented)
+                )
 
                 sectionContent
 
                 if let message = viewModel.message {
-                    Label(message, systemImage: statusIcon)
-                        .font(TypographyTokens.caption)
-                        .foregroundStyle(statusColor)
-                        .padding(.vertical, SpacingTokens.sm)
-                        .accessibilityIdentifier("problemReview.status")
+                    AppNoticeBanner(
+                        LocalizedStringKey(message),
+                        systemImage: statusIcon,
+                        tone: statusTone
+                    )
+                    .accessibilityIdentifier("problemReview.status")
                 }
             }
             .padding(SpacingTokens.lg)
@@ -97,11 +98,20 @@ struct ProblemReviewView: View {
                     case .hidden: EmptyView()
                     case .loading: ProgressView("attempt.mastery.loading")
                     case .failed:
-                        Text("attempt.mastery.failed")
-                        Button("attempt.mastery.retry") { Task { await viewModel.loadSkills(for: problemSessionId) } }
+                        AppSurfaceCard(elevated: true) {
+                            Text("attempt.mastery.failed")
+                                .font(TypographyTokens.caption)
+                                .foregroundStyle(ColorTokens.textSecondary)
+                            Button("attempt.mastery.retry") { Task { await viewModel.loadSkills(for: problemSessionId) } }
+                                .buttonStyle(AppSecondaryButtonStyle())
+                        }
                     case .ready(let skills):
-                        Text("attempt.temporal.mySkills").font(.headline)
-                        ForEach(skills, id: \.canonicalSkillCode) { SkillRetentionNode(skill: $0) }
+                        AppSurfaceCard {
+                            Text("attempt.temporal.mySkills")
+                                .font(TypographyTokens.cardTitle)
+                                .foregroundStyle(ColorTokens.textPrimary)
+                            ForEach(skills, id: \.canonicalSkillCode) { SkillRetentionNode(skill: $0) }
+                        }
                     }
                 }
                 ProblemParseMetadataEditor(viewModel: viewModel)
@@ -122,16 +132,23 @@ struct ProblemReviewView: View {
                     .font(.title2.weight(.semibold))
                     .foregroundStyle(review.currentParse.reviewRequired ? ColorTokens.warning : ColorTokens.action)
                     .frame(width: 44, height: 44)
-                    .background(ColorTokens.surfaceElevated)
-                    .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium))
+                    .background(review.currentParse.reviewRequired ? ColorTokens.warningSoft : ColorTokens.actionSoft)
+                    .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
 
                 VStack(alignment: .leading, spacing: SpacingTokens.xs) {
                     Text(primaryExpressionText(review.currentParse.normalizedProblem))
-                        .font(TypographyTokens.title)
+                        .font(TypographyTokens.sectionTitle)
                         .foregroundStyle(ColorTokens.textPrimary)
-                    Text("Revision \(review.currentParse.revision) · \(review.currentParse.source)")
-                        .font(TypographyTokens.caption)
-                        .foregroundStyle(ColorTokens.textSecondary)
+                    HStack(spacing: SpacingTokens.sm) {
+                        AppStatusBadge(
+                            verbatimTitle: "Revision \(review.currentParse.revision)",
+                            tone: review.currentParse.reviewRequired ? .warning : .action
+                        )
+                        .monospacedDigit()
+                        Text(review.currentParse.source)
+                            .font(TypographyTokens.caption)
+                            .foregroundStyle(ColorTokens.textSecondary)
+                    }
                 }
 
                 Spacer()
@@ -143,6 +160,7 @@ struct ProblemReviewView: View {
                 }
             }
             .pickerStyle(.menu)
+            .tint(ColorTokens.action)
             .disabled(!review.canCorrect)
         }
         .problemReviewPanel()
@@ -157,16 +175,13 @@ struct ProblemReviewView: View {
 
     private func failureView(_ message: String) -> some View {
         VStack(alignment: .leading, spacing: SpacingTokens.lg) {
-            Label(message, systemImage: "exclamationmark.triangle")
-                .font(TypographyTokens.body.weight(.semibold))
-                .foregroundStyle(ColorTokens.warning)
+            AppNoticeBanner(LocalizedStringKey(message), systemImage: "exclamationmark.triangle", tone: .warning)
             Button {
                 Task { await viewModel.load(problemSessionId: problemSessionId, force: true) }
             } label: {
                 Label("Reload", systemImage: "arrow.clockwise")
-                    .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(AppPrimaryButtonStyle())
         }
         .padding(SpacingTokens.lg)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
@@ -179,11 +194,11 @@ struct ProblemReviewView: View {
         return "info.circle"
     }
 
-    private var statusColor: Color {
+    private var statusTone: AppBadgeTone {
         if case .saved = viewModel.state {
-            return ColorTokens.action
+            return .success
         }
-        return ColorTokens.textSecondary
+        return .neutral
     }
 
     private func primaryExpressionText(_ problem: NormalizedProblemParse) -> String {
@@ -197,7 +212,7 @@ struct ProblemParseMetadataEditor: View {
     var body: some View {
         VStack(alignment: .leading, spacing: SpacingTokens.md) {
             Label("Classification", systemImage: "tag")
-                .font(TypographyTokens.body.weight(.semibold))
+                .font(TypographyTokens.cardTitle)
                 .foregroundStyle(ColorTokens.textPrimary)
 
             VStack(spacing: SpacingTokens.sm) {
@@ -226,17 +241,21 @@ extension View {
     func problemReviewPanel() -> some View {
         padding(SpacingTokens.md)
             .background(ColorTokens.surface)
-            .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium))
+            .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous))
             .overlay {
-                RoundedRectangle(cornerRadius: RadiusTokens.medium)
-                    .stroke(ColorTokens.border, lineWidth: 1)
+                RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous)
+                    .stroke(ColorTokens.borderSubtle, lineWidth: 1)
             }
     }
 
     func problemReviewTextField() -> some View {
         padding(SpacingTokens.sm)
             .background(ColorTokens.surfaceElevated)
-            .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.small))
+            .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.small, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: RadiusTokens.small, style: .continuous)
+                    .stroke(ColorTokens.borderStrong, lineWidth: 1)
+            }
             .foregroundStyle(ColorTokens.textPrimary)
     }
 }

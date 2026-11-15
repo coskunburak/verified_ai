@@ -21,8 +21,9 @@ public struct SyllabusSnapToPlanSheet: View {
                 uiTestingQuickSamples
                 parsedResultSection
             }
-            .padding()
+            .padding(SpacingTokens.lg)
         }
+        .background(ColorTokens.canvas)
         .navigationTitle(Text("exam.syllabus.sheet_title"))
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
@@ -75,7 +76,9 @@ public struct SyllabusSnapToPlanSheet: View {
                 .foregroundStyle(.secondary)
             if let upload = viewModel.latestUpload {
                 Text("Remaining monthly quota: \(upload.remainingMonthlyQuota) / 3")
-                    .font(.caption.bold())
+                    .font(TypographyTokens.caption.bold())
+                    .monospacedDigit()
+                    .foregroundStyle(ColorTokens.textPrimary)
                     .accessibilityIdentifier("syllabus.remainingQuotaLabel")
             }
         }
@@ -84,32 +87,60 @@ public struct SyllabusSnapToPlanSheet: View {
     @ViewBuilder
     private var errorOrStatusSection: some View {
         if let errKey = viewModel.errorLocalizationKey {
-            Text(LocalizedStringKey(errKey))
-                .font(.callout)
-                .foregroundStyle(.red)
-                .padding(10)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.red.opacity(0.10), in: RoundedRectangle(cornerRadius: 10))
-                .accessibilityIdentifier("syllabus.errorBanner")
+            HStack(spacing: SpacingTokens.xs) {
+                Image(systemName: "exclamationmark.triangle")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(ColorTokens.warning)
+                Text(LocalizedStringKey(errKey))
+                    .font(TypographyTokens.caption)
+                    .foregroundStyle(ColorTokens.textPrimary)
+                    .fixedSize(horizontal: false, vertical: true)
+                Spacer(minLength: 0)
+            }
+            .padding(.horizontal, SpacingTokens.compact)
+            .padding(.vertical, SpacingTokens.sm)
+            .background(ColorTokens.warningSoft)
+            .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                    .stroke(ColorTokens.warning.opacity(0.28), lineWidth: 1)
+            )
+            .accessibilityIdentifier("syllabus.errorBanner")
         }
         if let statusKey = viewModel.statusLocalizationKey {
-            Label(LocalizedStringKey(statusKey), systemImage: "checkmark.seal.fill")
-                .font(.callout)
-                .foregroundStyle(.green)
-                .padding(10)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.green.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
-                .accessibilityIdentifier("syllabus.statusBanner")
+            HStack(spacing: SpacingTokens.xs) {
+                Image(systemName: "checkmark.seal.fill")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(ColorTokens.success)
+                Text(LocalizedStringKey(statusKey))
+                    .font(TypographyTokens.caption)
+                    .foregroundStyle(ColorTokens.textPrimary)
+                    .fixedSize(horizontal: false, vertical: true)
+                Spacer(minLength: 0)
+            }
+            .padding(.horizontal, SpacingTokens.compact)
+            .padding(.vertical, SpacingTokens.sm)
+            .background(ColorTokens.successSoft)
+            .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                    .stroke(ColorTokens.success.opacity(0.28), lineWidth: 1)
+            )
+            .accessibilityIdentifier("syllabus.statusBanner")
         }
     }
 
     private var uploadControlsSection: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: SpacingTokens.sm) {
             PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
                 Label(LocalizedStringKey("exam.syllabus.choose_photo_button"), systemImage: "photo.on.rectangle")
-                    .frame(maxWidth: .infinity)
+                    .font(TypographyTokens.bodyMedium.weight(.semibold))
+                    .foregroundStyle(ColorTokens.actionForeground)
+                    .frame(maxWidth: .infinity, minHeight: 48)
+                    .background(ColorTokens.action)
+                    .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(.plain)
             .disabled(viewModel.isIngesting)
             .accessibilityIdentifier("syllabus.choosePhotoButton")
 
@@ -117,9 +148,17 @@ public struct SyllabusSnapToPlanSheet: View {
                 isFileImporterPresented = true
             } label: {
                 Label(LocalizedStringKey("exam.syllabus.choose_pdf_button"), systemImage: "doc.fill")
-                    .frame(maxWidth: .infinity)
+                    .font(TypographyTokens.bodyMedium.weight(.semibold))
+                    .foregroundStyle(ColorTokens.textPrimary)
+                    .frame(maxWidth: .infinity, minHeight: 48)
+                    .background(ColorTokens.surfaceElevated)
+                    .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                            .stroke(ColorTokens.borderStrong, lineWidth: 1)
+                    )
             }
-            .buttonStyle(.bordered)
+            .buttonStyle(.plain)
             .disabled(viewModel.isIngesting)
             .accessibilityIdentifier("syllabus.chooseFileButton")
         }
@@ -165,22 +204,23 @@ public struct SyllabusSnapToPlanSheet: View {
                     VStack(alignment: .leading, spacing: 6) {
                         HStack {
                             Text(item.rawTopicLabel)
-                                .font(.subheadline.bold())
+                                .font(TypographyTokens.cardTitle)
+                                .foregroundStyle(ColorTokens.textPrimary)
                             Spacer()
                             if let week = item.targetWeek {
                                 Text("W\(week)")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
+                                    .font(TypographyTokens.caption.monospacedDigit())
+                                    .foregroundStyle(ColorTokens.textSecondary)
                             }
                         }
                         if item.autoConfirmed, let matched = item.matchedSkillId {
                             Label(matched, systemImage: "checkmark.circle")
-                                .font(.caption)
-                                .foregroundStyle(.green)
+                                .font(TypographyTokens.caption)
+                                .foregroundStyle(ColorTokens.success)
                         } else if !item.candidates.isEmpty {
                             Text("exam.syllabus.disambiguate_prompt")
-                                .font(.caption)
-                                .foregroundStyle(.orange)
+                                .font(TypographyTokens.caption)
+                                .foregroundStyle(ColorTokens.warning)
                             Picker(
                                 item.rawTopicLabel,
                                 selection: Binding(
@@ -194,11 +234,16 @@ public struct SyllabusSnapToPlanSheet: View {
                                 }
                             }
                             .pickerStyle(.menu)
+                            .tint(ColorTokens.action)
                             .accessibilityIdentifier("syllabus.disambiguationPicker.\(item.itemIndex)")
                         }
                     }
-                    .padding()
-                    .background(Color.secondary.opacity(0.08), in: RoundedRectangle(cornerRadius: 12))
+                    .padding(SpacingTokens.md)
+                    .background(ColorTokens.surface, in: RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                            .stroke(ColorTokens.borderSubtle, lineWidth: 1)
+                    )
                 }
 
                 if upload.status == .needsDisambiguation {
@@ -206,9 +251,13 @@ public struct SyllabusSnapToPlanSheet: View {
                         Task { await viewModel.confirmDisambiguation() }
                     } label: {
                         Text("exam.syllabus.confirm_mappings_button")
-                            .frame(maxWidth: .infinity)
+                            .font(TypographyTokens.bodyMedium.weight(.semibold))
+                            .foregroundStyle(ColorTokens.actionForeground)
+                            .frame(maxWidth: .infinity, minHeight: 48)
+                            .background(ColorTokens.action)
+                            .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
                     }
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(.plain)
                     .disabled(viewModel.isIngesting)
                     .accessibilityIdentifier("syllabus.confirmMappingsButton")
                 }

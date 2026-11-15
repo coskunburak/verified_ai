@@ -3,14 +3,17 @@ import SwiftUI
 public struct ExamCatalogAndTargetView: View {
     @ObservedObject public var viewModel: ExamCatalogAndTargetViewModel
     public var candidateProfileViewModel: CandidateProfileViewModel?
+    public var blueprintAssemblyViewModel: ExamBlueprintAssemblyViewModel?
     @FocusState private var isScoreFieldFocused: Bool
 
     public init(
         viewModel: ExamCatalogAndTargetViewModel,
-        candidateProfileViewModel: CandidateProfileViewModel? = nil
+        candidateProfileViewModel: CandidateProfileViewModel? = nil,
+        blueprintAssemblyViewModel: ExamBlueprintAssemblyViewModel? = nil
     ) {
         self.viewModel = viewModel
         self.candidateProfileViewModel = candidateProfileViewModel
+        self.blueprintAssemblyViewModel = blueprintAssemblyViewModel
     }
 
     private var languageCode: String? {
@@ -68,6 +71,27 @@ public struct ExamCatalogAndTargetView: View {
                         }
                         .accessibilityIdentifier("exam.catalog.openCandidateProfileButton")
                     }
+
+                    if let blueprintAssemblyViewModel {
+                        NavigationLink {
+                            ExamBlueprintAssemblyView(viewModel: blueprintAssemblyViewModel)
+                        } label: {
+                            HStack {
+                                Label(LocalizedStringKey("exam.assembly.title"), systemImage: "square.stack.3d.up.badge.automatic")
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(ColorTokens.textPrimary)
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(ColorTokens.textSecondary)
+                            }
+                            .padding(14)
+                            .frame(maxWidth: .infinity)
+                            .background(ColorTokens.surfaceElevated)
+                            .clipShape(RoundedRectangle(cornerRadius: 14))
+                        }
+                        .accessibilityIdentifier("exam.catalog.openBlueprintAssemblyButton")
+                    }
                 }
             }
             .padding(16)
@@ -104,35 +128,44 @@ public struct ExamCatalogAndTargetView: View {
     }
 
     private var offlineBanner: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: SpacingTokens.xs) {
             Image(systemName: "wifi.slash")
-                .foregroundStyle(ColorTokens.warning)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(ColorTokens.accent)
             Text(LocalizedStringKey("exam.catalog.offline_banner"))
-                .font(.caption.weight(.medium))
-                .foregroundStyle(ColorTokens.warning)
-            Spacer()
+                .font(TypographyTokens.caption)
+                .foregroundStyle(ColorTokens.textPrimary)
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer(minLength: 0)
         }
-        .padding(12)
-        .background(ColorTokens.surfaceElevated)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .padding(.horizontal, SpacingTokens.compact)
+        .padding(.vertical, SpacingTokens.sm)
+        .background(ColorTokens.accentSoft)
+        .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                .stroke(ColorTokens.accent.opacity(0.28), lineWidth: 1)
+        )
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("exam.offline.banner")
     }
 
     private var featureDisabledCard: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Label(LocalizedStringKey("exam.catalog.feature_disabled"), systemImage: "pause.circle")
-                .font(.headline)
-                .foregroundStyle(ColorTokens.textSecondary)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(16)
-        .background(ColorTokens.surfaceElevated)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        Label(LocalizedStringKey("exam.catalog.feature_disabled"), systemImage: "pause.circle")
+            .font(TypographyTokens.cardTitle)
+            .foregroundStyle(ColorTokens.textSecondary)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(SpacingTokens.md)
+            .background(ColorTokens.surfaceElevated)
+            .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous)
+                    .stroke(ColorTokens.borderSubtle, lineWidth: 1)
+            )
     }
 
     private var jurisdictionPicker: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: SpacingTokens.xs) {
             jurisdictionChip(titleKey: "exam.catalog.filter.all", jurisdiction: nil)
             jurisdictionChip(titleKey: "exam.catalog.filter.tr", jurisdiction: .tr)
             jurisdictionChip(titleKey: "exam.catalog.filter.intl", jurisdiction: .intl)
@@ -148,12 +181,16 @@ public struct ExamCatalogAndTargetView: View {
             }
         } label: {
             Text(LocalizedStringKey(titleKey))
-                .font(.subheadline.weight(.semibold))
-                .padding(.horizontal, 14)
+                .font(TypographyTokens.caption.weight(.semibold))
+                .padding(.horizontal, SpacingTokens.compact)
                 .frame(minHeight: 40)
                 .background(isSelected ? ColorTokens.action : ColorTokens.surfaceElevated)
-                .foregroundStyle(isSelected ? ColorTokens.background : ColorTokens.textPrimary)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .foregroundStyle(isSelected ? ColorTokens.actionForeground : ColorTokens.textPrimary)
+                .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                        .stroke(isSelected ? ColorTokens.action : ColorTokens.borderSubtle, lineWidth: 1)
+                )
         }
     }
 
@@ -167,43 +204,46 @@ public struct ExamCatalogAndTargetView: View {
                         await viewModel.selectExam(def)
                     }
                 } label: {
-                    VStack(alignment: .leading, spacing: 8) {
+                    VStack(alignment: .leading, spacing: SpacingTokens.xs) {
                         HStack(alignment: .top) {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(def.localizedTitle(languageCode: languageCode))
-                                    .font(.headline)
+                                    .font(TypographyTokens.cardTitle)
                                     .foregroundStyle(ColorTokens.textPrimary)
                                     .multilineTextAlignment(.leading)
                                 Text("\(def.jurisdiction.rawValue) • \(def.examFamily.rawValue) • v\(def.examVersion)")
-                                    .font(.caption.weight(.medium))
+                                    .font(TypographyTokens.caption.weight(.medium))
+                                    .monospacedDigit()
                                     .foregroundStyle(ColorTokens.textSecondary)
                             }
                             Spacer()
                             if isSelected {
                                 Image(systemName: "checkmark.circle.fill")
-                                    .foregroundStyle(ColorTokens.accent)
+                                    .foregroundStyle(ColorTokens.action)
                             }
                         }
 
-                        HStack(spacing: 12) {
+                        HStack(spacing: SpacingTokens.compact) {
                             Text(String(format: NSLocalizedString("exam.catalog.questions_count", comment: ""), def.totalQuestions))
-                                .font(.caption2.weight(.semibold))
+                                .font(TypographyTokens.microLabel)
+                                .monospacedDigit()
                             Text(String(format: NSLocalizedString("exam.catalog.minutes_count", comment: ""), def.durationMinutes))
-                                .font(.caption2.weight(.semibold))
+                                .font(TypographyTokens.microLabel)
+                                .monospacedDigit()
                             Text(LocalizedStringKey(def.scoringFormulaType.localizationKey))
-                                .font(.caption2.weight(.semibold))
+                                .font(TypographyTokens.microLabel)
                                 .lineLimit(1)
                         }
                         .foregroundStyle(ColorTokens.textTertiary)
                     }
-                    .padding(14)
+                    .padding(SpacingTokens.md)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(ColorTokens.surfaceElevated)
+                    .background(isSelected ? ColorTokens.actionSoft : ColorTokens.surface)
                     .overlay(
-                        RoundedRectangle(cornerRadius: 14)
-                            .stroke(isSelected ? ColorTokens.action : Color.clear, lineWidth: 1.5)
+                        RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous)
+                            .stroke(isSelected ? ColorTokens.action : ColorTokens.borderSubtle, lineWidth: isSelected ? 1.5 : 1)
                     )
-                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                    .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous))
                 }
                 .accessibilityIdentifier("exam.card.\(def.examCode)")
             }
@@ -314,56 +354,71 @@ public struct ExamCatalogAndTargetView: View {
                         Text(LocalizedStringKey("exam.target.save_button"))
                     }
                 }
-                .font(.headline)
-                .frame(maxWidth: .infinity)
-                .frame(minHeight: 48)
+                .font(TypographyTokens.bodyMedium.weight(.semibold))
+                .foregroundStyle(ColorTokens.actionForeground)
+                .frame(maxWidth: .infinity, minHeight: 48)
+                .background(ColorTokens.action)
+                .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
             }
-            .buttonStyle(.borderedProminent)
-            .tint(ColorTokens.action)
+            .buttonStyle(.plain)
             .disabled(viewModel.isSaving || viewModel.isOfflineBannerVisible)
             .accessibilityIdentifier("exam.target.saveButton")
         }
-        .padding(16)
-        .background(ColorTokens.surfaceElevated)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .padding(SpacingTokens.md)
+        .background(ColorTokens.surface)
+        .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous)
+                .stroke(ColorTokens.borderSubtle, lineWidth: 1)
+        )
     }
 
     private func activeTargetReadinessCard(target: StudentExamTargetModel) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: SpacingTokens.xs) {
             HStack {
                 Text(LocalizedStringKey("exam.target.readiness_gap_title"))
-                    .font(.headline)
+                    .font(TypographyTokens.cardTitle)
                     .foregroundStyle(ColorTokens.textPrimary)
                 Spacer()
                 Text(LocalizedStringKey("exam.target.active_badge"))
-                    .font(.caption2.weight(.bold))
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(ColorTokens.accent.opacity(0.2))
-                    .foregroundStyle(ColorTokens.accent)
+                    .font(TypographyTokens.microLabel)
+                    .foregroundStyle(ColorTokens.action)
+                    .padding(.horizontal, SpacingTokens.xs)
+                    .padding(.vertical, SpacingTokens.xxs)
+                    .background(ColorTokens.actionSoft)
                     .clipShape(Capsule())
+                    .overlay(
+                        Capsule()
+                            .stroke(ColorTokens.action.opacity(0.28), lineWidth: 1)
+                    )
             }
 
             Text("\(target.examCode) v\(target.examVersion) • \(target.targetDate)")
-                .font(.caption.weight(.medium))
+                .font(TypographyTokens.caption.weight(.medium))
+                .monospacedDigit()
                 .foregroundStyle(ColorTokens.textSecondary)
 
             HStack {
                 Text(String(format: "%@: %.1f", NSLocalizedString("exam.target.estimated_score_label", comment: ""), target.readinessGapPreview.currentEstimatedScore))
-                    .font(.caption.monospacedDigit())
+                    .font(TypographyTokens.caption.monospacedDigit())
                 Spacer()
                 Text(String(format: "%@: %+.1f", NSLocalizedString("exam.target.gap_points_label", comment: ""), target.readinessGapPreview.gapPoints))
-                    .font(.caption.monospacedDigit().weight(.semibold))
+                    .font(TypographyTokens.caption.monospacedDigit().weight(.semibold))
                     .foregroundStyle(ColorTokens.action)
             }
             .foregroundStyle(ColorTokens.textPrimary)
 
             Text(LocalizedStringKey("exam.target.zero_cost_note"))
-                .font(.caption2)
+                .font(TypographyTokens.microLabel)
                 .foregroundStyle(ColorTokens.textTertiary)
         }
-        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(SpacingTokens.md)
         .background(ColorTokens.surfaceElevated)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous)
+                .stroke(ColorTokens.borderSubtle, lineWidth: 1)
+        )
     }
 }

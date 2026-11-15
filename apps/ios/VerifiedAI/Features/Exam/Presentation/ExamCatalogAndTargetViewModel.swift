@@ -247,6 +247,8 @@ public final class ExamCatalogAndTargetViewModel: ObservableObject {
             errorMessageKey = "exam.syllabus.error.media_unsupported"
         case .disambiguationRequired:
             errorMessageKey = "exam.syllabus.error.disambiguation_required"
+        case .poolInsufficient:
+            errorMessageKey = "exam.assembly.error.pool_insufficient"
         case .unexpected(let message):
             errorMessageKey = "exam.error.unexpected"
             errorDetailsText = message

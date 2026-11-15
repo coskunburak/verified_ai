@@ -1,0 +1,82 @@
+{
+  "examVersionNumber": 1,
+  "examSectionId": "92000000-0000-4000-8000-000000000101",
+  "questionCode": "TYT-MATH-2026-INT-001",
+  "topicCode": "MATH.ARITHMETIC.INTEGER_OPERATIONS",
+  "subtopicCode": "SIGNED_INTEGERS",
+  "itemFormat": "SINGLE_CHOICE_MCQ",
+  "difficultyBand": "EASY",
+  "difficultyBValue": -1.20,
+  "discriminationAValue": 1.05,
+  "guessingCValue": 0.20,
+  "cognitiveLevel": "RECALL",
+  "stemMarkdown": "Evaluate the integer expression (-18) + 27 - (-9) and choose the resulting value.",
+  "stemLatex": "(-18) + 27 - (-9)",
+  "altTextDescription": null,
+  "hasVisualDiagram": false,
+  "numericCorrectAnswer": null,
+  "numericTolerance": null,
+  "structuredRubric": {},
+  "solutionExplanationMarkdown": "Adding 27 to -18 gives 9, and subtracting -9 adds 9, yielding 9 + 9 = 18.",
+  "estimatedTimeSeconds": 60,
+  "maxPoints": 1.00,
+  "negativeMarkingWeight": 0.2500,
+  "options": [
+    {
+      "optionKey": "A",
+      "displayOrder": 1,
+      "contentMarkdown": "0",
+      "contentLatex": "0",
+      "isCorrect": false,
+      "distractorRationale": "Subtracted 9 instead of adding 9.",
+      "trainingEligible": false
+    },
+    {
+      "optionKey": "B",
+      "displayOrder": 2,
+      "contentMarkdown": "9",
+      "contentLatex": "9",
+      "isCorrect": false,
+      "distractorRationale": "Omitted the final -(-9) term.",
+      "trainingEligible": false
+    },
+    {
+      "optionKey": "C",
+      "displayOrder": 3,
+      "contentMarkdown": "18",
+      "contentLatex": "18",
+      "isCorrect": true,
+      "distractorRationale": "Correct evaluation of (-18) + 27 + 9.",
+      "trainingEligible": false
+    },
+    {
+      "optionKey": "D",
+      "displayOrder": 4,
+      "contentMarkdown": "36",
+      "contentLatex": "36",
+      "isCorrect": false,
+      "distractorRationale": "Treated -18 as +18.",
+      "trainingEligible": false
+    },
+    {
+      "optionKey": "E",
+      "displayOrder": 5,
+      "contentMarkdown": "-18",
+      "contentLatex": "-18",
+      "isCorrect": false,
+      "distractorRationale": "Sign reversal error.",
+      "trainingEligible": false
+    }
+  ],
+  "provenance": {
+    "sourceType": "ORIGINAL_AUTHORED",
+    "licenseClassification": "PROPRIETARY_INTERNAL",
+    "copyrightHolder": "VerifiedAI Assessment Guild",
+    "sourceReference": "TYT-2026-BANK-SPEC-INT-001",
+    "authorId": "sme.author.ayse.kaya",
+    "reviewerId": "sme.reviewer.mehmet.demir",
+    "verificationStatus": "VERIFIED",
+    "trainingEligible": false
+  },
+  "trainingEligible": false
+}

@@ -14,6 +14,7 @@ struct RootView: View {
     @StateObject private var coldStartDiagnosticViewModel: ColdStartDiagnosticViewModel
     @StateObject private var examCatalogViewModel: ExamCatalogAndTargetViewModel
     @StateObject private var candidateProfileViewModel: CandidateProfileViewModel
+    @StateObject private var blueprintAssemblyViewModel: ExamBlueprintAssemblyViewModel
     @State private var entitlementViewModel: EntitlementViewModel
     @State private var paywallViewModel: PaywallViewModel
     @State private var problemCaptureViewModel: ProblemCaptureViewModel
@@ -23,6 +24,7 @@ struct RootView: View {
     @State private var isPaywallPresented = false
     @State private var isAccountSettingsPresented = false
     @State private var isProblemCapturePresented = false
+    @AppStorage("verifiedai.theme_preference") private var themePreferenceRaw: String = AppThemePreference.light.rawValue
 
     init(environment: AppEnvironment, dependencies: AppDependencies) {
         self.environment = environment
@@ -55,6 +57,7 @@ struct RootView: View {
             cacheStore: dependencies.examCacheStore
         ))
         _candidateProfileViewModel = StateObject(wrappedValue: dependencies.makeCandidateProfileViewModel())
+        _blueprintAssemblyViewModel = StateObject(wrappedValue: dependencies.makeExamBlueprintAssemblyViewModel())
         _entitlementViewModel = State(initialValue: EntitlementViewModel(
             entitlementAPI: dependencies.entitlementAPI,
             displayCache: dependencies.entitlementDisplayCache,
@@ -110,6 +113,7 @@ struct RootView: View {
             }
         }
         .tint(ColorTokens.action)
+        .preferredColorScheme((AppThemePreference(rawValue: themePreferenceRaw) ?? .light).colorScheme)
         .task {
             await restoreSessionOnce()
         }
@@ -128,40 +132,33 @@ struct RootView: View {
 
     @ViewBuilder
     private func authenticatedContent(session: AuthSession) -> some View {
-        NavigationStack {
+        Group {
             switch onboardingViewModel.state {
             case .saving:
-                ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(ColorTokens.background)
-                    .navigationTitle("Verified AI")
+                NavigationStack {
+                    ProgressView()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(ColorTokens.canvas)
+                        .navigationTitle("Verified AI")
+                }
             default:
                 entitledHomeContent(userId: session.userId, authSessionId: session.sessionId)
             }
         }
         .id(session.sessionId)
-        .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Button {
-                    isAccountSettingsPresented = true
-                } label: {
-                    Label("Account", systemImage: "person.crop.circle")
-                }
-            }
-
-            ToolbarItem(placement: .topBarTrailing) {
-                Button("Sign Out") {
-                    resetAuthenticatedState()
-                    signInViewModel.logout()
-                }
-            }
-        }
         .sheet(isPresented: $isAccountSettingsPresented) {
             NavigationStack {
                 AccountSettingsView(
                     viewModel: accountSettingsViewModel,
                     weeklyReportViewModel: weeklyProgressReportViewModel,
-                    onAccountDeleted: handleAccountDeleted
+                    environmentName: environment.displayName,
+                    entitlement: entitlementViewModel.entitlement,
+                    onAccountDeleted: handleAccountDeleted,
+                    onSignOut: {
+                        isAccountSettingsPresented = false
+                        resetAuthenticatedState()
+                        signInViewModel.logout()
+                    }
                 )
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
@@ -178,6 +175,7 @@ struct RootView: View {
             coldStartDiagnosticViewModel.updateLearnerId(session.userId)
             examCatalogViewModel.updateLearnerId(session.userId)
             candidateProfileViewModel.updateLearnerId(session.userId)
+            blueprintAssemblyViewModel.updateLearnerId(session.userId)
             dependencies.storeKitTransactionObserver.start()
             await onboardingViewModel.bootstrap(userId: session.userId)
             if !ProcessInfo.processInfo.arguments.contains("--ui-testing") {
@@ -207,7 +205,8 @@ struct RootView: View {
     private func entitledHomeContent(userId: UUID, authSessionId: UUID) -> some View {
         switch entitlementViewModel.state {
         case .ready, .offline:
-            HomePlaceholderView(
+            MainTabView(
+                learnerId: userId,
                 environmentName: environment.displayName,
                 launchState: launchState,
                 entitlement: entitlementViewModel.entitlement,
@@ -224,6 +223,10 @@ struct RootView: View {
                 problemHistoryViewModel: problemHistoryViewModel,
                 manageSubscription: { isPaywallPresented = true },
                 manageAccount: { isAccountSettingsPresented = true },
+                signOut: {
+                    resetAuthenticatedState()
+                    signInViewModel.logout()
+                },
                 isSolveFixture: dependencies.solveFixture,
                 makeSolveModel: dependencies.solveEnabled ? { sessionId in
                     let tutorService = dependencies.tutorAPI
@@ -263,9 +266,10 @@ struct RootView: View {
                 reviewViewModel: dependencies.solveFixture ? nil : problemReviewViewModel,
                 coldStartViewModel: coldStartDiagnosticViewModel,
                 examViewModel: examCatalogViewModel,
-                candidateProfileViewModel: candidateProfileViewModel
+                candidateProfileViewModel: candidateProfileViewModel,
+                blueprintAssemblyViewModel: blueprintAssemblyViewModel,
+                weeklyReportViewModel: weeklyProgressReportViewModel
             )
-            .navigationTitle("Verified AI")
             .sheet(isPresented: $isPaywallPresented, onDismiss: {
                 Task { await entitlementViewModel.bootstrap(force: true) }
             }) {
@@ -296,24 +300,30 @@ struct RootView: View {
             }
         case .loading, .idle:
             ProgressView()
+                .tint(ColorTokens.action)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(ColorTokens.background)
+                .background(ColorTokens.canvas)
                 .navigationTitle("Verified AI")
                 .task {
                     await entitlementViewModel.bootstrap()
                 }
         case .failed:
             VStack(alignment: .leading, spacing: SpacingTokens.md) {
-                Label(entitlementViewModel.message ?? "Entitlement could not be loaded.", systemImage: "exclamationmark.triangle")
-                    .foregroundStyle(ColorTokens.warning)
-                Button("Retry") {
-                    Task { await entitlementViewModel.bootstrap(force: true) }
+                AppSurfaceCard {
+                    AppNoticeBanner(
+                        LocalizedStringKey(stringLiteral: entitlementViewModel.message ?? "Entitlement could not be loaded."),
+                        systemImage: "exclamationmark.triangle",
+                        tone: .warning
+                    )
+                    Button("Retry") {
+                        Task { await entitlementViewModel.bootstrap(force: true) }
+                    }
+                    .buttonStyle(AppPrimaryButtonStyle())
                 }
-                .buttonStyle(.borderedProminent)
             }
             .padding(SpacingTokens.lg)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            .background(ColorTokens.background)
+            .background(ColorTokens.canvas)
             .navigationTitle("Verified AI")
         }
     }
@@ -331,6 +341,7 @@ struct RootView: View {
         Task { await coldStartDiagnosticViewModel.purgeCurrentLearnerAndReset() }
         Task { await examCatalogViewModel.purgeUserDataAndReset() }
         Task { await candidateProfileViewModel.purgeUserDataAndReset() }
+        Task { await blueprintAssemblyViewModel.purgeUserDataAndReset() }
         entitlementViewModel.reset()
         paywallViewModel.reset()
         problemAssetUploadViewModel.reset()
@@ -375,23 +386,23 @@ struct RootView: View {
 private struct SplashScreenView: View {
     var body: some View {
         ZStack {
-            ColorTokens.background.ignoresSafeArea()
+            ColorTokens.canvas.ignoresSafeArea()
 
             VStack(spacing: SpacingTokens.md) {
                 Image(systemName: "checkmark.seal.fill")
-                    .font(.system(size: 48, weight: .semibold))
+                    .font(.system(size: 40, weight: .semibold))
                     .foregroundStyle(ColorTokens.action)
-                    .frame(width: 82, height: 82)
+                    .frame(width: 80, height: 80)
                     .background(ColorTokens.surface)
-                    .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium))
+                    .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous))
                     .overlay {
-                        RoundedRectangle(cornerRadius: RadiusTokens.medium)
-                            .stroke(ColorTokens.border, lineWidth: 1)
+                        RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous)
+                            .stroke(ColorTokens.borderSubtle, lineWidth: 1)
                     }
 
                 VStack(spacing: SpacingTokens.xs) {
                     Text("Verified AI")
-                        .font(.system(size: 34, weight: .semibold, design: .rounded))
+                        .font(TypographyTokens.heroTitle)
                         .foregroundStyle(ColorTokens.textPrimary)
                         .accessibilityIdentifier("appTitle")
                     Text("Preparing secure workspace")

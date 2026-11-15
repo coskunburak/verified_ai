@@ -72,6 +72,10 @@ struct AppDependencies {
         CandidateProfileViewModel(apiService: examAPI, offlineStore: examCacheStore)
     }
 
+    func makeExamBlueprintAssemblyViewModel() -> ExamBlueprintAssemblyViewModel {
+        ExamBlueprintAssemblyViewModel(apiService: examAPI, offlineStore: examCacheStore)
+    }
+
     #if DEBUG
     func seedOfflineExamFixturesIfNeeded() async {
         let defs = FixtureExamAPIService.seedDefinitions()
@@ -112,6 +116,10 @@ struct AppDependencies {
         await examCacheStore.saveCatalog(catalog)
         for def in defs {
             await examCacheStore.saveDefinitionDetail(def)
+        }
+        let blueprints = FixtureExamAPIService.seedBlueprints()
+        if let firstDef = defs.first {
+            await examCacheStore.saveBlueprints(blueprints, examDefinitionId: firstDef.examDefinitionId)
         }
     }
     #endif

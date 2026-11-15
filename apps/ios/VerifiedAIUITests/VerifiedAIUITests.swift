@@ -42,6 +42,15 @@ final class VerifiedAIUITests: XCTestCase {
     func testColdStartBaselineDiagnosticCardAndThreeStepFlow() {
         let app = launchAuthenticatedApp()
 
+        let planTab = app.tabBars.buttons["Plan"]
+        if planTab.waitForExistence(timeout: 4) {
+            planTab.tap()
+        } else {
+            let byIndex = app.tabBars.buttons.element(boundBy: 1)
+            XCTAssertTrue(byIndex.waitForExistence(timeout: 5))
+            byIndex.tap()
+        }
+
         let card = app.descendants(matching: .any)["coachHub.coldStartDiagnosticCard"]
         XCTAssertTrue(card.waitForExistence(timeout: 6))
 

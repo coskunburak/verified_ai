@@ -1,23 +1,42 @@
 package com.verifiedai.exam.infrastructure.privacy;
 
-import com.verifiedai.exam.application.ExamRepository;
-import com.verifiedai.exam.domain.ExamModels.StudentExamTargetRecord;
-import com.verifiedai.exam.domain.ExamModels.TargetStatus;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.verifiedai.exam.application.CandidateProfileRepository;
+import com.verifiedai.exam.application.ExamRepository;
+import com.verifiedai.exam.domain.AppliedAccommodationSnapshot;
+import com.verifiedai.exam.domain.AssembledAssessment;
+import com.verifiedai.exam.domain.AssembledAssessmentItem;
+import com.verifiedai.exam.domain.AssembledAssessmentRepository;
+import com.verifiedai.exam.domain.AssembledAssessmentStatus;
+import com.verifiedai.exam.domain.AssemblyDistributionSummary;
+import com.verifiedai.exam.domain.AssessmentBlueprintMode;
+import com.verifiedai.exam.domain.CandidateProfileModels.AccessibilityAccommodations;
+import com.verifiedai.exam.domain.CandidateProfileModels.CandidateProfileRecord;
+import com.verifiedai.exam.domain.CandidateProfileModels.FeasibilityStatus;
+import com.verifiedai.exam.domain.CognitiveTaxonomyLevel;
+import com.verifiedai.exam.domain.ExamModels.Jurisdiction;
+import com.verifiedai.exam.domain.ExamModels.StudentExamTargetRecord;
+import com.verifiedai.exam.domain.ExamModels.TargetStatus;
+import com.verifiedai.exam.domain.QuestionDifficultyBand;
+import com.verifiedai.exam.domain.QuestionItemFormat;
+import java.math.BigDecimal;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
 
 class ExamPrivacyLifecycleContributorTest {
 
@@ -89,28 +108,29 @@ class ExamPrivacyLifecycleContributorTest {
     }
 
     @Test
-    void exportDeleteAndPurgeIncludeCandidateProfileAndSyllabusUploads() {
-        var candidateRepo = mock(com.verifiedai.exam.application.CandidateProfileRepository.class);
+    void exportDeleteAndPurgeIncludeCandidateProfileSyllabusUploadsAndAssembledAssessmentsInFkSafeOrder() {
+        var candidateRepo = mock(CandidateProfileRepository.class);
+        var assembledRepo = mock(AssembledAssessmentRepository.class);
         Instant now = Instant.parse("2026-11-15T10:00:00Z");
 
         when(examRepository.findTargetsByUserId(userId)).thenReturn(List.of());
-        when(candidateRepo.findProfileByUserId(userId)).thenReturn(java.util.Optional.of(
-                new com.verifiedai.exam.domain.CandidateProfileModels.CandidateProfileRecord(
+        when(candidateRepo.findProfileByUserId(userId)).thenReturn(Optional.of(
+                new CandidateProfileRecord(
                         UUID.randomUUID(),
                         userId,
                         UUID.randomUUID(),
                         "TR_YKS_TYT_MATH",
                         "2026.1",
                         null,
-                        com.verifiedai.exam.domain.ExamModels.Jurisdiction.TR,
+                        Jurisdiction.TR,
                         LocalDate.of(2027, 6, 20),
                         new BigDecimal("35.0"),
                         60,
                         420,
-                        com.verifiedai.exam.domain.CandidateProfileModels.AccessibilityAccommodations.standardDefaults(),
+                        AccessibilityAccommodations.standardDefaults(),
                         new BigDecimal("0.25"),
                         15,
-                        com.verifiedai.exam.domain.CandidateProfileModels.FeasibilityStatus.OPTIMAL,
+                        FeasibilityStatus.OPTIMAL,
                         "key-privacy",
                         "candidate-profile-v1",
                         false,
@@ -122,19 +142,74 @@ class ExamPrivacyLifecycleContributorTest {
         when(candidateRepo.findSyllabusUploadsByUserId(userId, 100)).thenReturn(List.of());
         when(candidateRepo.purgeExpiredSyllabusUploads(now)).thenReturn(3);
 
+        UUID assessmentId = UUID.randomUUID();
+        AssembledAssessment assembled = new AssembledAssessment(
+                assessmentId,
+                userId,
+                UUID.randomUUID(),
+                UUID.randomUUID(),
+                "BP-TYT-MATH-DIAG-2026-V1",
+                "TYT Mathematics Diagnostic Baseline",
+                AssessmentBlueprintMode.DIAGNOSTIC_BASELINE,
+                UUID.fromString("91000000-0000-4000-8000-000000000101"),
+                1,
+                "seed-privacy-test",
+                "4040404040404040404040404040404040404040404040404040404040404040",
+                5,
+                900,
+                new BigDecimal("1.25"),
+                1125,
+                new AppliedAccommodationSnapshot(new BigDecimal("1.25"), false, false, false),
+                new AssemblyDistributionSummary(Map.of(), Map.of(), Map.of(), Map.of(), 0),
+                AssembledAssessmentStatus.ASSEMBLED,
+                now,
+                now.plusSeconds(86400),
+                false,
+                List.of(
+                        new AssembledAssessmentItem(
+                                UUID.randomUUID(),
+                                assessmentId,
+                                UUID.randomUUID(),
+                                "TYT-MATH-2026-INT-001",
+                                1,
+                                "MATH.ARITHMETIC.INTEGER_OPERATIONS",
+                                null,
+                                QuestionItemFormat.SINGLE_CHOICE_MCQ,
+                                QuestionDifficultyBand.EASY,
+                                CognitiveTaxonomyLevel.RECALL,
+                                "Evaluate (-18) + 27 - (-9)",
+                                null,
+                                null,
+                                false,
+                                List.of("A", "B", "C", "D", "E"),
+                                List.of(),
+                                new BigDecimal("1.00"),
+                                60,
+                                false
+                        )
+                )
+        );
+        when(assembledRepo.findByUserId(userId, 100)).thenReturn(List.of(assembled));
+        when(assembledRepo.deleteByUserId(userId)).thenReturn(1);
+
         ExamPrivacyLifecycleContributor fullContributor = new ExamPrivacyLifecycleContributor(
                 examRepository,
                 candidateRepo,
-                java.time.Clock.fixed(now, java.time.ZoneOffset.UTC)
+                assembledRepo,
+                Clock.fixed(now, ZoneOffset.UTC)
         );
         Map<String, Object> exported = fullContributor.exportUserData(userId);
         assertThat(exported.get("category")).isEqualTo("exam");
         assertThat(exported.get("candidateProfile")).isNotNull();
+        assertThat(exported.get("assembledAssessmentCount")).isEqualTo(1);
         assertThat(exported.get("trainingEligible")).isEqualTo(false);
         assertThat(fullContributor.purgeExpiredSyllabusArtifacts(now)).isEqualTo(3);
 
         fullContributor.deleteUserData(userId, now);
-        verify(candidateRepo, times(1)).deleteAllCandidateDataForUser(userId);
-        verify(examRepository, times(1)).deleteTargetsByUserId(userId);
+
+        InOrder order = inOrder(assembledRepo, candidateRepo, examRepository);
+        order.verify(assembledRepo).deleteByUserId(userId);
+        order.verify(candidateRepo).deleteAllCandidateDataForUser(userId);
+        order.verify(examRepository).deleteTargetsByUserId(userId);
     }
 }

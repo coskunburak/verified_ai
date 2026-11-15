@@ -11,31 +11,71 @@ struct CounterfactualTwinSheetView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 18) {
+                VStack(alignment: .leading, spacing: SpacingTokens.lg) {
                     TimelineView(.periodic(from: .now, by: 1)) { context in
                         let remaining = max(0, 60 - Int(context.date.timeIntervalSince(drill.createdAt)))
-                        Text(String(format: NSLocalizedString("attempt.twin.timer", comment: "Practice time"), remaining))
+                        AppStatusBadge(
+                            verbatimTitle: String(format: NSLocalizedString("attempt.twin.timer", comment: "Practice time"), remaining),
+                            systemImage: "timer",
+                            tone: remaining <= 10 ? .warning : .action
+                        )
+                        .monospacedDigit()
                     }
-                    Text("attempt.twin.timerHelp").font(.caption)
+                    Text("attempt.twin.timerHelp")
+                        .font(TypographyTokens.caption)
+                        .foregroundStyle(ColorTokens.textSecondary)
                     Text(verbatim: drill.domainLabel)
-                    math(drill.problem)
+                        .font(TypographyTokens.caption.weight(.semibold))
+                        .foregroundStyle(ColorTokens.textSecondary)
+                    AppSurfaceCard {
+                        math(drill.problem)
+                    }
                     ForEach(drill.options.indices, id: \.self) { index in
                         Button { selected = index } label: {
-                            HStack { Image(systemName: selected == index ? "largecircle.fill.circle" : "circle"); math(drill.options[index]) }
-                        }.buttonStyle(.bordered).disabled(busy || drill.status == "COMPLETED")
+                            HStack(spacing: SpacingTokens.sm) {
+                                Image(systemName: selected == index ? "largecircle.fill.circle" : "circle")
+                                    .foregroundStyle(selected == index ? ColorTokens.action : ColorTokens.textSecondary)
+                                math(drill.options[index])
+                                Spacer(minLength: 0)
+                            }
+                            .padding(SpacingTokens.compact)
+                            .background(selected == index ? ColorTokens.actionSoft : ColorTokens.surfaceElevated, in: RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                                    .stroke(selected == index ? ColorTokens.action : ColorTokens.borderSubtle, lineWidth: 1)
+                            )
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(busy || drill.status == "COMPLETED")
                     }
                     if drill.status == "OPEN" {
                         Button("attempt.twin.answer") { if let selected { submit(selected) } }
-                            .disabled(selected == nil || busy).buttonStyle(.borderedProminent)
+                            .disabled(selected == nil || busy)
+                            .buttonStyle(AppPrimaryButtonStyle())
                     } else {
-                        Label(drill.correct == true ? "attempt.twin.correct" : "attempt.twin.incorrect", systemImage: drill.correct == true ? "checkmark.circle" : "xmark.circle")
-                        if let correct = drill.correctOption { math(drill.options[correct]) }
-                        if let explanation = drill.explanationKey { Text(LocalizedStringKey(explanation)) }
+                        AppSurfaceCard(elevated: true) {
+                            Label(drill.correct == true ? "attempt.twin.correct" : "attempt.twin.incorrect", systemImage: drill.correct == true ? "checkmark.circle" : "xmark.circle")
+                                .font(TypographyTokens.cardTitle)
+                                .foregroundStyle(drill.correct == true ? ColorTokens.success : ColorTokens.warning)
+                            if let correct = drill.correctOption { math(drill.options[correct]) }
+                            if let explanation = drill.explanationKey {
+                                Text(LocalizedStringKey(explanation))
+                                    .font(TypographyTokens.body)
+                                    .foregroundStyle(ColorTokens.textSecondary)
+                            }
+                        }
                     }
                     if busy { ProgressView() }
-                    if failure { Text("attempt.learning.unavailable"); Button("attempt.learning.refresh", action: refresh).disabled(busy) }
-                }.padding()
-            }.onAppear { selected = drill.selectedOption }
+                    if failure {
+                        AppSurfaceCard(elevated: true) {
+                            Text("attempt.learning.unavailable")
+                            Button("attempt.learning.refresh", action: refresh)
+                                .buttonStyle(AppSecondaryButtonStyle())
+                                .disabled(busy)
+                        }
+                    }
+                }.padding(SpacingTokens.lg)
+            }.background(ColorTokens.canvas).onAppear { selected = drill.selectedOption }
                 .onChange(of: drill.selectedOption) { _, value in selected = value }
                 .navigationTitle("attempt.twin.title")
                 .toolbar { ToolbarItem(placement: .cancellationAction) { Button("attempt.twin.close") { dismiss() } } }

@@ -181,7 +181,7 @@ struct ProblemCaptureView: View {
             .padding(SpacingTokens.lg)
             .frame(maxWidth: 680, alignment: .leading)
         }
-        .background(ColorTokens.background)
+        .background(ColorTokens.canvas)
     }
 
     private var cameraCaptureView: some View {
@@ -209,26 +209,43 @@ struct ProblemCaptureView: View {
             .accessibilityHint("Place the full math problem inside the guide, then use the shutter button.")
 
             VStack(alignment: .leading, spacing: SpacingTokens.md) {
-                Text("Keep the entire problem inside the frame. Avoid glare and cut-off edges.")
-                    .font(TypographyTokens.caption)
-                    .foregroundStyle(ColorTokens.textSecondary)
+                HStack(spacing: SpacingTokens.xs) {
+                    Circle()
+                        .fill(ColorTokens.stepHighlight)
+                        .frame(width: 6, height: 6)
+                    Text("Keep the entire problem inside the corner brackets. Avoid glare and cut-off edges.")
+                        .font(TypographyTokens.caption)
+                        .foregroundStyle(ColorTokens.textSecondary)
+                }
 
                 HStack(spacing: SpacingTokens.md) {
                     PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
                         Label("Photo", systemImage: "photo")
                             .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.bordered)
+                    .buttonStyle(AppSecondaryButtonStyle())
                     .disabled(viewModel.isBusy)
 
                     Button {
                         Task { await viewModel.capturePhoto() }
                     } label: {
-                        Label("Capture", systemImage: "circle.inset.filled")
-                            .frame(maxWidth: .infinity)
+                        ZStack {
+                            Circle()
+                                .stroke(ColorTokens.action, lineWidth: 3)
+                                .frame(width: 68, height: 68)
+                            Circle()
+                                .fill(ColorTokens.action)
+                                .frame(width: 56, height: 56)
+                            Image(systemName: "camera.viewfinder")
+                                .font(.system(size: 22, weight: .semibold))
+                                .foregroundStyle(ColorTokens.actionForeground)
+                        }
+                        .frame(minWidth: 72, minHeight: 72)
+                        .contentShape(Circle())
                     }
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(.plain)
                     .disabled(viewModel.isBusy)
+                    .accessibilityLabel("Capture")
                     .accessibilityIdentifier("problemCapture.shutter")
 
                     Button {
@@ -238,14 +255,19 @@ struct ProblemCaptureView: View {
                         Label("Files", systemImage: "doc")
                             .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.bordered)
+                    .buttonStyle(AppSecondaryButtonStyle())
                     .disabled(viewModel.isBusy)
                 }
             }
             .padding(SpacingTokens.lg)
-            .background(ColorTokens.background)
+            .background(ColorTokens.surface)
+            .overlay(alignment: .top) {
+                Rectangle()
+                    .fill(ColorTokens.borderSubtle)
+                    .frame(height: 1)
+            }
         }
-        .background(ColorTokens.background)
+        .background(ColorTokens.canvas)
     }
 
     private func reviewView(_ asset: CapturedAsset) -> some View {
@@ -254,71 +276,71 @@ struct ProblemCaptureView: View {
                 preview(asset)
                     .accessibilityIdentifier("problemCapture.review.preview")
 
-                VStack(alignment: .leading, spacing: SpacingTokens.sm) {
+                AppSurfaceCard {
                     Text("Review capture")
-                        .font(TypographyTokens.title)
+                        .font(TypographyTokens.sectionTitle)
                         .foregroundStyle(ColorTokens.textPrimary)
                     Text("\(sourceTitle(asset.source)) · \(asset.dimensionsDescription)")
                         .font(TypographyTokens.caption)
+                        .monospacedDigit()
                         .foregroundStyle(ColorTokens.textSecondary)
                 }
 
                 qualitySection(asset)
 
-                VStack(spacing: SpacingTokens.md) {
+                VStack(spacing: SpacingTokens.sm) {
                     Button {
                         viewModel.editCrop()
                     } label: {
                         Label("Edit Crop", systemImage: "crop")
-                            .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.bordered)
+                    .buttonStyle(AppSecondaryButtonStyle())
                     .accessibilityIdentifier("problemCapture.review.editCrop")
 
                     Button("attempt.photo.rotate") { Task { await viewModel.rotateClockwise() } }
+                        .buttonStyle(AppSecondaryButtonStyle())
                         .disabled(viewModel.isBusy || asset.kind != .image)
                     Button {
                         viewModel.accept()
                     } label: {
                         Label(onLocalAcceptance == nil ? "Use This Problem" : "attempt.photo.use", systemImage: "checkmark.circle")
-                            .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(AppPrimaryButtonStyle())
                     .accessibilityIdentifier("problemCapture.review.accept")
                     .disabled(!asset.qualityAssessment.canContinue)
 
-                    HStack(spacing: SpacingTokens.md) {
+                    HStack(spacing: SpacingTokens.sm) {
                         Button {
                             Task { await viewModel.retake() }
                         } label: {
                             Label("Retake", systemImage: "arrow.counterclockwise")
-                                .frame(maxWidth: .infinity)
                         }
-                        .buttonStyle(.bordered)
+                        .buttonStyle(AppSecondaryButtonStyle())
 
                         Button {
                             Task { await viewModel.replaceAsset() }
                         } label: {
                             Label("Replace", systemImage: "square.and.arrow.down")
-                                .frame(maxWidth: .infinity)
                         }
-                        .buttonStyle(.bordered)
+                        .buttonStyle(AppSecondaryButtonStyle())
                     }
                 }
             }
             .padding(SpacingTokens.lg)
             .frame(maxWidth: 720, alignment: .leading)
         }
-        .background(ColorTokens.background)
+        .background(ColorTokens.canvas)
     }
 
     private func qualitySection(_ asset: CapturedAsset) -> some View {
         VStack(alignment: .leading, spacing: SpacingTokens.sm) {
             if asset.qualityAssessment.issues.isEmpty {
-                Label("Capture looks usable for the next step.", systemImage: "checkmark.circle")
-                    .font(TypographyTokens.body)
-                    .foregroundStyle(ColorTokens.action)
-                    .accessibilityIdentifier("problemCapture.quality.ok")
+                AppSurfaceCard(elevated: true) {
+                    Label("Capture looks usable for the next step.", systemImage: "checkmark.circle")
+                        .font(TypographyTokens.body)
+                        .foregroundStyle(ColorTokens.success)
+                        .accessibilityIdentifier("problemCapture.quality.ok")
+                }
             } else {
                 ForEach(asset.qualityAssessment.issues) { issue in
                     QualityIssueBanner(issue: issue)
@@ -332,59 +354,56 @@ struct ProblemCaptureView: View {
 
     private func failureView(_ failure: CaptureFailure, previousAsset: CapturedAsset?) -> some View {
         VStack(alignment: .leading, spacing: SpacingTokens.lg) {
-            Label(viewModel.message ?? "Capture could not continue.", systemImage: "exclamationmark.triangle")
-                .font(TypographyTokens.body.weight(.semibold))
-                .foregroundStyle(ColorTokens.warning)
-                .accessibilityIdentifier("problemCapture.failure.message")
+            AppNoticeBanner(
+                LocalizedStringKey(viewModel.message ?? "Capture could not continue."),
+                systemImage: "exclamationmark.triangle",
+                tone: .warning
+            )
+            .accessibilityIdentifier("problemCapture.failure.message")
 
-            VStack(spacing: SpacingTokens.md) {
+            VStack(spacing: SpacingTokens.sm) {
                 if failure == .permissionDenied {
                     Button {
                         openURL(URL(string: UIApplication.openSettingsURLString)!)
                     } label: {
                         Label("Open Settings", systemImage: "gear")
-                            .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(AppPrimaryButtonStyle())
                 }
 
                 PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
                     Label("Choose Photo", systemImage: "photo")
-                        .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.bordered)
+                .buttonStyle(AppSecondaryButtonStyle())
 
                 Button {
                     viewModel.beginDocumentImport()
                     isFileImporterPresented = true
                 } label: {
                     Label("Choose File", systemImage: "doc")
-                        .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.bordered)
+                .buttonStyle(AppSecondaryButtonStyle())
 
                 Button {
                     Task { await viewModel.chooseCamera() }
                 } label: {
                     Label("Try Camera Again", systemImage: "camera")
-                        .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.bordered)
+                .buttonStyle(AppSecondaryButtonStyle())
 
                 if previousAsset != nil {
                     Button {
                         viewModel.editCrop()
                     } label: {
                         Label("Return to Review", systemImage: "arrow.uturn.left")
-                            .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.bordered)
+                    .buttonStyle(AppSecondaryButtonStyle())
                 }
             }
         }
         .padding(SpacingTokens.lg)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(ColorTokens.background)
+        .background(ColorTokens.canvas)
     }
 
     private func acceptedView(_ acceptedAsset: AcceptedCapturedAsset) -> some View {
@@ -411,6 +430,7 @@ struct ProblemCaptureView: View {
                     .accessibilityIdentifier("problemCapture.upload.progress")
                 Text("\(Int(progress * 100))%")
                     .font(TypographyTokens.caption)
+                    .monospacedDigit()
                     .foregroundStyle(ColorTokens.textSecondary)
             case .confirming:
                 Label("Verifying upload", systemImage: "checkmark.shield")
@@ -447,24 +467,23 @@ struct ProblemCaptureView: View {
                     Task { await uploadViewModel.startRecognition(reference) }
                 } label: {
                     Label("Read Problem", systemImage: "text.viewfinder")
-                        .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(AppPrimaryButtonStyle())
                 .accessibilityIdentifier("problemCapture.recognition.start")
 
                 Button {
                     onDismiss()
                 } label: {
                     Label("Done", systemImage: "checkmark")
-                        .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.bordered)
+                .buttonStyle(AppSecondaryButtonStyle())
                 .accessibilityIdentifier("problemCapture.accepted.done")
             case .startingRecognition:
                 Label("Reading the problem", systemImage: "text.viewfinder")
                     .font(TypographyTokens.title)
                     .foregroundStyle(ColorTokens.textPrimary)
                 ProgressView()
+                    .tint(ColorTokens.action)
                     .accessibilityIdentifier("problemCapture.recognition.starting")
                 Text("The backend is starting a durable recognition job.")
                     .font(TypographyTokens.body)
@@ -474,6 +493,7 @@ struct ProblemCaptureView: View {
                     .font(TypographyTokens.title)
                     .foregroundStyle(ColorTokens.textPrimary)
                 ProgressView()
+                    .tint(ColorTokens.action)
                     .accessibilityIdentifier("problemCapture.recognition.progress")
                 Text("Status \(recognition.status)")
                     .font(TypographyTokens.caption)
@@ -489,17 +509,15 @@ struct ProblemCaptureView: View {
                     Task { if let onRecognizedWork { await onRecognizedWork(reference) } else { await uploadViewModel.startParse(reference) } }
                 } label: {
                     Label("Understand Problem", systemImage: "function")
-                        .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(AppPrimaryButtonStyle())
                 .accessibilityIdentifier("problemCapture.parse.start")
                 Button {
                     onDismiss()
                 } label: {
                     Label("Done", systemImage: "checkmark")
-                        .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(AppSecondaryButtonStyle())
             case .recognitionReviewRequired(let reference):
                 Label("Reading finished with uncertainty", systemImage: "exclamationmark.triangle")
                     .font(TypographyTokens.title)
@@ -511,17 +529,15 @@ struct ProblemCaptureView: View {
                     Task { if let onRecognizedWork { await onRecognizedWork(reference) } else { await uploadViewModel.startParse(reference) } }
                 } label: {
                     Label("Understand Problem", systemImage: "function")
-                        .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(AppPrimaryButtonStyle())
                 .accessibilityIdentifier("problemCapture.parse.start")
                 Button {
                     onDismiss()
                 } label: {
                     Label("Done", systemImage: "checkmark")
-                        .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(AppSecondaryButtonStyle())
             case .recognitionFailed(_, let recognition):
                 Label(uploadViewModel.message ?? "Reading could not finish.", systemImage: "exclamationmark.triangle")
                     .font(TypographyTokens.body.weight(.semibold))
@@ -536,14 +552,14 @@ struct ProblemCaptureView: View {
                     Task { await uploadViewModel.retryRecognition() }
                 } label: {
                     Label("Try Reading Again", systemImage: "arrow.clockwise")
-                        .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(AppPrimaryButtonStyle())
             case .startingParse:
                 Label("Understanding the problem", systemImage: "function")
                     .font(TypographyTokens.title)
                     .foregroundStyle(ColorTokens.textPrimary)
                 ProgressView()
+                    .tint(ColorTokens.action)
                     .accessibilityIdentifier("problemCapture.parse.starting")
                 Text("The backend is starting a durable parser job.")
                     .font(TypographyTokens.body)
@@ -553,6 +569,7 @@ struct ProblemCaptureView: View {
                     .font(TypographyTokens.title)
                     .foregroundStyle(ColorTokens.textPrimary)
                 ProgressView()
+                    .tint(ColorTokens.action)
                     .accessibilityIdentifier("problemCapture.parse.progress")
                 Text("Status \(parse.jobStatus)")
                     .font(TypographyTokens.caption)
@@ -566,9 +583,8 @@ struct ProblemCaptureView: View {
                     Task { await uploadViewModel.startCanonicalization(reference) }
                 } label: {
                     Label("Prepare Verification", systemImage: "checkmark.shield")
-                        .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(AppPrimaryButtonStyle())
                 .accessibilityIdentifier("problemCapture.canonicalize.start")
                 Button {
                     reviewSheet = ProblemReviewSheetContext(
@@ -577,17 +593,15 @@ struct ProblemCaptureView: View {
                     )
                 } label: {
                     Label("Review Problem", systemImage: "square.and.pencil")
-                        .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.bordered)
+                .buttonStyle(AppSecondaryButtonStyle())
                 .accessibilityIdentifier("problemCapture.reviewProblem")
                 Button {
                     onDismiss()
                 } label: {
                     Label("Done", systemImage: "checkmark")
-                        .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.bordered)
+                .buttonStyle(AppSecondaryButtonStyle())
             case .parseReviewRequired(let reference):
                 Label("Understanding finished with uncertainty", systemImage: "exclamationmark.triangle")
                     .font(TypographyTokens.title)
@@ -600,17 +614,15 @@ struct ProblemCaptureView: View {
                     )
                 } label: {
                     Label("Review Problem", systemImage: "square.and.pencil")
-                        .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(AppPrimaryButtonStyle())
                 .accessibilityIdentifier("problemCapture.reviewProblem")
                 Button {
                     onDismiss()
                 } label: {
                     Label("Done", systemImage: "checkmark")
-                        .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.bordered)
+                .buttonStyle(AppSecondaryButtonStyle())
             case .parseUnsupported(_, let parse):
                 Label("This problem type is not supported yet.", systemImage: "exclamationmark.triangle")
                     .font(TypographyTokens.title)
@@ -622,9 +634,8 @@ struct ProblemCaptureView: View {
                     onDismiss()
                 } label: {
                     Label("Done", systemImage: "checkmark")
-                        .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(AppPrimaryButtonStyle())
             case .parseFailed(_, let parse):
                 Label(uploadViewModel.message ?? "Understanding could not finish.", systemImage: "exclamationmark.triangle")
                     .font(TypographyTokens.body.weight(.semibold))
@@ -639,14 +650,14 @@ struct ProblemCaptureView: View {
                     Task { await uploadViewModel.retryParse() }
                 } label: {
                     Label("Try Understanding Again", systemImage: "arrow.clockwise")
-                        .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(AppPrimaryButtonStyle())
             case .canonicalizing:
                 Label("Preparing verification", systemImage: "checkmark.shield")
                     .font(TypographyTokens.title)
                     .foregroundStyle(ColorTokens.textPrimary)
                 ProgressView()
+                    .tint(ColorTokens.action)
                     .accessibilityIdentifier("problemCapture.canonicalize.progress")
                 Text("The backend is creating the canonical problem from the selected parse.")
                     .font(TypographyTokens.body)
@@ -660,17 +671,15 @@ struct ProblemCaptureView: View {
                     Task { await uploadViewModel.startClassification(reference) }
                 } label: {
                     Label("Classify Problem", systemImage: "tag")
-                        .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(AppPrimaryButtonStyle())
                 .accessibilityIdentifier("problemCapture.classification.start")
                 Button {
                     onDismiss()
                 } label: {
                     Label("Done", systemImage: "checkmark")
-                        .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.bordered)
+                .buttonStyle(AppSecondaryButtonStyle())
             case .canonicalizationFailed(_, let canonical):
                 Label(uploadViewModel.message ?? "Verification preparation could not finish.", systemImage: "exclamationmark.triangle")
                     .font(TypographyTokens.body.weight(.semibold))
@@ -685,14 +694,14 @@ struct ProblemCaptureView: View {
                     Task { await uploadViewModel.retryCanonicalization() }
                 } label: {
                     Label("Try Preparing Again", systemImage: "arrow.clockwise")
-                        .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(AppPrimaryButtonStyle())
             case .startingClassification:
                 Label("Classifying the problem", systemImage: "tag")
                     .font(TypographyTokens.title)
                     .foregroundStyle(ColorTokens.textPrimary)
                 ProgressView()
+                    .tint(ColorTokens.action)
                     .accessibilityIdentifier("problemCapture.classification.starting")
                 Text("The backend is starting a durable classification job.")
                     .font(TypographyTokens.body)
@@ -702,6 +711,7 @@ struct ProblemCaptureView: View {
                     .font(TypographyTokens.title)
                     .foregroundStyle(ColorTokens.textPrimary)
                 ProgressView()
+                    .tint(ColorTokens.action)
                     .accessibilityIdentifier("problemCapture.classification.progress")
                 Text("Status \(classification.jobStatus)")
                     .font(TypographyTokens.caption)
@@ -717,9 +727,8 @@ struct ProblemCaptureView: View {
                     } else { onDismiss() }
                 } label: {
                     Label("solve.continueSession", systemImage: "arrow.right.circle")
-                        .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(AppPrimaryButtonStyle())
             case .classificationReviewRequired(let reference):
                 Label("Classification needs review", systemImage: "exclamationmark.triangle")
                     .font(TypographyTokens.title)
@@ -729,9 +738,8 @@ struct ProblemCaptureView: View {
                     onDismiss()
                 } label: {
                     Label("Done", systemImage: "checkmark")
-                        .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(AppPrimaryButtonStyle())
             case .classificationUnsupported(_, let classification):
                 Label("This problem cannot be classified yet.", systemImage: "exclamationmark.triangle")
                     .font(TypographyTokens.title)
@@ -743,9 +751,8 @@ struct ProblemCaptureView: View {
                     onDismiss()
                 } label: {
                     Label("Done", systemImage: "checkmark")
-                        .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(AppPrimaryButtonStyle())
             case .classificationFailed(_, let classification):
                 Label(uploadViewModel.message ?? "Classification could not finish.", systemImage: "exclamationmark.triangle")
                     .font(TypographyTokens.body.weight(.semibold))
@@ -761,9 +768,8 @@ struct ProblemCaptureView: View {
                         Task { await uploadViewModel.retryClassification() }
                     } label: {
                         Label("Try Classification Again", systemImage: "arrow.clockwise")
-                            .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(AppPrimaryButtonStyle())
                 }
             case .preprocessingWarning(let reference, let acceptedAsset):
                 Label(uploadViewModel.message ?? "Capture quality needs review.", systemImage: "exclamationmark.triangle")
@@ -781,9 +787,8 @@ struct ProblemCaptureView: View {
                         viewModel.returnToCrop(acceptedAsset.asset)
                     } label: {
                         Label("Edit Crop", systemImage: "crop")
-                            .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.bordered)
+                    .buttonStyle(AppSecondaryButtonStyle())
 
                     Button {
                         Task {
@@ -792,17 +797,15 @@ struct ProblemCaptureView: View {
                         }
                     } label: {
                         Label("Retake", systemImage: "arrow.counterclockwise")
-                            .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.bordered)
+                    .buttonStyle(AppSecondaryButtonStyle())
 
                     Button {
                         Task { await uploadViewModel.continueWithWarning() }
                     } label: {
                         Label("Continue", systemImage: "checkmark")
-                            .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(AppPrimaryButtonStyle())
                     .accessibilityIdentifier("problemCapture.preprocessing.continueWarning")
                 }
             case .preprocessingFailed(_, let preprocessing, let acceptedAsset):
@@ -818,18 +821,16 @@ struct ProblemCaptureView: View {
                         Task { await uploadViewModel.retry() }
                     } label: {
                         Label("Retry", systemImage: "arrow.clockwise")
-                            .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(AppPrimaryButtonStyle())
 
                     Button {
                         uploadViewModel.cancel()
                         viewModel.returnToCrop(acceptedAsset.asset)
                     } label: {
                         Label("Edit Crop", systemImage: "crop")
-                            .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.bordered)
+                    .buttonStyle(AppSecondaryButtonStyle())
 
                     Button {
                         Task {
@@ -838,9 +839,8 @@ struct ProblemCaptureView: View {
                         }
                     } label: {
                         Label("Retake", systemImage: "arrow.counterclockwise")
-                            .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.bordered)
+                    .buttonStyle(AppSecondaryButtonStyle())
                 }
             case .recoverableFailure(let failure, _):
                 Label(uploadViewModel.message ?? "Upload could not continue.", systemImage: "exclamationmark.triangle")
@@ -854,15 +854,14 @@ struct ProblemCaptureView: View {
                     Task { await uploadViewModel.retry() }
                 } label: {
                     Label(retryLabel(for: failure), systemImage: "arrow.clockwise")
-                        .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(AppPrimaryButtonStyle())
                 .accessibilityIdentifier("problemCapture.upload.retry")
             }
         }
         .padding(SpacingTokens.lg)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(ColorTokens.background)
+        .background(ColorTokens.canvas)
         .task(id: acceptedAsset.localIdentifier) {
             if uploadViewModel.state == .idle {
                 await uploadViewModel.start(acceptedAsset)
@@ -878,7 +877,7 @@ struct ProblemCaptureView: View {
                 .foregroundStyle(ColorTokens.textSecondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(ColorTokens.background)
+        .background(ColorTokens.canvas)
     }
 
     private func preview(_ asset: CapturedAsset) -> some View {
@@ -947,9 +946,9 @@ struct ProblemCaptureView: View {
     }
 
     private func parseSummary(_ parse: ProblemParseResult) -> some View {
-        VStack(alignment: .leading, spacing: SpacingTokens.sm) {
+        AppSurfaceCard(elevated: true) {
             Text(parse.normalizedProblem?.taskType ?? parse.supportStatus ?? "Structured")
-                .font(TypographyTokens.body.weight(.semibold))
+                .font(TypographyTokens.cardTitle)
                 .foregroundStyle(ColorTokens.textPrimary)
             if let expression = parse.normalizedProblem?.expressions.first {
                 Text(expression.normalizedText)
@@ -965,9 +964,9 @@ struct ProblemCaptureView: View {
     }
 
     private func canonicalSummary(_ canonical: CanonicalProblemResult) -> some View {
-        VStack(alignment: .leading, spacing: SpacingTokens.sm) {
+        AppSurfaceCard(elevated: true) {
             Text(canonical.taskType)
-                .font(TypographyTokens.body.weight(.semibold))
+                .font(TypographyTokens.cardTitle)
                 .foregroundStyle(ColorTokens.textPrimary)
             Text(canonical.displayLatex ?? canonical.normalizedText ?? canonical.taskType)
                 .font(TypographyTokens.body)
@@ -975,6 +974,7 @@ struct ProblemCaptureView: View {
             Text("Canonical revision \(canonical.canonicalRevision) · \(canonical.problemType)")
                 .font(TypographyTokens.caption)
                 .foregroundStyle(ColorTokens.textSecondary)
+                .monospacedDigit()
             if !canonical.variables.isEmpty {
                 Text("Variables \(canonical.variables.joined(separator: ", "))")
                     .font(TypographyTokens.caption)
@@ -984,9 +984,9 @@ struct ProblemCaptureView: View {
     }
 
     private func classificationSummary(_ classification: ProblemClassificationResult) -> some View {
-        VStack(alignment: .leading, spacing: SpacingTokens.sm) {
+        AppSurfaceCard(elevated: true) {
             Text(classification.primarySkillId ?? classification.classificationStatus ?? "Unclassified")
-                .font(TypographyTokens.body.weight(.semibold))
+                .font(TypographyTokens.cardTitle)
                 .foregroundStyle(ColorTokens.textPrimary)
             if let topic = classification.topicId {
                 Text(topic)
@@ -1068,12 +1068,14 @@ private struct ProblemCaptureSourceRow: View {
     var body: some View {
         HStack(spacing: SpacingTokens.md) {
             Image(systemName: icon)
-                .font(.title2)
+                .font(.title3.weight(.semibold))
                 .foregroundStyle(ColorTokens.action)
-                .frame(width: 36)
+                .frame(width: 44, height: 44)
+                .background(ColorTokens.actionSoft)
+                .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
             VStack(alignment: .leading, spacing: SpacingTokens.xs) {
                 Text(title)
-                    .font(TypographyTokens.body.weight(.semibold))
+                    .font(TypographyTokens.cardTitle)
                     .foregroundStyle(ColorTokens.textPrimary)
                 Text(subtitle)
                     .font(TypographyTokens.caption)
@@ -1081,12 +1083,17 @@ private struct ProblemCaptureSourceRow: View {
             }
             Spacer()
             Image(systemName: "chevron.right")
-                .foregroundStyle(ColorTokens.textSecondary)
+                .font(TypographyTokens.caption.weight(.semibold))
+                .foregroundStyle(ColorTokens.textTertiary)
         }
         .padding(SpacingTokens.md)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(ColorTokens.surface)
-        .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium))
+        .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous)
+                .stroke(ColorTokens.borderSubtle, lineWidth: 1)
+        )
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.isButton)
     }
@@ -1119,19 +1126,75 @@ private struct CameraPreviewView: UIViewRepresentable {
 
 private struct CaptureGuideOverlay: View {
     var body: some View {
-        RoundedRectangle(cornerRadius: RadiusTokens.medium)
-            .strokeBorder(style: StrokeStyle(lineWidth: 3, dash: [10, 8]))
-            .foregroundStyle(.white)
-            .overlay(alignment: .topLeading) {
-                Text("Fit the full problem here")
-                    .font(TypographyTokens.caption.weight(.semibold))
-                    .foregroundStyle(.white)
-                    .padding(SpacingTokens.sm)
-                    .background(.black.opacity(0.55))
-                    .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.small))
-                    .padding(SpacingTokens.sm)
+        ZStack {
+            RoundedRectangle(cornerRadius: RadiusTokens.lg, style: .continuous)
+                .stroke(Color.white.opacity(0.22), lineWidth: 1)
+
+            CornerBracketsShape(length: 26, radius: RadiusTokens.lg)
+                .stroke(ColorTokens.action, style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
+
+            VStack {
+                HStack {
+                    HStack(spacing: 6) {
+                        Circle()
+                            .fill(ColorTokens.action)
+                            .frame(width: 7, height: 7)
+                        Text("Fit the full problem inside brackets")
+                            .font(TypographyTokens.microLabel)
+                            .foregroundStyle(.white)
+                    }
+                    .padding(.horizontal, SpacingTokens.sm)
+                    .padding(.vertical, 6)
+                    .background(Color.black.opacity(0.68))
+                    .clipShape(Capsule())
+                    .overlay(
+                        Capsule()
+                            .stroke(Color.white.opacity(0.20), lineWidth: 1)
+                    )
+                    Spacer()
+                }
+                Spacer()
             }
-            .accessibilityHidden(true)
+            .padding(SpacingTokens.sm)
+        }
+        .accessibilityHidden(true)
+    }
+}
+
+private struct CornerBracketsShape: Shape {
+    let length: CGFloat
+    let radius: CGFloat
+
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        let l = min(length, min(rect.width, rect.height) * 0.25)
+        let r = min(radius, l * 0.6)
+
+        // Top-left
+        path.move(to: CGPoint(x: rect.minX, y: rect.minY + l))
+        path.addLine(to: CGPoint(x: rect.minX, y: rect.minY + r))
+        path.addQuadCurve(to: CGPoint(x: rect.minX + r, y: rect.minY), control: CGPoint(x: rect.minX, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.minX + l, y: rect.minY))
+
+        // Top-right
+        path.move(to: CGPoint(x: rect.maxX - l, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.maxX - r, y: rect.minY))
+        path.addQuadCurve(to: CGPoint(x: rect.maxX, y: rect.minY + r), control: CGPoint(x: rect.maxX, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY + l))
+
+        // Bottom-right
+        path.move(to: CGPoint(x: rect.maxX, y: rect.maxY - l))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY - r))
+        path.addQuadCurve(to: CGPoint(x: rect.maxX - r, y: rect.maxY), control: CGPoint(x: rect.maxX, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.maxX - l, y: rect.maxY))
+
+        // Bottom-left
+        path.move(to: CGPoint(x: rect.minX + l, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.minX + r, y: rect.maxY))
+        path.addQuadCurve(to: CGPoint(x: rect.minX, y: rect.maxY - r), control: CGPoint(x: rect.minX, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY - l))
+
+        return path
     }
 }
 
@@ -1144,8 +1207,12 @@ private struct QualityIssueBanner: View {
             .foregroundStyle(ColorTokens.warning)
             .padding(SpacingTokens.md)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(ColorTokens.surface)
-            .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium))
+            .background(ColorTokens.warningSoft)
+            .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                    .stroke(ColorTokens.warning.opacity(0.45), lineWidth: 1)
+            )
             .accessibilityIdentifier("problemCapture.quality.\(issue.kind.rawValue)")
     }
 
@@ -1210,7 +1277,7 @@ private struct CropAdjustmentView: View {
                 .onChange(of: top) { _, _ in applyCrop() }
                 .onChange(of: bottom) { _, _ in applyCrop() }
 
-                HStack(spacing: SpacingTokens.md) {
+                HStack(spacing: SpacingTokens.sm) {
                     Button {
                         left = 0
                         top = 0
@@ -1219,24 +1286,22 @@ private struct CropAdjustmentView: View {
                         viewModel.useFullImageCrop()
                     } label: {
                         Label("Full Image", systemImage: "rectangle")
-                            .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.bordered)
+                    .buttonStyle(AppSecondaryButtonStyle())
 
                     Button {
                         viewModel.finishCropEditing()
                     } label: {
                         Label("Save Crop", systemImage: "checkmark")
-                            .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(AppPrimaryButtonStyle())
                     .accessibilityIdentifier("problemCapture.crop.save")
                 }
             }
             .padding(SpacingTokens.lg)
             .frame(maxWidth: 720, alignment: .leading)
         }
-        .background(ColorTokens.background)
+        .background(ColorTokens.canvas)
     }
 
     private var preview: some View {

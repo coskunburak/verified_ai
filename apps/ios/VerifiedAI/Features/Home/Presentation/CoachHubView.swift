@@ -7,6 +7,7 @@ public struct CoachHubView: View {
     public var coldStartViewModel: ColdStartDiagnosticViewModel?
     public var examViewModel: ExamCatalogAndTargetViewModel?
     public var candidateProfileViewModel: CandidateProfileViewModel?
+    public var blueprintAssemblyViewModel: ExamBlueprintAssemblyViewModel?
     public let onStartCapture: () -> Void
     public let onOpenTask: (DailyCoachTaskModel) -> Void
 
@@ -20,6 +21,7 @@ public struct CoachHubView: View {
         coldStartViewModel: ColdStartDiagnosticViewModel? = nil,
         examViewModel: ExamCatalogAndTargetViewModel? = nil,
         candidateProfileViewModel: CandidateProfileViewModel? = nil,
+        blueprintAssemblyViewModel: ExamBlueprintAssemblyViewModel? = nil,
         onStartCapture: @escaping () -> Void = {},
         onOpenTask: @escaping (DailyCoachTaskModel) -> Void = { _ in }
     ) {
@@ -29,6 +31,7 @@ public struct CoachHubView: View {
         self.coldStartViewModel = coldStartViewModel
         self.examViewModel = examViewModel
         self.candidateProfileViewModel = candidateProfileViewModel
+        self.blueprintAssemblyViewModel = blueprintAssemblyViewModel
         self.onStartCapture = onStartCapture
         self.onOpenTask = onOpenTask
     }
@@ -72,20 +75,27 @@ public struct CoachHubView: View {
                         NavigationLink {
                             ExamCatalogAndTargetView(
                                 viewModel: examViewModel,
-                                candidateProfileViewModel: candidateProfileViewModel
+                                candidateProfileViewModel: candidateProfileViewModel,
+                                blueprintAssemblyViewModel: blueprintAssemblyViewModel
                             )
                         } label: {
                             HStack {
                                 Label(LocalizedStringKey("home.exam_catalog.open_button"), systemImage: "checklist")
-                                    .font(.subheadline.weight(.semibold))
+                                    .font(TypographyTokens.cardTitle)
+                                    .foregroundStyle(ColorTokens.textPrimary)
                                 Spacer()
                                 Image(systemName: "chevron.right")
-                                    .font(.caption.weight(.semibold))
+                                    .font(TypographyTokens.caption.weight(.semibold))
+                                    .foregroundStyle(ColorTokens.textTertiary)
                             }
-                            .padding(12)
+                            .padding(SpacingTokens.compact)
                             .frame(maxWidth: .infinity)
-                            .background(Color(UIColor.secondarySystemBackground))
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .background(ColorTokens.surface)
+                            .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                                    .stroke(ColorTokens.borderSubtle, lineWidth: 1)
+                            )
                         }
                         .accessibilityIdentifier("home.examCatalog.button")
                     }
@@ -95,15 +105,21 @@ public struct CoachHubView: View {
                         } label: {
                             HStack {
                                 Label(LocalizedStringKey("home.candidate_profile.open_button"), systemImage: "calendar.badge.clock")
-                                    .font(.subheadline.weight(.semibold))
+                                    .font(TypographyTokens.cardTitle)
+                                    .foregroundStyle(ColorTokens.textPrimary)
                                 Spacer()
                                 Image(systemName: "chevron.right")
-                                    .font(.caption.weight(.semibold))
+                                    .font(TypographyTokens.caption.weight(.semibold))
+                                    .foregroundStyle(ColorTokens.textTertiary)
                             }
-                            .padding(12)
+                            .padding(SpacingTokens.compact)
                             .frame(maxWidth: .infinity)
-                            .background(Color(UIColor.secondarySystemBackground))
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .background(ColorTokens.surface)
+                            .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                                    .stroke(ColorTokens.borderSubtle, lineWidth: 1)
+                            )
                         }
                         .accessibilityIdentifier("coachHub.candidateProfileLink")
                     }
@@ -122,10 +138,13 @@ public struct CoachHubView: View {
                     ProgressView()
                         .frame(maxWidth: .infinity, alignment: .center)
                         .padding(.vertical, 28)
+                } else if let coldStartViewModel, !coldStartViewModel.isFeatureDisabled {
+                    ColdStartDiagnosticCardView(viewModel: coldStartViewModel)
                 }
             }
             .padding(16)
         }
+        .background(ColorTokens.canvas)
         .sheet(isPresented: $viewModel.showingStudyPlanSheet) {
             DailyStudyPlanView(
                 viewModel: viewModel,
@@ -151,15 +170,19 @@ public struct CoachHubView: View {
         HStack {
             HStack(spacing: 6) {
                 Image(systemName: "target")
-                    .foregroundColor(.accentColor)
+                    .foregroundStyle(ColorTokens.stepHighlight)
                 Text(LocalizedStringKey("coach.hub.exam_target"))
-                    .font(.caption.weight(.semibold))
-                    .foregroundColor(.primary)
+                    .font(TypographyTokens.caption.weight(.semibold))
+                    .foregroundStyle(ColorTokens.textPrimary)
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(Color(UIColor.secondarySystemBackground))
+            .padding(.horizontal, SpacingTokens.compact)
+            .padding(.vertical, SpacingTokens.xs)
+            .background(ColorTokens.surfaceElevated)
             .clipShape(Capsule())
+            .overlay(
+                Capsule()
+                    .stroke(ColorTokens.borderSubtle, lineWidth: 1)
+            )
 
             Spacer()
 
@@ -214,40 +237,27 @@ public struct CoachHubView: View {
     }
 
     private var offlineBanner: some View {
-        HStack(spacing: 8) {
-            Image(systemName: "wifi.slash")
-                .foregroundColor(.orange)
-            Text(LocalizedStringKey("coach.hub.offline_banner"))
-                .font(.caption)
-                .foregroundColor(.primary)
-            Spacer()
-        }
-        .padding(10)
-        .background(Color.orange.opacity(0.14))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        AppNoticeBanner("coach.hub.offline_banner", systemImage: "wifi.slash", tone: .warning)
     }
 
     private func heroMissionCard(summary: DailyCoachSummaryModel) -> some View {
-        VStack(alignment: .leading, spacing: 14) {
+        AppSurfaceCard {
             HStack {
                 Text(LocalizedStringKey("coach.hub.mission_title"))
-                    .font(.headline)
-                    .foregroundColor(.primary)
+                    .font(TypographyTokens.cardTitle)
+                    .foregroundStyle(ColorTokens.textPrimary)
                 Spacer()
-                Text(summary.isDownshifted
-                     ? LocalizedStringKey("coach.downshift.badge")
-                     : LocalizedStringKey("coach.hub.budget_15"))
-                    .font(.caption.weight(.semibold))
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 5)
-                    .background(summary.isDownshifted ? Color.orange.opacity(0.18) : Color.accentColor.opacity(0.16))
-                    .foregroundColor(summary.isDownshifted ? .orange : .accentColor)
-                    .clipShape(Capsule())
+                AppStatusBadge(
+                    summary.isDownshifted
+                        ? LocalizedStringKey("coach.downshift.badge")
+                        : LocalizedStringKey("coach.hub.budget_15"),
+                    tone: summary.isDownshifted ? .warning : .stepHighlight
+                )
             }
 
             Text(summary.briefingText)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+                .font(TypographyTokens.body)
+                .foregroundStyle(ColorTokens.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
 
             VStack(alignment: .leading, spacing: 6) {
@@ -255,18 +265,19 @@ public struct CoachHubView: View {
                     value: Double(summary.completedTasksCount),
                     total: Double(max(1, summary.totalTasksCount))
                 )
-                .tint(.accentColor)
+                .tint(ColorTokens.stepHighlight)
 
                 Text("\(summary.completedTasksCount) / \(summary.totalTasksCount)")
-                    .font(.caption2.weight(.semibold))
-                    .foregroundColor(.secondary)
+                    .font(TypographyTokens.microLabel)
+                    .monospacedDigit()
+                    .foregroundStyle(ColorTokens.textSecondary)
             }
 
             if let firstActiveTask = summary.tasks.first(where: { $0.status == .pending }) ?? summary.tasks.first {
                 VStack(alignment: .leading, spacing: 6) {
                     Text(LocalizedStringKey("coach.hub.preview_label"))
-                        .font(.caption.weight(.semibold))
-                        .foregroundColor(.secondary)
+                        .font(TypographyTokens.caption.weight(.semibold))
+                        .foregroundStyle(ColorTokens.textSecondary)
                     ScrollView(.horizontal, showsIndicators: false) {
                         NativeMathLabel(
                             latex: firstActiveTask.promptPreviewLatex,
@@ -276,53 +287,45 @@ public struct CoachHubView: View {
                         .fixedSize()
                     }
                 }
-                .padding(10)
+                .padding(SpacingTokens.sm)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color(UIColor.tertiarySystemBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .background(ColorTokens.surfaceElevated)
+                .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                        .stroke(ColorTokens.borderSubtle, lineWidth: 1)
+                )
             }
 
             Button {
                 viewModel.showingStudyPlanSheet = true
             } label: {
                 Label(LocalizedStringKey("coach.hub.start_mission_cta"), systemImage: "play.fill")
-                    .font(.headline)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 48)
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(AppPrimaryButtonStyle())
             .accessibilityIdentifier("coach.hub.startMission")
         }
-        .padding(16)
-        .background(Color(UIColor.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 18))
     }
 
     private func coldStartHeroCard(summary: DailyCoachSummaryModel) -> some View {
-        VStack(alignment: .leading, spacing: 14) {
+        AppSurfaceCard {
             HStack {
                 Text(LocalizedStringKey("coach.hub.coldstart_title"))
-                    .font(.headline)
-                    .foregroundColor(.primary)
+                    .font(TypographyTokens.cardTitle)
+                    .foregroundStyle(ColorTokens.textPrimary)
                 Spacer()
-                Text(LocalizedStringKey("coach.hub.budget_15"))
-                    .font(.caption.weight(.semibold))
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 5)
-                    .background(Color.green.opacity(0.16))
-                    .foregroundColor(.green)
-                    .clipShape(Capsule())
+                AppStatusBadge(LocalizedStringKey("coach.hub.budget_15"), tone: .success)
             }
 
             Text(summary.briefingText)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+                .font(TypographyTokens.body)
+                .foregroundStyle(ColorTokens.textSecondary)
 
             if let demo = summary.coldStartDemo {
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: SpacingTokens.xs) {
                     Text(demo.title)
-                        .font(.caption.weight(.semibold))
-                        .foregroundColor(.primary)
+                        .font(TypographyTokens.caption.weight(.semibold))
+                        .foregroundStyle(ColorTokens.textPrimary)
                     ScrollView(.horizontal, showsIndicators: false) {
                         NativeMathLabel(
                             latex: demo.samplePromptLatex,
@@ -332,94 +335,79 @@ public struct CoachHubView: View {
                         .fixedSize()
                     }
                     Text(demo.hintText)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                        .font(TypographyTokens.caption)
+                        .foregroundStyle(ColorTokens.textSecondary)
                 }
-                .padding(12)
+                .padding(SpacingTokens.compact)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color(UIColor.tertiarySystemBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .background(ColorTokens.surfaceElevated)
+                .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous)
+                        .stroke(ColorTokens.borderSubtle, lineWidth: 1)
+                )
             }
 
             Button {
                 viewModel.showingStudyPlanSheet = true
             } label: {
                 Label(LocalizedStringKey("coach.hub.coldstart_cta"), systemImage: "sparkles")
-                    .font(.headline)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 48)
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(AppPrimaryButtonStyle())
             .accessibilityIdentifier("coach.hub.startColdStart")
         }
-        .padding(16)
-        .background(Color(UIColor.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 18))
     }
 
     private var quickCaptureCTA: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack(spacing: 12) {
+        AppSurfaceCard {
+            HStack(spacing: SpacingTokens.compact) {
                 Image(systemName: "camera.viewfinder")
                     .font(.title2.weight(.semibold))
-                    .foregroundColor(.accentColor)
+                    .foregroundStyle(ColorTokens.action)
                     .frame(width: 44, height: 44)
-                    .background(Color.accentColor.opacity(0.14))
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .background(ColorTokens.actionSoft)
+                    .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(LocalizedStringKey("coach.hub.capture_title"))
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundColor(.primary)
+                        .font(TypographyTokens.cardTitle)
+                        .foregroundStyle(ColorTokens.textPrimary)
                     Text(LocalizedStringKey("coach.hub.capture_subtitle"))
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                        .font(TypographyTokens.caption)
+                        .foregroundStyle(ColorTokens.textSecondary)
                 }
                 Spacer()
             }
 
             Button(action: onStartCapture) {
                 Label(LocalizedStringKey("coach.hub.capture_cta"), systemImage: "arrow.up.right")
-                    .font(.subheadline.weight(.semibold))
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 44)
             }
-            .buttonStyle(.bordered)
+            .buttonStyle(AppSecondaryButtonStyle())
             .accessibilityIdentifier("coach.hub.quickCapture")
         }
-        .padding(14)
-        .background(Color(UIColor.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 
     private func activeTrapRadarSection(items: [TrapRadarPreviewModel]) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: SpacingTokens.compact) {
             Text(LocalizedStringKey("coach.hub.radar_title"))
-                .font(.headline)
-                .foregroundColor(.primary)
+                .font(TypographyTokens.cardTitle)
+                .foregroundStyle(ColorTokens.textPrimary)
 
             ForEach(items.prefix(3)) { item in
-                HStack {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(item.title)
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundColor(.primary)
-                        Text(item.skillCode)
-                            .font(.caption2)
-                            .foregroundColor(.secondary)
+                AppSurfaceCard(elevated: true) {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(item.title)
+                                .font(TypographyTokens.cardTitle)
+                                .foregroundStyle(ColorTokens.textPrimary)
+                            Text(item.skillCode)
+                                .font(TypographyTokens.microLabel.monospaced())
+                                .foregroundStyle(ColorTokens.textSecondary)
+                        }
+                        Spacer()
+                        AppStatusBadge(badgeDisplayLabel(item.badgeKey), tone: .action)
                     }
-                    Spacer()
-                    Text(badgeDisplayLabel(item.badgeKey))
-                        .font(.caption2.weight(.semibold))
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 5)
-                        .background(Color.accentColor.opacity(0.14))
-                        .foregroundColor(.accentColor)
-                        .clipShape(Capsule())
                 }
-                .padding(12)
-                .background(Color(UIColor.secondarySystemBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 14))
             }
         }
     }
@@ -443,19 +431,19 @@ private struct RebalanceCoachHubSection: View {
     var body: some View {
         Group {
             if let status = rebalanceViewModel.recoveryStatus, status.recoveryNeeded {
-                HStack(spacing: 12) {
+                HStack(spacing: SpacingTokens.compact) {
                     Image(systemName: "leaf.circle.fill")
                         .font(.title3)
-                        .foregroundStyle(Color.teal)
+                        .foregroundStyle(ColorTokens.action)
                         .accessibilityHidden(true)
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text("studyplan.rebalance.no_backlog_badge")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(Color.teal)
+                            .font(TypographyTokens.caption.weight(.semibold))
+                            .foregroundStyle(ColorTokens.action)
                         Text(LocalizedStringKey(status.welcomeMessageKey))
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .font(TypographyTokens.caption)
+                            .foregroundStyle(ColorTokens.textSecondary)
                             .lineLimit(2)
                     }
 
@@ -465,16 +453,20 @@ private struct RebalanceCoachHubSection: View {
                         rebalanceViewModel.isPresentingRecoverySheet = true
                     } label: {
                         Text("studyplan.rebalance.banner_cta")
-                            .font(.caption.weight(.semibold))
-                            .padding(.horizontal, 10)
+                            .font(TypographyTokens.caption.weight(.semibold))
+                            .padding(.horizontal, 12)
                             .padding(.vertical, 6)
-                            .background(Color.teal, in: Capsule())
-                            .foregroundStyle(.white)
+                            .background(ColorTokens.action, in: Capsule())
+                            .foregroundStyle(ColorTokens.actionForeground)
                     }
                     .accessibilityIdentifier("rebalance.banner.openSheet")
                 }
-                .padding(12)
-                .background(Color.teal.opacity(0.10), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                .padding(SpacingTokens.compact)
+                .background(ColorTokens.actionSoft, in: RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: RadiusTokens.large, style: .continuous)
+                        .stroke(ColorTokens.action.opacity(0.4), lineWidth: 1)
+                )
                 .accessibilityElement(children: .contain)
             }
         }

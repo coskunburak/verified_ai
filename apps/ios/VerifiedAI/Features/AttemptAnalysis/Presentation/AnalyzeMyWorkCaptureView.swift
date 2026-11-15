@@ -13,80 +13,113 @@ struct AnalyzeMyWorkCaptureView: View {
     @Environment(\.scenePhase) private var scenePhase
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                if viewModel.isFixture { Label("solve.fixture", systemImage: "testtube.2") }
+            VStack(alignment: .leading, spacing: SpacingTokens.lg) {
+                if viewModel.isFixture {
+                    AppNoticeBanner("solve.fixture", systemImage: "testtube.2", tone: .neutral)
+                }
                 if let original = viewModel.context?.originalStatement {
-                    AttemptMathView(json: original, fallback: NSLocalizedString("attempt.math.expression", comment: "Original mathematical statement"))
+                    AppSurfaceCard {
+                        AttemptMathView(json: original, fallback: NSLocalizedString("attempt.math.expression", comment: "Original mathematical statement"))
+                    }
                 }
                 // Accepted structured work has its own review/revise flow. Keep the empty
                 // manual composer out of the result screen until an explicit revision starts.
                 if viewModel.workResult == nil || viewModel.workDraft != nil {
-                Text("attempt.scope").font(.callout)
+                AppSurfaceCard {
+                Text("attempt.scope")
+                    .font(TypographyTokens.caption)
+                    .foregroundStyle(ColorTokens.textSecondary)
                 if let capability = viewModel.context?.handwriting,
                    ["NATIVE_REVIEW", "NATIVE_REVIEW_AND_GATEWAY"].contains(capability), let capture = viewModel.capture {
                     Button("attempt.photo.open") { gatewayCapture = false; capture.capture.open(); showingCapture = true }
+                        .buttonStyle(AppSecondaryButtonStyle())
                         .disabled(viewModel.editingLocked)
                         .accessibilityIdentifier("attempt.photo.open")
                 } else if viewModel.context != nil {
-                    Text("attempt.handwriting.unavailable")
+                    AppNoticeBanner("attempt.handwriting.unavailable", systemImage: "hand.draw", tone: .neutral)
                         .accessibilityIdentifier("attempt.handwriting.unavailable")
                 }
                 if viewModel.context?.handwriting == "NATIVE_REVIEW_AND_GATEWAY", let capture = viewModel.capture {
                     Button("attempt.photo.gateway") { gatewayCapture = true; capture.upload.cancel(); capture.capture.open(); showingCapture = true }
+                        .buttonStyle(AppSecondaryButtonStyle())
                         .disabled(viewModel.editingLocked)
                 }
                 if viewModel.context?.structuredWorkEnabled == true && viewModel.workDraft == nil {
                     Button("attempt.work.start") { viewModel.startStructured() }
+                        .buttonStyle(AppSecondaryButtonStyle())
                         .disabled(viewModel.editingLocked).accessibilityIdentifier("attempt.work.start")
                 }
                 if viewModel.workDraft == nil {
                 Toggle("attempt.answer.mode", isOn: $viewModel.answerMode)
+                    .tint(ColorTokens.action)
                     .disabled(viewModel.editingLocked).accessibilityIdentifier("attempt.answer.mode")
                 if viewModel.answerMode {
                     Text("attempt.answer.scope")
+                        .font(TypographyTokens.caption)
+                        .foregroundStyle(ColorTokens.textSecondary)
                     TextField("attempt.answer.label", text: $viewModel.finalAnswer)
                         .focused($answerFocused).submitLabel(.done).onSubmit { answerFocused = false }
-                        .textFieldStyle(.roundedBorder).frame(minHeight: 44).autocorrectionDisabled().textInputAutocapitalization(.never)
+                        .padding(SpacingTokens.sm)
+                        .background(ColorTokens.surfaceElevated)
+                        .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.small, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: RadiusTokens.small, style: .continuous)
+                                .stroke(ColorTokens.borderStrong, lineWidth: 1)
+                        )
+                        .frame(minHeight: 44).autocorrectionDisabled().textInputAutocapitalization(.never)
                         .disabled(viewModel.editingLocked)
                         .accessibilityLabel("attempt.answer.label").accessibilityIdentifier("attempt.answer.input")
                     Text("attempt.answer.reasoningOptional")
+                        .font(TypographyTokens.caption)
+                        .foregroundStyle(ColorTokens.textTertiary)
                 } else {
                     Toggle("attempt.domain.confirmReal", isOn: $viewModel.realDomainConfirmed)
+                        .tint(ColorTokens.action)
                         .disabled(viewModel.editingLocked)
                 }
                 }
                 if viewModel.draftNeedsReview {
-                    Text("attempt.draft.sourceChanged")
+                    AppNoticeBanner("attempt.draft.sourceChanged", systemImage: "exclamationmark.triangle", tone: .warning)
                     Button("attempt.draft.confirmSource") { viewModel.confirmDraftSource() }
+                        .buttonStyle(AppSecondaryButtonStyle())
                         .disabled(viewModel.busy).accessibilityIdentifier("attempt.draft.confirmSource")
                 }
                 if let tutor {
                     NavigationLink { TutorView(viewModel: tutor) } label: {
-                        Text("tutor.title").foregroundStyle(ColorTokens.action)
+                        HStack {
+                            Image(systemName: "bubble.left.and.text.bubble.right")
+                            Text("tutor.title")
+                        }
+                        .frame(maxWidth: .infinity, minHeight: 44)
+                        .foregroundStyle(ColorTokens.action)
+                        .background(ColorTokens.actionSoft)
+                        .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
                     }
-                    .frame(minHeight: 44)
                 }
-                if viewModel.context?.enabled == false { Text("attempt.unavailable") }
+                if viewModel.context?.enabled == false { Text("attempt.unavailable").foregroundStyle(ColorTokens.textSecondary) }
                 if viewModel.workDraft != nil { AttemptStructuredEditorView(model: viewModel) }
                 else { AttemptStepEditorView(text: $viewModel.draft, locked: viewModel.editingLocked) }
-                if viewModel.context != nil && !viewModel.payloadFits { Text("attempt.payloadTooLarge").foregroundStyle(.secondary) }
+                if viewModel.context != nil && !viewModel.payloadFits { Text("attempt.payloadTooLarge").foregroundStyle(ColorTokens.warning) }
                 Button(LocalizedStringKey(viewModel.workDraft != nil ? "attempt.work.save" : viewModel.answerMode ? "attempt.answer.review" : "attempt.submit")) {
                     if viewModel.answerMode && viewModel.workDraft == nil { reviewingSubmission = true } else { viewModel.submit() }
                 }
-                    .buttonStyle(.borderedProminent).frame(minHeight: 44)
+                    .buttonStyle(AppPrimaryButtonStyle())
                     .disabled(!viewModel.canSubmit).accessibilityIdentifier("attempt.submit")
+                }
                 }
                 if viewModel.busy { ProgressView().accessibilityLabel("attempt.loading").accessibilityIdentifier("attempt.loading") }
                 if let error = viewModel.errorKey {
-                    Label(LocalizedStringKey(error), systemImage: "exclamationmark.triangle")
+                    AppNoticeBanner(LocalizedStringKey(error), systemImage: "exclamationmark.triangle", tone: .warning)
                         .accessibilityIdentifier("attempt.error")
                 }
                 Button(LocalizedStringKey(viewModel.pending == nil && viewModel.pendingWork == nil ? "attempt.refresh" : "attempt.retry.button")) { viewModel.retry() }
-                    .frame(minHeight: 44).disabled(viewModel.busy).accessibilityIdentifier("attempt.retry")
+                    .buttonStyle(AppSecondaryButtonStyle())
+                    .disabled(viewModel.busy).accessibilityIdentifier("attempt.retry")
                 if viewModel.pendingCorrection != nil {
-                    Text("attempt.dna.pending")
+                    AppNoticeBanner("attempt.dna.pending", systemImage: "clock", tone: .neutral)
                     Button("attempt.dna.reviewHistory") { viewModel.reviewCorrectionHistory() }
-                        .disabled(viewModel.busy).frame(minHeight: 44).accessibilityIdentifier("attempt.dna.reviewHistory")
+                        .buttonStyle(AppSecondaryButtonStyle())
+                        .disabled(viewModel.busy).accessibilityIdentifier("attempt.dna.reviewHistory")
                 }
                 if let result = viewModel.result {
                     if let current = viewModel.context?.source, current != result.source { Text("attempt.history.sourceChanged") }
@@ -155,17 +188,30 @@ struct AnalyzeMyWorkCaptureView: View {
                 }
                 ForEach(viewModel.history) { attempt in
                     Button { viewModel.select(attempt) } label: {
-                        VStack(alignment: .leading) {
-                            Text("attempt.history")
-                            HStack { Text(attempt.createdAt, style: .date); Text(attempt.createdAt, style: .time) }
+                        AppSurfaceCard(elevated: true) {
+                            HStack {
+                                Text("attempt.history")
+                                    .font(TypographyTokens.cardTitle)
+                                    .foregroundStyle(ColorTokens.textPrimary)
+                                Spacer()
+                                HStack(spacing: SpacingTokens.xs) {
+                                    Text(attempt.createdAt, style: .date)
+                                    Text(attempt.createdAt, style: .time)
+                                }
+                                .font(TypographyTokens.caption.monospacedDigit())
+                                .foregroundStyle(ColorTokens.textSecondary)
+                            }
                         }
-                    }.frame(minHeight: 44).accessibilityIdentifier("attempt.history.\(attempt.id.uuidString)")
+                    }
+                    .buttonStyle(.plain)
+                    .frame(minHeight: 44)
+                    .accessibilityIdentifier("attempt.history.\(attempt.id.uuidString)")
                 }
-            }.padding()
+            }.padding(SpacingTokens.lg)
         }
         .foregroundStyle(ColorTokens.textPrimary)
         .tint(ColorTokens.action)
-        .background(ColorTokens.background)
+        .background(ColorTokens.canvas)
         .fullScreenCover(isPresented: $showingCapture) {
             if let c = viewModel.capture {
                 ProblemCaptureView(viewModel: c.capture, uploadViewModel: c.upload, problemReviewViewModel: c.review,

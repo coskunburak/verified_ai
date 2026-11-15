@@ -1,0 +1,72 @@
+{
+  "id": "94000000-0000-4000-8000-000000000101",
+  "examDefinitionId": "91000000-0000-4000-8000-000000000101",
+  "examVersionNumber": 1,
+  "examSectionId": "92000000-0000-4000-8000-000000000101",
+  "blueprintCode": "BP-TYT-MATH-DIAG-2026-V1",
+  "title": "TYT Mathematics Diagnostic Baseline (8 Items)",
+  "description": "Deterministic 8-question diagnostic baseline across core arithmetic and algebra foundations.",
+  "blueprintMode": "DIAGNOSTIC_BASELINE",
+  "totalQuestionCount": 8,
+  "baseDurationSeconds": 900,
+  "easyTargetBps": 2500,
+  "mediumTargetBps": 5000,
+  "hardTargetBps": 2500,
+  "expertTargetBps": 0,
+  "difficultyToleranceBps": 500,
+  "recallTargetBps": 2500,
+  "comprehensionTargetBps": 2500,
+  "applicationTargetBps": 2500,
+  "analysisTargetBps": 2500,
+  "evaluationTargetBps": 0,
+  "allowRecentlySeenCooldownDays": 14,
+  "shuffleQuestions": true,
+  "shuffleOptions": true,
+  "status": "ACTIVE",
+  "blueprintHash": "3030303030303030303030303030303030303030303030303030303030303001",
+  "topicRules": [
+    {
+      "id": "94100000-0000-4000-8000-000000000101",
+      "topicCode": "MATH.ARITHMETIC.INTEGER_OPERATIONS",
+      "targetWeightBps": 2500,
+      "minQuestionCount": 1,
+      "maxQuestionCount": 3,
+      "requiredItemFormats": ["SINGLE_CHOICE_MCQ"],
+      "ruleOrder": 1,
+      "trainingEligible": false
+    },
+    {
+      "id": "94100000-0000-4000-8000-000000000102",
+      "topicCode": "MATH.ARITHMETIC.FRACTIONS",
+      "targetWeightBps": 2500,
+      "minQuestionCount": 1,
+      "maxQuestionCount": 3,
+      "requiredItemFormats": ["SINGLE_CHOICE_MCQ"],
+      "ruleOrder": 2,
+      "trainingEligible": false
+    },
+    {
+      "id": "94100000-0000-4000-8000-000000000103",
+      "topicCode": "MATH.ARITHMETIC.PERCENTAGES",
+      "targetWeightBps": 2500,
+      "minQuestionCount": 1,
+      "maxQuestionCount": 3,
+      "requiredItemFormats": ["SINGLE_CHOICE_MCQ"],
+      "ruleOrder": 3,
+      "trainingEligible": false
+    },
+    {
+      "id": "94100000-0000-4000-8000-000000000104",
+      "topicCode": "MATH.ALGEBRA.FACTORING",
+      "targetWeightBps": 2500,
+      "minQuestionCount": 1,
+      "maxQuestionCount": 3,
+      "requiredItemFormats": ["SINGLE_CHOICE_MCQ"],
+      "ruleOrder": 4,
+      "trainingEligible": false
+    }
+  ],
+  "trainingEligible": false,
+  "createdAt": "2026-01-15T10:00:00Z",
+  "updatedAt": "2026-01-15T10:00:00Z"
+}
