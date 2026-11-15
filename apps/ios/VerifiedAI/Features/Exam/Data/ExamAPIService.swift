@@ -15,6 +15,11 @@ public enum ExamServiceError: Error, Equatable, Sendable {
     case mediaUnsupported
     case disambiguationRequired
     case poolInsufficient
+    case noHintModeActive
+    case deadlineExpired
+    case sessionAlreadySubmitted
+    case autosaveVersionConflict
+    case invalidScratchpadAsset
     case unexpected(String)
 }
 
@@ -53,6 +58,26 @@ public protocol ExamAPIServicing: Sendable {
     func assembleAssessment(examDefinitionId: UUID, request: AssessmentAssemblyRequestDTO) async throws -> AssembledAssessmentDTO
     func fetchAssembledAssessment(userId: UUID, assessmentId: UUID) async throws -> AssembledAssessmentDTO
     func fetchAssembledAssessments(userId: UUID, examDefinitionId: UUID?) async throws -> [AssembledAssessmentDTO]
+    func startOrResumeSession(request: ExamSessionStartRequestDTO) async throws -> ExamSessionDTO
+    func fetchSessionState(sessionId: UUID, clientTimestamp: String?) async throws -> ExamSessionDTO
+    func autosaveSessionItem(
+        sessionId: UUID,
+        itemPosition: Int,
+        idempotencyKey: String,
+        request: ExamSessionItemAutosaveRequestDTO
+    ) async throws -> ExamSessionItemAutosaveResponseDTO
+    func attachScratchpadPhoto(
+        sessionId: UUID,
+        itemPosition: Int,
+        idempotencyKey: String,
+        request: ExamScratchpadUploadRequestDTO
+    ) async throws -> ExamScratchpadUploadResponseDTO
+    func submitSession(
+        sessionId: UUID,
+        idempotencyKey: String,
+        request: ExamSessionSubmitRequestDTO
+    ) async throws -> ExamSessionSubmitResponseDTO
+    func checkNoHintGuard(sessionId: UUID, requestedSurface: String) async throws -> ExamNoHintGuardResponseDTO
 }
 
 public extension ExamAPIServicing {
@@ -343,20 +368,178 @@ final class HTTPExamAPIService: ExamAPIServicing, @unchecked Sendable {
         }
     }
 
+    // MARK: - Sprint 9.4 Timed Mock Exam Runtime Endpoints
+
+    func startOrResumeSession(request: ExamSessionStartRequestDTO) async throws -> ExamSessionDTO {
+        let bodyData = try encoder.encode(request)
+        let endpoint = Endpoint(path: "/v1/exams/sessions", method: .post)
+        let httpRequest = HTTPRequest<ExamSessionDTO>(
+            endpoint: endpoint,
+            body: bodyData,
+            allowsAuthRefreshRetry: true
+        )
+        do {
+            return try await apiClient.send(httpRequest).body
+        } catch let error as NetworkError {
+            throw mapNetworkError(error)
+        }
+    }
+
+    func fetchSessionState(sessionId: UUID, clientTimestamp: String? = nil) async throws -> ExamSessionDTO {
+        var queryItems: [URLQueryItem] = []
+        if let clientTimestamp {
+            queryItems.append(URLQueryItem(name: "clientTimestamp", value: clientTimestamp))
+        }
+        let endpoint = Endpoint(
+            path: "/v1/exams/sessions/\(sessionId.uuidString.lowercased())",
+            method: .get,
+            queryItems: queryItems
+        )
+        let httpRequest = HTTPRequest<ExamSessionDTO>(
+            endpoint: endpoint,
+            allowsAuthRefreshRetry: true
+        )
+        do {
+            return try await apiClient.send(httpRequest).body
+        } catch let error as NetworkError {
+            throw mapNetworkError(error)
+        }
+    }
+
+    func autosaveSessionItem(
+        sessionId: UUID,
+        itemPosition: Int,
+        idempotencyKey: String,
+        request: ExamSessionItemAutosaveRequestDTO
+    ) async throws -> ExamSessionItemAutosaveResponseDTO {
+        let bodyData = try encoder.encode(request)
+        let endpoint = Endpoint(
+            path: "/v1/exams/sessions/\(sessionId.uuidString.lowercased())/items/\(itemPosition)",
+            method: .patch
+        )
+        let httpRequest = HTTPRequest<ExamSessionItemAutosaveResponseDTO>(
+            endpoint: endpoint,
+            body: bodyData,
+            idempotencyKey: idempotencyKey,
+            allowsAuthRefreshRetry: true
+        )
+        do {
+            return try await apiClient.send(httpRequest).body
+        } catch let error as NetworkError {
+            throw mapNetworkError(error)
+        }
+    }
+
+    func attachScratchpadPhoto(
+        sessionId: UUID,
+        itemPosition: Int,
+        idempotencyKey: String,
+        request: ExamScratchpadUploadRequestDTO
+    ) async throws -> ExamScratchpadUploadResponseDTO {
+        let bodyData = try encoder.encode(request)
+        let endpoint = Endpoint(
+            path: "/v1/exams/sessions/\(sessionId.uuidString.lowercased())/items/\(itemPosition)/scratchpad",
+            method: .post
+        )
+        let httpRequest = HTTPRequest<ExamScratchpadUploadResponseDTO>(
+            endpoint: endpoint,
+            body: bodyData,
+            idempotencyKey: idempotencyKey,
+            allowsAuthRefreshRetry: true
+        )
+        do {
+            return try await apiClient.send(httpRequest).body
+        } catch let error as NetworkError {
+            throw mapNetworkError(error)
+        }
+    }
+
+    func submitSession(
+        sessionId: UUID,
+        idempotencyKey: String,
+        request: ExamSessionSubmitRequestDTO
+    ) async throws -> ExamSessionSubmitResponseDTO {
+        let bodyData = try encoder.encode(request)
+        let endpoint = Endpoint(
+            path: "/v1/exams/sessions/\(sessionId.uuidString.lowercased())/submit",
+            method: .post
+        )
+        let httpRequest = HTTPRequest<ExamSessionSubmitResponseDTO>(
+            endpoint: endpoint,
+            body: bodyData,
+            idempotencyKey: idempotencyKey,
+            allowsAuthRefreshRetry: true
+        )
+        do {
+            return try await apiClient.send(httpRequest).body
+        } catch let error as NetworkError {
+            throw mapNetworkError(error)
+        }
+    }
+
+    func checkNoHintGuard(sessionId: UUID, requestedSurface: String) async throws -> ExamNoHintGuardResponseDTO {
+        let payload = ["requestedSurface": requestedSurface]
+        let bodyData = try encoder.encode(payload)
+        let endpoint = Endpoint(
+            path: "/v1/exams/sessions/\(sessionId.uuidString.lowercased())/hint-guard-check",
+            method: .post
+        )
+        let httpRequest = HTTPRequest<ExamNoHintGuardResponseDTO>(
+            endpoint: endpoint,
+            body: bodyData,
+            allowsAuthRefreshRetry: true
+        )
+        do {
+            return try await apiClient.send(httpRequest).body
+        } catch let error as NetworkError {
+            throw mapNetworkError(error)
+        }
+    }
+
     private func mapNetworkError(_ error: NetworkError) -> ExamServiceError {
         switch error {
         case .server(let problem):
+            if problem.code == "EXAM_NO_HINT_MODE_ACTIVE" {
+                return .noHintModeActive
+            }
+            if problem.code == "EXAM_SESSION_EXPIRED"
+                || problem.code == "EXAM_SESSION_DEADLINE_EXPIRED"
+                || problem.code == "EXAM_SESSION_OFFLINE_GRACE_EXPIRED" {
+                return .deadlineExpired
+            }
+            if problem.code == "EXAM_SESSION_ALREADY_TERMINATED"
+                || problem.code == "EXAM_SESSION_INVALID_STATE_TRANSITION"
+                || problem.code == "EXAM_SESSION_ALREADY_SUBMITTED"
+                || problem.code == "EXAM_SESSION_INVALID_STATE" {
+                return .sessionAlreadySubmitted
+            }
+            if problem.code == "EXAM_ITEM_STALE_VERSION"
+                || problem.code == "EXAM_SESSION_IDEMPOTENCY_CONFLICT"
+                || problem.code == "EXAM_IDEMPOTENCY_KEY_REQUIRED"
+                || problem.code == "EXAM_AUTOSAVE_VERSION_CONFLICT"
+                || problem.code == "EXAM_IDEMPOTENCY_KEY_REUSED"
+                || problem.code == "EXAM_SECTION_LOCKED" {
+                return .autosaveVersionConflict
+            }
+            if problem.code == "EXAM_SCRATCHPAD_STORAGE_KEY_FORBIDDEN"
+                || problem.code == "EXAM_SCRATCHPAD_INVALID_ASSET"
+                || problem.code == "EXAM_ITEM_INVALID_ANSWER_PAYLOAD"
+                || problem.code == "EXAM_SCRATCHPAD_LIMIT_EXCEEDED" {
+                return .invalidScratchpadAsset
+            }
             if problem.status == 503
                 || problem.code == "EXAM_FEATURE_DISABLED"
                 || problem.code == "EXAM_QUESTION_BANK_DISABLED"
                 || problem.code == "EXAM_BLUEPRINT_DISABLED"
-                || problem.code == "EXAM_ASSESSMENT_ASSEMBLY_DISABLED" {
+                || problem.code == "EXAM_ASSESSMENT_ASSEMBLY_DISABLED"
+                || problem.code == "EXAM_SESSION_RUNTIME_FEATURE_DISABLED" {
                 return .featureDisabled
             }
             if problem.status == 403
                 || problem.code == "EXAM_ACCESS_DENIED"
                 || problem.code == "CANDIDATE_PROFILE_ACCESS_DENIED"
-                || problem.code == "EXAM_CANDIDATE_ACCESS_DENIED" {
+                || problem.code == "EXAM_CANDIDATE_ACCESS_DENIED"
+                || problem.code == "EXAM_SESSION_ACCESS_DENIED" {
                 return .forbidden
             }
             if problem.status == 404
@@ -367,7 +550,11 @@ final class HTTPExamAPIService: ExamAPIServicing, @unchecked Sendable {
                 || problem.code == "SYLLABUS_UPLOAD_NOT_FOUND"
                 || problem.code == "EXAM_QUESTION_ITEM_NOT_FOUND"
                 || problem.code == "EXAM_BLUEPRINT_NOT_FOUND"
-                || problem.code == "EXAM_ASSEMBLED_ASSESSMENT_NOT_FOUND" {
+                || problem.code == "EXAM_ASSEMBLY_NOT_FOUND"
+                || problem.code == "EXAM_ASSEMBLED_ASSESSMENT_NOT_FOUND"
+                || problem.code == "EXAM_SESSION_NOT_FOUND"
+                || problem.code == "EXAM_ITEM_NOT_FOUND"
+                || problem.code == "EXAM_SESSION_ITEM_NOT_FOUND" {
                 return .notFound
             }
             if problem.status == 409
@@ -427,13 +614,17 @@ final class HTTPExamAPIService: ExamAPIServicing, @unchecked Sendable {
 
 #if DEBUG
 final class FixtureExamAPIService: ExamAPIServicing, @unchecked Sendable {
-    private let simulateOffline: Bool
+    var simulateOffline: Bool
     private let userId: UUID
     private var storedTargets: [StudentExamTargetModel] = []
     private var storedProfile: CandidateProfileResponse?
     private var storedHistory: [CandidateHorizonHistoryEntry] = []
     private var storedUploads: [SyllabusIngestionResponse] = []
     private var storedAssembledAssessments: [AssembledAssessmentDTO] = []
+    private var storedSessions: [UUID: ExamSessionDTO] = [:]
+    private var autosaveIdempotencyCache: [String: ExamSessionItemAutosaveResponseDTO] = [:]
+    private var scratchpadIdempotencyCache: [String: ExamScratchpadUploadResponseDTO] = [:]
+    private var submitIdempotencyCache: [String: ExamSessionSubmitResponseDTO] = [:]
 
     init(simulateOffline: Bool = false, userId: UUID = UUID(uuidString: "91000000-0000-4000-8000-000000000a01")!) {
         self.simulateOffline = simulateOffline
@@ -990,6 +1181,479 @@ final class FixtureExamAPIService: ExamAPIServicing, @unchecked Sendable {
         return storedAssembledAssessments.filter { a in
             a.userId == userId && (examDefinitionId == nil || a.examDefinitionId == examDefinitionId)
         }
+    }
+
+    // MARK: - Sprint 9.4 Timed Mock Exam Runtime Fixtures
+
+    func startOrResumeSession(request: ExamSessionStartRequestDTO) async throws -> ExamSessionDTO {
+        if simulateOffline { throw ExamServiceError.offline }
+        let effectiveUserId = request.userId ?? userId
+        if let existing = storedSessions.values.first(where: {
+            $0.userId == effectiveUserId && $0.assemblyId == request.assemblyId && $0.status.isActive
+        }) {
+            return existing
+        }
+
+        let assembled = storedAssembledAssessments.first(where: { $0.id == request.assemblyId })
+            ?? Self.fallbackAssembledAssessment(userId: effectiveUserId, assemblyId: request.assemblyId)
+
+        let now = Date()
+        let formatter = ISO8601DateFormatter()
+        let graceSeconds = min(max(request.offlineGraceBufferSeconds ?? 120, 0), 120)
+        let deadline = now.addingTimeInterval(TimeInterval(assembled.effectiveDurationSeconds))
+        let graceDeadline = deadline.addingTimeInterval(TimeInterval(graceSeconds))
+        let nowString = formatter.string(from: now)
+        let sessionId = UUID()
+
+        let sessionItems: [ExamSessionItemDTO] = assembled.items.map { item in
+            ExamSessionItemDTO(
+                id: item.id,
+                itemPosition: item.sequenceNumber,
+                questionItemId: item.questionItemId,
+                questionCode: item.questionCode,
+                sectionCode: "MAIN",
+                sectionOrder: 1,
+                topicCode: item.topicCode,
+                itemFormat: item.itemFormat.rawValue,
+                difficultyBand: item.difficultyBand,
+                stemMarkdown: item.stemMarkdown,
+                optionsSnapshot: item.options,
+                figureAltText: item.altTextDescription,
+                maxPoints: item.allocatedPoints,
+                negativeMarkingWeight: 0.25,
+                responseState: .unvisited,
+                selectedOptionKey: nil,
+                numericResponseValue: nil,
+                flaggedForReview: false,
+                eliminatedOptionKeys: [],
+                timeSpentSeconds: 0,
+                autosaveVersion: 1,
+                clientAutosaveSeq: 0,
+                lastAutosavedAt: nil,
+                scratchpadRequired: true,
+                scratchpadAssets: [],
+                trainingEligible: false
+            )
+        }
+
+        let clockSync = ExamServerClockSyncDTO(
+            serverNow: nowString,
+            remainingSeconds: assembled.effectiveDurationSeconds,
+            graceRemainingSeconds: graceSeconds,
+            clientClockSkewMs: 0,
+            clockSkewAnomaly: false,
+            deadlineExpired: false,
+            offlineGraceActive: false
+        )
+
+        let sectionProgress = [
+            ExamSectionProgressSummaryDTO(
+                sectionCode: "MAIN",
+                sectionOrder: 1,
+                totalItems: sessionItems.count,
+                answeredItems: 0,
+                flaggedItems: 0,
+                omittedItems: sessionItems.count,
+                locked: false
+            )
+        ]
+
+        let session = ExamSessionDTO(
+            sessionId: sessionId,
+            userId: effectiveUserId,
+            assemblyId: assembled.id,
+            blueprintId: assembled.blueprintId,
+            examCode: "TR_YKS_TYT_MATH",
+            examVersionNumber: assembled.examVersionNumber,
+            status: .inProgress,
+            navigationPolicy: "FREE_NAVIGATION",
+            noHintPolicyEnforced: true,
+            accommodationsSnapshot: assembled.accommodationsSnapshot,
+            baseDurationSeconds: assembled.baseDurationSeconds,
+            extraTimeMultiplier: assembled.timeMultiplier,
+            effectiveDurationSeconds: assembled.effectiveDurationSeconds,
+            offlineGraceBufferSeconds: graceSeconds,
+            startedAt: nowString,
+            serverDeadlineAt: formatter.string(from: deadline),
+            graceDeadlineAt: formatter.string(from: graceDeadline),
+            lastHeartbeatAt: nowString,
+            submittedAt: nil,
+            submissionReason: nil,
+            totalItemCount: sessionItems.count,
+            answeredItemCount: 0,
+            flaggedItemCount: 0,
+            omittedItemCount: sessionItems.count,
+            scratchpadAttachmentCount: 0,
+            clockSync: clockSync,
+            sectionProgress: sectionProgress,
+            items: sessionItems,
+            f28VerificationBatchManifest: nil,
+            llmTokensUsed: 0,
+            trainingEligible: false
+        )
+        storedSessions[sessionId] = session
+        return session
+    }
+
+    func fetchSessionState(sessionId: UUID, clientTimestamp: String? = nil) async throws -> ExamSessionDTO {
+        if simulateOffline { throw ExamServiceError.offline }
+        guard var session = storedSessions[sessionId] else {
+            throw ExamServiceError.notFound
+        }
+        let now = Date()
+        let formatter = ISO8601DateFormatter()
+        let deadlineDate = formatter.date(from: session.serverDeadlineAt) ?? now.addingTimeInterval(60)
+        let graceDate = formatter.date(from: session.graceDeadlineAt) ?? deadlineDate.addingTimeInterval(TimeInterval(session.offlineGraceBufferSeconds))
+        let remaining = max(0, Int(deadlineDate.timeIntervalSince(now)))
+        let graceRemaining = max(0, Int(graceDate.timeIntervalSince(now)))
+        let nowString = formatter.string(from: now)
+        session.lastHeartbeatAt = nowString
+        session.clockSync = ExamServerClockSyncDTO(
+            serverNow: nowString,
+            remainingSeconds: remaining,
+            graceRemainingSeconds: graceRemaining,
+            clientClockSkewMs: 0,
+            clockSkewAnomaly: false,
+            deadlineExpired: remaining == 0,
+            offlineGraceActive: remaining == 0 && graceRemaining > 0
+        )
+        storedSessions[sessionId] = session
+        return session
+    }
+
+    func autosaveSessionItem(
+        sessionId: UUID,
+        itemPosition: Int,
+        idempotencyKey: String,
+        request: ExamSessionItemAutosaveRequestDTO
+    ) async throws -> ExamSessionItemAutosaveResponseDTO {
+        if simulateOffline { throw ExamServiceError.offline }
+        let cacheKey = "\(sessionId.uuidString)::\(itemPosition)::\(idempotencyKey)"
+        if let cached = autosaveIdempotencyCache[cacheKey] {
+            return cached
+        }
+        guard var session = storedSessions[sessionId] else {
+            throw ExamServiceError.notFound
+        }
+        guard session.status.isActive else {
+            throw ExamServiceError.sessionAlreadySubmitted
+        }
+        guard let idx = session.items.firstIndex(where: { $0.itemPosition == itemPosition }) else {
+            throw ExamServiceError.notFound
+        }
+        var item = session.items[idx]
+        if item.autosaveVersion != request.expectedAutosaveVersion {
+            throw ExamServiceError.autosaveVersionConflict
+        }
+
+        switch request.action {
+        case .viewOnly:
+            if item.responseState == .unvisited {
+                item.responseState = .viewedOmitted
+            }
+        case .selectOption:
+            item.selectedOptionKey = request.selectedOptionKey
+            item.numericResponseValue = request.numericResponseValue
+        case .clearAnswer:
+            item.selectedOptionKey = nil
+            item.numericResponseValue = nil
+        case .toggleFlag:
+            item.flaggedForReview = request.flaggedForReview ?? !item.flaggedForReview
+        case .setEliminatedOptions:
+            item.eliminatedOptionKeys = request.eliminatedOptionKeys ?? []
+        case .batchPatch:
+            if let key = request.selectedOptionKey { item.selectedOptionKey = key }
+            if let num = request.numericResponseValue { item.numericResponseValue = num }
+            if let flag = request.flaggedForReview { item.flaggedForReview = flag }
+            if let elim = request.eliminatedOptionKeys { item.eliminatedOptionKeys = elim }
+        }
+
+        let hasAnswer = (item.selectedOptionKey != nil && !item.selectedOptionKey!.isEmpty) || item.numericResponseValue != nil
+        if item.flaggedForReview {
+            item.responseState = hasAnswer ? .flaggedAnswered : .flaggedOmitted
+        } else if hasAnswer {
+            item.responseState = .answered
+        } else if item.responseState != .unvisited {
+            item.responseState = .viewedOmitted
+        }
+
+        let nowString = ISO8601DateFormatter().string(from: Date())
+        item.timeSpentSeconds += request.deltaTimeSpentSeconds
+        item.autosaveVersion += 1
+        item.clientAutosaveSeq = max(item.clientAutosaveSeq, request.clientAutosaveSeq)
+        item.lastAutosavedAt = nowString
+        session.items[idx] = item
+
+        session.answeredItemCount = session.items.filter {
+            $0.responseState == .answered || $0.responseState == .flaggedAnswered
+        }.count
+        session.flaggedItemCount = session.items.filter { $0.flaggedForReview }.count
+        session.omittedItemCount = session.totalItemCount - session.answeredItemCount
+        session.sectionProgress = [
+            ExamSectionProgressSummaryDTO(
+                sectionCode: "MAIN",
+                sectionOrder: 1,
+                totalItems: session.totalItemCount,
+                answeredItems: session.answeredItemCount,
+                flaggedItems: session.flaggedItemCount,
+                omittedItems: session.omittedItemCount,
+                locked: false
+            )
+        ]
+        storedSessions[sessionId] = session
+
+        let response = ExamSessionItemAutosaveResponseDTO(
+            sessionId: session.sessionId,
+            status: session.status,
+            itemPosition: item.itemPosition,
+            questionCode: item.questionCode,
+            responseState: item.responseState,
+            selectedOptionKey: item.selectedOptionKey,
+            numericResponseValue: item.numericResponseValue,
+            flaggedForReview: item.flaggedForReview,
+            eliminatedOptionKeys: item.eliminatedOptionKeys,
+            timeSpentSeconds: item.timeSpentSeconds,
+            autosaveVersion: item.autosaveVersion,
+            clientAutosaveSeq: item.clientAutosaveSeq,
+            answeredItemCount: session.answeredItemCount,
+            flaggedItemCount: session.flaggedItemCount,
+            omittedItemCount: session.omittedItemCount,
+            clockSync: session.clockSync,
+            llmTokensUsed: 0,
+            trainingEligible: false
+        )
+        autosaveIdempotencyCache[cacheKey] = response
+        return response
+    }
+
+    func attachScratchpadPhoto(
+        sessionId: UUID,
+        itemPosition: Int,
+        idempotencyKey: String,
+        request: ExamScratchpadUploadRequestDTO
+    ) async throws -> ExamScratchpadUploadResponseDTO {
+        if simulateOffline { throw ExamServiceError.offline }
+        let cacheKey = "\(sessionId.uuidString)::\(itemPosition)::scratch::\(idempotencyKey)"
+        if let cached = scratchpadIdempotencyCache[cacheKey] {
+            return cached
+        }
+        guard var session = storedSessions[sessionId] else {
+            throw ExamServiceError.notFound
+        }
+        guard session.status.isActive else {
+            throw ExamServiceError.sessionAlreadySubmitted
+        }
+        guard let idx = session.items.firstIndex(where: { $0.itemPosition == itemPosition }) else {
+            throw ExamServiceError.notFound
+        }
+        var item = session.items[idx]
+        guard item.scratchpadAssets.count < 4 else {
+            throw ExamServiceError.invalidScratchpadAsset
+        }
+
+        let nowString = ISO8601DateFormatter().string(from: Date())
+        let asset = ExamScratchpadAssetDTO(
+            id: UUID(),
+            sessionId: session.sessionId,
+            sessionItemId: item.id,
+            itemPosition: itemPosition,
+            pageNumber: request.pageNumber,
+            storageKey: request.storageKey,
+            mimeType: request.mimeType,
+            byteSize: request.byteSize,
+            sha256Checksum: request.sha256Checksum,
+            widthPx: request.widthPx,
+            heightPx: request.heightPx,
+            captureSource: request.captureSource,
+            bookletPublisher: request.bookletPublisher,
+            f28VerificationStatus: "QUEUED_FOR_POST_SUBMIT_BATCH",
+            capturedAt: request.capturedAt ?? nowString,
+            trainingEligible: false
+        )
+        item.scratchpadAssets.append(asset)
+        session.items[idx] = item
+        session.scratchpadAttachmentCount += 1
+        storedSessions[sessionId] = session
+
+        let response = ExamScratchpadUploadResponseDTO(
+            sessionId: session.sessionId,
+            itemPosition: itemPosition,
+            scratchpadAttachmentCount: session.scratchpadAttachmentCount,
+            itemScratchpadCount: item.scratchpadAssets.count,
+            asset: asset,
+            clockSync: session.clockSync,
+            llmTokensUsed: 0,
+            trainingEligible: false
+        )
+        scratchpadIdempotencyCache[cacheKey] = response
+        return response
+    }
+
+    func submitSession(
+        sessionId: UUID,
+        idempotencyKey: String,
+        request: ExamSessionSubmitRequestDTO
+    ) async throws -> ExamSessionSubmitResponseDTO {
+        if simulateOffline { throw ExamServiceError.offline }
+        let cacheKey = "\(sessionId.uuidString)::submit::\(idempotencyKey)"
+        if let cached = submitIdempotencyCache[cacheKey] {
+            return cached
+        }
+        guard var session = storedSessions[sessionId] else {
+            throw ExamServiceError.notFound
+        }
+        if let existingManifest = session.f28VerificationBatchManifest, !session.status.isActive {
+            return ExamSessionSubmitResponseDTO(
+                sessionId: session.sessionId,
+                assemblyId: session.assemblyId,
+                blueprintId: session.blueprintId,
+                examCode: session.examCode,
+                status: session.status,
+                submissionReason: session.submissionReason ?? request.submissionReason.rawValue,
+                submittedAt: session.submittedAt ?? ISO8601DateFormatter().string(from: Date()),
+                submitIdempotencyKey: idempotencyKey,
+                totalItemCount: session.totalItemCount,
+                answeredItemCount: session.answeredItemCount,
+                flaggedItemCount: session.flaggedItemCount,
+                omittedItemCount: session.omittedItemCount,
+                scratchpadAttachmentCount: session.scratchpadAttachmentCount,
+                f28VerificationBatchManifest: existingManifest,
+                clockSync: session.clockSync,
+                llmTokensUsed: 0,
+                trainingEligible: false
+            )
+        }
+
+        let nowString = ISO8601DateFormatter().string(from: Date())
+        let finalStatus: ExamSessionStatus
+        switch request.submissionReason {
+        case .userInitiated: finalStatus = .submitted
+        case .serverDeadlineExpired, .offlineGraceExhausted: finalStatus = .expiredAutoSubmitted
+        case .userAbandoned: finalStatus = .abandoned
+        }
+
+        var entries: [F28VerificationBatchEntryDTO] = []
+        for item in session.items {
+            for asset in item.scratchpadAssets {
+                entries.append(F28VerificationBatchEntryDTO(
+                    assetId: asset.id,
+                    sessionItemId: item.id,
+                    itemPosition: item.itemPosition,
+                    pageNumber: asset.pageNumber,
+                    questionCode: item.questionCode,
+                    topicCode: item.topicCode,
+                    storageKey: asset.storageKey,
+                    sha256Checksum: asset.sha256Checksum,
+                    captureSource: asset.captureSource,
+                    bookletPublisher: asset.bookletPublisher,
+                    f28VerificationStatus: asset.f28VerificationStatus
+                ))
+            }
+        }
+        let manifest = F28VerificationBatchManifestDTO(
+            batchStatus: entries.isEmpty ? "EMPTY_NO_SCRATCHPADS" : "QUEUED_FOR_F28_BATCH",
+            sessionId: session.sessionId,
+            userId: session.userId,
+            examCode: session.examCode,
+            totalAssets: entries.count,
+            llmTokensUsed: 0,
+            trainingEligible: false,
+            generatedAt: nowString,
+            assets: entries
+        )
+
+        session.status = finalStatus
+        session.submittedAt = nowString
+        session.submissionReason = request.submissionReason.rawValue
+        session.f28VerificationBatchManifest = manifest
+        storedSessions[sessionId] = session
+
+        let response = ExamSessionSubmitResponseDTO(
+            sessionId: session.sessionId,
+            assemblyId: session.assemblyId,
+            blueprintId: session.blueprintId,
+            examCode: session.examCode,
+            status: finalStatus,
+            submissionReason: request.submissionReason.rawValue,
+            submittedAt: nowString,
+            submitIdempotencyKey: idempotencyKey,
+            totalItemCount: session.totalItemCount,
+            answeredItemCount: session.answeredItemCount,
+            flaggedItemCount: session.flaggedItemCount,
+            omittedItemCount: session.omittedItemCount,
+            scratchpadAttachmentCount: session.scratchpadAttachmentCount,
+            f28VerificationBatchManifest: manifest,
+            clockSync: session.clockSync,
+            llmTokensUsed: 0,
+            trainingEligible: false
+        )
+        submitIdempotencyCache[cacheKey] = response
+        return response
+    }
+
+    func checkNoHintGuard(sessionId: UUID, requestedSurface: String) async throws -> ExamNoHintGuardResponseDTO {
+        if simulateOffline { throw ExamServiceError.offline }
+        guard let session = storedSessions[sessionId] else {
+            throw ExamServiceError.notFound
+        }
+        if session.status.isActive && session.noHintPolicyEnforced {
+            throw ExamServiceError.noHintModeActive
+        }
+        return ExamNoHintGuardResponseDTO(
+            sessionId: session.sessionId,
+            status: session.status,
+            hintAllowed: true,
+            policyCode: "POST_EXAM_REVIEW_ALLOWED",
+            requestedSurface: requestedSurface,
+            neutralExplanationKey: "exam.session.post_submit_review.allowed",
+            serverNow: ISO8601DateFormatter().string(from: Date()),
+            llmTokensUsed: 0,
+            trainingEligible: false
+        )
+    }
+
+    private static func fallbackAssembledAssessment(userId: UUID, assemblyId: UUID) -> AssembledAssessmentDTO {
+        let blueprint = seedBlueprints().first!
+        let items = Self.buildFixtureItems(for: blueprint, seed: "FALLBACK-SESSION")
+        let accommodations = AppliedAccommodationSnapshotDTO(
+            extraTimeMultiplier: 1.0,
+            highContrastMode: false,
+            screenReaderOptimized: false,
+            extendedBreakPrompts: false
+        )
+        let summary = AssemblyDistributionSummaryDTO(
+            topicCounts: ["MATH.ARITHMETIC": 4, "MATH.ALGEBRA": 4],
+            difficultyCounts: ["EASY": 2, "MEDIUM": 4, "HARD": 2],
+            cognitiveCounts: ["RECALL": 2, "APPLICATION": 4, "ANALYSIS": 2],
+            easyActualBps: 2500,
+            mediumActualBps: 5000,
+            hardActualBps: 2500,
+            expertActualBps: 0
+        )
+        return AssembledAssessmentDTO(
+            id: assemblyId,
+            userId: userId,
+            candidateProfileId: nil,
+            blueprintId: blueprint.id,
+            blueprintCode: blueprint.blueprintCode,
+            blueprintTitle: blueprint.title,
+            blueprintMode: blueprint.blueprintMode,
+            examDefinitionId: blueprint.examDefinitionId,
+            examVersionNumber: blueprint.examVersionNumber,
+            assemblySeed: "FALLBACK-SESSION",
+            reproducibilityHash: String(repeating: "a", count: 64),
+            totalQuestionCount: items.count,
+            baseDurationSeconds: blueprint.baseDurationSeconds,
+            timeMultiplier: 1.0,
+            effectiveDurationSeconds: blueprint.baseDurationSeconds,
+            accommodationsSnapshot: accommodations,
+            distributionSummary: summary,
+            status: .ready,
+            assembledAt: "2026-11-15T12:00:00Z",
+            expiresAt: "2026-11-22T12:00:00Z",
+            items: items,
+            trainingEligible: false
+        )
     }
 
     static func seedBlueprints() -> [ExamBlueprintDTO] {

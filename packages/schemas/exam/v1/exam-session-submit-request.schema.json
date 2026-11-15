@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/exam/v1/exam-session-submit-request.schema.json",
+  "title": "ExamSessionSubmitRequest",
+  "description": "Idempotent exam session submission request (Sprint 9.4).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "submissionReason",
+    "trainingEligible"
+  ],
+  "properties": {
+    "submissionReason": {
+      "type": "string",
+      "enum": [
+        "USER_INITIATED",
+        "SERVER_DEADLINE_EXPIRED",
+        "OFFLINE_GRACE_EXHAUSTED",
+        "USER_ABANDONED"
+      ]
+    },
+    "clientTimestamp": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    }
+  }
+}

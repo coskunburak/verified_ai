@@ -1,0 +1,13 @@
+{
+  "pageNumber": 1,
+  "storageKey": "users/99999999-1111-4222-8333-444444444444/exam-sessions/96000000-0000-4000-8000-000000000101/scratchpad/item1_page1.jpg",
+  "mimeType": "image/jpeg",
+  "byteSize": 245760,
+  "sha256Checksum": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "widthPx": 1600,
+  "heightPx": 1200,
+  "captureSource": "PAPER_DENEME_BOOKLET",
+  "bookletPublisher": "Özdebir",
+  "capturedAt": "2026-03-01T10:01:05Z",
+  "trainingEligible": false
+}

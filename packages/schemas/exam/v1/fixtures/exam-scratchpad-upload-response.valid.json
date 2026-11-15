@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "exam-scratchpad-upload-response-v1",
+  "sessionId": "96000000-0000-4000-8000-000000000101",
+  "itemPosition": 1,
+  "scratchpadAttachmentCount": 1,
+  "itemScratchpadCount": 1,
+  "asset": {
+    "id": "98000000-0000-4000-8000-000000000101",
+    "sessionId": "96000000-0000-4000-8000-000000000101",
+    "sessionItemId": "97000000-0000-4000-8000-000000000101",
+    "itemPosition": 1,
+    "pageNumber": 1,
+    "storageKey": "users/99999999-1111-4222-8333-444444444444/exam-sessions/96000000-0000-4000-8000-000000000101/scratchpad/item1_page1.jpg",
+    "mimeType": "image/jpeg",
+    "byteSize": 245760,
+    "sha256Checksum": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "widthPx": 1600,
+    "heightPx": 1200,
+    "captureSource": "PAPER_DENEME_BOOKLET",
+    "bookletPublisher": "Özdebir",
+    "f28VerificationStatus": "QUEUED_FOR_POST_SUBMIT_BATCH",
+    "capturedAt": "2026-03-01T10:01:05Z",
+    "trainingEligible": false
+  },
+  "clockSync": {
+    "serverNow": "2026-03-01T10:01:05Z",
+    "remainingSeconds": 1060,
+    "graceRemainingSeconds": 1180,
+    "clientClockSkewMs": 0,
+    "clockSkewAnomaly": false,
+    "deadlineExpired": false,
+    "offlineGraceActive": false
+  },
+  "llmTokensUsed": 0,
+  "trainingEligible": false
+}

@@ -27,6 +27,7 @@ public final class ExamBlueprintAssemblyViewModel: ObservableObject {
     private let apiService: ExamAPIServicing
     private let offlineStore: ExamOfflineSQLiteStore?
     private var activeUserId: UUID
+    private var cachedSessionViewModels: [UUID: ExamSessionViewModel] = [:]
 
     public init(
         apiService: ExamAPIServicing,
@@ -160,11 +161,30 @@ public final class ExamBlueprintAssemblyViewModel: ObservableObject {
     public func purgeUserDataAndReset() async {
         let userId = activeUserId
         await offlineStore?.clearUserData(userId: userId)
+        cachedSessionViewModels.removeAll()
         assembledAssessment = nil
         errorLocalizationKey = nil
         errorMessage = nil
         statusLocalizationKey = nil
         isOfflineCached = false
+    }
+
+    public func makeSessionViewModel(for assembled: AssembledAssessmentDTO) -> ExamSessionViewModel {
+        ExamSessionViewModel(
+            apiService: apiService,
+            offlineStore: offlineStore,
+            assemblyId: assembled.id,
+            userId: activeUserId
+        )
+    }
+
+    public func sessionViewModel(for assembled: AssembledAssessmentDTO) -> ExamSessionViewModel {
+        if let existing = cachedSessionViewModels[assembled.id] {
+            return existing
+        }
+        let created = makeSessionViewModel(for: assembled)
+        cachedSessionViewModels[assembled.id] = created
+        return created
     }
 
     private func mapError(_ error: Error) {

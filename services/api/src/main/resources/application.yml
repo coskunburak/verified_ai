@@ -305,3 +305,4 @@ verifiedai:
     question-bank-enabled: ${VERIFIEDAI_EXAM_QUESTION_BANK_ENABLED:false}
     blueprint-management-enabled: ${VERIFIEDAI_EXAM_BLUEPRINT_MANAGEMENT_ENABLED:false}
     assessment-assembly-enabled: ${VERIFIEDAI_EXAM_ASSESSMENT_ASSEMBLY_ENABLED:false}
+    session-runtime-enabled: ${EXAM_SESSION_RUNTIME_ENABLED:false}

@@ -868,6 +868,39 @@ def run_validation():
             if k not in obj:
                 continue
             val = obj[k]
+            if "anyOf" in prop:
+                any_ok = False
+                for branch in prop["anyOf"]:
+                    if branch.get("type") == "null" and val is None:
+                        any_ok = True
+                        break
+                    if "$ref" in branch and isinstance(val, dict):
+                        ref_name = branch["$ref"].split("/")[-1]
+                        if not _validate_s89_object_keys(val, defs[ref_name], defs):
+                            any_ok = True
+                            break
+                    elif branch.get("type") == "array" and isinstance(val, list):
+                        min_i = branch.get("minItems", 0)
+                        max_i = branch.get("maxItems")
+                        if len(val) >= min_i and (max_i is None or len(val) <= max_i):
+                            any_ok = True
+                            break
+                    elif branch.get("type") == "string" and isinstance(val, str):
+                        any_ok = True
+                        break
+                    elif branch.get("type") == "integer" and isinstance(val, int) and not isinstance(val, bool):
+                        any_ok = True
+                        break
+                    elif branch.get("type") == "boolean" and isinstance(val, bool):
+                        any_ok = True
+                        break
+                    elif branch.get("type") == "object" and isinstance(val, dict):
+                        if not _validate_s89_object_keys(val, branch, defs):
+                            any_ok = True
+                            break
+                if not any_ok:
+                    errs.append(f"{k} does not satisfy anyOf in schema")
+                continue
             if "$ref" in prop:
                 ref_name = prop["$ref"].split("/")[-1]
                 if not isinstance(val, dict):
@@ -1320,6 +1353,98 @@ def run_validation():
             except jsonschema.exceptions.ValidationError:
                 pass
         assert _validate_s89_object_keys(neg_payload, neg_sc, neg_sc.get("$defs", {})), f"Expected pure-python failure for {label}"
+
+    # Sprint 9.4 (CNT-LOS-10 / INV-EXAM-003 / F28 Timed Mock Exam Runtime) schema & fixture checks
+    s94_schema_dir = Path(__file__).resolve().parents[2] / "packages" / "schemas" / "exam" / "v1"
+    s94_fixtures_dir = s94_schema_dir / "fixtures"
+    s94_schema_files = [
+        "exam-session-start-request.schema.json",
+        "exam-session-response.schema.json",
+        "exam-session-item-autosave-request.schema.json",
+        "exam-session-item-autosave-response.schema.json",
+        "exam-scratchpad-upload-request.schema.json",
+        "exam-scratchpad-upload-response.schema.json",
+        "exam-session-submit-request.schema.json",
+        "exam-session-submit-response.schema.json",
+        "exam-no-hint-guard-response.schema.json",
+    ]
+    s94_schemas = {}
+    for fname in s94_schema_files:
+        spath = s94_schema_dir / fname
+        assert spath.exists(), f"Missing Sprint 9.4 schema: {spath}"
+        sc = json.loads(spath.read_text(encoding="utf-8"))
+        if jsonschema is not None:
+            jsonschema.Draft202012Validator.check_schema(sc)
+        s94_schemas[fname] = sc
+
+    s94_fixture_bindings = [
+        ("exam-session-start-request.schema.json", "exam-session-start-request.valid.json"),
+        ("exam-session-response.schema.json", "exam-session-response.valid.json"),
+        ("exam-session-item-autosave-request.schema.json", "exam-session-item-autosave-request.valid.json"),
+        ("exam-session-item-autosave-response.schema.json", "exam-session-item-autosave-response.valid.json"),
+        ("exam-scratchpad-upload-request.schema.json", "exam-scratchpad-upload-request.valid.json"),
+        ("exam-scratchpad-upload-response.schema.json", "exam-scratchpad-upload-response.valid.json"),
+        ("exam-session-submit-request.schema.json", "exam-session-submit-request.valid.json"),
+        ("exam-session-submit-response.schema.json", "exam-session-submit-response.valid.json"),
+        ("exam-no-hint-guard-response.schema.json", "exam-no-hint-guard-response.valid.json"),
+    ]
+    s94_valid_fixtures = {}
+    for sname, fixname in s94_fixture_bindings:
+        fpath = s94_fixtures_dir / fixname
+        assert fpath.exists(), f"Missing Sprint 9.4 fixture: {fpath}"
+        payload = json.loads(fpath.read_text(encoding="utf-8"))
+        sc = s94_schemas[sname]
+        if jsonschema is not None:
+            jsonschema.Draft202012Validator(sc).validate(payload)
+        errs = _validate_s89_object_keys(payload, sc, sc.get("$defs", {}))
+        assert not errs, f"Sprint 9.4 pure-Python check failed for {fixname}: {errs}"
+        s94_valid_fixtures[sname] = payload
+
+    def _s94_mut(sname: str, **updates):
+        copy = json.loads(json.dumps(s94_valid_fixtures[sname]))
+        for k, v in updates.items():
+            if v is ...:
+                copy.pop(k, None)
+            else:
+                copy[k] = v
+        return copy
+
+    s94_negative_cases = [
+        (s94_schemas["exam-session-start-request.schema.json"], _s94_mut("exam-session-start-request.schema.json", assemblyId=...), "s94 start request missing assemblyId"),
+        (s94_schemas["exam-session-start-request.schema.json"], _s94_mut("exam-session-start-request.schema.json", extraCheatField=True), "s94 start request additionalProperties"),
+        (s94_schemas["exam-session-response.schema.json"], _s94_mut("exam-session-response.schema.json", status="HINT_UNLOCKED"), "s94 session response invalid status enum"),
+        (s94_schemas["exam-session-item-autosave-request.schema.json"], _s94_mut("exam-session-item-autosave-request.schema.json", action="REQUEST_HINT"), "s94 autosave request invalid action enum"),
+        (s94_schemas["exam-session-item-autosave-response.schema.json"], _s94_mut("exam-session-item-autosave-response.schema.json", clockSync=...), "s94 autosave response missing clockSync"),
+        (s94_schemas["exam-scratchpad-upload-request.schema.json"], _s94_mut("exam-scratchpad-upload-request.schema.json", mimeType="application/pdf"), "s94 scratchpad request disallowed mimeType"),
+        (s94_schemas["exam-scratchpad-upload-response.schema.json"], _s94_mut("exam-scratchpad-upload-response.schema.json", asset=...), "s94 scratchpad response missing asset"),
+        (s94_schemas["exam-session-submit-request.schema.json"], _s94_mut("exam-session-submit-request.schema.json", submissionReason="INVALID_REASON"), "s94 submit request invalid reason enum"),
+        (s94_schemas["exam-session-submit-response.schema.json"], _s94_mut("exam-session-submit-response.schema.json", f28VerificationBatchManifest=...), "s94 submit response missing F28 manifest"),
+        (s94_schemas["exam-no-hint-guard-response.schema.json"], _s94_mut("exam-no-hint-guard-response.schema.json", status="INVALID_STATUS"), "s94 no-hint guard invalid status enum"),
+    ]
+    for neg_sc, neg_payload, label in s94_negative_cases:
+        if jsonschema is not None:
+            try:
+                jsonschema.Draft202012Validator(neg_sc).validate(neg_payload)
+                raise AssertionError(f"Expected jsonschema failure for {label}")
+            except jsonschema.exceptions.ValidationError:
+                pass
+        assert _validate_s89_object_keys(neg_payload, neg_sc, neg_sc.get("$defs", {})), f"Expected pure-python failure for {label}"
+
+    # Strict const=false / const=0 / const=true enforcement checks via Draft202012 or explicit invariant assertions
+    if jsonschema is not None:
+        s94_const_cases = [
+            (s94_schemas["exam-session-start-request.schema.json"], _s94_mut("exam-session-start-request.schema.json", trainingEligible=True), "s94 start trainingEligible=true"),
+            (s94_schemas["exam-session-response.schema.json"], _s94_mut("exam-session-response.schema.json", noHintPolicyEnforced=False), "s94 session noHintPolicyEnforced=false"),
+            (s94_schemas["exam-session-response.schema.json"], _s94_mut("exam-session-response.schema.json", llmTokensUsed=1), "s94 session llmTokensUsed=1"),
+            (s94_schemas["exam-no-hint-guard-response.schema.json"], _s94_mut("exam-no-hint-guard-response.schema.json", hintAllowed=True), "s94 no-hint hintAllowed=true"),
+            (s94_schemas["exam-scratchpad-upload-request.schema.json"], _s94_mut("exam-scratchpad-upload-request.schema.json", sha256Checksum="short"), "s94 scratchpad bad sha256Checksum"),
+        ]
+        for neg_sc, neg_payload, label in s94_const_cases:
+            try:
+                jsonschema.Draft202012Validator(neg_sc).validate(neg_payload)
+                raise AssertionError(f"Expected jsonschema failure for {label}")
+            except jsonschema.exceptions.ValidationError:
+                pass
     for card_fx in (ml_card_tr_fixture, ml_card_en_fixture):
         assert card_fx["schemaVersion"] == "1.0.0"
         assert card_fx["verificationStatus"] == "VERIFIED"
@@ -1661,6 +1786,28 @@ def run_validation():
                 for code in expected_codes:
                     assert code in s93_op["responses"], f"HTTP {code} missing from {s93_path} {s93_method} in {spec_name}"
 
+            expected_s94_endpoints = {
+                ("/v1/exams/sessions", "post"): {"200", "201", "400", "401", "403", "404", "409", "422", "503"},
+                ("/v1/exams/sessions/{sessionId}", "get"): {"200", "400", "401", "403", "404", "503"},
+                ("/v1/exams/sessions/{sessionId}/items/{itemPosition}", "patch"): {"200", "400", "401", "403", "404", "409", "422", "503"},
+                ("/v1/exams/sessions/{sessionId}/items/{itemPosition}/scratchpad", "post"): {"200", "201", "400", "401", "403", "404", "409", "422", "503"},
+                ("/v1/exams/sessions/{sessionId}/submit", "post"): {"200", "400", "401", "403", "404", "409", "422", "503"},
+                ("/v1/exams/sessions/{sessionId}/hint-guard-check", "post"): {"200", "400", "401", "403", "404", "409", "503"},
+                ("/api/v1/exams/sessions", "post"): {"200", "201", "400", "401", "403", "404", "409", "422", "503"},
+                ("/api/v1/exams/sessions/{sessionId}", "get"): {"200", "400", "401", "403", "404", "503"},
+                ("/api/v1/exams/sessions/{sessionId}/items/{itemPosition}", "patch"): {"200", "400", "401", "403", "404", "409", "422", "503"},
+                ("/api/v1/exams/sessions/{sessionId}/items/{itemPosition}/scratchpad", "post"): {"200", "201", "400", "401", "403", "404", "409", "422", "503"},
+                ("/api/v1/exams/sessions/{sessionId}/submit", "post"): {"200", "400", "401", "403", "404", "409", "422", "503"},
+                ("/api/v1/exams/sessions/{sessionId}/hint-guard-check", "post"): {"200", "400", "401", "403", "404", "409", "503"},
+            }
+            for (s94_path, s94_method), expected_codes in expected_s94_endpoints.items():
+                assert s94_path in spec_paths, f"Missing Sprint 9.4 path {s94_path} in {spec_name}"
+                assert s94_method in spec_paths[s94_path], f"Missing method {s94_method} on {s94_path} in {spec_name}"
+                s94_op = spec_paths[s94_path][s94_method]
+                assert s94_op["security"] == [{"bearerAuth": []}], f"Security bearerAuth missing on {s94_path} in {spec_name}"
+                for code in expected_codes:
+                    assert code in s94_op["responses"], f"HTTP {code} missing from {s94_path} {s94_method} in {spec_name}"
+
         assert openapi_path.read_bytes() == openapi_core_path.read_bytes(), "OpenAPI mirror public-api.yaml != verified-ai-core-api.yaml"
     else:
         openapi_bytes = openapi_path.read_bytes()
@@ -1711,8 +1858,17 @@ def run_validation():
             "ProblemNotFound",
             "ProblemUnprocessableEntity",
             "ProblemServiceUnavailable",
+            "ExamSessionStartRequest",
+            "ExamSessionResponse",
+            "ExamSessionItemAutosaveRequest",
+            "ExamSessionItemAutosaveResponse",
+            "ExamScratchpadUploadRequest",
+            "ExamScratchpadUploadResponse",
+            "ExamSessionSubmitRequest",
+            "ExamSessionSubmitResponse",
+            "ExamNoHintGuardResponse",
         ):
-            assert token in openapi_text, f"Missing Sprint 8.8..9.3 OpenAPI token in public-api.yaml: {token}"
+            assert token in openapi_text, f"Missing Sprint 8.8..9.4 OpenAPI token in public-api.yaml: {token}"
 
     # 3. iOS Localizable.xcstrings Key Verification
     xcstrings_data = json.loads(strings_path.read_text(encoding="utf-8"))
@@ -2040,6 +2196,27 @@ def run_validation():
         "exam.assembly.status.ready",
         "exam.assembly.offline.cached_banner",
         "exam.assembly.error.pool_insufficient",
+        "exam.assembly.startTimedSessionButton",
+        "exam.session.title",
+        "exam.session.timer.remaining_label",
+        "exam.session.timer.grace_buffer_active",
+        "exam.session.timer.clock_skew_notice",
+        "exam.session.no_hint.badge",
+        "exam.session.no_hint.notice",
+        "exam.session.navigator.title",
+        "exam.session.navigator.filter_all",
+        "exam.session.navigator.filter_flagged",
+        "exam.session.navigator.filter_omitted",
+        "exam.session.action.flag_review",
+        "exam.session.action.clear_answer",
+        "exam.session.action.previous_item",
+        "exam.session.action.next_item",
+        "exam.session.scratchpad.title",
+        "exam.session.scratchpad.attach_button",
+        "exam.session.scratchpad.queued_badge",
+        "exam.session.action.submit_exam",
+        "exam.session.submit.confirmation_title",
+        "exam.session.submit.receipt_title",
     ]
 
     banned_lexicon = re.compile(
@@ -2061,11 +2238,11 @@ def run_validation():
             if key.startswith("studyplan.rebalance.") or key.startswith("micro_lesson.") or key.startswith("study_session."):
                 m = banned_lexicon.search(val)
                 assert not m, f"Stigmatizing lexicon word '{m.group(0)}' in {key}[{lang}]: {val}"
-            elif key.startswith("gamification.") or key.startswith("weekly.") or key.startswith("cold_start.") or key.startswith("exam.candidate.") or key.startswith("exam.syllabus.") or key.startswith("home.candidate_profile.") or key.startswith("exam.assembly."):
+            elif key.startswith("gamification.") or key.startswith("weekly.") or key.startswith("cold_start.") or key.startswith("exam.candidate.") or key.startswith("exam.syllabus.") or key.startswith("home.candidate_profile.") or key.startswith("exam.assembly.") or key.startswith("exam.session."):
                 m = gamification_banned_lexicon.search(val)
                 assert not m, f"Stigmatizing lexicon word '{m.group(0)}' in {key}[{lang}]: {val}"
 
-    print(f"PASS: Sprint 8.1..9.3 JSON schemas, negative mutations, OpenAPI 3.1 endpoints, and {len(required_keys)} EN/TR localizations verified.")
+    print(f"PASS: Sprint 8.1..9.4 JSON schemas, negative mutations, OpenAPI 3.1 endpoints, and {len(required_keys)} EN/TR localizations verified.")
 
 
 if __name__ == "__main__":

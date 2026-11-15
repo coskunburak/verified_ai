@@ -1133,3 +1133,816 @@ public struct AssembledAssessmentDTO: Sendable, Codable, Equatable, Identifiable
 }
 
 public typealias ExamAssembledAssessmentModel = AssembledAssessmentDTO
+
+// MARK: - Sprint 9.4 Timed Mock Exam Runtime & F28 Scratchpad Ingestion Models (CNT-LOS-10 / ADR-005 / ADR-006)
+
+public enum ExamSessionStatus: String, Sendable, Codable, Equatable, CaseIterable {
+    case inProgress = "IN_PROGRESS"
+    case offlineGraceBuffer = "OFFLINE_GRACE_BUFFER"
+    case submitted = "SUBMITTED"
+    case expiredAutoSubmitted = "EXPIRED_AUTO_SUBMITTED"
+    case abandoned = "ABANDONED"
+
+    public var isActive: Bool {
+        self == .inProgress || self == .offlineGraceBuffer
+    }
+}
+
+public enum ExamItemResponseState: String, Sendable, Codable, Equatable, CaseIterable {
+    case unvisited = "UNVISITED"
+    case viewedOmitted = "VIEWED_OMITTED"
+    case answered = "ANSWERED"
+    case flaggedAnswered = "FLAGGED_ANSWERED"
+    case flaggedOmitted = "FLAGGED_OMITTED"
+}
+
+public enum ExamSessionItemAction: String, Sendable, Codable, Equatable, CaseIterable {
+    case viewOnly = "VIEW_ONLY"
+    case selectOption = "SELECT_OPTION"
+    case clearAnswer = "CLEAR_ANSWER"
+    case toggleFlag = "TOGGLE_FLAG"
+    case setEliminatedOptions = "SET_ELIMINATED_OPTIONS"
+    case batchPatch = "BATCH_PATCH"
+}
+
+public enum ExamScratchpadCaptureSource: String, Sendable, Codable, Equatable, CaseIterable {
+    case digitalMockScratchpad = "DIGITAL_MOCK_SCRATCHPAD"
+    case paperDenemeBooklet = "PAPER_DENEME_BOOKLET"
+}
+
+public enum ExamSessionSubmissionReason: String, Sendable, Codable, Equatable, CaseIterable {
+    case userInitiated = "USER_INITIATED"
+    case serverDeadlineExpired = "SERVER_DEADLINE_EXPIRED"
+    case offlineGraceExhausted = "OFFLINE_GRACE_EXHAUSTED"
+    case userAbandoned = "USER_ABANDONED"
+}
+
+public struct ExamServerClockSyncDTO: Sendable, Codable, Equatable {
+    public let serverNow: String
+    public let remainingSeconds: Int
+    public let graceRemainingSeconds: Int
+    public let clientClockSkewMs: Int64
+    public let clockSkewAnomaly: Bool
+    public let deadlineExpired: Bool
+    public let offlineGraceActive: Bool
+
+    public init(
+        serverNow: String,
+        remainingSeconds: Int,
+        graceRemainingSeconds: Int,
+        clientClockSkewMs: Int64 = 0,
+        clockSkewAnomaly: Bool = false,
+        deadlineExpired: Bool = false,
+        offlineGraceActive: Bool = false
+    ) {
+        self.serverNow = serverNow
+        self.remainingSeconds = remainingSeconds
+        self.graceRemainingSeconds = graceRemainingSeconds
+        self.clientClockSkewMs = clientClockSkewMs
+        self.clockSkewAnomaly = clockSkewAnomaly
+        self.deadlineExpired = deadlineExpired
+        self.offlineGraceActive = offlineGraceActive
+    }
+}
+
+public struct ExamSectionProgressSummaryDTO: Sendable, Codable, Equatable, Identifiable {
+    public var id: String { sectionCode }
+    public let sectionCode: String
+    public let sectionOrder: Int
+    public let totalItems: Int
+    public let answeredItems: Int
+    public let flaggedItems: Int
+    public let omittedItems: Int
+    public let locked: Bool
+
+    public init(
+        sectionCode: String,
+        sectionOrder: Int,
+        totalItems: Int,
+        answeredItems: Int,
+        flaggedItems: Int,
+        omittedItems: Int,
+        locked: Bool = false
+    ) {
+        self.sectionCode = sectionCode
+        self.sectionOrder = sectionOrder
+        self.totalItems = totalItems
+        self.answeredItems = answeredItems
+        self.flaggedItems = flaggedItems
+        self.omittedItems = omittedItems
+        self.locked = locked
+    }
+}
+
+public struct ExamScratchpadAssetDTO: Sendable, Codable, Equatable, Identifiable {
+    public let id: UUID
+    public let sessionId: UUID
+    public let sessionItemId: UUID
+    public let itemPosition: Int
+    public let pageNumber: Int
+    public let storageKey: String
+    public let mimeType: String
+    public let byteSize: Int64
+    public let sha256Checksum: String
+    public let widthPx: Int?
+    public let heightPx: Int?
+    public let captureSource: ExamScratchpadCaptureSource
+    public let bookletPublisher: String?
+    public let f28VerificationStatus: String
+    public let capturedAt: String
+    public let trainingEligible: Bool
+
+    public init(
+        id: UUID,
+        sessionId: UUID,
+        sessionItemId: UUID,
+        itemPosition: Int,
+        pageNumber: Int,
+        storageKey: String,
+        mimeType: String,
+        byteSize: Int64,
+        sha256Checksum: String,
+        widthPx: Int? = nil,
+        heightPx: Int? = nil,
+        captureSource: ExamScratchpadCaptureSource,
+        bookletPublisher: String? = nil,
+        f28VerificationStatus: String = "QUEUED_FOR_POST_SUBMIT_BATCH",
+        capturedAt: String,
+        trainingEligible: Bool = false
+    ) {
+        self.id = id
+        self.sessionId = sessionId
+        self.sessionItemId = sessionItemId
+        self.itemPosition = itemPosition
+        self.pageNumber = pageNumber
+        self.storageKey = storageKey
+        self.mimeType = mimeType
+        self.byteSize = byteSize
+        self.sha256Checksum = sha256Checksum
+        self.widthPx = widthPx
+        self.heightPx = heightPx
+        self.captureSource = captureSource
+        self.bookletPublisher = bookletPublisher
+        self.f28VerificationStatus = f28VerificationStatus
+        self.capturedAt = capturedAt
+        self.trainingEligible = trainingEligible
+    }
+}
+
+public struct ExamSessionItemDTO: Sendable, Codable, Equatable, Identifiable {
+    public let id: UUID
+    public let itemPosition: Int
+    public let questionItemId: UUID
+    public let questionCode: String
+    public let sectionCode: String
+    public let sectionOrder: Int
+    public let topicCode: String
+    public let itemFormat: String
+    public let difficultyBand: ExamDifficultyBand
+    public let stemMarkdown: String
+    public let optionsSnapshot: [AssembledQuestionOptionDTO]
+    public let figureAltText: String?
+    public let maxPoints: Double
+    public let negativeMarkingWeight: Double
+    public var responseState: ExamItemResponseState
+    public var selectedOptionKey: String?
+    public var numericResponseValue: Double?
+    public var flaggedForReview: Bool
+    public var eliminatedOptionKeys: [String]
+    public var timeSpentSeconds: Int
+    public var autosaveVersion: Int
+    public var clientAutosaveSeq: Int64
+    public var lastAutosavedAt: String?
+    public let scratchpadRequired: Bool
+    public var scratchpadAssets: [ExamScratchpadAssetDTO]
+    public let trainingEligible: Bool
+
+    public init(
+        id: UUID,
+        itemPosition: Int,
+        questionItemId: UUID,
+        questionCode: String,
+        sectionCode: String,
+        sectionOrder: Int,
+        topicCode: String,
+        itemFormat: String,
+        difficultyBand: ExamDifficultyBand,
+        stemMarkdown: String,
+        optionsSnapshot: [AssembledQuestionOptionDTO],
+        figureAltText: String? = nil,
+        maxPoints: Double,
+        negativeMarkingWeight: Double,
+        responseState: ExamItemResponseState,
+        selectedOptionKey: String? = nil,
+        numericResponseValue: Double? = nil,
+        flaggedForReview: Bool = false,
+        eliminatedOptionKeys: [String] = [],
+        timeSpentSeconds: Int = 0,
+        autosaveVersion: Int = 1,
+        clientAutosaveSeq: Int64 = 0,
+        lastAutosavedAt: String? = nil,
+        scratchpadRequired: Bool = false,
+        scratchpadAssets: [ExamScratchpadAssetDTO] = [],
+        trainingEligible: Bool = false
+    ) {
+        self.id = id
+        self.itemPosition = itemPosition
+        self.questionItemId = questionItemId
+        self.questionCode = questionCode
+        self.sectionCode = sectionCode
+        self.sectionOrder = sectionOrder
+        self.topicCode = topicCode
+        self.itemFormat = itemFormat
+        self.difficultyBand = difficultyBand
+        self.stemMarkdown = stemMarkdown
+        self.optionsSnapshot = optionsSnapshot
+        self.figureAltText = figureAltText
+        self.maxPoints = maxPoints
+        self.negativeMarkingWeight = negativeMarkingWeight
+        self.responseState = responseState
+        self.selectedOptionKey = selectedOptionKey
+        self.numericResponseValue = numericResponseValue
+        self.flaggedForReview = flaggedForReview
+        self.eliminatedOptionKeys = eliminatedOptionKeys
+        self.timeSpentSeconds = timeSpentSeconds
+        self.autosaveVersion = autosaveVersion
+        self.clientAutosaveSeq = clientAutosaveSeq
+        self.lastAutosavedAt = lastAutosavedAt
+        self.scratchpadRequired = scratchpadRequired
+        self.scratchpadAssets = scratchpadAssets
+        self.trainingEligible = trainingEligible
+    }
+}
+
+public struct F28VerificationBatchEntryDTO: Sendable, Codable, Equatable, Identifiable {
+    public var id: UUID { assetId }
+    public let assetId: UUID
+    public let sessionItemId: UUID
+    public let itemPosition: Int
+    public let pageNumber: Int
+    public let questionCode: String
+    public let topicCode: String
+    public let storageKey: String
+    public let sha256Checksum: String
+    public let captureSource: ExamScratchpadCaptureSource
+    public let bookletPublisher: String?
+    public let f28VerificationStatus: String
+
+    public init(
+        assetId: UUID,
+        sessionItemId: UUID,
+        itemPosition: Int,
+        pageNumber: Int,
+        questionCode: String,
+        topicCode: String,
+        storageKey: String,
+        sha256Checksum: String,
+        captureSource: ExamScratchpadCaptureSource,
+        bookletPublisher: String? = nil,
+        f28VerificationStatus: String = "QUEUED_FOR_POST_SUBMIT_BATCH"
+    ) {
+        self.assetId = assetId
+        self.sessionItemId = sessionItemId
+        self.itemPosition = itemPosition
+        self.pageNumber = pageNumber
+        self.questionCode = questionCode
+        self.topicCode = topicCode
+        self.storageKey = storageKey
+        self.sha256Checksum = sha256Checksum
+        self.captureSource = captureSource
+        self.bookletPublisher = bookletPublisher
+        self.f28VerificationStatus = f28VerificationStatus
+    }
+}
+
+public struct F28VerificationBatchManifestDTO: Sendable, Codable, Equatable {
+    public let batchVersion: String
+    public let batchStatus: String
+    public let sessionId: UUID
+    public let userId: UUID
+    public let examCode: String
+    public let totalAssets: Int
+    public let llmTokensUsed: Int
+    public let trainingEligible: Bool
+    public let generatedAt: String
+    public let assets: [F28VerificationBatchEntryDTO]
+
+    public init(
+        batchVersion: String = "f28-batch-manifest-v1",
+        batchStatus: String,
+        sessionId: UUID,
+        userId: UUID,
+        examCode: String,
+        totalAssets: Int,
+        llmTokensUsed: Int = 0,
+        trainingEligible: Bool = false,
+        generatedAt: String,
+        assets: [F28VerificationBatchEntryDTO]
+    ) {
+        self.batchVersion = batchVersion
+        self.batchStatus = batchStatus
+        self.sessionId = sessionId
+        self.userId = userId
+        self.examCode = examCode
+        self.totalAssets = totalAssets
+        self.llmTokensUsed = llmTokensUsed
+        self.trainingEligible = trainingEligible
+        self.generatedAt = generatedAt
+        self.assets = assets
+    }
+}
+
+public struct ExamSessionDTO: Sendable, Codable, Equatable, Identifiable {
+    public var id: UUID { sessionId }
+    public let schemaVersion: String
+    public let sessionId: UUID
+    public let userId: UUID
+    public let assemblyId: UUID
+    public let blueprintId: UUID
+    public let examCode: String
+    public let examVersionNumber: Int
+    public var status: ExamSessionStatus
+    public let navigationPolicy: String
+    public let noHintPolicyEnforced: Bool
+    public let accommodationsSnapshot: AppliedAccommodationSnapshotDTO
+    public let baseDurationSeconds: Int
+    public let extraTimeMultiplier: Double
+    public let effectiveDurationSeconds: Int
+    public let offlineGraceBufferSeconds: Int
+    public let startedAt: String
+    public let serverDeadlineAt: String
+    public let graceDeadlineAt: String
+    public var lastHeartbeatAt: String
+    public var submittedAt: String?
+    public var submissionReason: String?
+    public let totalItemCount: Int
+    public var answeredItemCount: Int
+    public var flaggedItemCount: Int
+    public var omittedItemCount: Int
+    public var scratchpadAttachmentCount: Int
+    public var clockSync: ExamServerClockSyncDTO
+    public var sectionProgress: [ExamSectionProgressSummaryDTO]
+    public var items: [ExamSessionItemDTO]
+    public var f28VerificationBatchManifest: F28VerificationBatchManifestDTO?
+    public let llmTokensUsed: Int
+    public let trainingEligible: Bool
+
+    public init(
+        schemaVersion: String = "exam-session-response-v1",
+        sessionId: UUID,
+        userId: UUID,
+        assemblyId: UUID,
+        blueprintId: UUID,
+        examCode: String,
+        examVersionNumber: Int,
+        status: ExamSessionStatus,
+        navigationPolicy: String,
+        noHintPolicyEnforced: Bool = true,
+        accommodationsSnapshot: AppliedAccommodationSnapshotDTO,
+        baseDurationSeconds: Int,
+        extraTimeMultiplier: Double,
+        effectiveDurationSeconds: Int,
+        offlineGraceBufferSeconds: Int = 120,
+        startedAt: String,
+        serverDeadlineAt: String,
+        graceDeadlineAt: String,
+        lastHeartbeatAt: String,
+        submittedAt: String? = nil,
+        submissionReason: String? = nil,
+        totalItemCount: Int,
+        answeredItemCount: Int,
+        flaggedItemCount: Int,
+        omittedItemCount: Int,
+        scratchpadAttachmentCount: Int,
+        clockSync: ExamServerClockSyncDTO,
+        sectionProgress: [ExamSectionProgressSummaryDTO],
+        items: [ExamSessionItemDTO],
+        f28VerificationBatchManifest: F28VerificationBatchManifestDTO? = nil,
+        llmTokensUsed: Int = 0,
+        trainingEligible: Bool = false
+    ) {
+        self.schemaVersion = schemaVersion
+        self.sessionId = sessionId
+        self.userId = userId
+        self.assemblyId = assemblyId
+        self.blueprintId = blueprintId
+        self.examCode = examCode
+        self.examVersionNumber = examVersionNumber
+        self.status = status
+        self.navigationPolicy = navigationPolicy
+        self.noHintPolicyEnforced = noHintPolicyEnforced
+        self.accommodationsSnapshot = accommodationsSnapshot
+        self.baseDurationSeconds = baseDurationSeconds
+        self.extraTimeMultiplier = extraTimeMultiplier
+        self.effectiveDurationSeconds = effectiveDurationSeconds
+        self.offlineGraceBufferSeconds = offlineGraceBufferSeconds
+        self.startedAt = startedAt
+        self.serverDeadlineAt = serverDeadlineAt
+        self.graceDeadlineAt = graceDeadlineAt
+        self.lastHeartbeatAt = lastHeartbeatAt
+        self.submittedAt = submittedAt
+        self.submissionReason = submissionReason
+        self.totalItemCount = totalItemCount
+        self.answeredItemCount = answeredItemCount
+        self.flaggedItemCount = flaggedItemCount
+        self.omittedItemCount = omittedItemCount
+        self.scratchpadAttachmentCount = scratchpadAttachmentCount
+        self.clockSync = clockSync
+        self.sectionProgress = sectionProgress
+        self.items = items
+        self.f28VerificationBatchManifest = f28VerificationBatchManifest
+        self.llmTokensUsed = llmTokensUsed
+        self.trainingEligible = trainingEligible
+    }
+}
+
+public struct ExamSessionStartRequestDTO: Sendable, Codable, Equatable {
+    public let userId: UUID?
+    public let assemblyId: UUID
+    public let offlineGraceBufferSeconds: Int?
+    public let clientTimestamp: String?
+    public let trainingEligible: Bool
+
+    public init(
+        userId: UUID? = nil,
+        assemblyId: UUID,
+        offlineGraceBufferSeconds: Int? = 120,
+        clientTimestamp: String? = nil,
+        trainingEligible: Bool = false
+    ) {
+        self.userId = userId
+        self.assemblyId = assemblyId
+        self.offlineGraceBufferSeconds = offlineGraceBufferSeconds
+        self.clientTimestamp = clientTimestamp
+        self.trainingEligible = trainingEligible
+    }
+}
+
+public struct ExamSessionItemAutosaveRequestDTO: Sendable, Codable, Equatable {
+    public let action: ExamSessionItemAction
+    public let selectedOptionKey: String?
+    public let numericResponseValue: Double?
+    public let flaggedForReview: Bool?
+    public let eliminatedOptionKeys: [String]?
+    public let deltaTimeSpentSeconds: Int
+    public let expectedAutosaveVersion: Int
+    public let clientAutosaveSeq: Int64
+    public let offlineReplay: Bool?
+    public let clientTimestamp: String?
+    public let trainingEligible: Bool
+
+    public init(
+        action: ExamSessionItemAction,
+        selectedOptionKey: String? = nil,
+        numericResponseValue: Double? = nil,
+        flaggedForReview: Bool? = nil,
+        eliminatedOptionKeys: [String]? = nil,
+        deltaTimeSpentSeconds: Int = 0,
+        expectedAutosaveVersion: Int,
+        clientAutosaveSeq: Int64,
+        offlineReplay: Bool? = false,
+        clientTimestamp: String? = nil,
+        trainingEligible: Bool = false
+    ) {
+        self.action = action
+        self.selectedOptionKey = selectedOptionKey
+        self.numericResponseValue = numericResponseValue
+        self.flaggedForReview = flaggedForReview
+        self.eliminatedOptionKeys = eliminatedOptionKeys
+        self.deltaTimeSpentSeconds = deltaTimeSpentSeconds
+        self.expectedAutosaveVersion = expectedAutosaveVersion
+        self.clientAutosaveSeq = clientAutosaveSeq
+        self.offlineReplay = offlineReplay
+        self.clientTimestamp = clientTimestamp
+        self.trainingEligible = trainingEligible
+    }
+}
+
+public struct ExamSessionItemAutosaveResponseDTO: Sendable, Codable, Equatable {
+    public let schemaVersion: String
+    public let sessionId: UUID
+    public let status: ExamSessionStatus
+    public let itemPosition: Int
+    public let questionCode: String
+    public let responseState: ExamItemResponseState
+    public let selectedOptionKey: String?
+    public let numericResponseValue: Double?
+    public let flaggedForReview: Bool
+    public let eliminatedOptionKeys: [String]
+    public let timeSpentSeconds: Int
+    public let autosaveVersion: Int
+    public let clientAutosaveSeq: Int64
+    public let answeredItemCount: Int
+    public let flaggedItemCount: Int
+    public let omittedItemCount: Int
+    public let clockSync: ExamServerClockSyncDTO
+    public let llmTokensUsed: Int
+    public let trainingEligible: Bool
+
+    public init(
+        schemaVersion: String = "exam-session-item-autosave-response-v1",
+        sessionId: UUID,
+        status: ExamSessionStatus,
+        itemPosition: Int,
+        questionCode: String,
+        responseState: ExamItemResponseState,
+        selectedOptionKey: String? = nil,
+        numericResponseValue: Double? = nil,
+        flaggedForReview: Bool,
+        eliminatedOptionKeys: [String],
+        timeSpentSeconds: Int,
+        autosaveVersion: Int,
+        clientAutosaveSeq: Int64,
+        answeredItemCount: Int,
+        flaggedItemCount: Int,
+        omittedItemCount: Int,
+        clockSync: ExamServerClockSyncDTO,
+        llmTokensUsed: Int = 0,
+        trainingEligible: Bool = false
+    ) {
+        self.schemaVersion = schemaVersion
+        self.sessionId = sessionId
+        self.status = status
+        self.itemPosition = itemPosition
+        self.questionCode = questionCode
+        self.responseState = responseState
+        self.selectedOptionKey = selectedOptionKey
+        self.numericResponseValue = numericResponseValue
+        self.flaggedForReview = flaggedForReview
+        self.eliminatedOptionKeys = eliminatedOptionKeys
+        self.timeSpentSeconds = timeSpentSeconds
+        self.autosaveVersion = autosaveVersion
+        self.clientAutosaveSeq = clientAutosaveSeq
+        self.answeredItemCount = answeredItemCount
+        self.flaggedItemCount = flaggedItemCount
+        self.omittedItemCount = omittedItemCount
+        self.clockSync = clockSync
+        self.llmTokensUsed = llmTokensUsed
+        self.trainingEligible = trainingEligible
+    }
+}
+
+public struct ExamScratchpadUploadRequestDTO: Sendable, Codable, Equatable {
+    public let pageNumber: Int
+    public let storageKey: String
+    public let mimeType: String
+    public let byteSize: Int64
+    public let sha256Checksum: String
+    public let widthPx: Int?
+    public let heightPx: Int?
+    public let captureSource: ExamScratchpadCaptureSource
+    public let bookletPublisher: String?
+    public let capturedAt: String?
+    public let trainingEligible: Bool
+
+    public init(
+        pageNumber: Int,
+        storageKey: String,
+        mimeType: String = "image/jpeg",
+        byteSize: Int64,
+        sha256Checksum: String,
+        widthPx: Int? = nil,
+        heightPx: Int? = nil,
+        captureSource: ExamScratchpadCaptureSource,
+        bookletPublisher: String? = nil,
+        capturedAt: String? = nil,
+        trainingEligible: Bool = false
+    ) {
+        self.pageNumber = pageNumber
+        self.storageKey = storageKey
+        self.mimeType = mimeType
+        self.byteSize = byteSize
+        self.sha256Checksum = sha256Checksum
+        self.widthPx = widthPx
+        self.heightPx = heightPx
+        self.captureSource = captureSource
+        self.bookletPublisher = bookletPublisher
+        self.capturedAt = capturedAt
+        self.trainingEligible = trainingEligible
+    }
+}
+
+public struct ExamScratchpadUploadResponseDTO: Sendable, Codable, Equatable {
+    public let schemaVersion: String
+    public let sessionId: UUID
+    public let itemPosition: Int
+    public let scratchpadAttachmentCount: Int
+    public let itemScratchpadCount: Int
+    public let asset: ExamScratchpadAssetDTO
+    public let clockSync: ExamServerClockSyncDTO
+    public let llmTokensUsed: Int
+    public let trainingEligible: Bool
+
+    public init(
+        schemaVersion: String = "exam-scratchpad-upload-response-v1",
+        sessionId: UUID,
+        itemPosition: Int,
+        scratchpadAttachmentCount: Int,
+        itemScratchpadCount: Int,
+        asset: ExamScratchpadAssetDTO,
+        clockSync: ExamServerClockSyncDTO,
+        llmTokensUsed: Int = 0,
+        trainingEligible: Bool = false
+    ) {
+        self.schemaVersion = schemaVersion
+        self.sessionId = sessionId
+        self.itemPosition = itemPosition
+        self.scratchpadAttachmentCount = scratchpadAttachmentCount
+        self.itemScratchpadCount = itemScratchpadCount
+        self.asset = asset
+        self.clockSync = clockSync
+        self.llmTokensUsed = llmTokensUsed
+        self.trainingEligible = trainingEligible
+    }
+}
+
+public struct ExamSessionSubmitRequestDTO: Sendable, Codable, Equatable {
+    public let submissionReason: ExamSessionSubmissionReason
+    public let clientTimestamp: String?
+    public let trainingEligible: Bool
+
+    public init(
+        submissionReason: ExamSessionSubmissionReason = .userInitiated,
+        clientTimestamp: String? = nil,
+        trainingEligible: Bool = false
+    ) {
+        self.submissionReason = submissionReason
+        self.clientTimestamp = clientTimestamp
+        self.trainingEligible = trainingEligible
+    }
+}
+
+public struct ExamSessionSubmitResponseDTO: Sendable, Codable, Equatable {
+    public let schemaVersion: String
+    public let sessionId: UUID
+    public let assemblyId: UUID
+    public let blueprintId: UUID
+    public let examCode: String
+    public let status: ExamSessionStatus
+    public let submissionReason: String
+    public let submittedAt: String
+    public let submitIdempotencyKey: String
+    public let totalItemCount: Int
+    public let answeredItemCount: Int
+    public let flaggedItemCount: Int
+    public let omittedItemCount: Int
+    public let scratchpadAttachmentCount: Int
+    public let f28VerificationBatchManifest: F28VerificationBatchManifestDTO
+    public let clockSync: ExamServerClockSyncDTO
+    public let llmTokensUsed: Int
+    public let trainingEligible: Bool
+
+    public init(
+        schemaVersion: String = "exam-session-submit-response-v1",
+        sessionId: UUID,
+        assemblyId: UUID,
+        blueprintId: UUID,
+        examCode: String,
+        status: ExamSessionStatus,
+        submissionReason: String,
+        submittedAt: String,
+        submitIdempotencyKey: String,
+        totalItemCount: Int,
+        answeredItemCount: Int,
+        flaggedItemCount: Int,
+        omittedItemCount: Int,
+        scratchpadAttachmentCount: Int,
+        f28VerificationBatchManifest: F28VerificationBatchManifestDTO,
+        clockSync: ExamServerClockSyncDTO,
+        llmTokensUsed: Int = 0,
+        trainingEligible: Bool = false
+    ) {
+        self.schemaVersion = schemaVersion
+        self.sessionId = sessionId
+        self.assemblyId = assemblyId
+        self.blueprintId = blueprintId
+        self.examCode = examCode
+        self.status = status
+        self.submissionReason = submissionReason
+        self.submittedAt = submittedAt
+        self.submitIdempotencyKey = submitIdempotencyKey
+        self.totalItemCount = totalItemCount
+        self.answeredItemCount = answeredItemCount
+        self.flaggedItemCount = flaggedItemCount
+        self.omittedItemCount = omittedItemCount
+        self.scratchpadAttachmentCount = scratchpadAttachmentCount
+        self.f28VerificationBatchManifest = f28VerificationBatchManifest
+        self.clockSync = clockSync
+        self.llmTokensUsed = llmTokensUsed
+        self.trainingEligible = trainingEligible
+    }
+}
+
+public struct ExamNoHintGuardResponseDTO: Sendable, Codable, Equatable {
+    public let schemaVersion: String
+    public let sessionId: UUID
+    public let status: ExamSessionStatus
+    public let hintAllowed: Bool
+    public let policyCode: String
+    public let requestedSurface: String
+    public let neutralExplanationKey: String
+    public let serverNow: String
+    public let llmTokensUsed: Int
+    public let trainingEligible: Bool
+
+    public init(
+        schemaVersion: String = "exam-no-hint-guard-response-v1",
+        sessionId: UUID,
+        status: ExamSessionStatus,
+        hintAllowed: Bool,
+        policyCode: String,
+        requestedSurface: String,
+        neutralExplanationKey: String,
+        serverNow: String,
+        llmTokensUsed: Int = 0,
+        trainingEligible: Bool = false
+    ) {
+        self.schemaVersion = schemaVersion
+        self.sessionId = sessionId
+        self.status = status
+        self.hintAllowed = hintAllowed
+        self.policyCode = policyCode
+        self.requestedSurface = requestedSurface
+        self.neutralExplanationKey = neutralExplanationKey
+        self.serverNow = serverNow
+        self.llmTokensUsed = llmTokensUsed
+        self.trainingEligible = trainingEligible
+    }
+}
+
+public struct ExamAutosaveOutboxEntry: Sendable, Codable, Equatable, Identifiable {
+    public let id: UUID
+    public let sessionId: UUID
+    public let userId: UUID
+    public let itemPosition: Int
+    public let idempotencyKey: String
+    public let request: ExamSessionItemAutosaveRequestDTO
+    public let enqueuedAt: String
+
+    public init(
+        id: UUID = UUID(),
+        sessionId: UUID,
+        userId: UUID,
+        itemPosition: Int,
+        idempotencyKey: String,
+        request: ExamSessionItemAutosaveRequestDTO,
+        enqueuedAt: String
+    ) {
+        self.id = id
+        self.sessionId = sessionId
+        self.userId = userId
+        self.itemPosition = itemPosition
+        self.idempotencyKey = idempotencyKey
+        self.request = request
+        self.enqueuedAt = enqueuedAt
+    }
+}
+
+public struct ExamLocalScratchpadDraft: Sendable, Codable, Equatable, Identifiable {
+    public let id: UUID
+    public let sessionId: UUID
+    public let userId: UUID
+    public let itemPosition: Int
+    public let pageNumber: Int
+    public let captureSource: ExamScratchpadCaptureSource
+    public let bookletPublisher: String?
+    public let storageKey: String
+    public let mimeType: String
+    public let byteSize: Int64
+    public let sha256Checksum: String
+    public let uploadState: String
+    public let idempotencyKey: String
+    public let createdAt: String
+
+    public init(
+        id: UUID = UUID(),
+        sessionId: UUID,
+        userId: UUID,
+        itemPosition: Int,
+        pageNumber: Int,
+        captureSource: ExamScratchpadCaptureSource,
+        bookletPublisher: String? = nil,
+        storageKey: String,
+        mimeType: String = "image/jpeg",
+        byteSize: Int64,
+        sha256Checksum: String,
+        uploadState: String = "QUEUED_LOCAL",
+        idempotencyKey: String,
+        createdAt: String
+    ) {
+        self.id = id
+        self.sessionId = sessionId
+        self.userId = userId
+        self.itemPosition = itemPosition
+        self.pageNumber = pageNumber
+        self.captureSource = captureSource
+        self.bookletPublisher = bookletPublisher
+        self.storageKey = storageKey
+        self.mimeType = mimeType
+        self.byteSize = byteSize
+        self.sha256Checksum = sha256Checksum
+        self.uploadState = uploadState
+        self.idempotencyKey = idempotencyKey
+        self.createdAt = createdAt
+    }
+}

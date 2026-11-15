@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/exam/v1/exam-session-item-autosave-request.schema.json",
+  "title": "ExamSessionItemAutosaveRequest",
+  "description": "Idempotent optimistic-concurrency item autosave request during a timed mock exam session (Sprint 9.4).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "action",
+    "deltaTimeSpentSeconds",
+    "expectedAutosaveVersion",
+    "clientAutosaveSeq",
+    "trainingEligible"
+  ],
+  "properties": {
+    "action": {
+      "type": "string",
+      "enum": [
+        "VIEW_ONLY",
+        "SELECT_OPTION",
+        "CLEAR_ANSWER",
+        "TOGGLE_FLAG",
+        "SET_ELIMINATED_OPTIONS",
+        "BATCH_PATCH"
+      ]
+    },
+    "selectedOptionKey": {
+      "type": ["string", "null"],
+      "enum": ["A", "B", "C", "D", "E", null]
+    },
+    "numericResponseValue": {
+      "type": ["number", "null"]
+    },
+    "flaggedForReview": {
+      "type": ["boolean", "null"]
+    },
+    "eliminatedOptionKeys": {
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["A", "B", "C", "D", "E"]
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "deltaTimeSpentSeconds": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3600
+    },
+    "expectedAutosaveVersion": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "clientAutosaveSeq": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "offlineReplay": {
+      "type": ["boolean", "null"]
+    },
+    "clientTimestamp": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    }
+  }
+}

@@ -178,6 +178,38 @@ final class Sprint91ExamCatalogAndTargetTests: XCTestCase {
             func fetchAssembledAssessments(userId: UUID, examDefinitionId: UUID?) async throws -> [AssembledAssessmentDTO] {
                 throw ExamServiceError.featureDisabled
             }
+            func startOrResumeSession(request: ExamSessionStartRequestDTO) async throws -> ExamSessionDTO {
+                throw ExamServiceError.featureDisabled
+            }
+            func fetchSessionState(sessionId: UUID, clientTimestamp: String?) async throws -> ExamSessionDTO {
+                throw ExamServiceError.featureDisabled
+            }
+            func autosaveSessionItem(
+                sessionId: UUID,
+                itemPosition: Int,
+                idempotencyKey: String,
+                request: ExamSessionItemAutosaveRequestDTO
+            ) async throws -> ExamSessionItemAutosaveResponseDTO {
+                throw ExamServiceError.featureDisabled
+            }
+            func attachScratchpadPhoto(
+                sessionId: UUID,
+                itemPosition: Int,
+                idempotencyKey: String,
+                request: ExamScratchpadUploadRequestDTO
+            ) async throws -> ExamScratchpadUploadResponseDTO {
+                throw ExamServiceError.featureDisabled
+            }
+            func submitSession(
+                sessionId: UUID,
+                idempotencyKey: String,
+                request: ExamSessionSubmitRequestDTO
+            ) async throws -> ExamSessionSubmitResponseDTO {
+                throw ExamServiceError.featureDisabled
+            }
+            func checkNoHintGuard(sessionId: UUID, requestedSurface: String) async throws -> ExamNoHintGuardResponseDTO {
+                throw ExamServiceError.featureDisabled
+            }
         }
 
         let store = ExamOfflineSQLiteStore(inMemory: true)

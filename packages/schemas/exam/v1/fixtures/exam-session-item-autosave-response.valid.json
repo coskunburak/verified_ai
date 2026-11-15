@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "exam-session-item-autosave-response-v1",
+  "sessionId": "96000000-0000-4000-8000-000000000101",
+  "status": "IN_PROGRESS",
+  "itemPosition": 1,
+  "questionCode": "TYT-MATH-2026-INT-001",
+  "responseState": "FLAGGED_ANSWERED",
+  "selectedOptionKey": "C",
+  "numericResponseValue": null,
+  "flaggedForReview": true,
+  "eliminatedOptionKeys": ["A", "D"],
+  "timeSpentSeconds": 35,
+  "autosaveVersion": 1,
+  "clientAutosaveSeq": 1,
+  "answeredItemCount": 1,
+  "flaggedItemCount": 1,
+  "omittedItemCount": 7,
+  "clockSync": {
+    "serverNow": "2026-03-01T10:00:35Z",
+    "remainingSeconds": 1090,
+    "graceRemainingSeconds": 1210,
+    "clientClockSkewMs": 0,
+    "clockSkewAnomaly": false,
+    "deadlineExpired": false,
+    "offlineGraceActive": false
+  },
+  "llmTokensUsed": 0,
+  "trainingEligible": false
+}

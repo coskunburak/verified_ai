@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/exam/v1/exam-session-item-autosave-response.schema.json",
+  "title": "ExamSessionItemAutosaveResponse",
+  "description": "Server-confirmed autosave response with incremented optimistic version and server clock synchronization (Sprint 9.4).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "sessionId",
+    "status",
+    "itemPosition",
+    "questionCode",
+    "responseState",
+    "flaggedForReview",
+    "eliminatedOptionKeys",
+    "timeSpentSeconds",
+    "autosaveVersion",
+    "clientAutosaveSeq",
+    "answeredItemCount",
+    "flaggedItemCount",
+    "omittedItemCount",
+    "clockSync",
+    "llmTokensUsed",
+    "trainingEligible"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "exam-session-item-autosave-response-v1"
+    },
+    "sessionId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "IN_PROGRESS",
+        "OFFLINE_GRACE_BUFFER",
+        "SUBMITTED",
+        "EXPIRED_AUTO_SUBMITTED",
+        "ABANDONED"
+      ]
+    },
+    "itemPosition": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "questionCode": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 64
+    },
+    "responseState": {
+      "type": "string",
+      "enum": [
+        "UNVISITED",
+        "VIEWED_OMITTED",
+        "ANSWERED",
+        "FLAGGED_ANSWERED",
+        "FLAGGED_OMITTED"
+      ]
+    },
+    "selectedOptionKey": {
+      "type": ["string", "null"],
+      "enum": ["A", "B", "C", "D", "E", null]
+    },
+    "numericResponseValue": {
+      "type": ["number", "null"]
+    },
+    "flaggedForReview": {
+      "type": "boolean"
+    },
+    "eliminatedOptionKeys": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["A", "B", "C", "D", "E"]
+      }
+    },
+    "timeSpentSeconds": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 32400
+    },
+    "autosaveVersion": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "clientAutosaveSeq": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "answeredItemCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 200
+    },
+    "flaggedItemCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 200
+    },
+    "omittedItemCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 200
+    },
+    "clockSync": {
+      "$ref": "#/$defs/ExamServerClockSync"
+    },
+    "llmTokensUsed": {
+      "type": "integer",
+      "const": 0
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    }
+  },
+  "$defs": {
+    "ExamServerClockSync": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "serverNow",
+        "remainingSeconds",
+        "graceRemainingSeconds",
+        "clientClockSkewMs",
+        "clockSkewAnomaly",
+        "deadlineExpired",
+        "offlineGraceActive"
+      ],
+      "properties": {
+        "serverNow": { "type": "string", "format": "date-time" },
+        "remainingSeconds": { "type": "integer", "minimum": 0 },
+        "graceRemainingSeconds": { "type": "integer", "minimum": 0 },
+        "clientClockSkewMs": { "type": "integer" },
+        "clockSkewAnomaly": { "type": "boolean" },
+        "deadlineExpired": { "type": "boolean" },
+        "offlineGraceActive": { "type": "boolean" }
+      }
+    }
+  }
+}

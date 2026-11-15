@@ -9,6 +9,9 @@ import com.verifiedai.exam.domain.CandidateProfileModels.CandidateHorizonHistory
 import com.verifiedai.exam.domain.CandidateProfileModels.CandidateProfileRecord;
 import com.verifiedai.exam.domain.CandidateProfileModels.SyllabusUploadRecord;
 import com.verifiedai.exam.domain.ExamModels.StudentExamTargetRecord;
+import com.verifiedai.exam.domain.ExamScratchpadAsset;
+import com.verifiedai.exam.domain.ExamSession;
+import com.verifiedai.exam.infrastructure.persistence.ExamSessionRepository;
 import com.verifiedai.sharedkernel.privacy.AccountDataLifecycleContributor;
 import java.time.Clock;
 import java.time.Instant;
@@ -28,7 +31,7 @@ import org.springframework.stereotype.Component;
 /**
  * GDPR / KVKK Article 17 lifecycle contributor for exam targets, pinned snapshots,
  * candidate profiles, horizon history, ephemeral syllabus ingestion metadata,
- * and assembled assessments.
+ * assembled assessments, and timed exam sessions / scratchpad assets (V057).
  */
 @Component
 public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleContributor {
@@ -39,6 +42,7 @@ public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleCont
     private final ExamRepository examRepository;
     private final CandidateProfileRepository candidateProfileRepository;
     private final AssembledAssessmentRepository assembledAssessmentRepository;
+    private final ExamSessionRepository examSessionRepository;
     private final Clock clock;
 
     @Autowired
@@ -46,12 +50,14 @@ public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleCont
             ExamRepository examRepository,
             ObjectProvider<CandidateProfileRepository> candidateProfileRepositoryProvider,
             ObjectProvider<AssembledAssessmentRepository> assembledAssessmentRepositoryProvider,
+            ObjectProvider<ExamSessionRepository> examSessionRepositoryProvider,
             ObjectProvider<Clock> clockProvider
     ) {
         this(
                 examRepository,
                 candidateProfileRepositoryProvider.getIfAvailable(),
                 assembledAssessmentRepositoryProvider.getIfAvailable(),
+                examSessionRepositoryProvider.getIfAvailable(),
                 clockProvider.getIfAvailable(Clock::systemUTC)
         );
     }
@@ -60,12 +66,23 @@ public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleCont
             ExamRepository examRepository,
             CandidateProfileRepository candidateProfileRepository,
             AssembledAssessmentRepository assembledAssessmentRepository,
+            ExamSessionRepository examSessionRepository,
             Clock clock
     ) {
         this.examRepository = Objects.requireNonNull(examRepository, "examRepository cannot be null");
         this.candidateProfileRepository = candidateProfileRepository;
         this.assembledAssessmentRepository = assembledAssessmentRepository;
+        this.examSessionRepository = examSessionRepository;
         this.clock = Objects.requireNonNull(clock, "clock cannot be null");
+    }
+
+    public ExamPrivacyLifecycleContributor(
+            ExamRepository examRepository,
+            CandidateProfileRepository candidateProfileRepository,
+            AssembledAssessmentRepository assembledAssessmentRepository,
+            Clock clock
+    ) {
+        this(examRepository, candidateProfileRepository, assembledAssessmentRepository, null, clock);
     }
 
     public ExamPrivacyLifecycleContributor(
@@ -73,18 +90,18 @@ public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleCont
             CandidateProfileRepository candidateProfileRepository,
             Clock clock
     ) {
-        this(examRepository, candidateProfileRepository, null, clock);
+        this(examRepository, candidateProfileRepository, null, null, clock);
     }
 
     public ExamPrivacyLifecycleContributor(
             ExamRepository examRepository,
             CandidateProfileRepository candidateProfileRepository
     ) {
-        this(examRepository, candidateProfileRepository, null, Clock.systemUTC());
+        this(examRepository, candidateProfileRepository, null, null, Clock.systemUTC());
     }
 
     public ExamPrivacyLifecycleContributor(ExamRepository examRepository) {
-        this(examRepository, null, null, Clock.systemUTC());
+        this(examRepository, null, null, null, Clock.systemUTC());
     }
 
     @Override
@@ -151,6 +168,16 @@ public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleCont
             exportMap.put("assembledAssessments", exportedAssembled);
         }
 
+        if (examSessionRepository != null) {
+            List<ExamSession> sessions = examSessionRepository.findByUserId(userId);
+            List<Map<String, Object>> exportedSessions = sessions.stream()
+                    .limit(EXPORT_HISTORY_LIMIT)
+                    .map(ExamPrivacyLifecycleContributor::mapExamSession)
+                    .toList();
+            exportMap.put("examSessionCount", exportedSessions.size());
+            exportMap.put("examSessions", exportedSessions);
+        }
+
         exportMap.put("llmTokensUsed", 0);
         exportMap.put("trainingEligible", false);
         return exportMap;
@@ -158,7 +185,12 @@ public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleCont
 
     @Override
     public void deleteUserData(UUID userId, Instant now) {
-        // FK-safe order: assembled assessments & items -> candidate profiles -> exam targets
+        // Strict FK-safe child-first purge order:
+        // V057 scratchpad assets / idempotency / session items / exam sessions
+        // -> V056 assembled assessments & items -> V055 candidate profiles -> V054 exam targets
+        int deletedSessionRows = examSessionRepository == null
+                ? 0
+                : examSessionRepository.deleteByUserId(userId);
         int deletedAssembled = assembledAssessmentRepository == null
                 ? 0
                 : assembledAssessmentRepository.deleteByUserId(userId);
@@ -167,7 +199,8 @@ public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleCont
                 : candidateProfileRepository.deleteAllCandidateDataForUser(userId);
         int deletedTargets = examRepository.deleteTargetsByUserId(userId);
         LOG.info(
-                "Privacy purge completed for exam module: deletedAssembled={} deletedCandidateRows={} deletedTargets={}",
+                "Privacy purge completed for exam module: deletedSessionRows={} deletedAssembled={} deletedCandidateRows={} deletedTargets={}",
+                deletedSessionRows,
                 deletedAssembled,
                 deletedCandidateRows,
                 deletedTargets
@@ -292,6 +325,45 @@ public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleCont
         m.put("cognitiveLevel", item.cognitiveLevel().name());
         m.put("optionOrder", item.optionOrder());
         m.put("allocatedPoints", item.allocatedPoints());
+        m.put("trainingEligible", false);
+        return m;
+    }
+
+    private static Map<String, Object> mapExamSession(ExamSession session) {
+        Map<String, Object> m = new LinkedHashMap<>();
+        m.put("sessionId", session.id().toString());
+        m.put("assemblyId", session.assemblyId().toString());
+        m.put("blueprintId", session.blueprintId().toString());
+        m.put("examCode", session.examCode());
+        m.put("examVersionNumber", session.examVersionNumber());
+        m.put("status", session.status().name());
+        m.put("startedAt", session.startedAt().toString());
+        m.put("serverDeadlineAt", session.serverDeadlineAt().toString());
+        m.put("submittedAt", session.submittedAt() != null ? session.submittedAt().toString() : null);
+        m.put("submissionReason", session.submissionReason());
+        m.put("totalItemCount", session.totalItemCount());
+        m.put("answeredItemCount", session.answeredItemCount());
+        m.put("flaggedItemCount", session.flaggedItemCount());
+        m.put("omittedItemCount", session.omittedItemCount());
+        m.put("scratchpadAttachmentCount", session.scratchpadAttachmentCount());
+        m.put("trainingEligible", false);
+        List<Map<String, Object>> scratchpadSummaries = session.items().stream()
+                .flatMap(item -> item.scratchpadAssets().stream())
+                .map(ExamPrivacyLifecycleContributor::mapScratchpadSummary)
+                .toList();
+        m.put("scratchpadAssets", scratchpadSummaries);
+        return m;
+    }
+
+    private static Map<String, Object> mapScratchpadSummary(ExamScratchpadAsset asset) {
+        Map<String, Object> m = new LinkedHashMap<>();
+        m.put("assetId", asset.id().toString());
+        m.put("itemPosition", asset.itemPosition());
+        m.put("pageNumber", asset.pageNumber());
+        m.put("captureSource", asset.captureSource());
+        m.put("bookletPublisher", asset.bookletPublisher());
+        m.put("f28VerificationStatus", asset.f28VerificationStatus());
+        m.put("sha256Checksum", asset.sha256Checksum());
         m.put("trainingEligible", false);
         return m;
     }

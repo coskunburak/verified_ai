@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "exam-no-hint-guard-response-v1",
+  "sessionId": "96000000-0000-4000-8000-000000000101",
+  "status": "IN_PROGRESS",
+  "hintAllowed": false,
+  "policyCode": "EXAM_NO_HINT_MODE_ACTIVE",
+  "requestedSurface": "SOCRATIC_HINT_DRAWER",
+  "neutralExplanationKey": "exam.session.no_hint.explanation",
+  "serverNow": "2026-03-01T10:02:00Z",
+  "llmTokensUsed": 0,
+  "trainingEligible": false
+}

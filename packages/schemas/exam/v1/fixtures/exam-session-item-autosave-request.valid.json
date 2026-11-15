@@ -1,0 +1,13 @@
+{
+  "action": "SELECT_OPTION",
+  "selectedOptionKey": "C",
+  "numericResponseValue": null,
+  "flaggedForReview": true,
+  "eliminatedOptionKeys": ["A", "D"],
+  "deltaTimeSpentSeconds": 35,
+  "expectedAutosaveVersion": 0,
+  "clientAutosaveSeq": 1,
+  "offlineReplay": false,
+  "clientTimestamp": "2026-03-01T10:00:35Z",
+  "trainingEligible": false
+}

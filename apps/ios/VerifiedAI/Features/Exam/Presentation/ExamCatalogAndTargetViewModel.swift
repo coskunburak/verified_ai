@@ -249,6 +249,16 @@ public final class ExamCatalogAndTargetViewModel: ObservableObject {
             errorMessageKey = "exam.syllabus.error.disambiguation_required"
         case .poolInsufficient:
             errorMessageKey = "exam.assembly.error.pool_insufficient"
+        case .noHintModeActive:
+            errorMessageKey = "exam.session.no_hint.notice"
+        case .deadlineExpired:
+            errorMessageKey = "exam.session.status.expired_auto_submitted"
+        case .sessionAlreadySubmitted:
+            errorMessageKey = "exam.session.submit.receipt_title"
+        case .autosaveVersionConflict:
+            errorMessageKey = "exam.error.version_conflict"
+        case .invalidScratchpadAsset:
+            errorMessageKey = "exam.syllabus.error.media_unsupported"
         case .unexpected(let message):
             errorMessageKey = "exam.error.unexpected"
             errorDetailsText = message

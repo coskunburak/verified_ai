@@ -8877,6 +8877,23 @@
         }
       }
     },
+    "exam.assembly.startTimedSessionButton" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start Timed Mock Exam"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zamanlı Deneme Sınavını Başlat"
+          }
+        }
+      }
+    },
     "exam.assembly.status.ready" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -8924,6 +8941,346 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Erişilebilirlik Desteği"
+          }
+        }
+      }
+    },
+    "exam.session.action.clear_answer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clear Selection"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seçimi Temizle"
+          }
+        }
+      }
+    },
+    "exam.session.action.flag_review" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Flag for Review"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İncele"
+          }
+        }
+      }
+    },
+    "exam.session.action.next_item" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sonraki"
+          }
+        }
+      }
+    },
+    "exam.session.action.previous_item" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Previous"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Önceki"
+          }
+        }
+      }
+    },
+    "exam.session.action.submit_exam" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Submit Mock Exam"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deneme Sınavını Teslim Et"
+          }
+        }
+      }
+    },
+    "exam.session.navigator.filter_all" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All Items"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tüm Sorular"
+          }
+        }
+      }
+    },
+    "exam.session.navigator.filter_flagged" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Flagged for Review"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İnceleme İçin İşaretli"
+          }
+        }
+      }
+    },
+    "exam.session.navigator.filter_omitted" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unanswered"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Boş Bırakılan"
+          }
+        }
+      }
+    },
+    "exam.session.navigator.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Question Navigator"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Soru Gezgini"
+          }
+        }
+      }
+    },
+    "exam.session.no_hint.badge" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No-Hint Exam Mode Active"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İpucu Kapalı Sınav Modu Etkin"
+          }
+        }
+      }
+    },
+    "exam.session.no_hint.notice" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tutor hints and AI guidance remain paused until submission."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Teslime kadar rehber ipuçları ve yapay zekâ desteği duraklatıldı."
+          }
+        }
+      }
+    },
+    "exam.session.scratchpad.attach_button" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Attach Solution Page"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çözüm Sayfası Ekle"
+          }
+        }
+      }
+    },
+    "exam.session.scratchpad.queued_badge" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Queued for Post-Submit F28 Verification"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Teslim Sonrası F28 Doğrulaması İçin Sıraya Alındı"
+          }
+        }
+      }
+    },
+    "exam.session.scratchpad.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deneme Scratchpad Photos"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deneme Çözüm Fotoğrafları"
+          }
+        }
+      }
+    },
+    "exam.session.submit.confirmation_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirm Mock Exam Submission"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deneme Sınavı Teslimini Onayla"
+          }
+        }
+      }
+    },
+    "exam.session.submit.receipt_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Submission Recorded — F28 Batch Queued"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Teslim Kaydedildi — F28 Toplu Doğrulama Sıraya Alındı"
+          }
+        }
+      }
+    },
+    "exam.session.timer.clock_skew_notice" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Device clock difference adjusted to server time."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cihaz saati farkı sunucu saatine göre ayarlandı."
+          }
+        }
+      }
+    },
+    "exam.session.timer.grace_buffer_active" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Offline Grace Window Active — Local Autosave Protected"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çevrimdışı Ek Süre Etkin — Yerel Kayıt Korumalı"
+          }
+        }
+      }
+    },
+    "exam.session.timer.remaining_label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server Time Remaining"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kalan Sunucu Süresi"
+          }
+        }
+      }
+    },
+    "exam.session.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Timed Mock Exam"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zamanlı Deneme Sınavı"
           }
         }
       }

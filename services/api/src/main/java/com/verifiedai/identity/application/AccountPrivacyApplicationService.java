@@ -166,6 +166,8 @@ public class AccountPrivacyApplicationService {
         // Completed exports also contain personal learning transcripts.
         jdbcTemplate.update("delete from data_exports where user_id = ?", userId);
         user.markDeleted(now);
+        // Save explicitly in case a lifecycle contributor cleared the JPA persistence context.
+        user = userRepository.save(user);
         recordPrivacyEvent(userId, "ACCOUNT_DELETED", "USER_CONFIRMED");
         metrics.deletionCompleted();
         return new DeletionRequestResult(user.id(), user.status(), user.deletionRequestedAt(), user.deletedAt());

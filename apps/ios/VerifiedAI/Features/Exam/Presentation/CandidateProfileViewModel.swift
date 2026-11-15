@@ -334,6 +334,16 @@ public final class CandidateProfileViewModel: ObservableObject {
                 errorLocalizationKey = "exam.syllabus.error.disambiguation_required"
             case .poolInsufficient:
                 errorLocalizationKey = "exam.assembly.error.pool_insufficient"
+            case .noHintModeActive:
+                errorLocalizationKey = "exam.session.no_hint.notice"
+            case .deadlineExpired:
+                errorLocalizationKey = "exam.session.status.expired_auto_submitted"
+            case .sessionAlreadySubmitted:
+                errorLocalizationKey = "exam.session.submit.receipt_title"
+            case .autosaveVersionConflict:
+                errorLocalizationKey = "exam.error.version_conflict"
+            case .invalidScratchpadAsset:
+                errorLocalizationKey = "exam.syllabus.error.media_unsupported"
             case .unexpected(let msg):
                 errorMessage = msg
             }

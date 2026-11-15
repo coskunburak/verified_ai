@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/exam/v1/exam-scratchpad-upload-response.schema.json",
+  "title": "ExamScratchpadUploadResponse",
+  "description": "Scratchpad photo attachment confirmation queued for F28 post-submit verification batch (Sprint 9.4).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "sessionId",
+    "itemPosition",
+    "scratchpadAttachmentCount",
+    "itemScratchpadCount",
+    "asset",
+    "clockSync",
+    "llmTokensUsed",
+    "trainingEligible"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "exam-scratchpad-upload-response-v1"
+    },
+    "sessionId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "itemPosition": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "scratchpadAttachmentCount": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "itemScratchpadCount": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 4
+    },
+    "asset": {
+      "$ref": "#/$defs/ExamScratchpadAssetSnapshot"
+    },
+    "clockSync": {
+      "$ref": "#/$defs/ExamServerClockSync"
+    },
+    "llmTokensUsed": {
+      "type": "integer",
+      "const": 0
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    }
+  },
+  "$defs": {
+    "ExamScratchpadAssetSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "sessionId",
+        "sessionItemId",
+        "itemPosition",
+        "pageNumber",
+        "storageKey",
+        "mimeType",
+        "byteSize",
+        "sha256Checksum",
+        "captureSource",
+        "f28VerificationStatus",
+        "capturedAt",
+        "trainingEligible"
+      ],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "sessionId": { "type": "string", "format": "uuid" },
+        "sessionItemId": { "type": "string", "format": "uuid" },
+        "itemPosition": { "type": "integer", "minimum": 1 },
+        "pageNumber": { "type": "integer", "minimum": 1, "maximum": 4 },
+        "storageKey": { "type": "string", "minLength": 10, "maxLength": 512 },
+        "mimeType": { "type": "string", "enum": ["image/jpeg", "image/png", "image/heic"] },
+        "byteSize": { "type": "integer", "minimum": 1, "maximum": 15728640 },
+        "sha256Checksum": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "widthPx": { "type": ["integer", "null"], "minimum": 200, "maximum": 12000 },
+        "heightPx": { "type": ["integer", "null"], "minimum": 200, "maximum": 12000 },
+        "captureSource": { "type": "string", "enum": ["DIGITAL_MOCK_SCRATCHPAD", "PAPER_DENEME_BOOKLET"] },
+        "bookletPublisher": { "type": ["string", "null"], "maxLength": 120 },
+        "f28VerificationStatus": { "type": "string", "enum": ["QUEUED_FOR_POST_SUBMIT_BATCH", "NOT_APPLICABLE"] },
+        "capturedAt": { "type": "string", "format": "date-time" },
+        "trainingEligible": { "type": "boolean", "const": false }
+      }
+    },
+    "ExamServerClockSync": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "serverNow",
+        "remainingSeconds",
+        "graceRemainingSeconds",
+        "clientClockSkewMs",
+        "clockSkewAnomaly",
+        "deadlineExpired",
+        "offlineGraceActive"
+      ],
+      "properties": {
+        "serverNow": { "type": "string", "format": "date-time" },
+        "remainingSeconds": { "type": "integer", "minimum": 0 },
+        "graceRemainingSeconds": { "type": "integer", "minimum": 0 },
+        "clientClockSkewMs": { "type": "integer" },
+        "clockSkewAnomaly": { "type": "boolean" },
+        "deadlineExpired": { "type": "boolean" },
+        "offlineGraceActive": { "type": "boolean" }
+      }
+    }
+  }
+}

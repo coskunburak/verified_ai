@@ -3155,3 +3155,7 @@ public root; attempt/{domain,application,api,infrastructure} owns accepted-evalu
 lifecycle. V036 is in db/migration/platform. Shared category/schema/fixtures are in packages/schemas;
 Python reuses app/verifiers/attempt_diagnosis.py. Existing iOS Features/AttemptAnalysis files own UI/model
 changes, and quality scripts own independent owner acceptance. No parallel classifier service is introduced.
+
+## Sprint 9.4 concrete placement
+
+Timed mock exam runtime, server-authoritative clocking (`INV-EXAM-003`), strict `NO_HINT_MODE`, and photographed deneme scratchpad ingestion (`F28`) belong exclusively to `com.verifiedai.exam` (`ExamSession`, `ExamSessionItem`, `ExamScratchpadAsset`, `ExamClockPolicy`, `ActiveExamNoHintGuard`, `ExamSessionRuntimeService`, `JdbcExamSessionRepository`, `ExamSessionRuntimeController`), persisted via `V057__timed_mock_exam_runtime_and_scratchpad_ingestion.sql` and purged by `ExamPrivacyLifecycleContributor`. Shared Draft 2020-12 JSON schemas live in `packages/schemas/exam/v1/`, twin OpenAPI 3.1 contracts live in `packages/contracts/openapi/public-api.yaml` and `packages/openapi/verified-ai-core-api.yaml`, and native Swift 6 Screen 10 UI/offline outbox persistence lives in `apps/ios/VerifiedAI/Features/Exam/` (`ExamSessionViewModel`, `ExamSessionView`, `ExamOfflineSQLiteStore`).

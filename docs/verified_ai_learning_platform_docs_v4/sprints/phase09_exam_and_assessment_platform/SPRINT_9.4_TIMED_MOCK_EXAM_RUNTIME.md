@@ -401,52 +401,52 @@ Codex must implement this sprint in small reviewable slices, re-reading the high
 ## 1. Sprint Metadata & Status
 - **Sprint ID:** `SPRINT_9.4`
 - **Canonical Title:** Timed Mock Exam Runtime, Server-Authoritative Clock & Photographed Deneme Scratchpad Ingestion (`F28`)
-- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011)`
+- **Status:** `LOCAL_ACCEPTANCE_PASSED (2026-11-15) — FEATURE_GATED_BY_ADR_011` (`SPRINT_9.4_EXECUTION_REPORT.md` & `SPRINT_9.4_FILE_MANIFEST.md`)
 - **Primary Spec Reference:** `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md` (Screen 10) & `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md` (`CNT-LOS-10`)
 
 ## 2. Strategic Learning OS Objective & User Value
 Delivers a resilient timed exam execution environment with server-authoritative clocking, automatic background answer saving, 120-second offline network tolerance, and strict no-hint isolation. Bridges physical paper deneme exams (`Özdebir`, `3D`, `Apotemi`) via scratchpad photo ingestion (`F28`), allowing students to analyze real exam mistakes without enduring 135-minute mobile screen fatigue.
 
 ## 3. Entry Gate & Preconditions
-- `ADR-011` `GO` decision recorded; `Sprint 9.3` accepted.
+- `ADR-011` feature flag gate (`verifiedai.exam.session-runtime-enabled: false`); `Sprint 9.3` (`V056`) accepted.
 
 ## 4. Domain Invariants & Runtime Rules
-1. **Server-Authoritative Clock & 120s Grace Buffer (`INV-EXAM-003`):** The session countdown is anchored strictly to server timestamp $t_{\text{start}}$. Client device clock alterations cannot prolong exam duration. If network disconnects, an offline grace buffer of $\le 120\text{ seconds}$ is granted for reconnection before the exam is auto-submitted.
-2. **Absolute No-Hint Policy:** Socratic prompts, live hint drawers, and step-by-step diff viewers are physically disabled during exam runtime (`NO_HINT_MODE`).
-3. **Idempotent Submission Protocol:** Submission requires an `Idempotency-Key: exam_sub_{sessionId}`; duplicated submissions return identical score projections without double-counting.
+1. **Server-Authoritative Clock & 120s Grace Buffer (`INV-EXAM-003`):** The session countdown is anchored strictly to server timestamp $t_{\text{start}}$. Client device clock alterations cannot prolong exam duration. If network disconnects, an offline grace buffer of $\le 120\text{ seconds}$ is granted for reconnection before the exam is auto-submitted (`EXPIRED_AUTO_SUBMITTED`).
+2. **Absolute No-Hint Policy (`ActiveExamNoHintGuard`):** Socratic prompts, live hint drawers, and step-by-step diff viewers are physically disabled during active exam runtime (`EXAM_NO_HINT_MODE_ACTIVE`), unlocking only after terminal submission (`POST_EXAM_REVIEW_ALLOWED`).
+3. **Idempotent Mutation & Submission Protocol:** Autosave, scratchpad upload, and submission require `Idempotency-Key` headers backed by SHA-256 request-payload hashing (`exam_session_idempotency_keys`), replaying identical requests and rejecting mismatched payloads (`409 EXAM_SESSION_IDEMPOTENCY_CONFLICT`).
 
 ## 5. Owning Spring Modulith Backend Modules & Classes
-- `com.verifiedai.exam`: `ExamSessionManager.java`, `ExamSession.java`, `ExamSessionItem.java`, `ExamSessionController.java`.
+- `com.verifiedai.exam`: `ExamSession.java`, `ExamSessionItem.java`, `ExamScratchpadAsset.java`, `ExamClockPolicy.java`, `ActiveExamNoHintGuard.java`, `ExamSessionRuntimeService.java`, `JdbcExamSessionRepository.java`, `ExamPrivacyLifecycleContributor.java`, and `ExamSessionRuntimeController.java`.
 
 ## 6. Python Math Verifier Impact
-- Batch-processes scratchpad work photos submitted at exam completion.
+- Receives the post-submission `F28VerificationBatchManifest` metadata queue (`QUEUED_FOR_F28_BATCH`) referencing ownership-scoped scratchpad photo assets (`users/{userId}/exam-sessions/{sessionId}/scratchpad/...`) with zero LLM spend during exam runtime.
 
-## 7. Database Migration & Persistence Contract (`PLANNED V057`)
-- **Tables:** `exam_sessions` (`id`, `user_id`, `exam_code`, `exam_version`, `session_type`, `status`, `started_at`, `submitted_at`, `net_score`, `total_questions`, `correct_count`, `wrong_count`, `blank_count`), `exam_session_items` (`id`, `session_id`, `question_index`, `canonical_skill_code`, `selected_option`, `is_correct`, `duration_seconds`).
+## 7. Database Migration & Persistence Contract (`V057__timed_mock_exam_runtime_and_scratchpad_ingestion.sql`)
+- **Tables:** `exam_sessions`, `exam_session_items`, `exam_scratchpad_assets`, `exam_session_idempotency_keys`, and `exam_session_clock_events` (all enforcing `CHECK (training_eligible = FALSE)` per `ADR-006`).
 
 ## 8. REST API Contracts (`CNT-LOS-10`)
-- `POST /v1/exams/sessions` and `POST /v1/exams/sessions/{id}/submit` (`exam-session-v1`).
+- Dual-mapped (`/v1/exams/sessions/**` & `/api/v1/exams/sessions/**`): `POST /sessions` (start/resume), `GET /sessions/{sessionId}` (heartbeat/sync), `PUT /sessions/{sessionId}/items/{itemPosition}` (optimistic/idempotent autosave), `POST /sessions/{sessionId}/items/{itemPosition}/scratchpad` (`F28` photo metadata attachment), `POST /sessions/{sessionId}/submit` (finalize + `F28VerificationBatchManifest`), and `GET /sessions/{sessionId}/no-hint-guard`.
 
 ## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
-- `ExamSessionView.swift` (Screen 10): Non-anxious distraction-free pacing bar, option selector, and scratchpad photo capture.
+- `ExamSessionViewModel.swift` & `ExamSessionView.swift` (Screen 10): Concept B zero-gradient/zero-shadow layout with server-synced countdown pill, `NO_HINT_MODE` badge, question navigator (`All`/`Flagged`/`Omitted`), strike-through elimination, paper deneme scratchpad capture, and `ExamOfflineSQLiteStore` local outbox sync.
 
 ## 10. AI Capability & Unit Economics Guardrail
-- **`$0.00` LLM token cost** for exam execution and scoring.
+- **`$0.00` LLM token cost** for exam execution, autosave, scratchpad ingestion metadata, and submission (`llm_tokens_used = 0`).
 
 ## 11. Privacy, Safety & Compliance
-- Purged on account deletion via `ExamPrivacyLifecycleContributor`.
+- Purged deterministically on account deletion via `ExamPrivacyLifecycleContributor` (`exam_session_clock_events`, `exam_session_idempotency_keys`, `exam_scratchpad_assets`, `exam_session_items`, `exam_sessions`).
 
 ## 12. Telemetry & Observability
-- Emits `exam_session_started`, `exam_item_answered`, `exam_session_submitted`, `grace_buffer_exhausted`.
+- Emits `ExamSessionStartedEvent`, `ExamItemAnsweredEvent`, `ExamScratchpadAttachedEvent`, and `ExamSessionSubmittedEvent` (`exam::events`) alongside Micrometer counters/timers (`verifiedai.exam.session.*`).
 
 ## 13. Feature Flags & Rollback Plan
 - `verifiedai.exam.session-runtime-enabled: false`.
 
 ## 14. Automated Test Matrix (Categories A–F)
-- Tests client clock drift injection, sudden network disconnects during exam, grace buffer auto-submit, and idempotent retry.
+- Covers server-authoritative countdown & clock skew telemetry, offline grace buffer (`<= 120s`) & auto-expiration, optimistic `autosaveVersion` conflicts, idempotent key replay vs payload mismatch conflict, `F28` scratchpad path/MIME/count bounds, `NO_HINT_MODE` blocking, multi-user BOLA isolation, SQLite offline outbox purge, and SwiftUI Screen 10 UI flow.
 
 ## 15. Owner-Only Acceptance Command
-- `bash scripts/quality/sprint_9_4_owner_acceptance.sh --full`
+- `bash scripts/quality/sprint_9_4_owner_acceptance.sh` (`LOCAL_ACCEPTANCE_PASSED`)
 
 ## 16. Explicit Non-Goals
 - Does not lock device hardware into single-app kiosk mode (supervised MDM).

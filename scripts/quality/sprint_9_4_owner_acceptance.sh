@@ -46,7 +46,10 @@ run_stage_1() {
   for required in \
     "apps/ios/VerifiedAI/Core/DesignSystem/Components/DesignSystemComponents.swift" \
     "apps/ios/VerifiedAI/Core/DesignSystem/Components/DesignSystemGalleryPreview.swift" \
-    "apps/ios/VerifiedAI/App/MainTabView.swift"; do
+    "apps/ios/VerifiedAI/App/MainTabView.swift" \
+    "apps/ios/VerifiedAI/Features/Exam/Presentation/ExamSessionViewModel.swift" \
+    "apps/ios/VerifiedAI/Features/Exam/Presentation/ExamSessionView.swift" \
+    "services/api/src/main/resources/db/migration/platform/V057__timed_mock_exam_runtime_and_scratchpad_ingestion.sql"; do
     if [[ ! -f "$required" ]]; then
       echo "ERROR: Missing Sprint 9.4 deliverable: $required"
       exit 1
@@ -56,8 +59,39 @@ run_stage_1() {
   rg -q "DesignSystemComponents.swift in Sources" apps/ios/VerifiedAI.xcodeproj/project.pbxproj
   rg -q "DesignSystemGalleryPreview.swift in Sources" apps/ios/VerifiedAI.xcodeproj/project.pbxproj
   rg -q "MainTabView.swift in Sources" apps/ios/VerifiedAI.xcodeproj/project.pbxproj
+  rg -q "ExamSessionViewModel.swift in Sources" apps/ios/VerifiedAI.xcodeproj/project.pbxproj
+  rg -q "ExamSessionView.swift in Sources" apps/ios/VerifiedAI.xcodeproj/project.pbxproj
+  rg -q "ExamSessionViewModelTests.swift in Sources" apps/ios/VerifiedAI.xcodeproj/project.pbxproj
+  rg -q "ExamSessionSQLiteStoreTests.swift in Sources" apps/ios/VerifiedAI.xcodeproj/project.pbxproj
+  rg -q "ExamSessionRuntimeUITests.swift in Sources" apps/ios/VerifiedAI.xcodeproj/project.pbxproj
   rg -q 'API_BASE_URL\[sdk=iphonesimulator\*\]' apps/ios/Config/Debug.xcconfig
-  echo "PASS: DesignSystemComponents, DesignSystemGalleryPreview & MainTabView registered in project.pbxproj and Simulator localhost URL configured."
+  echo "PASS: DesignSystem, MainTabView, ExamSession deliverables & tests registered in project.pbxproj and Simulator localhost URL configured."
+
+  if rg -n "com\.fasterxml\.jackson" services/api/src/main/java/com/verifiedai/exam; then
+    echo "ERROR: Legacy com.fasterxml.jackson import detected in com.verifiedai.exam (Jackson 3 tools.jackson.* required)."
+    exit 1
+  fi
+  echo "PASS: Zero com.fasterxml.jackson imports in com.verifiedai.exam."
+
+  for schema_base in \
+    exam-session-start-request \
+    exam-session-response \
+    exam-session-item-autosave-request \
+    exam-session-item-autosave-response \
+    exam-scratchpad-upload-request \
+    exam-scratchpad-upload-response \
+    exam-session-submit-request \
+    exam-session-submit-response \
+    exam-no-hint-guard-response; do
+    if [[ ! -f "packages/schemas/exam/v1/${schema_base}.schema.json" ]] || [[ ! -f "packages/schemas/exam/v1/fixtures/${schema_base}.valid.json" ]]; then
+      echo "ERROR: Missing Sprint 9.4 JSON schema or valid fixture for ${schema_base}"
+      exit 1
+    fi
+  done
+  echo "PASS: All 9 Sprint 9.4 JSON schemas and valid fixtures present."
+
+  cmp -s packages/contracts/openapi/public-api.yaml packages/openapi/verified-ai-core-api.yaml
+  echo "PASS: OpenAPI 3.1 twin specifications are byte-identical."
 
   if rg -n "UIColor\.system|UIColor\.secondary|Color\.indigo|Color\.purple|\.tint\(\.indigo\)|\.tint\(\.purple\)|\.shadow\(|systemBackground|secondarySystemBackground|systemGroupedBackground" \
     apps/ios/VerifiedAI/App \
@@ -85,6 +119,7 @@ run_stage_1() {
   echo "PASS: Hardcoded Solved/Review/Accuracy placeholder metrics removed."
 
   "$PYTHON_BIN" scripts/quality/docs_check.py
+  "$PYTHON_BIN" scripts/quality/validate_json_schemas.py
   "$PYTHON_BIN" scripts/quality/check_contracts.py
   "$PYTHON_BIN" scripts/quality/check_prompt_immutability.py --base-ref HEAD
   "$PYTHON_BIN" scripts/quality/check_sprint_6_10_localization.py /tmp/sprint_9_4_localization_report.json
@@ -144,7 +179,10 @@ run_stage_2() {
     apps/ios/VerifiedAI/Features/Exam/Presentation/ExamCatalogAndTargetView.swift \
     apps/ios/VerifiedAI/Features/Exam/Presentation/CandidateGoalSetupView.swift \
     apps/ios/VerifiedAI/Features/Exam/Presentation/SyllabusSnapToPlanSheet.swift \
-    apps/ios/VerifiedAI/Features/Exam/Presentation/ExamBlueprintAssemblyView.swift
+    apps/ios/VerifiedAI/Features/Exam/Presentation/ExamBlueprintAssemblyView.swift \
+    apps/ios/VerifiedAI/Features/Exam/Presentation/ExamSessionViewModel.swift \
+    apps/ios/VerifiedAI/Features/Exam/Presentation/ExamSessionView.swift \
+    apps/ios/VerifiedAIUITests/ExamSessionRuntimeUITests.swift
 
   xcrun --sdk iphonesimulator swiftc -typecheck \
     -strict-concurrency=complete \
@@ -177,8 +215,72 @@ run_stage_2() {
     apps/ios/VerifiedAI/Features/Exam/Presentation/ExamCatalogAndTargetView.swift \
     apps/ios/VerifiedAI/Features/Exam/Presentation/CandidateGoalSetupView.swift \
     apps/ios/VerifiedAI/Features/Exam/Presentation/SyllabusSnapToPlanSheet.swift \
-    apps/ios/VerifiedAI/Features/Exam/Presentation/ExamBlueprintAssemblyView.swift
-  echo "PASS: Swift 6 syntax and strict-concurrency checks passed."
+    apps/ios/VerifiedAI/Features/Exam/Presentation/ExamBlueprintAssemblyView.swift \
+    apps/ios/VerifiedAI/Features/Exam/Presentation/ExamSessionViewModel.swift \
+    apps/ios/VerifiedAI/Features/Exam/Presentation/ExamSessionView.swift
+
+  SIM_PLATFORM="$(xcrun --show-sdk-platform-path --sdk iphonesimulator)"
+  mkdir -p /tmp/s94-swift
+  xcrun --sdk iphonesimulator swiftc -emit-module \
+    -emit-module-path /tmp/s94-swift/VerifiedAI.swiftmodule \
+    -module-name VerifiedAI \
+    -enable-testing \
+    -strict-concurrency=complete \
+    -DDEBUG \
+    -module-cache-path /tmp/swift-module-cache \
+    -target arm64-apple-ios17.0-simulator \
+    apps/ios/VerifiedAI/Core/DesignSystem/Tokens/ColorTokens.swift \
+    apps/ios/VerifiedAI/Core/DesignSystem/Tokens/TypographyTokens.swift \
+    apps/ios/VerifiedAI/Core/DesignSystem/Tokens/SpacingTokens.swift \
+    apps/ios/VerifiedAI/Core/DesignSystem/Tokens/RadiusTokens.swift \
+    apps/ios/VerifiedAI/Core/DesignSystem/Components/DesignSystemComponents.swift \
+    apps/ios/VerifiedAI/Core/DesignSystem/Components/DesignSystemGalleryPreview.swift \
+    apps/ios/VerifiedAI/Core/Networking/APIClient.swift \
+    apps/ios/VerifiedAI/Core/Networking/HTTPRequest.swift \
+    apps/ios/VerifiedAI/Core/Networking/HTTPResponse.swift \
+    apps/ios/VerifiedAI/Core/Networking/HTTPMethod.swift \
+    apps/ios/VerifiedAI/Core/Networking/Endpoint.swift \
+    apps/ios/VerifiedAI/Core/Networking/NetworkError.swift \
+    apps/ios/VerifiedAI/Core/Networking/ProblemDetails.swift \
+    apps/ios/VerifiedAI/Core/Networking/AuthTokenProvider.swift \
+    apps/ios/VerifiedAI/Core/Networking/RequestInterceptor.swift \
+    apps/ios/VerifiedAI/Core/Observability/CorrelationContext.swift \
+    apps/ios/VerifiedAI/Core/Observability/AppLogger.swift \
+    apps/ios/VerifiedAI/Features/Exam/Domain/ExamModels.swift \
+    apps/ios/VerifiedAI/Features/Exam/Data/ExamAPIService.swift \
+    apps/ios/VerifiedAI/Features/Exam/Data/ExamOfflineSQLiteStore.swift \
+    apps/ios/VerifiedAI/Features/Exam/Presentation/ExamCatalogAndTargetViewModel.swift \
+    apps/ios/VerifiedAI/Features/Exam/Presentation/CandidateProfileViewModel.swift \
+    apps/ios/VerifiedAI/Features/Exam/Presentation/ExamBlueprintAssemblyViewModel.swift \
+    apps/ios/VerifiedAI/Features/Exam/Presentation/ExamSessionViewModel.swift \
+    apps/ios/VerifiedAI/Features/Exam/Presentation/ExamCatalogAndTargetView.swift \
+    apps/ios/VerifiedAI/Features/Exam/Presentation/CandidateGoalSetupView.swift \
+    apps/ios/VerifiedAI/Features/Exam/Presentation/SyllabusSnapToPlanSheet.swift \
+    apps/ios/VerifiedAI/Features/Exam/Presentation/ExamBlueprintAssemblyView.swift \
+    apps/ios/VerifiedAI/Features/Exam/Presentation/ExamSessionView.swift
+
+  xcrun --sdk iphonesimulator swiftc -typecheck \
+    -strict-concurrency=complete \
+    -DDEBUG \
+    -I /tmp/s94-swift \
+    -I "${SIM_PLATFORM}/Developer/usr/lib" \
+    -F "${SIM_PLATFORM}/Developer/Library/Frameworks" \
+    -module-cache-path /tmp/swift-module-cache \
+    -target arm64-apple-ios17.0-simulator \
+    apps/ios/VerifiedAITests/Exam/Sprint91ExamCatalogAndTargetTests.swift \
+    apps/ios/VerifiedAITests/Exam/CandidateProfileViewModelTests.swift \
+    apps/ios/VerifiedAITests/Exam/ExamBlueprintAssemblyViewModelTests.swift \
+    apps/ios/VerifiedAITests/Exam/ExamOfflineSQLiteStoreTests.swift \
+    apps/ios/VerifiedAITests/Exam/ExamSessionViewModelTests.swift \
+    apps/ios/VerifiedAITests/Exam/ExamSessionSQLiteStoreTests.swift \
+    apps/ios/VerifiedAIUITests/ExamCatalogUITests.swift \
+    apps/ios/VerifiedAIUITests/ExamSessionRuntimeUITests.swift
+  echo "PASS: Swift 6 syntax and strict-concurrency checks passed (production + tests)."
+}
+
+run_stage_2b() {
+  log_step "Stage 2B: Sprint 9.4 Backend Unit, WebMvc, V057 SQL, Privacy & Architecture Tests"
+  mvn -f services/api/pom.xml test -Dtest=ExamSessionTest,ExamSessionRuntimeServiceTest,V057MigrationSqlConsistencyTest,ExamSessionRuntimeControllerTest,ExamPrivacyLifecycleContributorTest,ModulithArchitectureTest,AiProviderBoundaryTest,RepositoryHierarchyTest
 }
 
 run_stage_3() {
@@ -195,10 +297,13 @@ run_stage_3() {
       -destination "$SIM_DESTINATION" \
       -only-testing:VerifiedAITests/AppEnvironmentTests \
       -only-testing:VerifiedAITests/ExamBlueprintAssemblyViewModelTests \
+      -only-testing:VerifiedAITests/ExamSessionViewModelTests \
+      -only-testing:VerifiedAITests/ExamSessionSQLiteStoreTests \
       -only-testing:VerifiedAIUITests/VerifiedAIUITests \
       -only-testing:VerifiedAIUITests/PrimarySolveUITests \
       -only-testing:VerifiedAIUITests/TutorUITests \
-      -only-testing:VerifiedAIUITests/ExamCatalogUITests
+      -only-testing:VerifiedAIUITests/ExamCatalogUITests \
+      -only-testing:VerifiedAIUITests/ExamSessionRuntimeUITests
   else
     echo "SKIP: CoreSimulatorService unavailable in sandbox; run this script on host Mac to execute Xcode Simulator UI tests."
   fi
@@ -206,5 +311,6 @@ run_stage_3() {
 
 run_stage_1
 run_stage_2
+run_stage_2b
 run_stage_3
-printf "\n==> [Sprint 9.4 UI Acceptance] COMPLETED\n"
+echo "LOCAL_ACCEPTANCE_PASSED"

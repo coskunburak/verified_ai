@@ -84,6 +84,33 @@ public actor ExamOfflineSQLiteStore: ExamCacheStoreProtocol {
             updated_at TEXT NOT NULL,
             PRIMARY KEY (assessment_id, user_id)
         );
+        CREATE TABLE IF NOT EXISTS exam_sessions_local (
+            session_id TEXT NOT NULL,
+            user_id TEXT NOT NULL,
+            assembly_id TEXT NOT NULL,
+            payload_json TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            PRIMARY KEY (session_id, user_id)
+        );
+        CREATE TABLE IF NOT EXISTS exam_autosave_outbox (
+            id TEXT NOT NULL,
+            session_id TEXT NOT NULL,
+            user_id TEXT NOT NULL,
+            item_position INTEGER NOT NULL,
+            idempotency_key TEXT NOT NULL,
+            payload_json TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            PRIMARY KEY (id, user_id)
+        );
+        CREATE TABLE IF NOT EXISTS exam_scratchpad_attachments_local (
+            id TEXT NOT NULL,
+            session_id TEXT NOT NULL,
+            user_id TEXT NOT NULL,
+            item_position INTEGER NOT NULL,
+            payload_json TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            PRIMARY KEY (id, user_id)
+        );
         """
         sqlite3_exec(db, sql, nil, nil, nil)
     }
@@ -244,6 +271,206 @@ public actor ExamOfflineSQLiteStore: ExamCacheStoreProtocol {
         return nil
     }
 
+    // MARK: - Sprint 9.4 Timed Exam Session & Outbox Persistence
+
+    public func saveExamSession(_ session: ExamSessionDTO) async {
+        guard let db,
+              let data = try? encoder.encode(session),
+              let jsonString = String(data: data, encoding: .utf8) else {
+            return
+        }
+        let sql = """
+        INSERT INTO exam_sessions_local (session_id, user_id, assembly_id, payload_json, updated_at)
+        VALUES (?1, ?2, ?3, ?4, ?5)
+        ON CONFLICT(session_id, user_id) DO UPDATE SET
+            assembly_id = excluded.assembly_id,
+            payload_json = excluded.payload_json,
+            updated_at = excluded.updated_at;
+        """
+        var stmt: OpaquePointer?
+        if sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK {
+            defer { sqlite3_finalize(stmt) }
+            let nowString = ISO8601DateFormatter().string(from: Date())
+            sqlite3_bind_text(stmt, 1, session.sessionId.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+            sqlite3_bind_text(stmt, 2, session.userId.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+            sqlite3_bind_text(stmt, 3, session.assemblyId.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+            sqlite3_bind_text(stmt, 4, jsonString, -1, SQLITE_TRANSIENT)
+            sqlite3_bind_text(stmt, 5, nowString, -1, SQLITE_TRANSIENT)
+            sqlite3_step(stmt)
+        }
+    }
+
+    public func loadExamSession(userId: UUID, sessionId: UUID) async -> ExamSessionDTO? {
+        guard let db else { return nil }
+        let sql = """
+        SELECT payload_json FROM exam_sessions_local
+        WHERE lower(user_id) = lower(?1) AND lower(session_id) = lower(?2)
+        LIMIT 1;
+        """
+        var stmt: OpaquePointer?
+        if sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK {
+            defer { sqlite3_finalize(stmt) }
+            sqlite3_bind_text(stmt, 1, userId.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+            sqlite3_bind_text(stmt, 2, sessionId.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+            if sqlite3_step(stmt) == SQLITE_ROW, let cStr = sqlite3_column_text(stmt, 0) {
+                let jsonString = String(cString: cStr)
+                if let data = jsonString.data(using: .utf8),
+                   let decoded = try? decoder.decode(ExamSessionDTO.self, from: data) {
+                    return decoded
+                }
+            }
+        }
+        return nil
+    }
+
+    public func loadActiveExamSession(userId: UUID, assemblyId: UUID) async -> ExamSessionDTO? {
+        guard let db else { return nil }
+        let sql = """
+        SELECT payload_json FROM exam_sessions_local
+        WHERE lower(user_id) = lower(?1) AND lower(assembly_id) = lower(?2)
+        ORDER BY updated_at DESC
+        LIMIT 5;
+        """
+        var stmt: OpaquePointer?
+        if sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK {
+            defer { sqlite3_finalize(stmt) }
+            sqlite3_bind_text(stmt, 1, userId.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+            sqlite3_bind_text(stmt, 2, assemblyId.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+            while sqlite3_step(stmt) == SQLITE_ROW {
+                if let cStr = sqlite3_column_text(stmt, 0),
+                   let data = String(cString: cStr).data(using: .utf8),
+                   let decoded = try? decoder.decode(ExamSessionDTO.self, from: data),
+                   decoded.status.isActive {
+                    return decoded
+                }
+            }
+        }
+        return nil
+    }
+
+    public func enqueueAutosaveOutbox(_ entry: ExamAutosaveOutboxEntry) async {
+        guard let db,
+              let data = try? encoder.encode(entry),
+              let jsonString = String(data: data, encoding: .utf8) else {
+            return
+        }
+        let sql = """
+        INSERT INTO exam_autosave_outbox (id, session_id, user_id, item_position, idempotency_key, payload_json, created_at)
+        VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)
+        ON CONFLICT(id, user_id) DO UPDATE SET
+            payload_json = excluded.payload_json;
+        """
+        var stmt: OpaquePointer?
+        if sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK {
+            defer { sqlite3_finalize(stmt) }
+            sqlite3_bind_text(stmt, 1, entry.id.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+            sqlite3_bind_text(stmt, 2, entry.sessionId.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+            sqlite3_bind_text(stmt, 3, entry.userId.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+            sqlite3_bind_int(stmt, 4, Int32(entry.itemPosition))
+            sqlite3_bind_text(stmt, 5, entry.idempotencyKey, -1, SQLITE_TRANSIENT)
+            sqlite3_bind_text(stmt, 6, jsonString, -1, SQLITE_TRANSIENT)
+            sqlite3_bind_text(stmt, 7, entry.enqueuedAt, -1, SQLITE_TRANSIENT)
+            sqlite3_step(stmt)
+        }
+    }
+
+    public func loadAutosaveOutbox(userId: UUID, sessionId: UUID) async -> [ExamAutosaveOutboxEntry] {
+        guard let db else { return [] }
+        let sql = """
+        SELECT payload_json FROM exam_autosave_outbox
+        WHERE lower(user_id) = lower(?1) AND lower(session_id) = lower(?2)
+        ORDER BY created_at ASC;
+        """
+        var result: [ExamAutosaveOutboxEntry] = []
+        var stmt: OpaquePointer?
+        if sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK {
+            defer { sqlite3_finalize(stmt) }
+            sqlite3_bind_text(stmt, 1, userId.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+            sqlite3_bind_text(stmt, 2, sessionId.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+            while sqlite3_step(stmt) == SQLITE_ROW {
+                if let cStr = sqlite3_column_text(stmt, 0),
+                   let data = String(cString: cStr).data(using: .utf8),
+                   let decoded = try? decoder.decode(ExamAutosaveOutboxEntry.self, from: data) {
+                    result.append(decoded)
+                }
+            }
+        }
+        return result
+    }
+
+    public func removeAutosaveOutboxEntry(userId: UUID, id: UUID) async {
+        guard let db else { return }
+        let sql = "DELETE FROM exam_autosave_outbox WHERE lower(user_id) = lower(?1) AND lower(id) = lower(?2);"
+        var stmt: OpaquePointer?
+        if sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK {
+            defer { sqlite3_finalize(stmt) }
+            sqlite3_bind_text(stmt, 1, userId.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+            sqlite3_bind_text(stmt, 2, id.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+            sqlite3_step(stmt)
+        }
+    }
+
+    public func saveLocalScratchpadDraft(_ draft: ExamLocalScratchpadDraft) async {
+        guard let db,
+              let data = try? encoder.encode(draft),
+              let jsonString = String(data: data, encoding: .utf8) else {
+            return
+        }
+        let sql = """
+        INSERT INTO exam_scratchpad_attachments_local (id, session_id, user_id, item_position, payload_json, created_at)
+        VALUES (?1, ?2, ?3, ?4, ?5, ?6)
+        ON CONFLICT(id, user_id) DO UPDATE SET
+            payload_json = excluded.payload_json;
+        """
+        var stmt: OpaquePointer?
+        if sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK {
+            defer { sqlite3_finalize(stmt) }
+            sqlite3_bind_text(stmt, 1, draft.id.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+            sqlite3_bind_text(stmt, 2, draft.sessionId.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+            sqlite3_bind_text(stmt, 3, draft.userId.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+            sqlite3_bind_int(stmt, 4, Int32(draft.itemPosition))
+            sqlite3_bind_text(stmt, 5, jsonString, -1, SQLITE_TRANSIENT)
+            sqlite3_bind_text(stmt, 6, draft.createdAt, -1, SQLITE_TRANSIENT)
+            sqlite3_step(stmt)
+        }
+    }
+
+    public func loadLocalScratchpadDrafts(userId: UUID, sessionId: UUID) async -> [ExamLocalScratchpadDraft] {
+        guard let db else { return [] }
+        let sql = """
+        SELECT payload_json FROM exam_scratchpad_attachments_local
+        WHERE lower(user_id) = lower(?1) AND lower(session_id) = lower(?2)
+        ORDER BY created_at ASC;
+        """
+        var result: [ExamLocalScratchpadDraft] = []
+        var stmt: OpaquePointer?
+        if sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK {
+            defer { sqlite3_finalize(stmt) }
+            sqlite3_bind_text(stmt, 1, userId.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+            sqlite3_bind_text(stmt, 2, sessionId.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+            while sqlite3_step(stmt) == SQLITE_ROW {
+                if let cStr = sqlite3_column_text(stmt, 0),
+                   let data = String(cString: cStr).data(using: .utf8),
+                   let decoded = try? decoder.decode(ExamLocalScratchpadDraft.self, from: data) {
+                    result.append(decoded)
+                }
+            }
+        }
+        return result
+    }
+
+    public func removeLocalScratchpadDraft(userId: UUID, id: UUID) async {
+        guard let db else { return }
+        let sql = "DELETE FROM exam_scratchpad_attachments_local WHERE lower(user_id) = lower(?1) AND lower(id) = lower(?2);"
+        var stmt: OpaquePointer?
+        if sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK {
+            defer { sqlite3_finalize(stmt) }
+            sqlite3_bind_text(stmt, 1, userId.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+            sqlite3_bind_text(stmt, 2, id.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+            sqlite3_step(stmt)
+        }
+    }
+
     public func clearUserData(userId: UUID) async {
         await purgeUserData(userId: userId)
     }
@@ -258,7 +485,10 @@ public actor ExamOfflineSQLiteStore: ExamCacheStoreProtocol {
             "student_exam_targets_cache",
             "cached_candidate_profiles",
             "cached_syllabus_uploads",
-            "cached_assembled_assessments"
+            "cached_assembled_assessments",
+            "exam_sessions_local",
+            "exam_autosave_outbox",
+            "exam_scratchpad_attachments_local"
         ] {
             let sql = "DELETE FROM \(table) WHERE lower(user_id) = lower(?1);"
             var stmt: OpaquePointer?
@@ -279,6 +509,9 @@ public actor ExamOfflineSQLiteStore: ExamCacheStoreProtocol {
             DELETE FROM cached_syllabus_uploads;
             DELETE FROM cached_exam_blueprints;
             DELETE FROM cached_assembled_assessments;
+            DELETE FROM exam_sessions_local;
+            DELETE FROM exam_autosave_outbox;
+            DELETE FROM exam_scratchpad_attachments_local;
             """, nil, nil, nil)
     }
 

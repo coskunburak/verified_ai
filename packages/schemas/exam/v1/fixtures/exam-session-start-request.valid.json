@@ -1,0 +1,7 @@
+{
+  "userId": "99999999-1111-4222-8333-444444444444",
+  "assemblyId": "95000000-0000-4000-8000-000000000101",
+  "offlineGraceBufferSeconds": 120,
+  "clientTimestamp": "2026-03-01T10:00:00Z",
+  "trainingEligible": false
+}

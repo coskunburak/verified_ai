@@ -23,8 +23,11 @@ import com.verifiedai.exam.domain.CognitiveTaxonomyLevel;
 import com.verifiedai.exam.domain.ExamModels.Jurisdiction;
 import com.verifiedai.exam.domain.ExamModels.StudentExamTargetRecord;
 import com.verifiedai.exam.domain.ExamModels.TargetStatus;
+import com.verifiedai.exam.domain.ExamSession;
+import com.verifiedai.exam.domain.ExamSessionStatus;
 import com.verifiedai.exam.domain.QuestionDifficultyBand;
 import com.verifiedai.exam.domain.QuestionItemFormat;
+import com.verifiedai.exam.infrastructure.persistence.ExamSessionRepository;
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
@@ -208,6 +211,80 @@ class ExamPrivacyLifecycleContributorTest {
         fullContributor.deleteUserData(userId, now);
 
         InOrder order = inOrder(assembledRepo, candidateRepo, examRepository);
+        order.verify(assembledRepo).deleteByUserId(userId);
+        order.verify(candidateRepo).deleteAllCandidateDataForUser(userId);
+        order.verify(examRepository).deleteTargetsByUserId(userId);
+    }
+
+    @Test
+    void exportAndDeleteIncludeTimedMockExamSessionsAndScratchpadsInChildFirstOrder() {
+        var candidateRepo = mock(CandidateProfileRepository.class);
+        var assembledRepo = mock(AssembledAssessmentRepository.class);
+        var sessionRepo = mock(ExamSessionRepository.class);
+        Instant now = Instant.parse("2026-11-15T10:00:00Z");
+
+        when(examRepository.findTargetsByUserId(userId)).thenReturn(List.of());
+        when(candidateRepo.findProfileByUserId(userId)).thenReturn(Optional.empty());
+        when(candidateRepo.findHorizonHistoryByUserId(userId, 100)).thenReturn(List.of());
+        when(candidateRepo.findSyllabusUploadsByUserId(userId, 100)).thenReturn(List.of());
+        when(assembledRepo.findByUserId(userId, 100)).thenReturn(List.of());
+
+        UUID sessionId = UUID.randomUUID();
+        ExamSession session = new ExamSession(
+                sessionId,
+                userId,
+                UUID.randomUUID(),
+                UUID.randomUUID(),
+                "TR_YKS_TYT_MATH",
+                1,
+                ExamSessionStatus.SUBMITTED,
+                "FREE_NAVIGATION",
+                true,
+                new AppliedAccommodationSnapshot(new BigDecimal("1.00"), false, false, false),
+                900,
+                new BigDecimal("1.00"),
+                900,
+                120,
+                now,
+                now.plusSeconds(900),
+                now.plusSeconds(1020),
+                now,
+                null,
+                now.plusSeconds(300),
+                "USER_INITIATED",
+                "submit-privacy-1",
+                1,
+                1,
+                0,
+                0,
+                0,
+                0L,
+                null,
+                false,
+                now,
+                now.plusSeconds(300),
+                List.of()
+        );
+        when(sessionRepo.findByUserId(userId)).thenReturn(List.of(session));
+        when(sessionRepo.deleteByUserId(userId)).thenReturn(1);
+
+        ExamPrivacyLifecycleContributor contributorWithSessions = new ExamPrivacyLifecycleContributor(
+                examRepository,
+                candidateRepo,
+                assembledRepo,
+                sessionRepo,
+                Clock.fixed(now, ZoneOffset.UTC)
+        );
+
+        Map<String, Object> exported = contributorWithSessions.exportUserData(userId);
+        assertThat(exported.get("examSessionCount")).isEqualTo(1);
+        assertThat(exported.get("examSessions")).isInstanceOf(List.class);
+        assertThat(exported.get("trainingEligible")).isEqualTo(false);
+
+        contributorWithSessions.deleteUserData(userId, now);
+
+        InOrder order = inOrder(sessionRepo, assembledRepo, candidateRepo, examRepository);
+        order.verify(sessionRepo).deleteByUserId(userId);
         order.verify(assembledRepo).deleteByUserId(userId);
         order.verify(candidateRepo).deleteAllCandidateDataForUser(userId);
         order.verify(examRepository).deleteTargetsByUserId(userId);

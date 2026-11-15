@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/exam/v1/exam-session-submit-response.schema.json",
+  "title": "ExamSessionSubmitResponse",
+  "description": "Idempotent exam session submission receipt with F28 verification batch manifest and $0.00 runtime LLM cost (Sprint 9.4).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "sessionId",
+    "assemblyId",
+    "blueprintId",
+    "examCode",
+    "status",
+    "submissionReason",
+    "submittedAt",
+    "submitIdempotencyKey",
+    "totalItemCount",
+    "answeredItemCount",
+    "flaggedItemCount",
+    "omittedItemCount",
+    "scratchpadAttachmentCount",
+    "f28VerificationBatchManifest",
+    "clockSync",
+    "llmTokensUsed",
+    "trainingEligible"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "exam-session-submit-response-v1"
+    },
+    "sessionId": { "type": "string", "format": "uuid" },
+    "assemblyId": { "type": "string", "format": "uuid" },
+    "blueprintId": { "type": "string", "format": "uuid" },
+    "examCode": { "type": "string", "minLength": 3, "maxLength": 64 },
+    "status": {
+      "type": "string",
+      "enum": ["SUBMITTED", "EXPIRED_AUTO_SUBMITTED", "ABANDONED"]
+    },
+    "submissionReason": {
+      "type": "string",
+      "enum": ["USER_INITIATED", "SERVER_DEADLINE_EXPIRED", "OFFLINE_GRACE_EXHAUSTED", "USER_ABANDONED"]
+    },
+    "submittedAt": { "type": "string", "format": "date-time" },
+    "submitIdempotencyKey": { "type": "string", "minLength": 3, "maxLength": 128 },
+    "totalItemCount": { "type": "integer", "minimum": 1, "maximum": 200 },
+    "answeredItemCount": { "type": "integer", "minimum": 0, "maximum": 200 },
+    "flaggedItemCount": { "type": "integer", "minimum": 0, "maximum": 200 },
+    "omittedItemCount": { "type": "integer", "minimum": 0, "maximum": 200 },
+    "scratchpadAttachmentCount": { "type": "integer", "minimum": 0, "maximum": 800 },
+    "f28VerificationBatchManifest": { "$ref": "#/$defs/F28VerificationBatchManifest" },
+    "clockSync": { "$ref": "#/$defs/ExamServerClockSync" },
+    "llmTokensUsed": { "type": "integer", "const": 0 },
+    "trainingEligible": { "type": "boolean", "const": false }
+  },
+  "$defs": {
+    "ExamServerClockSync": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "serverNow",
+        "remainingSeconds",
+        "graceRemainingSeconds",
+        "clientClockSkewMs",
+        "clockSkewAnomaly",
+        "deadlineExpired",
+        "offlineGraceActive"
+      ],
+      "properties": {
+        "serverNow": { "type": "string", "format": "date-time" },
+        "remainingSeconds": { "type": "integer", "minimum": 0 },
+        "graceRemainingSeconds": { "type": "integer", "minimum": 0 },
+        "clientClockSkewMs": { "type": "integer" },
+        "clockSkewAnomaly": { "type": "boolean" },
+        "deadlineExpired": { "type": "boolean" },
+        "offlineGraceActive": { "type": "boolean" }
+      }
+    },
+    "F28VerificationBatchEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "assetId",
+        "sessionItemId",
+        "itemPosition",
+        "pageNumber",
+        "questionCode",
+        "topicCode",
+        "storageKey",
+        "sha256Checksum",
+        "captureSource",
+        "f28VerificationStatus"
+      ],
+      "properties": {
+        "assetId": { "type": "string", "format": "uuid" },
+        "sessionItemId": { "type": "string", "format": "uuid" },
+        "itemPosition": { "type": "integer", "minimum": 1 },
+        "pageNumber": { "type": "integer", "minimum": 1, "maximum": 4 },
+        "questionCode": { "type": "string", "minLength": 3 },
+        "topicCode": { "type": "string", "minLength": 3 },
+        "storageKey": { "type": "string", "minLength": 10 },
+        "sha256Checksum": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "captureSource": { "type": "string", "enum": ["DIGITAL_MOCK_SCRATCHPAD", "PAPER_DENEME_BOOKLET"] },
+        "bookletPublisher": { "type": ["string", "null"], "maxLength": 120 },
+        "f28VerificationStatus": { "type": "string", "enum": ["QUEUED_FOR_POST_SUBMIT_BATCH", "NOT_APPLICABLE"] }
+      }
+    },
+    "F28VerificationBatchManifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "batchVersion",
+        "batchStatus",
+        "sessionId",
+        "userId",
+        "examCode",
+        "totalAssets",
+        "llmTokensUsed",
+        "trainingEligible",
+        "generatedAt",
+        "assets"
+      ],
+      "properties": {
+        "batchVersion": { "type": "string", "const": "f28-batch-manifest-v1" },
+        "batchStatus": { "type": "string", "enum": ["QUEUED_FOR_F28_BATCH", "EMPTY_NO_SCRATCHPADS"] },
+        "sessionId": { "type": "string", "format": "uuid" },
+        "userId": { "type": "string", "format": "uuid" },
+        "examCode": { "type": "string", "minLength": 3 },
+        "totalAssets": { "type": "integer", "minimum": 0 },
+        "llmTokensUsed": { "type": "integer", "const": 0 },
+        "trainingEligible": { "type": "boolean", "const": false },
+        "generatedAt": { "type": "string", "format": "date-time" },
+        "assets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/F28VerificationBatchEntry"
+          }
+        }
+      }
+    }
+  }
+}

@@ -398,6 +398,22 @@ public struct ExamBlueprintAssemblyView: View {
             }
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("exam.assembly.itemPreviewList")
+
+            NavigationLink {
+                ExamSessionView(viewModel: viewModel.sessionViewModel(for: assembled))
+            } label: {
+                HStack {
+                    Image(systemName: "timer")
+                    Text(LocalizedStringKey("exam.assembly.startTimedSessionButton"))
+                        .font(.headline)
+                }
+                .frame(maxWidth: .infinity, minHeight: 48)
+                .foregroundStyle(ColorTokens.actionForeground)
+                .background(ColorTokens.action)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("exam.assembly.startTimedSessionButton")
         }
         .padding(16)
         .background(ColorTokens.surfaceElevated)

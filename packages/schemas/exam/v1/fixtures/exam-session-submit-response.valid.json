@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "exam-session-submit-response-v1",
+  "sessionId": "96000000-0000-4000-8000-000000000101",
+  "assemblyId": "95000000-0000-4000-8000-000000000101",
+  "blueprintId": "94000000-0000-4000-8000-000000000101",
+  "examCode": "TR_YKS_TYT_MATH",
+  "status": "SUBMITTED",
+  "submissionReason": "USER_INITIATED",
+  "submittedAt": "2026-03-01T10:15:00Z",
+  "submitIdempotencyKey": "exam_sub_96000000-0000-4000-8000-000000000101",
+  "totalItemCount": 8,
+  "answeredItemCount": 6,
+  "flaggedItemCount": 1,
+  "omittedItemCount": 2,
+  "scratchpadAttachmentCount": 1,
+  "f28VerificationBatchManifest": {
+    "batchVersion": "f28-batch-manifest-v1",
+    "batchStatus": "QUEUED_FOR_F28_BATCH",
+    "sessionId": "96000000-0000-4000-8000-000000000101",
+    "userId": "99999999-1111-4222-8333-444444444444",
+    "examCode": "TR_YKS_TYT_MATH",
+    "totalAssets": 1,
+    "llmTokensUsed": 0,
+    "trainingEligible": false,
+    "generatedAt": "2026-03-01T10:15:00Z",
+    "assets": [
+      {
+        "assetId": "98000000-0000-4000-8000-000000000101",
+        "sessionItemId": "97000000-0000-4000-8000-000000000101",
+        "itemPosition": 1,
+        "pageNumber": 1,
+        "questionCode": "TYT-MATH-2026-INT-001",
+        "topicCode": "MATH.ARITHMETIC.INTEGER_OPERATIONS",
+        "storageKey": "users/99999999-1111-4222-8333-444444444444/exam-sessions/96000000-0000-4000-8000-000000000101/scratchpad/item1_page1.jpg",
+        "sha256Checksum": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "captureSource": "PAPER_DENEME_BOOKLET",
+        "bookletPublisher": "Özdebir",
+        "f28VerificationStatus": "QUEUED_FOR_POST_SUBMIT_BATCH"
+      }
+    ]
+  },
+  "clockSync": {
+    "serverNow": "2026-03-01T10:15:00Z",
+    "remainingSeconds": 0,
+    "graceRemainingSeconds": 0,
+    "clientClockSkewMs": 0,
+    "clockSkewAnomaly": false,
+    "deadlineExpired": true,
+    "offlineGraceActive": false
+  },
+  "llmTokensUsed": 0,
+  "trainingEligible": false
+}

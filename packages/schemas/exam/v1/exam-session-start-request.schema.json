@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/exam/v1/exam-session-start-request.schema.json",
+  "title": "ExamSessionStartRequest",
+  "description": "Start or idempotently resume a server-authoritative timed mock exam session (Sprint 9.4 / CNT-LOS-10).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "assemblyId",
+    "trainingEligible"
+  ],
+  "properties": {
+    "userId": {
+      "type": ["string", "null"],
+      "format": "uuid"
+    },
+    "assemblyId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "offlineGraceBufferSeconds": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "maximum": 120
+    },
+    "clientTimestamp": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    }
+  }
+}

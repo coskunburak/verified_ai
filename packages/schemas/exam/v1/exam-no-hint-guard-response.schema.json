@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/exam/v1/exam-no-hint-guard-response.schema.json",
+  "title": "ExamNoHintGuardResponse",
+  "description": "Strict zero-hint guard response enforcing NO_HINT_MODE during active mock exam sessions (CNT-LOS-10 / INV-EXAM-003).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "sessionId",
+    "status",
+    "hintAllowed",
+    "policyCode",
+    "requestedSurface",
+    "neutralExplanationKey",
+    "serverNow",
+    "llmTokensUsed",
+    "trainingEligible"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "exam-no-hint-guard-response-v1"
+    },
+    "sessionId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "IN_PROGRESS",
+        "OFFLINE_GRACE_BUFFER",
+        "SUBMITTED",
+        "EXPIRED_AUTO_SUBMITTED",
+        "ABANDONED"
+      ]
+    },
+    "hintAllowed": {
+      "type": "boolean",
+      "const": false
+    },
+    "policyCode": {
+      "type": "string",
+      "const": "EXAM_NO_HINT_MODE_ACTIVE"
+    },
+    "requestedSurface": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 64
+    },
+    "neutralExplanationKey": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 128
+    },
+    "serverNow": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "llmTokensUsed": {
+      "type": "integer",
+      "const": 0
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    }
+  }
+}

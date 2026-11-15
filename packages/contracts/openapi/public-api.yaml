@@ -5076,6 +5076,606 @@ paths:
         '503':
           $ref: '#/components/responses/ProblemServiceUnavailable'
 
+  /v1/exams/sessions:
+    post:
+      summary: Start or idempotently resume a timed mock exam session (CNT-LOS-10 / ADR-005 / ADR-006)
+      operationId: startOrResumeExamSession
+      tags:
+        - Exams
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExamSessionStartRequest'
+      responses:
+        '200':
+          description: Idempotent resume of an active timed mock exam session with server clock synchronization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamSessionResponse'
+        '201':
+          description: Newly started timed mock exam session with answer-key-free item snapshots and NO_HINT_MODE active
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamSessionResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '409':
+          $ref: '#/components/responses/ProblemConflict'
+        '422':
+          $ref: '#/components/responses/ProblemUnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /api/v1/exams/sessions:
+    post:
+      summary: Start or idempotently resume a timed mock exam session (/api alias)
+      operationId: startOrResumeExamSessionApiAlias
+      tags:
+        - Exams
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExamSessionStartRequest'
+      responses:
+        '200':
+          description: Idempotent resume of an active timed mock exam session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamSessionResponse'
+        '201':
+          description: Newly started timed mock exam session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamSessionResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '409':
+          $ref: '#/components/responses/ProblemConflict'
+        '422':
+          $ref: '#/components/responses/ProblemUnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /v1/exams/sessions/{sessionId}:
+    get:
+      summary: Retrieve server-authoritative mock exam session state and clock sync heartbeat
+      operationId: getExamSessionState
+      tags:
+        - Exams
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: clientTimestamp
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Current exam session state with server-authoritative remaining seconds and grace state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamSessionResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /api/v1/exams/sessions/{sessionId}:
+    get:
+      summary: Retrieve server-authoritative mock exam session state (/api alias)
+      operationId: getExamSessionStateApiAlias
+      tags:
+        - Exams
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: clientTimestamp
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Current exam session state with server clock synchronization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamSessionResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /v1/exams/sessions/{sessionId}/items/{itemPosition}:
+    patch:
+      summary: Optimistic-concurrency idempotent item autosave during a timed mock exam session
+      operationId: autosaveExamSessionItem
+      tags:
+        - Exams
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: itemPosition
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+        - name: Idempotency-Key
+          in: header
+          required: false
+          schema:
+            type: string
+            minLength: 3
+            maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExamSessionItemAutosaveRequest'
+      responses:
+        '200':
+          description: Server-confirmed autosave response or idempotent replay
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamSessionItemAutosaveResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '409':
+          $ref: '#/components/responses/ProblemConflict'
+        '422':
+          $ref: '#/components/responses/ProblemUnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /api/v1/exams/sessions/{sessionId}/items/{itemPosition}:
+    patch:
+      summary: Optimistic-concurrency idempotent item autosave (/api alias)
+      operationId: autosaveExamSessionItemApiAlias
+      tags:
+        - Exams
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: itemPosition
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+        - name: Idempotency-Key
+          in: header
+          required: false
+          schema:
+            type: string
+            minLength: 3
+            maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExamSessionItemAutosaveRequest'
+      responses:
+        '200':
+          description: Server-confirmed autosave response or idempotent replay
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamSessionItemAutosaveResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '409':
+          $ref: '#/components/responses/ProblemConflict'
+        '422':
+          $ref: '#/components/responses/ProblemUnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /v1/exams/sessions/{sessionId}/items/{itemPosition}/scratchpad:
+    post:
+      summary: Attach photographed paper deneme or digital scratchpad page for F28 post-submit batch verification (0 runtime LLM tokens)
+      operationId: attachExamScratchpadPhoto
+      tags:
+        - Exams
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: itemPosition
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+        - name: Idempotency-Key
+          in: header
+          required: false
+          schema:
+            type: string
+            minLength: 3
+            maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExamScratchpadUploadRequest'
+      responses:
+        '200':
+          description: Idempotent replay of scratchpad attachment confirmation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamScratchpadUploadResponse'
+        '201':
+          description: Newly recorded scratchpad attachment queued for F28 post-submit batch
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamScratchpadUploadResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '409':
+          $ref: '#/components/responses/ProblemConflict'
+        '422':
+          $ref: '#/components/responses/ProblemUnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /api/v1/exams/sessions/{sessionId}/items/{itemPosition}/scratchpad:
+    post:
+      summary: Attach photographed deneme scratchpad page (/api alias)
+      operationId: attachExamScratchpadPhotoApiAlias
+      tags:
+        - Exams
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: itemPosition
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+        - name: Idempotency-Key
+          in: header
+          required: false
+          schema:
+            type: string
+            minLength: 3
+            maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExamScratchpadUploadRequest'
+      responses:
+        '200':
+          description: Idempotent replay of scratchpad attachment confirmation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamScratchpadUploadResponse'
+        '201':
+          description: Newly recorded scratchpad attachment queued for F28 post-submit batch
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamScratchpadUploadResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '409':
+          $ref: '#/components/responses/ProblemConflict'
+        '422':
+          $ref: '#/components/responses/ProblemUnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /v1/exams/sessions/{sessionId}/submit:
+    post:
+      summary: Idempotent submission finalizing session state and building F28 post-submit batch manifest
+      operationId: submitExamSession
+      tags:
+        - Exams
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: Idempotency-Key
+          in: header
+          required: false
+          schema:
+            type: string
+            minLength: 3
+            maxLength: 128
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExamSessionSubmitRequest'
+      responses:
+        '200':
+          description: Idempotent submission receipt with F28 verification batch manifest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamSessionSubmitResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '409':
+          $ref: '#/components/responses/ProblemConflict'
+        '422':
+          $ref: '#/components/responses/ProblemUnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /api/v1/exams/sessions/{sessionId}/submit:
+    post:
+      summary: Idempotent exam session submission (/api alias)
+      operationId: submitExamSessionApiAlias
+      tags:
+        - Exams
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: Idempotency-Key
+          in: header
+          required: false
+          schema:
+            type: string
+            minLength: 3
+            maxLength: 128
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExamSessionSubmitRequest'
+      responses:
+        '200':
+          description: Idempotent submission receipt with F28 verification batch manifest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamSessionSubmitResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '409':
+          $ref: '#/components/responses/ProblemConflict'
+        '422':
+          $ref: '#/components/responses/ProblemUnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /v1/exams/sessions/{sessionId}/hint-guard-check:
+    post:
+      summary: Server-side zero-hint policy verification during active mock exam sessions (CNT-LOS-10 / INV-EXAM-003)
+      operationId: checkExamSessionNoHintGuard
+      tags:
+        - Exams
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                requestedSurface:
+                  type: string
+                  minLength: 2
+                  maxLength: 64
+      responses:
+        '200':
+          description: Post-submission state where tutor guidance is no longer blocked by an active exam
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamNoHintGuardResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '409':
+          description: EXAM_NO_HINT_MODE_ACTIVE — active timed mock exam strictly disables hints
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamNoHintGuardResponse'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /api/v1/exams/sessions/{sessionId}/hint-guard-check:
+    post:
+      summary: Server-side zero-hint policy verification (/api alias)
+      operationId: checkExamSessionNoHintGuardApiAlias
+      tags:
+        - Exams
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                requestedSurface:
+                  type: string
+                  minLength: 2
+                  maxLength: 64
+      responses:
+        '200':
+          description: Post-submission state where tutor guidance is no longer blocked by an active exam
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamNoHintGuardResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '409':
+          description: EXAM_NO_HINT_MODE_ACTIVE — active timed mock exam strictly disables hints
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamNoHintGuardResponse'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -9637,3 +10237,30 @@ components:
 
     AssembledAssessmentResponse:
       $ref: '../../schemas/exam/v1/assembled-assessment-response.schema.json'
+
+    ExamSessionStartRequest:
+      $ref: '../../schemas/exam/v1/exam-session-start-request.schema.json'
+
+    ExamSessionResponse:
+      $ref: '../../schemas/exam/v1/exam-session-response.schema.json'
+
+    ExamSessionItemAutosaveRequest:
+      $ref: '../../schemas/exam/v1/exam-session-item-autosave-request.schema.json'
+
+    ExamSessionItemAutosaveResponse:
+      $ref: '../../schemas/exam/v1/exam-session-item-autosave-response.schema.json'
+
+    ExamScratchpadUploadRequest:
+      $ref: '../../schemas/exam/v1/exam-scratchpad-upload-request.schema.json'
+
+    ExamScratchpadUploadResponse:
+      $ref: '../../schemas/exam/v1/exam-scratchpad-upload-response.schema.json'
+
+    ExamSessionSubmitRequest:
+      $ref: '../../schemas/exam/v1/exam-session-submit-request.schema.json'
+
+    ExamSessionSubmitResponse:
+      $ref: '../../schemas/exam/v1/exam-session-submit-response.schema.json'
+
+    ExamNoHintGuardResponse:
+      $ref: '../../schemas/exam/v1/exam-no-hint-guard-response.schema.json'
