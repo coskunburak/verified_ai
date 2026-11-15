@@ -4432,6 +4432,293 @@ paths:
         '503':
           $ref: '#/components/responses/ProblemServiceUnavailable'
 
+  /v1/candidate/profile:
+    put:
+      summary: Create or update learner exam goal, study horizon, and accommodations (Sprint 9.2)
+      operationId: putCandidateProfile
+      tags:
+        - Candidate
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: false
+          schema:
+            type: string
+            minLength: 4
+            maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertCandidateProfileRequest'
+      responses:
+        '200':
+          description: Candidate profile updated or idempotent replay returned at $0.00 LLM spend
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CandidateProfileResponse'
+        '201':
+          description: Candidate profile created and synchronized with active exam target
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CandidateProfileResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '422':
+          $ref: '#/components/responses/ProblemUnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+    post:
+      summary: Create or update learner candidate profile (POST alias, Sprint 9.2)
+      operationId: postCandidateProfile
+      tags:
+        - Candidate
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: false
+          schema:
+            type: string
+            minLength: 4
+            maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertCandidateProfileRequest'
+      responses:
+        '200':
+          description: Candidate profile updated or idempotent replay returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CandidateProfileResponse'
+        '201':
+          description: Candidate profile created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CandidateProfileResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '422':
+          $ref: '#/components/responses/ProblemUnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+    get:
+      summary: Get learner's active candidate profile, adjusted section timers, and feasibility assessment
+      operationId: getCandidateProfile
+      tags:
+        - Candidate
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Candidate profile retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CandidateProfileResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /v1/candidate/profile/history:
+    get:
+      summary: Get immutable audit trail of learner study horizon, target score, and budget edits
+      operationId: getCandidateProfileHistory
+      tags:
+        - Candidate
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Candidate horizon history retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CandidateProfileHistoryResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /v1/candidate/syllabus-ingest:
+    post:
+      summary: Upload a photo/PDF study schedule for Snap-to-Plan OCR extraction and curriculum disambiguation
+      operationId: ingestCandidateSyllabus
+      tags:
+        - Candidate
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: false
+          schema:
+            type: string
+            minLength: 4
+            maxLength: 128
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+                - file
+                - examCode
+              properties:
+                file:
+                  type: string
+                  format: binary
+                examCode:
+                  type: string
+                examVersion:
+                  type: string
+                idempotencyKey:
+                  type: string
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SyllabusIngestJsonRequest'
+      responses:
+        '200':
+          description: Cached SHA-256 or idempotent syllabus ingestion returned ($0.00 LLM spend)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyllabusIngestionResponse'
+        '201':
+          description: Syllabus ingested, mapped, and stored with trainingEligible=false and 30-day TTL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyllabusIngestionResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '413':
+          $ref: '#/components/responses/ProblemPayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/ProblemUnsupportedMediaType'
+        '422':
+          $ref: '#/components/responses/ProblemUnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/ProblemTooManyRequests'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /v1/candidate/syllabus-uploads/{uploadId}:
+    get:
+      summary: Get Snap-to-Plan syllabus ingestion result and disambiguation candidates
+      operationId: getCandidateSyllabusUpload
+      tags:
+        - Candidate
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: uploadId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Syllabus upload metadata retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyllabusIngestionResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /v1/candidate/syllabus-uploads/{uploadId}/confirm:
+    post:
+      summary: Confirm or override curriculum skill mappings for ambiguous syllabus topics
+      operationId: confirmCandidateSyllabusUpload
+      tags:
+        - Candidate
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: uploadId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SyllabusConfirmRequest'
+      responses:
+        '200':
+          description: Disambiguated syllabus mappings confirmed and study-plan update emitted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyllabusIngestionResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '422':
+          $ref: '#/components/responses/ProblemUnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -4472,6 +4759,21 @@ components:
           schema: {$ref: '#/components/schemas/ProblemDetails'}
     ProblemServiceUnavailable:
       description: Service feature disabled or temporarily unavailable
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/ProblemDetails'}
+    ProblemPayloadTooLarge:
+      description: Uploaded payload exceeds maximum permitted byte limit
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/ProblemDetails'}
+    ProblemUnsupportedMediaType:
+      description: Uploaded media magic bytes or MIME type are unsupported
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/ProblemDetails'}
+    ProblemTooManyRequests:
+      description: Rolling upload or rate quota exceeded
       content:
         application/problem+json:
           schema: {$ref: '#/components/schemas/ProblemDetails'}
@@ -8942,3 +9244,21 @@ components:
 
     StudentExamTargetListResponse:
       $ref: '../../schemas/exam/v1/student-exam-target-list-response.schema.json'
+
+    UpsertCandidateProfileRequest:
+      $ref: '../../schemas/exam/v1/upsert-candidate-profile-request.schema.json'
+
+    CandidateProfileResponse:
+      $ref: '../../schemas/exam/v1/candidate-profile.schema.json'
+
+    CandidateProfileHistoryResponse:
+      $ref: '../../schemas/exam/v1/candidate-profile-history-response.schema.json'
+
+    SyllabusIngestJsonRequest:
+      $ref: '../../schemas/exam/v1/syllabus-ingest-json-request.schema.json'
+
+    SyllabusIngestionResponse:
+      $ref: '../../schemas/exam/v1/syllabus-ingestion.schema.json'
+
+    SyllabusConfirmRequest:
+      $ref: '../../schemas/exam/v1/syllabus-confirm-request.schema.json'

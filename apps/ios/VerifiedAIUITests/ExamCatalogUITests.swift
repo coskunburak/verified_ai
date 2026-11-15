@@ -84,4 +84,75 @@ final class ExamCatalogUITests: XCTestCase {
         let tytCard = app.buttons["exam.card.TR_YKS_TYT_MATH"]
         XCTAssertTrue(tytCard.waitForExistence(timeout: 5))
     }
+
+    func testCandidateGoalSetupAccommodationsAndHorizonSave() {
+        let app = XCUIApplication()
+        app.launchArguments = [
+            "--ui-testing",
+            "--ui-testing-authenticated",
+            "--solve-fixture",
+            "--solve-reset",
+            "--exam-fixture",
+            "--ui-testing-candidate-profile"
+        ]
+        app.launch()
+
+        let entryButton = app.buttons["home.candidateProfile.button"]
+        XCTAssertTrue(entryButton.waitForExistence(timeout: 8))
+        entryButton.tap()
+
+        let saveButton = app.buttons["candidate.profile.saveButton"]
+        for _ in 0..<4 where !saveButton.exists || !saveButton.isHittable {
+            app.swipeUp()
+        }
+        XCTAssertTrue(saveButton.waitForExistence(timeout: 5))
+        saveButton.tap()
+
+        let savedBanner = app.descendants(matching: .any)["candidate.profile.savedBanner"]
+        for _ in 0..<4 where !savedBanner.exists {
+            app.swipeDown()
+        }
+        XCTAssertTrue(savedBanner.waitForExistence(timeout: 5))
+    }
+
+    func testSnapToPlanAmbiguousPdfDisambiguationAndConfirm() {
+        let app = XCUIApplication()
+        app.launchArguments = [
+            "--ui-testing",
+            "--ui-testing-authenticated",
+            "--solve-fixture",
+            "--solve-reset",
+            "--exam-fixture",
+            "--ui-testing-candidate-profile"
+        ]
+        app.launch()
+
+        let entryButton = app.buttons["home.candidateProfile.button"]
+        XCTAssertTrue(entryButton.waitForExistence(timeout: 8))
+        entryButton.tap()
+
+        let syllabusButton = app.buttons["candidate.profile.openSyllabusSheetButton"]
+        for _ in 0..<4 where !syllabusButton.exists || !syllabusButton.isHittable {
+            app.swipeUp()
+        }
+        XCTAssertTrue(syllabusButton.waitForExistence(timeout: 5))
+        syllabusButton.tap()
+
+        let sampleAmbiguousBtn = app.buttons["syllabus.sampleAmbiguousUploadButton"]
+        XCTAssertTrue(sampleAmbiguousBtn.waitForExistence(timeout: 5))
+        sampleAmbiguousBtn.tap()
+
+        let confirmButton = app.buttons["syllabus.confirmMappingsButton"]
+        for _ in 0..<4 where !confirmButton.exists || !confirmButton.isHittable {
+            app.swipeUp()
+        }
+        XCTAssertTrue(confirmButton.waitForExistence(timeout: 5))
+        confirmButton.tap()
+
+        let statusBanner = app.descendants(matching: .any)["syllabus.statusBanner"]
+        for _ in 0..<3 where !statusBanner.exists {
+            app.swipeDown()
+        }
+        XCTAssertTrue(statusBanner.waitForExistence(timeout: 5))
+    }
 }

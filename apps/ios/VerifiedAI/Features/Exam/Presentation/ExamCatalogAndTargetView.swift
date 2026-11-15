@@ -2,10 +2,15 @@ import SwiftUI
 
 public struct ExamCatalogAndTargetView: View {
     @ObservedObject public var viewModel: ExamCatalogAndTargetViewModel
+    public var candidateProfileViewModel: CandidateProfileViewModel?
     @FocusState private var isScoreFieldFocused: Bool
 
-    public init(viewModel: ExamCatalogAndTargetViewModel) {
+    public init(
+        viewModel: ExamCatalogAndTargetViewModel,
+        candidateProfileViewModel: CandidateProfileViewModel? = nil
+    ) {
         self.viewModel = viewModel
+        self.candidateProfileViewModel = candidateProfileViewModel
     }
 
     private var languageCode: String? {
@@ -41,6 +46,27 @@ public struct ExamCatalogAndTargetView: View {
 
                     if let activeTarget = viewModel.primaryActiveTarget {
                         activeTargetReadinessCard(target: activeTarget)
+                    }
+
+                    if let candidateProfileViewModel {
+                        NavigationLink {
+                            CandidateGoalSetupView(viewModel: candidateProfileViewModel)
+                        } label: {
+                            HStack {
+                                Label(LocalizedStringKey("exam.catalog.open_candidate_profile"), systemImage: "calendar.badge.clock")
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(ColorTokens.textPrimary)
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(ColorTokens.textSecondary)
+                            }
+                            .padding(14)
+                            .frame(maxWidth: .infinity)
+                            .background(ColorTokens.surfaceElevated)
+                            .clipShape(RoundedRectangle(cornerRadius: 14))
+                        }
+                        .accessibilityIdentifier("exam.catalog.openCandidateProfileButton")
                     }
                 }
             }

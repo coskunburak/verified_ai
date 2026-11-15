@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/exam/v1/upsert-candidate-profile-request.schema.json",
+  "title": "CandidateProfileUpsertRequest",
+  "description": "Learner request to configure or update exam goal, study budget, and accessibility accommodations (Sprint 9.2).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "examCode",
+    "targetScore",
+    "targetDate",
+    "dailyStudyMinutes",
+    "weeklyStudyMinutes"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "candidate-profile-request-v1"
+    },
+    "examCode": {
+      "type": "string",
+      "pattern": "^[A-Z0-9_]{3,64}$"
+    },
+    "pinnedExamVersion": {
+      "type": ["string", "null"],
+      "pattern": "^[A-Za-z0-9._-]{1,32}$"
+    },
+    "targetScore": {
+      "type": "number",
+      "minimum": -100,
+      "maximum": 2000
+    },
+    "targetDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "dailyStudyMinutes": {
+      "type": "integer",
+      "minimum": 15,
+      "maximum": 960
+    },
+    "weeklyStudyMinutes": {
+      "type": "integer",
+      "minimum": 15,
+      "maximum": 6720
+    },
+    "accommodations": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": [
+        "extraTimeMultiplier",
+        "highContrastEnabled",
+        "screenReaderOptimized",
+        "reducedMotionEnabled"
+      ],
+      "properties": {
+        "extraTimeMultiplier": {
+          "type": "number",
+          "enum": [1.0, 1.25, 1.5, 2.0]
+        },
+        "highContrastEnabled": {
+          "type": "boolean"
+        },
+        "screenReaderOptimized": {
+          "type": "boolean"
+        },
+        "reducedMotionEnabled": {
+          "type": "boolean"
+        }
+      }
+    },
+    "baselineMastery": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "maximum": 1
+    },
+    "changeReason": {
+      "type": ["string", "null"],
+      "maxLength": 64
+    },
+    "idempotencyKey": {
+      "type": ["string", "null"],
+      "minLength": 4,
+      "maxLength": 128
+    }
+  }
+}

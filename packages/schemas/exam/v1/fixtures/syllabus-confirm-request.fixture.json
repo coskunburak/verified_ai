@@ -1,0 +1,9 @@
+{
+  "schemaVersion": "syllabus-confirm-request-v1",
+  "mappings": [
+    {
+      "itemIndex": 1,
+      "confirmedSkillId": "MATH.EQUATIONS.LINEAR_SOLVING"
+    }
+  ]
+}

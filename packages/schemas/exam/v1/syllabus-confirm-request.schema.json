@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/exam/v1/syllabus-confirm-request.schema.json",
+  "title": "SyllabusConfirmRequest",
+  "description": "Learner confirmation mapping ambiguous parsed syllabus items to canonical curriculum skills (Sprint 9.2).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "mappings"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "syllabus-confirm-request-v1"
+    },
+    "mappings": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/SyllabusMappingConfirmation"
+      }
+    }
+  },
+  "$defs": {
+    "SyllabusMappingConfirmation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "itemIndex",
+        "confirmedSkillId"
+      ],
+      "properties": {
+        "itemIndex": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "confirmedSkillId": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 128
+        }
+      }
+    }
+  }
+}

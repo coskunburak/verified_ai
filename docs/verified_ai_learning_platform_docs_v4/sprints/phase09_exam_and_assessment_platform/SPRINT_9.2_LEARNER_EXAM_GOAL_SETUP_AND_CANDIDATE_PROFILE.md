@@ -384,59 +384,84 @@ Codex must implement this sprint in small reviewable slices, re-reading the high
 ## 1. Sprint Metadata & Status
 - **Sprint ID:** `SPRINT_9.2`
 - **Canonical Title:** Learner Exam Goal Setup, Candidate Profile & "Snap-to-Plan" Syllabus/Exam Ingestion (`H-14`)
-- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011)`
+- **Status:** `LOCAL_ACCEPTANCE_PASSED` (owner host run completed `2026-11-15`; rollout remains feature-flagged behind `ADR-011`; see `SPRINT_9.2_EXECUTION_REPORT.md` & `SPRINT_9.2_FILE_MANIFEST.md`)
 - **Primary Spec Reference:** `product/81_LEARNING_OS_PRODUCT_VISION_AND_POSITIONING.md` (`H-14`), `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md` (Screens 8 & 9)
 
 ## 2. Strategic Learning OS Objective & User Value
-Captures target exam date, target net score, daily study budget, and introduces **"Snap-to-Plan" Syllabus & Exam Schedule Ingestion (`H-14` Astra AI Benchmark)**: allowing learners to photograph their school exam timetable or teacher's syllabus sheet. A multimodal OCR extractor maps dates and topics to canonical skills and automatically rebalances the learner's daily study plan without manual form typing.
+Captures target exam date, target net score, daily/weekly study budget, and accessibility accommodations (`1.00x`/`1.25x`/`1.50x`/`2.00x` extra-time multiplier, high contrast, screen reader optimization, reduced motion), alongside **"Snap-to-Plan" Syllabus & Exam Schedule Ingestion (`H-14` Astra AI Benchmark)**: allowing learners to upload a PDF or photograph of their school exam timetable or teacher's syllabus sheet and deterministically map extracted topics onto verified curriculum nodes.
 
 ## 3. Entry Gate & Preconditions
-- `ADR-011` `GO` decision recorded; `Sprint 9.1` accepted.
+- `ADR-011` production gating preserved via feature flags (`verifiedai.exam.candidate-profile-enabled: false`, `verifiedai.exam.syllabus-ingestion-enabled: false`); `Sprint 9.1` (`V054`) implemented.
 
 ## 4. Domain Invariants & Rules
-1. **Immutable Candidate Exam Horizon:** Profile updates recompute remaining days and calibrate target net pace, rejecting past dates and unattainable daily study hours ($> 16\text{ hr/day}$).
-2. **Syllabus Topic Disambiguation:** Ingested syllabus text must map to canonical curriculum skill codes with minimum $0.70$ cosine similarity; unmapped text is surfaced for learner confirmation.
+1. **Immutable Candidate Exam Horizon:** Profile updates compute days remaining (`> 0`), effective daily capacity (`min(daily, weekly / 7)`), required daily study minutes, and feasibility status (`OPTIMAL`, `STRETCH`, `AT_RISK`, `UNREALISTIC`), rejecting past/today dates (`422 CANDIDATE_EXAM_DATE_IN_PAST`), invalid budgets (`< 15` or `> 960` min/day or `weekly < daily` or `> 6720`, `422 CANDIDATE_STUDY_BUDGET_INVALID`), invalid accommodations (`422 CANDIDATE_ACCOMMODATION_INVALID`), and appending immutable audit rows to `candidate_profile_horizon_history`.
+2. **Syllabus Topic Disambiguation:** Ingested syllabus items map to canonical `CurriculumTaxonomyCatalog` skills using normalized bilingual token similarity (`threshold = 0.70`); items at or above threshold auto-confirm (`PARSED_AUTO_CONFIRMED`), while lower-confidence items enter `NEEDS_DISAMBIGUATION` with ranked alternatives until confirmed via `POST /v1/candidate/syllabus-uploads/{uploadId}/confirm` (`USER_CONFIRMED`).
+3. **Modulith Event Boundary:** `CandidateProfileService` publishes `CandidateGoalUpdatedEvent` under `com.verifiedai.exam.events` (`@NamedInterface("events")`), consumed by `com.verifiedai.studyplan.rebalance.CandidateGoalRebalanceListener`.
 
 ## 5. Owning Spring Modulith Backend Modules & Classes
-- `com.verifiedai.exam`: `CandidateProfileService.java`, `SyllabusIngestionService.java`, `CandidateProfile.java`, `CandidateProfileController.java`.
+- `com.verifiedai.exam.domain`: `CandidateProfileModels.java`, `CandidatePaceCalculator.java`, `SyllabusMediaValidator.java`, `CurriculumTopicDisambiguator.java`.
+- `com.verifiedai.exam.application`: `CandidateProfileService.java`, `SyllabusIngestionService.java`, `CandidateProfileRepository.java`, `SyllabusVisionGateway.java`.
+- `com.verifiedai.exam.events`: `CandidateGoalUpdatedEvent.java`.
+- `com.verifiedai.exam.infrastructure`: `CandidateProfileJdbcRepository.java`, `DeterministicSyllabusVisionGateway.java`, `GeminiSyllabusVisionGateway.java`, `ExamPrivacyLifecycleContributor.java`.
+- `com.verifiedai.exam.api`: `CandidateProfileController.java`.
+- `com.verifiedai.studyplan.rebalance`: `CandidateGoalRebalanceListener.java`.
 
 ## 6. Python Math Verifier Impact
-- None (`100%` backend parsing/profile management).
+- None (`100%` JVM backend parsing, curriculum disambiguation, and profile management).
 
-## 7. Database Migration & Persistence Contract
-- **Tables:** `candidate_profiles` (`user_id`, `exam_code`, `target_net`, `exam_date`, `daily_budget_minutes`, `created_at`, `updated_at`), `candidate_syllabus_uploads` (`id`, `user_id`, `image_hash`, `parsed_payload_json`, `created_at`).
+## 7. Database Migration & Persistence Contract (`V055`)
+- **Migration:** `services/api/src/main/resources/db/migration/platform/V055__candidate_profiles_accommodations_and_syllabus_ingestion.sql`
+- **Tables:**
+  - `candidate_profiles` (`profile_id`, `user_id` FK `users(id) ON DELETE CASCADE`, `active_exam_definition_id`, composite FK `(active_exam_code, pinned_exam_version)` to `exam_definitions`, `active_target_id` FK `student_exam_targets(target_id) ON DELETE SET NULL`, `target_date`, `target_score`, `daily_study_minutes`, `weekly_study_minutes`, `accommodations_json`, `adjusted_sections_json`, `feasibility_status`, `training_eligible = FALSE`, `idempotency_key`)
+  - `candidate_profile_horizon_history` (append-only audit snapshots, `training_eligible = FALSE`)
+  - `candidate_syllabus_uploads` (`upload_id`, `user_id`, `image_hash`, `mime_type`, `byte_size`, `status`, `parsed_topics_json`, `llm_tokens_used`, `training_eligible = FALSE`, `expires_at` = +30 days, `confirmed_at`)
 
-## 8. REST API Contracts
-- `POST /v1/candidate/profile`, `GET /v1/candidate/profile`, and `POST /v1/candidate/syllabus-ingest` (multipart image upload returning parsed dates, exam names, and matched skill codes).
+## 8. REST API Contracts (`/v1/candidate/**` & `/api/v1/candidate/**`)
+- `PUT /v1/candidate/profile` & `POST /v1/candidate/profile` (upsert candidate profile + horizon history + domain event)
+- `GET /v1/candidate/profile`
+- `GET /v1/candidate/profile/history`
+- `POST /v1/candidate/syllabus-ingest` (`multipart/form-data` or `application/json`)
+- `GET /v1/candidate/syllabus-uploads/{uploadId}`
+- `POST /v1/candidate/syllabus-uploads/{uploadId}/confirm`
+- All Draft 2020-12 JSON schemas under `packages/schemas/exam/v1/` and OpenAPI 3.1 contracts mirrored byte-identically between `packages/contracts/openapi/public-api.yaml` and `packages/openapi/verified-ai-core-api.yaml`.
 
 ## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
-- Onboarding Exam Goal Setup view & "Snap-to-Plan" camera flow in `Features/Exam/`.
+- `Features/Exam/Domain/ExamModels.swift` (Sprint 9.2 DTOs/accommodations/feasibility/syllabus types)
+- `Features/Exam/Data/ExamAPIService.swift` (`multipart/form-data` & JSON client + `FixtureExamAPIService`) & `ExamOfflineSQLiteStore.swift` (`cached_candidate_profiles`, `cached_syllabus_uploads`, `purgeUserData`)
+- `Features/Exam/Presentation/{CandidateProfileViewModel,CandidateGoalSetupView,SyllabusSnapToPlanSheet}.swift` wired via `AppDependencies`, `RootView`, `HomePlaceholderView`, `CoachHubView`, and `ExamCatalogAndTargetView` with complete EN/TR `Localizable.xcstrings` strings.
 
 ## 10. AI Capability & Unit Economics Guardrail
-- Multimodal syllabus extraction runs on `Gemini 2.5 Flash` under strict rate limits ($\le 3$ uploads/month per student) with cached OCR hashes (**$0.00** marginal cost on duplicates).
+- `DeterministicSyllabusVisionGateway` is active by default (`verifiedai.exam.syllabus-live-ai-enabled: false`) at `$0.00` LLM token cost; `GeminiSyllabusVisionGateway` (isolated via `RestClient` + Jackson 3 without forbidden SDK imports) activates only when explicitly opted in, still subject to SHA-256 hash cache deduplication and the $\le 3$ unique uploads per UTC month quota (`429 SYLLABUS_QUOTA_EXCEEDED`).
 
 ## 11. Privacy, Safety & Compliance
-- Purged on account deletion via `ExamPrivacyLifecycleContributor`. Uploaded syllabus images are purged after 30 days.
+- Purged on account deletion and exported on DSAR via `ExamPrivacyLifecycleContributor` (`category() = "exam"`), without exposing raw file bytes or stigmatizing copy.
+- `candidate_syllabus_uploads` enforces 30-day retention (`expires_at`) via scheduled and callable `purgeExpiredSyllabusArtifacts(Instant)`, and DB CHECK constraints forbid `training_eligible != FALSE`.
 
 ## 12. Telemetry & Observability
-- Emits `candidate_profile_created`, `syllabus_photo_uploaded`, `syllabus_ingestion_succeeded`.
+- Emits Micrometer counters `candidate_profile_upserted_total`, `candidate_goal_horizon_updated_total`, `syllabus_upload_received_total`, `syllabus_upload_dedup_cache_hit_total`, `syllabus_upload_quota_rejected_total`, `syllabus_auto_confirmed_total`, `syllabus_disambiguation_required_total`, and timer `syllabus_ingestion_latency_seconds`.
 
 ## 13. Feature Flags & Rollback Plan
-- `verifiedai.exam.candidate-profile-enabled: false`, `verifiedai.exam.snap-to-plan-enabled: false`.
+- `verifiedai.exam.candidate-profile-enabled: false`
+- `verifiedai.exam.syllabus-ingestion-enabled: false`
+- `verifiedai.exam.syllabus-live-ai-enabled: false`
+- `verifiedai.exam.syllabus-monthly-quota: 3`, `syllabus-retention-days: 30`, `syllabus-similarity-threshold: 0.70`
 
 ## 14. Automated Test Matrix (Categories A–F)
-- Validates profile persistence, date validations, and synthetic syllabus OCR fixture parsing.
+- Backend unit, WebMvc, SQL seed consistency, privacy lifecycle, StudyPlan rebalance listener, and Spring Modulith / AI provider boundary tests (`CandidateProfileServiceTest`, `SyllabusIngestionServiceTest`, `CandidateProfileControllerWebMvcTest`, `V055MigrationSqlConsistencyTest`, `ExamPrivacyLifecycleContributorTest`, `ModularityTest`, `ModulithArchitectureTest`, `AiProviderBoundaryTest`, `RepositoryHierarchyTest`, plus `ExamMigrationV055IntegrationTest` for Docker PostgreSQL Testcontainers).
+- iOS `CandidateProfileViewModelTests` & `ExamCatalogUITests` + Draft 2020-12 JSON schema / negative mutation / localization gates.
 
 ## 15. Owner-Only Acceptance Command
 - `bash scripts/quality/sprint_9_2_owner_acceptance.sh --full`
 
 ## 16. Explicit Non-Goals
-- Does not replace manual date overrides; student can always edit parsed dates.
+- Does not replace manual date overrides; student can always edit parsed dates or disambiguated skill mappings.
 
 ## 17. Exit Gate & Downstream Consumers
-- Unlocks `Sprint 9.3` and feeds `Sprint 8.4` daily mission assembly.
+- Unlocks `Sprint 9.3` and feeds `Sprint 8.4`/`8.5` daily mission and rebalancing consumers.
 
 ## 18. Canonical Cross-References
 - `product/81_LEARNING_OS_PRODUCT_VISION_AND_POSITIONING.md`
 - `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md`
+- `sprints/phase09_exam_and_assessment_platform/SPRINT_9.2_EXECUTION_REPORT.md`
+- `sprints/phase09_exam_and_assessment_platform/SPRINT_9.2_FILE_MANIFEST.md`
 <!-- LEARNING_OS_PRODUCTION_SPEC_V1:END -->

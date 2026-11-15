@@ -6,6 +6,7 @@ public struct CoachHubView: View {
     public var gamificationViewModel: GamificationViewModel?
     public var coldStartViewModel: ColdStartDiagnosticViewModel?
     public var examViewModel: ExamCatalogAndTargetViewModel?
+    public var candidateProfileViewModel: CandidateProfileViewModel?
     public let onStartCapture: () -> Void
     public let onOpenTask: (DailyCoachTaskModel) -> Void
 
@@ -18,6 +19,7 @@ public struct CoachHubView: View {
         gamificationViewModel: GamificationViewModel? = nil,
         coldStartViewModel: ColdStartDiagnosticViewModel? = nil,
         examViewModel: ExamCatalogAndTargetViewModel? = nil,
+        candidateProfileViewModel: CandidateProfileViewModel? = nil,
         onStartCapture: @escaping () -> Void = {},
         onOpenTask: @escaping (DailyCoachTaskModel) -> Void = { _ in }
     ) {
@@ -26,6 +28,7 @@ public struct CoachHubView: View {
         self.gamificationViewModel = gamificationViewModel
         self.coldStartViewModel = coldStartViewModel
         self.examViewModel = examViewModel
+        self.candidateProfileViewModel = candidateProfileViewModel
         self.onStartCapture = onStartCapture
         self.onOpenTask = onOpenTask
     }
@@ -67,7 +70,10 @@ public struct CoachHubView: View {
                     }
                     if let examViewModel, !examViewModel.isFeatureDisabled {
                         NavigationLink {
-                            ExamCatalogAndTargetView(viewModel: examViewModel)
+                            ExamCatalogAndTargetView(
+                                viewModel: examViewModel,
+                                candidateProfileViewModel: candidateProfileViewModel
+                            )
                         } label: {
                             HStack {
                                 Label(LocalizedStringKey("home.exam_catalog.open_button"), systemImage: "checklist")
@@ -82,6 +88,24 @@ public struct CoachHubView: View {
                             .clipShape(RoundedRectangle(cornerRadius: 12))
                         }
                         .accessibilityIdentifier("home.examCatalog.button")
+                    }
+                    if let candidateProfileViewModel {
+                        NavigationLink {
+                            CandidateGoalSetupView(viewModel: candidateProfileViewModel)
+                        } label: {
+                            HStack {
+                                Label(LocalizedStringKey("home.candidate_profile.open_button"), systemImage: "calendar.badge.clock")
+                                    .font(.subheadline.weight(.semibold))
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .font(.caption.weight(.semibold))
+                            }
+                            .padding(12)
+                            .frame(maxWidth: .infinity)
+                            .background(Color(UIColor.secondarySystemBackground))
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                        }
+                        .accessibilityIdentifier("coachHub.candidateProfileLink")
                     }
                     if summary.isColdStart {
                         coldStartHeroCard(summary: summary)

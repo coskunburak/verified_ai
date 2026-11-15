@@ -235,6 +235,18 @@ public final class ExamCatalogAndTargetViewModel: ObservableObject {
             errorMessageKey = "exam.error.forbidden"
         case .notFound:
             errorMessageKey = "exam.error.not_found"
+        case .dateInPast:
+            errorMessageKey = "exam.candidate.error.date_in_past"
+        case .studyBudgetInvalid:
+            errorMessageKey = "exam.candidate.error.budget_invalid"
+        case .accommodationInvalid:
+            errorMessageKey = "exam.candidate.error.accommodation_invalid"
+        case .quotaExceeded:
+            errorMessageKey = "exam.syllabus.error.quota_exceeded"
+        case .mediaUnsupported:
+            errorMessageKey = "exam.syllabus.error.media_unsupported"
+        case .disambiguationRequired:
+            errorMessageKey = "exam.syllabus.error.disambiguation_required"
         case .unexpected(let message):
             errorMessageKey = "exam.error.unexpected"
             errorDetailsText = message

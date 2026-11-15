@@ -66,14 +66,10 @@ struct AppDependencies {
         HTTPColdStartDiagnosticService(apiClient: apiClient)
     }
     let examCacheStore: ExamOfflineSQLiteStore
-    var examAPI: ExamAPIServicing {
-        #if DEBUG
-        if solveFixture && ProcessInfo.processInfo.arguments.contains("--exam-fixture") {
-            let simulateOffline = ProcessInfo.processInfo.arguments.contains("--exam-offline")
-            return FixtureExamAPIService(simulateOffline: simulateOffline)
-        }
-        #endif
-        return HTTPExamAPIService(apiClient: apiClient)
+    let examAPI: ExamAPIServicing
+
+    func makeCandidateProfileViewModel() -> CandidateProfileViewModel {
+        CandidateProfileViewModel(apiService: examAPI, offlineStore: examCacheStore)
     }
 
     #if DEBUG
@@ -233,6 +229,18 @@ struct AppDependencies {
         let router = AppRouter()
         let deepLinkRouter = DeepLinkRouter()
         let examCacheStore = ExamOfflineSQLiteStore()
+        let examAPI: ExamAPIServicing
+        #if DEBUG
+        if arguments.contains("--exam-fixture"),
+           solveFixture || (environment == .development && arguments.contains("--ui-testing-authenticated") && (arguments.contains("--ui-testing-candidate-profile") || arguments.contains("-ui-testing-candidate-profile"))) {
+            let simulateOffline = arguments.contains("--exam-offline")
+            examAPI = FixtureExamAPIService(simulateOffline: simulateOffline)
+        } else {
+            examAPI = HTTPExamAPIService(apiClient: apiClient)
+        }
+        #else
+        examAPI = HTTPExamAPIService(apiClient: apiClient)
+        #endif
 
         return AppDependencies(
             apiClient: apiClient,
@@ -255,6 +263,7 @@ struct AppDependencies {
             problemSessionCache: problemSessionCache,
             attemptPending: attemptPending,
             examCacheStore: examCacheStore,
+            examAPI: examAPI,
             primarySolveAPI: primarySolveAPI,
             solveRecovery: solveRecovery,
             solveEnabled: solveEnabled,

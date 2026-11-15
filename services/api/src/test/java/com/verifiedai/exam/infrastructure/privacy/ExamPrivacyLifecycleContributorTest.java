@@ -87,4 +87,54 @@ class ExamPrivacyLifecycleContributorTest {
             assertThat(dumped).doesNotContain(banned);
         }
     }
+
+    @Test
+    void exportDeleteAndPurgeIncludeCandidateProfileAndSyllabusUploads() {
+        var candidateRepo = mock(com.verifiedai.exam.application.CandidateProfileRepository.class);
+        Instant now = Instant.parse("2026-11-15T10:00:00Z");
+
+        when(examRepository.findTargetsByUserId(userId)).thenReturn(List.of());
+        when(candidateRepo.findProfileByUserId(userId)).thenReturn(java.util.Optional.of(
+                new com.verifiedai.exam.domain.CandidateProfileModels.CandidateProfileRecord(
+                        UUID.randomUUID(),
+                        userId,
+                        UUID.randomUUID(),
+                        "TR_YKS_TYT_MATH",
+                        "2026.1",
+                        null,
+                        com.verifiedai.exam.domain.ExamModels.Jurisdiction.TR,
+                        LocalDate.of(2027, 6, 20),
+                        new BigDecimal("35.0"),
+                        60,
+                        420,
+                        com.verifiedai.exam.domain.CandidateProfileModels.AccessibilityAccommodations.standardDefaults(),
+                        new BigDecimal("0.25"),
+                        15,
+                        com.verifiedai.exam.domain.CandidateProfileModels.FeasibilityStatus.OPTIMAL,
+                        "key-privacy",
+                        "candidate-profile-v1",
+                        false,
+                        now,
+                        now
+                )
+        ));
+        when(candidateRepo.findHorizonHistoryByUserId(userId, 100)).thenReturn(List.of());
+        when(candidateRepo.findSyllabusUploadsByUserId(userId, 100)).thenReturn(List.of());
+        when(candidateRepo.purgeExpiredSyllabusUploads(now)).thenReturn(3);
+
+        ExamPrivacyLifecycleContributor fullContributor = new ExamPrivacyLifecycleContributor(
+                examRepository,
+                candidateRepo,
+                java.time.Clock.fixed(now, java.time.ZoneOffset.UTC)
+        );
+        Map<String, Object> exported = fullContributor.exportUserData(userId);
+        assertThat(exported.get("category")).isEqualTo("exam");
+        assertThat(exported.get("candidateProfile")).isNotNull();
+        assertThat(exported.get("trainingEligible")).isEqualTo(false);
+        assertThat(fullContributor.purgeExpiredSyllabusArtifacts(now)).isEqualTo(3);
+
+        fullContributor.deleteUserData(userId, now);
+        verify(candidateRepo, times(1)).deleteAllCandidateDataForUser(userId);
+        verify(examRepository, times(1)).deleteTargetsByUserId(userId);
+    }
 }

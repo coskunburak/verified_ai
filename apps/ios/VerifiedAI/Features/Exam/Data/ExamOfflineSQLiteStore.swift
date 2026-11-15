@@ -61,6 +61,16 @@ public actor ExamOfflineSQLiteStore: ExamCacheStoreProtocol {
             payload_json TEXT NOT NULL,
             updated_at TEXT NOT NULL
         );
+        CREATE TABLE IF NOT EXISTS cached_candidate_profiles (
+            user_id TEXT PRIMARY KEY,
+            payload_json TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+        );
+        CREATE TABLE IF NOT EXISTS cached_syllabus_uploads (
+            user_id TEXT PRIMARY KEY,
+            payload_json TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+        );
         """
         sqlite3_exec(db, sql, nil, nil, nil)
     }
@@ -82,13 +92,64 @@ public actor ExamOfflineSQLiteStore: ExamCacheStoreProtocol {
     }
 
     public func saveTargets(_ targets: [StudentExamTargetModel], for userId: UUID) async {
+        upsertUserScopedRow(table: "student_exam_targets_cache", userId: userId.uuidString, payload: targets)
+    }
+
+    public func loadTargets(for userId: UUID) async -> [StudentExamTargetModel] {
+        loadUserScopedRow(table: "student_exam_targets_cache", userId: userId.uuidString, as: [StudentExamTargetModel].self) ?? []
+    }
+
+    public func saveCandidateProfile(_ profile: CandidateProfileResponse, userId: String) async {
+        upsertUserScopedRow(table: "cached_candidate_profiles", userId: userId, payload: profile)
+    }
+
+    public func loadCandidateProfile(userId: String) async -> CandidateProfileResponse? {
+        loadUserScopedRow(table: "cached_candidate_profiles", userId: userId, as: CandidateProfileResponse.self)
+    }
+
+    public func saveSyllabusUpload(_ upload: SyllabusIngestionResponse, userId: String) async {
+        upsertUserScopedRow(table: "cached_syllabus_uploads", userId: userId, payload: upload)
+    }
+
+    public func loadLatestSyllabusUpload(userId: String) async -> SyllabusIngestionResponse? {
+        loadUserScopedRow(table: "cached_syllabus_uploads", userId: userId, as: SyllabusIngestionResponse.self)
+    }
+
+    public func purgeUserData(userId: UUID) async {
+        await purgeUserData(userId: userId.uuidString)
+    }
+
+    public func purgeUserData(userId: String) async {
+        guard let db else { return }
+        for table in ["student_exam_targets_cache", "cached_candidate_profiles", "cached_syllabus_uploads"] {
+            let sql = "DELETE FROM \(table) WHERE lower(user_id) = lower(?1);"
+            var stmt: OpaquePointer?
+            if sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK {
+                defer { sqlite3_finalize(stmt) }
+                sqlite3_bind_text(stmt, 1, userId, -1, SQLITE_TRANSIENT)
+                sqlite3_step(stmt)
+            }
+        }
+    }
+
+    public func purgeAll() async {
+        guard let db else { return }
+        sqlite3_exec(db, """
+            DELETE FROM exam_definitions_cache;
+            DELETE FROM student_exam_targets_cache;
+            DELETE FROM cached_candidate_profiles;
+            DELETE FROM cached_syllabus_uploads;
+            """, nil, nil, nil)
+    }
+
+    private func upsertUserScopedRow<T: Encodable>(table: String, userId: String, payload: T) {
         guard let db,
-              let data = try? encoder.encode(targets),
+              let data = try? encoder.encode(payload),
               let jsonString = String(data: data, encoding: .utf8) else {
             return
         }
         let sql = """
-        INSERT INTO student_exam_targets_cache (user_id, payload_json, updated_at)
+        INSERT INTO \(table) (user_id, payload_json, updated_at)
         VALUES (?1, ?2, ?3)
         ON CONFLICT(user_id) DO UPDATE SET
             payload_json = excluded.payload_json,
@@ -98,40 +159,29 @@ public actor ExamOfflineSQLiteStore: ExamCacheStoreProtocol {
         if sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK {
             defer { sqlite3_finalize(stmt) }
             let nowString = ISO8601DateFormatter().string(from: Date())
-            sqlite3_bind_text(stmt, 1, userId.uuidString, -1, SQLITE_TRANSIENT)
+            sqlite3_bind_text(stmt, 1, userId, -1, SQLITE_TRANSIENT)
             sqlite3_bind_text(stmt, 2, jsonString, -1, SQLITE_TRANSIENT)
             sqlite3_bind_text(stmt, 3, nowString, -1, SQLITE_TRANSIENT)
             sqlite3_step(stmt)
         }
     }
 
-    public func loadTargets(for userId: UUID) async -> [StudentExamTargetModel] {
-        guard let db else { return [] }
-        let sql = "SELECT payload_json FROM student_exam_targets_cache WHERE user_id = ?1 LIMIT 1;"
+    private func loadUserScopedRow<T: Decodable>(table: String, userId: String, as type: T.Type) -> T? {
+        guard let db else { return nil }
+        let sql = "SELECT payload_json FROM \(table) WHERE lower(user_id) = lower(?1) LIMIT 1;"
         var stmt: OpaquePointer?
         if sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK {
             defer { sqlite3_finalize(stmt) }
-            sqlite3_bind_text(stmt, 1, userId.uuidString, -1, SQLITE_TRANSIENT)
+            sqlite3_bind_text(stmt, 1, userId, -1, SQLITE_TRANSIENT)
             if sqlite3_step(stmt) == SQLITE_ROW, let cStr = sqlite3_column_text(stmt, 0) {
                 let jsonString = String(cString: cStr)
                 if let data = jsonString.data(using: .utf8),
-                   let decoded = try? decoder.decode([StudentExamTargetModel].self, from: data) {
+                   let decoded = try? decoder.decode(T.self, from: data) {
                     return decoded
                 }
             }
         }
-        return []
-    }
-
-    public func purgeUserData(userId: UUID) async {
-        guard let db else { return }
-        let sql = "DELETE FROM student_exam_targets_cache WHERE user_id = ?1;"
-        var stmt: OpaquePointer?
-        if sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK {
-            defer { sqlite3_finalize(stmt) }
-            sqlite3_bind_text(stmt, 1, userId.uuidString, -1, SQLITE_TRANSIENT)
-            sqlite3_step(stmt)
-        }
+        return nil
     }
 
     private func upsertDefinitionRow<T: Encodable>(cacheKey: String, payload: T) {

@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "syllabus-ingestion-v1",
+  "uploadId": "92000000-0000-4000-8000-000000000301",
+  "userId": "92000000-0000-4000-8000-000000000a01",
+  "examDefinitionId": "91000000-0000-4000-8000-000000000101",
+  "examCode": "TR_YKS_TYT_MATH",
+  "examVersion": "2026.1",
+  "imageHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "mimeType": "image/jpeg",
+  "byteSize": 245760,
+  "status": "NEEDS_DISAMBIGUATION",
+  "deduplicatedFromCache": false,
+  "idempotentReplay": false,
+  "remainingMonthlyQuota": 2,
+  "parsedTopics": [
+    {
+      "itemIndex": 0,
+      "rawTopicLabel": "Tam Sayılarla İşlemler",
+      "targetWeek": 1,
+      "targetMonth": "October",
+      "extractionConfidence": 0.96,
+      "matchedSkillId": "MATH.ARITHMETIC.INTEGER_OPERATIONS",
+      "matchedTopicId": "MATH.ARITHMETIC",
+      "similarityScore": 0.89,
+      "autoConfirmed": true,
+      "userConfirmed": false,
+      "candidates": [
+        {
+          "skillId": "MATH.ARITHMETIC.INTEGER_OPERATIONS",
+          "topicId": "MATH.ARITHMETIC",
+          "similarityScore": 0.89
+        }
+      ]
+    },
+    {
+      "itemIndex": 1,
+      "rawTopicLabel": "Genel Karma Tekrar ve Hızlandırma Programı",
+      "targetWeek": 2,
+      "targetMonth": "November",
+      "extractionConfidence": 0.58,
+      "matchedSkillId": null,
+      "matchedTopicId": null,
+      "similarityScore": 0.48,
+      "autoConfirmed": false,
+      "userConfirmed": false,
+      "candidates": [
+        {
+          "skillId": "MATH.EQUATIONS.LINEAR_SOLVING",
+          "topicId": "MATH.EQUATIONS",
+          "similarityScore": 0.48
+        },
+        {
+          "skillId": "MATH.FUNCTIONS.LINEAR",
+          "topicId": "MATH.FUNCTIONS",
+          "similarityScore": 0.42
+        }
+      ]
+    }
+  ],
+  "llmTokensUsed": 0,
+  "trainingEligible": false,
+  "expiresAt": "2026-12-15T01:00:00Z",
+  "confirmedAt": null,
+  "createdAt": "2026-11-15T01:00:00Z",
+  "updatedAt": "2026-11-15T01:00:00Z"
+}

@@ -13,6 +13,7 @@ struct RootView: View {
     @StateObject private var weeklyProgressReportViewModel: WeeklyProgressReportViewModel
     @StateObject private var coldStartDiagnosticViewModel: ColdStartDiagnosticViewModel
     @StateObject private var examCatalogViewModel: ExamCatalogAndTargetViewModel
+    @StateObject private var candidateProfileViewModel: CandidateProfileViewModel
     @State private var entitlementViewModel: EntitlementViewModel
     @State private var paywallViewModel: PaywallViewModel
     @State private var problemCaptureViewModel: ProblemCaptureViewModel
@@ -53,6 +54,7 @@ struct RootView: View {
             service: dependencies.examAPI,
             cacheStore: dependencies.examCacheStore
         ))
+        _candidateProfileViewModel = StateObject(wrappedValue: dependencies.makeCandidateProfileViewModel())
         _entitlementViewModel = State(initialValue: EntitlementViewModel(
             entitlementAPI: dependencies.entitlementAPI,
             displayCache: dependencies.entitlementDisplayCache,
@@ -175,6 +177,7 @@ struct RootView: View {
             weeklyProgressReportViewModel.reset()
             coldStartDiagnosticViewModel.updateLearnerId(session.userId)
             examCatalogViewModel.updateLearnerId(session.userId)
+            candidateProfileViewModel.updateLearnerId(session.userId)
             dependencies.storeKitTransactionObserver.start()
             await onboardingViewModel.bootstrap(userId: session.userId)
             if !ProcessInfo.processInfo.arguments.contains("--ui-testing") {
@@ -259,7 +262,8 @@ struct RootView: View {
                 } : nil,
                 reviewViewModel: dependencies.solveFixture ? nil : problemReviewViewModel,
                 coldStartViewModel: coldStartDiagnosticViewModel,
-                examViewModel: examCatalogViewModel
+                examViewModel: examCatalogViewModel,
+                candidateProfileViewModel: candidateProfileViewModel
             )
             .navigationTitle("Verified AI")
             .sheet(isPresented: $isPaywallPresented, onDismiss: {
@@ -326,6 +330,7 @@ struct RootView: View {
         weeklyProgressReportViewModel.reset()
         Task { await coldStartDiagnosticViewModel.purgeCurrentLearnerAndReset() }
         Task { await examCatalogViewModel.purgeUserDataAndReset() }
+        Task { await candidateProfileViewModel.purgeUserDataAndReset() }
         entitlementViewModel.reset()
         paywallViewModel.reset()
         problemAssetUploadViewModel.reset()

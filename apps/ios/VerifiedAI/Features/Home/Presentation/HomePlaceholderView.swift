@@ -18,6 +18,7 @@ struct HomePlaceholderView: View {
     var dailyCoachViewModel: DailyCoachViewModel? = nil
     var coldStartViewModel: ColdStartDiagnosticViewModel? = nil
     var examViewModel: ExamCatalogAndTargetViewModel? = nil
+    var candidateProfileViewModel: CandidateProfileViewModel? = nil
 
     var body: some View {
         ScrollView {
@@ -29,6 +30,7 @@ struct HomePlaceholderView: View {
                         viewModel: dailyCoachViewModel,
                         coldStartViewModel: coldStartViewModel,
                         examViewModel: examViewModel,
+                        candidateProfileViewModel: candidateProfileViewModel,
                         onStartCapture: startProblemCapture
                     )
                 } else {
@@ -37,6 +39,9 @@ struct HomePlaceholderView: View {
                     }
                     if let examViewModel, !examViewModel.isFeatureDisabled {
                         examCatalogEntryCard(examViewModel: examViewModel)
+                    }
+                    if let candidateProfileViewModel {
+                        candidateProfileEntryCard(viewModel: candidateProfileViewModel)
                     }
                 }
                 primaryAction
@@ -77,7 +82,10 @@ struct HomePlaceholderView: View {
 
     private func examCatalogEntryCard(examViewModel: ExamCatalogAndTargetViewModel) -> some View {
         NavigationLink {
-            ExamCatalogAndTargetView(viewModel: examViewModel)
+            ExamCatalogAndTargetView(
+                viewModel: examViewModel,
+                candidateProfileViewModel: candidateProfileViewModel
+            )
         } label: {
             VStack(alignment: .leading, spacing: SpacingTokens.sm) {
                 HStack {
@@ -106,6 +114,33 @@ struct HomePlaceholderView: View {
             .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium))
         }
         .accessibilityIdentifier("home.examCatalog.button")
+    }
+
+    private func candidateProfileEntryCard(viewModel: CandidateProfileViewModel) -> some View {
+        NavigationLink {
+            CandidateGoalSetupView(viewModel: viewModel)
+        } label: {
+            VStack(alignment: .leading, spacing: SpacingTokens.sm) {
+                HStack {
+                    Label(LocalizedStringKey("home.candidate_profile.card_title"), systemImage: "calendar.badge.clock")
+                        .font(.headline)
+                        .foregroundStyle(ColorTokens.textPrimary)
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(ColorTokens.textSecondary)
+                }
+                Text(LocalizedStringKey("home.candidate_profile.card_subtitle"))
+                    .font(TypographyTokens.caption)
+                    .foregroundStyle(ColorTokens.textSecondary)
+                    .multilineTextAlignment(.leading)
+            }
+            .padding(SpacingTokens.md)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(ColorTokens.surfaceElevated)
+            .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium))
+        }
+        .accessibilityIdentifier("home.candidateProfile.button")
     }
 
     @ViewBuilder

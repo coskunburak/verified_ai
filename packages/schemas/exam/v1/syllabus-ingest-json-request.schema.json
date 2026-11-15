@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/exam/v1/syllabus-ingest-json-request.schema.json",
+  "title": "SyllabusIngestJsonRequest",
+  "description": "JSON alternative payload for Snap-to-Plan syllabus ingestion with magic-byte validated base64 content (Sprint 9.2).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "examCode",
+    "base64Payload"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": ["string", "null"],
+      "const": "syllabus-ingest-request-v1"
+    },
+    "examCode": {
+      "type": "string",
+      "pattern": "^[A-Z0-9_]{3,64}$"
+    },
+    "examVersion": {
+      "type": ["string", "null"],
+      "pattern": "^[A-Za-z0-9._-]{1,32}$"
+    },
+    "mimeType": {
+      "type": ["string", "null"],
+      "enum": ["image/jpeg", "image/png", "image/webp", "image/heic", "application/pdf", null]
+    },
+    "base64Payload": {
+      "type": "string",
+      "minLength": 4
+    },
+    "filenameHint": {
+      "type": ["string", "null"],
+      "maxLength": 255
+    },
+    "idempotencyKey": {
+      "type": ["string", "null"],
+      "minLength": 4,
+      "maxLength": 128
+    }
+  }
+}

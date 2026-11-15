@@ -295,4 +295,10 @@ verifiedai:
   exam:
     catalog-enabled: ${VERIFIEDAI_EXAM_CATALOG_ENABLED:false}
     target-binding-enabled: ${VERIFIEDAI_EXAM_TARGET_BINDING_ENABLED:false}
+    candidate-profile-enabled: ${VERIFIEDAI_EXAM_CANDIDATE_PROFILE_ENABLED:false}
+    syllabus-ingestion-enabled: ${VERIFIEDAI_EXAM_SYLLABUS_INGESTION_ENABLED:false}
+    syllabus-monthly-quota: ${VERIFIEDAI_EXAM_SYLLABUS_MONTHLY_QUOTA:3}
+    syllabus-retention-days: ${VERIFIEDAI_EXAM_SYLLABUS_RETENTION_DAYS:30}
+    syllabus-similarity-threshold: ${VERIFIEDAI_EXAM_SYLLABUS_SIMILARITY_THRESHOLD:0.70}
+    syllabus-live-ai-enabled: ${VERIFIEDAI_EXAM_SYLLABUS_LIVE_AI_ENABLED:false}
     default-jurisdiction: ${VERIFIEDAI_EXAM_DEFAULT_JURISDICTION:TR}

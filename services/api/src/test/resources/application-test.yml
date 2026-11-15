@@ -2,4 +2,10 @@ verifiedai:
   exam:
     catalog-enabled: true
     target-binding-enabled: true
+    candidate-profile-enabled: true
+    syllabus-ingestion-enabled: true
+    syllabus-monthly-quota: 3
+    syllabus-retention-days: 30
+    syllabus-similarity-threshold: 0.70
+    syllabus-live-ai-enabled: false
     default-jurisdiction: TR

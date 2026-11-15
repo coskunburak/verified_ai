@@ -1114,7 +1114,88 @@ def run_validation():
                 pass
         assert _validate_s89_object_keys(neg_payload, neg_sc, neg_sc.get("$defs", {})), f"Expected pure-python failure for {label}"
 
-    # Sprint 8.6 pure-python schema & fixture invariants (always verified)
+    # Sprint 9.2 Learner Exam Goal Setup, Candidate Profile & Snap-to-Plan Syllabus Contracts
+    s92_schema_files = {
+        "candidate-profile": schemas_dir / "exam/v1/candidate-profile.schema.json",
+        "candidate-profile-request": schemas_dir / "exam/v1/upsert-candidate-profile-request.schema.json",
+        "candidate-profile-history": schemas_dir / "exam/v1/candidate-profile-history-response.schema.json",
+        "syllabus-ingestion": schemas_dir / "exam/v1/syllabus-ingestion.schema.json",
+        "syllabus-ingest-json": schemas_dir / "exam/v1/syllabus-ingest-json-request.schema.json",
+        "syllabus-confirm": schemas_dir / "exam/v1/syllabus-confirm-request.schema.json",
+    }
+    s92_fixture_bindings = [
+        ("candidate-profile", schemas_dir / "exam/v1/fixtures/candidate-profile-yks-tyt.example.json"),
+        ("candidate-profile-request", schemas_dir / "exam/v1/fixtures/upsert-candidate-profile-request.fixture.json"),
+        ("candidate-profile-history", schemas_dir / "exam/v1/fixtures/candidate-profile-history-response.fixture.json"),
+        ("syllabus-ingestion", schemas_dir / "exam/v1/fixtures/syllabus-ingestion-yks-tyt.example.json"),
+        ("syllabus-confirm", schemas_dir / "exam/v1/fixtures/syllabus-confirm-request.fixture.json"),
+    ]
+    s92_schemas: dict[str, dict] = {}
+    s92_fixtures: dict[str, dict] = {}
+    for key, schema_file in s92_schema_files.items():
+        assert schema_file.exists(), f"Missing Sprint 9.2 schema file: {schema_file}"
+        sc_obj = json.loads(schema_file.read_text(encoding="utf-8"))
+        assert sc_obj.get("$schema") == "https://json-schema.org/draft/2020-12/schema", f"Non-2020-12 schema: {schema_file}"
+        assert sc_obj.get("additionalProperties") is False, f"additionalProperties must be false on {schema_file}"
+        if jsonschema is not None:
+            jsonschema.Draft202012Validator.check_schema(sc_obj)
+        s92_schemas[key] = sc_obj
+
+    for schema_key, fixture_file in s92_fixture_bindings:
+        assert fixture_file.exists(), f"Missing Sprint 9.2 fixture file: {fixture_file}"
+        sc_obj = s92_schemas[schema_key]
+        fx_obj = json.loads(fixture_file.read_text(encoding="utf-8"))
+        if jsonschema is not None:
+            jsonschema.Draft202012Validator(sc_obj).validate(fx_obj)
+        errs = _validate_s89_object_keys(fx_obj, sc_obj, sc_obj.get("$defs", {}))
+        assert not errs, f"Sprint 9.2 pure-python schema check failed for {fixture_file.name}: {errs}"
+        s92_fixtures[fixture_file.name] = fx_obj
+
+    s92_prof_sc = s92_schemas["candidate-profile"]
+    s92_prof_fx = s92_fixtures["candidate-profile-yks-tyt.example.json"]
+    s92_req_sc = s92_schemas["candidate-profile-request"]
+    s92_req_fx = s92_fixtures["upsert-candidate-profile-request.fixture.json"]
+    s92_hist_sc = s92_schemas["candidate-profile-history"]
+    s92_hist_fx = s92_fixtures["candidate-profile-history-response.fixture.json"]
+    s92_syl_sc = s92_schemas["syllabus-ingestion"]
+    s92_syl_fx = s92_fixtures["syllabus-ingestion-yks-tyt.example.json"]
+    s92_conf_sc = s92_schemas["syllabus-confirm"]
+    s92_conf_fx = s92_fixtures["syllabus-confirm-request.fixture.json"]
+
+    mut_bad_acc = copy.deepcopy(s92_prof_fx)
+    mut_bad_acc["accommodations"] = {**mut_bad_acc["accommodations"], "extraTimeMultiplier": 1.75}
+    mut_bad_mime = copy.deepcopy(s92_syl_fx)
+    mut_bad_mime["mimeType"] = "text/html"
+    mut_big_byte = copy.deepcopy(s92_syl_fx)
+    mut_big_byte["byteSize"] = 10485761
+
+    s92_negative_cases = [
+        (s92_prof_sc, {**s92_prof_fx, "trainingEligible": True}, "candidate profile trainingEligible=True"),
+        (s92_prof_sc, {**s92_prof_fx, "llmTokensUsed": 3}, "candidate profile llmTokensUsed!=0"),
+        (s92_prof_sc, {**s92_prof_fx, "dailyStudyMinutes": 10}, "candidate profile dailyStudyMinutes < 15"),
+        (s92_prof_sc, {**s92_prof_fx, "feasibilityStatus": "IMPOSSIBLE"}, "candidate profile unknown feasibilityStatus"),
+        (s92_prof_sc, mut_bad_acc, "candidate profile invalid extraTimeMultiplier"),
+        (s92_prof_sc, {**s92_prof_fx, "studentEmail": "x@example.com"}, "candidate profile extra PII property"),
+        (s92_req_sc, {**s92_req_fx, "dailyStudyMinutes": 1000}, "candidate profile request dailyStudyMinutes > 960"),
+        (s92_hist_sc, {**s92_hist_fx, "trainingEligible": True}, "candidate history trainingEligible=True"),
+        (s92_syl_sc, {**s92_syl_fx, "trainingEligible": True}, "syllabus ingestion trainingEligible=True"),
+        (s92_syl_sc, mut_bad_mime, "syllabus ingestion text/html mimeType"),
+        (s92_syl_sc, mut_big_byte, "syllabus ingestion byteSize > 10MB"),
+        (s92_syl_sc, {**s92_syl_fx, "extraField": "nope"}, "syllabus ingestion additionalProperties"),
+        (s92_conf_sc, {**s92_conf_fx, "mappings": []}, "syllabus confirm empty mappings"),
+    ]
+    for neg_sc, neg_payload, label in s92_negative_cases:
+        if jsonschema is not None:
+            try:
+                jsonschema.Draft202012Validator(neg_sc).validate(neg_payload)
+                raise AssertionError(f"Expected jsonschema failure for {label}")
+            except jsonschema.exceptions.ValidationError:
+                pass
+        if isinstance(neg_payload, dict) and label not in (
+            "candidate profile invalid extraTimeMultiplier",
+            "syllabus ingestion text/html mimeType",
+        ):
+            assert _validate_s89_object_keys(neg_payload, neg_sc, neg_sc.get("$defs", {})), f"Expected pure-python failure for {label}"
     for card_fx in (ml_card_tr_fixture, ml_card_en_fixture):
         assert card_fx["schemaVersion"] == "1.0.0"
         assert card_fx["verificationStatus"] == "VERIFIED"
@@ -1398,6 +1479,34 @@ def run_validation():
                 assert s91_op["security"] == [{"bearerAuth": []}], f"Security bearerAuth missing on {s91_path} in {spec_name}"
                 for code in expected_codes:
                     assert code in s91_op["responses"], f"HTTP {code} missing from {s91_path} {s91_method} in {spec_name}"
+
+            # Sprint 9.2 OpenAPI paths & component schemas
+            for schema_name in (
+                "UpsertCandidateProfileRequest",
+                "CandidateProfileResponse",
+                "CandidateProfileHistoryResponse",
+                "SyllabusIngestJsonRequest",
+                "SyllabusIngestionResponse",
+                "SyllabusConfirmRequest",
+            ):
+                assert schema_name in spec_schemas, f"Missing Sprint 9.2 component schema {schema_name} in {spec_name}"
+
+            expected_s92_endpoints = {
+                ("/v1/candidate/profile", "put"): ("200", "201", "400", "401", "403", "404", "422", "503"),
+                ("/v1/candidate/profile", "post"): ("200", "201", "400", "401", "403", "404", "422", "503"),
+                ("/v1/candidate/profile", "get"): ("200", "400", "401", "403", "404", "503"),
+                ("/v1/candidate/profile/history", "get"): ("200", "400", "401", "403", "503"),
+                ("/v1/candidate/syllabus-ingest", "post"): ("200", "201", "400", "401", "403", "404", "413", "415", "422", "429", "503"),
+                ("/v1/candidate/syllabus-uploads/{uploadId}", "get"): ("200", "400", "401", "403", "404", "503"),
+                ("/v1/candidate/syllabus-uploads/{uploadId}/confirm", "post"): ("200", "400", "401", "403", "404", "422", "503"),
+            }
+            for (s92_path, s92_method), expected_codes in expected_s92_endpoints.items():
+                assert s92_path in spec_paths, f"Missing Sprint 9.2 path {s92_path} in {spec_name}"
+                assert s92_method in spec_paths[s92_path], f"Missing method {s92_method} on {s92_path} in {spec_name}"
+                s92_op = spec_paths[s92_path][s92_method]
+                assert s92_op["security"] == [{"bearerAuth": []}], f"Security bearerAuth missing on {s92_path} in {spec_name}"
+                for code in expected_codes:
+                    assert code in s92_op["responses"], f"HTTP {code} missing from {s92_path} {s92_method} in {spec_name}"
 
         assert openapi_path.read_bytes() == openapi_core_path.read_bytes(), "OpenAPI mirror public-api.yaml != verified-ai-core-api.yaml"
     else:
@@ -1706,6 +1815,50 @@ def run_validation():
         "home.exam_catalog.card_title",
         "home.exam_catalog.card_subtitle",
         "home.exam_catalog.open_button",
+        "exam.catalog.open_candidate_profile",
+        "home.candidate_profile.card_title",
+        "home.candidate_profile.card_subtitle",
+        "home.candidate_profile.open_button",
+        "exam.candidate.title",
+        "exam.candidate.subtitle",
+        "exam.candidate.goal_section",
+        "exam.candidate.exam_picker",
+        "exam.candidate.budget_section",
+        "exam.candidate.daily_minutes_label",
+        "exam.candidate.weekly_minutes_label",
+        "exam.candidate.feasibility_title",
+        "exam.candidate.feasibility.OPTIMAL",
+        "exam.candidate.feasibility.STRETCH",
+        "exam.candidate.feasibility.AT_RISK",
+        "exam.candidate.feasibility.UNREALISTIC",
+        "exam.candidate.accommodations_section",
+        "exam.candidate.extra_time_label",
+        "exam.candidate.high_contrast",
+        "exam.candidate.screen_reader",
+        "exam.candidate.reduced_motion",
+        "exam.candidate.save_button",
+        "exam.candidate.saved_banner",
+        "exam.candidate.history_title",
+        "exam.candidate.error.invalid_score",
+        "exam.candidate.error.date_in_past",
+        "exam.candidate.error.budget_invalid",
+        "exam.candidate.error.accommodation_invalid",
+        "exam.syllabus.open_sheet_button",
+        "exam.syllabus.sheet_title",
+        "exam.syllabus.close_button",
+        "exam.syllabus.sheet_subtitle",
+        "exam.syllabus.privacy_notice",
+        "exam.syllabus.choose_photo_button",
+        "exam.syllabus.choose_pdf_button",
+        "exam.syllabus.parsed_topics_title",
+        "exam.syllabus.disambiguate_prompt",
+        "exam.syllabus.confirm_mappings_button",
+        "exam.syllabus.status.needs_disambiguation",
+        "exam.syllabus.status.auto_confirmed",
+        "exam.syllabus.status.user_confirmed",
+        "exam.syllabus.error.quota_exceeded",
+        "exam.syllabus.error.media_unsupported",
+        "exam.syllabus.error.disambiguation_required",
     ]
 
     banned_lexicon = re.compile(
@@ -1727,11 +1880,11 @@ def run_validation():
             if key.startswith("studyplan.rebalance.") or key.startswith("micro_lesson.") or key.startswith("study_session."):
                 m = banned_lexicon.search(val)
                 assert not m, f"Stigmatizing lexicon word '{m.group(0)}' in {key}[{lang}]: {val}"
-            elif key.startswith("gamification.") or key.startswith("weekly.") or key.startswith("cold_start."):
+            elif key.startswith("gamification.") or key.startswith("weekly.") or key.startswith("cold_start.") or key.startswith("exam.candidate.") or key.startswith("exam.syllabus.") or key.startswith("home.candidate_profile."):
                 m = gamification_banned_lexicon.search(val)
                 assert not m, f"Stigmatizing lexicon word '{m.group(0)}' in {key}[{lang}]: {val}"
 
-    print(f"PASS: Sprint 8.1..9.1 JSON schemas, negative mutations, OpenAPI 3.1 endpoints, and {len(required_keys)} EN/TR localizations verified.")
+    print(f"PASS: Sprint 8.1..9.2 JSON schemas, negative mutations, OpenAPI 3.1 endpoints, and {len(required_keys)} EN/TR localizations verified.")
 
 
 if __name__ == "__main__":

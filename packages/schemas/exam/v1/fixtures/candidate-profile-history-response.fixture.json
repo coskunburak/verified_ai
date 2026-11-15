@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "candidate-profile-history-v1",
+  "userId": "92000000-0000-4000-8000-000000000a01",
+  "items": [
+    {
+      "historyId": "92000000-0000-4000-8000-000000000401",
+      "profileId": "92000000-0000-4000-8000-000000000201",
+      "examCode": "TR_YKS_TYT_MATH",
+      "pinnedExamVersion": "2026.1",
+      "previousTargetDate": null,
+      "newTargetDate": "2027-06-20",
+      "previousDailyMinutes": null,
+      "newDailyMinutes": 60,
+      "previousWeeklyMinutes": null,
+      "newWeeklyMinutes": 420,
+      "previousTargetScore": null,
+      "newTargetScore": 36.25,
+      "extraTimeMultiplier": 1.25,
+      "requiredDailyMinutes": 13,
+      "feasibilityStatus": "OPTIMAL",
+      "changeReason": "INITIAL_SETUP",
+      "changedAt": "2026-11-15T01:00:00Z"
+    }
+  ],
+  "llmTokensUsed": 0,
+  "trainingEligible": false
+}

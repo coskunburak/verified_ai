@@ -1,31 +1,74 @@
 package com.verifiedai.exam.infrastructure.privacy;
 
+import com.verifiedai.exam.application.CandidateProfileRepository;
 import com.verifiedai.exam.application.ExamRepository;
+import com.verifiedai.exam.domain.CandidateProfileModels.CandidateHorizonHistoryEntry;
+import com.verifiedai.exam.domain.CandidateProfileModels.CandidateProfileRecord;
+import com.verifiedai.exam.domain.CandidateProfileModels.SyllabusUploadRecord;
 import com.verifiedai.exam.domain.ExamModels.StudentExamTargetRecord;
 import com.verifiedai.sharedkernel.privacy.AccountDataLifecycleContributor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
- * GDPR / KVKK Article 17 lifecycle contributor for exam targets and pinned snapshots.
+ * GDPR / KVKK Article 17 lifecycle contributor for exam targets, pinned snapshots,
+ * candidate profiles, horizon history, and ephemeral syllabus ingestion metadata.
  */
 @Component
 public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleContributor {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExamPrivacyLifecycleContributor.class);
+    private static final int EXPORT_HISTORY_LIMIT = 100;
 
     private final ExamRepository examRepository;
+    private final CandidateProfileRepository candidateProfileRepository;
+    private final Clock clock;
+
+    @Autowired
+    public ExamPrivacyLifecycleContributor(
+            ExamRepository examRepository,
+            ObjectProvider<CandidateProfileRepository> candidateProfileRepositoryProvider,
+            ObjectProvider<Clock> clockProvider
+    ) {
+        this(
+                examRepository,
+                candidateProfileRepositoryProvider.getIfAvailable(),
+                clockProvider.getIfAvailable(Clock::systemUTC)
+        );
+    }
+
+    public ExamPrivacyLifecycleContributor(
+            ExamRepository examRepository,
+            CandidateProfileRepository candidateProfileRepository
+    ) {
+        this(examRepository, candidateProfileRepository, Clock.systemUTC());
+    }
+
+    public ExamPrivacyLifecycleContributor(
+            ExamRepository examRepository,
+            CandidateProfileRepository candidateProfileRepository,
+            Clock clock
+    ) {
+        this.examRepository = Objects.requireNonNull(examRepository, "examRepository cannot be null");
+        this.candidateProfileRepository = candidateProfileRepository;
+        this.clock = Objects.requireNonNull(clock, "clock cannot be null");
+    }
 
     public ExamPrivacyLifecycleContributor(ExamRepository examRepository) {
-        this.examRepository = Objects.requireNonNull(examRepository, "examRepository cannot be null");
+        this(examRepository, null, Clock.systemUTC());
     }
 
     @Override
@@ -61,6 +104,28 @@ public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleCont
         exportMap.put("category", category());
         exportMap.put("studentTargetCount", exportedTargets.size());
         exportMap.put("studentTargets", exportedTargets);
+
+        if (candidateProfileRepository != null) {
+            Optional<CandidateProfileRecord> profileOpt = candidateProfileRepository.findProfileByUserId(userId);
+            exportMap.put("candidateProfile", profileOpt.map(ExamPrivacyLifecycleContributor::mapCandidateProfile).orElse(null));
+
+            List<CandidateHorizonHistoryEntry> history =
+                    candidateProfileRepository.findHorizonHistoryByUserId(userId, EXPORT_HISTORY_LIMIT);
+            List<Map<String, Object>> exportedHistory = history.stream()
+                    .map(ExamPrivacyLifecycleContributor::mapHistoryEntry)
+                    .toList();
+            exportMap.put("candidateHorizonHistoryCount", exportedHistory.size());
+            exportMap.put("candidateHorizonHistory", exportedHistory);
+
+            List<SyllabusUploadRecord> uploads =
+                    candidateProfileRepository.findSyllabusUploadsByUserId(userId, EXPORT_HISTORY_LIMIT);
+            List<Map<String, Object>> exportedUploads = uploads.stream()
+                    .map(ExamPrivacyLifecycleContributor::mapSanitizedSyllabusUpload)
+                    .toList();
+            exportMap.put("syllabusUploadCount", exportedUploads.size());
+            exportMap.put("syllabusUploads", exportedUploads);
+        }
+
         exportMap.put("llmTokensUsed", 0);
         exportMap.put("trainingEligible", false);
         return exportMap;
@@ -68,7 +133,97 @@ public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleCont
 
     @Override
     public void deleteUserData(UUID userId, Instant now) {
+        int deletedCandidateRows = candidateProfileRepository == null
+                ? 0
+                : candidateProfileRepository.deleteAllCandidateDataForUser(userId);
         int deletedTargets = examRepository.deleteTargetsByUserId(userId);
-        LOG.info("Privacy purge completed for exam module: deletedTargets={}", deletedTargets);
+        LOG.info(
+                "Privacy purge completed for exam module: deletedTargets={} deletedCandidateRows={}",
+                deletedTargets,
+                deletedCandidateRows
+        );
+    }
+
+    @Scheduled(cron = "0 15 3 * * *")
+    public void purgeExpiredSyllabusArtifacts() {
+        purgeExpiredSyllabusArtifacts(Instant.now(clock));
+    }
+
+    public int purgeExpiredSyllabusArtifacts(Instant now) {
+        if (candidateProfileRepository == null) {
+            return 0;
+        }
+        Instant effectiveCutoff = now == null ? Instant.now(clock) : now;
+        int purged = candidateProfileRepository.purgeExpiredSyllabusUploads(effectiveCutoff);
+        if (purged > 0) {
+            LOG.info("Purged expired syllabus upload metadata rows={}", purged);
+        }
+        return purged;
+    }
+
+    private static Map<String, Object> mapCandidateProfile(CandidateProfileRecord profile) {
+        Map<String, Object> m = new LinkedHashMap<>();
+        m.put("profileId", profile.profileId().toString());
+        m.put("activeExamCode", profile.activeExamCode());
+        m.put("pinnedExamVersion", profile.pinnedExamVersion());
+        m.put("jurisdiction", profile.jurisdiction().name());
+        m.put("targetDate", profile.targetDate().toString());
+        m.put("targetScore", profile.targetScore());
+        m.put("dailyStudyMinutes", profile.dailyStudyMinutes());
+        m.put("weeklyStudyMinutes", profile.weeklyStudyMinutes());
+        m.put("extraTimeMultiplier", profile.accommodations().extraTimeMultiplier());
+        m.put("highContrastEnabled", profile.accommodations().highContrastEnabled());
+        m.put("screenReaderOptimized", profile.accommodations().screenReaderOptimized());
+        m.put("reducedMotionEnabled", profile.accommodations().reducedMotionEnabled());
+        m.put("requiredDailyMinutes", profile.requiredDailyMinutes());
+        m.put("feasibilityStatus", profile.feasibilityStatus().name());
+        m.put("trainingEligible", false);
+        m.put("createdAt", profile.createdAt().toString());
+        m.put("updatedAt", profile.updatedAt().toString());
+        return m;
+    }
+
+    private static Map<String, Object> mapHistoryEntry(CandidateHorizonHistoryEntry h) {
+        Map<String, Object> m = new LinkedHashMap<>();
+        m.put("historyId", h.historyId().toString());
+        m.put("examCode", h.examCode());
+        m.put("pinnedExamVersion", h.pinnedExamVersion());
+        m.put("previousTargetDate", h.previousTargetDate() != null ? h.previousTargetDate().toString() : null);
+        m.put("newTargetDate", h.newTargetDate().toString());
+        m.put("newDailyMinutes", h.newDailyMinutes());
+        m.put("newWeeklyMinutes", h.newWeeklyMinutes());
+        m.put("newTargetScore", h.newTargetScore());
+        m.put("extraTimeMultiplier", h.extraTimeMultiplier());
+        m.put("requiredDailyMinutes", h.requiredDailyMinutes());
+        m.put("feasibilityStatus", h.feasibilityStatus().name());
+        m.put("changeReason", h.changeReason());
+        m.put("changedAt", h.changedAt().toString());
+        return m;
+    }
+
+    private static Map<String, Object> mapSanitizedSyllabusUpload(SyllabusUploadRecord upload) {
+        Map<String, Object> m = new LinkedHashMap<>();
+        m.put("uploadId", upload.uploadId().toString());
+        m.put("examCode", upload.examCode());
+        m.put("examVersion", upload.examVersion());
+        m.put("imageHash", upload.imageHash());
+        m.put("mimeType", upload.mimeType());
+        m.put("byteSize", upload.byteSize());
+        m.put("status", upload.status().name());
+        m.put("deduplicatedFromCache", upload.deduplicatedFromCache());
+        m.put("parsedTopicCount", upload.parsedTopics().size());
+        m.put("parsedTopics", upload.parsedTopics().stream()
+                .map(t -> Map.of(
+                        "rawTopicLabel", t.rawTopicLabel(),
+                        "matchedSkillId", t.matchedSkillId() != null ? t.matchedSkillId() : "",
+                        "autoConfirmed", t.autoConfirmed(),
+                        "userConfirmed", t.userConfirmed()
+                ))
+                .toList());
+        m.put("trainingEligible", false);
+        m.put("expiresAt", upload.expiresAt().toString());
+        m.put("confirmedAt", upload.confirmedAt() != null ? upload.confirmedAt().toString() : null);
+        m.put("createdAt", upload.createdAt().toString());
+        return m;
     }
 }

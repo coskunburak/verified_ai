@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/exam/v1/candidate-profile-history-response.schema.json",
+  "title": "CandidateProfileHistoryResponse",
+  "description": "Immutable candidate study horizon audit trail response (Sprint 9.2).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "userId",
+    "items",
+    "llmTokensUsed",
+    "trainingEligible"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "candidate-profile-history-v1"
+    },
+    "userId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/CandidateHorizonHistoryEntry"
+      }
+    },
+    "llmTokensUsed": {
+      "type": "integer",
+      "const": 0
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    }
+  },
+  "$defs": {
+    "CandidateHorizonHistoryEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "historyId",
+        "profileId",
+        "examCode",
+        "pinnedExamVersion",
+        "previousTargetDate",
+        "newTargetDate",
+        "previousDailyMinutes",
+        "newDailyMinutes",
+        "previousWeeklyMinutes",
+        "newWeeklyMinutes",
+        "previousTargetScore",
+        "newTargetScore",
+        "extraTimeMultiplier",
+        "requiredDailyMinutes",
+        "feasibilityStatus",
+        "changeReason",
+        "changedAt"
+      ],
+      "properties": {
+        "historyId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "profileId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "examCode": {
+          "type": "string",
+          "pattern": "^[A-Z0-9_]{3,64}$"
+        },
+        "pinnedExamVersion": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9._-]{1,32}$"
+        },
+        "previousTargetDate": {
+          "type": ["string", "null"],
+          "format": "date"
+        },
+        "newTargetDate": {
+          "type": "string",
+          "format": "date"
+        },
+        "previousDailyMinutes": {
+          "type": ["integer", "null"],
+          "minimum": 15,
+          "maximum": 960
+        },
+        "newDailyMinutes": {
+          "type": "integer",
+          "minimum": 15,
+          "maximum": 960
+        },
+        "previousWeeklyMinutes": {
+          "type": ["integer", "null"],
+          "minimum": 15,
+          "maximum": 6720
+        },
+        "newWeeklyMinutes": {
+          "type": "integer",
+          "minimum": 15,
+          "maximum": 6720
+        },
+        "previousTargetScore": {
+          "type": ["number", "null"],
+          "minimum": -100,
+          "maximum": 2000
+        },
+        "newTargetScore": {
+          "type": "number",
+          "minimum": -100,
+          "maximum": 2000
+        },
+        "extraTimeMultiplier": {
+          "type": "number",
+          "enum": [1.0, 1.25, 1.5, 2.0]
+        },
+        "requiredDailyMinutes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "feasibilityStatus": {
+          "type": "string",
+          "enum": ["OPTIMAL", "STRETCH", "AT_RISK", "UNREALISTIC"]
+        },
+        "changeReason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "changedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

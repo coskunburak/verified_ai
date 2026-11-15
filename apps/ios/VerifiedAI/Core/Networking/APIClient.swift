@@ -84,7 +84,7 @@ final class APIClient {
         urlRequest.httpBody = request.body
         urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
         if request.body != nil {
-            urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            urlRequest.setValue(request.contentType, forHTTPHeaderField: "Content-Type")
         }
         try await interceptor.intercept(&urlRequest, idempotencyKey: request.idempotencyKey)
         return urlRequest

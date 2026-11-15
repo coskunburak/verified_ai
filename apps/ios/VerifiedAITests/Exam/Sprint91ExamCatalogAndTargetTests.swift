@@ -151,6 +151,21 @@ final class Sprint91ExamCatalogAndTargetTests: XCTestCase {
             func listTargets() async throws -> StudentExamTargetListResponse {
                 throw ExamServiceError.featureDisabled
             }
+            func upsertCandidateProfile(_ request: UpsertCandidateProfileRequest, idempotencyKey: String) async throws -> CandidateProfileResponse {
+                throw ExamServiceError.featureDisabled
+            }
+            func fetchCandidateProfile() async throws -> CandidateProfileResponse {
+                throw ExamServiceError.featureDisabled
+            }
+            func fetchCandidateProfileHistory() async throws -> CandidateProfileHistoryResponse {
+                throw ExamServiceError.featureDisabled
+            }
+            func ingestSyllabus(fileData: Data, mimeType: String, filename: String, examCode: String, examVersion: String?, idempotencyKey: String) async throws -> SyllabusIngestionResponse {
+                throw ExamServiceError.featureDisabled
+            }
+            func confirmSyllabusDisambiguation(uploadId: String, mappings: [SyllabusMappingConfirmation]) async throws -> SyllabusIngestionResponse {
+                throw ExamServiceError.featureDisabled
+            }
         }
 
         let store = ExamOfflineSQLiteStore(inMemory: true)

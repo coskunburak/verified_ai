@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "candidate-profile-request-v1",
+  "examCode": "TR_YKS_TYT_MATH",
+  "pinnedExamVersion": "2026.1",
+  "targetScore": 36.25,
+  "targetDate": "2027-06-20",
+  "dailyStudyMinutes": 60,
+  "weeklyStudyMinutes": 420,
+  "accommodations": {
+    "extraTimeMultiplier": 1.25,
+    "highContrastEnabled": false,
+    "screenReaderOptimized": true,
+    "reducedMotionEnabled": false
+  },
+  "baselineMastery": 0.25,
+  "changeReason": "INITIAL_SETUP",
+  "idempotencyKey": "fixture-candidate-profile-001"
+}
