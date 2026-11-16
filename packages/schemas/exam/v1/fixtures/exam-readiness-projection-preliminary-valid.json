@@ -1,0 +1,60 @@
+{
+  "projectionId": "96000000-0000-4000-8000-000000000102",
+  "userId": "91000000-0000-4000-8000-000000000a02",
+  "examCode": "YKS_TYT",
+  "targetId": null,
+  "latestScoredSessionId": null,
+  "totalQuestionCount": 40,
+  "wrongAnswerPenaltyRatio": 0.25,
+  "estimatedNetLow": 4.5,
+  "estimatedNetMid": 11.25,
+  "estimatedNetHigh": 18.0,
+  "credibleIntervalLevel": 0.9,
+  "targetNetScore": 30.0,
+  "netGapToTarget": 18.75,
+  "netLostToTraps": 0.0,
+  "pacingFactor": 0.92,
+  "meanRetentionProbability": 1.0,
+  "epistemicConfidence": 0.14,
+  "confidenceTier": "PRELIMINARY",
+  "calibrationRequired": true,
+  "recommendedDiagnosticQuestionCount": 10,
+  "evaluatedSkillCount": 1,
+  "totalEvidenceCount": 2,
+  "completedMockCount": 0,
+  "activeTrapBreakdown": [],
+  "sectionReadiness": [
+    {
+      "sectionCode": "TYT_MATH",
+      "sectionTitleKey": "TYT Mathematics",
+      "questionCount": 40,
+      "estimatedNetLow": 4.5,
+      "estimatedNetMid": 11.25,
+      "estimatedNetHigh": 18.0,
+      "meanMastery": 0.35,
+      "meanRetention": 1.0,
+      "epistemicConfidence": 0.14
+    }
+  ],
+  "topRoiAllocations": [
+    {
+      "allocationId": "96000000-0000-4000-8000-000000000403",
+      "sectionCode": "TYT_MATH",
+      "skillCode": "MATH.ARITHMETIC.INTEGER_OPERATIONS",
+      "topicTitleKey": "topic.math.arithmetic.integer_operations",
+      "blueprintQuestionWeight": 5.0,
+      "currentMastery": 0.35,
+      "retentionProbability": 1.0,
+      "expectedNetGainPerHour": 2.15,
+      "recommendedStudyMinutes": 45,
+      "priorityRank": 1,
+      "rationaleCode": "CALIBRATION_EVIDENCE_GAP",
+      "trainingEligible": false
+    }
+  ],
+  "methodologyVersion": "EXAM_READINESS_V1",
+  "trainingEligible": false,
+  "llmTokensUsed": 0,
+  "inferenceCostUsd": 0,
+  "computedAt": "2026-11-16T12:00:00Z"
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/exam/v1/exam-readiness-recompute-request.schema.json",
+  "title": "ExamReadinessRecomputeRequest",
+  "description": "Request payload to deterministically recompute a learner's exam readiness projection (Sprint 9.6).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["examCode"],
+  "properties": {
+    "examCode": {
+      "type": "string",
+      "pattern": "^[A-Z0-9_]{3,64}$"
+    },
+    "userId": {
+      "type": ["string", "null"],
+      "format": "uuid"
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    }
+  }
+}

@@ -1,5 +1,8 @@
 package com.verifiedai.exam.infrastructure.privacy;
 
+import com.verifiedai.exam.domain.ExamReadinessProjection;
+import com.verifiedai.exam.domain.ExamReadinessRepository;
+import com.verifiedai.exam.domain.ExamReadinessTopicAllocation;
 import com.verifiedai.exam.domain.ExamScoreRegradeAudit;
 import com.verifiedai.exam.domain.ExamSessionScoreSnapshot;
 import com.verifiedai.exam.infrastructure.persistence.ExamScoringRepository;
@@ -49,10 +52,16 @@ public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleCont
     private final ExamSessionRepository examSessionRepository;
     private final Clock clock;
     private ExamScoringRepository examScoringRepository;
+    private ExamReadinessRepository examReadinessRepository;
 
     @Autowired(required = false)
     public void setExamScoringRepository(ExamScoringRepository examScoringRepository) {
         this.examScoringRepository = examScoringRepository;
+    }
+
+    @Autowired(required = false)
+    public void setExamReadinessRepository(ExamReadinessRepository examReadinessRepository) {
+        this.examReadinessRepository = examReadinessRepository;
     }
 
     @Autowired
@@ -239,6 +248,50 @@ public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleCont
             exportMap.put("examScoreRegradeAudits", List.of());
         }
 
+        if (examReadinessRepository != null) {
+            List<Map<String, Object>> exportedProjections = new java.util.ArrayList<>();
+            for (ExamReadinessProjection p : examReadinessRepository.findAllByUserId(userId)) {
+                Map<String, Object> projEntry = new LinkedHashMap<>();
+                projEntry.put("projectionId", p.projectionId().toString());
+                projEntry.put("examCode", p.examCode());
+                projEntry.put("totalQuestionCount", p.totalQuestionCount());
+                projEntry.put("estimatedNetLow", p.estimatedNetLow());
+                projEntry.put("estimatedNetMid", p.estimatedNetMid());
+                projEntry.put("estimatedNetHigh", p.estimatedNetHigh());
+                projEntry.put("credibleIntervalLevel", p.credibleIntervalLevel());
+                projEntry.put("netLostToTraps", p.netLostToTraps());
+                projEntry.put("epistemicConfidence", p.epistemicConfidence());
+                projEntry.put("confidenceTier", p.confidenceTier().name());
+                projEntry.put("calibrationRequired", p.calibrationRequired());
+                projEntry.put("methodologyVersion", p.methodologyVersion());
+                projEntry.put("llmTokensUsed", 0);
+                projEntry.put("inferenceCostUsd", p.inferenceCostUsd());
+                projEntry.put("trainingEligible", false);
+                projEntry.put("computedAt", p.computedAt().toString());
+                exportedProjections.add(projEntry);
+            }
+            exportMap.put("examReadinessProjections", exportedProjections);
+
+            List<Map<String, Object>> exportedAllocations = new java.util.ArrayList<>();
+            for (ExamReadinessTopicAllocation alloc : examReadinessRepository.findTopicAllocationsByUserId(userId)) {
+                Map<String, Object> allocEntry = new LinkedHashMap<>();
+                allocEntry.put("allocationId", alloc.allocationId().toString());
+                allocEntry.put("sectionCode", alloc.sectionCode());
+                allocEntry.put("skillCode", alloc.skillCode());
+                allocEntry.put("topicTitleKey", alloc.topicTitleKey());
+                allocEntry.put("expectedNetGainPerHour", alloc.expectedNetGainPerHour());
+                allocEntry.put("recommendedStudyMinutes", alloc.recommendedStudyMinutes());
+                allocEntry.put("priorityRank", alloc.priorityRank());
+                allocEntry.put("rationaleCode", alloc.rationaleCode().name());
+                allocEntry.put("trainingEligible", false);
+                exportedAllocations.add(allocEntry);
+            }
+            exportMap.put("examReadinessTopicAllocations", exportedAllocations);
+        } else {
+            exportMap.put("examReadinessProjections", List.of());
+            exportMap.put("examReadinessTopicAllocations", List.of());
+        }
+
         exportMap.put("llmTokensUsed", 0);
         exportMap.put("trainingEligible", false);
         return exportMap;
@@ -247,9 +300,13 @@ public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleCont
     @Override
     public void deleteUserData(UUID userId, Instant now) {
         // Strict FK-safe child-first purge order:
-        // V058 scoring snapshots / item evaluations / regrade audits
+        // V059 readiness topic allocations / readiness projections
+        // -> V058 scoring snapshots / item evaluations / regrade audits
         // -> V057 scratchpad assets / idempotency / session items / exam sessions
         // -> V056 assembled assessments & items -> V055 candidate profiles -> V054 exam targets
+        int deletedReadinessRows = examReadinessRepository == null
+                ? 0
+                : examReadinessRepository.deleteByUserId(userId);
         int deletedScoringRows = examScoringRepository == null
                 ? 0
                 : examScoringRepository.deleteByUserId(userId);
@@ -264,7 +321,9 @@ public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleCont
                 : candidateProfileRepository.deleteAllCandidateDataForUser(userId);
         int deletedTargets = examRepository.deleteTargetsByUserId(userId);
         LOG.info(
-                "Privacy purge completed for exam module: deletedSessionRows={} deletedAssembled={} deletedCandidateRows={} deletedTargets={}",
+                "Privacy purge completed for exam module: deletedReadinessRows={} deletedScoringRows={} deletedSessionRows={} deletedAssembled={} deletedCandidateRows={} deletedTargets={}",
+                deletedReadinessRows,
+                deletedScoringRows,
                 deletedSessionRows,
                 deletedAssembled,
                 deletedCandidateRows,

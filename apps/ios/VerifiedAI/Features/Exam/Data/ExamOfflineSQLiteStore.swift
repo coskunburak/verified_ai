@@ -119,6 +119,13 @@ public actor ExamOfflineSQLiteStore: ExamCacheStoreProtocol {
             created_at TEXT NOT NULL,
             PRIMARY KEY (id, user_id)
         );
+        CREATE TABLE IF NOT EXISTS cached_exam_readiness_projections (
+            user_id TEXT NOT NULL,
+            exam_code TEXT NOT NULL,
+            payload_json TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            PRIMARY KEY (user_id, exam_code)
+        );
         """
         sqlite3_exec(db, sql, nil, nil, nil)
     }
@@ -497,7 +504,8 @@ public actor ExamOfflineSQLiteStore: ExamCacheStoreProtocol {
             "exam_sessions_local",
             "exam_cached_score_summaries",
             "exam_autosave_outbox",
-            "exam_scratchpad_attachments_local"
+            "exam_scratchpad_attachments_local",
+            "cached_exam_readiness_projections"
         ] {
             let sql = "DELETE FROM \(table) WHERE lower(user_id) = lower(?1);"
             var stmt: OpaquePointer?
@@ -522,7 +530,66 @@ public actor ExamOfflineSQLiteStore: ExamCacheStoreProtocol {
             DELETE FROM exam_cached_score_summaries;
             DELETE FROM exam_autosave_outbox;
             DELETE FROM exam_scratchpad_attachments_local;
+            DELETE FROM cached_exam_readiness_projections;
             """, nil, nil, nil)
+    }
+
+    // MARK: - Sprint 9.6 Offline Exam Readiness Projections Cache
+
+    public func saveReadinessProjection(_ projection: ExamReadinessProjection, userId: String) async {
+        guard let db,
+              let data = try? encoder.encode(projection),
+              let jsonString = String(data: data, encoding: .utf8) else {
+            return
+        }
+        let sql = """
+        INSERT INTO cached_exam_readiness_projections (user_id, exam_code, payload_json, updated_at)
+        VALUES (?1, ?2, ?3, ?4)
+        ON CONFLICT(user_id, exam_code) DO UPDATE SET
+            payload_json = excluded.payload_json,
+            updated_at = excluded.updated_at;
+        """
+        var stmt: OpaquePointer?
+        if sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK {
+            defer { sqlite3_finalize(stmt) }
+            let nowString = ISO8601DateFormatter().string(from: Date())
+            sqlite3_bind_text(stmt, 1, userId.lowercased(), -1, SQLITE_TRANSIENT)
+            sqlite3_bind_text(stmt, 2, projection.examCode.uppercased(), -1, SQLITE_TRANSIENT)
+            sqlite3_bind_text(stmt, 3, jsonString, -1, SQLITE_TRANSIENT)
+            sqlite3_bind_text(stmt, 4, nowString, -1, SQLITE_TRANSIENT)
+            sqlite3_step(stmt)
+        }
+    }
+
+    public func saveReadinessProjection(_ projection: ExamReadinessProjection, for userId: UUID) async {
+        await saveReadinessProjection(projection, userId: userId.uuidString)
+    }
+
+    public func loadReadinessProjection(userId: String, examCode: String) async -> ExamReadinessProjection? {
+        guard let db else { return nil }
+        let sql = """
+        SELECT payload_json FROM cached_exam_readiness_projections
+        WHERE lower(user_id) = lower(?1) AND upper(exam_code) = upper(?2)
+        LIMIT 1;
+        """
+        var stmt: OpaquePointer?
+        if sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK {
+            defer { sqlite3_finalize(stmt) }
+            sqlite3_bind_text(stmt, 1, userId, -1, SQLITE_TRANSIENT)
+            sqlite3_bind_text(stmt, 2, examCode, -1, SQLITE_TRANSIENT)
+            if sqlite3_step(stmt) == SQLITE_ROW, let cStr = sqlite3_column_text(stmt, 0) {
+                let jsonString = String(cString: cStr)
+                if let data = jsonString.data(using: .utf8),
+                   let decoded = try? decoder.decode(ExamReadinessProjection.self, from: data) {
+                    return decoded
+                }
+            }
+        }
+        return nil
+    }
+
+    public func loadReadinessProjection(userId: UUID, examCode: String) async -> ExamReadinessProjection? {
+        await loadReadinessProjection(userId: userId.uuidString, examCode: examCode)
     }
 
     // MARK: - Sprint 9.5 Offline Score Summary Cache

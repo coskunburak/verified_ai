@@ -1,0 +1,169 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/exam/v1/exam-readiness-projection.schema.json",
+  "title": "ExamReadinessProjectionResponse",
+  "description": "Deterministic Sprint 9.6 Exam Readiness Projection with 90% credible interval, active-trap attribution, sparse-evidence calibration guard (INV-EXAM-001), $0.00 LLM cost (INV-EXAM-004), and ADR-006 training isolation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "projectionId",
+    "userId",
+    "examCode",
+    "totalQuestionCount",
+    "wrongAnswerPenaltyRatio",
+    "estimatedNetLow",
+    "estimatedNetMid",
+    "estimatedNetHigh",
+    "credibleIntervalLevel",
+    "netLostToTraps",
+    "pacingFactor",
+    "meanRetentionProbability",
+    "epistemicConfidence",
+    "confidenceTier",
+    "calibrationRequired",
+    "recommendedDiagnosticQuestionCount",
+    "evaluatedSkillCount",
+    "totalEvidenceCount",
+    "completedMockCount",
+    "activeTrapBreakdown",
+    "sectionReadiness",
+    "topRoiAllocations",
+    "methodologyVersion",
+    "trainingEligible",
+    "llmTokensUsed",
+    "inferenceCostUsd",
+    "computedAt"
+  ],
+  "properties": {
+    "projectionId": { "type": "string", "format": "uuid" },
+    "userId": { "type": "string", "format": "uuid" },
+    "examCode": { "type": "string", "pattern": "^[A-Z0-9_]{3,64}$" },
+    "targetId": { "type": ["string", "null"], "format": "uuid" },
+    "latestScoredSessionId": { "type": ["string", "null"], "format": "uuid" },
+    "totalQuestionCount": { "type": "integer", "minimum": 1, "maximum": 200 },
+    "wrongAnswerPenaltyRatio": { "type": "number", "minimum": 0, "maximum": 1 },
+    "estimatedNetLow": { "type": "number" },
+    "estimatedNetMid": { "type": "number" },
+    "estimatedNetHigh": { "type": "number" },
+    "credibleIntervalLevel": { "type": "number", "const": 0.9 },
+    "targetNetScore": { "type": ["number", "null"] },
+    "netGapToTarget": { "type": ["number", "null"] },
+    "netLostToTraps": { "type": "number", "minimum": 0 },
+    "pacingFactor": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 },
+    "meanRetentionProbability": { "type": "number", "minimum": 0, "maximum": 1 },
+    "epistemicConfidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "confidenceTier": {
+      "type": "string",
+      "enum": ["PRELIMINARY", "CALIBRATING", "ESTABLISHED", "HIGH_CONFIDENCE"]
+    },
+    "calibrationRequired": { "type": "boolean" },
+    "recommendedDiagnosticQuestionCount": { "type": "integer", "minimum": 0 },
+    "evaluatedSkillCount": { "type": "integer", "minimum": 0 },
+    "totalEvidenceCount": { "type": "integer", "minimum": 0 },
+    "completedMockCount": { "type": "integer", "minimum": 0 },
+    "activeTrapBreakdown": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/ActiveTrapImpactItem" }
+    },
+    "sectionReadiness": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/SectionReadinessBreakdown" }
+    },
+    "topRoiAllocations": {
+      "type": "array",
+      "maxItems": 5,
+      "items": { "$ref": "#/$defs/ExamReadinessTopicAllocation" }
+    },
+    "methodologyVersion": { "type": "string", "minLength": 1, "maxLength": 32 },
+    "trainingEligible": { "type": "boolean", "const": false },
+    "llmTokensUsed": { "type": "integer", "const": 0 },
+    "inferenceCostUsd": { "type": "number", "const": 0 },
+    "computedAt": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "ActiveTrapImpactItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "trapFamilyCode",
+        "trapTitleKey",
+        "posteriorRate",
+        "estimatedNetLoss",
+        "affectedSkillCount"
+      ],
+      "properties": {
+        "trapFamilyCode": { "type": "string", "minLength": 2, "maxLength": 64 },
+        "trapTitleKey": { "type": "string", "minLength": 2, "maxLength": 128 },
+        "posteriorRate": { "type": "number", "minimum": 0, "maximum": 1 },
+        "estimatedNetLoss": { "type": "number", "minimum": 0 },
+        "affectedSkillCount": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "SectionReadinessBreakdown": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sectionCode",
+        "sectionTitleKey",
+        "questionCount",
+        "estimatedNetLow",
+        "estimatedNetMid",
+        "estimatedNetHigh",
+        "meanMastery",
+        "meanRetention",
+        "epistemicConfidence"
+      ],
+      "properties": {
+        "sectionCode": { "type": "string", "minLength": 2, "maxLength": 64 },
+        "sectionTitleKey": { "type": "string", "minLength": 2, "maxLength": 128 },
+        "questionCount": { "type": "integer", "minimum": 1, "maximum": 200 },
+        "estimatedNetLow": { "type": "number" },
+        "estimatedNetMid": { "type": "number" },
+        "estimatedNetHigh": { "type": "number" },
+        "meanMastery": { "type": "number", "minimum": 0, "maximum": 1 },
+        "meanRetention": { "type": "number", "minimum": 0, "maximum": 1 },
+        "epistemicConfidence": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "ExamReadinessTopicAllocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "allocationId",
+        "sectionCode",
+        "skillCode",
+        "topicTitleKey",
+        "blueprintQuestionWeight",
+        "currentMastery",
+        "retentionProbability",
+        "expectedNetGainPerHour",
+        "recommendedStudyMinutes",
+        "priorityRank",
+        "rationaleCode",
+        "trainingEligible"
+      ],
+      "properties": {
+        "allocationId": { "type": "string", "format": "uuid" },
+        "sectionCode": { "type": "string", "minLength": 2, "maxLength": 64 },
+        "skillCode": { "type": "string", "minLength": 2, "maxLength": 128 },
+        "topicTitleKey": { "type": "string", "minLength": 2, "maxLength": 128 },
+        "blueprintQuestionWeight": { "type": "number", "minimum": 0 },
+        "currentMastery": { "type": "number", "minimum": 0, "maximum": 1 },
+        "retentionProbability": { "type": "number", "minimum": 0, "maximum": 1 },
+        "expectedNetGainPerHour": { "type": "number", "minimum": 0 },
+        "recommendedStudyMinutes": { "type": "integer", "minimum": 1 },
+        "priorityRank": { "type": "integer", "minimum": 1 },
+        "rationaleCode": {
+          "type": "string",
+          "enum": [
+            "HIGH_BLUEPRINT_WEIGHT_LOW_MASTERY",
+            "RETENTION_DECAY_RECOVERY",
+            "ACTIVE_TRAP_MITIGATION",
+            "CALIBRATION_EVIDENCE_GAP"
+          ]
+        },
+        "trainingEligible": { "type": "boolean", "const": false }
+      }
+    }
+  }
+}

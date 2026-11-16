@@ -2,6 +2,8 @@
         displayName = "Exam",
         allowedDependencies = {
                 "curriculum::application",
+                "mastery",
+                "mistake",
                 "security",
                 "sharedkernel::privacy",
                 "sharedkernel::error",

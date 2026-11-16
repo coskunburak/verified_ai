@@ -5972,6 +5972,164 @@ paths:
         '503':
           $ref: '#/components/responses/ProblemServiceUnavailable'
 
+  /v1/exams/readiness:
+    get:
+      summary: Compute or retrieve deterministic Exam Readiness Projection with 90% credible interval (CNT-LOS-11, INV-EXAM-001, INV-EXAM-004, $0.00 LLM cost)
+      operationId: getExamReadinessProjection
+      tags:
+        - Exams
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: examCode
+          in: query
+          required: true
+          schema:
+            type: string
+            pattern: '^[A-Z0-9_]{3,64}$'
+        - name: userId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: recompute
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Canonical deterministic exam readiness projection with 90% credible interval and active-trap breakdown
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamReadinessProjectionResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /api/v1/exams/readiness:
+    get:
+      summary: Compute or retrieve deterministic Exam Readiness Projection with 90% credible interval (/api alias)
+      operationId: getExamReadinessProjectionApiAlias
+      tags:
+        - Exams
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: examCode
+          in: query
+          required: true
+          schema:
+            type: string
+            pattern: '^[A-Z0-9_]{3,64}$'
+        - name: userId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: recompute
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Canonical deterministic exam readiness projection with 90% credible interval and active-trap breakdown
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamReadinessProjectionResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /v1/exams/readiness/recompute:
+    post:
+      summary: Deterministically recompute Exam Readiness Projection ($0.00 LLM cost)
+      operationId: recomputeExamReadinessProjection
+      tags:
+        - Exams
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExamReadinessRecomputeRequest'
+      responses:
+        '200':
+          description: Recomputed canonical deterministic exam readiness projection
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamReadinessProjectionResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '422':
+          $ref: '#/components/responses/ProblemUnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /api/v1/exams/readiness/recompute:
+    post:
+      summary: Deterministically recompute Exam Readiness Projection (/api alias)
+      operationId: recomputeExamReadinessProjectionApiAlias
+      tags:
+        - Exams
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExamReadinessRecomputeRequest'
+      responses:
+        '200':
+          description: Recomputed canonical deterministic exam readiness projection
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamReadinessProjectionResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '422':
+          $ref: '#/components/responses/ProblemUnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -10641,3 +10799,18 @@ components:
         trainingEligible:
           type: boolean
           const: false
+
+    ExamReadinessProjectionResponse:
+      $ref: '../../schemas/exam/v1/exam-readiness-projection.schema.json'
+
+    ExamReadinessRecomputeRequest:
+      $ref: '../../schemas/exam/v1/exam-readiness-recompute-request.schema.json'
+
+    ActiveTrapImpactItem:
+      $ref: '../../schemas/exam/v1/exam-readiness-projection.schema.json#/$defs/ActiveTrapImpactItem'
+
+    SectionReadinessBreakdown:
+      $ref: '../../schemas/exam/v1/exam-readiness-projection.schema.json#/$defs/SectionReadinessBreakdown'
+
+    ExamReadinessTopicAllocation:
+      $ref: '../../schemas/exam/v1/exam-readiness-projection.schema.json#/$defs/ExamReadinessTopicAllocation'

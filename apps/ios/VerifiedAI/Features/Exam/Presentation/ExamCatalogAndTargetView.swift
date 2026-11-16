@@ -4,16 +4,20 @@ public struct ExamCatalogAndTargetView: View {
     @ObservedObject public var viewModel: ExamCatalogAndTargetViewModel
     public var candidateProfileViewModel: CandidateProfileViewModel?
     public var blueprintAssemblyViewModel: ExamBlueprintAssemblyViewModel?
+    public var readinessViewModel: ExamReadinessViewModel?
     @FocusState private var isScoreFieldFocused: Bool
+    @State private var isCalibrationSheetPresented = false
 
     public init(
         viewModel: ExamCatalogAndTargetViewModel,
         candidateProfileViewModel: CandidateProfileViewModel? = nil,
-        blueprintAssemblyViewModel: ExamBlueprintAssemblyViewModel? = nil
+        blueprintAssemblyViewModel: ExamBlueprintAssemblyViewModel? = nil,
+        readinessViewModel: ExamReadinessViewModel? = nil
     ) {
         self.viewModel = viewModel
         self.candidateProfileViewModel = candidateProfileViewModel
         self.blueprintAssemblyViewModel = blueprintAssemblyViewModel
+        self.readinessViewModel = readinessViewModel
     }
 
     private var languageCode: String? {
@@ -92,6 +96,34 @@ public struct ExamCatalogAndTargetView: View {
                         }
                         .accessibilityIdentifier("exam.catalog.openBlueprintAssemblyButton")
                     }
+
+                    NavigationLink {
+                        ExamReadinessHubView(
+                            viewModel: readinessViewModel ?? viewModel.makeReadinessViewModel(),
+                            onStartCalibration: blueprintAssemblyViewModel == nil ? nil : {
+                                isCalibrationSheetPresented = true
+                            }
+                        )
+                    } label: {
+                        HStack {
+                            Label(LocalizedStringKey("exam.readiness.open_from_hub"), systemImage: "chart.line.uptrend.xyaxis")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(ColorTokens.textPrimary)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(ColorTokens.textSecondary)
+                        }
+                        .padding(14)
+                        .frame(maxWidth: .infinity)
+                        .background(ColorTokens.surfaceElevated)
+                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 14)
+                                .stroke(ColorTokens.borderSubtle, lineWidth: 1)
+                        )
+                    }
+                    .accessibilityIdentifier("exam.hub.openReadinessButton")
                 }
             }
             .padding(16)
@@ -112,6 +144,20 @@ public struct ExamCatalogAndTargetView: View {
         .task {
             if viewModel.definitions.isEmpty {
                 await viewModel.loadCatalogAndTargets()
+            }
+        }
+        .sheet(isPresented: $isCalibrationSheetPresented) {
+            if let blueprintAssemblyViewModel {
+                NavigationStack {
+                    ExamBlueprintAssemblyView(viewModel: blueprintAssemblyViewModel)
+                        .toolbar {
+                            ToolbarItem(placement: .cancellationAction) {
+                                Button("Done") {
+                                    isCalibrationSheetPresented = false
+                                }
+                            }
+                        }
+                }
             }
         }
     }

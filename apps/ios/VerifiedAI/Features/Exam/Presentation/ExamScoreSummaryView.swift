@@ -33,6 +33,29 @@ public struct ExamScoreSummaryView: View {
                 } else if let summary = viewModel.scoreSummary {
                     netScoreCard(summary)
                     countsRow(summary)
+                    NavigationLink {
+                        ExamReadinessHubView(viewModel: viewModel.makeReadinessViewModel())
+                    } label: {
+                        HStack {
+                            Label(LocalizedStringKey("exam.readiness.open_from_score"), systemImage: "chart.line.uptrend.xyaxis")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(ColorTokens.action)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(ColorTokens.textSecondary)
+                        }
+                        .padding(12)
+                        .frame(maxWidth: .infinity)
+                        .background(ColorTokens.actionSoft)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(ColorTokens.action, lineWidth: 1)
+                        )
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier("exam.score.openReadinessButton")
                     topicBreakdownSection(summary.topicBreakdowns)
                     difficultyBreakdownSection(summary.difficultyBreakdowns)
                     itemEvidenceSection(summary)

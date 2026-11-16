@@ -40,6 +40,15 @@ public final class ExamCatalogAndTargetViewModel: ObservableObject {
         targets.first(where: { $0.targetStatus == .active && $0.isPrimary }) ?? targets.first(where: { $0.targetStatus == .active })
     }
 
+    public func makeReadinessViewModel() -> ExamReadinessViewModel {
+        ExamReadinessViewModel(
+            userId: currentUserId ?? ExamBlueprintAssemblyViewModel.defaultLearnerId,
+            selectedExamCode: primaryActiveTarget?.examCode ?? selectedDetail?.examCode ?? "TR_YKS_TYT_MATH",
+            apiService: service,
+            offlineStore: cacheStore as? ExamOfflineSQLiteStore
+        )
+    }
+
     public func updateLearnerId(_ userId: UUID?) {
         guard currentUserId != userId else { return }
         currentUserId = userId

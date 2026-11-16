@@ -353,21 +353,21 @@ Codex must implement this sprint in small reviewable slices, re-reading the high
 # Learning OS Production Implementation Specification v1 (`2026-11-07`)
 
 ## 1. Sprint Metadata & Status
-- **Sprint ID:** `SPRINT_9.7`
-- **Canonical Title:** Post-Assessment Mistake Attribution ("Deneme Hata Karnesi") & YKS Net-Gain Simulator (`H-03`)
-- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011)`
-- **Primary Spec Reference:** `product/81_LEARNING_OS_PRODUCT_VISION_AND_POSITIONING.md` (`H-03`), `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md` (Screens 9 & 10)
+- **Sprint ID:** `SPRINT_9.7` (**Option A — Wave 2 of 5**: includes `Bridge B4` Phase 13 Clean Seed Contract)
+- **Canonical Title:** Post-Assessment Mistake Attribution ("Deneme Hata Karnesi"), YKS Net-Gain Simulator (`H-03`) & Phase 13 Clean Seed Export (`Bridge B4`)
+- **Status:** `PLANNED_OPTION_A_WAVE_2` (`ADR-011` feature-flagged; depends on `SPRINT_9.6` & `SPRINT_9.6B`)
+- **Primary Spec Reference:** `product/81_LEARNING_OS_PRODUCT_VISION_AND_POSITIONING.md` (`H-03`), `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md` (Screens 9 & 10), `sprints/phase09_exam_and_assessment_platform/PHASE_09_TYT_AYT_BRIDGE_AND_REMAINING_SPRINTS_PLAN.md`
 
 ## 2. Strategic Learning OS Objective & User Value
 Converts completed mock/diagnostic sessions or photographed paper deneme errors into a **4-Category Post-Exam Attribution Breakdown**:
 1. `CONCEPTUAL_GAP` (low skill mastery $M_{u,s} < 0.45$)
-2. `RECURRING_MISTAKE_TRAP` (matches an active `mistake_code` in Mistake DNA `V037`)
+2. `RECURRING_MISTAKE_TRAP` (matches an active `mistake_code` in Mistake DNA `V037` or distractor rationale in `V060`)
 3. `TIME_PRESSURE_SLIP` (`ARITH_BASIC_COMPUTATION` under high time-per-item pressure)
 4. `STRATEGIC_OMISSION` (unattempted item)
-and ranks study recommendations by **Expected Net Gain per Study Hour ($\Delta\text{Net}/\text{hr}$)**.
+and ranks study recommendations by **Expected Net Gain per Study Hour ($\Delta\text{Net}/\text{hr}$)** while establishing the `ADR-006`-compliant `evaluations/exports/yks-tr-phase13-seed/` SME/SymPy clean export contract (`Bridge B4`).
 
 ## 3. Entry Gate & Preconditions
-- `ADR-011` `GO` decision recorded; `Sprint 9.6` accepted.
+- `Sprint 9.6` (`V059`) and `Sprint 9.6B` (`V060`, `Bridge B1+B2+B3`) accepted (`LOCAL_ACCEPTANCE_PASSED`).
 
 ## 4. Domain Invariants & Attribution Rules
 1. **Every Wrong Mock Item Links to Canonical Attempt Evaluation (`V035`/`V036`):** When a student uploads or enters steps for a missed mock question, the step verifier attributes the exact `mistake_code` rather than treating the question as a generic binary wrong answer.
@@ -381,17 +381,20 @@ and ranks study recommendations by **Expected Net Gain per Study Hour ($\Delta\t
 ## 6. Python Math Verifier Impact
 - Uses `attempt_verification_v2.py` and `attempt_diagnosis.py` on submitted mock scratchpad work.
 
-## 7. Database Migration & Persistence Contract
-- Stores item-level attribution on `exam_session_items` (`PLANNED V057`, referencing `V054` `exam_definitions`) and net-gain allocations on `exam_readiness_projections` (`PLANNED V059`).
+## 7. Database Migration & Persistence Contract (`PLANNED V061`)
+- **Migration File:** `services/api/src/main/resources/db/migration/platform/V061__sprint_9_7_post_assessment_attribution.sql` *(builds on `V057`–`V060`)*
+- **Tables:**
+  - `exam_session_item_attributions` (`attribution_id`, `session_id`, `item_evaluation_id`, `user_id`, `skill_id`, `attribution_category`, `matched_mistake_code`, `time_spent_seconds`, `estimated_net_impact`, `recommended_action_type`, `training_eligible = FALSE`, `llm_tokens_used = 0`)
+  - `exam_study_reallocation_batches` (`batch_id`, `user_id`, `source_session_id`, `top_roi_plan_json`, `applied_to_study_plan`, `created_at`, `training_eligible = FALSE`)
 
 ## 8. REST API Contracts (`CNT-LOS-10` & `CNT-LOS-11`)
-- `GET /v1/exams/sessions/{id}/attribution-report` and `GET /v1/exams/readiness`.
+- `GET /v1/exams/sessions/{sessionId}/attribution-report` (& `/api/v1/...`), `POST /v1/exams/sessions/{sessionId}/apply-study-rebalance`, and `GET /v1/exams/readiness`.
 
 ## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
-- Renders the **Post-Exam Mistake Attribution Card** and **High-ROI Topic Allocator Table** (`EXP-LOS-07`).
+- Renders `PostExamAttributionView.swift`, `PostExamAttributionViewModel.swift`, offline SQLite cache (`cached_exam_attributions`), and High-ROI Topic Allocator Table (`EXP-LOS-07`).
 
 ## 10. AI Capability & Unit Economics Guardrail
-- Attribution math and ROI ranking are **100% deterministic (`$0.00` LLM cost)**.
+- Attribution math and ROI ranking are **100% deterministic (`$0.00` LLM cost)**. `Bridge B4` seed exports strictly exclude all production student rows (`training_eligible = FALSE`) and include only SME/synthetic `SymPy`-verified records.
 
 ## 11. Privacy, Safety & Compliance
 - Covered by `ExamPrivacyLifecycleContributor`.

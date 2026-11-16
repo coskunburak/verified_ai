@@ -222,6 +222,12 @@ final class Sprint91ExamCatalogAndTargetTests: XCTestCase {
             func fetchRegradeAudits(sessionId: UUID) async throws -> ExamScoreRegradeAuditListResponse {
                 throw ExamServiceError.featureDisabled
             }
+            func fetchExamReadiness(examCode: String, recompute: Bool) async throws -> ExamReadinessProjection {
+                throw ExamServiceError.featureDisabled
+            }
+            func recomputeExamReadiness(examCode: String) async throws -> ExamReadinessProjection {
+                throw ExamServiceError.featureDisabled
+            }
         }
 
         let store = ExamOfflineSQLiteStore(inMemory: true)

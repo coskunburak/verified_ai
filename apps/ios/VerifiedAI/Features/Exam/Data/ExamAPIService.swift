@@ -84,6 +84,8 @@ public protocol ExamAPIServicing: Sendable {
     func fetchScoreSummary(sessionId: UUID) async throws -> ExamSessionScoreSummaryResponse
     func regradeSession(sessionId: UUID, request: ExamScoreRegradeRequest) async throws -> ExamScoreRegradeResponse
     func fetchRegradeAudits(sessionId: UUID) async throws -> ExamScoreRegradeAuditListResponse
+    func fetchExamReadiness(examCode: String, recompute: Bool) async throws -> ExamReadinessProjection
+    func recomputeExamReadiness(examCode: String) async throws -> ExamReadinessProjection
 }
 
 public extension ExamAPIServicing {
@@ -571,6 +573,46 @@ final class HTTPExamAPIService: ExamAPIServicing, @unchecked Sendable {
         }
     }
 
+    func fetchExamReadiness(examCode: String, recompute: Bool) async throws -> ExamReadinessProjection {
+        let queryItems = [
+            URLQueryItem(name: "examCode", value: examCode),
+            URLQueryItem(name: "recompute", value: recompute ? "true" : "false")
+        ]
+        let endpoint = Endpoint(
+            path: "/api/v1/exams/readiness",
+            method: .get,
+            queryItems: queryItems
+        )
+        let httpRequest = HTTPRequest<ExamReadinessProjection>(
+            endpoint: endpoint,
+            allowsAuthRefreshRetry: true
+        )
+        do {
+            return try await apiClient.send(httpRequest).body
+        } catch let error as NetworkError {
+            throw mapNetworkError(error)
+        }
+    }
+
+    func recomputeExamReadiness(examCode: String) async throws -> ExamReadinessProjection {
+        let payload = ExamReadinessRecomputeRequest(examCode: examCode, trainingEligible: false)
+        let bodyData = try encoder.encode(payload)
+        let endpoint = Endpoint(
+            path: "/api/v1/exams/readiness/recompute",
+            method: .post
+        )
+        let httpRequest = HTTPRequest<ExamReadinessProjection>(
+            endpoint: endpoint,
+            body: bodyData,
+            allowsAuthRefreshRetry: true
+        )
+        do {
+            return try await apiClient.send(httpRequest).body
+        } catch let error as NetworkError {
+            throw mapNetworkError(error)
+        }
+    }
+
     private func mapNetworkError(_ error: NetworkError) -> ExamServiceError {
         switch error {
         case .server(let problem):
@@ -615,7 +657,8 @@ final class HTTPExamAPIService: ExamAPIServicing, @unchecked Sendable {
                 || problem.code == "EXAM_BLUEPRINT_DISABLED"
                 || problem.code == "EXAM_ASSESSMENT_ASSEMBLY_DISABLED"
                 || problem.code == "EXAM_SESSION_RUNTIME_FEATURE_DISABLED"
-                || problem.code == "EXAM_SCORING_FEATURE_DISABLED" {
+                || problem.code == "EXAM_SCORING_FEATURE_DISABLED"
+                || problem.code == "EXAM_READINESS_DISABLED" {
                 return .featureDisabled
             }
             if problem.status == 403
@@ -700,6 +743,7 @@ final class HTTPExamAPIService: ExamAPIServicing, @unchecked Sendable {
 #if DEBUG
 final class FixtureExamAPIService: ExamAPIServicing, @unchecked Sendable {
     var simulateOffline: Bool
+    var simulatePreliminaryReadiness: Bool
     private let userId: UUID
     private var storedTargets: [StudentExamTargetModel] = []
     private var storedProfile: CandidateProfileResponse?
@@ -712,10 +756,229 @@ final class FixtureExamAPIService: ExamAPIServicing, @unchecked Sendable {
     private var submitIdempotencyCache: [String: ExamSessionSubmitResponseDTO] = [:]
     private var storedScoreSnapshots: [UUID: ExamSessionScoreSummaryResponse] = [:]
     private var storedRegradeAudits: [UUID: [ExamScoreRegradeAuditItem]] = [:]
+    private var storedReadinessProjections: [String: ExamReadinessProjection] = [:]
 
-    init(simulateOffline: Bool = false, userId: UUID = UUID(uuidString: "91000000-0000-4000-8000-000000000a01")!) {
+    init(
+        simulateOffline: Bool = false,
+        userId: UUID = UUID(uuidString: "91000000-0000-4000-8000-000000000a01")!,
+        simulatePreliminaryReadiness: Bool = false
+    ) {
         self.simulateOffline = simulateOffline
         self.userId = userId
+        self.simulatePreliminaryReadiness = simulatePreliminaryReadiness
+    }
+
+    // MARK: - Sprint 9.6 Deterministic Exam Readiness Fixtures
+
+    func fetchExamReadiness(examCode: String, recompute: Bool) async throws -> ExamReadinessProjection {
+        if simulateOffline { throw ExamServiceError.offline }
+        let normalized = Self.canonicalReadinessExamCode(examCode)
+        if !recompute, let cached = storedReadinessProjections[normalized] {
+            return cached
+        }
+        let built = Self.buildFixtureReadinessProjection(
+            examCode: normalized,
+            userId: userId,
+            preliminaryMode: simulatePreliminaryReadiness,
+            completedMocks: Array(storedScoreSnapshots.values),
+            activeTarget: storedTargets.first(where: { $0.targetStatus == .active })
+        )
+        storedReadinessProjections[normalized] = built
+        return built
+    }
+
+    func recomputeExamReadiness(examCode: String) async throws -> ExamReadinessProjection {
+        try await fetchExamReadiness(examCode: examCode, recompute: true)
+    }
+
+    private static func canonicalReadinessExamCode(_ raw: String) -> String {
+        switch raw.trimmingCharacters(in: .whitespacesAndNewlines).uppercased() {
+        case "YKS_TYT", "YKS_TYT_MATH":
+            return "TR_YKS_TYT_MATH"
+        case "YKS_AYT_SAY", "YKS_AYT", "YKS_AYT_MATH":
+            return "TR_YKS_AYT_MATH"
+        default:
+            return raw.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        }
+    }
+
+    static func buildFixtureReadinessProjection(
+        examCode: String,
+        userId: UUID,
+        preliminaryMode: Bool,
+        completedMocks: [ExamSessionScoreSummaryResponse] = [],
+        activeTarget: StudentExamTargetModel? = nil
+    ) -> ExamReadinessProjection {
+        let canonical = canonicalReadinessExamCode(examCode)
+        let isAyt = canonical == "TR_YKS_AYT_MATH"
+        let isSat = canonical == "INTL_SAT_MATH"
+        let totalQuestions = isSat ? 44 : 40
+        let penaltyRatio = isSat ? 0.0 : 0.25
+        let targetNet = activeTarget?.targetScore ?? (isAyt ? 32.0 : (isSat ? 38.0 : 33.5))
+        let latestSessionId = completedMocks.first?.sessionId
+        let mockCount = completedMocks.count
+
+        if preliminaryMode {
+            let low = 4.50
+            let mid = 11.25
+            let high = 18.00
+            let secCode = isAyt ? "AYT_MATH" : (isSat ? "SAT_MOD_1" : "TYT_MATH")
+            return ExamReadinessProjection(
+                projectionId: UUID(),
+                userId: userId,
+                examCode: canonical,
+                targetId: activeTarget?.targetId,
+                latestScoredSessionId: latestSessionId,
+                totalQuestionCount: totalQuestions,
+                wrongAnswerPenaltyRatio: penaltyRatio,
+                estimatedNetLow: low,
+                estimatedNetMid: mid,
+                estimatedNetHigh: high,
+                credibleIntervalLevel: 0.90,
+                targetNetScore: targetNet,
+                netGapToTarget: ((targetNet - mid) * 100.0).rounded() / 100.0,
+                netLostToTraps: 0.0,
+                pacingFactor: 0.92,
+                meanRetentionProbability: 1.0,
+                epistemicConfidence: 0.14,
+                confidenceTier: .preliminary,
+                calibrationRequired: true,
+                recommendedDiagnosticQuestionCount: 10,
+                evaluatedSkillCount: 1,
+                totalEvidenceCount: 2,
+                completedMockCount: mockCount,
+                activeTrapBreakdown: [],
+                sectionReadiness: [
+                    SectionReadinessBreakdown(
+                        sectionCode: secCode,
+                        sectionTitleKey: isAyt ? "AYT Mathematics" : (isSat ? "Math Module 1" : "TYT Mathematics"),
+                        questionCount: totalQuestions,
+                        estimatedNetLow: low,
+                        estimatedNetMid: mid,
+                        estimatedNetHigh: high,
+                        meanMastery: 0.35,
+                        meanRetention: 1.0,
+                        epistemicConfidence: 0.14
+                    )
+                ],
+                topRoiAllocations: [
+                    ExamReadinessTopicAllocation(
+                        allocationId: UUID(),
+                        sectionCode: secCode,
+                        skillCode: isAyt ? "MATH.CALCULUS.DIFFERENTIATION.CHAIN_RULE" : "MATH.ARITHMETIC.INTEGER_OPERATIONS",
+                        topicTitleKey: isAyt ? "topic.math.calculus.differentiation.chain_rule" : "topic.math.arithmetic.integer_operations",
+                        blueprintQuestionWeight: 5.0,
+                        currentMastery: 0.35,
+                        retentionProbability: 1.0,
+                        expectedNetGainPerHour: 2.150,
+                        recommendedStudyMinutes: 45,
+                        priorityRank: 1,
+                        rationaleCode: .calibrationEvidenceGap,
+                        trainingEligible: false
+                    )
+                ],
+                methodologyVersion: "EXAM_READINESS_V1",
+                trainingEligible: false,
+                llmTokensUsed: 0,
+                inferenceCostUsd: 0.0,
+                computedAt: "2026-11-16T12:00:00Z"
+            )
+        }
+
+        let mid = isAyt ? 26.50 : (isSat ? 34.00 : 28.25)
+        let low = isAyt ? 23.25 : (isSat ? 31.00 : 25.00)
+        let high = isAyt ? 29.75 : (isSat ? 37.00 : 31.50)
+        let traps = [
+            ActiveTrapImpactItem(
+                trapFamilyCode: isAyt ? "FORMULA_ERROR" : "SIGN_ERROR",
+                trapTitleKey: isAyt ? "exam.readiness.trap.formula_error" : "exam.readiness.trap.sign_error",
+                posteriorRate: 0.38,
+                estimatedNetLoss: 1.65,
+                affectedSkillCount: 2
+            ),
+            ActiveTrapImpactItem(
+                trapFamilyCode: "CONCEPT_ERROR",
+                trapTitleKey: "exam.readiness.trap.concept_error",
+                posteriorRate: 0.27,
+                estimatedNetLoss: 1.10,
+                affectedSkillCount: 1
+            )
+        ]
+        let secCode = isAyt ? "AYT_MATH" : (isSat ? "SAT_MOD_1" : "TYT_MATH")
+        return ExamReadinessProjection(
+            projectionId: UUID(),
+            userId: userId,
+            examCode: canonical,
+            targetId: activeTarget?.targetId,
+            latestScoredSessionId: latestSessionId,
+            totalQuestionCount: totalQuestions,
+            wrongAnswerPenaltyRatio: penaltyRatio,
+            estimatedNetLow: low,
+            estimatedNetMid: mid,
+            estimatedNetHigh: high,
+            credibleIntervalLevel: 0.90,
+            targetNetScore: targetNet,
+            netGapToTarget: ((targetNet - mid) * 100.0).rounded() / 100.0,
+            netLostToTraps: 2.75,
+            pacingFactor: 0.94,
+            meanRetentionProbability: 0.84,
+            epistemicConfidence: 0.64,
+            confidenceTier: .established,
+            calibrationRequired: false,
+            recommendedDiagnosticQuestionCount: 0,
+            evaluatedSkillCount: 13,
+            totalEvidenceCount: 48 + mockCount * 5,
+            completedMockCount: max(1, mockCount),
+            activeTrapBreakdown: traps,
+            sectionReadiness: [
+                SectionReadinessBreakdown(
+                    sectionCode: secCode,
+                    sectionTitleKey: isAyt ? "AYT Mathematics" : (isSat ? "Math Module 1" : "TYT Mathematics"),
+                    questionCount: totalQuestions,
+                    estimatedNetLow: low,
+                    estimatedNetMid: mid,
+                    estimatedNetHigh: high,
+                    meanMastery: 0.74,
+                    meanRetention: 0.84,
+                    epistemicConfidence: 0.64
+                )
+            ],
+            topRoiAllocations: [
+                ExamReadinessTopicAllocation(
+                    allocationId: UUID(),
+                    sectionCode: secCode,
+                    skillCode: isAyt ? "MATH.CALCULUS.DIFFERENTIATION.CHAIN_RULE" : "MATH.ARITHMETIC.FRACTIONS",
+                    topicTitleKey: isAyt ? "topic.math.calculus.differentiation.chain_rule" : "topic.math.arithmetic.fractions",
+                    blueprintQuestionWeight: 4.0,
+                    currentMastery: 0.58,
+                    retentionProbability: 0.79,
+                    expectedNetGainPerHour: 1.450,
+                    recommendedStudyMinutes: 45,
+                    priorityRank: 1,
+                    rationaleCode: .activeTrapMitigation,
+                    trainingEligible: false
+                ),
+                ExamReadinessTopicAllocation(
+                    allocationId: UUID(),
+                    sectionCode: secCode,
+                    skillCode: isAyt ? "MATH.CALCULUS.INTEGRATION.BASIC_SUBSTITUTION" : "MATH.EQUATIONS.INEQUALITIES_BASIC",
+                    topicTitleKey: isAyt ? "topic.math.calculus.integration.basic_substitution" : "topic.math.equations.inequalities_basic",
+                    blueprintQuestionWeight: 3.0,
+                    currentMastery: 0.62,
+                    retentionProbability: 0.68,
+                    expectedNetGainPerHour: 1.120,
+                    recommendedStudyMinutes: 40,
+                    priorityRank: 2,
+                    rationaleCode: .retentionDecayRecovery,
+                    trainingEligible: false
+                )
+            ],
+            methodologyVersion: "EXAM_READINESS_V1",
+            trainingEligible: false,
+            llmTokensUsed: 0,
+            inferenceCostUsd: 0.0,
+            computedAt: "2026-11-16T12:00:00Z"
+        )
     }
 
     // MARK: - Sprint 9.5 Deterministic Scoring Fixtures

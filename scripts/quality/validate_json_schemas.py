@@ -1521,6 +1521,88 @@ def run_validation():
                 raise AssertionError(f"Expected jsonschema failure for {label}")
             except jsonschema.exceptions.ValidationError:
                 pass
+
+    # Sprint 9.6 (CNT-LOS-11 Exam Readiness Model, 90% Credible Interval & Active-Trap Penalty) schema & fixture checks
+    s96_schema_dir = Path(__file__).resolve().parents[2] / "packages" / "schemas" / "exam" / "v1"
+    s96_fixtures_dir = s96_schema_dir / "fixtures"
+    s96_schema_files = [
+        "exam-readiness-projection.schema.json",
+        "exam-readiness-recompute-request.schema.json",
+    ]
+    s96_schemas = {}
+    for fname in s96_schema_files:
+        spath = s96_schema_dir / fname
+        assert spath.exists(), f"Missing Sprint 9.6 schema: {spath}"
+        sc = json.loads(spath.read_text(encoding="utf-8"))
+        if jsonschema is not None:
+            jsonschema.Draft202012Validator.check_schema(sc)
+        s96_schemas[fname] = sc
+
+    s96_fixture_bindings = [
+        ("exam-readiness-projection.schema.json", "exam-readiness-projection-valid.json"),
+        ("exam-readiness-projection.schema.json", "exam-readiness-projection-preliminary-valid.json"),
+        ("exam-readiness-recompute-request.schema.json", "exam-readiness-recompute-request-valid.json"),
+    ]
+    s96_valid_fixtures = {}
+    for sname, fixname in s96_fixture_bindings:
+        fpath = s96_fixtures_dir / fixname
+        assert fpath.exists(), f"Missing Sprint 9.6 fixture: {fpath}"
+        payload = json.loads(fpath.read_text(encoding="utf-8"))
+        sc = s96_schemas[sname]
+        if jsonschema is not None:
+            jsonschema.Draft202012Validator(sc).validate(payload)
+        errs = _validate_s89_object_keys(payload, sc, sc.get("$defs", {}))
+        assert not errs, f"Sprint 9.6 pure-Python check failed for {fixname}: {errs}"
+        s96_valid_fixtures[fixname] = payload
+
+    s96_proj_valid = s96_valid_fixtures["exam-readiness-projection-valid.json"]
+    s96_proj_prelim = s96_valid_fixtures["exam-readiness-projection-preliminary-valid.json"]
+    assert s96_proj_valid["estimatedNetLow"] <= s96_proj_valid["estimatedNetMid"] <= s96_proj_valid["estimatedNetHigh"]
+    assert s96_proj_prelim["epistemicConfidence"] < 0.25
+    assert s96_proj_prelim["confidenceTier"] == "PRELIMINARY"
+    assert s96_proj_prelim["calibrationRequired"] is True
+    assert s96_proj_prelim["recommendedDiagnosticQuestionCount"] >= 10
+
+    def _s96_mut(fixname: str, **updates):
+        copy = json.loads(json.dumps(s96_valid_fixtures[fixname]))
+        for k, v in updates.items():
+            if v is ...:
+                copy.pop(k, None)
+            else:
+                copy[k] = v
+        return copy
+
+    s96_negative_cases = [
+        (s96_schemas["exam-readiness-projection.schema.json"], _s96_mut("exam-readiness-projection-valid.json", netLostToTraps=-1.5), "s96 negative netLostToTraps"),
+        (s96_schemas["exam-readiness-projection.schema.json"], _s96_mut("exam-readiness-projection-valid.json", confidenceTier="INVALID"), "s96 invalid confidenceTier"),
+        (s96_schemas["exam-readiness-projection.schema.json"], _s96_mut("exam-readiness-projection-valid.json", epistemicConfidence=1.5), "s96 epistemicConfidence > 1"),
+        (s96_schemas["exam-readiness-projection.schema.json"], _s96_mut("exam-readiness-projection-valid.json", unexpectedCheatField=True), "s96 projection additionalProperties"),
+        (s96_schemas["exam-readiness-recompute-request.schema.json"], _s96_mut("exam-readiness-recompute-request-valid.json", examCode=...), "s96 recompute missing examCode"),
+        (s96_schemas["exam-readiness-recompute-request.schema.json"], _s96_mut("exam-readiness-recompute-request-valid.json", extraField="x"), "s96 recompute additionalProperties"),
+    ]
+    for neg_sc, neg_payload, label in s96_negative_cases:
+        if jsonschema is not None:
+            try:
+                jsonschema.Draft202012Validator(neg_sc).validate(neg_payload)
+                raise AssertionError(f"Expected jsonschema failure for {label}")
+            except jsonschema.exceptions.ValidationError:
+                pass
+        assert _validate_s89_object_keys(neg_payload, neg_sc, neg_sc.get("$defs", {})), f"Expected pure-python failure for {label}"
+
+    if jsonschema is not None:
+        s96_const_cases = [
+            (s96_schemas["exam-readiness-projection.schema.json"], _s96_mut("exam-readiness-projection-valid.json", trainingEligible=True), "s96 projection trainingEligible=true"),
+            (s96_schemas["exam-readiness-projection.schema.json"], _s96_mut("exam-readiness-projection-valid.json", llmTokensUsed=5), "s96 projection llmTokensUsed=5"),
+            (s96_schemas["exam-readiness-projection.schema.json"], _s96_mut("exam-readiness-projection-valid.json", inferenceCostUsd=0.25), "s96 projection non-zero inferenceCostUsd"),
+            (s96_schemas["exam-readiness-projection.schema.json"], _s96_mut("exam-readiness-projection-valid.json", credibleIntervalLevel=0.95), "s96 projection wrong credibleIntervalLevel"),
+            (s96_schemas["exam-readiness-recompute-request.schema.json"], _s96_mut("exam-readiness-recompute-request-valid.json", trainingEligible=True), "s96 recompute trainingEligible=true"),
+        ]
+        for neg_sc, neg_payload, label in s96_const_cases:
+            try:
+                jsonschema.Draft202012Validator(neg_sc).validate(neg_payload)
+                raise AssertionError(f"Expected jsonschema failure for {label}")
+            except jsonschema.exceptions.ValidationError:
+                pass
     for card_fx in (ml_card_tr_fixture, ml_card_en_fixture):
         assert card_fx["schemaVersion"] == "1.0.0"
         assert card_fx["verificationStatus"] == "VERIFIED"
@@ -1902,6 +1984,30 @@ def run_validation():
                 for code in expected_codes:
                     assert code in s95_op["responses"], f"HTTP {code} missing from {s95_path} {s95_method} in {spec_name}"
 
+            # Sprint 9.6 OpenAPI paths & component schemas
+            for schema_name in (
+                "ExamReadinessProjectionResponse",
+                "ExamReadinessRecomputeRequest",
+                "ActiveTrapImpactItem",
+                "SectionReadinessBreakdown",
+                "ExamReadinessTopicAllocation",
+            ):
+                assert schema_name in spec_schemas, f"Missing Sprint 9.6 component schema {schema_name} in {spec_name}"
+
+            expected_s96_endpoints = {
+                ("/v1/exams/readiness", "get"): {"200", "400", "401", "403", "404", "503"},
+                ("/api/v1/exams/readiness", "get"): {"200", "400", "401", "403", "404", "503"},
+                ("/v1/exams/readiness/recompute", "post"): {"200", "400", "401", "403", "404", "422", "503"},
+                ("/api/v1/exams/readiness/recompute", "post"): {"200", "400", "401", "403", "404", "422", "503"},
+            }
+            for (s96_path, s96_method), expected_codes in expected_s96_endpoints.items():
+                assert s96_path in spec_paths, f"Missing Sprint 9.6 path {s96_path} in {spec_name}"
+                assert s96_method in spec_paths[s96_path], f"Missing method {s96_method} on {s96_path} in {spec_name}"
+                s96_op = spec_paths[s96_path][s96_method]
+                assert s96_op["security"] == [{"bearerAuth": []}], f"Security bearerAuth missing on {s96_path} in {spec_name}"
+                for code in expected_codes:
+                    assert code in s96_op["responses"], f"HTTP {code} missing from {s96_path} {s96_method} in {spec_name}"
+
         assert openapi_path.read_bytes() == openapi_core_path.read_bytes(), "OpenAPI mirror public-api.yaml != verified-ai-core-api.yaml"
     else:
         openapi_bytes = openapi_path.read_bytes()
@@ -1965,8 +2071,17 @@ def run_validation():
             "ExamScoreRegradeRequest",
             "ExamScoreRegradeResponse",
             "ExamScoreRegradeAuditListResponse",
+            "/v1/exams/readiness:",
+            "/api/v1/exams/readiness:",
+            "/v1/exams/readiness/recompute:",
+            "/api/v1/exams/readiness/recompute:",
+            "ExamReadinessProjectionResponse",
+            "ExamReadinessRecomputeRequest",
+            "ActiveTrapImpactItem",
+            "SectionReadinessBreakdown",
+            "ExamReadinessTopicAllocation",
         ):
-            assert token in openapi_text, f"Missing Sprint 8.8..9.5 OpenAPI token in public-api.yaml: {token}"
+            assert token in openapi_text, f"Missing Sprint 8.8..9.6 OpenAPI token in public-api.yaml: {token}"
 
     # 3. iOS Localizable.xcstrings Key Verification
     xcstrings_data = json.loads(strings_path.read_text(encoding="utf-8"))
@@ -2352,6 +2467,40 @@ def run_validation():
         "exam.score.error.not_found",
         "exam.score.error.regrade_invalid",
         "exam.score.error.generic",
+        "exam.readiness.title",
+        "exam.readiness.subtitle",
+        "exam.readiness.offline_banner",
+        "exam.readiness.loading",
+        "exam.readiness.recompute_button",
+        "exam.readiness.interval.title",
+        "exam.readiness.interval.mid_label",
+        "exam.readiness.interval.target_label",
+        "exam.readiness.interval.gap_label",
+        "exam.readiness.zero_cost_note",
+        "exam.readiness.tier.preliminary",
+        "exam.readiness.tier.calibrating",
+        "exam.readiness.tier.established",
+        "exam.readiness.tier.high_confidence",
+        "exam.readiness.preliminary.title",
+        "exam.readiness.preliminary.body",
+        "exam.readiness.preliminary.cta",
+        "exam.readiness.traps.title",
+        "exam.readiness.traps.empty",
+        "exam.readiness.simulator.title",
+        "exam.readiness.simulator.trap_slider",
+        "exam.readiness.simulator.hours_slider",
+        "exam.readiness.simulator.projected_label",
+        "exam.readiness.sections.title",
+        "exam.readiness.roi.title",
+        "exam.readiness.rationale.active_trap_mitigation",
+        "exam.readiness.rationale.retention_decay_recovery",
+        "exam.readiness.rationale.high_blueprint_weight_low_mastery",
+        "exam.readiness.rationale.calibration_evidence_gap",
+        "exam.readiness.open_from_hub",
+        "exam.readiness.open_from_score",
+        "exam.readiness.error.offline_unavailable",
+        "exam.readiness.error.feature_disabled",
+        "exam.readiness.error.generic",
     ]
 
     banned_lexicon = re.compile(
@@ -2373,11 +2522,11 @@ def run_validation():
             if key.startswith("studyplan.rebalance.") or key.startswith("micro_lesson.") or key.startswith("study_session."):
                 m = banned_lexicon.search(val)
                 assert not m, f"Stigmatizing lexicon word '{m.group(0)}' in {key}[{lang}]: {val}"
-            elif key.startswith("gamification.") or key.startswith("weekly.") or key.startswith("cold_start.") or key.startswith("exam.candidate.") or key.startswith("exam.syllabus.") or key.startswith("home.candidate_profile.") or key.startswith("exam.assembly.") or key.startswith("exam.session.") or key.startswith("exam.score."):
+            elif key.startswith("gamification.") or key.startswith("weekly.") or key.startswith("cold_start.") or key.startswith("exam.candidate.") or key.startswith("exam.syllabus.") or key.startswith("home.candidate_profile.") or key.startswith("exam.assembly.") or key.startswith("exam.session.") or key.startswith("exam.score.") or key.startswith("exam.readiness."):
                 m = gamification_banned_lexicon.search(val)
                 assert not m, f"Stigmatizing lexicon word '{m.group(0)}' in {key}[{lang}]: {val}"
 
-    print(f"PASS: Sprint 8.1..9.5 JSON schemas, negative mutations, OpenAPI 3.1 endpoints, and {len(required_keys)} EN/TR localizations verified.")
+    print(f"PASS: Sprint 8.1..9.6 JSON schemas, negative mutations, OpenAPI 3.1 endpoints, and {len(required_keys)} EN/TR localizations verified.")
 
 
 if __name__ == "__main__":

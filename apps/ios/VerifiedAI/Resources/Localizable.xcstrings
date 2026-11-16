@@ -17,6 +17,16 @@
     "#%lld" : {
 
     },
+    "#%lld • %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "#%1$lld • %2$@"
+          }
+        }
+      }
+    },
     "%@ – %@" : {
       "localizations" : {
         "en" : {
@@ -83,6 +93,16 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "%1$@ • %2$@"
+          }
+        }
+      }
+    },
+    "%@ • %@ • %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ • %2$@ • %3$@"
           }
         }
       }
@@ -258,6 +278,16 @@
         }
       }
     },
+    "%lld queued updates • %llds grace" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld queued updates • %2$llds grace"
+          }
+        }
+      }
+    },
     "%lld/%lld" : {
       "localizations" : {
         "en" : {
@@ -268,14 +298,50 @@
         }
       }
     },
+    "%lld/4" : {
+
+    },
     "%lld/160" : {
 
     },
     "%lld%%" : {
 
     },
+    "%lldC / %lldW / %lldB" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lldC / %2$lldW / %3$lldB"
+          }
+        }
+      }
+    },
+    "%lldC • %lldW • %lldB" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lldC • %2$lldW • %3$lldB"
+          }
+        }
+      }
+    },
     "%lldm" : {
 
+    },
+    "%lldQ" : {
+
+    },
+    "%lldQ • Mid %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lldQ • Mid %2$@"
+          }
+        }
+      }
     },
     "• v%lld" : {
 
@@ -425,6 +491,16 @@
     },
     "Advance synthetic job" : {
 
+    },
+    "Answered: %lld/%lld • Flagged: %lld • Omitted: %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Answered: %1$lld/%2$lld • Flagged: %3$lld • Omitted: %4$lld"
+          }
+        }
+      }
     },
     "Appearance" : {
       "extractionState" : "manual",
@@ -8575,6 +8651,12 @@
     "DELETE" : {
 
     },
+    "Deneme Booklet" : {
+
+    },
+    "Deneme Publisher / Booklet (optional)" : {
+
+    },
     "Design System 2.1" : {
 
     },
@@ -8582,6 +8664,9 @@
 
     },
     "Difficulty %@" : {
+
+    },
+    "Digital Scratchpad" : {
 
     },
     "Direct Practice Count" : {
@@ -8941,975 +9026,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Erişilebilirlik Desteği"
-          }
-        }
-      }
-    },
-    "exam.session.action.clear_answer" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Clear Selection"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Seçimi Temizle"
-          }
-        }
-      }
-    },
-    "exam.session.action.flag_review" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Flag for Review"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "İncele"
-          }
-        }
-      }
-    },
-    "exam.session.action.next_item" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Next"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sonraki"
-          }
-        }
-      }
-    },
-    "exam.session.action.previous_item" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Previous"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Önceki"
-          }
-        }
-      }
-    },
-    "exam.session.action.submit_exam" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Submit Mock Exam"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deneme Sınavını Teslim Et"
-          }
-        }
-      }
-    },
-    "exam.session.navigator.filter_all" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "All Items"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tüm Sorular"
-          }
-        }
-      }
-    },
-    "exam.session.navigator.filter_flagged" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Flagged for Review"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "İnceleme İçin İşaretli"
-          }
-        }
-      }
-    },
-    "exam.session.navigator.filter_omitted" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Unanswered"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Boş Bırakılan"
-          }
-        }
-      }
-    },
-    "exam.session.navigator.title" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Question Navigator"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Soru Gezgini"
-          }
-        }
-      }
-    },
-    "exam.session.no_hint.badge" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No-Hint Exam Mode Active"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "İpucu Kapalı Sınav Modu Etkin"
-          }
-        }
-      }
-    },
-    "exam.session.no_hint.notice" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tutor hints and AI guidance remain paused until submission."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Teslime kadar rehber ipuçları ve yapay zekâ desteği duraklatıldı."
-          }
-        }
-      }
-    },
-    "exam.session.scratchpad.attach_button" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Attach Solution Page"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Çözüm Sayfası Ekle"
-          }
-        }
-      }
-    },
-    "exam.session.scratchpad.queued_badge" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Queued for Post-Submit F28 Verification"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Teslim Sonrası F28 Doğrulaması İçin Sıraya Alındı"
-          }
-        }
-      }
-    },
-    "exam.session.scratchpad.title" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deneme Scratchpad Photos"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deneme Çözüm Fotoğrafları"
-          }
-        }
-      }
-    },
-    "exam.session.submit.confirmation_title" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Confirm Mock Exam Submission"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deneme Sınavı Teslimini Onayla"
-          }
-        }
-      }
-    },
-    "exam.session.submit.receipt_title" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Submission Recorded — F28 Batch Queued"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Teslim Kaydedildi — F28 Toplu Doğrulama Sıraya Alındı"
-          }
-        }
-      }
-    },
-    "exam.session.timer.clock_skew_notice" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Device clock difference adjusted to server time."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cihaz saati farkı sunucu saatine göre ayarlandı."
-          }
-        }
-      }
-    },
-    "exam.session.timer.grace_buffer_active" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Offline Grace Window Active — Local Autosave Protected"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Çevrimdışı Ek Süre Etkin — Yerel Kayıt Korumalı"
-          }
-        }
-      }
-    },
-    "exam.session.timer.remaining_label" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Server Time Remaining"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kalan Sunucu Süresi"
-          }
-        }
-      }
-    },
-    "exam.session.title" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Timed Mock Exam"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zamanlı Deneme Sınavı"
-          }
-        }
-      }
-    },
-    "exam.session.view_score_summary" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "View Score Summary & Evidence"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Puan Özetini ve Kanıtları Görüntüle"
-          }
-        }
-      }
-    },
-    "exam.score.title" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Score & Evidence Summary"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Puan ve Kanıt Özeti"
-          }
-        }
-      }
-    },
-    "exam.score.action.close" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Done"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kapat"
-          }
-        }
-      }
-    },
-    "exam.score.action.clear_topic_filter" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Show All Topics"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tüm Konuları Göster"
-          }
-        }
-      }
-    },
-    "exam.score.action.trigger_regrade" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Run Deterministic Regrade"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Belirlenimci Yeniden Puanlamayı Çalıştır"
-          }
-        }
-      }
-    },
-    "exam.score.loading" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Computing deterministic net score..."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Belirlenimci net puan hesaplanıyor..."
-          }
-        }
-      }
-    },
-    "exam.score.offline_banner" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Offline Mode — Showing Locally Cached Score Snapshot"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Çevrimdışı Mod — Yerel Önbellekteki Puan Özeti Gösteriliyor"
-          }
-        }
-      }
-    },
-    "exam.score.net_score.label" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Official Net Score"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Resmi Net Puan"
-          }
-        }
-      }
-    },
-    "exam.score.raw_correct.label" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Raw Correct"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ham Doğru"
-          }
-        }
-      }
-    },
-    "exam.score.offset.label" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wrong-Answer Offset"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Yanlış Götürme Payı"
-          }
-        }
-      }
-    },
-    "exam.score.range.label" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bounds"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sınır Aralığı"
-          }
-        }
-      }
-    },
-    "exam.score.count.correct" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Correct"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Doğru"
-          }
-        }
-      }
-    },
-    "exam.score.count.wrong" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wrong"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Yanlış"
-          }
-        }
-      }
-    },
-    "exam.score.count.blank" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Blank"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Boş"
-          }
-        }
-      }
-    },
-    "exam.score.count.time" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Duration"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Süre"
-          }
-        }
-      }
-    },
-    "exam.score.formula.osym_4_1" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ÖSYM 4:1 Net Rule"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ÖSYM 4 Yanlış 1 Doğru"
-          }
-        }
-      }
-    },
-    "exam.score.formula.osym_3_1" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "LGS 3:1 Net Rule"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "LGS 3 Yanlış 1 Doğru"
-          }
-        }
-      }
-    },
-    "exam.score.formula.no_penalty" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Raw Correct Only"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Yalnızca Doğru Sayısı"
-          }
-        }
-      }
-    },
-    "exam.score.formula.weighted" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Weighted Section Rubric"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ağırlıklı Bölüm Değerlendirmesi"
-          }
-        }
-      }
-    },
-    "exam.score.section.topic_breakdown" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Topic Performance Breakdown"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Konu Bazlı Performans Dağılımı"
-          }
-        }
-      }
-    },
-    "exam.score.section.difficulty_breakdown" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Difficulty Band Breakdown"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zorluk Düzeyi Dağılımı"
-          }
-        }
-      }
-    },
-    "exam.score.section.item_evidence" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Item-Level Evidence Traceability"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Soru Bazlı Kanıt İzlenebilirliği"
-          }
-        }
-      }
-    },
-    "exam.score.section.regrade_audits" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Regrade Audit Ledger"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Yeniden Puanlama Denetim Kaydı"
-          }
-        }
-      }
-    },
-    "exam.score.filter.all" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "All"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tümü"
-          }
-        }
-      }
-    },
-    "exam.score.filter.correct" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Correct"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Doğru"
-          }
-        }
-      }
-    },
-    "exam.score.filter.wrong" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wrong"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Yanlış"
-          }
-        }
-      }
-    },
-    "exam.score.filter.blank" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Blank"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Boş"
-          }
-        }
-      }
-    },
-    "exam.score.filter.flagged" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Flagged"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "İşaretli"
-          }
-        }
-      }
-    },
-    "exam.score.regrade.reason_label" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Regrade Reason"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Yeniden Puanlama Nedeni"
-          }
-        }
-      }
-    },
-    "exam.score.regrade.detail_placeholder" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Reason note (e.g. answer key update)"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Açıklama notu (ör. cevap anahtarı güncellemesi)"
-          }
-        }
-      }
-    },
-    "exam.score.regrade.empty" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No regrade adjustments recorded for this session."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bu oturum için henüz yeniden puanlama kaydı bulunmuyor."
-          }
-        }
-      }
-    },
-    "exam.score.error.offline_unavailable" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Score snapshot is not cached locally while offline."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Çevrimdışı durumda yerel önbellekte puan özeti bulunamadı."
-          }
-        }
-      }
-    },
-    "exam.score.error.feature_disabled" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deterministic scoring engine is currently turned off."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Belirlenimci puanlama motoru şu anda devre dışı."
-          }
-        }
-      }
-    },
-    "exam.score.error.not_scorable" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Submit the exam session before viewing the score summary."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Puan özetini görüntülemeden önce sınav oturumunu teslim edin."
-          }
-        }
-      }
-    },
-    "exam.score.error.not_found" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Score summary record not found."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Puan özeti kaydı bulunamadı."
-          }
-        }
-      }
-    },
-    "exam.score.error.regrade_invalid" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enter valid regrade details before submitting."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Göndermeden önce geçerli yeniden puanlama ayrıntıları girin."
-          }
-        }
-      }
-    },
-    "exam.score.error.generic" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Could not load score summary. Please try again."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Puan özeti yüklenemedi. Lütfen yeniden deneyin."
           }
         }
       }
@@ -10580,6 +9696,1196 @@
         }
       }
     },
+    "exam.readiness.error.feature_disabled" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exam readiness projection is currently disabled."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sınav hazırlık projeksiyonu şu anda devre dışı."
+          }
+        }
+      }
+    },
+    "exam.readiness.error.generic" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unable to refresh exam readiness projection."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sınav hazırlık projeksiyonu güncellenemedi."
+          }
+        }
+      }
+    },
+    "exam.readiness.error.offline_unavailable" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Readiness projection unavailable offline without a cached snapshot."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Önbellek kaydı olmadan çevrimdışı hazırlık projeksiyonu açılamadı."
+          }
+        }
+      }
+    },
+    "exam.readiness.interval.gap_label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Target Delta"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hedef Farkı"
+          }
+        }
+      }
+    },
+    "exam.readiness.interval.mid_label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Expected Mid Net"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beklenen Orta Net"
+          }
+        }
+      }
+    },
+    "exam.readiness.interval.target_label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Target Net"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hedef Net"
+          }
+        }
+      }
+    },
+    "exam.readiness.interval.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "90% Credible Net Interval"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%90 Güven Aralıklı Net Tahmini"
+          }
+        }
+      }
+    },
+    "exam.readiness.loading" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Computing readiness projection…"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hazırlık projeksiyonu hesaplanıyor…"
+          }
+        }
+      }
+    },
+    "exam.readiness.offline_banner" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Showing cached readiness projection offline"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çevrimdışı önbellekteki hazırlık projeksiyonu gösteriliyor"
+          }
+        }
+      }
+    },
+    "exam.readiness.open_from_hub" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Exam Readiness & Net Simulator"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sınav Hazırlık ve Net Simülatörünü Aç"
+          }
+        }
+      }
+    },
+    "exam.readiness.open_from_score" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View Exam Readiness Impact"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sınav Hazırlık Etkisini Gör"
+          }
+        }
+      }
+    },
+    "exam.readiness.preliminary.body" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your interval is intentionally wide while skill evidence builds. Complete a 10-question diagnostic to narrow your projection."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beceri kanıtları toplanırken net aralığı dürüstçe geniş tutulur. Projeksiyonu daraltmak için 10 soruluk tanı kontrolünü tamamla."
+          }
+        }
+      }
+    },
+    "exam.readiness.preliminary.cta" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start 10-Question Calibration"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10 Soruluk Tanı Kontrolünü Başlat"
+          }
+        }
+      }
+    },
+    "exam.readiness.preliminary.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "More Verified Evidence Needed"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Daha Fazla Doğrulanmış Kanıt Gerekli"
+          }
+        }
+      }
+    },
+    "exam.readiness.rationale.active_trap_mitigation" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Active Trap Mitigation"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktif Tuzak Onarımı"
+          }
+        }
+      }
+    },
+    "exam.readiness.rationale.calibration_evidence_gap" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calibration Evidence"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kalibrasyon Kanıtı"
+          }
+        }
+      }
+    },
+    "exam.readiness.rationale.high_blueprint_weight_low_mastery" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "High Blueprint Weight"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yüksek Sınav Ağırlığı"
+          }
+        }
+      }
+    },
+    "exam.readiness.rationale.retention_decay_recovery" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retention Refresh"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hafıza Tazeleme"
+          }
+        }
+      }
+    },
+    "exam.readiness.recompute_button" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recompute Readiness"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hazırlığı Yeniden Hesapla"
+          }
+        }
+      }
+    },
+    "exam.readiness.roi.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "High-ROI Study Priorities"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yüksek ROI Çalışma Öncelikleri"
+          }
+        }
+      }
+    },
+    "exam.readiness.sections.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Section Readiness Breakdown"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bölüm Bazlı Hazırlık Kırılımı"
+          }
+        }
+      }
+    },
+    "exam.readiness.simulator.hours_slider" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Focused High-ROI Study Hours"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yüksek ROI Odaklı Çalışma Saati"
+          }
+        }
+      }
+    },
+    "exam.readiness.simulator.projected_label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simulated Net Range"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simüle Edilen Net Aralığı"
+          }
+        }
+      }
+    },
+    "exam.readiness.simulator.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deterministic Net-Gain Simulator"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deterministik Net Kazanım Simülatörü"
+          }
+        }
+      }
+    },
+    "exam.readiness.simulator.trap_slider" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Active Trap Reduction"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktif Tuzak Azaltma"
+          }
+        }
+      }
+    },
+    "exam.readiness.subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "90% credible interval projection & deterministic ROI planner"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%90 güven aralıklı net projeksiyonu ve deterministik ROI planlayıcı"
+          }
+        }
+      }
+    },
+    "exam.readiness.tier.calibrating" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calibrating"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kalibre Ediliyor"
+          }
+        }
+      }
+    },
+    "exam.readiness.tier.established" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Established"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yerleşik Güven"
+          }
+        }
+      }
+    },
+    "exam.readiness.tier.high_confidence" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "High Confidence"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yüksek Güven"
+          }
+        }
+      }
+    },
+    "exam.readiness.tier.preliminary" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preliminary"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ön Tahmin"
+          }
+        }
+      }
+    },
+    "exam.readiness.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exam Readiness Hub"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sınav Hazırlık Merkezi"
+          }
+        }
+      }
+    },
+    "exam.readiness.traps.empty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No active recurring exam traps detected"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktif tekrarlayan sınav tuzağı saptanmadı"
+          }
+        }
+      }
+    },
+    "exam.readiness.traps.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nets Lost to Active Traps"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktif Tuzaklara Giden Net"
+          }
+        }
+      }
+    },
+    "exam.readiness.zero_cost_note" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "$0.00 LLM Cost • Deterministic Psychometric Engine (INV-EXAM-004)"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "$0.00 LLM Maliyeti • Deterministik Psikometrik Motor (INV-EXAM-004)"
+          }
+        }
+      }
+    },
+    "exam.score.action.clear_topic_filter" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show All Topics"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tüm Konuları Göster"
+          }
+        }
+      }
+    },
+    "exam.score.action.close" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Done"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kapat"
+          }
+        }
+      }
+    },
+    "exam.score.action.trigger_regrade" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Run Deterministic Regrade"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Belirlenimci Yeniden Puanlamayı Çalıştır"
+          }
+        }
+      }
+    },
+    "exam.score.count.blank" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blank"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Boş"
+          }
+        }
+      }
+    },
+    "exam.score.count.correct" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Correct"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doğru"
+          }
+        }
+      }
+    },
+    "exam.score.count.time" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duration"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Süre"
+          }
+        }
+      }
+    },
+    "exam.score.count.wrong" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wrong"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yanlış"
+          }
+        }
+      }
+    },
+    "exam.score.error.feature_disabled" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deterministic scoring engine is currently turned off."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Belirlenimci puanlama motoru şu anda devre dışı."
+          }
+        }
+      }
+    },
+    "exam.score.error.generic" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Could not load score summary. Please try again."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puan özeti yüklenemedi. Lütfen yeniden deneyin."
+          }
+        }
+      }
+    },
+    "exam.score.error.not_found" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Score summary record not found."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puan özeti kaydı bulunamadı."
+          }
+        }
+      }
+    },
+    "exam.score.error.not_scorable" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Submit the exam session before viewing the score summary."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puan özetini görüntülemeden önce sınav oturumunu teslim edin."
+          }
+        }
+      }
+    },
+    "exam.score.error.offline_unavailable" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Score snapshot is not cached locally while offline."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çevrimdışı durumda yerel önbellekte puan özeti bulunamadı."
+          }
+        }
+      }
+    },
+    "exam.score.error.regrade_invalid" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter valid regrade details before submitting."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Göndermeden önce geçerli yeniden puanlama ayrıntıları girin."
+          }
+        }
+      }
+    },
+    "exam.score.filter.all" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tümü"
+          }
+        }
+      }
+    },
+    "exam.score.filter.blank" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blank"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Boş"
+          }
+        }
+      }
+    },
+    "exam.score.filter.correct" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Correct"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doğru"
+          }
+        }
+      }
+    },
+    "exam.score.filter.flagged" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Flagged"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İşaretli"
+          }
+        }
+      }
+    },
+    "exam.score.filter.wrong" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wrong"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yanlış"
+          }
+        }
+      }
+    },
+    "exam.score.formula.no_penalty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raw Correct Only"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yalnızca Doğru Sayısı"
+          }
+        }
+      }
+    },
+    "exam.score.formula.osym_3_1" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LGS 3:1 Net Rule"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LGS 3 Yanlış 1 Doğru"
+          }
+        }
+      }
+    },
+    "exam.score.formula.osym_4_1" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ÖSYM 4:1 Net Rule"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ÖSYM 4 Yanlış 1 Doğru"
+          }
+        }
+      }
+    },
+    "exam.score.formula.weighted" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weighted Section Rubric"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ağırlıklı Bölüm Değerlendirmesi"
+          }
+        }
+      }
+    },
+    "exam.score.loading" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Computing deterministic net score..."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Belirlenimci net puan hesaplanıyor..."
+          }
+        }
+      }
+    },
+    "exam.score.net_score.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Official Net Score"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resmi Net Puan"
+          }
+        }
+      }
+    },
+    "exam.score.offline_banner" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Offline Mode — Showing Locally Cached Score Snapshot"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çevrimdışı Mod — Yerel Önbellekteki Puan Özeti Gösteriliyor"
+          }
+        }
+      }
+    },
+    "exam.score.offset.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wrong-Answer Offset"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yanlış Götürme Payı"
+          }
+        }
+      }
+    },
+    "exam.score.range.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bounds"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sınır Aralığı"
+          }
+        }
+      }
+    },
+    "exam.score.raw_correct.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raw Correct"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ham Doğru"
+          }
+        }
+      }
+    },
+    "exam.score.regrade.detail_placeholder" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reason note (e.g. answer key update)"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Açıklama notu (ör. cevap anahtarı güncellemesi)"
+          }
+        }
+      }
+    },
+    "exam.score.regrade.empty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No regrade adjustments recorded for this session."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu oturum için henüz yeniden puanlama kaydı bulunmuyor."
+          }
+        }
+      }
+    },
+    "exam.score.regrade.reason_label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Regrade Reason"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yeniden Puanlama Nedeni"
+          }
+        }
+      }
+    },
+    "exam.score.section.difficulty_breakdown" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Difficulty Band Breakdown"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zorluk Düzeyi Dağılımı"
+          }
+        }
+      }
+    },
+    "exam.score.section.item_evidence" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Item-Level Evidence Traceability"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Soru Bazlı Kanıt İzlenebilirliği"
+          }
+        }
+      }
+    },
+    "exam.score.section.regrade_audits" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Regrade Audit Ledger"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yeniden Puanlama Denetim Kaydı"
+          }
+        }
+      }
+    },
+    "exam.score.section.topic_breakdown" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Topic Performance Breakdown"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Konu Bazlı Performans Dağılımı"
+          }
+        }
+      }
+    },
+    "exam.score.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Score & Evidence Summary"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puan ve Kanıt Özeti"
+          }
+        }
+      }
+    },
     "exam.scoring.CORRECT_MINUS_QUARTER_WRONG" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -10627,6 +10933,363 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ağırlıklı Bölüm Rubriği"
+          }
+        }
+      }
+    },
+    "exam.session.action.clear_answer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clear Selection"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seçimi Temizle"
+          }
+        }
+      }
+    },
+    "exam.session.action.flag_review" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Flag for Review"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İncele"
+          }
+        }
+      }
+    },
+    "exam.session.action.next_item" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sonraki"
+          }
+        }
+      }
+    },
+    "exam.session.action.previous_item" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Previous"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Önceki"
+          }
+        }
+      }
+    },
+    "exam.session.action.submit_exam" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Submit Mock Exam"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deneme Sınavını Teslim Et"
+          }
+        }
+      }
+    },
+    "exam.session.navigator.filter_all" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All Items"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tüm Sorular"
+          }
+        }
+      }
+    },
+    "exam.session.navigator.filter_flagged" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Flagged for Review"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İnceleme İçin İşaretli"
+          }
+        }
+      }
+    },
+    "exam.session.navigator.filter_omitted" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unanswered"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Boş Bırakılan"
+          }
+        }
+      }
+    },
+    "exam.session.navigator.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Question Navigator"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Soru Gezgini"
+          }
+        }
+      }
+    },
+    "exam.session.no_hint.badge" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No-Hint Exam Mode Active"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İpucu Kapalı Sınav Modu Etkin"
+          }
+        }
+      }
+    },
+    "exam.session.no_hint.notice" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tutor hints and AI guidance remain paused until submission."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Teslime kadar rehber ipuçları ve yapay zekâ desteği duraklatıldı."
+          }
+        }
+      }
+    },
+    "exam.session.scratchpad.attach_button" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Attach Solution Page"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çözüm Sayfası Ekle"
+          }
+        }
+      }
+    },
+    "exam.session.scratchpad.queued_badge" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Queued for Post-Submit F28 Verification"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Teslim Sonrası F28 Doğrulaması İçin Sıraya Alındı"
+          }
+        }
+      }
+    },
+    "exam.session.scratchpad.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deneme Scratchpad Photos"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deneme Çözüm Fotoğrafları"
+          }
+        }
+      }
+    },
+    "exam.session.submit.confirmation_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirm Mock Exam Submission"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deneme Sınavı Teslimini Onayla"
+          }
+        }
+      }
+    },
+    "exam.session.submit.receipt_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Submission Recorded — F28 Batch Queued"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Teslim Kaydedildi — F28 Toplu Doğrulama Sıraya Alındı"
+          }
+        }
+      }
+    },
+    "exam.session.timer.clock_skew_notice" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Device clock difference adjusted to server time."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cihaz saati farkı sunucu saatine göre ayarlandı."
+          }
+        }
+      }
+    },
+    "exam.session.timer.grace_buffer_active" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Offline Grace Window Active — Local Autosave Protected"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çevrimdışı Ek Süre Etkin — Yerel Kayıt Korumalı"
+          }
+        }
+      }
+    },
+    "exam.session.timer.remaining_label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server Time Remaining"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kalan Sunucu Süresi"
+          }
+        }
+      }
+    },
+    "exam.session.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Timed Mock Exam"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zamanlı Deneme Sınavı"
+          }
+        }
+      }
+    },
+    "exam.session.view_score_summary" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View Score Summary & Evidence"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puan Özetini ve Kanıtları Görüntüle"
           }
         }
       }
@@ -11701,6 +12364,22 @@
       }
     },
     "Expressions" : {
+
+    },
+    "F28 Assets: %lld" : {
+
+    },
+    "F28 Batch: %@ • Runtime LLM Tokens: %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "F28 Batch: %1$@ • Runtime LLM Tokens: %2$lld"
+          }
+        }
+      }
+    },
+    "F28: %lld pages" : {
 
     },
     "Files" : {
@@ -13002,6 +13681,12 @@
     "Notice how checking x = 3 and x = -3 confirms both roots satisfy the original equation." : {
 
     },
+    "Numeric Answer" : {
+
+    },
+    "OK" : {
+
+    },
     "Open Settings" : {
 
     },
@@ -13545,6 +14230,16 @@
     "Protected" : {
 
     },
+    "Q%lld • %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Q%1$lld • %2$@"
+          }
+        }
+      }
+    },
     "Question %lld, %@, topic %@, difficulty %@" : {
       "localizations" : {
         "en" : {
@@ -13756,6 +14451,9 @@
     "Role" : {
 
     },
+    "Save" : {
+
+    },
     "Save Crop" : {
 
     },
@@ -13793,6 +14491,16 @@
     },
     "segment" : {
 
+    },
+    "Selected: %@ • Key: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Selected: %1$@ • Key: %2$@"
+          }
+        }
+      }
     },
     "Selects this blueprint for deterministic assessment assembly" : {
 
@@ -15337,6 +16045,16 @@
     "Source text" : {
 
     },
+    "Source: %@ (v%lld)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Source: %1$@ (v%2$lld)"
+          }
+        }
+      }
+    },
     "Standard" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -15392,6 +16110,9 @@
       }
     },
     "Status %@" : {
+
+    },
+    "Status: %@" : {
 
     },
     "Step Timeline Connector" : {
@@ -15937,6 +16658,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Kalıcılık ve Bağışıklık Pekiştirmesi"
+          }
+        }
+      }
+    },
+    "Submitted: %@ • Expected: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Submitted: %1$@ • Expected: %2$@"
           }
         }
       }
@@ -17621,6 +18352,19 @@
     },
     "v%@" : {
 
+    },
+    "v%lld" : {
+
+    },
+    "v%lld -> v%lld • %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "v%1$lld -> v%2$lld • %3$@"
+          }
+        }
+      }
     },
     "Variables" : {
 

@@ -387,6 +387,7 @@ private struct ExamsWorkspaceView: View {
     @ObservedObject var examViewModel: ExamCatalogAndTargetViewModel
     @ObservedObject var candidateProfileViewModel: CandidateProfileViewModel
     @ObservedObject var blueprintAssemblyViewModel: ExamBlueprintAssemblyViewModel
+    @State private var isCalibrationSheetPresented = false
 
     var body: some View {
         ScrollView {
@@ -440,11 +441,38 @@ private struct ExamsWorkspaceView: View {
                         ExamBlueprintAssemblyView(viewModel: blueprintAssemblyViewModel)
                     }
                     .accessibilityIdentifier("home.blueprintAssembly.button")
+
+                    examStepLink(
+                        step: "4",
+                        titleKey: "exam.readiness.title",
+                        subtitleKey: "exam.readiness.subtitle",
+                        systemImage: "chart.line.uptrend.xyaxis"
+                    ) {
+                        ExamReadinessHubView(
+                            viewModel: examViewModel.makeReadinessViewModel(),
+                            onStartCalibration: {
+                                isCalibrationSheetPresented = true
+                            }
+                        )
+                    }
+                    .accessibilityIdentifier("home.examReadiness.button")
                 }
             }
             .padding(SpacingTokens.lg)
         }
         .background(ColorTokens.canvas.ignoresSafeArea())
+        .sheet(isPresented: $isCalibrationSheetPresented) {
+            NavigationStack {
+                ExamBlueprintAssemblyView(viewModel: blueprintAssemblyViewModel)
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Done") {
+                                isCalibrationSheetPresented = false
+                            }
+                        }
+                    }
+            }
+        }
     }
 
     private func examStepLink<Destination: View>(

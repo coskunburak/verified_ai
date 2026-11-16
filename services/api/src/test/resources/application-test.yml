@@ -35,3 +35,4 @@ verifiedai:
     assessment-assembly-enabled: true
     session-runtime-enabled: true
     scoring-engine-enabled: true
+    readiness-enabled: true

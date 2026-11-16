@@ -76,6 +76,18 @@ struct AppDependencies {
         ExamBlueprintAssemblyViewModel(apiService: examAPI, offlineStore: examCacheStore)
     }
 
+    func makeExamReadinessViewModel(
+        userId: UUID = ExamBlueprintAssemblyViewModel.defaultLearnerId,
+        examCode: String = "TR_YKS_TYT_MATH"
+    ) -> ExamReadinessViewModel {
+        ExamReadinessViewModel(
+            userId: userId,
+            selectedExamCode: examCode,
+            apiService: examAPI,
+            offlineStore: examCacheStore
+        )
+    }
+
     #if DEBUG
     func seedOfflineExamFixturesIfNeeded() async {
         let defs = FixtureExamAPIService.seedDefinitions()
@@ -242,7 +254,11 @@ struct AppDependencies {
         if arguments.contains("--exam-fixture"),
            solveFixture || (environment == .development && arguments.contains("--ui-testing-authenticated") && (arguments.contains("--ui-testing-candidate-profile") || arguments.contains("-ui-testing-candidate-profile"))) {
             let simulateOffline = arguments.contains("--exam-offline")
-            examAPI = FixtureExamAPIService(simulateOffline: simulateOffline)
+            let simulatePreliminary = arguments.contains("--exam-readiness-preliminary")
+            examAPI = FixtureExamAPIService(
+                simulateOffline: simulateOffline,
+                simulatePreliminaryReadiness: simulatePreliminary
+            )
         } else {
             examAPI = HTTPExamAPIService(apiClient: apiClient)
         }

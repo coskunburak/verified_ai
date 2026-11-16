@@ -188,17 +188,19 @@ Phase overview: `sprints/phase08_adaptive_learning_and_study_planning/PHASE_08_A
 ## Phase 9 — Exam & Assessment Platform
 
 Phase overview: `sprints/phase09_exam_and_assessment_platform/PHASE_09_EXAM_AND_ASSESSMENT_PLATFORM.md`
+Remaining Option A (5-Wave) plan: `sprints/phase09_exam_and_assessment_platform/PHASE_09_TYT_AYT_BRIDGE_AND_REMAINING_SPRINTS_PLAN.md`
 
 - `Sprint 9.1` — **Exam Definitions, Curriculum Mapping, and Versioning** — `phase09_exam_and_assessment_platform/SPRINT_9.1_EXAM_DEFINITIONS_CURRICULUM_MAPPING_AND_VERSIONING.md` (`V054`; see `phase09_exam_and_assessment_platform/SPRINT_9.1_EXECUTION_REPORT.md` & `phase09_exam_and_assessment_platform/SPRINT_9.1_FILE_MANIFEST.md`)
 - `Sprint 9.2` — **Learner Exam Goal Setup and Candidate Profile (Snap-to-Plan Syllabus Ingestion)** — `phase09_exam_and_assessment_platform/SPRINT_9.2_LEARNER_EXAM_GOAL_SETUP_AND_CANDIDATE_PROFILE.md` (`V055`; see `phase09_exam_and_assessment_platform/SPRINT_9.2_EXECUTION_REPORT.md` & `phase09_exam_and_assessment_platform/SPRINT_9.2_FILE_MANIFEST.md`)
 - `Sprint 9.3` — **Question Bank, Blueprint, and Assessment Assembly Rules** — `phase09_exam_and_assessment_platform/SPRINT_9.3_QUESTION_BANK_BLUEPRINT_AND_ASSESSMENT_ASSEMBLY_RULES.md` (`V056`; see `phase09_exam_and_assessment_platform/SPRINT_9.3_EXECUTION_REPORT.md` & `phase09_exam_and_assessment_platform/SPRINT_9.3_FILE_MANIFEST.md`)
-- `Sprint 9.4` — **Timed Mock Exam Runtime** — `phase09_exam_and_assessment_platform/SPRINT_9.4_TIMED_MOCK_EXAM_RUNTIME.md`
-- `Sprint 9.5` — **Scoring Engine and Evidence Traceability** — `phase09_exam_and_assessment_platform/SPRINT_9.5_SCORING_ENGINE_AND_EVIDENCE_TRACEABILITY.md`
-- `Sprint 9.6` — **Exam Readiness Model and Confidence Semantics** — `phase09_exam_and_assessment_platform/SPRINT_9.6_EXAM_READINESS_MODEL_AND_CONFIDENCE_SEMANTICS.md`
-- `Sprint 9.7` — **Weak-Area Prioritization After Assessments** — `phase09_exam_and_assessment_platform/SPRINT_9.7_WEAK_AREA_PRIORITIZATION_AFTER_ASSESSMENTS.md`
-- `Sprint 9.8` — **Final Review and Pre-Exam Study Mode (48-Hour Trap & Formula Cheat Sheet)** — `phase09_exam_and_assessment_platform/SPRINT_9.8_FINAL_REVIEW_AND_PRE_EXAM_STUDY_MODE.md`
-- `Sprint 9.9` — **Exam Analytics, Reports, and Progress Comparison** — `phase09_exam_and_assessment_platform/SPRINT_9.9_EXAM_ANALYTICS_REPORTS_AND_PROGRESS_COMPARISON.md`
-- `Sprint 9.10` — **Assessment Integrity, Accessibility, Failure Recovery, and Reliability** — `phase09_exam_and_assessment_platform/SPRINT_9.10_ASSESSMENT_INTEGRITY_ACCESSIBILITY_FAILURE_RECOVERY_AND_RELIABILITY.md`
+- `Sprint 9.4` — **Timed Mock Exam Runtime** — `phase09_exam_and_assessment_platform/SPRINT_9.4_TIMED_MOCK_EXAM_RUNTIME.md` (`V057`; see `phase09_exam_and_assessment_platform/SPRINT_9.4_EXECUTION_REPORT.md` & `phase09_exam_and_assessment_platform/SPRINT_9.4_FILE_MANIFEST.md`)
+- `Sprint 9.5` — **Scoring Engine and Evidence Traceability** — `phase09_exam_and_assessment_platform/SPRINT_9.5_SCORING_ENGINE_AND_EVIDENCE_TRACEABILITY.md` (`V058`; see `phase09_exam_and_assessment_platform/SPRINT_9.5_EXECUTION_REPORT.md` & `phase09_exam_and_assessment_platform/SPRINT_9.5_FILE_MANIFEST.md`)
+- `Sprint 9.6` — **Exam Readiness Model and Confidence Semantics** — `phase09_exam_and_assessment_platform/SPRINT_9.6_EXAM_READINESS_MODEL_AND_CONFIDENCE_SEMANTICS.md` (`V059`; see `phase09_exam_and_assessment_platform/SPRINT_9.6_EXECUTION_REPORT.md` & `phase09_exam_and_assessment_platform/SPRINT_9.6_FILE_MANIFEST.md`)
+- `Sprint 9.6B` — **TYT/AYT Curriculum Expansion, Turkish New-Gen Question Bank & SymPy Benchmarks (Option A — Wave 1: `Bridge B1+B2+B3`)** — `phase09_exam_and_assessment_platform/SPRINT_9.6B_TYT_AYT_CURRICULUM_EXPANSION_QUESTION_BANK_AND_SYMPY_BENCHMARKS.md` (`PLANNED V060`)
+- `Sprint 9.7` — **Weak-Area Prioritization After Assessments + Phase 13 Clean Seed Export (Option A — Wave 2: includes `Bridge B4`)** — `phase09_exam_and_assessment_platform/SPRINT_9.7_WEAK_AREA_PRIORITIZATION_AFTER_ASSESSMENTS.md` (`PLANNED V061`)
+- `Sprint 9.8` — **Final Review and Pre-Exam Study Mode (48-Hour Trap & Formula Cheat Sheet, Option A — Wave 3)** — `phase09_exam_and_assessment_platform/SPRINT_9.8_FINAL_REVIEW_AND_PRE_EXAM_STUDY_MODE.md` (`PLANNED V062`)
+- `Sprint 9.9` — **Exam Analytics, Reports, and Progress Comparison (Option A — Wave 4)** — `phase09_exam_and_assessment_platform/SPRINT_9.9_EXAM_ANALYTICS_REPORTS_AND_PROGRESS_COMPARISON.md` (`PLANNED V063`)
+- `Sprint 9.10` — **Assessment Integrity, Accessibility, Failure Recovery, and Reliability (Option A — Wave 5 / Phase 9 Exit Gate)** — `phase09_exam_and_assessment_platform/SPRINT_9.10_ASSESSMENT_INTEGRITY_ACCESSIBILITY_FAILURE_RECOVERY_AND_RELIABILITY.md` (`PLANNED V064`)
 
 ## Phase 10 — Monetization, Growth & Product Operations
 

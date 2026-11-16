@@ -1,0 +1,89 @@
+{
+  "projectionId": "96000000-0000-4000-8000-000000000101",
+  "userId": "91000000-0000-4000-8000-000000000a01",
+  "examCode": "YKS_AYT_SAY",
+  "targetId": "96000000-0000-4000-8000-000000000201",
+  "latestScoredSessionId": "96000000-0000-4000-8000-000000000301",
+  "totalQuestionCount": 40,
+  "wrongAnswerPenaltyRatio": 0.25,
+  "estimatedNetLow": 23.25,
+  "estimatedNetMid": 26.5,
+  "estimatedNetHigh": 29.75,
+  "credibleIntervalLevel": 0.9,
+  "targetNetScore": 32.0,
+  "netGapToTarget": 5.5,
+  "netLostToTraps": 2.75,
+  "pacingFactor": 0.94,
+  "meanRetentionProbability": 0.84,
+  "epistemicConfidence": 0.64,
+  "confidenceTier": "ESTABLISHED",
+  "calibrationRequired": false,
+  "recommendedDiagnosticQuestionCount": 0,
+  "evaluatedSkillCount": 14,
+  "totalEvidenceCount": 52,
+  "completedMockCount": 2,
+  "activeTrapBreakdown": [
+    {
+      "trapFamilyCode": "FORMULA_ERROR",
+      "trapTitleKey": "exam.readiness.trap.formula_error",
+      "posteriorRate": 0.38,
+      "estimatedNetLoss": 1.65,
+      "affectedSkillCount": 2
+    },
+    {
+      "trapFamilyCode": "SIGN_ERROR",
+      "trapTitleKey": "exam.readiness.trap.sign_error",
+      "posteriorRate": 0.29,
+      "estimatedNetLoss": 1.1,
+      "affectedSkillCount": 1
+    }
+  ],
+  "sectionReadiness": [
+    {
+      "sectionCode": "AYT_MATH",
+      "sectionTitleKey": "AYT Mathematics",
+      "questionCount": 40,
+      "estimatedNetLow": 23.25,
+      "estimatedNetMid": 26.5,
+      "estimatedNetHigh": 29.75,
+      "meanMastery": 0.74,
+      "meanRetention": 0.84,
+      "epistemicConfidence": 0.64
+    }
+  ],
+  "topRoiAllocations": [
+    {
+      "allocationId": "96000000-0000-4000-8000-000000000401",
+      "sectionCode": "AYT_MATH",
+      "skillCode": "MATH.CALCULUS.DIFFERENTIATION.CHAIN_RULE",
+      "topicTitleKey": "topic.math.calculus.differentiation.chain_rule",
+      "blueprintQuestionWeight": 3.0,
+      "currentMastery": 0.58,
+      "retentionProbability": 0.79,
+      "expectedNetGainPerHour": 1.245,
+      "recommendedStudyMinutes": 45,
+      "priorityRank": 1,
+      "rationaleCode": "ACTIVE_TRAP_MITIGATION",
+      "trainingEligible": false
+    },
+    {
+      "allocationId": "96000000-0000-4000-8000-000000000402",
+      "sectionCode": "AYT_MATH",
+      "skillCode": "MATH.CALCULUS.INTEGRATION.BASIC_SUBSTITUTION",
+      "topicTitleKey": "topic.math.calculus.integration.basic_substitution",
+      "blueprintQuestionWeight": 3.0,
+      "currentMastery": 0.62,
+      "retentionProbability": 0.68,
+      "expectedNetGainPerHour": 0.98,
+      "recommendedStudyMinutes": 40,
+      "priorityRank": 2,
+      "rationaleCode": "RETENTION_DECAY_RECOVERY",
+      "trainingEligible": false
+    }
+  ],
+  "methodologyVersion": "EXAM_READINESS_V1",
+  "trainingEligible": false,
+  "llmTokensUsed": 0,
+  "inferenceCostUsd": 0,
+  "computedAt": "2026-11-16T12:00:00Z"
+}

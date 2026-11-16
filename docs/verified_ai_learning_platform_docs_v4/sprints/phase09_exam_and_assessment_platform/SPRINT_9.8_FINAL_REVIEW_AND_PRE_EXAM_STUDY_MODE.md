@@ -399,16 +399,16 @@ Codex must implement this sprint in small reviewable slices, re-reading the high
 # Learning OS Production Implementation Specification v1 (`2026-11-07`)
 
 ## 1. Sprint Metadata & Status
-- **Sprint ID:** `SPRINT_9.8`
+- **Sprint ID:** `SPRINT_9.8` (**Option A — Wave 3 of 5**)
 - **Canonical Title:** Final Review, Pre-Exam Study Mode & 48-Hour Personal Formula/Trap Sheet (`H-15`)
-- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011)`
-- **Primary Spec Reference:** `product/81_LEARNING_OS_PRODUCT_VISION_AND_POSITIONING.md` (`H-15`), `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md` (Screens 10 & 11)
+- **Status:** `PLANNED_OPTION_A_WAVE_3` (`ADR-011` feature-flagged; depends on `SPRINT_9.7`)
+- **Primary Spec Reference:** `product/81_LEARNING_OS_PRODUCT_VISION_AND_POSITIONING.md` (`H-15`), `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md` (Screens 10 & 11), `sprints/phase09_exam_and_assessment_platform/PHASE_09_TYT_AYT_BRIDGE_AND_REMAINING_SPRINTS_PLAN.md`
 
 ## 2. Strategic Learning OS Objective & User Value
 Assembles high-yield final review 48 hours prior to high-stakes exams. Suspends new concept acquisition and generates the **"Personal Formula & Trap Cheat Sheet" (`H-15` Astra AI Benchmark)**: an on-device 1-page printable or offline-ready digest pairing the student's top 10 recurring mistake counterexamples with high-yield formula proofs (`PDFKit` on-device rendering).
 
 ## 3. Entry Gate & Preconditions
-- `ADR-011` `GO` decision recorded; `Sprints 9.1–9.7` accepted.
+- `Sprints 9.1–9.6`, `9.6B (V060)`, and `9.7 (V061)` accepted (`LOCAL_ACCEPTANCE_PASSED`).
 
 ## 4. Domain Invariants & Rules
 1. **Panic Inhibition Rule:** In pre-exam mode (countdown $\le 48\text{ hr}$), new unpracticed advanced skills are blocked from the review queue; the engine serves only high-weight familiar skills ($M \ge 0.50$) with active trap repair.
@@ -420,8 +420,9 @@ Assembles high-yield final review 48 hours prior to high-stakes exams. Suspends 
 ## 6. Python Math Verifier Impact
 - Validates formula proofs in cheat sheets against SymPy canonical ASTs.
 
-## 7. Database Migration & Persistence Contract
-- **Tables:** `pre_exam_study_sessions` (`id`, `user_id`, `exam_code`, `hours_remaining`, `cheat_sheet_generated`, `created_at`).
+## 7. Database Migration & Persistence Contract (`PLANNED V062`)
+- **Migration File:** `services/api/src/main/resources/db/migration/platform/V062__sprint_9_8_pre_exam_review_sessions.sql`
+- **Tables:** `pre_exam_study_sessions` (`session_id`, `user_id`, `exam_code`, `hours_remaining`, `panic_inhibition_active`, `selected_skills_json`, `top_traps_json`, `cheat_sheet_generated`, `training_eligible = FALSE`, `llm_tokens_used = 0`, `created_at`).
 
 ## 8. REST API Contracts
 - `GET /v1/exams/pre-exam-review/{examCode}`, `GET /v1/exams/cheat-sheet/{examCode}` (`cheat-sheet-v1`).

@@ -2457,3 +2457,280 @@ public struct ExamScoreRegradeAuditListResponse: Sendable, Codable, Equatable {
         self.trainingEligible = trainingEligible
     }
 }
+
+// MARK: - Sprint 9.6 Exam Readiness Model, 90% Credible Interval & Active-Trap Penalty
+
+public enum ExamReadinessConfidenceTier: String, Sendable, Codable, CaseIterable, Equatable, Hashable, Identifiable {
+    case preliminary = "PRELIMINARY"
+    case calibrating = "CALIBRATING"
+    case established = "ESTABLISHED"
+    case highConfidence = "HIGH_CONFIDENCE"
+
+    public var id: String { rawValue }
+
+    public var localizationKey: String {
+        switch self {
+        case .preliminary:
+            "exam.readiness.tier.preliminary"
+        case .calibrating:
+            "exam.readiness.tier.calibrating"
+        case .established:
+            "exam.readiness.tier.established"
+        case .highConfidence:
+            "exam.readiness.tier.high_confidence"
+        }
+    }
+}
+
+public enum ExamReadinessRationaleCode: String, Sendable, Codable, CaseIterable, Equatable, Hashable, Identifiable {
+    case highBlueprintWeightLowMastery = "HIGH_BLUEPRINT_WEIGHT_LOW_MASTERY"
+    case retentionDecayRecovery = "RETENTION_DECAY_RECOVERY"
+    case activeTrapMitigation = "ACTIVE_TRAP_MITIGATION"
+    case calibrationEvidenceGap = "CALIBRATION_EVIDENCE_GAP"
+
+    public var id: String { rawValue }
+
+    public var localizationKey: String {
+        switch self {
+        case .highBlueprintWeightLowMastery:
+            "exam.readiness.rationale.high_blueprint_weight_low_mastery"
+        case .retentionDecayRecovery:
+            "exam.readiness.rationale.retention_decay_recovery"
+        case .activeTrapMitigation:
+            "exam.readiness.rationale.active_trap_mitigation"
+        case .calibrationEvidenceGap:
+            "exam.readiness.rationale.calibration_evidence_gap"
+        }
+    }
+}
+
+public struct ActiveTrapImpactItem: Sendable, Codable, Equatable, Identifiable {
+    public var id: String { trapFamilyCode }
+    public let trapFamilyCode: String
+    public let trapTitleKey: String
+    public let posteriorRate: Double
+    public let estimatedNetLoss: Double
+    public let affectedSkillCount: Int
+
+    public init(
+        trapFamilyCode: String,
+        trapTitleKey: String,
+        posteriorRate: Double,
+        estimatedNetLoss: Double,
+        affectedSkillCount: Int
+    ) {
+        self.trapFamilyCode = trapFamilyCode
+        self.trapTitleKey = trapTitleKey
+        self.posteriorRate = posteriorRate
+        self.estimatedNetLoss = estimatedNetLoss
+        self.affectedSkillCount = affectedSkillCount
+    }
+}
+
+public struct SectionReadinessBreakdown: Sendable, Codable, Equatable, Identifiable {
+    public var id: String { sectionCode }
+    public let sectionCode: String
+    public let sectionTitleKey: String
+    public let questionCount: Int
+    public let estimatedNetLow: Double
+    public let estimatedNetMid: Double
+    public let estimatedNetHigh: Double
+    public let meanMastery: Double
+    public let meanRetention: Double
+    public let epistemicConfidence: Double
+
+    public init(
+        sectionCode: String,
+        sectionTitleKey: String,
+        questionCount: Int,
+        estimatedNetLow: Double,
+        estimatedNetMid: Double,
+        estimatedNetHigh: Double,
+        meanMastery: Double,
+        meanRetention: Double,
+        epistemicConfidence: Double
+    ) {
+        self.sectionCode = sectionCode
+        self.sectionTitleKey = sectionTitleKey
+        self.questionCount = questionCount
+        self.estimatedNetLow = estimatedNetLow
+        self.estimatedNetMid = estimatedNetMid
+        self.estimatedNetHigh = estimatedNetHigh
+        self.meanMastery = meanMastery
+        self.meanRetention = meanRetention
+        self.epistemicConfidence = epistemicConfidence
+    }
+}
+
+public struct ExamReadinessTopicAllocation: Sendable, Codable, Equatable, Identifiable {
+    public var id: UUID { allocationId }
+    public let allocationId: UUID
+    public let sectionCode: String
+    public let skillCode: String
+    public let topicTitleKey: String
+    public let blueprintQuestionWeight: Double
+    public let currentMastery: Double
+    public let retentionProbability: Double
+    public let expectedNetGainPerHour: Double
+    public let recommendedStudyMinutes: Int
+    public let priorityRank: Int
+    public let rationaleCode: ExamReadinessRationaleCode
+    public let trainingEligible: Bool
+
+    public init(
+        allocationId: UUID,
+        sectionCode: String,
+        skillCode: String,
+        topicTitleKey: String,
+        blueprintQuestionWeight: Double,
+        currentMastery: Double,
+        retentionProbability: Double,
+        expectedNetGainPerHour: Double,
+        recommendedStudyMinutes: Int,
+        priorityRank: Int,
+        rationaleCode: ExamReadinessRationaleCode,
+        trainingEligible: Bool = false
+    ) {
+        self.allocationId = allocationId
+        self.sectionCode = sectionCode
+        self.skillCode = skillCode
+        self.topicTitleKey = topicTitleKey
+        self.blueprintQuestionWeight = blueprintQuestionWeight
+        self.currentMastery = currentMastery
+        self.retentionProbability = retentionProbability
+        self.expectedNetGainPerHour = expectedNetGainPerHour
+        self.recommendedStudyMinutes = recommendedStudyMinutes
+        self.priorityRank = priorityRank
+        self.rationaleCode = rationaleCode
+        self.trainingEligible = trainingEligible
+    }
+}
+
+public struct ExamReadinessProjection: Sendable, Codable, Equatable, Identifiable {
+    public var id: UUID { projectionId }
+    public let projectionId: UUID
+    public let userId: UUID
+    public let examCode: String
+    public let targetId: UUID?
+    public let latestScoredSessionId: UUID?
+    public let totalQuestionCount: Int
+    public let wrongAnswerPenaltyRatio: Double
+    public let estimatedNetLow: Double
+    public let estimatedNetMid: Double
+    public let estimatedNetHigh: Double
+    public let credibleIntervalLevel: Double
+    public let targetNetScore: Double?
+    public let netGapToTarget: Double?
+    public let netLostToTraps: Double
+    public let pacingFactor: Double
+    public let meanRetentionProbability: Double
+    public let epistemicConfidence: Double
+    public let confidenceTier: ExamReadinessConfidenceTier
+    public let calibrationRequired: Bool
+    public let recommendedDiagnosticQuestionCount: Int
+    public let evaluatedSkillCount: Int
+    public let totalEvidenceCount: Int
+    public let completedMockCount: Int
+    public let activeTrapBreakdown: [ActiveTrapImpactItem]
+    public let sectionReadiness: [SectionReadinessBreakdown]
+    public let topRoiAllocations: [ExamReadinessTopicAllocation]
+    public let methodologyVersion: String
+    public let trainingEligible: Bool
+    public let llmTokensUsed: Int
+    public let inferenceCostUsd: Double
+    public let computedAt: String
+
+    public init(
+        projectionId: UUID,
+        userId: UUID,
+        examCode: String,
+        targetId: UUID? = nil,
+        latestScoredSessionId: UUID? = nil,
+        totalQuestionCount: Int,
+        wrongAnswerPenaltyRatio: Double,
+        estimatedNetLow: Double,
+        estimatedNetMid: Double,
+        estimatedNetHigh: Double,
+        credibleIntervalLevel: Double = 0.90,
+        targetNetScore: Double? = nil,
+        netGapToTarget: Double? = nil,
+        netLostToTraps: Double,
+        pacingFactor: Double,
+        meanRetentionProbability: Double,
+        epistemicConfidence: Double,
+        confidenceTier: ExamReadinessConfidenceTier,
+        calibrationRequired: Bool,
+        recommendedDiagnosticQuestionCount: Int,
+        evaluatedSkillCount: Int,
+        totalEvidenceCount: Int,
+        completedMockCount: Int,
+        activeTrapBreakdown: [ActiveTrapImpactItem],
+        sectionReadiness: [SectionReadinessBreakdown],
+        topRoiAllocations: [ExamReadinessTopicAllocation],
+        methodologyVersion: String = "EXAM_READINESS_V1",
+        trainingEligible: Bool = false,
+        llmTokensUsed: Int = 0,
+        inferenceCostUsd: Double = 0.0,
+        computedAt: String
+    ) {
+        self.projectionId = projectionId
+        self.userId = userId
+        self.examCode = examCode
+        self.targetId = targetId
+        self.latestScoredSessionId = latestScoredSessionId
+        self.totalQuestionCount = totalQuestionCount
+        self.wrongAnswerPenaltyRatio = wrongAnswerPenaltyRatio
+        self.estimatedNetLow = estimatedNetLow
+        self.estimatedNetMid = estimatedNetMid
+        self.estimatedNetHigh = estimatedNetHigh
+        self.credibleIntervalLevel = credibleIntervalLevel
+        self.targetNetScore = targetNetScore
+        self.netGapToTarget = netGapToTarget
+        self.netLostToTraps = netLostToTraps
+        self.pacingFactor = pacingFactor
+        self.meanRetentionProbability = meanRetentionProbability
+        self.epistemicConfidence = epistemicConfidence
+        self.confidenceTier = confidenceTier
+        self.calibrationRequired = calibrationRequired
+        self.recommendedDiagnosticQuestionCount = recommendedDiagnosticQuestionCount
+        self.evaluatedSkillCount = evaluatedSkillCount
+        self.totalEvidenceCount = totalEvidenceCount
+        self.completedMockCount = completedMockCount
+        self.activeTrapBreakdown = activeTrapBreakdown
+        self.sectionReadiness = sectionReadiness
+        self.topRoiAllocations = topRoiAllocations
+        self.methodologyVersion = methodologyVersion
+        self.trainingEligible = trainingEligible
+        self.llmTokensUsed = llmTokensUsed
+        self.inferenceCostUsd = inferenceCostUsd
+        self.computedAt = computedAt
+    }
+
+    public var credibleIntervalWidth: Double {
+        ((estimatedNetHigh - estimatedNetLow) * 100.0).rounded() / 100.0
+    }
+
+    public var satisfiesIntervalOrderInvariant: Bool {
+        estimatedNetLow <= estimatedNetMid && estimatedNetMid <= estimatedNetHigh
+    }
+
+    public var isPreliminaryGuardActive: Bool {
+        epistemicConfidence < 0.25 && confidenceTier == .preliminary && calibrationRequired
+    }
+}
+
+public struct ExamReadinessRecomputeRequest: Sendable, Codable, Equatable {
+    public let examCode: String
+    public let userId: UUID?
+    public let trainingEligible: Bool
+
+    public init(
+        examCode: String,
+        userId: UUID? = nil,
+        trainingEligible: Bool = false
+    ) {
+        self.examCode = examCode
+        self.userId = userId
+        self.trainingEligible = trainingEligible
+    }
+}

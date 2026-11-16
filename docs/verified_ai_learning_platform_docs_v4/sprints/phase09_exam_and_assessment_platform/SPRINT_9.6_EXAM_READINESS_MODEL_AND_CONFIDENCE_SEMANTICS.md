@@ -402,7 +402,7 @@ Codex must implement this sprint in small reviewable slices, re-reading the high
 ## 1. Sprint Metadata & Status
 - **Sprint ID:** `SPRINT_9.6`
 - **Canonical Title:** Exam Readiness Model, 90% Credible-Interval Net Projection ($\widehat{\text{Net}}_{u,E}$), and Active-Trap Penalty Semantics
-- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011)`
+- **Status:** `IMPLEMENTED & VERIFIED` (Sprint 9.6 Complete; Feature-Flagged behind `verifiedai.exam.readiness-enabled`, ADR-011)
 - **Primary Spec Reference:** `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md` (Quantity 5) & `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md` (Screen 9)
 
 ## 2. Strategic Learning OS Objective & User Value
@@ -420,38 +420,41 @@ Computes the learner's **Projected Exam Net Score Interval ($[\text{Net}_{\text{
 3. **Sparse Evidence Guard:** When mean epistemic confidence $\bar{C}_{u,E} < 0.25$, `confidenceTier = 'PRELIMINARY'` and the UI prompts a 10-question diagnostic rather than claiming narrow net precision.
 
 ## 5. Owning Spring Modulith Backend Modules & Classes
-- `com.verifiedai.exam`: `ExamReadinessProjectionService.java`, `ExamReadinessProjection.java`, `ExamReadinessController.java`.
+- `com.verifiedai.exam`: `ExamReadinessCalculator`, `ExamReadinessProjection`, `ExamReadinessConfidenceTier`, `ExamReadinessRationaleCode`, `ActiveTrapImpactItem`, `SectionReadinessBreakdown`, `ExamReadinessTopicAllocation`, `ExamReadinessRepository`, `ExamReadinessSignalReader`, `ExamReadinessProjectionService`, `JdbcExamReadinessRepository`, `ExamReadinessController`, `ExamReadinessResponse`, `ExamReadinessComputedEvent`, `ExamProperties`.
 
 ## 6. Python Math Verifier Impact
 - None (`100%` deterministic psychometric calculation in Java).
 
-## 7. Database Migration & Persistence Contract (`PLANNED V059`)
-- **Migration File:** `services/api/src/main/resources/db/migration/platform/V059__exam_readiness_projections.sql` *(PLANNED; builds on `V054`)*
-- **Table:** `exam_readiness_projections` (`id`, `user_id`, `exam_code`, `exam_version`, `estimated_net_low`, `estimated_net_mid`, `estimated_net_high`, `net_lost_to_traps`, `epistemic_confidence`, `confidence_tier`, `high_roi_allocations_json`, `computed_at`).
+## 7. Database Migration & Persistence Contract (`IMPLEMENTED V059`)
+- **Migration File:** `services/api/src/main/resources/db/migration/platform/V059__sprint_9_6_exam_readiness_projections.sql` *(builds on `V002`, `V054`, `V057`)*
+- **Tables:**
+  - `exam_readiness_projections` (`projection_id`, `user_id`, `exam_code`, `target_id`, `latest_scored_session_id`, `total_question_count`, `wrong_answer_penalty_ratio`, `estimated_net_low`, `estimated_net_mid`, `estimated_net_high`, `credible_interval_level = 0.90`, `target_net_score`, `net_gap_to_target`, `net_lost_to_traps`, `pacing_factor`, `mean_retention_probability`, `epistemic_confidence`, `confidence_tier`, `calibration_required`, `recommended_diagnostic_question_count`, `evaluated_skill_count`, `total_evidence_count`, `completed_mock_count`, `active_trap_breakdown_json`, `section_readiness_json`, `top_roi_allocations_json`, `methodology_version`, `training_eligible = FALSE`, `llm_tokens_used = 0`, `inference_cost_usd = 0.000000`, `computed_at`)
+  - `exam_readiness_topic_allocations` (`allocation_id`, `projection_id`, `user_id`, `exam_code`, `section_code`, `skill_code`, `topic_title_key`, `blueprint_question_weight`, `current_mastery`, `retention_probability`, `expected_net_gain_per_hour`, `recommended_study_minutes`, `priority_rank`, `rationale_code`, `training_eligible = FALSE`)
 
 ## 8. REST API Contracts (`CNT-LOS-11`)
-- `GET /v1/exams/readiness?examCode={TR_YKS_TYT_MATH|TR_YKS_AYT_MATH|...}` (`exam-readiness-v1`).
+- `GET /v1/exams/readiness?examCode={TR_YKS_TYT_MATH|TR_YKS_AYT_MATH|YKS_TYT|...}[&recompute=false]` & `/api/v1/exams/readiness` (`exam-readiness-projection.schema.json`)
+- `POST /v1/exams/readiness/recompute` & `/api/v1/exams/readiness/recompute` (`exam-readiness-recompute-request.schema.json`)
 
 ## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
-- Renders Screen 9 (`YKS / Exam Readiness & Net-Gain Simulator Hub`) in `apps/ios/VerifiedAI/Features/Exam/` and `Features/Home/`.
+- Renders Screen 9 (`YKS / Exam Readiness & Net-Gain Simulator Hub`) in `apps/ios/VerifiedAI/Features/Exam/Presentation/ExamReadinessHubView.swift` & `ExamReadinessViewModel.swift`, persisted offline in `ExamOfflineSQLiteStore` (`cached_exam_readiness_projections`) and navigable from `MainTabView` (`home.examReadiness.button`), `ExamCatalogAndTargetView` (`exam.hub.openReadinessButton`), and `ExamScoreSummaryView` (`exam.score.openReadinessButton`).
 
 ## 10. AI Capability & Unit Economics Guardrail
-- **`$0.00` LLM token cost.**
+- **`$0.00` LLM token cost (`llmTokensUsed = 0`, `inferenceCostUsd = 0.000000`, `trainingEligible = false`).**
 
 ## 11. Privacy, Safety & Compliance
-- Purged on account deletion via `ExamPrivacyLifecycleContributor`.
+- Exported (`examReadinessProjections`, `examReadinessTopicAllocations`) and purged child-first on account deletion via `ExamPrivacyLifecycleContributor` and `ExamOfflineSQLiteStore.purgeUserData(userId:)`.
 
 ## 12. Telemetry & Observability
-- Emits `exam_readiness_viewed` (`exam_code`, `confidence_tier`, `net_lost_to_traps`).
+- Publishes `ExamReadinessComputedEvent` (`exam::events`) and Micrometer metrics `verifiedai.exam.readiness.computed.total`, `verifiedai.exam.readiness.cache_hit.total`, `verifiedai.exam.readiness.bola.denied.total`, and `verifiedai.exam.readiness.latency`.
 
 ## 13. Feature Flags & Rollback Plan
-- `verifiedai.exam.readiness-enabled: false`.
+- `verifiedai.exam.readiness-enabled: ${VERIFIEDAI_EXAM_READINESS_ENABLED:false}` (`ApiErrorCode.EXAM_READINESS_DISABLED`, `403 FORBIDDEN`).
 
-## 14. Automated Test Matrix (Categories A–F)
-- Property-based tests verifying interval width narrows monotonically as `evidence_count` increases and `net_lost_to_traps` decreases when recurring mistakes are remediated.
+## 14. Automated Test Matrix (Categories A–E)
+- Backend Category A–C tests (`ExamReadinessCalculatorTest`, `V059MigrationSqlConsistencyTest`, `ExamReadinessMigrationAndRepositoryTest`, `ExamReadinessControllerWebMvcTest`, `ExamReadinessPrivacyLifecycleContributorTest`) and iOS Category D–E tests (`Sprint96ExamReadinessTests`, `ExamReadinessHubUITests`) verifying interval narrowing monotonicity, active-trap monotonicity, `PRELIMINARY` guard, PostgreSQL CHECK constraints, BOLA, and offline SQLite isolation.
 
 ## 15. Owner-Only Acceptance Command
-- `bash scripts/quality/sprint_9_6_owner_acceptance.sh --full`
+- `bash scripts/quality/sprint_9_6_owner_acceptance.sh --VerifyHost` (prints `LOCAL_ACCEPTANCE_PASSED`) — evidence in `SPRINT_9.6_EXECUTION_REPORT.md` & `SPRINT_9.6_FILE_MANIFEST.md`.
 
 ## 16. Explicit Non-Goals
 - Never uses an LLM prompt to guess or estimate exam scores.

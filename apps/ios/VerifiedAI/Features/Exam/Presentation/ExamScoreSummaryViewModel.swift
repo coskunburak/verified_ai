@@ -88,6 +88,16 @@ public final class ExamScoreSummaryViewModel: ObservableObject {
         !regradeAudits.isEmpty
     }
 
+    public func makeReadinessViewModel() -> ExamReadinessViewModel {
+        ExamReadinessViewModel(
+            userId: userId,
+            selectedExamCode: scoreSummary?.examCode ?? "TR_YKS_TYT_MATH",
+            highContrastMode: highContrastMode,
+            apiService: apiService,
+            offlineStore: offlineStore
+        )
+    }
+
     public func loadScoreSummary(computeIfMissing: Bool = true) async {
         isLoading = true
         errorMessage = nil

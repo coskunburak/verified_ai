@@ -388,21 +388,21 @@ Codex must implement this sprint in small reviewable slices, re-reading the high
 # Learning OS Production Implementation Specification v1 (`2026-11-07`)
 
 ## 1. Sprint Metadata & Status
-- **Sprint ID:** `SPRINT_9.10`
+- **Sprint ID:** `SPRINT_9.10` (**Option A — Wave 5 of 5 / Phase 9 Exit Gate**)
 - **Canonical Title:** Assessment Integrity, Tamper-Resistance, Mathematical VoiceOver Accessibility & Reliability (Phase 9 Exit Gate)
-- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011)`
-- **Primary Spec Reference:** `quality/91_LEARNING_OS_PRODUCT_LEARNING_AND_RELEASE_ACCEPTANCE_GATES.md` & `adr/ADR-010_NATIVE_2D_MATH_RENDERING_AND_STEP_DIFF_HIGHLIGHTING.md`
+- **Status:** `PLANNED_OPTION_A_WAVE_5` (`ADR-011` feature-flagged; depends on `SPRINT_9.9`)
+- **Primary Spec Reference:** `quality/91_LEARNING_OS_PRODUCT_LEARNING_AND_RELEASE_ACCEPTANCE_GATES.md`, `adr/ADR-010_NATIVE_2D_MATH_RENDERING_AND_STEP_DIFF_HIGHLIGHTING.md`, `sprints/phase09_exam_and_assessment_platform/PHASE_09_TYT_AYT_BRIDGE_AND_REMAINING_SPRINTS_PLAN.md`
 
 ## 2. Strategic Learning OS Objective & User Value
-Hardens the entire exam engine against accidental data loss, timer tampering, network severance, and unfair accessibility barriers. Implements cryptographic submission integrity, ensures complete VoiceOver spoken math compliance for visually impaired learners, and certifies Phase 09 exit criteria across all exam definitions, session runtimes, readiness models, and attribution reports.
+Hardens the entire exam engine against accidental data loss, timer tampering, network severance, and unfair accessibility barriers. Implements cryptographic submission integrity, ensures complete VoiceOver spoken math compliance for visually impaired learners across `V060` Turkish TYT/AYT expressions, and certifies Phase 09 exit criteria across all exam definitions, session runtimes, readiness models, and attribution reports.
 
 ## 3. Entry Gate & Preconditions
-- `ADR-011` `GO` decision recorded; `Sprints 9.1–9.9` accepted.
+- `Sprints 9.1–9.6`, `9.6B (V060)`, `9.7 (V061)`, `9.8 (V062)`, and `9.9 (V063)` accepted (`LOCAL_ACCEPTANCE_PASSED`).
 
 ## 4. Domain Invariants & Integrity Rules
 1. **Cryptographic Submission Integrity (`INV-EXAM-006`):** Final answer packets are signed with `HMAC-SHA256` using the user's ephemeral session token and server timestamp, preventing packet tampering, replay attacks, or intercepted option alterations.
-2. **Universal Spoken Math Accessibility (`ADR-010`):** Every mathematical formula in exam questions must render with native Dynamic Type (`xSmall` to `AX3`) and emit correct semantic VoiceOver speech strings in `tr-TR` (e.g., $\int_0^1 x^2 \, dx$ spoken as *"sıfırdan bire x kare d x integrali"*).
-3. **Phase 9 Exit Gate Certification:** Formally validates that `CNT-LOS-10` (Exam Sessions) and `CNT-LOS-11` (Readiness Projection) execute with $< 350\text{ms}$ SLA, zero P0/P1 defects, and full database migration integrity (`V054`–`V062`).
+2. **Universal Spoken Math Accessibility (`ADR-010`):** Every mathematical formula in exam questions (`V060` Turkish TYT/AYT included) must render with native Dynamic Type (`xSmall` to `AX3`) and emit correct semantic VoiceOver speech strings in `tr-TR` (e.g., $\int_0^1 x^2 \, dx$ spoken as *"sıfırdan bire x kare d x integrali"*).
+3. **Phase 9 Exit Gate Certification:** Formally validates that `CNT-LOS-10` (Exam Sessions) and `CNT-LOS-11` (Readiness Projection) execute with $< 350\text{ms}$ SLA, zero P0/P1 defects, and full database migration integrity (`V054`–`V064`).
 
 ## 5. Owning Spring Modulith Backend Modules & Classes
 - `com.verifiedai.exam`: `AssessmentIntegrityGuard.java`, `ExamQualityGateService.java`, `AdminExamQualityGateController.java`.
@@ -410,8 +410,9 @@ Hardens the entire exam engine against accidental data loss, timer tampering, ne
 ## 6. Python Math Verifier Impact
 - Validates that mathematical LaTeX representations render semantic spoken speech tokens without loss.
 
-## 7. Database Migration & Persistence Contract
-- **Tables:** `exam_integrity_audit_logs` (`id`, `session_id`, `event_type`, `signature_verified`, `created_at`).
+## 7. Database Migration & Persistence Contract (`PLANNED V064`)
+- **Migration File:** `services/api/src/main/resources/db/migration/platform/V064__sprint_9_10_exam_integrity_audit_logs.sql`
+- **Tables:** `exam_integrity_audit_logs` (`id`, `session_id`, `user_id`, `event_type`, `signature_verified`, `client_clock_skew_ms`, `payload_sha256`, `training_eligible = FALSE`, `created_at`).
 
 ## 8. REST API Contracts
 - `GET /v1/admin/exams/quality-gate` (`exam-quality-v1`).

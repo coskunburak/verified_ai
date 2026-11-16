@@ -399,16 +399,16 @@ Codex must implement this sprint in small reviewable slices, re-reading the high
 # Learning OS Production Implementation Specification v1 (`2026-11-07`)
 
 ## 1. Sprint Metadata & Status
-- **Sprint ID:** `SPRINT_9.9`
+- **Sprint ID:** `SPRINT_9.9` (**Option A — Wave 4 of 5**)
 - **Canonical Title:** Longitudinal Exam Progress Analytics, Topic-Level Pacing & Trap Remediation Correlation
-- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011)`
-- **Primary Spec Reference:** `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md` (Screen 9) & `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md`
+- **Status:** `PLANNED_OPTION_A_WAVE_4` (`ADR-011` feature-flagged; depends on `SPRINT_9.8`)
+- **Primary Spec Reference:** `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md` (Screen 9), `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md`, `sprints/phase09_exam_and_assessment_platform/PHASE_09_TYT_AYT_BRIDGE_AND_REMAINING_SPRINTS_PLAN.md`
 
 ## 2. Strategic Learning OS Objective & User Value
 Visualizes the learner's longitudinal net score growth across successive mock exams, breaking down performance by curriculum sub-topic, question-pacing speed, and section fatigue. Empirically proves product value by plotting net score gains directly alongside the elimination of recurring Mistake DNA traps.
 
 ## 3. Entry Gate & Preconditions
-- `ADR-011` `GO` decision recorded; `Sprints 9.1–9.8` accepted.
+- `Sprints 9.1–9.6`, `9.6B (V060)`, `9.7 (V061)`, and `9.8 (V062)` accepted (`LOCAL_ACCEPTANCE_PASSED`).
 
 ## 4. Domain Invariants & Analytics Rules
 1. **Longitudinal Score Trajectory (`INV-EXAM-005`):** Tracks moving averages of net scores across the last $N \le 20$ mock sessions, isolating genuine cognitive mastery gains from random test-variance fluctuations.
@@ -421,8 +421,9 @@ Visualizes the learner's longitudinal net score growth across successive mock ex
 ## 6. Python Math Verifier Impact
 - None (`100%` SQL/Java analytics aggregation).
 
-## 7. Database Migration & Persistence Contract
-- **Tables:** `exam_analytics_snapshots` (`id`, `user_id`, `exam_code`, `net_trend_json`, `pacing_stats_json`, `conquered_traps_count`, `as_of_date`).
+## 7. Database Migration & Persistence Contract (`PLANNED V063`)
+- **Migration File:** `services/api/src/main/resources/db/migration/platform/V063__sprint_9_9_exam_analytics_snapshots.sql`
+- **Tables:** `exam_analytics_snapshots` (`snapshot_id`, `user_id`, `exam_code`, `mock_count`, `net_trend_json`, `pacing_stats_json`, `trap_correlation_json`, `conquered_traps_count`, `as_of_date`, `training_eligible = FALSE`, `llm_tokens_used = 0`).
 
 ## 8. REST API Contracts
 - `GET /v1/analytics/exams/progress?examCode={code}` (`exam-analytics-v1`).
