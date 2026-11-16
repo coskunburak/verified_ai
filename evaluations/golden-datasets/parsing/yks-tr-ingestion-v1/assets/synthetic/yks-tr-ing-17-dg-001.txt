@@ -1,0 +1,2 @@
+Yandaki dairesel grafikte bir kütüphanedeki toplam $720$ kitabın türlere göre dağılımı gösterilmiştir. Roman kitaplarına ait merkez açı $150^\circ$, tarih kitaplarına ait merkez açı $90^\circ$ ve geri kalan kısım bilim kitaplarıdır. Buna göre kütüphanedeki bilim kitaplarının sayısı roman kitaplarının sayısından kaç eksiktir?
+A) $40$ B) $60$ C) $90$ D) $120$ E) $240$

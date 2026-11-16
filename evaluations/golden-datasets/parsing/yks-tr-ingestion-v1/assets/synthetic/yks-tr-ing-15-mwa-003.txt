@@ -1,0 +1,2 @@
+Bir annenin bugünkü yaşı, iki çocuğunun bugünkü yaşları toplamının $3$ katıdır. $6$ yıl sonra annenin yaşı, çocuklarının o günkü yaşları toplamının $2$ katından $4$ eksik olacağına göre, annenin bugünkü yaşı kaçtır?
+A) $36$ B) $39$ C) $42$ D) $45$ E) $48$

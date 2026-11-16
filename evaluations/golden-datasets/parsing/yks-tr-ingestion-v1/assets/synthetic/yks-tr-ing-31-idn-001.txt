@@ -1,0 +1,2 @@
+$x \in \left(\frac{\pi}{2}, \pi\right)$ ve $\sin x = \frac{5}{13}$ olduğuna göre, $\cos x + \tan x$ ifadesinin değeri kaçtır?
+A) $-\frac{209}{156}$ B) $-\frac{79}{156}$ C) $\frac{79}{156}$ D) $\frac{209}{156}$ E) $-\frac{17}{25}$

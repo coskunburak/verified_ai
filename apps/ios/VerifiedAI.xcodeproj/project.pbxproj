@@ -87,6 +87,7 @@
 		B96000000000000000000002 /* ExamReadinessHubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A96000000000000000000002 /* ExamReadinessHubView.swift */; };
 		B96000000000000000000003 /* Sprint96ExamReadinessTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A96000000000000000000003 /* Sprint96ExamReadinessTests.swift */; };
 		B96000000000000000000004 /* ExamReadinessHubUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A96000000000000000000004 /* ExamReadinessHubUITests.swift */; };
+		B96B00000000000000000001 /* ExamTurkishYksAccessibilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A96B00000000000000000001 /* ExamTurkishYksAccessibilityTests.swift */; };
 		B89500000000000000000001 /* DailyCoachSQLiteCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000001 /* DailyCoachSQLiteCache.swift */; };
 		B89500000000000000000002 /* RebalanceSQLiteCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000002 /* RebalanceSQLiteCache.swift */; };
 		B89500000000000000000003 /* CoachHubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000003 /* CoachHubView.swift */; };
@@ -376,6 +377,7 @@
 		A96000000000000000000002 /* ExamReadinessHubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Exam/Presentation/ExamReadinessHubView.swift; sourceTree = SOURCE_ROOT; };
 		A96000000000000000000003 /* Sprint96ExamReadinessTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Exam/Sprint96ExamReadinessTests.swift; sourceTree = SOURCE_ROOT; };
 		A96000000000000000000004 /* ExamReadinessHubUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAIUITests/ExamReadinessHubUITests.swift; sourceTree = SOURCE_ROOT; };
+		A96B00000000000000000001 /* ExamTurkishYksAccessibilityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Exam/ExamTurkishYksAccessibilityTests.swift; sourceTree = SOURCE_ROOT; };
 		A89500000000000000000001 /* DailyCoachSQLiteCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Home/Data/DailyCoachSQLiteCache.swift; sourceTree = SOURCE_ROOT; };
 		A89500000000000000000002 /* RebalanceSQLiteCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Home/Data/RebalanceSQLiteCache.swift; sourceTree = SOURCE_ROOT; };
 		A89500000000000000000003 /* CoachHubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Home/Presentation/CoachHubView.swift; sourceTree = SOURCE_ROOT; };
@@ -1263,6 +1265,7 @@
 				A96000000000000000000001 /* ExamReadinessViewModel.swift */,
 				A96000000000000000000002 /* ExamReadinessHubView.swift */,
 				A96000000000000000000003 /* Sprint96ExamReadinessTests.swift */,
+				A96B00000000000000000001 /* ExamTurkishYksAccessibilityTests.swift */,
 				A89500000000000000000001 /* DailyCoachSQLiteCache.swift */,
 				A89500000000000000000002 /* RebalanceSQLiteCache.swift */,
 				A89500000000000000000003 /* CoachHubView.swift */,
@@ -1714,6 +1717,7 @@
 				B94100000000000000000004 /* ExamSessionSQLiteStoreTests.swift in Sources */,
 				B95000000000000000000003 /* Sprint95ExamScoringAndEvidenceTests.swift in Sources */,
 				B96000000000000000000003 /* Sprint96ExamReadinessTests.swift in Sources */,
+				B96B00000000000000000001 /* ExamTurkishYksAccessibilityTests.swift in Sources */,
 				B89600000000000000000001 /* Sprint82PracticeTests.swift in Sources */,
 				B89600000000000000000002 /* Sprint83SpacedRepetitionTests.swift in Sources */,
 				B89600000000000000000003 /* Sprint84CoachHubTests.swift in Sources */,

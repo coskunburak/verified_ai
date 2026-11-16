@@ -69,7 +69,7 @@ class ExamMigrationV055IntegrationTest extends PostgresIntegrationTestSupport {
                 new CandidateProfileUpsertRequest(
                         "candidate-profile-request-v1",
                         "TR_YKS_TYT_MATH",
-                        "2026.1",
+                        "2026.2",
                         new BigDecimal("35.00"),
                         LocalDate.now().plusDays(120),
                         60,
@@ -88,7 +88,7 @@ class ExamMigrationV055IntegrationTest extends PostgresIntegrationTestSupport {
 
         byte[] ambiguousPdf = "%PDF-1.4\nAMBIGUOUS_SYLLABUS\n".getBytes(StandardCharsets.UTF_8);
         IngestResult ingested = syllabusIngestionService.ingestSyllabus(
-                userId, "TR_YKS_TYT_MATH", "2026.1", ambiguousPdf, "application/pdf", "ambiguous.pdf", "pg-ing-key-1"
+                userId, "TR_YKS_TYT_MATH", "2026.2", ambiguousPdf, "application/pdf", "ambiguous.pdf", "pg-ing-key-1"
         );
         assertTrue(ingested.created());
         assertEquals(SyllabusUploadStatus.NEEDS_DISAMBIGUATION, ingested.response().status());

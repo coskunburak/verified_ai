@@ -1,0 +1,2 @@
+Aralarında $450\text{ km}$ mesafe bulunan iki şehirden aynı anda birbirine doğru sabit $70\text{ km/sa}$ ve $80\text{ km/sa}$ hızlarla iki araç hareket ediyor. Bu iki araç kaç saat sonra karşılaşır?
+A) $2.5$ B) $3$ C) $4$ D) $5.625$ E) $45$

@@ -1,0 +1,2 @@
+Bir elektronik mağazasında etiket fiyatı üzerinden $\%20$ indirimle satılan bir kulaklığa, kasada indirimli fiyat üzerinden ayrıca $\%10$ ek indirim uygulanmaktadır. Kulaklığı kasada $720\text{ TL}$ ödeyerek alan bir müşteri, etiket fiyatı üzerinden toplam kaç TL indirim kazanmıştır?
+A) $216$ B) $280$ C) $300$ D) $308$ E) $1000$

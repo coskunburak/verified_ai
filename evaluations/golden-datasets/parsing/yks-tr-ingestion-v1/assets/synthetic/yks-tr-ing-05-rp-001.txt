@@ -1,0 +1,2 @@
+Bir fırında hazırlanan kurabiye hamurunda un, şeker ve tereyağı kütleleri sırasıyla $5$, $2$ ve $3$ sayılarıyla doğru orantılıdır. Toplam $1200\text{ gram}$ hamur hazırlandığında kullanılan un miktarı tereyağı miktarından kaç gram fazladır?
+A) $120$ B) $240$ C) $360$ D) $400$ E) $600$

@@ -1,0 +1,2 @@
+Bir yazılım geliştirme işini Ahmet tek başına $12$ günde, Burak tek başına $18$ günde tamamlayabilmektedir. İkisi birlikte $4$ gün çalıştıktan sonra Ahmet işten ayrılıyor ve kalan işi Burak tek başına tamamlıyor. Buna göre tüm iş toplam kaç günde bitmiştir?
+A) $8$ B) $10$ C) $12$ D) $14$ E) $18$

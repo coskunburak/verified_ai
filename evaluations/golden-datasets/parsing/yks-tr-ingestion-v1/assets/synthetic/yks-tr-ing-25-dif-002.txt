@@ -1,0 +1,2 @@
+$f(x) = (x^2 + 1)(2x - 3)$ fonksiyonu için $f'(2)$ değeri kaçtır?
+A) $4$ B) $8$ C) $10$ D) $14$ E) $18$

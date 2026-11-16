@@ -1,0 +1,2 @@
+Bir manav kasası $200\text{ TL}$'den aldığı $25\text{ kg}$ domatesin taşımada $5\text{ kg}$'ının ezilip çürüdüğünü fark ediyor. Manavın bu satıştan toplam $\%20$ kâr elde edebilmesi için sağlam domateslerin kilogramını kaç TL'den satması gerekir?
+A) $9.6$ B) $10$ C) $12$ D) $14$ E) $15$

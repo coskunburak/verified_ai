@@ -111,7 +111,7 @@ class ExamMigrationV056IntegrationTest extends PostgresIntegrationTestSupport {
                 new CandidateProfileUpsertRequest(
                         "candidate-profile-request-v1",
                         "TR_YKS_TYT_MATH",
-                        "2026.1",
+                        "2026.2",
                         new BigDecimal("35.00"),
                         LocalDate.now().plusDays(90),
                         60,

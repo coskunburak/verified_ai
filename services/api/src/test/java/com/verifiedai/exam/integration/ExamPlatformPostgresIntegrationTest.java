@@ -72,9 +72,9 @@ class ExamPlatformPostgresIntegrationTest extends PostgresIntegrationTestSupport
     }
 
     @Test
-    void seededV054BlueprintsConserveWeightsVerifyHashesAndValidateAgainstCurriculumCatalog() {
+    void seededV054AndV060BlueprintsConserveWeightsVerifyHashesAndValidateAgainstCurriculumCatalog() {
         List<ExamDefinition> allDefinitions = examRepository.findCatalog(null, null, true);
-        assertEquals(6, allDefinitions.size());
+        assertEquals(8, allDefinitions.size());
 
         for (ExamDefinition def : allDefinitions) {
             blueprintValidator.validateBlueprint(def);
@@ -108,13 +108,13 @@ class ExamPlatformPostgresIntegrationTest extends PostgresIntegrationTestSupport
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.definitions", hasSize(3)));
 
-        // 4. Fetch active TYT detail + blueprint hash
+        // 4. Fetch active TYT detail + blueprint hash (2026.2 after V060)
         String tytJson = mockMvc.perform(get("/v1/exams/definitions/TR_YKS_TYT_MATH")
                         .with(authentication(authFor(USER_A))))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.examVersion").value("2026.1"))
+                .andExpect(jsonPath("$.examVersion").value("2026.2"))
                 .andExpect(jsonPath("$.totalQuestions").value(40))
-                .andExpect(jsonPath("$.topicWeights", hasSize(13)))
+                .andExpect(jsonPath("$.topicWeights", hasSize(22)))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -125,7 +125,7 @@ class ExamPlatformPostgresIntegrationTest extends PostgresIntegrationTestSupport
                 {
                   "schemaVersion": "student-exam-target-request-v1",
                   "examCode": "TR_YKS_TYT_MATH",
-                  "examVersion": "2026.1",
+                  "examVersion": "2026.2",
                   "expectedBlueprintHash": "%s",
                   "targetScore": 36.25,
                   "targetDate": "2027-06-20",

@@ -1,0 +1,2 @@
+Bir kırtasiyeci aldığı $50$ adet defterin $30$ tanesini $\%40$ kârla, kalan $20$ tanesini ise $\%10$ zararla satmıştır. Kırtasiyecinin tüm satıştan elde ettiği toplam kâr oranı yüzde kaçtır?
+A) $15$ B) $20$ C) $24$ D) $25$ E) $30$

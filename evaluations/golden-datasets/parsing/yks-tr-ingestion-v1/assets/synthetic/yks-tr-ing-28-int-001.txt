@@ -1,0 +1,2 @@
+$\int_0^2 (3x^2 + 2x + 1)\,dx$ belirli integralinin değeri kaçtır?
+A) $10$ B) $12$ C) $14$ D) $17$ E) $24$

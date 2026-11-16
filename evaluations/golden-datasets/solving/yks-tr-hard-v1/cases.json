@@ -1,0 +1,2705 @@
+[
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "ayt-tr-hard-01",
+    "revision": 1,
+    "family": "polinom-bolunme-kalan",
+    "partition": "REGRESSION",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "ALGEBRA",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "STANDARD",
+    "canonicalSupport": "SUPPORTED",
+    "input": "$P(x) = x^3 - 4x^2 + ax + 6$ polinomunun $(x - 2)$ ile bölümünden kalan $10$ olduğuna göre, $P(x)$ polinomunun $(x + 1)$ ile bölümünden kalan kaçtır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "YKS_AYT_CORE",
+      "STANDARD",
+      "PARTITION_REGRESSION"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "-5",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: P(2) = 10 \\implies a = ?,\\; P(-1) = ?",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "$P(2) = 8 - 16 + 2a + 6 = 10 \\Rightarrow 2a - 2 = 10 \\Rightarrow a = 6$. Buradan $P(-1) = -1 - 4 - 6 + 6 = -5$ bulunur.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "ayt-tr-hard-02",
+    "revision": 1,
+    "family": "polinom-carpan-kurgu",
+    "partition": "HARD_TAIL",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "ALGEBRA",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "HARD_TAIL",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Başkatsayısı $2$ olan üçüncü dereceden bir $P(x)$ polinomu $(x - 1)$, $(x - 2)$ ve $(x + 1)$ ile tam bölünebilmektedir. Buna göre $P(3)$ değeri kaçtır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "YKS_AYT_CORE",
+      "HARD_TAIL",
+      "PARTITION_HARD_TAIL"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "16",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: P(x) = 2(x - 1)(x - 2)(x + 1),\\; P(3) = ?",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "$P(x) = 2(x-1)(x-2)(x+1)$ biçimindedir. $x = 3$ için $P(3) = 2 \\cdot 2 \\cdot 1 \\cdot 4 = 16$ bulunur.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "ayt-tr-hard-03",
+    "revision": 1,
+    "family": "ikinci-derece-kok-katsayi",
+    "partition": "HARD_TAIL",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "ALGEBRA",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "HARD_TAIL",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Başkatsayısı $1$ olan ikinci dereceden $P(x)$ polinomu için $P(1) = P(4) = 5$ eşitliği sağlanmaktadır. Buna göre $P(6)$ değeri kaçtır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "YKS_AYT_CORE",
+      "HARD_TAIL",
+      "PARTITION_HARD_TAIL"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "15",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: P(x) = (x - 1)(x - 4) + 5,\\; P(6) = ?",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "$P(x) - 5$ polinomunun kökleri $1$ ve $4$ olduğundan $P(x) = (x-1)(x-4) + 5$. Buradan $P(6) = 5 \\cdot 2 + 5 = 15$ olur.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "ayt-tr-hard-04",
+    "revision": 1,
+    "family": "karmasik-bolme",
+    "partition": "REGRESSION",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "ALGEBRA",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "STANDARD",
+    "canonicalSupport": "SUPPORTED",
+    "input": "$i^2 = -1$ olmak üzere, $z = \\frac{4 + 2i}{1 - i}$ karmaşık sayısının sanal (imajiner) kısmı ile gerçel (reel) kısmının toplamı kaçtır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "YKS_AYT_CORE",
+      "STANDARD",
+      "PARTITION_REGRESSION"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "4",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: \\text{Re}\\left(\\frac{4 + 2i}{1 - i}\\right) + \\text{Im}\\left(\\frac{4 + 2i}{1 - i}\\right)",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "Paydayı eşleniği $(1+i)$ ile çarparsak $\\frac{(4+2i)(1+i)}{1 - i^2} = \\frac{4 + 4i + 2i + 2i^2}{2} = \\frac{2 + 6i}{2} = 1 + 3i$. $\\text{Re}(z) + \\text{Im}(z) = 1 + 3 = 4$ olur.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "ayt-tr-hard-05",
+    "revision": 1,
+    "family": "i-kuvvetleri-toplam",
+    "partition": "REGRESSION",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "ALGEBRA",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "STANDARD",
+    "canonicalSupport": "SUPPORTED",
+    "input": "$i^2 = -1$ olmak üzere, $(1 + i)^6 - (1 - i)^6$ işleminin sonucu aşağıdakilerden hangisidir?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "YKS_AYT_CORE",
+      "STANDARD",
+      "PARTITION_REGRESSION"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "-16*i",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: (1 + i)^6 - (1 - i)^6",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "$(1+i)^2 = 2i \\Rightarrow (1+i)^6 = (2i)^3 = -8i$. Benzer şekilde $(1-i)^2 = -2i \\Rightarrow (1-i)^6 = (-2i)^3 = +8i$. Fark $-8i - 8i = -16i$ olur.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "ayt-tr-hard-06",
+    "revision": 1,
+    "family": "logaritma-tanim-kumesi-tuzak",
+    "partition": "HARD_TAIL",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "ALGEBRA",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "HARD_TAIL",
+    "canonicalSupport": "SUPPORTED",
+    "input": "$\\log_2(x - 1) + \\log_2(x - 3) = 3$ denklemini sağlayan $x$ gerçel sayılarının toplamı kaçtır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "YKS_AYT_LOG",
+      "DOMAIN_TRAP",
+      "HARD_TAIL",
+      "PARTITION_HARD_TAIL"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "5",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: \\log_2((x-1)(x-3)) = 3,\\; x > 3",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "$(x-1)(x-3) = 2^3 = 8 \\Rightarrow x^2 - 4x - 5 = 0 \\Rightarrow (x-5)(x+1) = 0$. Ancak logaritma argümanları $x-1>0$ ve $x-3>0$ ($x > 3$) gerektirdiğinden $x = -1$ yalancı köktür. Tek kök $x = 5$'tir.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "ayt-tr-hard-07",
+    "revision": 1,
+    "family": "logaritma-taban-degisimi",
+    "partition": "REGRESSION",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "ALGEBRA",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "STANDARD",
+    "canonicalSupport": "SUPPORTED",
+    "input": "$\\log_3 5 \\cdot \\log_5 27 + \\ln(e^4)$ işleminin sonucu kaçtır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "YKS_AYT_LOG",
+      "STANDARD",
+      "PARTITION_REGRESSION"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "7",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: \\log_3 27 + 4",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "Taban değiştirme özelliği ile $\\log_3 5 \\cdot \\log_5 27 = \\log_3 27 = 3$. Ayrıca $\\ln(e^4) = 4$ olduğundan toplam $3 + 4 = 7$ olur.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "ayt-tr-hard-08",
+    "revision": 1,
+    "family": "ustel-log-denklem",
+    "partition": "HARD_TAIL",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "ALGEBRA",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "HARD_TAIL",
+    "canonicalSupport": "SUPPORTED",
+    "input": "$4^x - 6 \\cdot 2^x + 8 = 0$ denkleminin köklerinin toplamı kaçtır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "YKS_AYT_LOG",
+      "HARD_TAIL",
+      "PARTITION_HARD_TAIL"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "3",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: (2^x - 2)(2^x - 4) = 0",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "$u = 2^x$ dönüşümüyle $u^2 - 6u + 8 = 0 \\Rightarrow (u-2)(u-4)=0$. $2^x = 2 \\Rightarrow x_1 = 1$ ve $2^x = 4 \\Rightarrow x_2 = 2$. Kökler toplamı $1 + 2 = 3$'tür.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "ayt-tr-hard-09",
+    "revision": 1,
+    "family": "logaritma-esitsizlik-taban",
+    "partition": "HARD_TAIL",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "ALGEBRA",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "HARD_TAIL",
+    "canonicalSupport": "SUPPORTED",
+    "input": "$\\log_{1/2}(2x - 5) \\ge -2$ eşitsizliğini sağlayan kaç farklı $x$ tam sayısı vardır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "YKS_AYT_LOG",
+      "HARD_TAIL",
+      "PARTITION_HARD_TAIL"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "2",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: 0 < 2x - 5 \\le (1/2)^{-2} = 4",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "Taban $1/2 \\in (0, 1)$ olduğu için eşitsizlik yön değiştirir: $2x - 5 \\le (1/2)^{-2} = 4 \\Rightarrow x \\le 4{,}5$. Ayrıca tanım kümesi gereği $2x - 5 > 0 \\Rightarrow x > 2{,}5$. Dolayısıyla $2{,}5 < x \\le 4{,}5$ aralığındaki tam sayılar $3$ ve $4$ olmak üzere $2$ tanedir.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "ayt-tr-hard-10",
+    "revision": 1,
+    "family": "mutlak-deger-kok-kisiti",
+    "partition": "REGRESSION",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "ALGEBRA",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "STANDARD",
+    "canonicalSupport": "SUPPORTED",
+    "input": "$|x - 3| = 2x - 9$ denkleminin çözüm kümesindeki $x$ değeri kaçtır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "YKS_AYT_CORE",
+      "DOMAIN_TRAP",
+      "STANDARD",
+      "PARTITION_REGRESSION"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "6",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: |x - 3| = 2x - 9,\\; 2x - 9 \\ge 0",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "Sağ taraf $2x - 9 \\ge 0 \\Rightarrow x \\ge 4{,}5$ olmalıdır. $x - 3 = 2x - 9 \\Rightarrow x = 6$ ($\\ge 4{,}5$, geçerli). Diğer dal $-(x-3) = 2x - 9 \\Rightarrow 3x = 12 \\Rightarrow x = 4$ ($< 4{,}5$, yalancı kök). Tek çözüm $x = 6$'dır.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "ayt-tr-hard-11",
+    "revision": 1,
+    "family": "bileske-fonksiyon-denklem",
+    "partition": "REGRESSION",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "ALGEBRA",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "STANDARD",
+    "canonicalSupport": "SUPPORTED",
+    "input": "$f(x) = 2x - 3$ ve $g(x) = x^2 + 1$ fonksiyonları tanımlanıyor. Buna göre $(f \\circ g)(2) - (g \\circ f)(2)$ farkı kaçtır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "YKS_AYT_CORE",
+      "STANDARD",
+      "PARTITION_REGRESSION"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "5",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: f(g(2)) - g(f(2))",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "$g(2) = 5 \\Rightarrow f(g(2)) = f(5) = 7$. $f(2) = 1 \\Rightarrow g(f(2)) = g(1) = 2$. Fark $7 - 2 = 5$ olur.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "ayt-tr-hard-12",
+    "revision": 1,
+    "family": "ters-fonksiyon-rasyonel",
+    "partition": "HARD_TAIL",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "ALGEBRA",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "HARD_TAIL",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Uygun tanım kümesinde $f(x) = \\frac{3x + 2}{x - 4}$ fonksiyonunun tersi $f^{-1}(x)$ olduğuna göre, $f^{-1}(5)$ değeri kaçtır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "YKS_AYT_CORE",
+      "HARD_TAIL",
+      "PARTITION_HARD_TAIL"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "11",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: \\frac{3x + 2}{x - 4} = 5",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "$f^{-1}(5) = k \\iff f(k) = 5 \\Rightarrow \\frac{3k + 2}{k - 4} = 5 \\Rightarrow 3k + 2 = 5k - 20 \\Rightarrow 2k = 22 \\Rightarrow k = 11$.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "ayt-tr-hard-13",
+    "revision": 1,
+    "family": "aritmetik-dizi-terim",
+    "partition": "REGRESSION",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "SEQUENCES",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "STANDARD",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Bir $(a_n)$ aritmetik dizisinde $a_4 = 14$ ve $a_{10} = 38$ olduğuna göre, bu dizinin ilk terimi $a_1$ kaçtır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "YKS_AYT_CORE",
+      "STANDARD",
+      "PARTITION_REGRESSION"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "2",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: d = \\frac{38 - 14}{10 - 4},\\; a_1 = a_4 - 3d",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "Ortak fark $d = \\frac{38 - 14}{10 - 4} = \\frac{24}{6} = 4$ olur. $a_1 = a_4 - 3d = 14 - 12 = 2$ bulunur.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "ayt-tr-hard-14",
+    "revision": 1,
+    "family": "aritmetik-ilk-n-toplam",
+    "partition": "REGRESSION",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "SEQUENCES",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "STANDARD",
+    "canonicalSupport": "SUPPORTED",
+    "input": "İlk $n$ teriminin toplamı $S_n = 2n^2 + 3n$ olan bir $(a_n)$ aritmetik dizisinin $10.$ terimi $a_{10}$ kaçtır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "YKS_AYT_CORE",
+      "STANDARD",
+      "PARTITION_REGRESSION"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "41",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: a_{10} = S_{10} - S_9",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "$a_{10} = S_{10} - S_9 = (2\\cdot 100 + 30) - (2\\cdot 81 + 27) = 230 - 189 = 41$ bulunur.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "ayt-tr-hard-15",
+    "revision": 1,
+    "family": "trig-ozdeslik-bolge",
+    "partition": "REGRESSION",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "TRIGONOMETRY",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "STANDARD",
+    "canonicalSupport": "SUPPORTED",
+    "input": "$x \\in \\left(\\frac{\\pi}{2}, \\pi\\right)$ ve $\\sin x = \\frac{5}{13}$ olduğuna göre, $\\cos x + \\tan x$ ifadesinin değeri kaçtır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "YKS_AYT_TRIG",
+      "STANDARD",
+      "PARTITION_REGRESSION"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "-209/156",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: -\\frac{12}{13} - \\frac{5}{12}",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "$x$ ikinci bölgede olduğu için $\\cos x < 0$ ve $\\tan x < 0$'dır. $5-12-13$ dik üçgeninden $\\cos x = -\\frac{12}{13}$ ve $\\tan x = -\\frac{5}{12}$ olur. Toplam $-\\frac{12}{13} - \\frac{5}{12} = -\\frac{144 + 65}{156} = -\\frac{209}{156}$.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "ayt-tr-hard-16",
+    "revision": 1,
+    "family": "indirgeme-formulleri",
+    "partition": "REGRESSION",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "TRIGONOMETRY",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "STANDARD",
+    "canonicalSupport": "SUPPORTED",
+    "input": "$\\frac{\\sin(\\pi + x) \\cdot \\cos\\left(\\frac{\\pi}{2} - x\\right)}{\\tan(\\pi - x)}$ ifadesi sadeleştirildiğinde aşağıdakilerden hangisine eşittir? ($\\sin x \\neq 0, \\cos x \\neq 0$)",
+    "slices": [
+      "TR",
+      "TEXT",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "YKS_AYT_TRIG",
+      "STANDARD",
+      "PARTITION_REGRESSION"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "sin(x)*cos(x)",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: \\frac{(-\\sin x)(\\sin x)}{-\\tan x}",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "$\\sin(\\pi+x) = -\\sin x$, $\\cos(\\frac{\\pi}{2}-x) = \\sin x$ ve $\\tan(\\pi-x) = -\\tan x = -\\frac{\\sin x}{\\cos x}$. Oran $\\frac{-\\sin^2 x}{-\\sin x / \\cos x} = \\sin x \\cos x$ olur.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "ayt-tr-hard-17",
+    "revision": 1,
+    "family": "trig-ozdeslik-kare",
+    "partition": "HARD_TAIL",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "TRIGONOMETRY",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "HARD_TAIL",
+    "canonicalSupport": "SUPPORTED",
+    "input": "$\\sin x - \\cos x = \\frac{1}{3}$ olduğuna göre, $\\sin^3 x - \\cos^3 x$ ifadesinin değeri kaçtır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "YKS_AYT_TRIG",
+      "HARD_TAIL",
+      "PARTITION_HARD_TAIL"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "13/27",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: (\\sin x - \\cos x)(1 + \\sin x \\cos x)",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "Her iki tarafın karesi alınırsa $1 - 2\\sin x\\cos x = \\frac{1}{9} \\Rightarrow \\sin x\\cos x = \\frac{4}{9}$. Özdeşlikten $\\sin^3 x - \\cos^3 x = (\\sin x - \\cos x)(1 + \\sin x\\cos x) = \\frac{1}{3}\\left(1 + \\frac{4}{9}\\right) = \\frac{13}{27}$ bulunur.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "ayt-tr-hard-18",
+    "revision": 1,
+    "family": "yarim-aci-cos2x",
+    "partition": "REGRESSION",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "TRIGONOMETRY",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "STANDARD",
+    "canonicalSupport": "SUPPORTED",
+    "input": "$\\cos x = \\frac{3}{5}$ olduğuna göre, $\\cos(2x)$ değeri kaçtır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "YKS_AYT_TRIG",
+      "STANDARD",
+      "PARTITION_REGRESSION"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "-7/25",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: 2\\cos^2 x - 1",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "$\\cos(2x) = 2\\cos^2 x - 1 = 2\\left(\\frac{9}{25}\\right) - 1 = \\frac{18 - 25}{25} = -\\frac{7}{25}$.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "ayt-tr-hard-19",
+    "revision": 1,
+    "family": "binom-sabit-terim",
+    "partition": "REGRESSION",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "PROBABILITY",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "STANDARD",
+    "canonicalSupport": "SUPPORTED",
+    "input": "$\\left(x^2 - \\frac{2}{x}\\right)^6$ açılımında sabit terim (yani $x^0$'lı terimin katsayısı) kaçtır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "YKS_AYT_CORE",
+      "STANDARD",
+      "PARTITION_REGRESSION"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "240",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: \\binom{6}{4}(1)^2(-2)^4",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "Genel terim $\\binom{6}{r}(x^2)^{6-r}\\left(-\\frac{2}{x}\\right)^r$ olup üs $2(6-r) - r = 12 - 3r = 0 \\Rightarrow r = 4$. Katsayı $\\binom{6}{4}(-2)^4 = 15 \\cdot 16 = 240$ bulunur.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "ayt-tr-hard-20",
+    "revision": 1,
+    "family": "tekrarli-permutasyon",
+    "partition": "HARD_TAIL",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "PROBABILITY",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "HARD_TAIL",
+    "canonicalSupport": "SUPPORTED",
+    "input": "$1, 1, 2, 2, 2, 3$ rakamlarının tamamı kullanılarak $6$ basamaklı ve $3$ ile başlamayan kaç farklı doğal sayı yazılabilir?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "YKS_AYT_CORE",
+      "HARD_TAIL",
+      "PARTITION_HARD_TAIL"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "50",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: \\frac{6!}{2!3!1!} - \\frac{5!}{2!3!}",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "Tüm sıralamalar $\\frac{6!}{2!3!} = 60$ tanedir. $3$ ile başlayanlar $\\frac{5!}{2!3!} = 10$ tanedir. $3$ ile başlamayanlar $60 - 10 = 50$ tanedir.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "ayt-tr-hard-21",
+    "revision": 1,
+    "family": "limit-dogrudan-koyma",
+    "partition": "REGRESSION",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "CALCULUS",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "STANDARD",
+    "canonicalSupport": "SUPPORTED",
+    "input": "$\\lim_{x \\to 2} \\frac{x^3 - 3x + 4}{x^2 + 2}$ limitinin değeri kaçtır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "YKS_AYT_CALCULUS",
+      "STANDARD",
+      "PARTITION_REGRESSION"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "1",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: \\frac{2^3 - 3(2) + 4}{2^2 + 2}",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "Payda $x=2$ noktasında sıfır olmadığından doğrudan yerine koyma uygulanır: $\\frac{8 - 6 + 4}{4 + 2} = \\frac{6}{6} = 1$.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "ayt-tr-hard-22",
+    "revision": 1,
+    "family": "limit-sifir-bolu-sifir",
+    "partition": "HARD_TAIL",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "CALCULUS",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "HARD_TAIL",
+    "canonicalSupport": "SUPPORTED",
+    "input": "$\\lim_{x \\to 3} \\frac{x^2 - 9}{\\sqrt{x + 1} - 2}$ limitinin değeri kaçtır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "YKS_AYT_CALCULUS",
+      "HARD_TAIL",
+      "PARTITION_HARD_TAIL"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "24",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: \\lim_{x \\to 3} (x+3)(\\sqrt{x+1}+2)",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "$\\frac{0}{0}$ belirsizliği eşlenik çarpımı ile kaldırılır: $\\frac{(x-3)(x+3)(\\sqrt{x+1}+2)}{(x+1)-4} = (x+3)(\\sqrt{x+1}+2)$. $x \\to 3$ için $6 \\cdot 4 = 24$ bulunur.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "ayt-tr-hard-23",
+    "revision": 1,
+    "family": "turev-polinom-teget",
+    "partition": "REGRESSION",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "CALCULUS",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "STANDARD",
+    "canonicalSupport": "SUPPORTED",
+    "input": "$f(x) = x^3 - 3x^2 + 4x - 5$ fonksiyonunun grafiğine $x = 2$ apsisli noktasından çizilen teğetin eğimi kaçtır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "YKS_AYT_CALCULUS",
+      "STANDARD",
+      "PARTITION_REGRESSION"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "4",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: f'(2) = 3(2)^2 - 6(2) + 4",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "$f'(x) = 3x^2 - 6x + 4$. $x = 2$ noktasındaki teğetin eğimi $f'(2) = 12 - 12 + 4 = 4$ olur.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "ayt-tr-hard-24",
+    "revision": 1,
+    "family": "carpim-turevi-polinom",
+    "partition": "REGRESSION",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "CALCULUS",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "STANDARD",
+    "canonicalSupport": "SUPPORTED",
+    "input": "$f(x) = (x^2 + 1)(2x - 3)$ fonksiyonu için $f'(2)$ değeri kaçtır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "YKS_AYT_CALCULUS",
+      "STANDARD",
+      "PARTITION_REGRESSION"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "14",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: 2x(2x-3) + (x^2+1)(2) \\Big|_{x=2}",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "$f'(x) = 2x(2x - 3) + (x^2 + 1)\\cdot 2$. $x = 2$ için $4(1) + 5(2) = 4 + 10 = 14$ bulunur.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "ayt-tr-hard-25",
+    "revision": 1,
+    "family": "carpim-turevi-soyut",
+    "partition": "HARD_TAIL",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "CALCULUS",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "HARD_TAIL",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Türevlenebilir $f$ ve $g$ fonksiyonları için $f(1) = 3$, $f'(1) = -2$, $g(1) = 4$ ve $g'(1) = 5$ veriliyor. $h(x) = x^2 \\cdot f(x) \\cdot g(x)$ olduğuna göre $h'(1)$ kaçtır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "YKS_AYT_CALCULUS",
+      "HARD_TAIL",
+      "PARTITION_HARD_TAIL"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "31",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: 2x f(x)g(x) + x^2(f'(x)g(x) + f(x)g'(x)) \\Big|_{x=1}",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "$h'(1) = 2(1)f(1)g(1) + 1^2[f'(1)g(1) + f(1)g'(1)] = 2(3)(4) + [(-2)(4) + (3)(5)] = 24 + (-8 + 15) = 31$.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "ayt-tr-hard-26",
+    "revision": 1,
+    "family": "belirli-integral-alan",
+    "partition": "REGRESSION",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "CALCULUS",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "STANDARD",
+    "canonicalSupport": "SUPPORTED",
+    "input": "$\\int_0^2 (3x^2 + 2x + 1)\\,dx$ belirli integralinin değeri kaçtır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "YKS_AYT_CALCULUS",
+      "STANDARD",
+      "PARTITION_REGRESSION"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "14",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: \\left[x^3 + x^2 + x\\right]_0^2",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "Belirsiz integral $x^3 + x^2 + x$'tir. Sınırlar konulursa $(8 + 4 + 2) - 0 = 14$ bulunur.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "ayt-tr-hard-27",
+    "revision": 1,
+    "family": "degisken-degistirme-sinir-tuzak",
+    "partition": "HARD_TAIL",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "CALCULUS",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "HARD_TAIL",
+    "canonicalSupport": "SUPPORTED",
+    "input": "$\\int_0^1 6x(x^2 + 1)^2\\,dx$ belirli integralinin değeri kaçtır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "YKS_AYT_CALCULUS",
+      "DOMAIN_TRAP",
+      "HARD_TAIL",
+      "PARTITION_HARD_TAIL"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "7",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: \\int_1^2 3u^2\\,du = \\left[u^3\\right]_1^2",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "$u = x^2 + 1 \\Rightarrow du = 2x\\,dx$. Alt sınır $x=0 \\Rightarrow u=1$, üst sınır $x=1 \\Rightarrow u=2$. İntegral $\\int_1^2 3u^2\\,du = [u^3]_1^2 = 8 - 1 = 7$ olur.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "ayt-tr-hard-28",
+    "revision": 1,
+    "family": "kosinus-teoremi",
+    "partition": "REGRESSION",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "GEOMETRY",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "STANDARD",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Bir $ABC$ üçgeninde $|AB| = 5\\text{ cm}$, $|AC| = 8\\text{ cm}$ ve $m(\\widehat{BAC}) = 60^\\circ$ olduğuna göre, $|BC|$ kenarının uzunluğu kaç santimetredir?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "YKS_AYT_CORE",
+      "STANDARD",
+      "PARTITION_REGRESSION"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "7",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: \\sqrt{5^2 + 8^2 - 2\\cdot 5\\cdot 8\\cdot \\cos 60^\\circ}",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "Kosinüs teoreminden $|BC|^2 = 25 + 64 - 2(5)(8)(1/2) = 89 - 40 = 49 \\Rightarrow |BC| = 7\\text{ cm}$ bulunur.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "ayt-tr-hard-29",
+    "revision": 1,
+    "family": "oklit-dik-ucgen",
+    "partition": "HARD_TAIL",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "GEOMETRY",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "HARD_TAIL",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Bir $ABC$ dik üçgeninde $m(\\widehat{BAC}) = 90^\\circ$ olup $[AH] \\perp [BC]$ yüksekliği çizilmiştir. $|BH| = 4\\text{ cm}$ ve $|HC| = 9\\text{ cm}$ olduğuna göre, $ABC$ üçgeninin alanı kaç $\\text{cm}^2$'dir?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "YKS_AYT_CORE",
+      "HARD_TAIL",
+      "PARTITION_HARD_TAIL"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "39",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: \\frac{1}{2}(4 + 9)\\sqrt{4 \\cdot 9}",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "Öklid bağıntısından $h^2 = p \\cdot k = 4 \\cdot 9 = 36 \\Rightarrow h = 6\\text{ cm}$. Taban $|BC| = 4 + 9 = 13\\text{ cm}$ olduğundan alan $\\frac{13 \\cdot 6}{2} = 39\\text{ cm}^2$ olur.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "ayt-tr-hard-30",
+    "revision": 1,
+    "family": "acioray-teoremi",
+    "partition": "HARD_TAIL",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "GEOMETRY",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "HARD_TAIL",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Bir $ABC$ üçgeninde $[AD]$ iç açıortaydır. $|AB| = 6\\text{ cm}$, $|AC| = 10\\text{ cm}$ ve $|BC| = 12\\text{ cm}$ olduğuna göre, $|DC|$ uzunluğu kaç santimetredir?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "YKS_AYT_CORE",
+      "HARD_TAIL",
+      "PARTITION_HARD_TAIL"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "15/2",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: \\frac{|BD|}{6} = \\frac{|DC|}{10},\\; |BD| + |DC| = 12",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "İç açıortay teoremine göre $\\frac{|BD|}{|DC|} = \\frac{6}{10} = \\frac{3}{5}$. $|BD|=3k, |DC|=5k \\Rightarrow 8k = 12 \\Rightarrow k = \\frac{3}{2}$. Buradan $|DC| = 5 \\cdot \\frac{3}{2} = \\frac{15}{2}\\text{ cm}$ olur.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "tyt-tr-wp-01",
+    "revision": 1,
+    "family": "kesir-cozumleme",
+    "partition": "REGRESSION",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "WORD_PROBLEM",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "STANDARD",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Bir kargo şirketinin şubesinde bulunan paketlerin $\\frac{2}{5}$'i İstanbul'a, kalan paketlerin $\\frac{1}{3}$'ü Ankara'ya gönderilmiştir. Şubede geriye $24$ paket kaldığına göre, başlangıçta şubede toplam kaç paket vardır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "YKS_TYT_PROBLEM",
+      "PARTITION_REGRESSION",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "STANDARD"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "60",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: \\left(1 - \\frac{2}{5}\\right)\\left(1 - \\frac{1}{3}\\right)x = 24",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "Kalan oran $\\frac{3}{5} \\cdot \\frac{2}{3} = \\frac{2}{5}$ olur. $\\frac{2}{5}x = 24$ ise $x = 60$ paket bulunur.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "tyt-tr-wp-02",
+    "revision": 1,
+    "family": "esit-parca-kurgu",
+    "partition": "REGRESSION",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "WORD_PROBLEM",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "STANDARD",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Bir marangoz elindeki tahta çubuğu önce $8$ eş parçaya bölüyor. Eğer aynı çubuğu $6$ eş parçaya bölseydi her bir parça $5\\text{ cm}$ daha uzun olacaktı. Buna göre tahta çubuğun toplam uzunluğu kaç santimetredir?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "YKS_TYT_PROBLEM",
+      "PARTITION_REGRESSION",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "STANDARD"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "120",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: \\frac{L}{6} - \\frac{L}{8} = 5",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "$\\frac{L}{6} - \\frac{L}{8} = 5 \\Rightarrow \\frac{4L - 3L}{24} = 5 \\Rightarrow L = 120\\text{ cm}$ bulunur.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "tyt-tr-wp-03",
+    "revision": 1,
+    "family": "asansor-kapasite",
+    "partition": "HARD_TAIL",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "WORD_PROBLEM",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "HARD_TAIL",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Bir apartman asansörünün taşıma kapasitesi yalnızca yetişkinlerden oluştuğunda $12$ kişi, yalnızca çocuklardan oluştuğunda ise $20$ kişidir. Bu asansöre $9$ yetişkin bindiğinde asansörün kalan kapasitesiyle en fazla kaç çocuk daha asansöre binebilir?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "YKS_TYT_PROBLEM",
+      "PARTITION_REGRESSION",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "HARD_TAIL"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "5",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: \\frac{9}{12} + \\frac{c}{20} \\le 1",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "$9$ yetişkin kapasitenin $\\frac{9}{12} = \\frac{3}{4}$'ünü doldurur. Kalan $\\frac{1}{4}$ kapasite $\\frac{1}{4} \\cdot 20 = 5$ çocuğa karşılık gelir.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "tyt-tr-wp-04",
+    "revision": 1,
+    "family": "batarya-tuketim",
+    "partition": "HARD_TAIL",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "WORD_PROBLEM",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "HARD_TAIL",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Tam şarjlı bir dizüstü bilgisayarın bataryası yalnızca video izlendiğinde $4$ saatte, yalnızca belge düzenlendiğinde ise $10$ saatte tamamen tükenmektedir. Bataryası tam dolu iken $2$ saat video izleyen bir öğrenci, ardından belge düzenlemeye geçerse kalan batarya ile kaç saat daha belge düzenleyebilir?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "YKS_TYT_PROBLEM",
+      "PARTITION_REGRESSION",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "HARD_TAIL"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "5",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: \\frac{2}{4} + \\frac{t}{10} = 1",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "$2$ saat video bataryanın $\\frac{2}{4} = \\frac{1}{2}$'sini tüketir. Kalan $\\frac{1}{2}$ batarya ile $\\frac{1}{2} \\cdot 10 = 5$ saat belge düzenlenir.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "tyt-tr-wp-05",
+    "revision": 1,
+    "family": "doguru-oranti-tarif",
+    "partition": "REGRESSION",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "WORD_PROBLEM",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "STANDARD",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Bir fırında hazırlanan kurabiye hamurunda un, şeker ve tereyağı kütleleri sırasıyla $5$, $2$ ve $3$ sayılarıyla doğru orantılıdır. Toplam $1200\\text{ gram}$ hamur hazırlandığında kullanılan un miktarı tereyağı miktarından kaç gram fazladır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "YKS_TYT_PROBLEM",
+      "PARTITION_REGRESSION",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "STANDARD"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "240",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: 5k + 2k + 3k = 1200,\\; 5k - 3k = ?",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "$10k = 1200 \\Rightarrow k = 120\\text{ g}$. Un ile tereyağı farkı $5k - 3k = 2k = 240\\text{ g}$ bulunur.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "tyt-tr-wp-06",
+    "revision": 1,
+    "family": "ters-oranti-disli",
+    "partition": "REGRESSION",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "WORD_PROBLEM",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "STANDARD",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Birbirini döndüren üç dişli çarktan birincisi $3$, ikincisi $4$, üçüncüsü ise $6$ devir yaptığında aynı konuma gelmektedir. Bu üç çarkın toplam diş sayısı $135$ olduğuna göre, en fazla dişe sahip olan çarkın diş sayısı kaçtır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "YKS_TYT_PROBLEM",
+      "PARTITION_REGRESSION",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "STANDARD"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "60",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: 3d_1 = 4d_2 = 6d_3 = 12k,\\; d_1 + d_2 + d_3 = 135",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "Devir sayısı ile diş sayısı ters orantılıdır: $d_1=4k, d_2=3k, d_3=2k$. Toplam $9k=135 \\Rightarrow k=15$. En büyük çark $4k=60$ dişlidir.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "tyt-tr-wp-07",
+    "revision": 1,
+    "family": "karisim-oran",
+    "partition": "REGRESSION",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "WORD_PROBLEM",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "STANDARD",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Bir kafede hazırlanan özel kahve karışımında süt miktarının kahve özütü miktarına oranı $\\frac{7}{3}$'tür. $300\\text{ mL}$ karışımın içine yalnızca $60\\text{ mL}$ daha süt eklendiğinde yeni karışımda süt miktarının kahve özütü miktarına oranı kaç olur?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "YKS_TYT_PROBLEM",
+      "PARTITION_REGRESSION",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "STANDARD"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "3",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: \\frac{210 + 60}{90}",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "$300\\text{ mL}$ karışımda $210\\text{ mL}$ süt ve $90\\text{ mL}$ kahve özütü vardır. $60\\text{ mL}$ süt eklenince $\\frac{270}{90} = 3$ olur.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "tyt-tr-wp-08",
+    "revision": 1,
+    "family": "bilesik-oranti-maliyet",
+    "partition": "HARD_TAIL",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "WORD_PROBLEM",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "HARD_TAIL",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Bir matbaada özdeş $6$ yazıcı günde $4$ saat çalışarak $5$ günde toplam $3600$ sayfa basmaktadır. Aynı kapasitedeki $8$ yazıcı günde $6$ saat çalışarak $3$ günde toplam kaç sayfa basar?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "YKS_TYT_PROBLEM",
+      "PARTITION_REGRESSION",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "HARD_TAIL"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "4320",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: \\frac{3600}{6 \\cdot 4 \\cdot 5} = \\frac{x}{8 \\cdot 6 \\cdot 3}",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "İş / (yazıcı $\\cdot$ saat $\\cdot$ gün) sabittir: $\\frac{3600}{120} = 30$ sayfa/(yazıcı$\\cdot$saat). Yeni durumda $8 \\cdot 6 \\cdot 3 \\cdot 30 = 4320$ sayfa basılır.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "tyt-tr-wp-09",
+    "revision": 1,
+    "family": "kampanya-indirim",
+    "partition": "REGRESSION",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "WORD_PROBLEM",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "STANDARD",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Bir elektronik mağazasında etiket fiyatı üzerinden $\\%20$ indirimle satılan bir kulaklığa, kasada indirimli fiyat üzerinden ayrıca $\\%10$ ek indirim uygulanmaktadır. Kulaklığı kasada $720\\text{ TL}$ ödeyerek alan bir müşteri, etiket fiyatı üzerinden toplam kaç TL indirim kazanmıştır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "YKS_TYT_PROBLEM",
+      "PARTITION_REGRESSION",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "STANDARD"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "280",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: E \\cdot 0.80 \\cdot 0.90 = 720,\\; E - 720 = ?",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "$0.72 E = 720 \\Rightarrow E = 1000\\text{ TL}$. Toplam indirim $1000 - 720 = 280\\text{ TL}$ olur.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "tyt-tr-wp-10",
+    "revision": 1,
+    "family": "kar-zarar-karisik",
+    "partition": "HARD_TAIL",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "WORD_PROBLEM",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "HARD_TAIL",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Bir kırtasiyeci aldığı $50$ adet defterin $30$ tanesini $\\%40$ kârla, kalan $20$ tanesini ise $\\%10$ zararla satmıştır. Kırtasiyecinin tüm satıştan elde ettiği toplam kâr oranı yüzde kaçtır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "YKS_TYT_PROBLEM",
+      "PARTITION_REGRESSION",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "HARD_TAIL"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "20",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: \\frac{30(0.40) - 20(0.10)}{50} \\times 100",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "Birim maliyeti $100$ TL alırsak toplam maliyet $5000$ TL olur. Kâr-zarar toplamı $30\\cdot 40 - 20\\cdot 10 = 1000$ TL'dir. Kâr oranı $\\frac{1000}{5000} = \\%20$'dir.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "tyt-tr-wp-11",
+    "revision": 1,
+    "family": "karisim-buharlasma",
+    "partition": "HARD_TAIL",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "WORD_PROBLEM",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "HARD_TAIL",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Şeker oranı $\\%24$ olan $250\\text{ gram}$ şekerli sudan, buharlaştırma yoluyla $50\\text{ gram}$ saf su buharlaştırılıyor. Son durumda elde edilen karışımın şeker oranı yüzde kaç olur?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "YKS_TYT_PROBLEM",
+      "PARTITION_REGRESSION",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "HARD_TAIL"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "30",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: \\frac{250 \\cdot 0.24}{250 - 50} \\times 100",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "Çözeltideki şeker miktarı $250 \\cdot 0.24 = 60\\text{ gram}$ sabit kalır. Toplam kütle $200\\text{ g}$'a düştüğünden şeker oranı $\\frac{60}{200} = \\%30$ olur.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "tyt-tr-wp-12",
+    "revision": 1,
+    "family": "enflasyon-maliyet",
+    "partition": "REGRESSION",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "WORD_PROBLEM",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "STANDARD",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Bir manav kasası $200\\text{ TL}$'den aldığı $25\\text{ kg}$ domatesin taşımada $5\\text{ kg}$'ının ezilip çürüdüğünü fark ediyor. Manavın bu satıştan toplam $\\%20$ kâr elde edebilmesi için sağlam domateslerin kilogramını kaç TL'den satması gerekir?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "YKS_TYT_PROBLEM",
+      "PARTITION_REGRESSION",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "STANDARD"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "12",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: \\frac{200 \\cdot 1.20}{25 - 5}",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "Hedeflenen toplam gelir $200 \\cdot 1.20 = 240\\text{ TL}$'dir. Sağlam $20\\text{ kg}$ domatesin kilogram satış fiyatı $\\frac{240}{20} = 12\\text{ TL}$ olmalıdır.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "tyt-tr-wp-13",
+    "revision": 1,
+    "family": "hiz-karsilasma",
+    "partition": "REGRESSION",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "WORD_PROBLEM",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "STANDARD",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Aralarında $450\\text{ km}$ mesafe bulunan iki şehirden aynı anda birbirine doğru sabit $70\\text{ km/sa}$ ve $80\\text{ km/sa}$ hızlarla iki araç hareket ediyor. Bu iki araç kaç saat sonra karşılaşır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "YKS_TYT_PROBLEM",
+      "PARTITION_REGRESSION",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "STANDARD"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "3",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: (70 + 80)t = 450",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "Araçlar birbirine doğru hareket ettiğinden bağıl hız $70 + 80 = 150\\text{ km/sa}$ olur. $t = \\frac{450}{150} = 3$ saat sonra karşılaşırlar.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "tyt-tr-wp-14",
+    "revision": 1,
+    "family": "ortalama-hiz",
+    "partition": "REGRESSION",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "WORD_PROBLEM",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "STANDARD",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Bir sürücü A şehrinden B şehrine saatte $60\\text{ km}$ sabit hızla gidip, hiç beklemeden aynı yolu saatte $90\\text{ km}$ sabit hızla geri dönüyor. Bu sürücünün gidiş-dönüş yolculuğundaki ortalama hızı saatte kaç kilometredir?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "YKS_TYT_PROBLEM",
+      "PARTITION_REGRESSION",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "STANDARD"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "72",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: \\frac{2 \\cdot 60 \\cdot 90}{60 + 90}",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "Yolu $d = 180\\text{ km}$ alırsak gidiş $3$ saat, dönüş $2$ saat sürer. Ortalama hız $\\frac{360}{5} = 72\\text{ km/sa}$ olur.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "tyt-tr-wp-15",
+    "revision": 1,
+    "family": "yas-problemi",
+    "partition": "REGRESSION",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "WORD_PROBLEM",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "STANDARD",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Bir annenin bugünkü yaşı, iki çocuğunun bugünkü yaşları toplamının $3$ katıdır. $6$ yıl sonra annenin yaşı, çocuklarının o günkü yaşları toplamının $2$ katından $4$ eksik olacağına göre, annenin bugünkü yaşı kaçtır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "YKS_TYT_PROBLEM",
+      "PARTITION_REGRESSION",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "STANDARD"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "42",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: 3T + 6 = 2(T + 12) - 4",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "Çocukların bugünkü yaş toplamı $T$ ise anne $3T$ yaşındadır. $6$ yıl sonra iki çocuğun yaş toplamı $T+12$ olur. $3T+6 = 2T+24-4 \\Rightarrow T=14$, anne $3\\cdot 14 = 42$ yaşındadır.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "tyt-tr-wp-16",
+    "revision": 1,
+    "family": "isci-havuz",
+    "partition": "HARD_TAIL",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "WORD_PROBLEM",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "HARD_TAIL",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Bir yazılım geliştirme işini Ahmet tek başına $12$ günde, Burak tek başına $18$ günde tamamlayabilmektedir. İkisi birlikte $4$ gün çalıştıktan sonra Ahmet işten ayrılıyor ve kalan işi Burak tek başına tamamlıyor. Buna göre tüm iş toplam kaç günde bitmiştir?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "YKS_TYT_PROBLEM",
+      "PARTITION_REGRESSION",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "HARD_TAIL"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "12",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: 4\\left(\\frac{1}{12} + \\frac{1}{18}\\right) + \\frac{t}{18} = 1,\\; 4 + t = ?",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "İlk $4$ günde $4(\\frac{3+2}{36}) = \\frac{20}{36} = \\frac{5}{9}$ iş biter. Kalan $\\frac{4}{9}$ işi Burak $\\frac{4}{9} \\cdot 18 = 8$ günde bitirir. Toplam süre $4 + 8 = 12$ gündür.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "tyt-tr-wp-17",
+    "revision": 1,
+    "family": "dairesel-grafik",
+    "partition": "REGRESSION",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "WORD_PROBLEM",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "STANDARD",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Yandaki dairesel grafikte bir kütüphanedeki toplam $720$ kitabın türlere göre dağılımı gösterilmiştir. Roman kitaplarına ait merkez açı $150^\\circ$, tarih kitaplarına ait merkez açı $90^\\circ$ ve geri kalan kısım bilim kitaplarıdır. Buna göre kütüphanedeki bilim kitaplarının sayısı roman kitaplarının sayısından kaç eksiktir?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "YKS_TYT_PROBLEM",
+      "PARTITION_REGRESSION",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "STANDARD"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "60",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: \\frac{150 - (360 - 150 - 90)}{360} \\cdot 720",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "Bilim merkez açısı $360^\\circ - 240^\\circ = 120^\\circ$ olur. Açı farkı $150^\\circ - 120^\\circ = 30^\\circ$ olduğundan kitap farkı $\\frac{30}{360} \\cdot 720 = 60$ bulunur.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "tyt-tr-wp-18",
+    "revision": 1,
+    "family": "sutun-grafigi-ortalama",
+    "partition": "REGRESSION",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "WORD_PROBLEM",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "STANDARD",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Grafikte bir öğrencinin pazartesiden cumaya kadar $5$ gün boyunca çözdüğü günlük soru sayıları sırasıyla $40, 55, 45, 70$ ve $x$ olarak verilmiştir. Öğrencinin bu $5$ günlük günlük soru çözme ortalaması $54$ olduğuna göre, cuma günü çözdüğü $x$ soru sayısı perşembe gününden kaç eksiktir?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "YKS_TYT_PROBLEM",
+      "PARTITION_REGRESSION",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "STANDARD"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "10",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: \\frac{40 + 55 + 45 + 70 + x}{5} = 54,\\; 70 - x = ?",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "Toplam soru $5 \\cdot 54 = 270$ olmalıdır. İlk $4$ gün toplamı $210$ olduğundan $x = 60$ bulunur. Perşembe ($70$) ile fark $70 - 60 = 10$ sorudur.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "tyt-tr-wp-19",
+    "revision": 1,
+    "family": "dogrusal-graf-tuketim",
+    "partition": "HARD_TAIL",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "WORD_PROBLEM",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "HARD_TAIL",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Doğrusal grafikte bir su deposundaki su miktarının zamana bağlı değişimi verilmiştir. Depo başlangıçta ($t=0$) $320\\text{ litre}$ su içermekte olup $4$ saat sonra içinde $200\\text{ litre}$ su kalmaktadır. Sabit hızla su boşalmaya devam ettiğinde deponun tamamen boşalması toplam kaç saat sürer?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "YKS_TYT_PROBLEM",
+      "PARTITION_REGRESSION",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "HARD_TAIL"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "32/3",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: 320 - \\frac{320 - 200}{4} t = 0",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "Saatlik boşalma hızı $\\frac{320 - 200}{4} = 30\\text{ L/sa}$'tir. $320$ litrenin tamamı $\\frac{320}{30} = \\frac{32}{3}$ saatte boşalır.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "tyt-tr-wp-20",
+    "revision": 1,
+    "family": "tablo-veri-analizi",
+    "partition": "HARD_TAIL",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "WORD_PROBLEM",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "HARD_TAIL",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Aşağıdaki tabloda bir mağazadaki A ve B ürünlerinin alış-satış fiyatları verilmiştir: A ürününün alışı $120\\text{ TL}$, satışı $150\\text{ TL}$; B ürününün alışı $80\\text{ TL}$, satışı $110\\text{ TL}$'dir. Bir gün içinde toplam $20$ adet ürün satan mağaza toplam $600\\text{ TL}$ kâr elde etmiştir. Satılan B ürünü sayısı $12$ olduğuna göre, eğer tam tersi $12$ adet A ve $8$ adet B satılsaydı elde edilecek toplam kâr yine kaç TL olurdu?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "YKS_TYT_PROBLEM",
+      "PARTITION_REGRESSION",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "HARD_TAIL"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "600",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: 12(150 - 120) + 8(110 - 80)",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "A ürününden birim kâr $150-120 = 30\\text{ TL}$, B ürününden birim kâr $110-80 = 30\\text{ TL}$'dir. Birim kârlar eşit olduğu için $12\\cdot 30 + 8\\cdot 30 = 600\\text{ TL}$ olur.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "tyt-tr-wp-21",
+    "revision": 1,
+    "family": "sira-oturma-duzeni",
+    "partition": "REGRESSION",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "WORD_PROBLEM",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "STANDARD",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Bir sinema salonundaki tek sıralı koltuklarda baştan $14.$ sırada oturan Zeynep ile sondan $19.$ sırada oturan Kerem arasında $4$ kişi oturmaktadır. Zeynep gişeye (başa) Kerem'den daha yakın olduğuna göre, bu sırada toplam kaç kişi vardır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "YKS_TYT_PROBLEM",
+      "PARTITION_REGRESSION",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "STANDARD"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "37",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: 14 + 4 + 19",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "Zeynep başta olduğu için kimse kesişmez: baştan Zeynep'e kadar $14$, arada $4$, Kerem'den sona kadar $19$ kişi vardır. Toplam $14 + 4 + 19 = 37$ kişi olur.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "tyt-tr-wp-22",
+    "revision": 1,
+    "family": "peryodik-durum",
+    "partition": "REGRESSION",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "WORD_PROBLEM",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "STANDARD",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Bir dijital panoda \"VERIFIED\" kelimesinin $8$ harfi soldan sağa sırayla her saniye bir harf yanacak biçimde döngüsel olarak yanmaktadır ($1.$ saniye V, $2.$ saniye E, ..., $8.$ saniye D, $9.$ saniye V). Buna göre $2026.$ saniyede panoda hangi sıradaki harf yanar?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "YKS_TYT_PROBLEM",
+      "PARTITION_REGRESSION",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "STANDARD"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "2",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: 2026 \\bmod 8",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "Döngü uzunluğu $8$'dir. $2026 = 8 \\cdot 253 + 2$ olduğundan kalan $2$'dir ve $2.$ sıradaki harf (E) yanar.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "tyt-tr-wp-23",
+    "revision": 1,
+    "family": "kutu-bilye-guvenlik",
+    "partition": "HARD_TAIL",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "WORD_PROBLEM",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "HARD_TAIL",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Bir torbada $7$ kırmızı, $9$ mavi ve $11$ yeşil özdeş bilye vardır. Torbadan aynı anda ve bakmadan en az kaç bilye çekilirse, çekilen bilyeler arasında kesinlikle her renkten en az birer bilye bulunur?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "YKS_TYT_PROBLEM",
+      "PARTITION_REGRESSION",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "HARD_TAIL"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "21",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: 11 + 9 + 1",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "En kötü senaryoda (güvercin yuvası ilkesi) önce en çok olan iki rengin tamamı çekilir: $11 + 9 = 20$. Bir sonraki bilye kesinlikle üçüncü renktendir: $20 + 1 = 21$.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "tyt-tr-wp-24",
+    "revision": 1,
+    "family": "digi-kart-oruntu",
+    "partition": "HARD_TAIL",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "WORD_PROBLEM",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "HARD_TAIL",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Bir oyunda $1$'den $15$'e kadar numaralandırılmış $15$ karttan seçilen iki kartın üzerindeki sayıların toplamının $20$ olduğu ve üçüncü bir kartın bu iki sayının farkına eşit olduğu biliniyor. İlk iki kartın çarpımı $91$ olduğuna göre, üçüncü kartın numarası kaçtır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "YKS_TYT_PROBLEM",
+      "PARTITION_REGRESSION",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "HARD_TAIL"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "6",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: a + b = 20,\\; ab = 91,\\; |a - b| = ?",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "$a+b=20$ ve $ab=91$ ise $(a-b)^2 = (a+b)^2 - 4ab = 400 - 364 = 36 \\Rightarrow |a-b| = 6$ (sayılar $13$ ve $7$'dir).",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "tyt-tr-wp-25",
+    "revision": 1,
+    "family": "asal-carpan-kurgu",
+    "partition": "REGRESSION",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "ALGEBRA",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "STANDARD",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Bir okul koridorundaki dolaplar $1$'den $60$'a kadar numaralandırılmıştır. Numarası hem $3$'ün hem de $4$'ün tam katı olan dolaplar maviye, diğerleri beyaza boyanacaktır. Buna göre kaç dolap maviye boyanır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "YKS_TYT_PROBLEM",
+      "PARTITION_REGRESSION",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "STANDARD"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "5",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: \\lfloor 60 / \\text{lcm}(3,4) \\rfloor",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "$\\text{EKOK}(3,4) = 12$ olduğundan $12, 24, 36, 48, 60$ numaralı toplam $5$ dolap maviye boyanır.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "tyt-tr-wp-26",
+    "revision": 1,
+    "family": "ebob-ekok-bahce",
+    "partition": "HARD_TAIL",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "ALGEBRA",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "HARD_TAIL",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Kenar uzunlukları $42\\text{ metre}$ ve $70\\text{ metre}$ olan dikdörtgen şeklindeki bir tarlanın çevresine, köşelerine de gelmek şartıyla eşit aralıklarla ağaç dikilecektir. Kullanılacak ağaç sayısının en az olması için toplam kaç ağaç gereklidir?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "YKS_TYT_PROBLEM",
+      "PARTITION_REGRESSION",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "HARD_TAIL"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "16",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: \\frac{2(42 + 70)}{\\gcd(42, 70)}",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "$\\text{EBOB}(42, 70) = 14\\text{ metre}$ aralık seçilir. Çevre $2(42+70) = 224\\text{ m}$ olduğundan $\\frac{224}{14} = 16$ ağaç gerekir.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "tyt-tr-wp-27",
+    "revision": 1,
+    "family": "devirli-ondalik",
+    "partition": "REGRESSION",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "ALGEBRA",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "STANDARD",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Bir dijital tartı gerçek kütlesi $4{,}2\\text{ kg}$ olan bir paketi $4{,}\\overline{3}$ olarak değil; $x = 1{,}\\overline{2} + 2{,}\\overline{7}$ formülüyle hesaplanan toplam kütle kadar gösteriyor. Buna göre $x$ değeri kaçtır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "YKS_TYT_PROBLEM",
+      "PARTITION_REGRESSION",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "STANDARD"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "4",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: \\frac{12 - 1}{9} + \\frac{27 - 2}{9}",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "$1{,}\\overline{2} = \\frac{11}{9}$ ve $2{,}\\overline{7} = \\frac{25}{9}$ olduğundan $x = \\frac{11 + 25}{9} = \\frac{36}{9} = 4$ bulunur.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "tyt-tr-wp-28",
+    "revision": 1,
+    "family": "yuzde-dogrudan",
+    "partition": "REGRESSION",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "ALGEBRA",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "STANDARD",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Bir su şişesinin $\\%40$'ı doluyken içinde $240\\text{ mL}$ su bulunmaktadır. Bu şişeye $180\\text{ mL}$ daha su eklendiğinde şişenin yüzde kaçı dolmuş olur?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "YKS_TYT_PROBLEM",
+      "PARTITION_REGRESSION",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "STANDARD"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "70",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: \\frac{240 + 180}{240 / 0.40} \\times 100",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "Şişenin tamamı $240 / 0.40 = 600\\text{ mL}$'dir. Toplam su $240 + 180 = 420\\text{ mL}$ olur ve doluluk oranı $\\frac{420}{600} = \\%70$'tir.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "tyt-tr-wp-29",
+    "revision": 1,
+    "family": "alisveris-kdv",
+    "partition": "REGRESSION",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "ALGEBRA",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "STANDARD",
+    "canonicalSupport": "SUPPORTED",
+    "input": "KDV hariç fiyatına $\\%20$ KDV eklenerek $360\\text{ TL}$'ye satılan bir ceketin fiyatı yıl sonu indirimiyle KDV dahil fiyat üzerinden $\\%25$ düşürülüyor. Ceketin KDV hariç başlangıç fiyatı, indirimli satış fiyatından kaç TL fazladır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "YKS_TYT_PROBLEM",
+      "PARTITION_REGRESSION",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "STANDARD"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "30",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: \\frac{360}{1.20} - 360 \\cdot 0.75",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "KDV hariç başlangıç fiyatı $\\frac{360}{1{,}20} = 300\\text{ TL}$'dir. İndirimli satış fiyatı $360 \\cdot 0{,}75 = 270\\text{ TL}$ olur. Aradaki fark $300 - 270 = 30\\text{ TL}$'dir.",
+      "independentReview": false
+    }
+  },
+  {
+    "schemaVersion": "solver-evaluation-case-v1",
+    "id": "tyt-tr-wp-30",
+    "revision": 1,
+    "family": "veri-yuzde-artis",
+    "partition": "HARD_TAIL",
+    "origin": {
+      "type": "PROJECT_AUTHORED_SYNTHETIC",
+      "author": "verified-ai-sprint-9.6b",
+      "license": "PROJECT_EVALUATION_ONLY",
+      "rightsStatus": "SYNTHETIC_PROJECT_AUTHORED",
+      "trainingEligibility": "NOT_ELIGIBLE"
+    },
+    "problemClass": "ALGEBRA",
+    "locale": "tr-TR",
+    "modality": "TEXT",
+    "difficulty": "HARD_TAIL",
+    "canonicalSupport": "SUPPORTED",
+    "input": "Bir çevrimiçi eğitim platformundaki aktif kullanıcı sayısı birinci yıl $\\%25$ artmış, ikinci yıl ise $\\%20$ azalmıştır. Üçüncü yılın sonunda kullanıcı sayısının başlangıca göre $\\%40$ artmış olması için üçüncü yılda yüzde kaç artış yapılmalıdır?",
+    "slices": [
+      "TR",
+      "TEXT",
+      "YKS_TYT_PROBLEM",
+      "PARTITION_REGRESSION",
+      "SUPPORT_SUPPORTED",
+      "SCOPE_FINAL_ANSWER",
+      "HARD_TAIL"
+    ],
+    "contracts": [
+      "solution-candidate-v2",
+      "verification-decision-v1",
+      "verification-policy-v1"
+    ],
+    "expected": {
+      "disposition": "CANDIDATE",
+      "answer": "40",
+      "verification": "VERIFIED",
+      "scope": "FINAL_ANSWER",
+      "scopeDetail": "Model: 1.25 \\cdot 0.80 \\cdot (1 + p/100) = 1.40",
+      "uncertainty": false,
+      "labelBasis": "SYNTHETIC_AUTHOR_JUDGMENT",
+      "rationale": "İlk iki yıl sonunda çarpan $1.25 \\cdot 0.80 = 1.00$ olur, yani kullanıcı sayısı başlangıca geri döner. Bu nedenle üçüncü yılda $\\%40$ artış gerekir.",
+      "independentReview": false
+    }
+  }
+]

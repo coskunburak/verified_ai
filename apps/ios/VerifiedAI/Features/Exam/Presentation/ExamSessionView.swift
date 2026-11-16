@@ -162,7 +162,8 @@ public struct ExamSessionView: View {
                         .font(.caption.weight(.semibold))
                     Text(LocalizedStringKey("exam.session.no_hint.badge"))
                         .font(.caption.weight(.semibold))
-                        .lineLimit(1)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 .foregroundStyle(ColorTokens.action)
                 .padding(.horizontal, 10)
@@ -314,6 +315,8 @@ public struct ExamSessionView: View {
             Text(item.stemMarkdown)
                 .font(.body)
                 .foregroundStyle(ColorTokens.textPrimary)
+                .multilineTextAlignment(.leading)
+                .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .accessibilityIdentifier("exam.session.questionStemCard")
 
@@ -321,6 +324,11 @@ public struct ExamSessionView: View {
                 Text(alt)
                     .font(.caption)
                     .foregroundStyle(ColorTokens.textSecondary)
+                    .multilineTextAlignment(.leading)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .accessibilityLabel(alt)
+                    .accessibilityIdentifier("exam.session.figureAltText")
             }
 
             if !item.optionsSnapshot.isEmpty {
@@ -334,10 +342,11 @@ public struct ExamSessionView: View {
                                     await viewModel.selectOption(option.optionKey)
                                 }
                             } label: {
-                                HStack(spacing: 10) {
+                                HStack(alignment: .top, spacing: 10) {
                                     Text(option.optionKey)
                                         .font(.subheadline.monospacedDigit().weight(.bold))
-                                        .frame(width: 28, height: 28)
+                                        .padding(.horizontal, 4)
+                                        .frame(minWidth: 28, minHeight: 28)
                                         .foregroundStyle(isSelected ? ColorTokens.actionForeground : ColorTokens.textPrimary)
                                         .background(isSelected ? ColorTokens.action : ColorTokens.surface)
                                         .clipShape(RoundedRectangle(cornerRadius: 6))
@@ -347,8 +356,9 @@ public struct ExamSessionView: View {
                                         .strikethrough(isEliminated, color: ColorTokens.textTertiary)
                                         .foregroundStyle(isEliminated ? ColorTokens.textTertiary : ColorTokens.textPrimary)
                                         .multilineTextAlignment(.leading)
+                                        .fixedSize(horizontal: false, vertical: true)
 
-                                    Spacer()
+                                    Spacer(minLength: 0)
                                 }
                                 .padding(10)
                                 .frame(minHeight: 44)

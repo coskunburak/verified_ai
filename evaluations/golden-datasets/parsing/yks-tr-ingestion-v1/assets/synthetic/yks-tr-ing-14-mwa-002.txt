@@ -1,0 +1,2 @@
+Bir sürücü A şehrinden B şehrine saatte $60\text{ km}$ sabit hızla gidip, hiç beklemeden aynı yolu saatte $90\text{ km}$ sabit hızla geri dönüyor. Bu sürücünün gidiş-dönüş yolculuğundaki ortalama hızı saatte kaç kilometredir?
+A) $68$ B) $72$ C) $75$ D) $78$ E) $80$

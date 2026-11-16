@@ -1,0 +1,2 @@
+$f(x) = (x^2 - 3x + 3)e^x$ fonksiyonunun yerel ekstremum noktalarının apsislerinin toplamı kaçtır?
+A) $-1$ B) $0$ C) $1$ D) $3$ E) $5$

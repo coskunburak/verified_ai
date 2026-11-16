@@ -87,6 +87,7 @@ public class DeterministicAssessmentAssemblyEngine {
 
         Map<String, List<QuestionBankItem>> selectedByTopic = new LinkedHashMap<>();
         Map<String, List<QuestionBankItem>> allowedSwapPoolByTopic = new LinkedHashMap<>();
+        Map<String, List<QuestionBankItem>> allTopicCandidatesByTopic = new LinkedHashMap<>();
         Set<UUID> chosenIds = new HashSet<>();
 
         List<BlueprintTopicRule> orderedRules = blueprint.topicRules().stream()
@@ -98,11 +99,12 @@ public class DeterministicAssessmentAssemblyEngine {
             if (quota == 0) {
                 selectedByTopic.put(rule.topicCode(), new ArrayList<>());
                 allowedSwapPoolByTopic.put(rule.topicCode(), List.of());
+                allTopicCandidatesByTopic.put(rule.topicCode(), List.of());
                 continue;
             }
 
             List<QuestionBankItem> topicCandidates = eligibleGlobalPool.stream()
-                    .filter(item -> item.topicCode().equals(rule.topicCode()))
+                    .filter(item -> matchesTopicRule(item.topicCode(), rule.topicCode()))
                     .filter(item -> rule.requiredItemFormats().contains(item.itemFormat()))
                     .filter(item -> !chosenIds.contains(item.id()))
                     .toList();
@@ -168,6 +170,7 @@ public class DeterministicAssessmentAssemblyEngine {
                     rule.topicCode(),
                     freshPool.size() >= quota ? freshPool : topicCandidates
             );
+            allTopicCandidatesByTopic.put(rule.topicCode(), topicCandidates);
         }
 
         // Deterministic local refinement pass to minimize max difficulty deviation bps within topic pools
@@ -180,6 +183,20 @@ public class DeterministicAssessmentAssemblyEngine {
                 input.userId(),
                 input.assemblySeed()
         );
+
+        // If strict cooldown-only pools could not satisfy difficultyToleranceBps, fall back to full topicCandidates
+        List<QuestionBankItem> refinedCheck = selectedByTopic.values().stream().flatMap(List::stream).toList();
+        if (computeMaxDifficultyDeviationBps(refinedCheck, blueprint) > blueprint.difficultyToleranceBps()) {
+            refineSelectionForDifficultyTolerance(
+                    orderedRules,
+                    selectedByTopic,
+                    allTopicCandidatesByTopic,
+                    chosenIds,
+                    blueprint,
+                    input.userId(),
+                    input.assemblySeed()
+            );
+        }
 
         // Flatten in canonical ruleOrder + questionCode order before optional shuffle
         List<QuestionBankItem> selectedItems = new ArrayList<>(totalQuestions);
@@ -575,7 +592,12 @@ public class DeterministicAssessmentAssemblyEngine {
         }
 
         for (QuestionBankItem item : selectedItems) {
-            topicCounts.merge(item.topicCode(), 1, Integer::sum);
+            String matchedRuleTopic = blueprint.topicRules().stream()
+                    .map(BlueprintTopicRule::topicCode)
+                    .filter(ruleTopic -> matchesTopicRule(item.topicCode(), ruleTopic))
+                    .findFirst()
+                    .orElse(item.topicCode());
+            topicCounts.merge(matchedRuleTopic, 1, Integer::sum);
             difficultyCounts.merge(item.difficultyBand().name(), 1, Integer::sum);
             cognitiveCounts.merge(item.cognitiveLevel().name(), 1, Integer::sum);
         }
@@ -678,6 +700,11 @@ public class DeterministicAssessmentAssemblyEngine {
         } catch (NoSuchAlgorithmException ex) {
             throw new IllegalStateException("SHA-256 unavailable", ex);
         }
+    }
+
+    private static boolean matchesTopicRule(String itemTopicCode, String ruleTopicCode) {
+        return itemTopicCode != null && ruleTopicCode != null
+                && (itemTopicCode.equals(ruleTopicCode) || itemTopicCode.startsWith(ruleTopicCode + "."));
     }
 
     public static String sha256Hex(String input) {

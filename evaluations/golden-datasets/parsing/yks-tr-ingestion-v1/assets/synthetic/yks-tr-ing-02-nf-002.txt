@@ -1,0 +1,2 @@
+Bir marangoz elindeki tahta çubuğu önce $8$ eş parçaya bölüyor. Eğer aynı çubuğu $6$ eş parçaya bölseydi her bir parça $5\text{ cm}$ daha uzun olacaktı. Buna göre tahta çubuğun toplam uzunluğu kaç santimetredir?
+A) $96$ B) $100$ C) $120$ D) $144$ E) $240$

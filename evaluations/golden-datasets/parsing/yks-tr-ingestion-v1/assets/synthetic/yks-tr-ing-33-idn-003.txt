@@ -1,0 +1,2 @@
+$\sin x - \cos x = \frac{1}{3}$ olduğuna göre, $\sin^3 x - \cos^3 x$ ifadesinin değeri kaçtır?
+A) $\frac{1}{27}$ B) $\frac{5}{27}$ C) $\frac{13}{27}$ D) $\frac{17}{27}$ E) $\frac{19}{27}$

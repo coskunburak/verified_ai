@@ -1,0 +1,2 @@
+$\int_1^4 \frac{3}{2\sqrt{x}}\left(\sqrt{x} + 1\right)^2\,dx$ belirli integralinin değeri kaçtır?
+A) $-19$ B) $19$ C) $27$ D) $38$ E) $63$

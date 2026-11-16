@@ -1,0 +1,2 @@
+$\frac{\sin(\pi + x) \cdot \cos\left(\frac{\pi}{2} - x\right)}{\tan(\pi - x)}$ ifadesi sadeleştirildiğinde aşağıdakilerden hangisine eşittir? ($\sin x \neq 0, \cos x \neq 0$)
+A) $-\sin x \cos x$ B) $\sin x \cos x$ C) $\frac{\sin x}{\cos x}$ D) $-\cos^2 x$ E) $\sin^2 x$

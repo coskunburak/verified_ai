@@ -1,0 +1,2 @@
+Bir matbaada özdeş $6$ yazıcı günde $4$ saat çalışarak $5$ günde toplam $3600$ sayfa basmaktadır. Aynı kapasitedeki $8$ yazıcı günde $6$ saat çalışarak $3$ günde toplam kaç sayfa basar?
+A) $3600$ B) $3840$ C) $4050$ D) $4320$ E) $4800$

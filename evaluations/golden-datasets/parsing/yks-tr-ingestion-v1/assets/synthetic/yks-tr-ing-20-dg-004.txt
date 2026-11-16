@@ -1,0 +1,2 @@
+Aşağıdaki tabloda bir mağazadaki A ve B ürünlerinin alış-satış fiyatları verilmiştir: A ürününün alışı $120\text{ TL}$, satışı $150\text{ TL}$; B ürününün alışı $80\text{ TL}$, satışı $110\text{ TL}$'dir. Bir gün içinde toplam $20$ adet ürün satan mağaza toplam $600\text{ TL}$ kâr elde etmiştir. Satılan B ürünü sayısı $12$ olduğuna göre, eğer tam tersi $12$ adet A ve $8$ adet B satılsaydı elde edilecek toplam kâr yine kaç TL olurdu?
+A) $480$ B) $540$ C) $600$ D) $640$ E) $720$

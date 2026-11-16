@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "solver-dataset-manifest-v1",
+  "datasetVersion": "yks-tr-hard-v1",
+  "caseSchemaVersion": "solver-evaluation-case-v1",
+  "caseSchemaSha256": "da3d30be1bc8dc4a6dad86a73eda6d9f6a133060e8fbd7fe95cd27abdff985fc",
+  "caseFile": "cases.json",
+  "caseFileSha256": "5dd7cb81ff4b02d37b7ac75238c320f15493a437f1e01181cea6fc27af36e2b0",
+  "caseCount": 60,
+  "requiredSlices": [
+    "DOMAIN_TRAP",
+    "HARD_TAIL",
+    "PARTITION_HARD_TAIL",
+    "PARTITION_REGRESSION",
+    "SCOPE_FINAL_ANSWER",
+    "STANDARD",
+    "SUPPORT_SUPPORTED",
+    "TEXT",
+    "TR",
+    "YKS_AYT_CALCULUS",
+    "YKS_AYT_CORE",
+    "YKS_AYT_LOG",
+    "YKS_AYT_TRIG",
+    "YKS_TYT_PROBLEM"
+  ],
+  "partitions": {
+    "DEVELOPMENT": "AVAILABLE",
+    "REGRESSION": "AVAILABLE",
+    "HARD_TAIL": "AVAILABLE",
+    "PROTECTED_HOLDOUT": "BLOCKED_RESTRICTED_STORAGE_UNAVAILABLE",
+    "PRODUCTION_CORRECTIONS": "BLOCKED_GOVERNANCE_UNAVAILABLE"
+  },
+  "representativeness": "ENGINEERING_ONLY",
+  "independentGoldApproval": false,
+  "trainingEligibility": "NOT_ELIGIBLE"
+}

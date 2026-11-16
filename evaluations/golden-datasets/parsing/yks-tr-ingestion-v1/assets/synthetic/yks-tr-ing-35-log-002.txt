@@ -1,0 +1,2 @@
+$\log_3 5 \cdot \log_5 27 + \ln(e^4)$ işleminin sonucu kaçtır?
+A) $4$ B) $6$ C) $7$ D) $9$ E) $12$

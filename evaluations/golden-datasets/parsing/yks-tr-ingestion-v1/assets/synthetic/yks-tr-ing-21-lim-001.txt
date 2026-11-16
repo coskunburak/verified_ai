@@ -1,0 +1,2 @@
+$\lim_{x \to 2} \frac{x^3 - 3x + 4}{x^2 + 2}$ limitinin değeri kaçtır?
+A) $0$ B) $1$ C) $\frac{3}{2}$ D) $\frac{5}{3}$ E) $3$

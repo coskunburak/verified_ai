@@ -1,0 +1,2 @@
+$\lim_{x \to 3} \frac{x^2 - 9}{\sqrt{x + 1} - 2}$ limitinin değeri kaçtır?
+A) $0$ B) $6$ C) $12$ D) $24$ E) $48$

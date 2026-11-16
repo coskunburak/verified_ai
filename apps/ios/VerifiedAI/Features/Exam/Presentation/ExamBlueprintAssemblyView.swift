@@ -361,7 +361,7 @@ public struct ExamBlueprintAssemblyView: View {
                 Text(assembled.reproducibilityHash)
                     .font(.caption2.monospaced())
                     .foregroundStyle(ColorTokens.textPrimary)
-                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("exam.assembly.reproducibilityHashLabel")
             }
 
@@ -373,19 +373,22 @@ public struct ExamBlueprintAssemblyView: View {
                         Text("#\(item.sequenceNumber)")
                             .font(.caption.monospacedDigit().weight(.bold))
                             .foregroundStyle(ColorTokens.action)
-                            .frame(width: 28, alignment: .leading)
+                            .frame(minWidth: 28, alignment: .leading)
 
                         VStack(alignment: .leading, spacing: 2) {
                             Text("\(item.questionCode) • \(item.topicCode)")
                                 .font(.caption.weight(.semibold))
                                 .foregroundStyle(ColorTokens.textPrimary)
+                                .fixedSize(horizontal: false, vertical: true)
                             Text("\(item.difficultyBand.rawValue) • \(item.cognitiveLevel.rawValue) • Options: \(item.optionOrder.joined(separator: ", "))")
                                 .font(.caption2)
                                 .foregroundStyle(ColorTokens.textSecondary)
+                                .fixedSize(horizontal: false, vertical: true)
                             if let altText = item.altTextDescription, !altText.isEmpty {
                                 Text(altText)
                                     .font(.caption2)
                                     .foregroundStyle(ColorTokens.textTertiary)
+                                    .fixedSize(horizontal: false, vertical: true)
                             }
                         }
                         Spacer()

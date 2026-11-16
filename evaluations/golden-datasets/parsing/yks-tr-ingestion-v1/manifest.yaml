@@ -1,0 +1,61 @@
+{
+  "datasetId": "yks-tr-ingestion",
+  "datasetVersion": "yks-tr-ingestion-v1",
+  "caseSchemaVersion": "ingestion-evaluation-case-v1",
+  "reportSchemaVersion": "ingestion-evaluation-report-v1",
+  "evaluationPolicyVersion": "ingestion-evaluation-policy-v1",
+  "createdAt": "2026-11-16T00:00:00Z",
+  "owner": "AI evaluation / YKS Turkish benchmark owner",
+  "purpose": "Deterministic Turkish YKS TYT new-generation word problem & hard AYT symbolic OCR/parsing golden dataset (ADR-006 NOT_ELIGIBLE).",
+  "ontologyVersion": "curriculum-v1-seed",
+  "partitions": [
+    "REGRESSION",
+    "HARD_TAIL",
+    "PROTECTED_HOLDOUT"
+  ],
+  "caseFiles": {
+    "REGRESSION": "regression.jsonl",
+    "HARD_TAIL": "hard-tail.jsonl"
+  },
+  "caseCounts": {
+    "REGRESSION": 20,
+    "HARD_TAIL": 15,
+    "PROTECTED_HOLDOUT": 0,
+    "totalCommitted": 35,
+    "criticalCommitted": 25
+  },
+  "caseFileSha256": {
+    "regression.jsonl": "20cf45015537603d2e9f915ec63d2d03d20230b9965ac8da49a54a9c8527e6d4",
+    "hard-tail.jsonl": "3ab0d33655dcda1f43ccd91d9272123e9b29527a16dd5c843e0e4bb68817915a"
+  },
+  "assetManifestSha256": "2a8f3336c10c7e2f43c41d290d1e8aaf2bd36fcaf81c756c9c2bd811e4e28236",
+  "sourcePolicy": {
+    "allowedOrigins": [
+      "SYNTHETIC",
+      "INTERNALLY_AUTHORED",
+      "PERMISSIVELY_LICENSED_PUBLIC"
+    ],
+    "forbiddenOrigins": [
+      "PRODUCTION_USER_CONTENT",
+      "UNKNOWN_LICENSE_SCRAPE"
+    ],
+    "licensesReadme": "licenses/README.md"
+  },
+  "trainingEligibilityPolicy": {
+    "default": "NOT_ELIGIBLE",
+    "allowedCommittedValues": [
+      "NOT_ELIGIBLE"
+    ],
+    "productionUserCorrectionsAreGold": false
+  },
+  "protectedHoldout": {
+    "partition": "PROTECTED_HOLDOUT",
+    "payloadAvailableInRepository": false,
+    "status": "BLOCKED_PROTECTED_HOLDOUT",
+    "version": "yks-tr-ingestion-v1-protected-holdout-contract",
+    "sha256": "BLOCKED_EXTERNAL_PROTECTED_HOLDOUT",
+    "environmentVariablePath": "YKS_TR_INGESTION_HOLDOUT_PATH",
+    "environmentVariableSha256": "YKS_TR_INGESTION_HOLDOUT_SHA256",
+    "rawPayloadMayBeUploadedAsCiArtifact": false
+  }
+}

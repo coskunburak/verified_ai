@@ -1,0 +1,2 @@
+Bir kafede hazırlanan özel kahve karışımında süt miktarının kahve özütü miktarına oranı $\frac{7}{3}$'tür. $300\text{ mL}$ karışımın içine yalnızca $60\text{ mL}$ daha süt eklendiğinde yeni karışımda süt miktarının kahve özütü miktarına oranı kaç olur?
+A) $\frac{5}{2}$ B) $\frac{11}{4}$ C) $3$ D) $\frac{7}{2}$ E) $4$

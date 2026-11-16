@@ -1,0 +1,2 @@
+Grafikte bir öğrencinin pazartesiden cumaya kadar $5$ gün boyunca çözdüğü günlük soru sayıları sırasıyla $40, 55, 45, 70$ ve $x$ olarak verilmiştir. Öğrencinin bu $5$ günlük günlük soru çözme ortalaması $54$ olduğuna göre, cuma günü çözdüğü $x$ soru sayısı perşembe gününden kaç eksiktir?
+A) $5$ B) $10$ C) $16$ D) $20$ E) $60$

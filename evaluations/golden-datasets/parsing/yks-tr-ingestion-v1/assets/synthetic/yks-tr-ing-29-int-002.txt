@@ -1,0 +1,2 @@
+$\int_0^1 6x(x^2 + 1)^2\,dx$ belirli integralinin değeri kaçtır?
+A) $-7$ B) $1$ C) $7$ D) $8$ E) $14$

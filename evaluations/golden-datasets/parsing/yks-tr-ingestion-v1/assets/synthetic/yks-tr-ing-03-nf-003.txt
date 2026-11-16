@@ -1,0 +1,2 @@
+Bir apartman asansörünün taşıma kapasitesi yalnızca yetişkinlerden oluştuğunda $12$ kişi, yalnızca çocuklardan oluştuğunda ise $20$ kişidir. Bu asansöre $9$ yetişkin bindiğinde asansörün kalan kapasitesiyle en fazla kaç çocuk daha asansöre binebilir?
+A) $3$ B) $4$ C) $5$ D) $6$ E) $8$

@@ -1,0 +1,2 @@
+Birbirini döndüren üç dişli çarktan birincisi $3$, ikincisi $4$, üçüncüsü ise $6$ devir yaptığında aynı konuma gelmektedir. Bu üç çarkın toplam diş sayısı $135$ olduğuna göre, en fazla dişe sahip olan çarkın diş sayısı kaçtır?
+A) $30$ B) $45$ C) $54$ D) $60$ E) $75$

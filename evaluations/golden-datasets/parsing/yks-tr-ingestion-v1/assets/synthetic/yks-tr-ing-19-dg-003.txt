@@ -1,0 +1,2 @@
+Doğrusal grafikte bir su deposundaki su miktarının zamana bağlı değişimi verilmiştir. Depo başlangıçta ($t=0$) $320\text{ litre}$ su içermekte olup $4$ saat sonra içinde $200\text{ litre}$ su kalmaktadır. Sabit hızla su boşalmaya devam ettiğinde deponun tamamen boşalması toplam kaç saat sürer?
+A) $\frac{20}{3}$ B) $8$ C) $10$ D) $\frac{32}{3}$ E) $12$
