@@ -49,6 +49,7 @@ jobs:
       - name: Test API
         working-directory: services/api
         env:
+          DOCKER_API_VERSION: "1.44"
           VERIFIEDAI_MATH_WIRE: "true"
           VERIFIEDAI_VERIFIER_PYTHON: ${{ github.workspace }}/services/math-verifier/.venv/bin/python
         run: mvn -Dverifiedai.test.minio-image=verified-ai/minio-test:2024-07-16-3535197 test
