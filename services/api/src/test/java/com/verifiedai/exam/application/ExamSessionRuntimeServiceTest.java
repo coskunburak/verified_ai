@@ -335,6 +335,55 @@ class ExamSessionRuntimeServiceTest {
                         .isEqualTo(ApiErrorCode.EXAM_SESSION_EXPIRED));
     }
 
+    @Test
+    void triggersDeterministicAutoScoringOnSubmitAndAutoExpire() {
+        ExamScoringEngineService scoringMock = mock(ExamScoringEngineService.class);
+        when(scoringMock.isScoringEngineEnabled()).thenReturn(true);
+        service.setExamScoringEngineService(scoringMock);
+
+        AssembledAssessment assembly = sampleAssembly();
+        when(assemblyRepository.findById(ASSEMBLY_ID)).thenReturn(Optional.of(assembly));
+        when(sessionRepository.findActiveByUserIdAndAssemblyId(USER_ID, ASSEMBLY_ID)).thenReturn(Optional.empty());
+        ExamSession session = service.startOrResumeSession(
+                USER_ID,
+                new StartSessionCommand(USER_ID, ASSEMBLY_ID, 120, T0, false)
+        ).session();
+
+        when(sessionRepository.findById(session.id())).thenReturn(Optional.of(session));
+        when(sessionRepository.findIdempotencyRecord(any(), anyString(), anyString())).thenReturn(Optional.empty());
+
+        service.submitSession(
+                USER_ID,
+                session.id(),
+                "submit-autoscore-1",
+                new SubmitSessionCommand("USER_INITIATED", T0.plusSeconds(45), false)
+        );
+        verify(scoringMock, org.mockito.Mockito.times(1)).computeOrGetScoreSummary(USER_ID, session.id());
+
+        // Second session auto-expired on past-grace autosave also triggers deterministic scoring
+        UUID expiredSessionId = UUID.randomUUID();
+        ExamSession secondActive = new ExamSession(
+                expiredSessionId, USER_ID, ASSEMBLY_ID, BLUEPRINT_ID, session.examCode(), 1,
+                ExamSessionStatus.OFFLINE_GRACE_BUFFER, session.navigationPolicy(), true,
+                session.accommodationsSnapshot(), session.baseDurationSeconds(), session.accommodationsSnapshot().timeMultiplier(),
+                session.effectiveDurationSeconds(), session.offlineGraceBufferSeconds(),
+                T0, T0.plusSeconds(1125), T0.plusSeconds(1245), T0, T0.plusSeconds(1150),
+                null, null, null, 1, 100, 0, 0, 5, 0L, null, false, T0, T0, session.items()
+        );
+        clock.advanceSeconds(1300);
+        when(sessionRepository.findById(expiredSessionId)).thenReturn(Optional.of(secondActive));
+        assertThatThrownBy(() -> service.autosaveItem(
+                USER_ID,
+                expiredSessionId,
+                1,
+                "auto-expire-hook-1",
+                new AutosaveItemCommand(
+                        "SELECT_OPTION", "B", null, false, null, 10, 0, 1L, true, clock.instant(), false
+                )
+        )).isInstanceOf(ApiProblemException.class);
+        verify(scoringMock, org.mockito.Mockito.times(1)).computeOrGetScoreSummary(USER_ID, expiredSessionId);
+    }
+
     private static AssembledAssessment sampleAssembly() {
         UUID item1QuestionId = UUID.fromString("93000000-0000-4000-8000-000000000101");
         List<AssembledAssessmentItem> items = new java.util.ArrayList<>();

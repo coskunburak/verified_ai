@@ -158,6 +158,12 @@ public class ExamSessionRuntimeService {
     private final Clock clock;
     private final JsonMapper jsonMapper;
     private volatile boolean sessionRuntimeEnabled;
+    private ExamScoringEngineService examScoringEngineService;
+
+    @Autowired(required = false)
+    public void setExamScoringEngineService(ExamScoringEngineService examScoringEngineService) {
+        this.examScoringEngineService = examScoringEngineService;
+    }
 
     @Autowired
     public ExamSessionRuntimeService(
@@ -747,6 +753,7 @@ public class ExamSessionRuntimeService {
         ));
 
         publishSubmittedEvent(saved, serverNow);
+        triggerDeterministicAutoScoring(saved);
         return new SubmitSessionResult(false, snapshot, saved, manifest, clockSync);
     }
 
@@ -775,8 +782,15 @@ public class ExamSessionRuntimeService {
         );
         ExamSession saved = examSessionRepository.updateSessionHeader(finalized);
         publishSubmittedEvent(saved, serverNow);
+        triggerDeterministicAutoScoring(saved);
         LOG.info("Auto-expired exam sessionId={} examCode={} reason={}", saved.id(), saved.examCode(), reason);
         return saved;
+    }
+
+    private void triggerDeterministicAutoScoring(ExamSession saved) {
+        if (examScoringEngineService != null && examScoringEngineService.isScoringEngineEnabled()) {
+            examScoringEngineService.computeOrGetScoreSummary(saved.userId(), saved.id());
+        }
     }
 
     private void publishSubmittedEvent(ExamSession saved, Instant serverNow) {

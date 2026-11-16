@@ -230,6 +230,135 @@ public final class ScoringFormulaPolicy {
         return clamp(scaled, minScore, maxScore);
     }
 
+    public static ScoringEvaluationResult evaluateAggregateForQuestionCount(
+            ExamDefinition definition,
+            int evaluatedQuestionCount,
+            int correctCount,
+            int wrongCount,
+            int blankCount
+    ) {
+        Objects.requireNonNull(definition, "definition cannot be null");
+        if (evaluatedQuestionCount < 1 || evaluatedQuestionCount > 200) {
+            throw new ApiProblemException(
+                    HttpStatus.BAD_REQUEST,
+                    ApiErrorCode.REQUEST_VALIDATION_FAILED,
+                    "evaluatedQuestionCount must be between 1 and 200",
+                    true,
+                    "FIX_RESPONSE_COUNTS"
+            );
+        }
+        validateCounts(correctCount, wrongCount, blankCount, evaluatedQuestionCount);
+        if (evaluatedQuestionCount == definition.totalQuestions()) {
+            return evaluateAggregate(definition, correctCount, wrongCount, blankCount);
+        }
+
+        BigDecimal effectivePenalty = effectiveWrongPenaltyRatio(definition);
+        BigDecimal adjustedMinScore = definition.scoringFormulaType() == ScoringFormulaType.CORRECT_MINUS_QUARTER_WRONG
+                ? minPossibleNetScore(definition.scoringFormulaType(), effectivePenalty, evaluatedQuestionCount)
+                : definition.minScore();
+        BigDecimal adjustedMaxScore = definition.scoringFormulaType() == ScoringFormulaType.CORRECT_MINUS_QUARTER_WRONG
+                ? maxPossibleNetScore(definition.scoringFormulaType(), evaluatedQuestionCount)
+                : definition.maxScore();
+
+        ExamDefinition adjusted = new ExamDefinition(
+                definition.id(),
+                definition.examCode(),
+                definition.examVersion(),
+                definition.jurisdiction(),
+                definition.examFamily(),
+                definition.titleEn(),
+                definition.titleTr(),
+                definition.status(),
+                evaluatedQuestionCount,
+                definition.durationMinutes(),
+                definition.scoringFormulaType(),
+                definition.wrongPenaltyFactor(),
+                adjustedMinScore,
+                adjustedMaxScore,
+                definition.navigationPolicy(),
+                definition.blueprintHash(),
+                definition.effectiveFrom(),
+                definition.deprecatedAt(),
+                definition.supersededByVersion(),
+                definition.sections(),
+                definition.scoringParameters(),
+                definition.topicWeights(),
+                definition.trainingEligible(),
+                definition.createdAt(),
+                definition.updatedAt()
+        );
+        return evaluateAggregate(adjusted, correctCount, wrongCount, blankCount);
+    }
+
+    public static BigDecimal effectiveWrongPenaltyRatio(ExamDefinition definition) {
+        if (definition == null) {
+            return new BigDecimal("0.2500");
+        }
+        return switch (definition.scoringFormulaType()) {
+            case CORRECT_MINUS_QUARTER_WRONG -> {
+                BigDecimal configured = definition.wrongPenaltyFactor();
+                yield configured != null
+                        ? configured.setScale(4, RoundingMode.HALF_UP)
+                        : new BigDecimal("0.2500");
+            }
+            case RAW_CORRECT_ONLY -> BigDecimal.ZERO.setScale(4, RoundingMode.HALF_UP);
+            case WEIGHTED_SECTION_RUBRIC -> {
+                BigDecimal configured = definition.wrongPenaltyFactor();
+                yield configured != null
+                        ? configured.setScale(4, RoundingMode.HALF_UP)
+                        : BigDecimal.ZERO.setScale(4, RoundingMode.HALF_UP);
+            }
+        };
+    }
+
+    public static BigDecimal minPossibleNetScore(
+            ScoringFormulaType formulaType,
+            BigDecimal wrongPenaltyRatio,
+            int totalQuestions
+    ) {
+        if (totalQuestions < 1) {
+            throw new IllegalArgumentException("totalQuestions must be >= 1");
+        }
+        if (formulaType == ScoringFormulaType.RAW_CORRECT_ONLY) {
+            return BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
+        }
+        BigDecimal penalty = wrongPenaltyRatio == null ? BigDecimal.ZERO : wrongPenaltyRatio;
+        return penalty.multiply(BigDecimal.valueOf(totalQuestions))
+                .negate()
+                .setScale(2, RoundingMode.HALF_UP);
+    }
+
+    public static BigDecimal maxPossibleNetScore(ScoringFormulaType formulaType, int totalQuestions) {
+        if (totalQuestions < 1) {
+            throw new IllegalArgumentException("totalQuestions must be >= 1");
+        }
+        return BigDecimal.valueOf(totalQuestions).setScale(2, RoundingMode.HALF_UP);
+    }
+
+    public static BigDecimal computeNormalizedPercentageScore(
+            BigDecimal netScore,
+            BigDecimal maxPossibleNetScore
+    ) {
+        if (netScore == null || maxPossibleNetScore == null || maxPossibleNetScore.compareTo(BigDecimal.ZERO) <= 0) {
+            return BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
+        }
+        BigDecimal ratio = netScore
+                .multiply(new BigDecimal("100"))
+                .divide(maxPossibleNetScore, 4, RoundingMode.HALF_UP);
+        return clamp(ratio, BigDecimal.ZERO, new BigDecimal("100.00"));
+    }
+
+    public static BigDecimal computeAccuracyPercentage(int correctCount, int wrongCount) {
+        int attempted = correctCount + wrongCount;
+        if (attempted <= 0) {
+            return BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
+        }
+        BigDecimal ratio = BigDecimal.valueOf(correctCount)
+                .multiply(new BigDecimal("100"))
+                .divide(BigDecimal.valueOf(attempted), 4, RoundingMode.HALF_UP);
+        return clamp(ratio, BigDecimal.ZERO, new BigDecimal("100.00"));
+    }
+
     private static BigDecimal clamp(BigDecimal value, BigDecimal minScore, BigDecimal maxScore) {
         BigDecimal result = value;
         if (minScore != null && result.compareTo(minScore) < 0) {

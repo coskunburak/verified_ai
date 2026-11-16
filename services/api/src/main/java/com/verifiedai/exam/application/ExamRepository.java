@@ -17,6 +17,8 @@ public interface ExamRepository {
 
     List<ExamDefinition> findCatalog(Jurisdiction jurisdiction, ExamFamily examFamily, boolean includeDeprecated);
 
+    Optional<ExamDefinition> findById(UUID examDefinitionId);
+
     Optional<ExamDefinition> findLatestByCode(String examCode, boolean includeDeprecated);
 
     Optional<ExamDefinition> findByCodeAndVersion(String examCode, String examVersion);

@@ -208,6 +208,79 @@ class ExamPrivacyLifecycleContributorTest {
         assertThat(exported.get("trainingEligible")).isEqualTo(false);
         assertThat(fullContributor.purgeExpiredSyllabusArtifacts(now)).isEqualTo(3);
 
+        com.verifiedai.exam.infrastructure.persistence.ExamScoringRepository scoringRepo =
+                mock(com.verifiedai.exam.infrastructure.persistence.ExamScoringRepository.class);
+        UUID scoreId = UUID.randomUUID();
+        UUID sessionId = UUID.randomUUID();
+        com.verifiedai.exam.domain.ExamSessionScoreSnapshot snapshot = new com.verifiedai.exam.domain.ExamSessionScoreSnapshot(
+                scoreId,
+                sessionId,
+                userId,
+                UUID.fromString("91000000-0000-4000-8000-000000000101"),
+                assessmentId,
+                "TR_YKS_TYT_MATH",
+                com.verifiedai.exam.domain.ExamModels.ScoringFormulaType.CORRECT_MINUS_QUARTER_WRONG,
+                new BigDecimal("0.2500"),
+                1,
+                1,
+                0,
+                0,
+                BigDecimal.ONE,
+                BigDecimal.ZERO,
+                BigDecimal.ONE,
+                new BigDecimal("-0.25"),
+                BigDecimal.ONE,
+                new BigDecimal("100.00"),
+                new BigDecimal("100.00"),
+                45,
+                new BigDecimal("45.00"),
+                List.of(new com.verifiedai.exam.domain.TopicScoreBreakdown(
+                        "MATH.ARITHMETIC.INTEGER_OPERATIONS",
+                        "Integer Operations",
+                        1, 1, 0, 0, BigDecimal.ONE, BigDecimal.ZERO, BigDecimal.ONE,
+                        new BigDecimal("100.00"), 45, new BigDecimal("45.00")
+                )),
+                List.of(new com.verifiedai.exam.domain.DifficultyScoreBreakdown(
+                        com.verifiedai.exam.domain.DifficultyBand.EASY,
+                        1, 1, 0, 0, BigDecimal.ONE, new BigDecimal("100.00"), 45, new BigDecimal("45.00")
+                )),
+                List.of(),
+                1,
+                now,
+                now,
+                null,
+                0,
+                BigDecimal.ZERO,
+                false
+        );
+        com.verifiedai.exam.domain.ExamScoreRegradeAudit audit = new com.verifiedai.exam.domain.ExamScoreRegradeAudit(
+                UUID.randomUUID(), scoreId, sessionId, userId, 1, 2,
+                BigDecimal.ZERO, BigDecimal.ONE, 0, 1, 0, 0, 1, 0,
+                com.verifiedai.exam.domain.ScoreRegradeReasonCode.ANSWER_KEY_CORRECTION,
+                "Privacy export regrade record", "qa-system",
+                java.util.Map.of("netScoreDelta", BigDecimal.ONE), false, now
+        );
+        when(scoringRepo.findLatestScoresByUserId(userId, 100)).thenReturn(List.of(snapshot));
+        when(scoringRepo.findRegradeAuditsByUserId(userId)).thenReturn(List.of(audit));
+        when(scoringRepo.deleteByUserId(userId)).thenReturn(2);
+
+        ExamPrivacyLifecycleContributor scoringContributor = new ExamPrivacyLifecycleContributor(
+                examRepository,
+                candidateRepo,
+                assembledRepo,
+                Clock.fixed(now, ZoneOffset.UTC)
+        );
+        scoringContributor.setExamScoringRepository(scoringRepo);
+        java.util.Map<String, Object> scoringExport = scoringContributor.exportUserData(userId);
+        assertThat(scoringExport.get("trainingEligible")).isEqualTo(false);
+        assertThat(scoringExport).containsKeys("examSessionScores", "examScoreRegradeAudits");
+        assertThat(scoringExport.toString()).doesNotContain("failurerate").doesNotContain("weaknessscore");
+
+        scoringContributor.deleteUserData(userId, now);
+        org.mockito.InOrder deleteOrder = org.mockito.Mockito.inOrder(scoringRepo, assembledRepo);
+        deleteOrder.verify(scoringRepo).deleteByUserId(userId);
+        deleteOrder.verify(assembledRepo).deleteByUserId(userId);
+
         fullContributor.deleteUserData(userId, now);
 
         InOrder order = inOrder(assembledRepo, candidateRepo, examRepository);

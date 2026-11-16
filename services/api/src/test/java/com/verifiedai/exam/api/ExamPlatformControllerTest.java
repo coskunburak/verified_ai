@@ -405,6 +405,13 @@ class ExamPlatformControllerTest {
         }
 
         @Override
+        public Optional<ExamDefinition> findById(UUID examDefinitionId) {
+            return definitions.stream()
+                    .filter(def -> def.id().equals(examDefinitionId))
+                    .findFirst();
+        }
+
+        @Override
         public Optional<ExamDefinition> findLatestByCode(String examCode, boolean includeDeprecated) {
             return definitions.stream()
                     .filter(def -> def.examCode().equals(examCode))

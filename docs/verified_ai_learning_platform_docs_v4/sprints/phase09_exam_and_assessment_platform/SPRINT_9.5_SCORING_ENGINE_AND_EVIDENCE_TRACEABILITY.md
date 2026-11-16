@@ -355,52 +355,52 @@ Codex must implement this sprint in small reviewable slices, re-reading the high
 ## 1. Sprint Metadata & Status
 - **Sprint ID:** `SPRINT_9.5`
 - **Canonical Title:** Deterministic Scoring Engine, ÖSYM Net Calculation Policy ($\text{Net} = C - 0.25 W$) & Evidence Traceability
-- **Status:** `BLOCKED_BY_ENTRY_GATE (ADR-011)`
+- **Status:** `LOCAL_ACCEPTANCE_PASSED (2026-11-16) — FEATURE_GATED_BY_ADR_011` (`SPRINT_9.5_EXECUTION_REPORT.md` & `SPRINT_9.5_FILE_MANIFEST.md`)
 - **Primary Spec Reference:** `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md` (Quantity 5) & `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md`
 
 ## 2. Strategic Learning OS Objective & User Value
 Calculates explainable, deterministic exam scoring across multiple assessment frameworks, specifically implementing the Turkish ÖSYM penalty rule ($\text{Net} = \text{Correct} - 0.25 \cdot \text{Wrong}$) and AP/IB/SAT points models. Anchors every question result to verifiable attempt evidence without relying on generative LLM score approximations.
 
 ## 3. Entry Gate & Preconditions
-- `ADR-011` `GO` decision recorded; `Sprint 9.4` accepted.
+- `ADR-011` feature flag gate (`verifiedai.exam.scoring-engine-enabled: false`); `Sprint 9.4` (`V057`) accepted.
 
 ## 4. Domain Invariants & Scoring Rules
-1. **Deterministic Penalty Arithmetic (`INV-EXAM-004`):** For ÖSYM exams, net score is governed strictly by $\text{Net} = C - 0.25 \cdot W$. Scores are rounded to exactly two decimal places, and $\text{Net} \in [-0.25 \cdot Q_E,\; Q_E]$.
-2. **Immutable Score Snapshots:** Once computed, score records bind to the immutable `exam_sessions.submitted_at` timestamp. Re-scoring is possible only through explicit administrative regrading with audit logging.
-3. **Traceability to Learning State:** Wrong answers are linked to canonical skill codes to immediately feed the post-assessment weak-area prioritization pipeline (`Sprint 9.7`).
+1. **Deterministic Penalty Arithmetic (`INV-EXAM-004`):** For ÖSYM exams, net score is governed strictly by $\text{Net} = C - 0.25 \cdot W$. Scores are rounded (`HALF_UP`) to exactly two decimal places, and $\text{Net} \in [-0.25 \cdot Q_E,\; Q_E]$.
+2. **Scorable Status Gate & Audit-Logged Regrading:** Scoring requires terminal scorable session states (`SUBMITTED` or `EXPIRED_AUTO_SUBMITTED`), rejecting active/non-scorable sessions with `HTTP 409 EXAM_SESSION_NOT_SCORABLE`. Re-scoring creates an explicit audit trail (`exam_score_regrade_audits`) incrementing `score_version`.
+3. **Traceability to Learning State & F28 Scratchpad Evidence:** Per-item evaluations record `question_item_id`, `topic_code`, `difficulty_band`, `cognitive_level`, `format_type`, distractor note, and `F28ScratchpadTraceStatus` to feed post-assessment weak-area prioritization (`Sprint 9.7`).
 
 ## 5. Owning Spring Modulith Backend Modules & Classes
-- `com.verifiedai.exam`: `ExamScoringService.java`, `ScoringFormulaPolicy.java`, `ExamScoreSummaryDto.java`, `ExamScoringController.java`.
+- `com.verifiedai.exam`: `DeterministicExamScoringPolicy.java`, `ScoringFormulaPolicy.java`, `ExamSessionScoreSnapshot.java`, `ExamSessionItemEvaluation.java`, `ExamScoreRegradeAudit.java`, `TopicScoreBreakdown.java`, `DifficultyScoreBreakdown.java`, `ExamScoringEngineService.java`, `JdbcExamScoringRepository.java`, `ExamPrivacyLifecycleContributor.java`, and `ExamScoringController.java`.
 
 ## 6. Python Math Verifier Impact
 - None (`100%` deterministic Java domain logic).
 
-## 7. Database Migration & Persistence Contract
-- **Tables:** `exam_session_scores` (`session_id`, `total_score`, `net_score`, `correct_count`, `wrong_count`, `omitted_count`, `scoring_policy_code`, `computed_at`).
+## 7. Database Migration & Persistence Contract (`V058__create_exam_scoring_and_evidence_tables.sql`)
+- **Tables:** `exam_session_scores`, `exam_session_item_evaluations`, and `exam_score_regrade_audits` (all enforcing `CHECK (training_eligible = FALSE)` per `ADR-006`, plus `CHECK (llm_tokens_used = 0)` and `CHECK (inference_cost_usd = 0.000000)` per `INV-EXAM-004`).
 
 ## 8. REST API Contracts
-- `GET /v1/exams/sessions/{id}/score-summary` (`exam-score-summary-v1`).
+- Dual-mapped (`/v1/exams/sessions/**` & `/api/v1/exams/sessions/**`): `POST /sessions/{sessionId}/score`, `GET /sessions/{sessionId}/score-summary`, `POST /sessions/{sessionId}/score-regrade`, and `GET /sessions/{sessionId}/score-regrades` (`schemaVersion: "2026-04-01"`).
 
 ## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
-- Renders `ExamScoreSummaryView.swift` (Net score badge, Correct/Wrong/Blank counters, and time-per-question metrics).
+- Renders `ExamScoreSummaryView.swift` + `ExamScoreSummaryViewModel.swift` (net score hero card, formula badge, Correct/Wrong/Blank counters, topic & difficulty breakdowns, `All`/`Wrong`/`Blank` item evidence list, regrade audit section, and SQLite offline fallback via `ExamOfflineSQLiteStore`).
 
 ## 10. AI Capability & Unit Economics Guardrail
-- **`$0.00` LLM token cost** (pure server-side math).
+- **`$0.00` LLM token cost** (`llm_tokens_used = 0`, `inference_cost_usd = 0.000000`, pure server-side math).
 
 ## 11. Privacy, Safety & Compliance
-- Purged on account deletion via `ExamPrivacyLifecycleContributor`.
+- Exported and child-first purged deterministically on account deletion via `ExamPrivacyLifecycleContributor` (`exam_score_regrade_audits` -> `exam_session_item_evaluations` -> `exam_session_scores`).
 
 ## 12. Telemetry & Observability
-- Emits `exam_scored`, `net_score_calculated` (`exam_code`, `net_score`, `accuracy_rate`).
+- Emits `ExamScoreComputedEvent` (`exam::events`) and Micrometer metrics for score computation and regrades (`llm_tokens_used = 0`).
 
 ## 13. Feature Flags & Rollback Plan
 - `verifiedai.exam.scoring-engine-enabled: false`.
 
 ## 14. Automated Test Matrix (Categories A–F)
-- Tests all boundary cases: 40 correct ($40.0\text{ Net}$), 40 wrong ($-10.0\text{ Net}$), 40 blank ($0.0\text{ Net}$), and fractional decimal rounding.
+- Tests boundary net cases (40 correct `40.00`, 40 wrong `-10.00`, 40 blank `0.00`, fractional `HALF_UP` rounding), non-scorable session `409` rejection, BOLA `403` enforcement, regrade validation/versioning, `V058` SQL constraints, privacy export & child-first cascade, SQLite offline fallback & purge, and SwiftUI post-submit score summary flow.
 
 ## 15. Owner-Only Acceptance Command
-- `bash scripts/quality/sprint_9_5_owner_acceptance.sh --full`
+- `bash scripts/quality/sprint_9_5_owner_acceptance.sh --VerifyHost` (`LOCAL_ACCEPTANCE_PASSED`)
 
 ## 16. Explicit Non-Goals
 - Does not rank students against a live national percentile bell curve without formal cohort data.

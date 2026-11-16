@@ -28,6 +28,7 @@ public final class ExamSessionViewModel: ObservableObject {
     @Published public private(set) var localScratchpadDraftCount: Int = 0
     @Published public private(set) var submissionReceipt: ExamSessionSubmitResponseDTO?
     @Published public var showSubmitConfirmation: Bool = false
+    @Published public var showScoreSummary: Bool = false
     @Published public var noHintAlertVisible: Bool = false
     @Published public private(set) var lastNoHintExplanationKey: String?
     @Published public private(set) var errorLocalizationKey: String?
@@ -61,6 +62,17 @@ public final class ExamSessionViewModel: ObservableObject {
 
     public var currentUserId: UUID {
         activeUserId
+    }
+
+    public func makeScoreSummaryViewModel() -> ExamScoreSummaryViewModel {
+        let resolvedSessionId = session?.sessionId ?? submissionReceipt?.sessionId ?? UUID()
+        return ExamScoreSummaryViewModel(
+            sessionId: resolvedSessionId,
+            userId: activeUserId,
+            highContrastMode: highContrastMode,
+            apiService: apiService,
+            offlineStore: offlineStore
+        )
     }
 
     public var highContrastMode: Bool {

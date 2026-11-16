@@ -1,5 +1,9 @@
 package com.verifiedai.exam.infrastructure.privacy;
 
+import com.verifiedai.exam.domain.ExamScoreRegradeAudit;
+import com.verifiedai.exam.domain.ExamSessionScoreSnapshot;
+import com.verifiedai.exam.infrastructure.persistence.ExamScoringRepository;
+
 import com.verifiedai.exam.application.CandidateProfileRepository;
 import com.verifiedai.exam.application.ExamRepository;
 import com.verifiedai.exam.domain.AssembledAssessment;
@@ -44,6 +48,12 @@ public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleCont
     private final AssembledAssessmentRepository assembledAssessmentRepository;
     private final ExamSessionRepository examSessionRepository;
     private final Clock clock;
+    private ExamScoringRepository examScoringRepository;
+
+    @Autowired(required = false)
+    public void setExamScoringRepository(ExamScoringRepository examScoringRepository) {
+        this.examScoringRepository = examScoringRepository;
+    }
 
     @Autowired
     public ExamPrivacyLifecycleContributor(
@@ -178,6 +188,57 @@ public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleCont
             exportMap.put("examSessions", exportedSessions);
         }
 
+        if (examScoringRepository != null) {
+            List<Map<String, Object>> exportedScores = new java.util.ArrayList<>();
+            for (ExamSessionScoreSnapshot score : examScoringRepository.findLatestScoresByUserId(userId, 200)) {
+                Map<String, Object> scoreEntry = new java.util.LinkedHashMap<>();
+                scoreEntry.put("scoreId", score.scoreId());
+                scoreEntry.put("sessionId", score.sessionId());
+                scoreEntry.put("examCode", score.examCode());
+                scoreEntry.put("scoringFormulaType", score.scoringFormulaType().name());
+                scoreEntry.put("wrongPenaltyRatio", score.wrongPenaltyRatio());
+                scoreEntry.put("totalQuestions", score.totalQuestions());
+                scoreEntry.put("correctCount", score.correctCount());
+                scoreEntry.put("wrongCount", score.wrongCount());
+                scoreEntry.put("blankCount", score.blankCount());
+                scoreEntry.put("rawCorrectScore", score.rawCorrectScore());
+                scoreEntry.put("wrongPenaltyDeduction", score.wrongPenaltyDeduction());
+                scoreEntry.put("netScore", score.netScore());
+                scoreEntry.put("normalizedPercentageScore", score.normalizedPercentageScore());
+                scoreEntry.put("accuracyPercentage", score.accuracyPercentage());
+                scoreEntry.put("scoreVersion", score.scoreVersion());
+                scoreEntry.put("scoredAt", score.scoredAt());
+                scoreEntry.put("lastRegradedAt", score.lastRegradedAt());
+                scoreEntry.put("llmTokensUsed", 0);
+                scoreEntry.put("inferenceCostUsd", score.inferenceCostUsd());
+                scoreEntry.put("trainingEligible", false);
+                exportedScores.add(scoreEntry);
+            }
+            exportMap.put("examSessionScores", exportedScores);
+
+            List<Map<String, Object>> exportedAudits = new java.util.ArrayList<>();
+            for (ExamScoreRegradeAudit audit : examScoringRepository.findRegradeAuditsByUserId(userId)) {
+                Map<String, Object> auditEntry = new java.util.LinkedHashMap<>();
+                auditEntry.put("regradeAuditId", audit.regradeAuditId());
+                auditEntry.put("scoreId", audit.scoreId());
+                auditEntry.put("sessionId", audit.sessionId());
+                auditEntry.put("previousScoreVersion", audit.previousScoreVersion());
+                auditEntry.put("newScoreVersion", audit.newScoreVersion());
+                auditEntry.put("previousNetScore", audit.previousNetScore());
+                auditEntry.put("newNetScore", audit.newNetScore());
+                auditEntry.put("reasonCode", audit.reasonCode().name());
+                auditEntry.put("reasonDetail", audit.reasonDetail());
+                auditEntry.put("triggeredBy", audit.triggeredBy());
+                auditEntry.put("regradedAt", audit.regradedAt());
+                auditEntry.put("trainingEligible", false);
+                exportedAudits.add(auditEntry);
+            }
+            exportMap.put("examScoreRegradeAudits", exportedAudits);
+        } else {
+            exportMap.put("examSessionScores", List.of());
+            exportMap.put("examScoreRegradeAudits", List.of());
+        }
+
         exportMap.put("llmTokensUsed", 0);
         exportMap.put("trainingEligible", false);
         return exportMap;
@@ -186,8 +247,12 @@ public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleCont
     @Override
     public void deleteUserData(UUID userId, Instant now) {
         // Strict FK-safe child-first purge order:
-        // V057 scratchpad assets / idempotency / session items / exam sessions
+        // V058 scoring snapshots / item evaluations / regrade audits
+        // -> V057 scratchpad assets / idempotency / session items / exam sessions
         // -> V056 assembled assessments & items -> V055 candidate profiles -> V054 exam targets
+        int deletedScoringRows = examScoringRepository == null
+                ? 0
+                : examScoringRepository.deleteByUserId(userId);
         int deletedSessionRows = examSessionRepository == null
                 ? 0
                 : examSessionRepository.deleteByUserId(userId);

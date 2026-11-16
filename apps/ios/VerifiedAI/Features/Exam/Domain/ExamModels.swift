@@ -1946,3 +1946,514 @@ public struct ExamLocalScratchpadDraft: Sendable, Codable, Equatable, Identifiab
         self.createdAt = createdAt
     }
 }
+
+// MARK: - Sprint 9.5 Deterministic Scoring Engine, ÖSYM Net Policy & Evidence Models
+
+public typealias ExamScoringFormulaType = ScoringFormulaType
+
+public enum ExamScoreDifficultyBand: String, Codable, CaseIterable, Equatable, Hashable, Sendable, Identifiable {
+    case easy = "EASY"
+    case moderate = "MODERATE"
+    case hard = "HARD"
+    case elite = "ELITE"
+
+    public var id: String { rawValue }
+}
+
+public enum ExamScoreCognitiveLevel: String, Codable, CaseIterable, Equatable, Hashable, Sendable, Identifiable {
+    case recall = "RECALL"
+    case application = "APPLICATION"
+    case analysis = "ANALYSIS"
+    case synthesis = "SYNTHESIS"
+
+    public var id: String { rawValue }
+}
+
+public enum ExamScoreQuestionFormatType: String, Codable, CaseIterable, Equatable, Hashable, Sendable, Identifiable {
+    case singleChoiceMcq = "SINGLE_CHOICE_MCQ"
+    case multiSelectMcq = "MULTI_SELECT_MCQ"
+    case numericGridIn = "NUMERIC_GRID_IN"
+
+    public var id: String { rawValue }
+}
+
+public enum ExamItemEvaluationOutcome: String, Codable, CaseIterable, Equatable, Hashable, Sendable, Identifiable {
+    case correct = "CORRECT"
+    case wrong = "WRONG"
+    case blank = "BLANK"
+
+    public var id: String { rawValue }
+}
+
+public enum ExamF28ScratchpadStatus: String, Codable, CaseIterable, Equatable, Hashable, Sendable {
+    case none = "NONE"
+    case attachedMetadataOnly = "ATTACHED_METADATA_ONLY"
+}
+
+public enum ExamScoreRegradeReasonCode: String, Codable, CaseIterable, Equatable, Hashable, Sendable, Identifiable {
+    case answerKeyCorrection = "ANSWER_KEY_CORRECTION"
+    case penaltyPolicySync = "PENALTY_POLICY_SYNC"
+    case adminManualRegrade = "ADMIN_MANUAL_REGRADE"
+
+    public var id: String { rawValue }
+}
+
+public enum ExamItemEvidenceFilter: String, CaseIterable, Identifiable, Sendable {
+    case all = "ALL"
+    case correct = "CORRECT"
+    case wrong = "WRONG"
+    case blank = "BLANK"
+    case flagged = "FLAGGED"
+
+    public var id: String { rawValue }
+
+    public var localizationKey: String {
+        switch self {
+        case .all: return "exam.score.filter.all"
+        case .correct: return "exam.score.filter.correct"
+        case .wrong: return "exam.score.filter.wrong"
+        case .blank: return "exam.score.filter.blank"
+        case .flagged: return "exam.score.filter.flagged"
+        }
+    }
+}
+
+public struct ExamTopicScoreBreakdown: Sendable, Codable, Equatable, Hashable, Identifiable {
+    public var id: String { topicCode }
+    public let topicCode: String
+    public let topicTitle: String
+    public let totalQuestions: Int
+    public let correctCount: Int
+    public let wrongCount: Int
+    public let blankCount: Int
+    public let rawCorrectScore: Double
+    public let wrongPenaltyDeduction: Double
+    public let netScore: Double
+    public let accuracyPercentage: Double
+    public let totalTimeSpentSeconds: Int
+    public let averageSecondsPerItem: Double
+
+    public init(
+        topicCode: String,
+        topicTitle: String,
+        totalQuestions: Int,
+        correctCount: Int,
+        wrongCount: Int,
+        blankCount: Int,
+        rawCorrectScore: Double,
+        wrongPenaltyDeduction: Double,
+        netScore: Double,
+        accuracyPercentage: Double,
+        totalTimeSpentSeconds: Int,
+        averageSecondsPerItem: Double
+    ) {
+        self.topicCode = topicCode
+        self.topicTitle = topicTitle
+        self.totalQuestions = totalQuestions
+        self.correctCount = correctCount
+        self.wrongCount = wrongCount
+        self.blankCount = blankCount
+        self.rawCorrectScore = rawCorrectScore
+        self.wrongPenaltyDeduction = wrongPenaltyDeduction
+        self.netScore = netScore
+        self.accuracyPercentage = accuracyPercentage
+        self.totalTimeSpentSeconds = totalTimeSpentSeconds
+        self.averageSecondsPerItem = averageSecondsPerItem
+    }
+}
+
+public struct ExamDifficultyScoreBreakdown: Sendable, Codable, Equatable, Hashable, Identifiable {
+    public var id: String { difficultyBand.rawValue }
+    public let difficultyBand: ExamScoreDifficultyBand
+    public let totalQuestions: Int
+    public let correctCount: Int
+    public let wrongCount: Int
+    public let blankCount: Int
+    public let netScore: Double
+    public let accuracyPercentage: Double
+    public let totalTimeSpentSeconds: Int
+    public let averageSecondsPerItem: Double
+
+    public init(
+        difficultyBand: ExamScoreDifficultyBand,
+        totalQuestions: Int,
+        correctCount: Int,
+        wrongCount: Int,
+        blankCount: Int,
+        netScore: Double,
+        accuracyPercentage: Double,
+        totalTimeSpentSeconds: Int,
+        averageSecondsPerItem: Double
+    ) {
+        self.difficultyBand = difficultyBand
+        self.totalQuestions = totalQuestions
+        self.correctCount = correctCount
+        self.wrongCount = wrongCount
+        self.blankCount = blankCount
+        self.netScore = netScore
+        self.accuracyPercentage = accuracyPercentage
+        self.totalTimeSpentSeconds = totalTimeSpentSeconds
+        self.averageSecondsPerItem = averageSecondsPerItem
+    }
+}
+
+public struct ExamSessionItemEvaluation: Sendable, Codable, Equatable, Identifiable {
+    public var id: UUID { evaluationId }
+    public let evaluationId: UUID
+    public let sessionItemId: UUID
+    public let questionItemId: UUID
+    public let positionIndex: Int
+    public let questionCode: String
+    public let topicCode: String
+    public let topicTitle: String
+    public let difficultyBand: ExamScoreDifficultyBand
+    public let cognitiveLevel: ExamScoreCognitiveLevel
+    public let formatType: ExamScoreQuestionFormatType
+    public let evaluationOutcome: ExamItemEvaluationOutcome
+    public let selectedOptionKey: String?
+    public let numericResponseValue: Double?
+    public let correctOptionKey: String?
+    public let expectedNumericAnswer: Double?
+    public let numericTolerance: Double?
+    public let rawPointsAwarded: Double
+    public let penaltyPointsDeducted: Double
+    public let netPointsContribution: Double
+    public let flaggedForReview: Bool
+    public let timeSpentSeconds: Int
+    public let selectedOptionDistractorRationale: String?
+    public let solutionExplanationMarkdown: String
+    public let evidenceSourceRef: String
+    public let f28ScratchpadStatus: ExamF28ScratchpadStatus
+    public let scratchpadAssetCount: Int
+    public let scratchpadAssetIds: [UUID]
+    public let questionVersion: Int
+    public let llmTokensUsed: Int
+    public let trainingEligible: Bool
+    public let evaluatedAt: String
+
+    public init(
+        evaluationId: UUID,
+        sessionItemId: UUID,
+        questionItemId: UUID,
+        positionIndex: Int,
+        questionCode: String,
+        topicCode: String,
+        topicTitle: String,
+        difficultyBand: ExamScoreDifficultyBand,
+        cognitiveLevel: ExamScoreCognitiveLevel,
+        formatType: ExamScoreQuestionFormatType,
+        evaluationOutcome: ExamItemEvaluationOutcome,
+        selectedOptionKey: String?,
+        numericResponseValue: Double?,
+        correctOptionKey: String?,
+        expectedNumericAnswer: Double?,
+        numericTolerance: Double?,
+        rawPointsAwarded: Double,
+        penaltyPointsDeducted: Double,
+        netPointsContribution: Double,
+        flaggedForReview: Bool,
+        timeSpentSeconds: Int,
+        selectedOptionDistractorRationale: String?,
+        solutionExplanationMarkdown: String,
+        evidenceSourceRef: String,
+        f28ScratchpadStatus: ExamF28ScratchpadStatus,
+        scratchpadAssetCount: Int,
+        scratchpadAssetIds: [UUID],
+        questionVersion: Int,
+        llmTokensUsed: Int = 0,
+        trainingEligible: Bool = false,
+        evaluatedAt: String
+    ) {
+        self.evaluationId = evaluationId
+        self.sessionItemId = sessionItemId
+        self.questionItemId = questionItemId
+        self.positionIndex = positionIndex
+        self.questionCode = questionCode
+        self.topicCode = topicCode
+        self.topicTitle = topicTitle
+        self.difficultyBand = difficultyBand
+        self.cognitiveLevel = cognitiveLevel
+        self.formatType = formatType
+        self.evaluationOutcome = evaluationOutcome
+        self.selectedOptionKey = selectedOptionKey
+        self.numericResponseValue = numericResponseValue
+        self.correctOptionKey = correctOptionKey
+        self.expectedNumericAnswer = expectedNumericAnswer
+        self.numericTolerance = numericTolerance
+        self.rawPointsAwarded = rawPointsAwarded
+        self.penaltyPointsDeducted = penaltyPointsDeducted
+        self.netPointsContribution = netPointsContribution
+        self.flaggedForReview = flaggedForReview
+        self.timeSpentSeconds = timeSpentSeconds
+        self.selectedOptionDistractorRationale = selectedOptionDistractorRationale
+        self.solutionExplanationMarkdown = solutionExplanationMarkdown
+        self.evidenceSourceRef = evidenceSourceRef
+        self.f28ScratchpadStatus = f28ScratchpadStatus
+        self.scratchpadAssetCount = scratchpadAssetCount
+        self.scratchpadAssetIds = scratchpadAssetIds
+        self.questionVersion = questionVersion
+        self.llmTokensUsed = llmTokensUsed
+        self.trainingEligible = trainingEligible
+        self.evaluatedAt = evaluatedAt
+    }
+}
+
+public struct ExamSessionScoreSummaryResponse: Sendable, Codable, Equatable, Identifiable {
+    public var id: UUID { scoreId }
+    public let schemaVersion: String
+    public let scoreId: UUID
+    public let sessionId: UUID
+    public let userId: UUID
+    public let examDefinitionId: UUID
+    public let assembledAssessmentId: UUID
+    public let examCode: String
+    public let scoringFormulaType: ExamScoringFormulaType
+    public let wrongPenaltyRatio: Double
+    public let totalQuestions: Int
+    public let correctCount: Int
+    public let wrongCount: Int
+    public let blankCount: Int
+    public let rawCorrectScore: Double
+    public let wrongPenaltyDeduction: Double
+    public let netScore: Double
+    public let minPossibleNetScore: Double
+    public let maxPossibleNetScore: Double
+    public let normalizedPercentageScore: Double
+    public let accuracyPercentage: Double
+    public let totalTimeSpentSeconds: Int
+    public let averageSecondsPerItem: Double
+    public let topicBreakdowns: [ExamTopicScoreBreakdown]
+    public let difficultyBreakdowns: [ExamDifficultyScoreBreakdown]
+    public let itemEvaluations: [ExamSessionItemEvaluation]
+    public let scoreVersion: Int
+    public let sessionSubmittedAt: String
+    public let scoredAt: String
+    public let lastRegradedAt: String?
+    public let llmTokensUsed: Int
+    public let inferenceCostUsd: Double
+    public let trainingEligible: Bool
+
+    public init(
+        schemaVersion: String = "2026-04-01",
+        scoreId: UUID,
+        sessionId: UUID,
+        userId: UUID,
+        examDefinitionId: UUID,
+        assembledAssessmentId: UUID,
+        examCode: String,
+        scoringFormulaType: ExamScoringFormulaType,
+        wrongPenaltyRatio: Double,
+        totalQuestions: Int,
+        correctCount: Int,
+        wrongCount: Int,
+        blankCount: Int,
+        rawCorrectScore: Double,
+        wrongPenaltyDeduction: Double,
+        netScore: Double,
+        minPossibleNetScore: Double,
+        maxPossibleNetScore: Double,
+        normalizedPercentageScore: Double,
+        accuracyPercentage: Double,
+        totalTimeSpentSeconds: Int,
+        averageSecondsPerItem: Double,
+        topicBreakdowns: [ExamTopicScoreBreakdown],
+        difficultyBreakdowns: [ExamDifficultyScoreBreakdown],
+        itemEvaluations: [ExamSessionItemEvaluation],
+        scoreVersion: Int,
+        sessionSubmittedAt: String,
+        scoredAt: String,
+        lastRegradedAt: String?,
+        llmTokensUsed: Int = 0,
+        inferenceCostUsd: Double = 0.0,
+        trainingEligible: Bool = false
+    ) {
+        self.schemaVersion = schemaVersion
+        self.scoreId = scoreId
+        self.sessionId = sessionId
+        self.userId = userId
+        self.examDefinitionId = examDefinitionId
+        self.assembledAssessmentId = assembledAssessmentId
+        self.examCode = examCode
+        self.scoringFormulaType = scoringFormulaType
+        self.wrongPenaltyRatio = wrongPenaltyRatio
+        self.totalQuestions = totalQuestions
+        self.correctCount = correctCount
+        self.wrongCount = wrongCount
+        self.blankCount = blankCount
+        self.rawCorrectScore = rawCorrectScore
+        self.wrongPenaltyDeduction = wrongPenaltyDeduction
+        self.netScore = netScore
+        self.minPossibleNetScore = minPossibleNetScore
+        self.maxPossibleNetScore = maxPossibleNetScore
+        self.normalizedPercentageScore = normalizedPercentageScore
+        self.accuracyPercentage = accuracyPercentage
+        self.totalTimeSpentSeconds = totalTimeSpentSeconds
+        self.averageSecondsPerItem = averageSecondsPerItem
+        self.topicBreakdowns = topicBreakdowns
+        self.difficultyBreakdowns = difficultyBreakdowns
+        self.itemEvaluations = itemEvaluations
+        self.scoreVersion = scoreVersion
+        self.sessionSubmittedAt = sessionSubmittedAt
+        self.scoredAt = scoredAt
+        self.lastRegradedAt = lastRegradedAt
+        self.llmTokensUsed = llmTokensUsed
+        self.inferenceCostUsd = inferenceCostUsd
+        self.trainingEligible = trainingEligible
+    }
+}
+
+public struct ExamScoreRegradeRequest: Sendable, Codable, Equatable {
+    public let reasonCode: ExamScoreRegradeReasonCode
+    public let reasonDetail: String
+    public let triggeredBy: String
+    public let trainingEligible: Bool
+
+    public init(
+        reasonCode: ExamScoreRegradeReasonCode,
+        reasonDetail: String,
+        triggeredBy: String,
+        trainingEligible: Bool = false
+    ) {
+        self.reasonCode = reasonCode
+        self.reasonDetail = reasonDetail
+        self.triggeredBy = triggeredBy
+        self.trainingEligible = trainingEligible
+    }
+}
+
+public struct ExamScoreRegradeDeltaSummary: Sendable, Codable, Equatable {
+    public let netScoreDelta: Double
+    public let correctCountDelta: Int
+    public let wrongCountDelta: Int
+    public let blankCountDelta: Int
+    public let changedPositionIndices: [Int]
+
+    public init(
+        netScoreDelta: Double,
+        correctCountDelta: Int,
+        wrongCountDelta: Int,
+        blankCountDelta: Int,
+        changedPositionIndices: [Int]
+    ) {
+        self.netScoreDelta = netScoreDelta
+        self.correctCountDelta = correctCountDelta
+        self.wrongCountDelta = wrongCountDelta
+        self.blankCountDelta = blankCountDelta
+        self.changedPositionIndices = changedPositionIndices
+    }
+}
+
+public struct ExamScoreRegradeAuditItem: Sendable, Codable, Equatable, Identifiable {
+    public var id: UUID { regradeAuditId }
+    public let regradeAuditId: UUID
+    public let scoreId: UUID
+    public let sessionId: UUID
+    public let userId: UUID
+    public let previousScoreVersion: Int
+    public let newScoreVersion: Int
+    public let previousNetScore: Double
+    public let newNetScore: Double
+    public let previousCorrectCount: Int
+    public let newCorrectCount: Int
+    public let previousWrongCount: Int
+    public let newWrongCount: Int
+    public let previousBlankCount: Int
+    public let newBlankCount: Int
+    public let reasonCode: ExamScoreRegradeReasonCode
+    public let reasonDetail: String
+    public let triggeredBy: String
+    public let deltaSummary: ExamScoreRegradeDeltaSummary
+    public let trainingEligible: Bool
+    public let regradedAt: String
+
+    public init(
+        regradeAuditId: UUID,
+        scoreId: UUID,
+        sessionId: UUID,
+        userId: UUID,
+        previousScoreVersion: Int,
+        newScoreVersion: Int,
+        previousNetScore: Double,
+        newNetScore: Double,
+        previousCorrectCount: Int,
+        newCorrectCount: Int,
+        previousWrongCount: Int,
+        newWrongCount: Int,
+        previousBlankCount: Int,
+        newBlankCount: Int,
+        reasonCode: ExamScoreRegradeReasonCode,
+        reasonDetail: String,
+        triggeredBy: String,
+        deltaSummary: ExamScoreRegradeDeltaSummary,
+        trainingEligible: Bool = false,
+        regradedAt: String
+    ) {
+        self.regradeAuditId = regradeAuditId
+        self.scoreId = scoreId
+        self.sessionId = sessionId
+        self.userId = userId
+        self.previousScoreVersion = previousScoreVersion
+        self.newScoreVersion = newScoreVersion
+        self.previousNetScore = previousNetScore
+        self.newNetScore = newNetScore
+        self.previousCorrectCount = previousCorrectCount
+        self.newCorrectCount = newCorrectCount
+        self.previousWrongCount = previousWrongCount
+        self.newWrongCount = newWrongCount
+        self.previousBlankCount = previousBlankCount
+        self.newBlankCount = newBlankCount
+        self.reasonCode = reasonCode
+        self.reasonDetail = reasonDetail
+        self.triggeredBy = triggeredBy
+        self.deltaSummary = deltaSummary
+        self.trainingEligible = trainingEligible
+        self.regradedAt = regradedAt
+    }
+}
+
+public struct ExamScoreRegradeResponse: Sendable, Codable, Equatable {
+    public let schemaVersion: String
+    public let scoreSummary: ExamSessionScoreSummaryResponse
+    public let regradeAudit: ExamScoreRegradeAuditItem
+    public let llmTokensUsed: Int
+    public let inferenceCostUsd: Double
+    public let trainingEligible: Bool
+
+    public init(
+        schemaVersion: String = "2026-04-01",
+        scoreSummary: ExamSessionScoreSummaryResponse,
+        regradeAudit: ExamScoreRegradeAuditItem,
+        llmTokensUsed: Int = 0,
+        inferenceCostUsd: Double = 0.0,
+        trainingEligible: Bool = false
+    ) {
+        self.schemaVersion = schemaVersion
+        self.scoreSummary = scoreSummary
+        self.regradeAudit = regradeAudit
+        self.llmTokensUsed = llmTokensUsed
+        self.inferenceCostUsd = inferenceCostUsd
+        self.trainingEligible = trainingEligible
+    }
+}
+
+public struct ExamScoreRegradeAuditListResponse: Sendable, Codable, Equatable {
+    public let schemaVersion: String
+    public let sessionId: UUID
+    public let totalCount: Int
+    public let audits: [ExamScoreRegradeAuditItem]
+    public let trainingEligible: Bool
+
+    public init(
+        schemaVersion: String = "2026-04-01",
+        sessionId: UUID,
+        totalCount: Int,
+        audits: [ExamScoreRegradeAuditItem],
+        trainingEligible: Bool = false
+    ) {
+        self.schemaVersion = schemaVersion
+        self.sessionId = sessionId
+        self.totalCount = totalCount
+        self.audits = audits
+        self.trainingEligible = trainingEligible
+    }
+}

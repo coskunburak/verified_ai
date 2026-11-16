@@ -18,6 +18,8 @@ public enum ExamServiceError: Error, Equatable, Sendable {
     case noHintModeActive
     case deadlineExpired
     case sessionAlreadySubmitted
+    case sessionNotScorable
+    case regradeInvalidRequest
     case autosaveVersionConflict
     case invalidScratchpadAsset
     case unexpected(String)
@@ -78,6 +80,10 @@ public protocol ExamAPIServicing: Sendable {
         request: ExamSessionSubmitRequestDTO
     ) async throws -> ExamSessionSubmitResponseDTO
     func checkNoHintGuard(sessionId: UUID, requestedSurface: String) async throws -> ExamNoHintGuardResponseDTO
+    func computeOrGetScoreSummary(sessionId: UUID) async throws -> ExamSessionScoreSummaryResponse
+    func fetchScoreSummary(sessionId: UUID) async throws -> ExamSessionScoreSummaryResponse
+    func regradeSession(sessionId: UUID, request: ExamScoreRegradeRequest) async throws -> ExamScoreRegradeResponse
+    func fetchRegradeAudits(sessionId: UUID) async throws -> ExamScoreRegradeAuditListResponse
 }
 
 public extension ExamAPIServicing {
@@ -496,11 +502,87 @@ final class HTTPExamAPIService: ExamAPIServicing, @unchecked Sendable {
         }
     }
 
+    func computeOrGetScoreSummary(sessionId: UUID) async throws -> ExamSessionScoreSummaryResponse {
+        let endpoint = Endpoint(
+            path: "/v1/exams/sessions/\(sessionId.uuidString.lowercased())/score-summary",
+            method: .post
+        )
+        let httpRequest = HTTPRequest<ExamSessionScoreSummaryResponse>(
+            endpoint: endpoint,
+            allowsAuthRefreshRetry: true
+        )
+        do {
+            return try await apiClient.send(httpRequest).body
+        } catch let error as NetworkError {
+            throw mapNetworkError(error)
+        }
+    }
+
+    func fetchScoreSummary(sessionId: UUID) async throws -> ExamSessionScoreSummaryResponse {
+        let endpoint = Endpoint(
+            path: "/v1/exams/sessions/\(sessionId.uuidString.lowercased())/score-summary",
+            method: .get
+        )
+        let httpRequest = HTTPRequest<ExamSessionScoreSummaryResponse>(
+            endpoint: endpoint,
+            allowsAuthRefreshRetry: true
+        )
+        do {
+            return try await apiClient.send(httpRequest).body
+        } catch let error as NetworkError {
+            throw mapNetworkError(error)
+        }
+    }
+
+    func regradeSession(
+        sessionId: UUID,
+        request: ExamScoreRegradeRequest
+    ) async throws -> ExamScoreRegradeResponse {
+        let bodyData = try encoder.encode(request)
+        let endpoint = Endpoint(
+            path: "/v1/exams/sessions/\(sessionId.uuidString.lowercased())/regrade",
+            method: .post
+        )
+        let httpRequest = HTTPRequest<ExamScoreRegradeResponse>(
+            endpoint: endpoint,
+            body: bodyData,
+            allowsAuthRefreshRetry: true
+        )
+        do {
+            return try await apiClient.send(httpRequest).body
+        } catch let error as NetworkError {
+            throw mapNetworkError(error)
+        }
+    }
+
+    func fetchRegradeAudits(sessionId: UUID) async throws -> ExamScoreRegradeAuditListResponse {
+        let endpoint = Endpoint(
+            path: "/v1/exams/sessions/\(sessionId.uuidString.lowercased())/regrade-audits",
+            method: .get
+        )
+        let httpRequest = HTTPRequest<ExamScoreRegradeAuditListResponse>(
+            endpoint: endpoint,
+            allowsAuthRefreshRetry: true
+        )
+        do {
+            return try await apiClient.send(httpRequest).body
+        } catch let error as NetworkError {
+            throw mapNetworkError(error)
+        }
+    }
+
     private func mapNetworkError(_ error: NetworkError) -> ExamServiceError {
         switch error {
         case .server(let problem):
             if problem.code == "EXAM_NO_HINT_MODE_ACTIVE" {
                 return .noHintModeActive
+            }
+            if problem.code == "EXAM_SESSION_NOT_SCORABLE"
+                || problem.code == "EXAM_SESSION_ACTIVE_SCORING_FORBIDDEN" {
+                return .sessionNotScorable
+            }
+            if problem.code == "EXAM_REGRADE_INVALID_REQUEST" {
+                return .regradeInvalidRequest
             }
             if problem.code == "EXAM_SESSION_EXPIRED"
                 || problem.code == "EXAM_SESSION_DEADLINE_EXPIRED"
@@ -532,14 +614,16 @@ final class HTTPExamAPIService: ExamAPIServicing, @unchecked Sendable {
                 || problem.code == "EXAM_QUESTION_BANK_DISABLED"
                 || problem.code == "EXAM_BLUEPRINT_DISABLED"
                 || problem.code == "EXAM_ASSESSMENT_ASSEMBLY_DISABLED"
-                || problem.code == "EXAM_SESSION_RUNTIME_FEATURE_DISABLED" {
+                || problem.code == "EXAM_SESSION_RUNTIME_FEATURE_DISABLED"
+                || problem.code == "EXAM_SCORING_FEATURE_DISABLED" {
                 return .featureDisabled
             }
             if problem.status == 403
                 || problem.code == "EXAM_ACCESS_DENIED"
                 || problem.code == "CANDIDATE_PROFILE_ACCESS_DENIED"
                 || problem.code == "EXAM_CANDIDATE_ACCESS_DENIED"
-                || problem.code == "EXAM_SESSION_ACCESS_DENIED" {
+                || problem.code == "EXAM_SESSION_ACCESS_DENIED"
+                || problem.code == "EXAM_SESSION_FORBIDDEN" {
                 return .forbidden
             }
             if problem.status == 404
@@ -554,7 +638,8 @@ final class HTTPExamAPIService: ExamAPIServicing, @unchecked Sendable {
                 || problem.code == "EXAM_ASSEMBLED_ASSESSMENT_NOT_FOUND"
                 || problem.code == "EXAM_SESSION_NOT_FOUND"
                 || problem.code == "EXAM_ITEM_NOT_FOUND"
-                || problem.code == "EXAM_SESSION_ITEM_NOT_FOUND" {
+                || problem.code == "EXAM_SESSION_ITEM_NOT_FOUND"
+                || problem.code == "EXAM_SCORE_NOT_FOUND" {
                 return .notFound
             }
             if problem.status == 409
@@ -625,10 +710,416 @@ final class FixtureExamAPIService: ExamAPIServicing, @unchecked Sendable {
     private var autosaveIdempotencyCache: [String: ExamSessionItemAutosaveResponseDTO] = [:]
     private var scratchpadIdempotencyCache: [String: ExamScratchpadUploadResponseDTO] = [:]
     private var submitIdempotencyCache: [String: ExamSessionSubmitResponseDTO] = [:]
+    private var storedScoreSnapshots: [UUID: ExamSessionScoreSummaryResponse] = [:]
+    private var storedRegradeAudits: [UUID: [ExamScoreRegradeAuditItem]] = [:]
 
     init(simulateOffline: Bool = false, userId: UUID = UUID(uuidString: "91000000-0000-4000-8000-000000000a01")!) {
         self.simulateOffline = simulateOffline
         self.userId = userId
+    }
+
+    // MARK: - Sprint 9.5 Deterministic Scoring Fixtures
+
+    func computeOrGetScoreSummary(sessionId: UUID) async throws -> ExamSessionScoreSummaryResponse {
+        if simulateOffline { throw ExamServiceError.offline }
+        if let session = storedSessions[sessionId] {
+            guard session.status == .submitted || session.status == .expiredAutoSubmitted else {
+                throw ExamServiceError.sessionNotScorable
+            }
+            if let existing = storedScoreSnapshots[sessionId] {
+                return existing
+            }
+            let computed = Self.buildScoreSummaryFromSession(session)
+            storedScoreSnapshots[sessionId] = computed
+            return computed
+        }
+        if let existing = storedScoreSnapshots[sessionId] {
+            return existing
+        }
+        throw ExamServiceError.notFound
+    }
+
+    func fetchScoreSummary(sessionId: UUID) async throws -> ExamSessionScoreSummaryResponse {
+        if simulateOffline { throw ExamServiceError.offline }
+        if let session = storedSessions[sessionId] {
+            guard session.status == .submitted || session.status == .expiredAutoSubmitted else {
+                throw ExamServiceError.sessionNotScorable
+            }
+        }
+        guard let existing = storedScoreSnapshots[sessionId] else {
+            throw ExamServiceError.notFound
+        }
+        return existing
+    }
+
+    func regradeSession(
+        sessionId: UUID,
+        request: ExamScoreRegradeRequest
+    ) async throws -> ExamScoreRegradeResponse {
+        if simulateOffline { throw ExamServiceError.offline }
+        guard !request.reasonDetail.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+              !request.triggeredBy.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            throw ExamServiceError.regradeInvalidRequest
+        }
+        if let session = storedSessions[sessionId] {
+            guard session.status == .submitted || session.status == .expiredAutoSubmitted else {
+                throw ExamServiceError.sessionNotScorable
+            }
+        }
+        guard let previous = storedScoreSnapshots[sessionId] else {
+            throw ExamServiceError.notFound
+        }
+        let updated = Self.applyFixtureRegrade(previous: previous)
+        storedScoreSnapshots[sessionId] = updated
+
+        let changedPositions = zip(previous.itemEvaluations, updated.itemEvaluations)
+            .filter { $0.evaluationOutcome != $1.evaluationOutcome }
+            .map { $0.1.positionIndex }
+
+        let audit = ExamScoreRegradeAuditItem(
+            regradeAuditId: UUID(),
+            scoreId: previous.scoreId,
+            sessionId: sessionId,
+            userId: previous.userId,
+            previousScoreVersion: previous.scoreVersion,
+            newScoreVersion: updated.scoreVersion,
+            previousNetScore: previous.netScore,
+            newNetScore: updated.netScore,
+            previousCorrectCount: previous.correctCount,
+            newCorrectCount: updated.correctCount,
+            previousWrongCount: previous.wrongCount,
+            newWrongCount: updated.wrongCount,
+            previousBlankCount: previous.blankCount,
+            newBlankCount: updated.blankCount,
+            reasonCode: request.reasonCode,
+            reasonDetail: request.reasonDetail.trimmingCharacters(in: .whitespacesAndNewlines),
+            triggeredBy: request.triggeredBy.trimmingCharacters(in: .whitespacesAndNewlines),
+            deltaSummary: ExamScoreRegradeDeltaSummary(
+                netScoreDelta: ((updated.netScore - previous.netScore) * 100.0).rounded() / 100.0,
+                correctCountDelta: updated.correctCount - previous.correctCount,
+                wrongCountDelta: updated.wrongCount - previous.wrongCount,
+                blankCountDelta: updated.blankCount - previous.blankCount,
+                changedPositionIndices: changedPositions
+            ),
+            trainingEligible: false,
+            regradedAt: updated.lastRegradedAt ?? "2026-11-16T00:05:00Z"
+        )
+        storedRegradeAudits[sessionId, default: []].insert(audit, at: 0)
+
+        return ExamScoreRegradeResponse(
+            schemaVersion: "2026-04-01",
+            scoreSummary: updated,
+            regradeAudit: audit,
+            llmTokensUsed: 0,
+            inferenceCostUsd: 0.0,
+            trainingEligible: false
+        )
+    }
+
+    func fetchRegradeAudits(sessionId: UUID) async throws -> ExamScoreRegradeAuditListResponse {
+        if simulateOffline { throw ExamServiceError.offline }
+        if let session = storedSessions[sessionId] {
+            guard session.status == .submitted || session.status == .expiredAutoSubmitted else {
+                throw ExamServiceError.sessionNotScorable
+            }
+        }
+        let audits = storedRegradeAudits[sessionId] ?? []
+        return ExamScoreRegradeAuditListResponse(
+            schemaVersion: "2026-04-01",
+            sessionId: sessionId,
+            totalCount: audits.count,
+            audits: audits,
+            trainingEligible: false
+        )
+    }
+
+    private static func buildScoreSummaryFromSession(_ session: ExamSessionDTO) -> ExamSessionScoreSummaryResponse {
+        let scoreId = UUID()
+        let wrongPenaltyRatio = 0.25
+        let nowIso = session.submittedAt ?? "2026-11-16T00:00:00Z"
+        let ordered = session.items.sorted { $0.itemPosition < $1.itemPosition }
+
+        var correctCount = 0
+        var wrongCount = 0
+        var blankCount = 0
+        var totalTime = 0
+
+        var evals: [ExamSessionItemEvaluation] = []
+        for item in ordered {
+            let fmt: ExamScoreQuestionFormatType = {
+                switch item.itemFormat.uppercased() {
+                case "MULTI_SELECT_MCQ": return .multiSelectMcq
+                case "NUMERIC_GRID_IN", "SHORT_STRUCTURED_RESPONSE": return .numericGridIn
+                default: return .singleChoiceMcq
+                }
+            }()
+            let diff: ExamScoreDifficultyBand = {
+                switch item.difficultyBand {
+                case .easy: return .easy
+                case .hard: return .hard
+                case .expert: return .elite
+                default: return .moderate
+                }
+            }()
+            let correctKey = fmt == .numericGridIn ? nil : (item.itemPosition % 2 == 1 ? "A" : "C")
+            let expectedNum = fmt == .numericGridIn ? 12.5 : nil
+            let outcome: ExamItemEvaluationOutcome
+            let distractor: String?
+            if fmt == .numericGridIn {
+                if let submitted = item.numericResponseValue {
+                    outcome = abs(submitted - 12.5) <= 0.05 ? .correct : .wrong
+                } else {
+                    outcome = .blank
+                }
+            } else if let selected = item.selectedOptionKey?.trimmingCharacters(in: .whitespacesAndNewlines).uppercased(),
+                      !selected.isEmpty {
+                outcome = (selected == correctKey) ? .correct : .wrong
+            } else {
+                outcome = .blank
+            }
+
+            switch outcome {
+            case .correct:
+                correctCount += 1
+                distractor = nil
+            case .wrong:
+                wrongCount += 1
+                distractor = "Check sign inversion or algebraic simplification step for \(item.questionCode)."
+            case .blank:
+                blankCount += 1
+                distractor = nil
+            }
+
+            let rawPts = outcome == .correct ? 1.0 : 0.0
+            let penPts = outcome == .wrong ? wrongPenaltyRatio : 0.0
+            let netPts = rawPts - penPts
+            totalTime += max(0, item.timeSpentSeconds)
+
+            let topicTitle = item.topicCode
+                .split(separator: ".")
+                .last
+                .map { $0.replacingOccurrences(of: "_", with: " ").capitalized } ?? item.topicCode
+
+            evals.append(ExamSessionItemEvaluation(
+                evaluationId: UUID(),
+                sessionItemId: item.id,
+                questionItemId: item.questionItemId,
+                positionIndex: item.itemPosition,
+                questionCode: item.questionCode,
+                topicCode: item.topicCode,
+                topicTitle: topicTitle,
+                difficultyBand: diff,
+                cognitiveLevel: item.itemPosition % 3 == 0 ? .analysis : .application,
+                formatType: fmt,
+                evaluationOutcome: outcome,
+                selectedOptionKey: item.selectedOptionKey,
+                numericResponseValue: item.numericResponseValue,
+                correctOptionKey: correctKey,
+                expectedNumericAnswer: expectedNum,
+                numericTolerance: fmt == .numericGridIn ? 0.01 : nil,
+                rawPointsAwarded: rawPts,
+                penaltyPointsDeducted: penPts,
+                netPointsContribution: netPts,
+                flaggedForReview: item.flaggedForReview,
+                timeSpentSeconds: max(0, item.timeSpentSeconds),
+                selectedOptionDistractorRationale: distractor,
+                solutionExplanationMarkdown: "Deterministic key step verification for \(item.questionCode).",
+                evidenceSourceRef: "question_bank:\(item.questionCode):v1",
+                f28ScratchpadStatus: item.scratchpadAssets.isEmpty ? .none : .attachedMetadataOnly,
+                scratchpadAssetCount: item.scratchpadAssets.count,
+                scratchpadAssetIds: item.scratchpadAssets.map(\.id),
+                questionVersion: 1,
+                llmTokensUsed: 0,
+                trainingEligible: false,
+                evaluatedAt: nowIso
+            ))
+        }
+
+        return recomputeSnapshot(
+            scoreId: scoreId,
+            sessionId: session.sessionId,
+            userId: session.userId,
+            examDefinitionId: session.blueprintId,
+            assembledAssessmentId: session.assemblyId,
+            examCode: session.examCode,
+            wrongPenaltyRatio: wrongPenaltyRatio,
+            evaluations: evals,
+            scoreVersion: 1,
+            sessionSubmittedAt: nowIso,
+            scoredAt: nowIso,
+            lastRegradedAt: nil
+        )
+    }
+
+    private static func applyFixtureRegrade(previous: ExamSessionScoreSummaryResponse) -> ExamSessionScoreSummaryResponse {
+        var updatedEvals = previous.itemEvaluations
+        if let idx = updatedEvals.firstIndex(where: { $0.evaluationOutcome == .wrong }) {
+            let old = updatedEvals[idx]
+            updatedEvals[idx] = ExamSessionItemEvaluation(
+                evaluationId: UUID(),
+                sessionItemId: old.sessionItemId,
+                questionItemId: old.questionItemId,
+                positionIndex: old.positionIndex,
+                questionCode: old.questionCode,
+                topicCode: old.topicCode,
+                topicTitle: old.topicTitle,
+                difficultyBand: old.difficultyBand,
+                cognitiveLevel: old.cognitiveLevel,
+                formatType: old.formatType,
+                evaluationOutcome: .correct,
+                selectedOptionKey: old.selectedOptionKey,
+                numericResponseValue: old.numericResponseValue,
+                correctOptionKey: old.selectedOptionKey ?? old.correctOptionKey,
+                expectedNumericAnswer: old.expectedNumericAnswer,
+                numericTolerance: old.numericTolerance,
+                rawPointsAwarded: 1.0,
+                penaltyPointsDeducted: 0.0,
+                netPointsContribution: 1.0,
+                flaggedForReview: old.flaggedForReview,
+                timeSpentSeconds: old.timeSpentSeconds,
+                selectedOptionDistractorRationale: nil,
+                solutionExplanationMarkdown: "Errata answer key correction updated canonical response.",
+                evidenceSourceRef: "\(old.evidenceSourceRef):errata",
+                f28ScratchpadStatus: old.f28ScratchpadStatus,
+                scratchpadAssetCount: old.scratchpadAssetCount,
+                scratchpadAssetIds: old.scratchpadAssetIds,
+                questionVersion: old.questionVersion + 1,
+                llmTokensUsed: 0,
+                trainingEligible: false,
+                evaluatedAt: "2026-11-16T00:05:00Z"
+            )
+        }
+        return recomputeSnapshot(
+            scoreId: previous.scoreId,
+            sessionId: previous.sessionId,
+            userId: previous.userId,
+            examDefinitionId: previous.examDefinitionId,
+            assembledAssessmentId: previous.assembledAssessmentId,
+            examCode: previous.examCode,
+            wrongPenaltyRatio: previous.wrongPenaltyRatio,
+            evaluations: updatedEvals,
+            scoreVersion: previous.scoreVersion + 1,
+            sessionSubmittedAt: previous.sessionSubmittedAt,
+            scoredAt: previous.scoredAt,
+            lastRegradedAt: "2026-11-16T00:05:00Z"
+        )
+    }
+
+    private static func recomputeSnapshot(
+        scoreId: UUID,
+        sessionId: UUID,
+        userId: UUID,
+        examDefinitionId: UUID,
+        assembledAssessmentId: UUID,
+        examCode: String,
+        wrongPenaltyRatio: Double,
+        evaluations: [ExamSessionItemEvaluation],
+        scoreVersion: Int,
+        sessionSubmittedAt: String,
+        scoredAt: String,
+        lastRegradedAt: String?
+    ) -> ExamSessionScoreSummaryResponse {
+        let total = max(1, evaluations.count)
+        let correct = evaluations.filter { $0.evaluationOutcome == .correct }.count
+        let wrong = evaluations.filter { $0.evaluationOutcome == .wrong }.count
+        let blank = evaluations.filter { $0.evaluationOutcome == .blank }.count
+        let raw = Double(correct)
+        let penalty = ((Double(wrong) * wrongPenaltyRatio) * 100.0).rounded() / 100.0
+        let net = ((raw - penalty) * 100.0).rounded() / 100.0
+        let minPossible = -((Double(total) * wrongPenaltyRatio) * 100.0).rounded() / 100.0
+        let maxPossible = Double(total)
+        let normalizedPct = min(100.0, max(0.0, ((net / maxPossible) * 100.0 * 100.0).rounded() / 100.0))
+        let attempted = correct + wrong
+        let accuracyPct = attempted == 0 ? 0.0 : ((Double(correct) / Double(attempted)) * 100.0 * 100.0).rounded() / 100.0
+        let totalSec = evaluations.reduce(0) { $0 + $1.timeSpentSeconds }
+        let avgSec = ((Double(totalSec) / Double(total)) * 100.0).rounded() / 100.0
+
+        let groupedByTopic = Dictionary(grouping: evaluations, by: \.topicCode)
+        let topics: [ExamTopicScoreBreakdown] = groupedByTopic.keys.sorted().map { code in
+            let group = groupedByTopic[code] ?? []
+            let tc = group.filter { $0.evaluationOutcome == .correct }.count
+            let tw = group.filter { $0.evaluationOutcome == .wrong }.count
+            let tb = group.filter { $0.evaluationOutcome == .blank }.count
+            let tPen = ((Double(tw) * wrongPenaltyRatio) * 100.0).rounded() / 100.0
+            let tNet = ((Double(tc) - tPen) * 100.0).rounded() / 100.0
+            let tAtt = tc + tw
+            let tAcc = tAtt == 0 ? 0.0 : ((Double(tc) / Double(tAtt)) * 100.0 * 100.0).rounded() / 100.0
+            let tSec = group.reduce(0) { $0 + $1.timeSpentSeconds }
+            let tAvg = ((Double(tSec) / Double(max(1, group.count))) * 100.0).rounded() / 100.0
+            return ExamTopicScoreBreakdown(
+                topicCode: code,
+                topicTitle: group.first?.topicTitle ?? code,
+                totalQuestions: group.count,
+                correctCount: tc,
+                wrongCount: tw,
+                blankCount: tb,
+                rawCorrectScore: Double(tc),
+                wrongPenaltyDeduction: tPen,
+                netScore: tNet,
+                accuracyPercentage: tAcc,
+                totalTimeSpentSeconds: tSec,
+                averageSecondsPerItem: tAvg
+            )
+        }
+
+        let groupedByDiff = Dictionary(grouping: evaluations, by: \.difficultyBand)
+        let diffs: [ExamDifficultyScoreBreakdown] = ExamScoreDifficultyBand.allCases.compactMap { band in
+            guard let group = groupedByDiff[band], !group.isEmpty else { return nil }
+            let dc = group.filter { $0.evaluationOutcome == .correct }.count
+            let dw = group.filter { $0.evaluationOutcome == .wrong }.count
+            let db = group.filter { $0.evaluationOutcome == .blank }.count
+            let dNet = ((Double(dc) - Double(dw) * wrongPenaltyRatio) * 100.0).rounded() / 100.0
+            let dAtt = dc + dw
+            let dAcc = dAtt == 0 ? 0.0 : ((Double(dc) / Double(dAtt)) * 100.0 * 100.0).rounded() / 100.0
+            let dSec = group.reduce(0) { $0 + $1.timeSpentSeconds }
+            let dAvg = ((Double(dSec) / Double(group.count)) * 100.0).rounded() / 100.0
+            return ExamDifficultyScoreBreakdown(
+                difficultyBand: band,
+                totalQuestions: group.count,
+                correctCount: dc,
+                wrongCount: dw,
+                blankCount: db,
+                netScore: dNet,
+                accuracyPercentage: dAcc,
+                totalTimeSpentSeconds: dSec,
+                averageSecondsPerItem: dAvg
+            )
+        }
+
+        return ExamSessionScoreSummaryResponse(
+            schemaVersion: "2026-04-01",
+            scoreId: scoreId,
+            sessionId: sessionId,
+            userId: userId,
+            examDefinitionId: examDefinitionId,
+            assembledAssessmentId: assembledAssessmentId,
+            examCode: examCode,
+            scoringFormulaType: .correctMinusQuarterWrong,
+            wrongPenaltyRatio: wrongPenaltyRatio,
+            totalQuestions: evaluations.count,
+            correctCount: correct,
+            wrongCount: wrong,
+            blankCount: blank,
+            rawCorrectScore: raw,
+            wrongPenaltyDeduction: penalty,
+            netScore: net,
+            minPossibleNetScore: minPossible,
+            maxPossibleNetScore: maxPossible,
+            normalizedPercentageScore: normalizedPct,
+            accuracyPercentage: accuracyPct,
+            totalTimeSpentSeconds: totalSec,
+            averageSecondsPerItem: avgSec,
+            topicBreakdowns: topics,
+            difficultyBreakdowns: diffs,
+            itemEvaluations: evaluations,
+            scoreVersion: scoreVersion,
+            sessionSubmittedAt: sessionSubmittedAt,
+            scoredAt: scoredAt,
+            lastRegradedAt: lastRegradedAt,
+            llmTokensUsed: 0,
+            inferenceCostUsd: 0.0,
+            trainingEligible: false
+        )
     }
 
     func fetchDefinitions(

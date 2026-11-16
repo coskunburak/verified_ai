@@ -68,6 +68,12 @@ public class QuestionBankJdbcRepository implements QuestionBankRepository {
                     :status, :contentSha256, :exposureCount, FALSE, :createdAt, :updatedAt
                 )
                 ON CONFLICT (id) DO UPDATE SET
+                    numeric_correct_answer = EXCLUDED.numeric_correct_answer,
+                    numeric_tolerance = EXCLUDED.numeric_tolerance,
+                    structured_rubric_json = EXCLUDED.structured_rubric_json,
+                    solution_explanation_markdown = EXCLUDED.solution_explanation_markdown,
+                    max_points = EXCLUDED.max_points,
+                    negative_marking_weight = EXCLUDED.negative_marking_weight,
                     status = EXCLUDED.status,
                     content_sha256 = EXCLUDED.content_sha256,
                     exposure_count = EXCLUDED.exposure_count,

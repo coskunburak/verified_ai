@@ -255,6 +255,10 @@ public final class ExamCatalogAndTargetViewModel: ObservableObject {
             errorMessageKey = "exam.session.status.expired_auto_submitted"
         case .sessionAlreadySubmitted:
             errorMessageKey = "exam.session.submit.receipt_title"
+        case .sessionNotScorable:
+            errorMessageKey = "exam.score.error.not_scorable"
+        case .regradeInvalidRequest:
+            errorMessageKey = "exam.score.error.regrade_invalid"
         case .autosaveVersionConflict:
             errorMessageKey = "exam.error.version_conflict"
         case .invalidScratchpadAsset:

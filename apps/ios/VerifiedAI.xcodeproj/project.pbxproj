@@ -80,6 +80,9 @@
 		B94100000000000000000003 /* ExamSessionViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94100000000000000000003 /* ExamSessionViewModelTests.swift */; };
 		B94100000000000000000004 /* ExamSessionSQLiteStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94100000000000000000004 /* ExamSessionSQLiteStoreTests.swift */; };
 		B94100000000000000000005 /* ExamSessionRuntimeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94100000000000000000005 /* ExamSessionRuntimeUITests.swift */; };
+		B95000000000000000000001 /* ExamScoreSummaryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A95000000000000000000001 /* ExamScoreSummaryViewModel.swift */; };
+		B95000000000000000000002 /* ExamScoreSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A95000000000000000000002 /* ExamScoreSummaryView.swift */; };
+		B95000000000000000000003 /* Sprint95ExamScoringAndEvidenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A95000000000000000000003 /* Sprint95ExamScoringAndEvidenceTests.swift */; };
 		B89500000000000000000001 /* DailyCoachSQLiteCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000001 /* DailyCoachSQLiteCache.swift */; };
 		B89500000000000000000002 /* RebalanceSQLiteCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000002 /* RebalanceSQLiteCache.swift */; };
 		B89500000000000000000003 /* CoachHubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89500000000000000000003 /* CoachHubView.swift */; };
@@ -362,6 +365,9 @@
 		A94100000000000000000003 /* ExamSessionViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Exam/ExamSessionViewModelTests.swift; sourceTree = SOURCE_ROOT; };
 		A94100000000000000000004 /* ExamSessionSQLiteStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Exam/ExamSessionSQLiteStoreTests.swift; sourceTree = SOURCE_ROOT; };
 		A94100000000000000000005 /* ExamSessionRuntimeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAIUITests/ExamSessionRuntimeUITests.swift; sourceTree = SOURCE_ROOT; };
+		A95000000000000000000001 /* ExamScoreSummaryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Exam/Presentation/ExamScoreSummaryViewModel.swift; sourceTree = SOURCE_ROOT; };
+		A95000000000000000000002 /* ExamScoreSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Exam/Presentation/ExamScoreSummaryView.swift; sourceTree = SOURCE_ROOT; };
+		A95000000000000000000003 /* Sprint95ExamScoringAndEvidenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Exam/Sprint95ExamScoringAndEvidenceTests.swift; sourceTree = SOURCE_ROOT; };
 		A89500000000000000000001 /* DailyCoachSQLiteCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Home/Data/DailyCoachSQLiteCache.swift; sourceTree = SOURCE_ROOT; };
 		A89500000000000000000002 /* RebalanceSQLiteCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Home/Data/RebalanceSQLiteCache.swift; sourceTree = SOURCE_ROOT; };
 		A89500000000000000000003 /* CoachHubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Home/Presentation/CoachHubView.swift; sourceTree = SOURCE_ROOT; };
@@ -1242,6 +1248,9 @@
 				A94100000000000000000002 /* ExamSessionView.swift */,
 				A94100000000000000000003 /* ExamSessionViewModelTests.swift */,
 				A94100000000000000000004 /* ExamSessionSQLiteStoreTests.swift */,
+				A95000000000000000000001 /* ExamScoreSummaryViewModel.swift */,
+				A95000000000000000000002 /* ExamScoreSummaryView.swift */,
+				A95000000000000000000003 /* Sprint95ExamScoringAndEvidenceTests.swift */,
 				A89500000000000000000001 /* DailyCoachSQLiteCache.swift */,
 				A89500000000000000000002 /* RebalanceSQLiteCache.swift */,
 				A89500000000000000000003 /* CoachHubView.swift */,
@@ -1524,6 +1533,8 @@
 				B93000000000000000000002 /* ExamBlueprintAssemblyView.swift in Sources */,
 				B94100000000000000000001 /* ExamSessionViewModel.swift in Sources */,
 				B94100000000000000000002 /* ExamSessionView.swift in Sources */,
+				B95000000000000000000001 /* ExamScoreSummaryViewModel.swift in Sources */,
+				B95000000000000000000002 /* ExamScoreSummaryView.swift in Sources */,
 				B89500000000000000000001 /* DailyCoachSQLiteCache.swift in Sources */,
 				B89500000000000000000002 /* RebalanceSQLiteCache.swift in Sources */,
 				B89500000000000000000003 /* CoachHubView.swift in Sources */,
@@ -1687,6 +1698,7 @@
 				B93000000000000000000004 /* ExamOfflineSQLiteStoreTests.swift in Sources */,
 				B94100000000000000000003 /* ExamSessionViewModelTests.swift in Sources */,
 				B94100000000000000000004 /* ExamSessionSQLiteStoreTests.swift in Sources */,
+				B95000000000000000000003 /* Sprint95ExamScoringAndEvidenceTests.swift in Sources */,
 				B89600000000000000000001 /* Sprint82PracticeTests.swift in Sources */,
 				B89600000000000000000002 /* Sprint83SpacedRepetitionTests.swift in Sources */,
 				B89600000000000000000003 /* Sprint84CoachHubTests.swift in Sources */,

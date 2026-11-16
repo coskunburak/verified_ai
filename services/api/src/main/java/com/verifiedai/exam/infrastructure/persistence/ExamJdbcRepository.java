@@ -107,6 +107,26 @@ public class ExamJdbcRepository implements ExamRepository {
     }
 
     @Override
+    public Optional<ExamDefinition> findById(UUID examDefinitionId) {
+        return jdbcClient.sql("""
+                SELECT id, exam_code, exam_version, jurisdiction, exam_family,
+                       title_en, title_tr, status, total_questions, duration_minutes,
+                       scoring_formula_type, wrong_penalty_factor, min_score, max_score, navigation_policy,
+                       blueprint_hash, effective_from, deprecated_at, superseded_by_version,
+                       sections_json::text AS sections_text,
+                       scoring_parameters_json::text AS scoring_parameters_text,
+                       training_eligible, created_at, updated_at
+                FROM exam_definitions
+                WHERE id = :examDefinitionId
+                LIMIT 1
+                """)
+                .param("examDefinitionId", examDefinitionId)
+                .query(this::mapExamDefinitionWithoutWeights)
+                .optional()
+                .map(def -> attachWeights(def, loadWeightsForSingleDefinition(def.id())));
+    }
+
+    @Override
     public Optional<ExamDefinition> findLatestByCode(String examCode, boolean includeDeprecated) {
         String sql = """
                 SELECT id, exam_code, exam_version, jurisdiction, exam_family,

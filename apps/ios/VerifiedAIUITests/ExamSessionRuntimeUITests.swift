@@ -84,6 +84,23 @@ final class ExamSessionRuntimeUITests: XCTestCase {
             app.swipeDown()
         }
         XCTAssertTrue(receiptCard.waitForExistence(timeout: 6))
+
+        let viewScoreButton = app.buttons["exam.session.viewScoreSummaryButton"]
+        scrollToElementIfNeeded(viewScoreButton, in: app)
+        XCTAssertTrue(viewScoreButton.waitForExistence(timeout: 5))
+        viewScoreButton.tap()
+
+        let scoreScreen = app.descendants(matching: .any)["exam.score.screen"]
+        XCTAssertTrue(scoreScreen.waitForExistence(timeout: 6))
+        XCTAssertTrue(app.descendants(matching: .any)["exam.score.netScoreCard"].exists)
+        XCTAssertTrue(app.descendants(matching: .any)["exam.score.formulaBadge"].exists)
+        XCTAssertTrue(app.descendants(matching: .any)["exam.score.countsRow"].exists)
+
+        let regradeButton = app.buttons["exam.score.regradeButton"]
+        scrollToElementIfNeeded(regradeButton, in: app)
+        XCTAssertTrue(regradeButton.waitForExistence(timeout: 5))
+        regradeButton.tap()
+        XCTAssertTrue(app.descendants(matching: .any)["exam.score.regradeAuditSection"].exists)
     }
 
     private func openExamsTab(_ app: XCUIApplication) {

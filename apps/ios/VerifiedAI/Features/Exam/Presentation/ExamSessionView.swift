@@ -81,6 +81,11 @@ public struct ExamSessionView: View {
             .accessibilityIdentifier("exam.session.confirmSubmitButton")
             Button("Cancel", role: .cancel) {}
         }
+        .sheet(isPresented: $viewModel.showScoreSummary) {
+            NavigationStack {
+                ExamScoreSummaryView(viewModel: viewModel.makeScoreSummaryViewModel())
+            }
+        }
         .alert(
             LocalizedStringKey("exam.session.no_hint.badge"),
             isPresented: $viewModel.noHintAlertVisible
@@ -565,6 +570,22 @@ public struct ExamSessionView: View {
             Text("F28 Batch: \(receipt.f28VerificationBatchManifest.batchStatus) • Runtime LLM Tokens: \(receipt.llmTokensUsed)")
                 .font(.caption2.monospaced())
                 .foregroundStyle(ColorTokens.textSecondary)
+
+            Button {
+                viewModel.showScoreSummary = true
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: "chart.bar.doc.horizontal")
+                    Text(LocalizedStringKey("exam.session.view_score_summary"))
+                        .font(.subheadline.weight(.semibold))
+                }
+                .frame(maxWidth: .infinity, minHeight: 44)
+                .foregroundStyle(ColorTokens.actionForeground)
+                .background(ColorTokens.action)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("exam.session.viewScoreSummaryButton")
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)

@@ -340,6 +340,10 @@ public final class CandidateProfileViewModel: ObservableObject {
                 errorLocalizationKey = "exam.session.status.expired_auto_submitted"
             case .sessionAlreadySubmitted:
                 errorLocalizationKey = "exam.session.submit.receipt_title"
+            case .sessionNotScorable:
+                errorLocalizationKey = "exam.score.error.not_scorable"
+            case .regradeInvalidRequest:
+                errorLocalizationKey = "exam.score.error.regrade_invalid"
             case .autosaveVersionConflict:
                 errorLocalizationKey = "exam.error.version_conflict"
             case .invalidScratchpadAsset:

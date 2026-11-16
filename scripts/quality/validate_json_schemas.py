@@ -1445,6 +1445,82 @@ def run_validation():
                 raise AssertionError(f"Expected jsonschema failure for {label}")
             except jsonschema.exceptions.ValidationError:
                 pass
+
+    # Sprint 9.5 (Scoring Engine, ÖSYM Net Policy & Evidence Traceability) schema & fixture checks
+    s95_schema_dir = Path(__file__).resolve().parents[2] / "packages" / "schemas" / "exam" / "v1"
+    s95_fixtures_dir = s95_schema_dir / "fixtures"
+    s95_schema_files = [
+        "exam-score-summary-response.schema.json",
+        "exam-score-regrade-request.schema.json",
+        "exam-score-regrade-response.schema.json",
+    ]
+    s95_schemas = {}
+    for fname in s95_schema_files:
+        spath = s95_schema_dir / fname
+        assert spath.exists(), f"Missing Sprint 9.5 schema: {spath}"
+        sc = json.loads(spath.read_text(encoding="utf-8"))
+        if jsonschema is not None:
+            jsonschema.Draft202012Validator.check_schema(sc)
+        s95_schemas[fname] = sc
+
+    s95_fixture_bindings = [
+        ("exam-score-summary-response.schema.json", "exam-score-summary-response.valid.json"),
+        ("exam-score-regrade-request.schema.json", "exam-score-regrade-request.valid.json"),
+        ("exam-score-regrade-response.schema.json", "exam-score-regrade-response.valid.json"),
+    ]
+    s95_valid_fixtures = {}
+    for sname, fixname in s95_fixture_bindings:
+        fpath = s95_fixtures_dir / fixname
+        assert fpath.exists(), f"Missing Sprint 9.5 fixture: {fpath}"
+        payload = json.loads(fpath.read_text(encoding="utf-8"))
+        sc = s95_schemas[sname]
+        if jsonschema is not None:
+            jsonschema.Draft202012Validator(sc).validate(payload)
+        errs = _validate_s89_object_keys(payload, sc, sc.get("$defs", {}))
+        assert not errs, f"Sprint 9.5 pure-Python check failed for {fixname}: {errs}"
+        s95_valid_fixtures[sname] = payload
+
+    def _s95_mut(sname: str, **updates):
+        copy = json.loads(json.dumps(s95_valid_fixtures[sname]))
+        for k, v in updates.items():
+            if v is ...:
+                copy.pop(k, None)
+            else:
+                copy[k] = v
+        return copy
+
+    s95_negative_cases = [
+        (s95_schemas["exam-score-summary-response.schema.json"], _s95_mut("exam-score-summary-response.schema.json", scoringFormulaType="INVALID_POLICY"), "s95 summary invalid scoringFormulaType"),
+        (s95_schemas["exam-score-summary-response.schema.json"], _s95_mut("exam-score-summary-response.schema.json", itemEvaluations=...), "s95 summary missing itemEvaluations"),
+        (s95_schemas["exam-score-summary-response.schema.json"], _s95_mut("exam-score-summary-response.schema.json", normalizedPercentageScore=125.0), "s95 summary out-of-range percentage"),
+        (s95_schemas["exam-score-regrade-request.schema.json"], _s95_mut("exam-score-regrade-request.schema.json", reasonCode="UNKNOWN_REASON"), "s95 regrade request invalid reasonCode"),
+        (s95_schemas["exam-score-regrade-request.schema.json"], _s95_mut("exam-score-regrade-request.schema.json", reasonDetail=...), "s95 regrade request missing reasonDetail"),
+        (s95_schemas["exam-score-regrade-response.schema.json"], _s95_mut("exam-score-regrade-response.schema.json", regradeAudit=...), "s95 regrade response missing regradeAudit"),
+        (s95_schemas["exam-score-regrade-response.schema.json"], _s95_mut("exam-score-regrade-response.schema.json", extraCheatField=True), "s95 regrade response additionalProperties"),
+    ]
+    for neg_sc, neg_payload, label in s95_negative_cases:
+        if jsonschema is not None:
+            try:
+                jsonschema.Draft202012Validator(neg_sc).validate(neg_payload)
+                raise AssertionError(f"Expected jsonschema failure for {label}")
+            except jsonschema.exceptions.ValidationError:
+                pass
+        assert _validate_s89_object_keys(neg_payload, neg_sc, neg_sc.get("$defs", {})), f"Expected pure-python failure for {label}"
+
+    if jsonschema is not None:
+        s95_const_cases = [
+            (s95_schemas["exam-score-summary-response.schema.json"], _s95_mut("exam-score-summary-response.schema.json", llmTokensUsed=5), "s95 summary non-zero llmTokensUsed"),
+            (s95_schemas["exam-score-summary-response.schema.json"], _s95_mut("exam-score-summary-response.schema.json", inferenceCostUsd=0.05), "s95 summary non-zero inferenceCostUsd"),
+            (s95_schemas["exam-score-summary-response.schema.json"], _s95_mut("exam-score-summary-response.schema.json", trainingEligible=True), "s95 summary trainingEligible=true"),
+            (s95_schemas["exam-score-regrade-request.schema.json"], _s95_mut("exam-score-regrade-request.schema.json", trainingEligible=True), "s95 regrade request trainingEligible=true"),
+            (s95_schemas["exam-score-regrade-response.schema.json"], _s95_mut("exam-score-regrade-response.schema.json", llmTokensUsed=2), "s95 regrade response non-zero llmTokensUsed"),
+        ]
+        for neg_sc, neg_payload, label in s95_const_cases:
+            try:
+                jsonschema.Draft202012Validator(neg_sc).validate(neg_payload)
+                raise AssertionError(f"Expected jsonschema failure for {label}")
+            except jsonschema.exceptions.ValidationError:
+                pass
     for card_fx in (ml_card_tr_fixture, ml_card_en_fixture):
         assert card_fx["schemaVersion"] == "1.0.0"
         assert card_fx["verificationStatus"] == "VERIFIED"
@@ -1808,6 +1884,24 @@ def run_validation():
                 for code in expected_codes:
                     assert code in s94_op["responses"], f"HTTP {code} missing from {s94_path} {s94_method} in {spec_name}"
 
+            expected_s95_endpoints = {
+                ("/v1/exams/sessions/{sessionId}/score-summary", "post"): {"200", "400", "401", "403", "404", "409", "422", "503"},
+                ("/v1/exams/sessions/{sessionId}/score-summary", "get"): {"200", "400", "401", "403", "404", "409", "503"},
+                ("/v1/exams/sessions/{sessionId}/regrade", "post"): {"200", "400", "401", "403", "404", "409", "422", "503"},
+                ("/v1/exams/sessions/{sessionId}/regrade-audits", "get"): {"200", "400", "401", "403", "404", "409", "503"},
+                ("/api/v1/exams/sessions/{sessionId}/score-summary", "post"): {"200", "400", "401", "403", "404", "409", "422", "503"},
+                ("/api/v1/exams/sessions/{sessionId}/score-summary", "get"): {"200", "400", "401", "403", "404", "409", "503"},
+                ("/api/v1/exams/sessions/{sessionId}/regrade", "post"): {"200", "400", "401", "403", "404", "409", "422", "503"},
+                ("/api/v1/exams/sessions/{sessionId}/regrade-audits", "get"): {"200", "400", "401", "403", "404", "409", "503"},
+            }
+            for (s95_path, s95_method), expected_codes in expected_s95_endpoints.items():
+                assert s95_path in spec_paths, f"Missing Sprint 9.5 path {s95_path} in {spec_name}"
+                assert s95_method in spec_paths[s95_path], f"Missing method {s95_method} on {s95_path} in {spec_name}"
+                s95_op = spec_paths[s95_path][s95_method]
+                assert s95_op["security"] == [{"bearerAuth": []}], f"Security bearerAuth missing on {s95_path} in {spec_name}"
+                for code in expected_codes:
+                    assert code in s95_op["responses"], f"HTTP {code} missing from {s95_path} {s95_method} in {spec_name}"
+
         assert openapi_path.read_bytes() == openapi_core_path.read_bytes(), "OpenAPI mirror public-api.yaml != verified-ai-core-api.yaml"
     else:
         openapi_bytes = openapi_path.read_bytes()
@@ -1867,8 +1961,12 @@ def run_validation():
             "ExamSessionSubmitRequest",
             "ExamSessionSubmitResponse",
             "ExamNoHintGuardResponse",
+            "ExamScoreSummaryResponse",
+            "ExamScoreRegradeRequest",
+            "ExamScoreRegradeResponse",
+            "ExamScoreRegradeAuditListResponse",
         ):
-            assert token in openapi_text, f"Missing Sprint 8.8..9.4 OpenAPI token in public-api.yaml: {token}"
+            assert token in openapi_text, f"Missing Sprint 8.8..9.5 OpenAPI token in public-api.yaml: {token}"
 
     # 3. iOS Localizable.xcstrings Key Verification
     xcstrings_data = json.loads(strings_path.read_text(encoding="utf-8"))
@@ -2217,6 +2315,43 @@ def run_validation():
         "exam.session.action.submit_exam",
         "exam.session.submit.confirmation_title",
         "exam.session.submit.receipt_title",
+        "exam.session.view_score_summary",
+        "exam.score.title",
+        "exam.score.action.close",
+        "exam.score.action.clear_topic_filter",
+        "exam.score.action.trigger_regrade",
+        "exam.score.loading",
+        "exam.score.offline_banner",
+        "exam.score.net_score.label",
+        "exam.score.raw_correct.label",
+        "exam.score.offset.label",
+        "exam.score.range.label",
+        "exam.score.count.correct",
+        "exam.score.count.wrong",
+        "exam.score.count.blank",
+        "exam.score.count.time",
+        "exam.score.formula.osym_4_1",
+        "exam.score.formula.osym_3_1",
+        "exam.score.formula.no_penalty",
+        "exam.score.formula.weighted",
+        "exam.score.section.topic_breakdown",
+        "exam.score.section.difficulty_breakdown",
+        "exam.score.section.item_evidence",
+        "exam.score.section.regrade_audits",
+        "exam.score.filter.all",
+        "exam.score.filter.correct",
+        "exam.score.filter.wrong",
+        "exam.score.filter.blank",
+        "exam.score.filter.flagged",
+        "exam.score.regrade.reason_label",
+        "exam.score.regrade.detail_placeholder",
+        "exam.score.regrade.empty",
+        "exam.score.error.offline_unavailable",
+        "exam.score.error.feature_disabled",
+        "exam.score.error.not_scorable",
+        "exam.score.error.not_found",
+        "exam.score.error.regrade_invalid",
+        "exam.score.error.generic",
     ]
 
     banned_lexicon = re.compile(
@@ -2238,11 +2373,11 @@ def run_validation():
             if key.startswith("studyplan.rebalance.") or key.startswith("micro_lesson.") or key.startswith("study_session."):
                 m = banned_lexicon.search(val)
                 assert not m, f"Stigmatizing lexicon word '{m.group(0)}' in {key}[{lang}]: {val}"
-            elif key.startswith("gamification.") or key.startswith("weekly.") or key.startswith("cold_start.") or key.startswith("exam.candidate.") or key.startswith("exam.syllabus.") or key.startswith("home.candidate_profile.") or key.startswith("exam.assembly.") or key.startswith("exam.session."):
+            elif key.startswith("gamification.") or key.startswith("weekly.") or key.startswith("cold_start.") or key.startswith("exam.candidate.") or key.startswith("exam.syllabus.") or key.startswith("home.candidate_profile.") or key.startswith("exam.assembly.") or key.startswith("exam.session.") or key.startswith("exam.score."):
                 m = gamification_banned_lexicon.search(val)
                 assert not m, f"Stigmatizing lexicon word '{m.group(0)}' in {key}[{lang}]: {val}"
 
-    print(f"PASS: Sprint 8.1..9.4 JSON schemas, negative mutations, OpenAPI 3.1 endpoints, and {len(required_keys)} EN/TR localizations verified.")
+    print(f"PASS: Sprint 8.1..9.5 JSON schemas, negative mutations, OpenAPI 3.1 endpoints, and {len(required_keys)} EN/TR localizations verified.")
 
 
 if __name__ == "__main__":

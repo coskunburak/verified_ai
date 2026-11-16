@@ -1,0 +1,250 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/exam/v1/exam-score-summary-response.schema.json",
+  "title": "ExamScoreSummaryResponse",
+  "description": "Deterministic Sprint 9.5 exam session score summary with ÖSYM net calculation, topic/difficulty breakdowns, and per-item evidence traceability ($0.00 LLM cost, trainingEligible=false).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "scoreId",
+    "sessionId",
+    "userId",
+    "examDefinitionId",
+    "assembledAssessmentId",
+    "examCode",
+    "scoringFormulaType",
+    "wrongPenaltyRatio",
+    "totalQuestions",
+    "correctCount",
+    "wrongCount",
+    "blankCount",
+    "rawCorrectScore",
+    "wrongPenaltyDeduction",
+    "netScore",
+    "minPossibleNetScore",
+    "maxPossibleNetScore",
+    "normalizedPercentageScore",
+    "accuracyPercentage",
+    "totalTimeSpentSeconds",
+    "averageSecondsPerItem",
+    "topicBreakdowns",
+    "difficultyBreakdowns",
+    "itemEvaluations",
+    "scoreVersion",
+    "sessionSubmittedAt",
+    "scoredAt",
+    "lastRegradedAt",
+    "llmTokensUsed",
+    "inferenceCostUsd",
+    "trainingEligible"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "2026-04-01"
+    },
+    "scoreId": { "type": "string", "format": "uuid" },
+    "sessionId": { "type": "string", "format": "uuid" },
+    "userId": { "type": "string", "format": "uuid" },
+    "examDefinitionId": { "type": "string", "format": "uuid" },
+    "assembledAssessmentId": { "type": "string", "format": "uuid" },
+    "examCode": { "type": "string", "minLength": 3, "maxLength": 64 },
+    "scoringFormulaType": {
+      "type": "string",
+      "enum": [
+        "CORRECT_MINUS_QUARTER_WRONG",
+        "RAW_CORRECT_ONLY",
+        "WEIGHTED_SECTION_RUBRIC"
+      ]
+    },
+    "wrongPenaltyRatio": { "type": "number", "minimum": 0, "maximum": 1 },
+    "totalQuestions": { "type": "integer", "minimum": 1, "maximum": 200 },
+    "correctCount": { "type": "integer", "minimum": 0, "maximum": 200 },
+    "wrongCount": { "type": "integer", "minimum": 0, "maximum": 200 },
+    "blankCount": { "type": "integer", "minimum": 0, "maximum": 200 },
+    "rawCorrectScore": { "type": "number", "minimum": 0 },
+    "wrongPenaltyDeduction": { "type": "number", "minimum": 0 },
+    "netScore": { "type": "number" },
+    "minPossibleNetScore": { "type": "number" },
+    "maxPossibleNetScore": { "type": "number" },
+    "normalizedPercentageScore": { "type": "number", "minimum": 0, "maximum": 100 },
+    "accuracyPercentage": { "type": "number", "minimum": 0, "maximum": 100 },
+    "totalTimeSpentSeconds": { "type": "integer", "minimum": 0 },
+    "averageSecondsPerItem": { "type": "number", "minimum": 0 },
+    "topicBreakdowns": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/ExamTopicScoreBreakdown" }
+    },
+    "difficultyBreakdowns": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/ExamDifficultyScoreBreakdown" }
+    },
+    "itemEvaluations": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 200,
+      "items": { "$ref": "#/$defs/ExamSessionItemEvaluation" }
+    },
+    "scoreVersion": { "type": "integer", "minimum": 1 },
+    "sessionSubmittedAt": { "type": "string", "format": "date-time" },
+    "scoredAt": { "type": "string", "format": "date-time" },
+    "lastRegradedAt": { "type": ["string", "null"], "format": "date-time" },
+    "llmTokensUsed": { "type": "integer", "const": 0 },
+    "inferenceCostUsd": { "type": "number", "minimum": 0, "maximum": 0 },
+    "trainingEligible": { "type": "boolean", "const": false }
+  },
+  "$defs": {
+    "ExamTopicScoreBreakdown": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "topicCode",
+        "topicTitle",
+        "totalQuestions",
+        "correctCount",
+        "wrongCount",
+        "blankCount",
+        "rawCorrectScore",
+        "wrongPenaltyDeduction",
+        "netScore",
+        "accuracyPercentage",
+        "totalTimeSpentSeconds",
+        "averageSecondsPerItem"
+      ],
+      "properties": {
+        "topicCode": { "type": "string", "minLength": 2, "maxLength": 128 },
+        "topicTitle": { "type": "string", "minLength": 2, "maxLength": 160 },
+        "totalQuestions": { "type": "integer", "minimum": 1, "maximum": 200 },
+        "correctCount": { "type": "integer", "minimum": 0, "maximum": 200 },
+        "wrongCount": { "type": "integer", "minimum": 0, "maximum": 200 },
+        "blankCount": { "type": "integer", "minimum": 0, "maximum": 200 },
+        "rawCorrectScore": { "type": "number", "minimum": 0 },
+        "wrongPenaltyDeduction": { "type": "number", "minimum": 0 },
+        "netScore": { "type": "number" },
+        "accuracyPercentage": { "type": "number", "minimum": 0, "maximum": 100 },
+        "totalTimeSpentSeconds": { "type": "integer", "minimum": 0 },
+        "averageSecondsPerItem": { "type": "number", "minimum": 0 }
+      }
+    },
+    "ExamDifficultyScoreBreakdown": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "difficultyBand",
+        "totalQuestions",
+        "correctCount",
+        "wrongCount",
+        "blankCount",
+        "netScore",
+        "accuracyPercentage",
+        "totalTimeSpentSeconds",
+        "averageSecondsPerItem"
+      ],
+      "properties": {
+        "difficultyBand": {
+          "type": "string",
+          "enum": ["EASY", "MODERATE", "HARD", "ELITE"]
+        },
+        "totalQuestions": { "type": "integer", "minimum": 1, "maximum": 200 },
+        "correctCount": { "type": "integer", "minimum": 0, "maximum": 200 },
+        "wrongCount": { "type": "integer", "minimum": 0, "maximum": 200 },
+        "blankCount": { "type": "integer", "minimum": 0, "maximum": 200 },
+        "netScore": { "type": "number" },
+        "accuracyPercentage": { "type": "number", "minimum": 0, "maximum": 100 },
+        "totalTimeSpentSeconds": { "type": "integer", "minimum": 0 },
+        "averageSecondsPerItem": { "type": "number", "minimum": 0 }
+      }
+    },
+    "ExamSessionItemEvaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evaluationId",
+        "sessionItemId",
+        "questionItemId",
+        "positionIndex",
+        "questionCode",
+        "topicCode",
+        "topicTitle",
+        "difficultyBand",
+        "cognitiveLevel",
+        "formatType",
+        "evaluationOutcome",
+        "selectedOptionKey",
+        "numericResponseValue",
+        "correctOptionKey",
+        "expectedNumericAnswer",
+        "numericTolerance",
+        "rawPointsAwarded",
+        "penaltyPointsDeducted",
+        "netPointsContribution",
+        "flaggedForReview",
+        "timeSpentSeconds",
+        "selectedOptionDistractorRationale",
+        "solutionExplanationMarkdown",
+        "evidenceSourceRef",
+        "f28ScratchpadStatus",
+        "scratchpadAssetCount",
+        "scratchpadAssetIds",
+        "questionVersion",
+        "llmTokensUsed",
+        "trainingEligible",
+        "evaluatedAt"
+      ],
+      "properties": {
+        "evaluationId": { "type": "string", "format": "uuid" },
+        "sessionItemId": { "type": "string", "format": "uuid" },
+        "questionItemId": { "type": "string", "format": "uuid" },
+        "positionIndex": { "type": "integer", "minimum": 1, "maximum": 200 },
+        "questionCode": { "type": "string", "minLength": 2, "maxLength": 64 },
+        "topicCode": { "type": "string", "minLength": 2, "maxLength": 128 },
+        "topicTitle": { "type": "string", "minLength": 2, "maxLength": 160 },
+        "difficultyBand": {
+          "type": "string",
+          "enum": ["EASY", "MODERATE", "HARD", "ELITE"]
+        },
+        "cognitiveLevel": {
+          "type": "string",
+          "enum": ["RECALL", "APPLICATION", "ANALYSIS", "SYNTHESIS"]
+        },
+        "formatType": {
+          "type": "string",
+          "enum": ["SINGLE_CHOICE_MCQ", "MULTI_SELECT_MCQ", "NUMERIC_GRID_IN"]
+        },
+        "evaluationOutcome": {
+          "type": "string",
+          "enum": ["CORRECT", "WRONG", "BLANK"]
+        },
+        "selectedOptionKey": { "type": ["string", "null"], "maxLength": 64 },
+        "numericResponseValue": { "type": ["number", "null"] },
+        "correctOptionKey": { "type": ["string", "null"], "maxLength": 64 },
+        "expectedNumericAnswer": { "type": ["number", "null"] },
+        "numericTolerance": { "type": ["number", "null"], "minimum": 0 },
+        "rawPointsAwarded": { "type": "number" },
+        "penaltyPointsDeducted": { "type": "number", "minimum": 0 },
+        "netPointsContribution": { "type": "number" },
+        "flaggedForReview": { "type": "boolean" },
+        "timeSpentSeconds": { "type": "integer", "minimum": 0 },
+        "selectedOptionDistractorRationale": { "type": ["string", "null"] },
+        "solutionExplanationMarkdown": { "type": "string", "minLength": 1 },
+        "evidenceSourceRef": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "f28ScratchpadStatus": {
+          "type": "string",
+          "enum": ["NONE", "ATTACHED_METADATA_ONLY"]
+        },
+        "scratchpadAssetCount": { "type": "integer", "minimum": 0 },
+        "scratchpadAssetIds": {
+          "type": "array",
+          "items": { "type": "string", "format": "uuid" }
+        },
+        "questionVersion": { "type": "integer", "minimum": 1 },
+        "llmTokensUsed": { "type": "integer", "const": 0 },
+        "trainingEligible": { "type": "boolean", "const": false },
+        "evaluatedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

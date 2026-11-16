@@ -92,6 +92,14 @@ public actor ExamOfflineSQLiteStore: ExamCacheStoreProtocol {
             updated_at TEXT NOT NULL,
             PRIMARY KEY (session_id, user_id)
         );
+        CREATE TABLE IF NOT EXISTS exam_cached_score_summaries (
+            session_id TEXT NOT NULL,
+            user_id TEXT NOT NULL,
+            score_version INTEGER NOT NULL,
+            payload_json TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            PRIMARY KEY (session_id, user_id)
+        );
         CREATE TABLE IF NOT EXISTS exam_autosave_outbox (
             id TEXT NOT NULL,
             session_id TEXT NOT NULL,
@@ -487,6 +495,7 @@ public actor ExamOfflineSQLiteStore: ExamCacheStoreProtocol {
             "cached_syllabus_uploads",
             "cached_assembled_assessments",
             "exam_sessions_local",
+            "exam_cached_score_summaries",
             "exam_autosave_outbox",
             "exam_scratchpad_attachments_local"
         ] {
@@ -510,9 +519,62 @@ public actor ExamOfflineSQLiteStore: ExamCacheStoreProtocol {
             DELETE FROM cached_exam_blueprints;
             DELETE FROM cached_assembled_assessments;
             DELETE FROM exam_sessions_local;
+            DELETE FROM exam_cached_score_summaries;
             DELETE FROM exam_autosave_outbox;
             DELETE FROM exam_scratchpad_attachments_local;
             """, nil, nil, nil)
+    }
+
+    // MARK: - Sprint 9.5 Offline Score Summary Cache
+
+    public func saveScoreSummary(_ summary: ExamSessionScoreSummaryResponse, for userId: UUID) {
+        guard let db,
+              let data = try? encoder.encode(summary),
+              let jsonString = String(data: data, encoding: .utf8) else {
+            return
+        }
+        let sql = """
+        INSERT INTO exam_cached_score_summaries (session_id, user_id, score_version, payload_json, updated_at)
+        VALUES (?1, ?2, ?3, ?4, ?5)
+        ON CONFLICT(session_id, user_id) DO UPDATE SET
+            score_version = excluded.score_version,
+            payload_json = excluded.payload_json,
+            updated_at = excluded.updated_at;
+        """
+        var stmt: OpaquePointer?
+        if sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK {
+            defer { sqlite3_finalize(stmt) }
+            let nowString = ISO8601DateFormatter().string(from: Date())
+            sqlite3_bind_text(stmt, 1, summary.sessionId.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+            sqlite3_bind_text(stmt, 2, userId.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+            sqlite3_bind_int(stmt, 3, Int32(summary.scoreVersion))
+            sqlite3_bind_text(stmt, 4, jsonString, -1, SQLITE_TRANSIENT)
+            sqlite3_bind_text(stmt, 5, nowString, -1, SQLITE_TRANSIENT)
+            sqlite3_step(stmt)
+        }
+    }
+
+    public func loadScoreSummary(sessionId: UUID, userId: UUID) -> ExamSessionScoreSummaryResponse? {
+        guard let db else { return nil }
+        let sql = """
+        SELECT payload_json FROM exam_cached_score_summaries
+        WHERE lower(session_id) = lower(?1) AND lower(user_id) = lower(?2)
+        LIMIT 1;
+        """
+        var stmt: OpaquePointer?
+        if sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK {
+            defer { sqlite3_finalize(stmt) }
+            sqlite3_bind_text(stmt, 1, sessionId.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+            sqlite3_bind_text(stmt, 2, userId.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+            if sqlite3_step(stmt) == SQLITE_ROW, let cStr = sqlite3_column_text(stmt, 0) {
+                let jsonString = String(cString: cStr)
+                if let data = jsonString.data(using: .utf8),
+                   let decoded = try? decoder.decode(ExamSessionScoreSummaryResponse.self, from: data) {
+                    return decoded
+                }
+            }
+        }
+        return nil
     }
 
     private func upsertUserScopedRow<T: Encodable>(table: String, userId: String, payload: T) {

@@ -5676,6 +5676,302 @@ paths:
         '503':
           $ref: '#/components/responses/ProblemServiceUnavailable'
 
+  /v1/exams/sessions/{sessionId}/score-summary:
+    post:
+      summary: Compute or idempotently retrieve deterministic exam score summary (INV-EXAM-004, $0.00 LLM cost)
+      operationId: computeOrGetExamSessionScoreSummary
+      tags:
+        - Exams
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Canonical deterministic exam session score summary with topic/difficulty breakdowns and item evidence
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamScoreSummaryResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '409':
+          $ref: '#/components/responses/ProblemConflict'
+        '422':
+          $ref: '#/components/responses/ProblemUnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+    get:
+      summary: Retrieve persisted canonical exam session score summary (terminal sessions only)
+      operationId: getExamSessionScoreSummary
+      tags:
+        - Exams
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Canonical deterministic exam session score summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamScoreSummaryResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '409':
+          $ref: '#/components/responses/ProblemConflict'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /api/v1/exams/sessions/{sessionId}/score-summary:
+    post:
+      summary: Compute or idempotently retrieve deterministic exam score summary (/api alias)
+      operationId: computeOrGetExamSessionScoreSummaryApiAlias
+      tags:
+        - Exams
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Canonical deterministic exam session score summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamScoreSummaryResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '409':
+          $ref: '#/components/responses/ProblemConflict'
+        '422':
+          $ref: '#/components/responses/ProblemUnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+    get:
+      summary: Retrieve persisted canonical exam session score summary (/api alias)
+      operationId: getExamSessionScoreSummaryApiAlias
+      tags:
+        - Exams
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Canonical deterministic exam session score summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamScoreSummaryResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '409':
+          $ref: '#/components/responses/ProblemConflict'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /v1/exams/sessions/{sessionId}/regrade:
+    post:
+      summary: Execute audited deterministic regrade of a scored exam session
+      operationId: regradeExamSession
+      tags:
+        - Exams
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExamScoreRegradeRequest'
+      responses:
+        '200':
+          description: Regraded canonical score summary and immutable versioned audit log entry
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamScoreRegradeResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '409':
+          $ref: '#/components/responses/ProblemConflict'
+        '422':
+          $ref: '#/components/responses/ProblemUnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /api/v1/exams/sessions/{sessionId}/regrade:
+    post:
+      summary: Execute audited deterministic regrade of a scored exam session (/api alias)
+      operationId: regradeExamSessionApiAlias
+      tags:
+        - Exams
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExamScoreRegradeRequest'
+      responses:
+        '200':
+          description: Regraded canonical score summary and immutable versioned audit log entry
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamScoreRegradeResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '409':
+          $ref: '#/components/responses/ProblemConflict'
+        '422':
+          $ref: '#/components/responses/ProblemUnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /v1/exams/sessions/{sessionId}/regrade-audits:
+    get:
+      summary: List immutable regrade audit entries for an exam session
+      operationId: listExamSessionRegradeAudits
+      tags:
+        - Exams
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Immutable regrade audit log entries ordered newest first
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamScoreRegradeAuditListResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '409':
+          $ref: '#/components/responses/ProblemConflict'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
+  /api/v1/exams/sessions/{sessionId}/regrade-audits:
+    get:
+      summary: List immutable regrade audit entries for an exam session (/api alias)
+      operationId: listExamSessionRegradeAuditsApiAlias
+      tags:
+        - Exams
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Immutable regrade audit log entries ordered newest first
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamScoreRegradeAuditListResponse'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '409':
+          $ref: '#/components/responses/ProblemConflict'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -10264,3 +10560,84 @@ components:
 
     ExamNoHintGuardResponse:
       $ref: '../../schemas/exam/v1/exam-no-hint-guard-response.schema.json'
+
+    ExamScoreSummaryResponse:
+      $ref: '../../schemas/exam/v1/exam-score-summary-response.schema.json'
+
+    ExamScoreRegradeRequest:
+      $ref: '../../schemas/exam/v1/exam-score-regrade-request.schema.json'
+
+    ExamScoreRegradeResponse:
+      $ref: '../../schemas/exam/v1/exam-score-regrade-response.schema.json'
+
+    ExamScoreRegradeAuditListResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - schemaVersion
+        - sessionId
+        - totalCount
+        - audits
+        - trainingEligible
+      properties:
+        schemaVersion:
+          type: string
+          const: '2026-04-01'
+        sessionId:
+          type: string
+          format: uuid
+        totalCount:
+          type: integer
+          minimum: 0
+        audits:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required:
+              - regradeAuditId
+              - scoreId
+              - sessionId
+              - userId
+              - previousScoreVersion
+              - newScoreVersion
+              - previousNetScore
+              - newNetScore
+              - previousCorrectCount
+              - newCorrectCount
+              - previousWrongCount
+              - newWrongCount
+              - previousBlankCount
+              - newBlankCount
+              - reasonCode
+              - reasonDetail
+              - triggeredBy
+              - deltaSummary
+              - trainingEligible
+              - regradedAt
+            properties:
+              regradeAuditId: {type: string, format: uuid}
+              scoreId: {type: string, format: uuid}
+              sessionId: {type: string, format: uuid}
+              userId: {type: string, format: uuid}
+              previousScoreVersion: {type: integer, minimum: 1}
+              newScoreVersion: {type: integer, minimum: 2}
+              previousNetScore: {type: number}
+              newNetScore: {type: number}
+              previousCorrectCount: {type: integer, minimum: 0}
+              newCorrectCount: {type: integer, minimum: 0}
+              previousWrongCount: {type: integer, minimum: 0}
+              newWrongCount: {type: integer, minimum: 0}
+              previousBlankCount: {type: integer, minimum: 0}
+              newBlankCount: {type: integer, minimum: 0}
+              reasonCode:
+                type: string
+                enum: [ANSWER_KEY_CORRECTION, PENALTY_POLICY_SYNC, ADMIN_MANUAL_REGRADE]
+              reasonDetail: {type: string}
+              triggeredBy: {type: string}
+              deltaSummary: {type: object}
+              trainingEligible: {type: boolean, const: false}
+              regradedAt: {type: string, format: date-time}
+        trainingEligible:
+          type: boolean
+          const: false

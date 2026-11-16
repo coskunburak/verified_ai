@@ -210,6 +210,18 @@ final class Sprint91ExamCatalogAndTargetTests: XCTestCase {
             func checkNoHintGuard(sessionId: UUID, requestedSurface: String) async throws -> ExamNoHintGuardResponseDTO {
                 throw ExamServiceError.featureDisabled
             }
+            func computeOrGetScoreSummary(sessionId: UUID) async throws -> ExamSessionScoreSummaryResponse {
+                throw ExamServiceError.featureDisabled
+            }
+            func fetchScoreSummary(sessionId: UUID) async throws -> ExamSessionScoreSummaryResponse {
+                throw ExamServiceError.featureDisabled
+            }
+            func regradeSession(sessionId: UUID, request: ExamScoreRegradeRequest) async throws -> ExamScoreRegradeResponse {
+                throw ExamServiceError.featureDisabled
+            }
+            func fetchRegradeAudits(sessionId: UUID) async throws -> ExamScoreRegradeAuditListResponse {
+                throw ExamServiceError.featureDisabled
+            }
         }
 
         let store = ExamOfflineSQLiteStore(inMemory: true)
