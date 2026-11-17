@@ -2734,3 +2734,200 @@ public struct ExamReadinessRecomputeRequest: Sendable, Codable, Equatable {
         self.trainingEligible = trainingEligible
     }
 }
+
+// MARK: - Sprint 9.7 deterministic H-03 attribution
+public enum ExamAttributionCategory: String, Codable, Sendable, CaseIterable {
+    case conceptualGap = "CONCEPTUAL_GAP"
+    case recurringMistakeTrap = "RECURRING_MISTAKE_TRAP"
+    case timePressureSlip = "TIME_PRESSURE_SLIP"
+    case strategicOmission = "STRATEGIC_OMISSION"
+}
+public enum ExamRemediationActionType: String, Codable, Sendable {
+    case microLesson = "MICRO_LESSON"
+    case twinDrill = "TWIN_DRILL"
+    case timedSpeedDrill = "TIMED_SPEED_DRILL"
+    case triageStrategyReview = "TRIAGE_STRATEGY_REVIEW"
+}
+
+public struct ExamAttributionCategorySummaryItem: Codable, Sendable, Equatable, Identifiable {
+    public var category: ExamAttributionCategory
+    public var itemCount: Int
+    public var lostNet: Double
+    public var sharePercentage: Double
+    public var headline: String
+    public var id: String { category.rawValue }
+    public init(category: ExamAttributionCategory, itemCount: Int, lostNet: Double, sharePercentage: Double, headline: String) {
+        self.category = category
+        self.itemCount = itemCount
+        self.lostNet = lostNet
+        self.sharePercentage = sharePercentage
+        self.headline = headline
+    }
+}
+
+public struct ExamHighRoiAllocationItem: Codable, Sendable, Equatable, Identifiable {
+    public var rank: Int
+    public var topicId: String
+    public var skillId: String
+    public var expectedNetGainPerHour: Double
+    public var estimatedRemediationHours: Double
+    public var recommendedActionType: ExamRemediationActionType
+    public var recommendedTargetRef: String
+    public var topicTitle: String
+    public var skillTitle: String
+    public var dominantCategory: ExamAttributionCategory
+    public var matchedMistakeCode: String?
+    public var sessionLostNet: Double
+    public var currentMastery: Double
+    public var examSuccessProbability: Double
+    public var estimatedNetRecoveryTotal: Double
+    public var rationale: String
+    public var id: String { skillId }
+    public init(rank: Int, topicId: String, skillId: String, expectedNetGainPerHour: Double, estimatedRemediationHours: Double, recommendedActionType: ExamRemediationActionType, recommendedTargetRef: String, topicTitle: String, skillTitle: String, dominantCategory: ExamAttributionCategory, matchedMistakeCode: String?, sessionLostNet: Double, currentMastery: Double, examSuccessProbability: Double, estimatedNetRecoveryTotal: Double, rationale: String) {
+        self.rank = rank
+        self.topicId = topicId
+        self.skillId = skillId
+        self.expectedNetGainPerHour = expectedNetGainPerHour
+        self.estimatedRemediationHours = estimatedRemediationHours
+        self.recommendedActionType = recommendedActionType
+        self.recommendedTargetRef = recommendedTargetRef
+        self.topicTitle = topicTitle
+        self.skillTitle = skillTitle
+        self.dominantCategory = dominantCategory
+        self.matchedMistakeCode = matchedMistakeCode
+        self.sessionLostNet = sessionLostNet
+        self.currentMastery = currentMastery
+        self.examSuccessProbability = examSuccessProbability
+        self.estimatedNetRecoveryTotal = estimatedNetRecoveryTotal
+        self.rationale = rationale
+    }
+}
+
+public struct ExamItemAttributionDetail: Codable, Sendable, Equatable, Identifiable {
+    public var attributionId: UUID
+    public var itemEvaluationId: UUID
+    public var itemOrder: Int
+    public var sectionCode: String
+    public var topicId: String
+    public var skillId: String
+    public var itemOutcome: String
+    public var attributionCategory: ExamAttributionCategory
+    public var matchedMistakeCode: String?
+    public var evidenceSource: String
+    public var timeSpentSeconds: Int
+    public var expectedSolveSeconds: Int
+    public var masterySnapshot: Double
+    public var estimatedNetImpact: Double
+    public var recommendedActionType: ExamRemediationActionType
+    public var recommendedTargetRef: String
+    public var rationale: String
+    public var id: UUID { attributionId }
+    public init(attributionId: UUID, itemEvaluationId: UUID, itemOrder: Int, sectionCode: String, topicId: String, skillId: String, itemOutcome: String, attributionCategory: ExamAttributionCategory, matchedMistakeCode: String?, evidenceSource: String, timeSpentSeconds: Int, expectedSolveSeconds: Int, masterySnapshot: Double, estimatedNetImpact: Double, recommendedActionType: ExamRemediationActionType, recommendedTargetRef: String, rationale: String) {
+        self.attributionId = attributionId
+        self.itemEvaluationId = itemEvaluationId
+        self.itemOrder = itemOrder
+        self.sectionCode = sectionCode
+        self.topicId = topicId
+        self.skillId = skillId
+        self.itemOutcome = itemOutcome
+        self.attributionCategory = attributionCategory
+        self.matchedMistakeCode = matchedMistakeCode
+        self.evidenceSource = evidenceSource
+        self.timeSpentSeconds = timeSpentSeconds
+        self.expectedSolveSeconds = expectedSolveSeconds
+        self.masterySnapshot = masterySnapshot
+        self.estimatedNetImpact = estimatedNetImpact
+        self.recommendedActionType = recommendedActionType
+        self.recommendedTargetRef = recommendedTargetRef
+        self.rationale = rationale
+    }
+}
+
+public struct ExamAttributionReportResponse: Codable, Sendable, Equatable {
+    public var sessionId: UUID
+    public var userId: UUID
+    public var examCode: String
+    public var generatedAt: String
+    public var algorithmVersion: String
+    public var totalLostNet: Double
+    public var categorySummary: [ExamAttributionCategorySummaryItem]
+    public var topRoiAllocations: [ExamHighRoiAllocationItem]
+    public var itemAttributions: [ExamItemAttributionDetail]
+    public var studyPlanRebalanced: Bool
+    public var lastReallocationBatchId: UUID?
+    public var trainingEligible: Bool
+    public init(sessionId: UUID, userId: UUID, examCode: String, generatedAt: String, algorithmVersion: String, totalLostNet: Double, categorySummary: [ExamAttributionCategorySummaryItem], topRoiAllocations: [ExamHighRoiAllocationItem], itemAttributions: [ExamItemAttributionDetail], studyPlanRebalanced: Bool, lastReallocationBatchId: UUID?, trainingEligible: Bool) {
+        self.sessionId = sessionId
+        self.userId = userId
+        self.examCode = examCode
+        self.generatedAt = generatedAt
+        self.algorithmVersion = algorithmVersion
+        self.totalLostNet = totalLostNet
+        self.categorySummary = categorySummary
+        self.topRoiAllocations = topRoiAllocations
+        self.itemAttributions = itemAttributions
+        self.studyPlanRebalanced = studyPlanRebalanced
+        self.lastReallocationBatchId = lastReallocationBatchId
+        self.trainingEligible = trainingEligible
+    }
+}
+
+public struct ExamApplyStudyRebalanceRequest: Codable, Sendable, Equatable {
+    public var maxTopicsToApply: Int
+    public var targetHorizonDays: Int
+    public var preferredDailyMinutes: Int
+    public init(maxTopicsToApply: Int, targetHorizonDays: Int, preferredDailyMinutes: Int) {
+        self.maxTopicsToApply = maxTopicsToApply
+        self.targetHorizonDays = targetHorizonDays
+        self.preferredDailyMinutes = preferredDailyMinutes
+    }
+}
+
+public struct ExamRebalanceDirective: Codable, Sendable, Equatable, Identifiable {
+    public var rank: Int
+    public var topicId: String
+    public var skillId: String
+    public var expectedNetGainPerHour: Double
+    public var estimatedRemediationHours: Double
+    public var recommendedActionType: ExamRemediationActionType
+    public var recommendedTargetRef: String
+    public var id: String { skillId }
+    public init(rank: Int, topicId: String, skillId: String, expectedNetGainPerHour: Double, estimatedRemediationHours: Double, recommendedActionType: ExamRemediationActionType, recommendedTargetRef: String) {
+        self.rank = rank
+        self.topicId = topicId
+        self.skillId = skillId
+        self.expectedNetGainPerHour = expectedNetGainPerHour
+        self.estimatedRemediationHours = estimatedRemediationHours
+        self.recommendedActionType = recommendedActionType
+        self.recommendedTargetRef = recommendedTargetRef
+    }
+}
+
+public struct ExamApplyStudyRebalanceResponse: Codable, Sendable, Equatable {
+    public var batchId: UUID
+    public var sourceSessionId: UUID
+    public var userId: UUID
+    public var examCode: String
+    public var appliedToStudyPlan: Bool
+    public var idempotentReplay: Bool
+    public var rebalancedStudyPlanId: UUID
+    public var rebalancedTasksCount: Int
+    public var totalExpectedNetRecovery: Double
+    public var appliedDirectives: [ExamRebalanceDirective]
+    public var appliedAt: String
+    public var trainingEligible: Bool
+    public init(batchId: UUID, sourceSessionId: UUID, userId: UUID, examCode: String, appliedToStudyPlan: Bool, idempotentReplay: Bool, rebalancedStudyPlanId: UUID, rebalancedTasksCount: Int, totalExpectedNetRecovery: Double, appliedDirectives: [ExamRebalanceDirective], appliedAt: String, trainingEligible: Bool) {
+        self.batchId = batchId
+        self.sourceSessionId = sourceSessionId
+        self.userId = userId
+        self.examCode = examCode
+        self.appliedToStudyPlan = appliedToStudyPlan
+        self.idempotentReplay = idempotentReplay
+        self.rebalancedStudyPlanId = rebalancedStudyPlanId
+        self.rebalancedTasksCount = rebalancedTasksCount
+        self.totalExpectedNetRecovery = totalExpectedNetRecovery
+        self.appliedDirectives = appliedDirectives
+        self.appliedAt = appliedAt
+        self.trainingEligible = trainingEligible
+    }
+}

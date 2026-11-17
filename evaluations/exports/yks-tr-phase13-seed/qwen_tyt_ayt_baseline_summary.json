@@ -1,0 +1,18 @@
+{
+  "datasetId": "yks-tr-phase13-seed-v1",
+  "seedSha256": "ba8c8039f8ea09781582066397b845a90d43e9c82aa1d6fd18387779619413dc",
+  "decision": "REQUIRES_MORE_EVIDENCE",
+  "phase13SftLoraEntryApproved": false,
+  "evidenceScope": "STATIC_SEED_INTEGRITY_ONLY",
+  "modelRunPerformed": false,
+  "modelCaseCount": 0,
+  "turkishPromptAccuracy": null,
+  "sympyAnswerEquivalenceRate": null,
+  "distractorTrapCaptureRate": null,
+  "verifiedSeedRecordCount": 120,
+  "requiredEvidence": [
+    "Identity-pinned Qwen TYT/AYT inference run",
+    "Independent answer and trap grading",
+    "Protected evaluation corpus kept out of training"
+  ]
+}

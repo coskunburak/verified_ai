@@ -116,6 +116,7 @@
 ## 4. Seçenek A: Dalga 2–5 (`Sprint 9.7–9.10`) Production Uygulama Planı
 
 ### 4.1 Dalga 2 — Sprint 9.7 + `Bridge B4` — Deneme Sonrası Hata Karnesi, Zayıf Alan Önceliklendirme (`H-03`) & `Phase 13` Seed İhracı
+- **Durum (2026-11-17): COMPLETED — OWNER HOST ACCEPTANCE PASSED.** V061 kodu, 120 kayıtlık temiz ihracat ve native telafi navigasyonu hazır; kullanıcı host kabulünü ve 430 dosyalık doküman kontrolünü başarıyla tamamladı. Qwen baseline: `REQUIRES_MORE_EVIDENCE`. Ayrıntılar: [Sprint 9.7 execution report](SPRINT_9.7_EXECUTION_REPORT.md).
 - **Önkoşul:** `Dalga 1 (Sprint 9.6B / V060)` + `Sprint 9.6 (V059)` kabul edilmiş olmalı.
 - **Mimari & Ownership (`com.verifiedai.exam` + `com.verifiedai.studyplan` + `evaluations/exports/`):**
   - `ExamSession` + `ExamSessionScoreSnapshot` (`V058`) + `ExamScratchpadAsset` (`F28`) + `Mistake DNA` (`V037`) verilerini tüketerek her yanlış ve boş soru için 4 deterministik sınıflandırma üretir:

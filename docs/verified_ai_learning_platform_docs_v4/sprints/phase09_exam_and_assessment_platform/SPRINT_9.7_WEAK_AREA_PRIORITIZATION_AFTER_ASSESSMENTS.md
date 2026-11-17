@@ -1,5 +1,7 @@
 # Sprint 9.7 — Weak-Area Prioritization After Assessments
 
+Status (2026-11-17): **COMPLETED — OWNER HOST ACCEPTANCE PASSED**. See [execution report](SPRINT_9.7_EXECUTION_REPORT.md).
+
 ## Sprint mission
 
 Convert mock-exam outcomes into high-value skill recommendations and targeted review.

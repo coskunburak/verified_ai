@@ -51,6 +51,13 @@ public actor ExamOfflineSQLiteStore: ExamCacheStoreProtocol {
     private static func createTablesIfNotExists(on db: OpaquePointer?) {
         guard let db else { return }
         let sql = """
+        CREATE TABLE IF NOT EXISTS cached_exam_attributions (
+            session_id TEXT PRIMARY KEY,
+            user_id TEXT NOT NULL,
+            exam_code TEXT NOT NULL,
+            payload_json TEXT NOT NULL,
+            updated_at INTEGER NOT NULL
+        );
         CREATE TABLE IF NOT EXISTS exam_definitions_cache (
             cache_key TEXT PRIMARY KEY,
             payload_json TEXT NOT NULL,
@@ -497,6 +504,7 @@ public actor ExamOfflineSQLiteStore: ExamCacheStoreProtocol {
     public func purgeUserData(userId: String) async {
         guard let db else { return }
         for table in [
+            "cached_exam_attributions",
             "student_exam_targets_cache",
             "cached_candidate_profiles",
             "cached_syllabus_uploads",
@@ -520,6 +528,7 @@ public actor ExamOfflineSQLiteStore: ExamCacheStoreProtocol {
     public func purgeAll() async {
         guard let db else { return }
         sqlite3_exec(db, """
+            DELETE FROM cached_exam_attributions;
             DELETE FROM exam_definitions_cache;
             DELETE FROM student_exam_targets_cache;
             DELETE FROM cached_candidate_profiles;
@@ -533,6 +542,45 @@ public actor ExamOfflineSQLiteStore: ExamCacheStoreProtocol {
             DELETE FROM cached_exam_readiness_projections;
             """, nil, nil, nil)
     }
+
+    public enum AttributionCacheError: Error { case unavailable, invalidPayload, statementFailed }
+
+    public func saveAttributionReport(_ report: ExamAttributionReportResponse) throws {
+        guard !report.trainingEligible else { throw AttributionCacheError.invalidPayload }
+        guard let db else { throw AttributionCacheError.unavailable }
+        let data = try encoder.encode(report)
+        guard let payload = String(data: data, encoding: .utf8) else { throw AttributionCacheError.invalidPayload }
+        let sql = """
+        INSERT INTO cached_exam_attributions(session_id,user_id,exam_code,payload_json,updated_at)
+        VALUES (?1,?2,?3,?4,?5) ON CONFLICT(session_id) DO UPDATE SET
+        user_id=excluded.user_id,exam_code=excluded.exam_code,payload_json=excluded.payload_json,updated_at=excluded.updated_at;
+        """
+        var stmt: OpaquePointer?
+        guard sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK else { throw AttributionCacheError.statementFailed }
+        defer { sqlite3_finalize(stmt) }
+        sqlite3_bind_text(stmt, 1, report.sessionId.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+        sqlite3_bind_text(stmt, 2, report.userId.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+        sqlite3_bind_text(stmt, 3, report.examCode, -1, SQLITE_TRANSIENT)
+        sqlite3_bind_text(stmt, 4, payload, -1, SQLITE_TRANSIENT)
+        sqlite3_bind_int64(stmt, 5, Int64(Date().timeIntervalSince1970))
+        guard sqlite3_step(stmt) == SQLITE_DONE else { throw AttributionCacheError.statementFailed }
+    }
+
+    public func loadAttributionReport(sessionId: UUID) throws -> ExamAttributionReportResponse? {
+        guard let db else { throw AttributionCacheError.unavailable }
+        var stmt: OpaquePointer?
+        guard sqlite3_prepare_v2(db, "SELECT payload_json FROM cached_exam_attributions WHERE session_id=?1", -1, &stmt, nil) == SQLITE_OK else { throw AttributionCacheError.statementFailed }
+        defer { sqlite3_finalize(stmt) }
+        sqlite3_bind_text(stmt, 1, sessionId.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+        let status = sqlite3_step(stmt)
+        if status == SQLITE_DONE { return nil }
+        guard status == SQLITE_ROW, let raw = sqlite3_column_text(stmt, 0) else { throw AttributionCacheError.statementFailed }
+        let report = try decoder.decode(ExamAttributionReportResponse.self, from: Data(String(cString: raw).utf8))
+        guard report.sessionId == sessionId, !report.trainingEligible else { throw AttributionCacheError.invalidPayload }
+        return report
+    }
+
+    public func clearAllUserData() async { await purgeAll() }
 
     // MARK: - Sprint 9.6 Offline Exam Readiness Projections Cache
 

@@ -51,7 +51,9 @@ final class APIClient {
                     return HTTPResponse(
                         statusCode: httpResponse.statusCode,
                         headers: httpResponse.allHeaderFields,
-                        body: try decoder.decode(Response.self, from: data)
+                        body: try request.decodesISO8601Dates
+                            ? Self.decodeISO8601Response(Response.self, from: data)
+                            : decoder.decode(Response.self, from: data)
                     )
                 } catch {
                     throw NetworkError.decoding(error.localizedDescription)
@@ -68,6 +70,22 @@ final class APIClient {
         } catch {
             throw NetworkError.transport(error.localizedDescription)
         }
+    }
+
+    /// Opt-in for native practice/micro-lesson contracts, without changing existing DTO decoding.
+    static func decodeISO8601Response<Response: Decodable>(_ type: Response.Type, from data: Data) throws -> Response {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .custom { decoder in
+            let container = try decoder.singleValueContainer()
+            let value = try container.decode(String.self)
+            let formatter = ISO8601DateFormatter()
+            formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+            if let date = formatter.date(from: value) { return date }
+            formatter.formatOptions = [.withInternetDateTime]
+            if let date = formatter.date(from: value) { return date }
+            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Expected an ISO-8601 timestamp")
+        }
+        return try decoder.decode(type, from: data)
     }
 
     private func makeURLRequest<Response: Decodable>(from request: HTTPRequest<Response>) async throws -> URLRequest {

@@ -1,0 +1,82 @@
+{
+  "sessionId": "11111111-1111-4111-8111-111111111111",
+  "userId": "11111111-1111-4111-8111-111111111111",
+  "examCode": "TR_YKS_AYT_MATH",
+  "generatedAt": "2026-11-17T10:00:00Z",
+  "algorithmVersion": "H03_ATTRIBUTION_V1",
+  "totalLostNet": 1.25,
+  "categorySummary": [
+    {
+      "category": "CONCEPTUAL_GAP",
+      "itemCount": 0,
+      "lostNet": 0,
+      "sharePercentage": 0,
+      "headline": "CONCEPTUAL_GAP"
+    },
+    {
+      "category": "RECURRING_MISTAKE_TRAP",
+      "itemCount": 1,
+      "lostNet": 1.25,
+      "sharePercentage": 100,
+      "headline": "RECURRING_MISTAKE_TRAP"
+    },
+    {
+      "category": "TIME_PRESSURE_SLIP",
+      "itemCount": 0,
+      "lostNet": 0,
+      "sharePercentage": 0,
+      "headline": "TIME_PRESSURE_SLIP"
+    },
+    {
+      "category": "STRATEGIC_OMISSION",
+      "itemCount": 0,
+      "lostNet": 0,
+      "sharePercentage": 0,
+      "headline": "STRATEGIC_OMISSION"
+    }
+  ],
+  "topRoiAllocations": [
+    {
+      "rank": 1,
+      "topicId": "MATH.CALCULUS",
+      "skillId": "MATH.CALCULUS.DIFFERENTIATION.CHAIN_RULE",
+      "expectedNetGainPerHour": 0.329,
+      "estimatedRemediationHours": 2.96,
+      "recommendedActionType": "TWIN_DRILL",
+      "recommendedTargetRef": "twin:MATH.CALCULUS.DIFFERENTIATION.CHAIN_RULE:CALC_CHAIN_RULE_OMITTED",
+      "topicTitle": "Türev",
+      "skillTitle": "Zincir kuralı",
+      "dominantCategory": "RECURRING_MISTAKE_TRAP",
+      "matchedMistakeCode": "CALC_CHAIN_RULE_OMITTED",
+      "sessionLostNet": 1.25,
+      "currentMastery": 0.5,
+      "examSuccessProbability": 0.46,
+      "estimatedNetRecoveryTotal": 0.98,
+      "rationale": "Zincir kuralını ikiz soruyla pekiştir."
+    }
+  ],
+  "itemAttributions": [
+    {
+      "attributionId": "11111111-1111-4111-8111-111111111111",
+      "itemEvaluationId": "11111111-1111-4111-8111-111111111111",
+      "itemOrder": 1,
+      "sectionCode": "AYT_MATH",
+      "topicId": "MATH.CALCULUS",
+      "skillId": "MATH.CALCULUS.DIFFERENTIATION.CHAIN_RULE",
+      "itemOutcome": "WRONG",
+      "attributionCategory": "RECURRING_MISTAKE_TRAP",
+      "matchedMistakeCode": "CALC_CHAIN_RULE_OMITTED",
+      "evidenceSource": "DISTRACTOR_TRAP_MAP",
+      "timeSpentSeconds": 200,
+      "expectedSolveSeconds": 135,
+      "masterySnapshot": 0.5,
+      "estimatedNetImpact": 1.25,
+      "recommendedActionType": "TWIN_DRILL",
+      "recommendedTargetRef": "twin:MATH.CALCULUS.DIFFERENTIATION.CHAIN_RULE:CALC_CHAIN_RULE_OMITTED",
+      "rationale": "Zincir kuralını ikiz soruyla pekiştir."
+    }
+  ],
+  "studyPlanRebalanced": false,
+  "lastReallocationBatchId": null,
+  "trainingEligible": true
+}

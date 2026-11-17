@@ -6,6 +6,7 @@ import com.verifiedai.exam.domain.ExamReadinessTopicAllocation;
 import com.verifiedai.exam.domain.ExamScoreRegradeAudit;
 import com.verifiedai.exam.domain.ExamSessionScoreSnapshot;
 import com.verifiedai.exam.infrastructure.persistence.ExamScoringRepository;
+import com.verifiedai.exam.infrastructure.persistence.ExamAttributionRepository;
 
 import com.verifiedai.exam.application.CandidateProfileRepository;
 import com.verifiedai.exam.application.ExamRepository;
@@ -51,6 +52,13 @@ public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleCont
     private final AssembledAssessmentRepository assembledAssessmentRepository;
     private final ExamSessionRepository examSessionRepository;
     private final Clock clock;
+    private ExamAttributionRepository examAttributionRepository;
+
+    @Autowired(required = false)
+    public void setExamAttributionRepository(ExamAttributionRepository repository) {
+        this.examAttributionRepository = repository;
+    }
+
     private ExamScoringRepository examScoringRepository;
     private ExamReadinessRepository examReadinessRepository;
 
@@ -292,6 +300,10 @@ public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleCont
             exportMap.put("examReadinessTopicAllocations", List.of());
         }
 
+        exportMap.put("itemAttributions", examAttributionRepository == null ? List.of()
+                : examAttributionRepository.exportItemAttributions(userId));
+        exportMap.put("studyReallocationBatches", examAttributionRepository == null ? List.of()
+                : examAttributionRepository.exportReallocationBatches(userId));
         exportMap.put("llmTokensUsed", 0);
         exportMap.put("trainingEligible", false);
         return exportMap;
@@ -304,6 +316,9 @@ public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleCont
         // -> V058 scoring snapshots / item evaluations / regrade audits
         // -> V057 scratchpad assets / idempotency / session items / exam sessions
         // -> V056 assembled assessments & items -> V055 candidate profiles -> V054 exam targets
+        int deletedAttributionRows = examAttributionRepository == null ? 0
+                : examAttributionRepository.deleteByUserId(userId);
+        LOG.info("Privacy purge completed for exam attribution: deletedRows={}", deletedAttributionRows);
         int deletedReadinessRows = examReadinessRepository == null
                 ? 0
                 : examReadinessRepository.deleteByUserId(userId);

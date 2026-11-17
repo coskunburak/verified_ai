@@ -56,6 +56,13 @@ public struct ExamScoreSummaryView: View {
                     }
                     .buttonStyle(.plain)
                     .accessibilityIdentifier("exam.score.openReadinessButton")
+                    NavigationLink {
+                        PostExamAttributionView(viewModel: viewModel.makeAttributionViewModel())
+                    } label: {
+                        Text("Hata Karnesi ve Net Kazanım Simülatörü (H-03)")
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .accessibilityIdentifier("examScoreSummary.openAttributionReportButton")
                     topicBreakdownSection(summary.topicBreakdowns)
                     difficultyBreakdownSection(summary.difficultyBreakdowns)
                     itemEvidenceSection(summary)

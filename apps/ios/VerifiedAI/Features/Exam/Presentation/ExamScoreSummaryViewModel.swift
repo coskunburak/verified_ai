@@ -88,6 +88,10 @@ public final class ExamScoreSummaryViewModel: ObservableObject {
         !regradeAudits.isEmpty
     }
 
+    public func makeAttributionViewModel() -> PostExamAttributionViewModel {
+        PostExamAttributionViewModel(sessionId: sessionId, userId: userId, api: apiService, cache: offlineStore)
+    }
+
     public func makeReadinessViewModel() -> ExamReadinessViewModel {
         ExamReadinessViewModel(
             userId: userId,

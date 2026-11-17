@@ -83,8 +83,12 @@
 		B95000000000000000000001 /* ExamScoreSummaryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A95000000000000000000001 /* ExamScoreSummaryViewModel.swift */; };
 		B95000000000000000000002 /* ExamScoreSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A95000000000000000000002 /* ExamScoreSummaryView.swift */; };
 		B95000000000000000000003 /* Sprint95ExamScoringAndEvidenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A95000000000000000000003 /* Sprint95ExamScoringAndEvidenceTests.swift */; };
+		B97000000000000000000003 /* PostExamAttributionViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A97000000000000000000003 /* PostExamAttributionViewModelTests.swift */; };
 		B96000000000000000000001 /* ExamReadinessViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A96000000000000000000001 /* ExamReadinessViewModel.swift */; };
+		B97000000000000000000001 /* PostExamAttributionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A97000000000000000000001 /* PostExamAttributionViewModel.swift */; };
 		B96000000000000000000002 /* ExamReadinessHubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A96000000000000000000002 /* ExamReadinessHubView.swift */; };
+		B97000000000000000000002 /* PostExamAttributionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A97000000000000000000002 /* PostExamAttributionView.swift */; };
+		B97000000000000000000004 /* PostExamRemediationDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = A97000000000000000000004 /* PostExamRemediationDestination.swift */; };
 		B96000000000000000000003 /* Sprint96ExamReadinessTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A96000000000000000000003 /* Sprint96ExamReadinessTests.swift */; };
 		B96000000000000000000004 /* ExamReadinessHubUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A96000000000000000000004 /* ExamReadinessHubUITests.swift */; };
 		B96B00000000000000000001 /* ExamTurkishYksAccessibilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A96B00000000000000000001 /* ExamTurkishYksAccessibilityTests.swift */; };
@@ -373,8 +377,12 @@
 		A95000000000000000000001 /* ExamScoreSummaryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Exam/Presentation/ExamScoreSummaryViewModel.swift; sourceTree = SOURCE_ROOT; };
 		A95000000000000000000002 /* ExamScoreSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Exam/Presentation/ExamScoreSummaryView.swift; sourceTree = SOURCE_ROOT; };
 		A95000000000000000000003 /* Sprint95ExamScoringAndEvidenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Exam/Sprint95ExamScoringAndEvidenceTests.swift; sourceTree = SOURCE_ROOT; };
+		A97000000000000000000003 /* PostExamAttributionViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Exam/PostExamAttributionViewModelTests.swift; sourceTree = SOURCE_ROOT; };
 		A96000000000000000000001 /* ExamReadinessViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Exam/Presentation/ExamReadinessViewModel.swift; sourceTree = SOURCE_ROOT; };
+		A97000000000000000000001 /* PostExamAttributionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Exam/Presentation/PostExamAttributionViewModel.swift; sourceTree = SOURCE_ROOT; };
 		A96000000000000000000002 /* ExamReadinessHubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Exam/Presentation/ExamReadinessHubView.swift; sourceTree = SOURCE_ROOT; };
+		A97000000000000000000002 /* PostExamAttributionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Exam/Presentation/PostExamAttributionView.swift; sourceTree = SOURCE_ROOT; };
+		A97000000000000000000004 /* PostExamRemediationDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Exam/Presentation/PostExamRemediationDestination.swift; sourceTree = SOURCE_ROOT; };
 		A96000000000000000000003 /* Sprint96ExamReadinessTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Exam/Sprint96ExamReadinessTests.swift; sourceTree = SOURCE_ROOT; };
 		A96000000000000000000004 /* ExamReadinessHubUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAIUITests/ExamReadinessHubUITests.swift; sourceTree = SOURCE_ROOT; };
 		A96B00000000000000000001 /* ExamTurkishYksAccessibilityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Exam/ExamTurkishYksAccessibilityTests.swift; sourceTree = SOURCE_ROOT; };
@@ -1262,8 +1270,12 @@
 				A95000000000000000000001 /* ExamScoreSummaryViewModel.swift */,
 				A95000000000000000000002 /* ExamScoreSummaryView.swift */,
 				A95000000000000000000003 /* Sprint95ExamScoringAndEvidenceTests.swift */,
+				A97000000000000000000003 /* PostExamAttributionViewModelTests.swift */,
 				A96000000000000000000001 /* ExamReadinessViewModel.swift */,
+				A97000000000000000000001 /* PostExamAttributionViewModel.swift */,
 				A96000000000000000000002 /* ExamReadinessHubView.swift */,
+				A97000000000000000000002 /* PostExamAttributionView.swift */,
+				A97000000000000000000004 /* PostExamRemediationDestination.swift */,
 				A96000000000000000000003 /* Sprint96ExamReadinessTests.swift */,
 				A96B00000000000000000001 /* ExamTurkishYksAccessibilityTests.swift */,
 				A89500000000000000000001 /* DailyCoachSQLiteCache.swift */,
@@ -1551,7 +1563,10 @@
 				B95000000000000000000001 /* ExamScoreSummaryViewModel.swift in Sources */,
 				B95000000000000000000002 /* ExamScoreSummaryView.swift in Sources */,
 				B96000000000000000000001 /* ExamReadinessViewModel.swift in Sources */,
+				B97000000000000000000001 /* PostExamAttributionViewModel.swift in Sources */,
 				B96000000000000000000002 /* ExamReadinessHubView.swift in Sources */,
+				B97000000000000000000002 /* PostExamAttributionView.swift in Sources */,
+				B97000000000000000000004 /* PostExamRemediationDestination.swift in Sources */,
 				B89500000000000000000001 /* DailyCoachSQLiteCache.swift in Sources */,
 				B89500000000000000000002 /* RebalanceSQLiteCache.swift in Sources */,
 				B89500000000000000000003 /* CoachHubView.swift in Sources */,
@@ -1716,6 +1731,7 @@
 				B94100000000000000000003 /* ExamSessionViewModelTests.swift in Sources */,
 				B94100000000000000000004 /* ExamSessionSQLiteStoreTests.swift in Sources */,
 				B95000000000000000000003 /* Sprint95ExamScoringAndEvidenceTests.swift in Sources */,
+				B97000000000000000000003 /* PostExamAttributionViewModelTests.swift in Sources */,
 				B96000000000000000000003 /* Sprint96ExamReadinessTests.swift in Sources */,
 				B96B00000000000000000001 /* ExamTurkishYksAccessibilityTests.swift in Sources */,
 				B89600000000000000000001 /* Sprint82PracticeTests.swift in Sources */,

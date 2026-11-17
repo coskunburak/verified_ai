@@ -172,6 +172,24 @@ def report(rows: list[dict], reviews: dict, schema: dict) -> dict:
     }
 
 
+def phase13_baseline_gate(manifest: dict) -> dict:
+    """An export proves seed integrity, never a Qwen model's performance."""
+    return {
+        "datasetId": manifest["datasetId"],
+        "seedSha256": manifest["sha256"],
+        "decision": "REQUIRES_MORE_EVIDENCE",
+        "phase13SftLoraEntryApproved": False,
+        "evidenceScope": "STATIC_SEED_INTEGRITY_ONLY",
+        "modelRunPerformed": False,
+        "modelCaseCount": 0,
+        "turkishPromptAccuracy": None,
+        "sympyAnswerEquivalenceRate": None,
+        "distractorTrapCaptureRate": None,
+        "verifiedSeedRecordCount": manifest["recordCount"],
+        "requiredEvidence": ["Identity-pinned Qwen TYT/AYT inference run", "Independent answer and trap grading", "Protected evaluation corpus kept out of training"],
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("attempts", type=Path)

@@ -2531,3 +2531,5 @@ def run_validation():
 
 if __name__ == "__main__":
     run_validation()
+    from validate_sprint_9_7_contracts import validate
+    validate()

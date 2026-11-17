@@ -19,4 +19,11 @@ public class ExamProperties {
     public void setReadinessEnabled(boolean readinessEnabled) {
         this.readinessEnabled = readinessEnabled;
     }
+    private boolean attributionEnabled = false;
+    private boolean netGainSimulatorEnabled = false;
+
+    public boolean isAttributionEnabled() { return attributionEnabled; }
+    public void setAttributionEnabled(boolean enabled) { attributionEnabled = enabled; }
+    public boolean isNetGainSimulatorEnabled() { return netGainSimulatorEnabled; }
+    public void setNetGainSimulatorEnabled(boolean enabled) { netGainSimulatorEnabled = enabled; }
 }

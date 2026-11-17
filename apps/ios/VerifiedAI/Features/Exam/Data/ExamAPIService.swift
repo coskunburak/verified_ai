@@ -27,7 +27,26 @@ public enum ExamServiceError: Error, Equatable, Sendable {
 
 public typealias ExamAPIServiceProtocol = ExamAPIServicing
 
-public protocol ExamAPIServicing: Sendable {
+public protocol ExamRemediationServicing: MicroLessonClientProtocol {
+    func startRemediationPractice(skillId: String, mode: PracticeSessionMode) async throws -> PracticeSession
+    func submitRemediationPractice(sessionId: UUID, itemId: UUID, request: PracticeSubmissionRequest) async throws -> PracticeSubmissionResponse
+    func abandonRemediationPractice(sessionId: UUID) async throws -> PracticeSession
+}
+
+public extension ExamRemediationServicing {
+    func startRemediationPractice(skillId: String, mode: PracticeSessionMode) async throws -> PracticeSession { throw ExamServiceError.featureDisabled }
+    func submitRemediationPractice(sessionId: UUID, itemId: UUID, request: PracticeSubmissionRequest) async throws -> PracticeSubmissionResponse { throw ExamServiceError.featureDisabled }
+    func abandonRemediationPractice(sessionId: UUID) async throws -> PracticeSession { throw ExamServiceError.featureDisabled }
+    func fetchMicroLesson(mistakeCode: String, locale: String, triggerSource: MicroLessonTriggerSource, sourceAttemptId: UUID?) async throws -> MicroLessonCard { throw MicroLessonClientError.featureDisabled }
+    func completeMicroLesson(mistakeCode: String, request: MicroLessonCompleteRequest) async throws -> MicroLessonCompleteResponse { throw MicroLessonClientError.featureDisabled }
+}
+
+public protocol ExamAttributionServicing: ExamRemediationServicing {
+    func fetchAttributionReport(sessionId: UUID) async throws -> ExamAttributionReportResponse
+    func applyStudyRebalance(sessionId: UUID, request: ExamApplyStudyRebalanceRequest, idempotencyKey: String) async throws -> ExamApplyStudyRebalanceResponse
+}
+
+public protocol ExamAPIServicing: ExamAttributionServicing {
     func fetchDefinitions(
         jurisdiction: ExamJurisdiction?,
         examFamily: ExamFamily?,
@@ -89,6 +108,9 @@ public protocol ExamAPIServicing: Sendable {
 }
 
 public extension ExamAPIServicing {
+    func fetchAttributionReport(sessionId: UUID) async throws -> ExamAttributionReportResponse { throw ExamServiceError.featureDisabled }
+    func applyStudyRebalance(sessionId: UUID, request: ExamApplyStudyRebalanceRequest, idempotencyKey: String) async throws -> ExamApplyStudyRebalanceResponse { throw ExamServiceError.featureDisabled }
+
     func fetchBlueprints(examDefinitionId: UUID) async throws -> [ExamBlueprintDTO] {
         try await fetchBlueprints(examDefinitionId: examDefinitionId, examVersionNumber: nil)
     }
@@ -613,9 +635,88 @@ final class HTTPExamAPIService: ExamAPIServicing, @unchecked Sendable {
         }
     }
 
+    func fetchAttributionReport(sessionId: UUID) async throws -> ExamAttributionReportResponse {
+        let endpoint = Endpoint(path: "/v1/exams/sessions/\(sessionId.uuidString.lowercased())/attribution-report", method: .get)
+        let request = HTTPRequest<ExamAttributionReportResponse>(endpoint: endpoint, allowsAuthRefreshRetry: true)
+        do { return try await apiClient.send(request).body }
+        catch let error as NetworkError { throw mapNetworkError(error) }
+    }
+
+    func applyStudyRebalance(sessionId: UUID, request: ExamApplyStudyRebalanceRequest, idempotencyKey: String) async throws -> ExamApplyStudyRebalanceResponse {
+        let endpoint = Endpoint(path: "/v1/exams/sessions/\(sessionId.uuidString.lowercased())/apply-study-rebalance", method: .post)
+        let httpRequest = HTTPRequest<ExamApplyStudyRebalanceResponse>(endpoint: endpoint, body: try encoder.encode(request), idempotencyKey: idempotencyKey, allowsAuthRefreshRetry: true)
+        do { return try await apiClient.send(httpRequest).body }
+        catch let error as NetworkError { throw mapNetworkError(error) }
+    }
+
+    func startRemediationPractice(skillId: String, mode: PracticeSessionMode) async throws -> PracticeSession {
+        let endpoint = Endpoint(path: "/v1/study-plan/practice/sessions", method: .post)
+        let payload = ["targetSkillId": skillId, "sessionMode": mode.rawValue, "locale": "tr-TR"]
+        let request = HTTPRequest<PracticeSession>(endpoint: endpoint, body: try encoder.encode(payload), decodesISO8601Dates: true)
+        do { return try await apiClient.send(request).body }
+        catch let error as NetworkError { throw mapNetworkError(error) }
+    }
+
+    func submitRemediationPractice(sessionId: UUID, itemId: UUID, request: PracticeSubmissionRequest) async throws -> PracticeSubmissionResponse {
+        let endpoint = Endpoint(path: "/v1/study-plan/practice/sessions/\(sessionId.uuidString.lowercased())/items/\(itemId.uuidString.lowercased())/submit", method: .post)
+        let httpRequest = HTTPRequest<PracticeSubmissionResponse>(endpoint: endpoint, body: try encoder.encode(request), decodesISO8601Dates: true)
+        do { return try await apiClient.send(httpRequest).body }
+        catch let error as NetworkError { throw mapNetworkError(error) }
+    }
+
+    func abandonRemediationPractice(sessionId: UUID) async throws -> PracticeSession {
+        let endpoint = Endpoint(path: "/v1/study-plan/practice/sessions/\(sessionId.uuidString.lowercased())/abandon", method: .post)
+        let request = HTTPRequest<PracticeSession>(endpoint: endpoint, decodesISO8601Dates: true)
+        do { return try await apiClient.send(request).body }
+        catch let error as NetworkError { throw mapNetworkError(error) }
+    }
+
+    func fetchMicroLesson(mistakeCode: String, locale: String, triggerSource: MicroLessonTriggerSource, sourceAttemptId: UUID?) async throws -> MicroLessonCard {
+        var query = [URLQueryItem(name: "locale", value: locale), URLQueryItem(name: "triggerSource", value: triggerSource.rawValue)]
+        if let sourceAttemptId { query.append(URLQueryItem(name: "sourceAttemptId", value: sourceAttemptId.uuidString.lowercased())) }
+        let endpoint = Endpoint(path: "/v1/micro-lessons/\(mistakeCode)", method: .get, queryItems: query)
+        let request = HTTPRequest<MicroLessonCard>(endpoint: endpoint, decodesISO8601Dates: true)
+        do {
+            let card = try await apiClient.send(request).body
+            guard card.mistakeCode == mistakeCode, card.locale == locale, card.passesLocalIntegrityChecks else {
+                throw MicroLessonClientError.verificationFailed
+            }
+            return card
+        } catch let error as NetworkError { throw mapMicroLessonError(error) }
+    }
+
+    func completeMicroLesson(mistakeCode: String, request: MicroLessonCompleteRequest) async throws -> MicroLessonCompleteResponse {
+        let endpoint = Endpoint(path: "/v1/micro-lessons/\(mistakeCode)/complete", method: .post)
+        let httpRequest = HTTPRequest<MicroLessonCompleteResponse>(endpoint: endpoint, body: try encoder.encode(request),
+            idempotencyKey: request.idempotencyKey, allowsAuthRefreshRetry: true, decodesISO8601Dates: true)
+        do {
+            let receipt = try await apiClient.send(httpRequest).body
+            guard receipt.mistakeCode == mistakeCode, receipt.locale == request.locale, !receipt.trainingEligible else {
+                throw MicroLessonClientError.verificationFailed
+            }
+            return receipt
+        } catch let error as NetworkError { throw mapMicroLessonError(error) }
+    }
+
+    private func mapMicroLessonError(_ error: NetworkError) -> MicroLessonClientError {
+        switch error {
+        case .transport(let message): return .networkFailure(message)
+        case .server(let problem):
+            if problem.status == 401 || problem.status == 403 { return .triggerNotEligible }
+            if problem.status == 404 { return .diagnosisNotFound }
+            if problem.code == "FEATURE_DISABLED" || problem.code == "MICRO_LESSON_FEATURE_DISABLED" { return .featureDisabled }
+            return .verificationFailed
+        case .httpStatus(401), .httpStatus(403): return .triggerNotEligible
+        case .httpStatus(404): return .diagnosisNotFound
+        default: return .verificationFailed
+        }
+    }
+
     private func mapNetworkError(_ error: NetworkError) -> ExamServiceError {
         switch error {
         case .server(let problem):
+            if problem.code == "FEATURE_DISABLED" { return .featureDisabled }
+            if problem.code == "SESSION_NOT_SCORED" { return .sessionNotScorable }
             if problem.code == "EXAM_NO_HINT_MODE_ACTIVE" {
                 return .noHintModeActive
             }

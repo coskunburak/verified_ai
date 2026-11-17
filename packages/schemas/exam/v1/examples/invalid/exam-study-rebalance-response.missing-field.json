@@ -1,0 +1,23 @@
+{
+  "sourceSessionId": "11111111-1111-4111-8111-111111111111",
+  "userId": "11111111-1111-4111-8111-111111111111",
+  "examCode": "TR_YKS_AYT_MATH",
+  "appliedToStudyPlan": true,
+  "idempotentReplay": false,
+  "rebalancedStudyPlanId": "11111111-1111-4111-8111-111111111111",
+  "rebalancedTasksCount": 7,
+  "totalExpectedNetRecovery": 0.9,
+  "appliedDirectives": [
+    {
+      "rank": 1,
+      "topicId": "MATH.CALCULUS",
+      "skillId": "MATH.CALCULUS.DIFFERENTIATION.CHAIN_RULE",
+      "expectedNetGainPerHour": 0.329,
+      "estimatedRemediationHours": 2.96,
+      "recommendedActionType": "TWIN_DRILL",
+      "recommendedTargetRef": "twin:MATH.CALCULUS.DIFFERENTIATION.CHAIN_RULE:CALC_CHAIN_RULE_OMITTED"
+    }
+  ],
+  "appliedAt": "2026-11-17T10:00:00Z",
+  "trainingEligible": false
+}

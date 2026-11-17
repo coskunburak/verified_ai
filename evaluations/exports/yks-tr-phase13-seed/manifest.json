@@ -1,0 +1,26 @@
+{
+  "datasetId": "yks-tr-phase13-seed-v1",
+  "trainingEligibility": "CLEAN_SYNTHETIC_SME_ONLY",
+  "studentDataIncluded": false,
+  "adr006Compliant": true,
+  "recordCount": 120,
+  "sha256": "ba8c8039f8ea09781582066397b845a90d43e9c82aa1d6fd18387779619413dc",
+  "sourceSha256": "d658517ca7eac841999531732da1642a289f1637241430eef2990d526eb8dd59",
+  "verificationScope": "ANSWER_OPTION_EQUIVALENCE_ONLY",
+  "excludedRecords": [
+    {
+      "seed_id": "AYT-TR-2026-AL-CMP-002",
+      "reason": "invalid decimal literal (<unknown>, line 1)"
+    },
+    {
+      "seed_id": "AYT-TR-2026-AL-LOG-003",
+      "reason": "invalid syntax (<unknown>, line 1)"
+    },
+    {
+      "seed_id": "AYT-TR-2026-TR-IDN-002",
+      "reason": "invalid syntax (<unknown>, line 1)"
+    }
+  ],
+  "goldenCorpusPolicy": "EXCLUDED_EVALUATION_ONLY_NOT_ELIGIBLE",
+  "source": "services/api/src/main/resources/db/migration/platform/V060__yks_tyt_ayt_curriculum_expansion_and_question_bank.sql"
+}

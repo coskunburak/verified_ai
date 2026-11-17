@@ -7,6 +7,7 @@ struct HTTPRequest<Response: Decodable> {
     let idempotencyKey: String?
     let allowsAuthRefreshRetry: Bool
     let timeout: TimeInterval
+    let decodesISO8601Dates: Bool
 
     init(
         endpoint: Endpoint,
@@ -14,9 +15,11 @@ struct HTTPRequest<Response: Decodable> {
         contentType: String = "application/json",
         idempotencyKey: String? = nil,
         allowsAuthRefreshRetry: Bool? = nil,
-        timeout: TimeInterval = 60
+        timeout: TimeInterval = 60,
+        decodesISO8601Dates: Bool = false
     ) {
         self.timeout = timeout
+        self.decodesISO8601Dates = decodesISO8601Dates
         self.endpoint = endpoint
         self.body = body
         self.contentType = contentType

@@ -293,6 +293,8 @@ verifiedai:
   analytics:
     weekly-digest-enabled: ${VERIFIEDAI_ANALYTICS_WEEKLY_DIGEST_ENABLED:true}
   exam:
+    attribution-enabled: ${EXAM_ATTRIBUTION_ENABLED:false}
+    net-gain-simulator-enabled: ${EXAM_NET_GAIN_SIMULATOR_ENABLED:false}
     catalog-enabled: ${VERIFIEDAI_EXAM_CATALOG_ENABLED:false}
     target-binding-enabled: ${VERIFIEDAI_EXAM_TARGET_BINDING_ENABLED:false}
     candidate-profile-enabled: ${VERIFIEDAI_EXAM_CANDIDATE_PROFILE_ENABLED:false}

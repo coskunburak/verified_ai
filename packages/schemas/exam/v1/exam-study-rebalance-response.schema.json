@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/exam/v1/exam-study-rebalance-response.schema.json",
+  "title": "exam-study-rebalance-response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "batchId",
+    "sourceSessionId",
+    "userId",
+    "examCode",
+    "appliedToStudyPlan",
+    "idempotentReplay",
+    "rebalancedStudyPlanId",
+    "rebalancedTasksCount",
+    "totalExpectedNetRecovery",
+    "appliedDirectives",
+    "appliedAt",
+    "trainingEligible"
+  ],
+  "properties": {
+    "batchId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "sourceSessionId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "userId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "examCode": {
+      "type": "string",
+      "minLength": 1
+    },
+    "appliedToStudyPlan": {
+      "const": true
+    },
+    "idempotentReplay": {
+      "type": "boolean"
+    },
+    "rebalancedStudyPlanId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "rebalancedTasksCount": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 21
+    },
+    "totalExpectedNetRecovery": {
+      "type": "number",
+      "minimum": 0
+    },
+    "appliedDirectives": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "rank",
+          "topicId",
+          "skillId",
+          "expectedNetGainPerHour",
+          "estimatedRemediationHours",
+          "recommendedActionType",
+          "recommendedTargetRef"
+        ],
+        "properties": {
+          "rank": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 3
+          },
+          "topicId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "skillId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "expectedNetGainPerHour": {
+            "type": "number",
+            "minimum": 0
+          },
+          "estimatedRemediationHours": {
+            "type": "number",
+            "minimum": 0.5
+          },
+          "recommendedActionType": {
+            "enum": [
+              "MICRO_LESSON",
+              "TWIN_DRILL",
+              "TIMED_SPEED_DRILL",
+              "TRIAGE_STRATEGY_REVIEW"
+            ]
+          },
+          "recommendedTargetRef": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "minItems": 1,
+      "maxItems": 3
+    },
+    "appliedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "trainingEligible": {
+      "const": false
+    }
+  }
+}

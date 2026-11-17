@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/exam/v1/exam-study-rebalance-request.schema.json",
+  "title": "exam-study-rebalance-request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "maxTopicsToApply",
+    "targetHorizonDays",
+    "preferredDailyMinutes"
+  ],
+  "properties": {
+    "maxTopicsToApply": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 3
+    },
+    "targetHorizonDays": {
+      "const": 7
+    },
+    "preferredDailyMinutes": {
+      "type": "integer",
+      "minimum": 5,
+      "maximum": 240
+    }
+  }
+}
