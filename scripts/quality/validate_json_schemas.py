@@ -2519,6 +2519,40 @@ def run_validation():
         "exam.preExam.time.EXAM_PASSED",
         "exam.preExam.time.ACTIVE_48H_WINDOW",
         "exam.preExam.time.EARLY_PREVIEW_OUTSIDE_48H",
+        "exam.progress.title",
+        "exam.progress.openHint",
+        "exam.progress.loading",
+        "exam.progress.retry",
+        "exam.progress.offlineBanner",
+        "exam.progress.disabled",
+        "exam.progress.signIn",
+        "exam.progress.unsupported",
+        "exam.progress.integrityError",
+        "exam.progress.cacheError",
+        "exam.progress.error",
+        "exam.progress.zeroCostNote",
+        "exam.progress.summary.title",
+        "exam.progress.summary.deltaLabel",
+        "exam.progress.trajectory.title",
+        "exam.progress.empty.title",
+        "exam.progress.empty.body",
+        "exam.progress.insufficient.oneMock",
+        "exam.progress.insufficient.twoMocks",
+        "exam.progress.pacing.title",
+        "exam.progress.pacing.empty",
+        "exam.progress.pacing.fast",
+        "exam.progress.pacing.onPace",
+        "exam.progress.pacing.bottleneck",
+        "exam.progress.pacing.insufficientData",
+        "exam.progress.pacing.insufficientDetail",
+        "exam.progress.traps.title",
+        "exam.progress.traps.activeNowFormat",
+        "exam.progress.traps.conqueredUnavailable",
+        "exam.progress.traps.nonCausalNote",
+        "exam.progress.traps.status.COMPUTED",
+        "exam.progress.traps.status.INSUFFICIENT_DATA",
+        "exam.progress.traps.status.ZERO_VARIANCE",
+        "exam.progress.traps.status.NO_HISTORICAL_ACTIVE_TRAP_DATA",
     ]
 
     banned_lexicon = re.compile(
@@ -2540,7 +2574,7 @@ def run_validation():
             if key.startswith("studyplan.rebalance.") or key.startswith("micro_lesson.") or key.startswith("study_session."):
                 m = banned_lexicon.search(val)
                 assert not m, f"Stigmatizing lexicon word '{m.group(0)}' in {key}[{lang}]: {val}"
-            elif key.startswith("gamification.") or key.startswith("weekly.") or key.startswith("cold_start.") or key.startswith("exam.candidate.") or key.startswith("exam.syllabus.") or key.startswith("home.candidate_profile.") or key.startswith("exam.assembly.") or key.startswith("exam.session.") or key.startswith("exam.score.") or key.startswith("exam.readiness.") or key.startswith("exam.preExam."):
+            elif key.startswith("gamification.") or key.startswith("weekly.") or key.startswith("cold_start.") or key.startswith("exam.candidate.") or key.startswith("exam.syllabus.") or key.startswith("home.candidate_profile.") or key.startswith("exam.assembly.") or key.startswith("exam.session.") or key.startswith("exam.score.") or key.startswith("exam.readiness.") or key.startswith("exam.preExam.") or key.startswith("exam.progress."):
                 m = gamification_banned_lexicon.search(val)
                 assert not m, f"Stigmatizing lexicon word '{m.group(0)}' in {key}[{lang}]: {val}"
 
@@ -2553,3 +2587,5 @@ if __name__ == "__main__":
     validate()
     from validate_sprint_9_8_contracts import validate as validate_9_8
     validate_9_8()
+    from validate_sprint_9_9_contracts import validate as validate_9_9
+    validate_9_9()

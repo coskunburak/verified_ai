@@ -23,6 +23,7 @@ import com.verifiedai.exam.infrastructure.persistence.ExamSessionRepository;
 import com.verifiedai.sharedkernel.privacy.AccountDataLifecycleContributor;
 import java.time.Clock;
 import com.verifiedai.exam.infrastructure.persistence.PreExamStudySessionRepository;
+import com.verifiedai.exam.infrastructure.persistence.ExamAnalyticsSnapshotRepository;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -55,6 +56,12 @@ public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleCont
     private final Clock clock;
     private ExamAttributionRepository examAttributionRepository;
     private PreExamStudySessionRepository preExamStudySessionRepository;
+    private ExamAnalyticsSnapshotRepository examAnalyticsSnapshotRepository;
+
+    @Autowired(required = false)
+    public void setExamAnalyticsSnapshotRepository(ExamAnalyticsSnapshotRepository repository) {
+        this.examAnalyticsSnapshotRepository = repository;
+    }
 
     @Autowired(required = false)
     public void setPreExamStudySessionRepository(PreExamStudySessionRepository repository) {
@@ -65,6 +72,9 @@ public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleCont
     public void purgeExpiredPreExamSnapshots() {
         if (preExamStudySessionRepository != null) {
             preExamStudySessionRepository.purgeExpired(Instant.now(clock));
+        }
+        if (examAnalyticsSnapshotRepository != null) {
+            examAnalyticsSnapshotRepository.purgeExpired(Instant.now(clock));
         }
     }
 
@@ -323,6 +333,8 @@ public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleCont
                 : preExamStudySessionRepository.exportByUserId(userId));
         exportMap.put("preExamExportEvents", preExamStudySessionRepository == null ? List.of()
                 : preExamStudySessionRepository.exportEventsByUserId(userId));
+        exportMap.put("examAnalyticsSnapshots", examAnalyticsSnapshotRepository == null ? List.of()
+                : examAnalyticsSnapshotRepository.exportByUserId(userId));
         exportMap.put("llmTokensUsed", 0);
         exportMap.put("trainingEligible", false);
         return exportMap;
@@ -330,6 +342,9 @@ public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleCont
 
     @Override
     public void deleteUserData(UUID userId, Instant now) {
+        if (examAnalyticsSnapshotRepository != null) {
+            examAnalyticsSnapshotRepository.deleteByUserId(userId);
+        }
         if (preExamStudySessionRepository != null) {
             preExamStudySessionRepository.deleteByUserId(userId);
         }

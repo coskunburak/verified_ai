@@ -28,6 +28,14 @@ public final class ExamScoreSummaryViewModel: ObservableObject {
         return PreExamCramViewModel(user: userId, exam: exam, api: api, cache: offlineStore)
     }
 
+    func makeProgressHistoryViewModel() -> ExamProgressHistoryViewModel? {
+        let exam = ExamReadinessViewModel.canonicalExamCode(scoreSummary?.examCode ?? "TR_YKS_TYT_MATH")
+        guard ExamProgressReport.supportedExams.contains(exam),
+              let api = apiService as? any ExamProgressServicing
+        else { return nil }
+        return ExamProgressHistoryViewModel(user: userId, exam: exam, api: api, cache: offlineStore)
+    }
+
     public init(
         sessionId: UUID,
         userId: UUID,

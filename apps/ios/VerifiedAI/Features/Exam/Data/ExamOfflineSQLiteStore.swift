@@ -33,6 +33,7 @@ public actor ExamOfflineSQLiteStore: ExamCacheStoreProtocol {
     private let connection: Connection
     private var db: OpaquePointer? { connection.handle }
     private var preExamGeneration: UInt64 = 0
+    private var progressGeneration: UInt64 = 0
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
 
@@ -54,6 +55,15 @@ public actor ExamOfflineSQLiteStore: ExamCacheStoreProtocol {
         let sql = """
         CREATE TABLE IF NOT EXISTS pre_exam_cheat_sheet_cache (
             user_id TEXT NOT NULL, exam_code TEXT NOT NULL, bundle_json TEXT NOT NULL,
+            PRIMARY KEY(user_id, exam_code)
+        );
+        CREATE TABLE IF NOT EXISTS cached_exam_progress_reports (
+            user_id TEXT NOT NULL,
+            exam_code TEXT NOT NULL,
+            schema_version TEXT NOT NULL,
+            payload_json TEXT NOT NULL,
+            stored_at REAL NOT NULL,
+            expires_at REAL NOT NULL,
             PRIMARY KEY(user_id, exam_code)
         );
         CREATE TABLE IF NOT EXISTS cached_exam_attributions (
@@ -508,9 +518,11 @@ public actor ExamOfflineSQLiteStore: ExamCacheStoreProtocol {
 
     public func purgeUserData(userId: String) async {
         preExamGeneration &+= 1
+        progressGeneration &+= 1
         guard let db else { return }
         for table in [
             "pre_exam_cheat_sheet_cache",
+            "cached_exam_progress_reports",
             "cached_exam_attributions",
             "student_exam_targets_cache",
             "cached_candidate_profiles",
@@ -534,9 +546,11 @@ public actor ExamOfflineSQLiteStore: ExamCacheStoreProtocol {
 
     public func purgeAll() async {
         preExamGeneration &+= 1
+        progressGeneration &+= 1
         guard let db else { return }
         sqlite3_exec(db, """
             DELETE FROM pre_exam_cheat_sheet_cache;
+            DELETE FROM cached_exam_progress_reports;
             DELETE FROM cached_exam_attributions;
             DELETE FROM exam_definitions_cache;
             DELETE FROM student_exam_targets_cache;
@@ -817,5 +831,79 @@ extension ExamOfflineSQLiteStore {
         guard bundle.review.expiresAt > Date(), bundle.sheet.expiresAt > Date() else { return nil }
         try bundle.validate(user: user, exam: exam)
         return bundle
+    }
+}
+
+extension ExamOfflineSQLiteStore {
+    public func progressEpoch() -> UInt64 { progressGeneration }
+
+    public func saveProgressReport(
+        _ report: ExamProgressReport,
+        user: UUID,
+        exam: String,
+        epoch: UInt64,
+        now: Date = Date()
+    ) throws {
+        guard epoch == progressGeneration else { throw ExamProgressError.integrity }
+        try report.validate(user: user, exam: exam, now: now)
+        guard let db else { throw ExamProgressError.cache }
+        let isoEncoder = JSONEncoder()
+        isoEncoder.dateEncodingStrategy = .iso8601
+        let payloadText = String(decoding: try isoEncoder.encode(report), as: UTF8.self)
+        let storedAt = now.timeIntervalSince1970
+        let boundedExpiry = min(report.expiresAt.timeIntervalSince1970, storedAt + 86400)
+        guard boundedExpiry > storedAt else { throw ExamProgressError.integrity }
+
+        let sql = """
+        INSERT INTO cached_exam_progress_reports(user_id, exam_code, schema_version, payload_json, stored_at, expires_at)
+        VALUES (?1, ?2, ?3, ?4, ?5, ?6)
+        ON CONFLICT(user_id, exam_code) DO UPDATE SET
+            schema_version = excluded.schema_version,
+            payload_json = excluded.payload_json,
+            stored_at = excluded.stored_at,
+            expires_at = excluded.expires_at;
+        """
+        var stmt: OpaquePointer?
+        guard sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK else { throw ExamProgressError.cache }
+        defer { sqlite3_finalize(stmt) }
+        sqlite3_bind_text(stmt, 1, user.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+        sqlite3_bind_text(stmt, 2, exam, -1, SQLITE_TRANSIENT)
+        sqlite3_bind_text(stmt, 3, report.schemaVersion, -1, SQLITE_TRANSIENT)
+        sqlite3_bind_text(stmt, 4, payloadText, -1, SQLITE_TRANSIENT)
+        sqlite3_bind_double(stmt, 5, storedAt)
+        sqlite3_bind_double(stmt, 6, boundedExpiry)
+        guard sqlite3_step(stmt) == SQLITE_DONE else { throw ExamProgressError.cache }
+    }
+
+    public func loadProgressReport(user: UUID, exam: String, now: Date = Date()) throws -> ExamProgressReport? {
+        guard let db else { throw ExamProgressError.cache }
+        let sql = """
+        SELECT schema_version, payload_json, stored_at, expires_at
+        FROM cached_exam_progress_reports
+        WHERE user_id = ?1 AND exam_code = ?2;
+        """
+        var stmt: OpaquePointer?
+        guard sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK else { throw ExamProgressError.cache }
+        defer { sqlite3_finalize(stmt) }
+        sqlite3_bind_text(stmt, 1, user.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+        sqlite3_bind_text(stmt, 2, exam, -1, SQLITE_TRANSIENT)
+        let step = sqlite3_step(stmt)
+        if step == SQLITE_DONE { return nil }
+        guard step == SQLITE_ROW,
+              let schemaPtr = sqlite3_column_text(stmt, 0),
+              let payloadPtr = sqlite3_column_text(stmt, 1)
+        else { throw ExamProgressError.cache }
+        let schemaVersion = String(cString: schemaPtr)
+        let storedAt = sqlite3_column_double(stmt, 2)
+        let expiresAt = sqlite3_column_double(stmt, 3)
+        let nowTs = now.timeIntervalSince1970
+        guard schemaVersion == ExamProgressReport.expectedSchemaVersion,
+              expiresAt > nowTs,
+              expiresAt - storedAt <= 86400
+        else { return nil }
+        let payloadData = Data(String(cString: payloadPtr).utf8)
+        let report = try APIClient.decodeISO8601Response(ExamProgressReport.self, from: payloadData)
+        try report.validate(user: user, exam: exam, now: now)
+        return report
     }
 }

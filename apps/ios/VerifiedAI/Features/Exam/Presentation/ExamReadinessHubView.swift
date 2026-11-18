@@ -29,6 +29,23 @@ public struct ExamReadinessHubView: View {
                     NavigationLink { PreExamCramView(viewModel: preExam) } label: { Text("exam.preExam.title") }
                         .accessibilityHint(Text("exam.preExam.openHint"))
                 }
+                if let progressVM = viewModel.makeProgressHistoryViewModel() {
+                    NavigationLink {
+                        ExamProgressHistoryView(viewModel: progressVM)
+                    } label: {
+                        Label(LocalizedStringKey("exam.progress.title"), systemImage: "chart.xyaxis.line")
+                            .font(TypographyTokens.cardTitle)
+                            .foregroundStyle(ColorTokens.action)
+                    }
+                    .accessibilityIdentifier("exam.readiness.openProgressButton")
+                    .accessibilityHint(Text("exam.progress.openHint"))
+                } else {
+                    Text(LocalizedStringKey("exam.progress.unsupported"))
+                        .font(TypographyTokens.caption)
+                        .foregroundStyle(ColorTokens.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .accessibilityIdentifier("exam.readiness.progressUnsupported")
+                }
                 examSelectorStrip
 
                 if viewModel.isOfflineFallback {

@@ -288,6 +288,10 @@
 		B98000000000000000000005 /* PreExamCramViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98000000000000000000005 /* PreExamCramViewModelTests.swift */; };
 		B98000000000000000000006 /* PersonalCheatSheetPDFRendererTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98000000000000000000006 /* PersonalCheatSheetPDFRendererTests.swift */; };
 		B98000000000000000000007 /* APIClientConditionalGETTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98000000000000000000007 /* APIClientConditionalGETTests.swift */; };
+		B99000000000000000000001 /* ExamProgressModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99000000000000000000001 /* ExamProgressModels.swift */; };
+		B99000000000000000000002 /* ExamProgressHistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99000000000000000000002 /* ExamProgressHistoryViewModel.swift */; };
+		B99000000000000000000003 /* ExamProgressHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99000000000000000000003 /* ExamProgressHistoryView.swift */; };
+		B99000000000000000000004 /* ExamProgressHistoryViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99000000000000000000004 /* ExamProgressHistoryViewModelTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -596,6 +600,10 @@
 		A98000000000000000000005 /* PreExamCramViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Exam/PreExamCramViewModelTests.swift; sourceTree = SOURCE_ROOT; };
 		A98000000000000000000006 /* PersonalCheatSheetPDFRendererTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Exam/PersonalCheatSheetPDFRendererTests.swift; sourceTree = SOURCE_ROOT; };
 		A98000000000000000000007 /* APIClientConditionalGETTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Exam/APIClientConditionalGETTests.swift; sourceTree = SOURCE_ROOT; };
+		A99000000000000000000001 /* ExamProgressModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Exam/Domain/ExamProgressModels.swift; sourceTree = SOURCE_ROOT; };
+		A99000000000000000000002 /* ExamProgressHistoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Exam/Presentation/ExamProgressHistoryViewModel.swift; sourceTree = SOURCE_ROOT; };
+		A99000000000000000000003 /* ExamProgressHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Exam/Presentation/ExamProgressHistoryView.swift; sourceTree = SOURCE_ROOT; };
+		A99000000000000000000004 /* ExamProgressHistoryViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Exam/ExamProgressHistoryViewModelTests.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1288,6 +1296,10 @@
 				A96000000000000000000001 /* ExamReadinessViewModel.swift */,
 				A97000000000000000000001 /* PostExamAttributionViewModel.swift */,
 				A98000000000000000000007 /* APIClientConditionalGETTests.swift */,
+				A99000000000000000000004 /* ExamProgressHistoryViewModelTests.swift */,
+				A99000000000000000000003 /* ExamProgressHistoryView.swift */,
+				A99000000000000000000002 /* ExamProgressHistoryViewModel.swift */,
+				A99000000000000000000001 /* ExamProgressModels.swift */,
 				A98000000000000000000006 /* PersonalCheatSheetPDFRendererTests.swift */,
 				A98000000000000000000005 /* PreExamCramViewModelTests.swift */,
 				A98000000000000000000004 /* PersonalCheatSheetPDFRenderer.swift */,
@@ -1589,6 +1601,9 @@
 				B98000000000000000000003 /* PreExamCramView.swift in Sources */,
 				B98000000000000000000002 /* PreExamCramViewModel.swift in Sources */,
 				B98000000000000000000001 /* PreExamModels.swift in Sources */,
+				B99000000000000000000003 /* ExamProgressHistoryView.swift in Sources */,
+				B99000000000000000000002 /* ExamProgressHistoryViewModel.swift in Sources */,
+				B99000000000000000000001 /* ExamProgressModels.swift in Sources */,
 				B96000000000000000000002 /* ExamReadinessHubView.swift in Sources */,
 				B97000000000000000000002 /* PostExamAttributionView.swift in Sources */,
 				B97000000000000000000004 /* PostExamRemediationDestination.swift in Sources */,
@@ -1758,6 +1773,7 @@
 				B95000000000000000000003 /* Sprint95ExamScoringAndEvidenceTests.swift in Sources */,
 				B97000000000000000000003 /* PostExamAttributionViewModelTests.swift in Sources */,
 				B98000000000000000000007 /* APIClientConditionalGETTests.swift in Sources */,
+				B99000000000000000000004 /* ExamProgressHistoryViewModelTests.swift in Sources */,
 				B98000000000000000000006 /* PersonalCheatSheetPDFRendererTests.swift in Sources */,
 				B98000000000000000000005 /* PreExamCramViewModelTests.swift in Sources */,
 				B96000000000000000000003 /* Sprint96ExamReadinessTests.swift in Sources */,

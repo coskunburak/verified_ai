@@ -165,15 +165,15 @@
 - **Domain & İstatistik Kuralları (`$0.00` LLM Maliyeti):**
   - **Score Trajectory (`INV-EXAM-005`):** Son $N \le 20$ deneme oturumu üzerinden net skoru ve hareketli ortalamayı hesaplar.
   - **Speed-Pressure Pacing:** Alt konu bazında soru başı ortalama süreyi (`mean_seconds_per_question`) beklenen süreyle (`estimated_time_seconds` `V056`/`V060`) kıyaslayarak darboğazları işaretler (ör. TYT Problemlerde `135s` vs hedef `90s`, AYT İntegralde `210s` vs `150s`).
-  - **Trap Remediation Correlation:** Aktif tuzak sayısı/propensity düştükçe net skor artışını ($\Delta\text{Net} \propto -\Delta\theta_{u,m}$) seriler halinde döner.
+  - **Trap Remediation Correlation:** Oturum bazlı `RECURRING_MISTAKE_TRAP` olay insidansı (`SESSION_MATCHED_TRAP_INCIDENCE`) ile net skor arasındaki gözlemsel Pearson ilişkisini (`associationIsCausal: false`) hesaplar; güncel aktif tuzak sayısını (`activeTrapCountNow`) anlık bilgi olarak iliştirir ve tarihsel geçiş kanıtı olmadan `conqueredTrapsEvidenceStatus = UNAVAILABLE` (`conqueredTrapsCount = 0`) döner.
 - **Veritabanı (`V063__sprint_9_9_exam_analytics_snapshots.sql`):**
-  - `exam_analytics_snapshots` (`snapshot_id`, `user_id`, `exam_code`, `mock_count`, `net_trend_json`, `pacing_stats_json`, `trap_correlation_json`, `conquered_traps_count`, `as_of_date`, `training_eligible = FALSE`, `llm_tokens_used = 0`).
+  - `exam_analytics_snapshots` (`snapshot_id`, `user_id`, `exam_code`, `mock_count`, `net_trend_json`, `pacing_stats_json`, `trap_correlation_json`, `conquered_traps_count`, `as_of_date`, `source_fingerprint`, `algorithm_version`, `source_last_score_id`, `schema_version`, `training_eligible = FALSE`, `llm_tokens_used = 0`, `inference_cost_usd = 0`).
 - **API & Kontratlar:**
   - `GET /v1/analytics/exams/progress?examCode={code}` (& `/api/v1/...`, `exam-analytics-progress-v1` şema, `Cache-Control: no-store`, BOLA `403`).
   - Feature Flag: `verifiedai.exam.analytics-enabled: ${VERIFIEDAI_EXAM_ANALYTICS_ENABLED:false}`
 - **iOS (`Concept B`):**
-  - `ExamProgressHistoryView.swift` & `ExamProgressHistoryViewModel.swift`: Net gelişim grafiği (*Swift Charts* düz çizgi, sıfır gradient/gölge), konu hız karşılaştırma listesi, fethedilen tuzak rozeti sayacı ve offline önbellek.
-- **Kabul Kriterleri (`sprint_9_9_owner_acceptance.sh`):**
+  - `ExamProgressHistoryView.swift` & `ExamProgressHistoryViewModel.swift`: *Swift Charts* `LineMark`/`PointMark` net + 3'lü hareketli ortalama grafiği, `BarMark` konu hız karşılaştırması, gözlemsel tuzak ilişkisi özeti, Concept B düz yüzey ve owner/exam izolasyonlu SQLite önbellek.
+- **Kabul Kriterleri (`sprint_9_9_owner_acceptance.sh --VerifyHost`):**
   - 1..50 simüle deneme verisi üzerinde regresyon/korelasyon doğrulaması + BOLA + offline isolation.
 
 ---

@@ -1,0 +1,22 @@
+# Sprint 9.9 execution report
+
+Status: COMPLETED — OWNER ACCEPTANCE PASSED (`2026-11-18`). All four Sprint 9.9 implementation packages for `INV-EXAM-005` (`Longitudinal Exam Progress Analytics, Topic-Level Pacing & Trap Remediation Correlation`) passed owner contract, backend, Flyway V063 / Testcontainers PostgreSQL, Spring Modulith, iOS static, and iOS Simulator XCTest verification. Feature flag `verifiedai.exam.analytics-enabled` remains `false` by default; production activation, commit, and push require separate owner authorization.
+
+Base HEAD: `a7d638a3aa9951877e434d736e89f5581207b1e8`; branch `main`. No commit, push, or deploy performed.
+
+## Delivered scope
+
+1. **Migration, Schema & OpenAPI:** Added `V063__sprint_9_9_exam_analytics_snapshots.sql` with 24h TTL, `training_eligible = FALSE`, `llm_tokens_used = 0`, `inference_cost_usd = 0`, `source_last_score_id` FK cascade, and owner/exam/fingerprint uniqueness. Added strict Draft 2020-12 `exam-analytics-progress.schema.json` (`exam-analytics-progress-v1`), valid (`0` and `>= 3` mocks) and 5 invalid fixtures, and mirrored `/v1/analytics/exams/progress` and `/api/v1/analytics/exams/progress` in `public-api.yaml` and `verified-ai-core-api.yaml`.
+2. **Backend (`com.verifiedai.exam`):** Added `ExamProperties.analyticsEnabled` (`false` default), `PacingAnalysisDto`, `ExamProgressReport`, `ExamAnalyticsPolicy` (latest 20 per owner+canonical exam, chronological ASC trajectory, real-window `MA3`, `HALF_UP` rounding, `0.85`/`1.15` raw-ratio pacing thresholds, guarded non-causal Pearson r), `ExamAnalyticsSnapshotRepository` (`JdbcClient`, advisory lock, owner-scoped reads/upsert/export/delete/purge), `ExamAnalyticsService` (feature-flag guard, BOLA guard, source fingerprinting, `exam_analytics_viewed`), `ExamAnalyticsController` (`Cache-Control: no-store`, `ProblemDetail`), and `ExamPrivacyLifecycleContributor` child-first export/delete/TTL wiring.
+3. **iOS (`apps/ios/VerifiedAI/`):** Added `ExamProgressModels.swift` (with `nonisolated` `canonicalExamCode`), `HTTPExamAPIService: ExamProgressServicing`, `cached_exam_progress_reports` + `progressEpoch` in `ExamOfflineSQLiteStore`, `ExamProgressHistoryViewModel`, Concept B flat `ExamProgressHistoryView` (Swift Charts `LineMark`/`PointMark`/`BarMark`, VoiceOver summaries, zero gradients/shadows/glassmorphism), navigation links from `ExamReadinessHubView` and `ExamScoreSummaryView`, 34 non-stigmatizing EN/TR keys in `Localizable.xcstrings`, and Xcode project registration.
+4. **Tests, Quality Gates & Docs:** Added Categories A–F test suites (`ExamAnalyticsPolicyTest`, `ExamAnalyticsServiceTest`, `ExamAnalyticsControllerTest`, `ExamAnalyticsSnapshotIntegrationTest`, `ExamAnalyticsHttpIntegrationTest`, `ExamAnalyticsPrivacyLifecycleIntegrationTest`, `ExamProgressHistoryViewModelTests`), contract/Swift/owner acceptance scripts, and synchronized [acceptance matrix](SPRINT_9.9_ACCEPTANCE_MATRIX.md).
+
+## Owner evidence
+
+Owner-verified PASS evidence (`2026-11-18`):
+
+- **Contracts & schemas:** `validate_sprint_9_9_contracts.py` PASS; `validate_json_schemas.py` (`465` EN/TR localizations + Sprint 8.1..9.9) PASS; `check_contracts.py` PASS.
+- **Backend unit, Modulith & privacy:** `ExamAnalyticsPolicyTest` (7/7), `ExamAnalyticsServiceTest` (5/5), `ExamAnalyticsControllerTest` (2/2), `ExamAnalyticsPrivacyLifecycleIntegrationTest` (1/1), and `ModulithArchitectureTest` (1/1) — 16/16 PASS (`BUILD SUCCESS`); existing privacy/9.8 regression suites (`PreExamPrivacyLifecycleTest`, `ExamPrivacyLifecycleContributorTest`, `ExamReadinessPrivacyLifecycleContributorTest`, `PreExamControllerTest`, `PreExamReviewServiceTest`) — 10/10 PASS.
+- **PostgreSQL / Testcontainers & HTTP integration:** `ExamAnalyticsSnapshotIntegrationTest` (2/2, Flyway applied through `v063`) PASS; `ExamAnalyticsHttpIntegrationTest` (1/1 in `TEST-com.verifiedai.exam.integration.ExamAnalyticsHttpIntegrationTest.xml` after updating pre-controller `401` `Cache-Control` check to `containsString("no-store")`) PASS.
+- **iOS static & runtime XCTest:** `sprint_9_9_swift_check.sh` PASS; `ExamProgressHistoryViewModelTests` 5/5 PASS on `iPhone 16 Pro` (`iOS 18.4` Simulator, `Test-VerifiedAI-2026.11.18_17-58-22-+0300.xcresult`); `sprint_9_9_owner_acceptance.sh --VerifyHost` PASS (`SPRINT_9_9_IOS_AND_CONTRACT_GATES_PASSED_REVIEW_RECORDED_BACKEND_EVIDENCE_BEFORE_RELEASE`).
+- **Documentation:** `docs_check.py` (`437 Markdown files`) re-verified after closure edits. See [acceptance matrix](SPRINT_9.9_ACCEPTANCE_MATRIX.md).

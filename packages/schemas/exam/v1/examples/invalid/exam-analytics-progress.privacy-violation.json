@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "exam-analytics-progress-v1",
+  "snapshotId": "99000000-0000-4000-8000-000000000004",
+  "userId": "11111111-2222-4333-8444-555555555555",
+  "examCode": "TR_YKS_TYT_MATH",
+  "mockCount": 0,
+  "evidenceStatus": "EMPTY",
+  "deltaNet": null,
+  "scoreTrajectory": [],
+  "pacingByTopic": [],
+  "trapRemediation": {
+    "sourceKind": "SESSION_MATCHED_TRAP_INCIDENCE",
+    "dataStatus": "INSUFFICIENT_DATA",
+    "observations": [],
+    "activeTrapCountNow": 0,
+    "correlationCoefficient": null,
+    "correlationSampleSize": 0,
+    "conqueredTrapsEvidenceStatus": "UNAVAILABLE",
+    "associationIsCausal": false
+  },
+  "conqueredTrapsCount": 0,
+  "asOfDate": "2026-11-18",
+  "algorithmVersion": "INV_EXAM_005_V1",
+  "trainingEligible": true,
+  "llmTokensUsed": 12,
+  "inferenceCostUsd": 0.02,
+  "generatedAt": "2026-11-18T10:00:00Z",
+  "expiresAt": "2026-11-19T10:00:00Z"
+}

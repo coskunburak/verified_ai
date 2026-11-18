@@ -67,6 +67,17 @@ public struct ExamScoreSummaryView: View {
                     NavigationLink { PreExamCramView(viewModel: preExam) } label: { Text("exam.preExam.title") }
                         .accessibilityHint(Text("exam.preExam.openHint"))
                 }
+                if let progressVM = viewModel.makeProgressHistoryViewModel() {
+                    NavigationLink {
+                        ExamProgressHistoryView(viewModel: progressVM)
+                    } label: {
+                        Label(LocalizedStringKey("exam.progress.title"), systemImage: "chart.xyaxis.line")
+                            .font(TypographyTokens.cardTitle)
+                            .foregroundStyle(ColorTokens.action)
+                    }
+                    .accessibilityIdentifier("exam.score.openProgressButton")
+                    .accessibilityHint(Text("exam.progress.openHint"))
+                }
                     topicBreakdownSection(summary.topicBreakdowns)
                     difficultyBreakdownSection(summary.difficultyBreakdowns)
                     itemEvidenceSection(summary)

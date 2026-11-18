@@ -401,7 +401,7 @@ Codex must implement this sprint in small reviewable slices, re-reading the high
 ## 1. Sprint Metadata & Status
 - **Sprint ID:** `SPRINT_9.9` (**Option A — Wave 4 of 5**)
 - **Canonical Title:** Longitudinal Exam Progress Analytics, Topic-Level Pacing & Trap Remediation Correlation
-- **Status:** `PLANNED_OPTION_A_WAVE_4` (`ADR-011` feature-flagged; depends on `SPRINT_9.8`)
+- **Status:** `LOCAL_ACCEPTANCE_PASSED` (`2026-11-18`; `ADR-011` feature-flagged off by default: `verifiedai.exam.analytics-enabled: false`; depends on `SPRINT_9.8`)
 - **Primary Spec Reference:** `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md` (Screen 9), `learning/86_LEARNING_OUTCOMES_RETRIEVAL_PRACTICE_AND_MASTERY_EVALUATION.md`, `sprints/phase09_exam_and_assessment_platform/PHASE_09_TYT_AYT_BRIDGE_AND_REMAINING_SPRINTS_PLAN.md`
 
 ## 2. Strategic Learning OS Objective & User Value
@@ -413,23 +413,23 @@ Visualizes the learner's longitudinal net score growth across successive mock ex
 ## 4. Domain Invariants & Analytics Rules
 1. **Longitudinal Score Trajectory (`INV-EXAM-005`):** Tracks moving averages of net scores across the last $N \le 20$ mock sessions, isolating genuine cognitive mastery gains from random test-variance fluctuations.
 2. **Speed-Pressure Pacing Analytics:** Computes mean elapsed seconds per question stratified by topic (e.g., $85\text{s}$ in Algebra vs $195\text{s}$ in Definite Integrals), highlighting speed bottlenecks that trigger time-pressure slips.
-3. **Trap Remediation Correlation:** Explicitly plots the inverse correlation between Active Trap Count and Net Score ($\Delta\text{Net} \propto -\Delta\theta_{u,m}$), validating the efficacy of the daily trap repair loop.
+3. **Trap Remediation Correlation:** Computes observational Pearson association (`associationIsCausal: false`) between session-level `RECURRING_MISTAKE_TRAP` incidence (`SESSION_MATCHED_TRAP_INCIDENCE`) and net score across `>= 3` distinct-date mocks with positive variance, attaches `activeTrapCountNow` as a point-in-time snapshot only, and marks `conqueredTrapsEvidenceStatus = UNAVAILABLE` (`conqueredTrapsCount = 0`) when historical trap transition logs are absent.
 
 ## 5. Owning Spring Modulith Backend Modules & Classes
-- `com.verifiedai.exam`: `ExamAnalyticsService.java`, `ExamProgressReport.java`, `PacingAnalysisDto.java`, `ExamAnalyticsController.java`.
+- `com.verifiedai.exam`: `ExamAnalyticsPolicy.java`, `ExamAnalyticsService.java`, `ExamProgressReport.java`, `PacingAnalysisDto.java`, `ExamAnalyticsController.java`, `ExamAnalyticsSnapshotRepository.java`, `ExamPrivacyLifecycleContributor.java`.
 
 ## 6. Python Math Verifier Impact
 - None (`100%` SQL/Java analytics aggregation).
 
-## 7. Database Migration & Persistence Contract (`PLANNED V063`)
+## 7. Database Migration & Persistence Contract (`V063`)
 - **Migration File:** `services/api/src/main/resources/db/migration/platform/V063__sprint_9_9_exam_analytics_snapshots.sql`
-- **Tables:** `exam_analytics_snapshots` (`snapshot_id`, `user_id`, `exam_code`, `mock_count`, `net_trend_json`, `pacing_stats_json`, `trap_correlation_json`, `conquered_traps_count`, `as_of_date`, `training_eligible = FALSE`, `llm_tokens_used = 0`).
+- **Tables:** `exam_analytics_snapshots` (`snapshot_id`, `user_id`, `exam_code`, `mock_count`, `net_trend_json`, `pacing_stats_json`, `trap_correlation_json`, `conquered_traps_count`, `as_of_date`, `source_fingerprint`, `algorithm_version`, `source_last_score_id`, `schema_version`, `training_eligible = FALSE`, `llm_tokens_used = 0`, `inference_cost_usd = 0`).
 
 ## 8. REST API Contracts
-- `GET /v1/analytics/exams/progress?examCode={code}` (`exam-analytics-v1`).
+- `GET /v1/analytics/exams/progress?examCode={code}` and `GET /api/v1/analytics/exams/progress?examCode={code}` (`exam-analytics-progress-v1`, schema `packages/schemas/exam/v1/exam-analytics-progress.schema.json`, `Cache-Control: no-store`, BOLA `403`, feature flag `403`).
 
 ## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
-- Renders `ExamProgressHistoryView.swift` (Net growth sparklines, pacing radar charts, and topic breakdown).
+- Renders `ExamProgressHistoryView.swift` & `ExamProgressHistoryViewModel.swift` (Swift Charts `LineMark`/`PointMark` net & MA3 trajectory, `BarMark` topic pacing comparison, non-causal trap summary, Concept B flat surface, owner-isolated SQLite cache).
 
 ## 10. AI Capability & Unit Economics Guardrail
 - **`$0.00` LLM token cost** (pure statistical aggregation).
@@ -447,7 +447,7 @@ Visualizes the learner's longitudinal net score growth across successive mock ex
 - Validates progress aggregation across 1 to 50 simulated historical mock exams, verifying pacing math and trap correlation curves.
 
 ## 15. Owner-Only Acceptance Command
-- `bash scripts/quality/sprint_9_9_owner_acceptance.sh --full`
+- `bash scripts/quality/sprint_9_9_owner_acceptance.sh --VerifyHost` (alias `--full`)
 
 ## 16. Explicit Non-Goals
 - Does not expose individual student scores to public leaderboards without explicit consent.

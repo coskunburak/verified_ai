@@ -81,6 +81,8 @@ def main() -> int:
     for name in ("pre-exam-review-session", "exam-cheat-sheet"):
         if not (ROOT / "packages/schemas/exam/v1" / f"{name}.schema.json").is_file():
             failures.append(f"Missing Sprint 9.8 contract: {name}")
+    if not (ROOT / "packages/schemas/exam/v1/exam-analytics-progress.schema.json").is_file():
+        failures.append("Missing Sprint 9.9 contract: exam-analytics-progress")
     if failures:
         print("contract check failed:")
         for failure in failures:

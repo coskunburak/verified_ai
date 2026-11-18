@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "exam-analytics-progress-v1",
+  "snapshotId": "99000000-0000-4000-8000-000000000001",
+  "userId": "11111111-2222-4333-8444-555555555555",
+  "examCode": "TR_YKS_AYT_MATH",
+  "mockCount": 3,
+  "evidenceStatus": "SUFFICIENT_EVIDENCE",
+  "deltaNet": 6.5,
+  "scoreTrajectory": [
+    {
+      "sessionId": "99000000-0000-4000-8000-000000000101",
+      "submittedAt": "2026-10-01T09:00:00Z",
+      "netScore": 21.25,
+      "movingAverage3": 21.25,
+      "scoreVersion": 1
+    },
+    {
+      "sessionId": "99000000-0000-4000-8000-000000000102",
+      "submittedAt": "2026-10-15T09:00:00Z",
+      "netScore": 24.5,
+      "movingAverage3": 22.88,
+      "scoreVersion": 1
+    },
+    {
+      "sessionId": "99000000-0000-4000-8000-000000000103",
+      "submittedAt": "2026-11-01T09:00:00Z",
+      "netScore": 27.75,
+      "movingAverage3": 24.5,
+      "scoreVersion": 1
+    }
+  ],
+  "pacingByTopic": [
+    {
+      "topicCode": "MATH.ALGEBRA",
+      "subtopicCode": "POLYNOMIALS",
+      "skillId": "MATH.ALGEBRA.FACTORING",
+      "observedQuestionCount": 6,
+      "excludedUnmeasuredCount": 0,
+      "meanSecondsPerQuestion": 85.0,
+      "expectedSecondsPerQuestion": 105.0,
+      "ratio": 0.81,
+      "classification": "FAST"
+    },
+    {
+      "topicCode": "MATH.CALCULUS",
+      "subtopicCode": "DEFINITE_INTEGRAL",
+      "skillId": "MATH.CALCULUS.INTEGRATION.DEFINITE",
+      "observedQuestionCount": 6,
+      "excludedUnmeasuredCount": 1,
+      "meanSecondsPerQuestion": 195.0,
+      "expectedSecondsPerQuestion": 150.0,
+      "ratio": 1.3,
+      "classification": "BOTTLENECK"
+    }
+  ],
+  "trapRemediation": {
+    "sourceKind": "SESSION_MATCHED_TRAP_INCIDENCE",
+    "dataStatus": "COMPUTED",
+    "observations": [
+      {
+        "sessionId": "99000000-0000-4000-8000-000000000101",
+        "submittedAt": "2026-10-01T09:00:00Z",
+        "netScore": 21.25,
+        "matchedTrapIncidenceCount": 5
+      },
+      {
+        "sessionId": "99000000-0000-4000-8000-000000000102",
+        "submittedAt": "2026-10-15T09:00:00Z",
+        "netScore": 24.5,
+        "matchedTrapIncidenceCount": 3
+      },
+      {
+        "sessionId": "99000000-0000-4000-8000-000000000103",
+        "submittedAt": "2026-11-01T09:00:00Z",
+        "netScore": 27.75,
+        "matchedTrapIncidenceCount": 1
+      }
+    ],
+    "activeTrapCountNow": 2,
+    "correlationCoefficient": -1.0,
+    "correlationSampleSize": 3,
+    "conqueredTrapsEvidenceStatus": "UNAVAILABLE",
+    "associationIsCausal": false
+  },
+  "conqueredTrapsCount": 0,
+  "asOfDate": "2026-11-18",
+  "algorithmVersion": "INV_EXAM_005_V1",
+  "trainingEligible": false,
+  "llmTokensUsed": 0,
+  "inferenceCostUsd": 0,
+  "generatedAt": "2026-11-18T10:00:00Z",
+  "expiresAt": "2026-11-19T10:00:00Z"
+}

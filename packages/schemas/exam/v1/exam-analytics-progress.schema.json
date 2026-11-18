@@ -1,0 +1,491 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/exam/v1/exam-analytics-progress.schema.json",
+  "title": "exam-analytics-progress",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "snapshotId",
+    "userId",
+    "examCode",
+    "mockCount",
+    "evidenceStatus",
+    "deltaNet",
+    "scoreTrajectory",
+    "pacingByTopic",
+    "trapRemediation",
+    "conqueredTrapsCount",
+    "asOfDate",
+    "algorithmVersion",
+    "trainingEligible",
+    "llmTokensUsed",
+    "inferenceCostUsd",
+    "generatedAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "exam-analytics-progress-v1"
+    },
+    "snapshotId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "userId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "examCode": {
+      "enum": [
+        "TR_YKS_TYT_MATH",
+        "TR_YKS_AYT_MATH"
+      ]
+    },
+    "mockCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 20
+    },
+    "evidenceStatus": {
+      "enum": [
+        "EMPTY",
+        "INSUFFICIENT_FOR_TREND",
+        "PARTIAL_TREND",
+        "SUFFICIENT_EVIDENCE"
+      ]
+    },
+    "deltaNet": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": -250,
+      "maximum": 250
+    },
+    "scoreTrajectory": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "$ref": "#/$defs/ScoreTrajectoryPoint"
+      }
+    },
+    "pacingByTopic": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "$ref": "#/$defs/PacingAnalysisItem"
+      }
+    },
+    "trapRemediation": {
+      "$ref": "#/$defs/TrapRemediationSummary"
+    },
+    "conqueredTrapsCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 500
+    },
+    "asOfDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "algorithmVersion": {
+      "const": "INV_EXAM_005_V1"
+    },
+    "trainingEligible": {
+      "const": false
+    },
+    "llmTokensUsed": {
+      "const": 0
+    },
+    "inferenceCostUsd": {
+      "const": 0
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "mockCount": {
+            "const": 0
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "evidenceStatus": {
+            "const": "EMPTY"
+          },
+          "deltaNet": {
+            "type": "null"
+          },
+          "scoreTrajectory": {
+            "maxItems": 0
+          },
+          "pacingByTopic": {
+            "maxItems": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "mockCount": {
+            "const": 1
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "evidenceStatus": {
+            "const": "INSUFFICIENT_FOR_TREND"
+          },
+          "deltaNet": {
+            "type": "null"
+          },
+          "scoreTrajectory": {
+            "minItems": 1,
+            "maxItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "mockCount": {
+            "const": 2
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "evidenceStatus": {
+            "const": "PARTIAL_TREND"
+          },
+          "deltaNet": {
+            "type": "number"
+          },
+          "scoreTrajectory": {
+            "minItems": 2,
+            "maxItems": 2
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "mockCount": {
+            "minimum": 3
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "evidenceStatus": {
+            "const": "SUFFICIENT_EVIDENCE"
+          },
+          "deltaNet": {
+            "type": "number"
+          },
+          "scoreTrajectory": {
+            "minItems": 3
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "ScoreTrajectoryPoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sessionId",
+        "submittedAt",
+        "netScore",
+        "movingAverage3",
+        "scoreVersion"
+      ],
+      "properties": {
+        "sessionId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "submittedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "netScore": {
+          "type": "number",
+          "minimum": -50,
+          "maximum": 200
+        },
+        "movingAverage3": {
+          "type": "number",
+          "minimum": -50,
+          "maximum": 200
+        },
+        "scoreVersion": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+        }
+      }
+    },
+    "PacingAnalysisItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "topicCode",
+        "subtopicCode",
+        "skillId",
+        "observedQuestionCount",
+        "excludedUnmeasuredCount",
+        "meanSecondsPerQuestion",
+        "expectedSecondsPerQuestion",
+        "ratio",
+        "classification"
+      ],
+      "properties": {
+        "topicCode": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "subtopicCode": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "skillId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "observedQuestionCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4000
+        },
+        "excludedUnmeasuredCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4000
+        },
+        "meanSecondsPerQuestion": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0,
+          "maximum": 7200
+        },
+        "expectedSecondsPerQuestion": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0,
+          "maximum": 7200
+        },
+        "ratio": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0,
+          "maximum": 100
+        },
+        "classification": {
+          "enum": [
+            "BOTTLENECK",
+            "ON_PACE",
+            "FAST",
+            "INSUFFICIENT_DATA"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "classification": {
+                "const": "INSUFFICIENT_DATA"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "meanSecondsPerQuestion": {
+                "type": "null"
+              },
+              "expectedSecondsPerQuestion": {
+                "type": "null"
+              },
+              "ratio": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "observedQuestionCount": {
+                "minimum": 2
+              },
+              "meanSecondsPerQuestion": {
+                "type": "number"
+              },
+              "expectedSecondsPerQuestion": {
+                "type": "number"
+              },
+              "ratio": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "TrapRemediationSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceKind",
+        "dataStatus",
+        "observations",
+        "activeTrapCountNow",
+        "correlationCoefficient",
+        "correlationSampleSize",
+        "conqueredTrapsEvidenceStatus",
+        "associationIsCausal"
+      ],
+      "properties": {
+        "sourceKind": {
+          "enum": [
+            "SESSION_MATCHED_TRAP_INCIDENCE",
+            "HISTORICAL_ACTIVE_TRAP_SNAPSHOTS"
+          ]
+        },
+        "dataStatus": {
+          "enum": [
+            "COMPUTED",
+            "INSUFFICIENT_DATA",
+            "ZERO_VARIANCE",
+            "NO_HISTORICAL_ACTIVE_TRAP_DATA"
+          ]
+        },
+        "observations": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "$ref": "#/$defs/TrapObservationPoint"
+          }
+        },
+        "activeTrapCountNow": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 500
+        },
+        "correlationCoefficient": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": -1.0,
+          "maximum": 1.0
+        },
+        "correlationSampleSize": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 20
+        },
+        "conqueredTrapsEvidenceStatus": {
+          "enum": [
+            "VERIFIED_TRANSITIONS",
+            "UNAVAILABLE"
+          ]
+        },
+        "associationIsCausal": {
+          "const": false
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "dataStatus": {
+                "const": "COMPUTED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "correlationSampleSize": {
+                "minimum": 3
+              },
+              "correlationCoefficient": {
+                "type": "number"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "correlationCoefficient": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "TrapObservationPoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sessionId",
+        "submittedAt",
+        "netScore",
+        "matchedTrapIncidenceCount"
+      ],
+      "properties": {
+        "sessionId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "submittedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "netScore": {
+          "type": "number",
+          "minimum": -50,
+          "maximum": 200
+        },
+        "matchedTrapIncidenceCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 200
+        }
+      }
+    }
+  }
+}

@@ -1,6 +1,210 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "exam.progress.title": {
+      "localizations": {
+        "tr": { "stringUnit": { "state": "translated", "value": "Gelişim ve hız analizi" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Progress & pacing analytics" } }
+      }
+    },
+    "exam.progress.openHint": {
+      "localizations": {
+        "tr": { "stringUnit": { "state": "translated", "value": "Son denemelerdeki net eğilimini, konu hızını ve tuzak gözlemlerini açar." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Opens net trajectory, topic pacing, and trap observations across recent mocks." } }
+      }
+    },
+    "exam.progress.loading": {
+      "localizations": {
+        "tr": { "stringUnit": { "state": "translated", "value": "Sınav gelişim raporu hazırlanıyor…" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Preparing exam progress report…" } }
+      }
+    },
+    "exam.progress.retry": {
+      "localizations": {
+        "tr": { "stringUnit": { "state": "translated", "value": "Yeniden dene" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Try again" } }
+      }
+    },
+    "exam.progress.offlineBanner": {
+      "localizations": {
+        "tr": { "stringUnit": { "state": "translated", "value": "Çevrimdışı önbellekteki doğrulanmış rapor gösteriliyor." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Showing verified report from offline cache." } }
+      }
+    },
+    "exam.progress.disabled": {
+      "localizations": {
+        "tr": { "stringUnit": { "state": "translated", "value": "Sınav gelişim analitiği şu anda kapalı." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Exam progress analytics is currently turned off." } }
+      }
+    },
+    "exam.progress.signIn": {
+      "localizations": {
+        "tr": { "stringUnit": { "state": "translated", "value": "Gelişim raporunu görmek için yeniden oturum aç." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Sign in again to view your progress report." } }
+      }
+    },
+    "exam.progress.unsupported": {
+      "localizations": {
+        "tr": { "stringUnit": { "state": "translated", "value": "Bu analiz yalnızca TYT ve AYT Matematik denemeleri için kullanılabilir." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Progress analytics is available only for TYT and AYT Mathematics exams." } }
+      }
+    },
+    "exam.progress.integrityError": {
+      "localizations": {
+        "tr": { "stringUnit": { "state": "translated", "value": "Rapor kimlik ve bütünlük doğrulamasını geçemedi." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Report could not pass identity and integrity verification." } }
+      }
+    },
+    "exam.progress.cacheError": {
+      "localizations": {
+        "tr": { "stringUnit": { "state": "translated", "value": "Yerel önbellek verisi okunamadı; lütfen bağlantıyı yenileyin." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Local cache data could not be read; please refresh when online." } }
+      }
+    },
+    "exam.progress.error": {
+      "localizations": {
+        "tr": { "stringUnit": { "state": "translated", "value": "Gelişim raporu şu anda yüklenemedi." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Progress report could not be loaded right now." } }
+      }
+    },
+    "exam.progress.zeroCostNote": {
+      "localizations": {
+        "tr": { "stringUnit": { "state": "translated", "value": "Tamamen deterministik hesaplama · Yapay zeka çıkarım maliyeti $0.00" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Purely deterministic calculation · AI inference cost $0.00" } }
+      }
+    },
+    "exam.progress.summary.title": {
+      "localizations": {
+        "tr": { "stringUnit": { "state": "translated", "value": "Deneme özeti (son 20 oturum)" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Mock summary (latest 20 sessions)" } }
+      }
+    },
+    "exam.progress.summary.deltaLabel": {
+      "localizations": {
+        "tr": { "stringUnit": { "state": "translated", "value": "pencere içi net farkı" } },
+        "en": { "stringUnit": { "state": "translated", "value": "net change across window" } }
+      }
+    },
+    "exam.progress.trajectory.title": {
+      "localizations": {
+        "tr": { "stringUnit": { "state": "translated", "value": "Net skoru ve 3 denemelik hareketli ortalama" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Net score and 3-mock moving average" } }
+      }
+    },
+    "exam.progress.empty.title": {
+      "localizations": {
+        "tr": { "stringUnit": { "state": "translated", "value": "Henüz puanlanmış deneme yok" } },
+        "en": { "stringUnit": { "state": "translated", "value": "No scored mocks yet" } }
+      }
+    },
+    "exam.progress.empty.body": {
+      "localizations": {
+        "tr": { "stringUnit": { "state": "translated", "value": "İlk denemeni tamamladığında net gelişimin ve konu hızın burada görünür." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Your net trajectory and topic pacing will appear here after your first scored mock." } }
+      }
+    },
+    "exam.progress.insufficient.oneMock": {
+      "localizations": {
+        "tr": { "stringUnit": { "state": "translated", "value": "Tek deneme kaydedildi; net eğilimi henüz oluşmadı." } },
+        "en": { "stringUnit": { "state": "translated", "value": "One mock recorded; a multi-session trend has not formed yet." } }
+      }
+    },
+    "exam.progress.insufficient.twoMocks": {
+      "localizations": {
+        "tr": { "stringUnit": { "state": "translated", "value": "İki deneme ile ön eğilim gösteriliyor; tam 3'lü ortalama için 1 deneme daha gerekli." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Preliminary trend from two mocks; one more mock enables a full 3-point moving average." } }
+      }
+    },
+    "exam.progress.pacing.title": {
+      "localizations": {
+        "tr": { "stringUnit": { "state": "translated", "value": "Konu bazlı süre ve hız analizi" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Topic-level pacing analysis" } }
+      }
+    },
+    "exam.progress.pacing.empty": {
+      "localizations": {
+        "tr": { "stringUnit": { "state": "translated", "value": "Süre karşılaştırması için henüz ölçülmüş soru kaydı yok." } },
+        "en": { "stringUnit": { "state": "translated", "value": "No timed question records are available for pacing comparison yet." } }
+      }
+    },
+    "exam.progress.pacing.fast": {
+      "localizations": {
+        "tr": { "stringUnit": { "state": "translated", "value": "Hızlı tempo" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Fast pace" } }
+      }
+    },
+    "exam.progress.pacing.onPace": {
+      "localizations": {
+        "tr": { "stringUnit": { "state": "translated", "value": "Hedef tempoda" } },
+        "en": { "stringUnit": { "state": "translated", "value": "On pace" } }
+      }
+    },
+    "exam.progress.pacing.bottleneck": {
+      "localizations": {
+        "tr": { "stringUnit": { "state": "translated", "value": "Ek süre gerektiren konu" } },
+        "en": { "stringUnit": { "state": "translated", "value": "High time demand" } }
+      }
+    },
+    "exam.progress.pacing.insufficientData": {
+      "localizations": {
+        "tr": { "stringUnit": { "state": "translated", "value": "Ek veri gerekli" } },
+        "en": { "stringUnit": { "state": "translated", "value": "More data needed" } }
+      }
+    },
+    "exam.progress.pacing.insufficientDetail": {
+      "localizations": {
+        "tr": { "stringUnit": { "state": "translated", "value": "Bu konu için en az 2 ölçülmüş soru gerekli." } },
+        "en": { "stringUnit": { "state": "translated", "value": "At least 2 timed questions are required for this topic." } }
+      }
+    },
+    "exam.progress.traps.title": {
+      "localizations": {
+        "tr": { "stringUnit": { "state": "translated", "value": "Tuzak gözlemi ve ilişki özeti" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Trap incidence & association summary" } }
+      }
+    },
+    "exam.progress.traps.activeNowFormat": {
+      "localizations": {
+        "tr": { "stringUnit": { "state": "translated", "value": "Şu anki aktif tuzak sayısı: %d" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Current active traps right now: %d" } }
+      }
+    },
+    "exam.progress.traps.conqueredUnavailable": {
+      "localizations": {
+        "tr": { "stringUnit": { "state": "translated", "value": "Tarihsel tuzak kapanma serisi henüz kullanılamıyor." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Historical trap transition series is not yet available." } }
+      }
+    },
+    "exam.progress.traps.nonCausalNote": {
+      "localizations": {
+        "tr": { "stringUnit": { "state": "translated", "value": "Yalnızca gözlemsel ilişkiyi gösterir; tek başına nedensellik veya kalıcı öğrenme kanıtı değildir." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Reflects observational association only; does not establish causality or mastery on its own." } }
+      }
+    },
+    "exam.progress.traps.status.COMPUTED": {
+      "localizations": {
+        "tr": { "stringUnit": { "state": "translated", "value": "Oturum bazlı tuzak insidansı ilişkisi hesaplandı." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Session-level trap incidence association computed." } }
+      }
+    },
+    "exam.progress.traps.status.INSUFFICIENT_DATA": {
+      "localizations": {
+        "tr": { "stringUnit": { "state": "translated", "value": "İlişki hesaplaması için en az 3 farklı tarihli deneme gerekli." } },
+        "en": { "stringUnit": { "state": "translated", "value": "At least 3 distinct-date mock sessions are needed to compute association." } }
+      }
+    },
+    "exam.progress.traps.status.ZERO_VARIANCE": {
+      "localizations": {
+        "tr": { "stringUnit": { "state": "translated", "value": "Denemelerde tuzak veya net değişimi sabit kaldığı için korelasyon tanımlanmadı." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Correlation is undefined because trap counts or net scores had zero variance." } }
+      }
+    },
+    "exam.progress.traps.status.NO_HISTORICAL_ACTIVE_TRAP_DATA": {
+      "localizations": {
+        "tr": { "stringUnit": { "state": "translated", "value": "Tarihsel aktif tuzak anlık görüntüsü henüz mevcut değil." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Historical active trap snapshots are not available yet." } }
+      }
+    },
   "exam.preExam.title": {
     "localizations": {
       "tr": {

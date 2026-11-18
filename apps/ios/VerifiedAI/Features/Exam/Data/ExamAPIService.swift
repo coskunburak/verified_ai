@@ -2758,3 +2758,23 @@ extension HTTPExamAPIService: PreExamServicing {
             idempotencyKey: key))
     }
 }
+
+extension HTTPExamAPIService: ExamProgressServicing {
+    func progress(exam: String) async throws -> ExamProgressReport {
+        let canonical = ExamProgressReport.canonicalExamCode(exam)
+        guard ExamProgressReport.supportedExams.contains(canonical) else {
+            throw ExamProgressError.unsupportedExam
+        }
+        let endpoint = Endpoint(
+            path: "/v1/analytics/exams/progress",
+            method: .get,
+            queryItems: [URLQueryItem(name: "examCode", value: canonical)]
+        )
+        let request = HTTPRequest<ExamProgressReport>(
+            endpoint: endpoint,
+            allowsAuthRefreshRetry: true,
+            decodesISO8601Dates: true
+        )
+        return try await apiClient.send(request).body
+    }
+}
