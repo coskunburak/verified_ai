@@ -4,6 +4,156 @@ info:
   version: 0.1.0
 
 paths:
+  /v1/exams/pre-exam-review/{examCode}:
+    get:
+      summary: Read private deterministic H-15 pre-exam-review
+      security: [{bearerAuth: []}]
+      parameters:
+        - {name: examCode, in: path, required: true, schema: {type: string, enum: [TR_YKS_TYT_MATH, TR_YKS_AYT_MATH]}}
+        - {name: If-None-Match, in: header, schema: {type: string}, description: Quoted entity tags; weak comparison and wildcard supported}
+      responses:
+        '200':
+          description: Owner snapshot; date-only precision never supplies an exact countdown
+          headers:
+            ETag: {schema: {type: string}, description: Quoted resource-specific SHA-256}
+            Cache-Control: {schema: {type: string, const: no-store}}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PreExamReviewSession'}
+        '304':
+          description: No body; reuse only an unexpired same-owner same-exam snapshot or retry unconditionally
+          headers:
+            ETag: {schema: {type: string}}
+            Cache-Control: {schema: {type: string, const: no-store}}
+        '400': {$ref: '#/components/responses/ProblemBadRequest'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '429': {$ref: '#/components/responses/Problem'}
+        '500': {$ref: '#/components/responses/Problem'}
+        '503': {$ref: '#/components/responses/Problem'}
+  /v1/exams/cheat-sheet/{examCode}:
+    get:
+      summary: Read private deterministic H-15 cheat-sheet
+      security: [{bearerAuth: []}]
+      parameters:
+        - {name: examCode, in: path, required: true, schema: {type: string, enum: [TR_YKS_TYT_MATH, TR_YKS_AYT_MATH]}}
+        - {name: If-None-Match, in: header, schema: {type: string}, description: Quoted entity tags; weak comparison and wildcard supported}
+      responses:
+        '200':
+          description: Owner snapshot; date-only precision never supplies an exact countdown
+          headers:
+            ETag: {schema: {type: string}, description: Quoted resource-specific SHA-256}
+            Cache-Control: {schema: {type: string, const: no-store}}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ExamCheatSheet'}
+        '304':
+          description: No body; reuse only an unexpired same-owner same-exam snapshot or retry unconditionally
+          headers:
+            ETag: {schema: {type: string}}
+            Cache-Control: {schema: {type: string, const: no-store}}
+        '400': {$ref: '#/components/responses/ProblemBadRequest'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '429': {$ref: '#/components/responses/Problem'}
+        '500': {$ref: '#/components/responses/Problem'}
+        '503': {$ref: '#/components/responses/Problem'}
+  /v1/exams/pre-exam-review/sessions/{sessionId}/export-events:
+    post:
+      summary: Record an owner-scoped deduplicated on-device PDF export
+      description: Feature disabled returns 403; absent, expired or foreign sessions return 404. No PDF is uploaded.
+      security: [{bearerAuth: []}]
+      parameters:
+        - {name: sessionId, in: path, required: true, schema: {type: string, format: uuid}}
+        - {name: Idempotency-Key, in: header, required: true, schema: {type: string, minLength: 1, maxLength: 128, pattern: '.*\S.*'}}
+      responses:
+        '204':
+          description: Event accepted or previously recorded for this owner and session
+          headers:
+            Cache-Control: {schema: {type: string, const: no-store}}
+        '400': {$ref: '#/components/responses/ProblemBadRequest'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '429': {$ref: '#/components/responses/Problem'}
+        '500': {$ref: '#/components/responses/Problem'}
+  /api/v1/exams/pre-exam-review/{examCode}:
+    get:
+      summary: Read private deterministic H-15 pre-exam-review
+      security: [{bearerAuth: []}]
+      parameters:
+        - {name: examCode, in: path, required: true, schema: {type: string, enum: [TR_YKS_TYT_MATH, TR_YKS_AYT_MATH]}}
+        - {name: If-None-Match, in: header, schema: {type: string}, description: Quoted entity tags; weak comparison and wildcard supported}
+      responses:
+        '200':
+          description: Owner snapshot; date-only precision never supplies an exact countdown
+          headers:
+            ETag: {schema: {type: string}, description: Quoted resource-specific SHA-256}
+            Cache-Control: {schema: {type: string, const: no-store}}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PreExamReviewSession'}
+        '304':
+          description: No body; reuse only an unexpired same-owner same-exam snapshot or retry unconditionally
+          headers:
+            ETag: {schema: {type: string}}
+            Cache-Control: {schema: {type: string, const: no-store}}
+        '400': {$ref: '#/components/responses/ProblemBadRequest'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '429': {$ref: '#/components/responses/Problem'}
+        '500': {$ref: '#/components/responses/Problem'}
+        '503': {$ref: '#/components/responses/Problem'}
+  /api/v1/exams/cheat-sheet/{examCode}:
+    get:
+      summary: Read private deterministic H-15 cheat-sheet
+      security: [{bearerAuth: []}]
+      parameters:
+        - {name: examCode, in: path, required: true, schema: {type: string, enum: [TR_YKS_TYT_MATH, TR_YKS_AYT_MATH]}}
+        - {name: If-None-Match, in: header, schema: {type: string}, description: Quoted entity tags; weak comparison and wildcard supported}
+      responses:
+        '200':
+          description: Owner snapshot; date-only precision never supplies an exact countdown
+          headers:
+            ETag: {schema: {type: string}, description: Quoted resource-specific SHA-256}
+            Cache-Control: {schema: {type: string, const: no-store}}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ExamCheatSheet'}
+        '304':
+          description: No body; reuse only an unexpired same-owner same-exam snapshot or retry unconditionally
+          headers:
+            ETag: {schema: {type: string}}
+            Cache-Control: {schema: {type: string, const: no-store}}
+        '400': {$ref: '#/components/responses/ProblemBadRequest'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '429': {$ref: '#/components/responses/Problem'}
+        '500': {$ref: '#/components/responses/Problem'}
+        '503': {$ref: '#/components/responses/Problem'}
+  /api/v1/exams/pre-exam-review/sessions/{sessionId}/export-events:
+    post:
+      summary: Record an owner-scoped deduplicated on-device PDF export
+      description: Feature disabled returns 403; absent, expired or foreign sessions return 404. No PDF is uploaded.
+      security: [{bearerAuth: []}]
+      parameters:
+        - {name: sessionId, in: path, required: true, schema: {type: string, format: uuid}}
+        - {name: Idempotency-Key, in: header, required: true, schema: {type: string, minLength: 1, maxLength: 128, pattern: '.*\S.*'}}
+      responses:
+        '204':
+          description: Event accepted or previously recorded for this owner and session
+          headers:
+            Cache-Control: {schema: {type: string, const: no-store}}
+        '400': {$ref: '#/components/responses/ProblemBadRequest'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '429': {$ref: '#/components/responses/Problem'}
+        '500': {$ref: '#/components/responses/Problem'}
   /v1/exams/sessions/{sessionId}/attribution-report:
     get:
       summary: Read deterministic H-03 attribution
@@ -6286,6 +6436,8 @@ components:
           schema: {"$ref": "#/components/schemas/ProblemDetails"}
 
   schemas:
+    PreExamReviewSession: {"$schema":"https://json-schema.org/draft/2020-12/schema","$id":"https://verifiedai.com/schemas/exam/v1/pre-exam-review-session.schema.json","title":"pre-exam-review-session","type":"object","additionalProperties":false,"required":["schemaVersion","sessionId","userId","examCode","generatedAt","expiresAt","algorithmVersion","catalogVersion","catalogContentHash","etag","targetExamDate","targetExamAt","timePrecision","windowStatus","hoursRemaining","evidenceStatus","panicInhibitionActive","masteryFloor","excludedLowMasteryTopicCount","activeTraps","highYieldFormulas","genericReferences","llmTokensUsed","trainingEligible"],"properties":{"schemaVersion":{"const":"pre-exam-review-v1"},"sessionId":{"type":"string","format":"uuid"},"userId":{"type":"string","format":"uuid"},"examCode":{"enum":["TR_YKS_TYT_MATH","TR_YKS_AYT_MATH"]},"generatedAt":{"type":"string","format":"date-time"},"expiresAt":{"type":"string","format":"date-time"},"algorithmVersion":{"const":"H15_V1"},"catalogVersion":{"const":"pre-exam-catalog-v1"},"catalogContentHash":{"type":"string","pattern":"^[0-9a-f]{64}$"},"etag":{"type":"string","pattern":"^[0-9a-f]{64}$"},"targetExamDate":{"type":["string","null"],"format":"date"},"targetExamAt":{"type":["string","null"],"format":"date-time"},"timePrecision":{"enum":["EXACT","DATE_ONLY_ESTIMATE","UNAVAILABLE"]},"windowStatus":{"enum":["ACTIVE_48H_WINDOW","EARLY_PREVIEW_OUTSIDE_48H","DATE_ONLY_ESTIMATE","NO_TARGET_DATE","EXAM_PASSED"]},"hoursRemaining":{"type":["number","null"],"minimum":0},"evidenceStatus":{"enum":["SUFFICIENT_EVIDENCE","INSUFFICIENT_EVIDENCE"]},"panicInhibitionActive":{"const":true},"masteryFloor":{"const":0.5},"excludedLowMasteryTopicCount":{"type":"integer","minimum":0},"activeTraps":{"type":"array","maxItems":10,"items":{"type":"object","additionalProperties":false,"required":["catalogId","skillCode","mistakeCode","titleTr","titleEn","ruleLatex","ruleDisplay","domainTr","domainEn","counterExampleLatex","counterExampleDisplay","quickCheckTr","quickCheckEn","answerDisplay"],"properties":{"catalogId":{"type":"string","minLength":1,"maxLength":512},"skillCode":{"type":"string","minLength":1,"maxLength":512},"mistakeCode":{"type":"string","minLength":1,"maxLength":512},"titleTr":{"type":"string","minLength":1,"maxLength":512},"titleEn":{"type":"string","minLength":1,"maxLength":512},"ruleLatex":{"type":"string","minLength":1,"maxLength":512},"ruleDisplay":{"type":"string","minLength":1,"maxLength":512},"domainTr":{"type":"string","minLength":1,"maxLength":512},"domainEn":{"type":"string","minLength":1,"maxLength":512},"counterExampleLatex":{"type":"string","minLength":1,"maxLength":512},"counterExampleDisplay":{"type":"string","minLength":1,"maxLength":512},"quickCheckTr":{"type":"string","minLength":1,"maxLength":512},"quickCheckEn":{"type":"string","minLength":1,"maxLength":512},"answerDisplay":{"type":"string","minLength":1,"maxLength":512}}}},"highYieldFormulas":{"type":"array","maxItems":12,"items":{"type":"object","additionalProperties":false,"required":["catalogId","skillCode","titleTr","titleEn","ruleLatex","ruleDisplay","domainTr","domainEn"],"properties":{"catalogId":{"type":"string","minLength":1,"maxLength":512},"skillCode":{"type":"string","minLength":1,"maxLength":512},"titleTr":{"type":"string","minLength":1,"maxLength":512},"titleEn":{"type":"string","minLength":1,"maxLength":512},"ruleLatex":{"type":"string","minLength":1,"maxLength":512},"ruleDisplay":{"type":"string","minLength":1,"maxLength":512},"domainTr":{"type":"string","minLength":1,"maxLength":512},"domainEn":{"type":"string","minLength":1,"maxLength":512}}}},"genericReferences":{"type":"array","maxItems":5,"items":{"type":"object","additionalProperties":false,"required":["catalogId","skillCode","titleTr","titleEn","ruleLatex","ruleDisplay","domainTr","domainEn"],"properties":{"catalogId":{"type":"string","minLength":1,"maxLength":512},"skillCode":{"type":"string","minLength":1,"maxLength":512},"titleTr":{"type":"string","minLength":1,"maxLength":512},"titleEn":{"type":"string","minLength":1,"maxLength":512},"ruleLatex":{"type":"string","minLength":1,"maxLength":512},"ruleDisplay":{"type":"string","minLength":1,"maxLength":512},"domainTr":{"type":"string","minLength":1,"maxLength":512},"domainEn":{"type":"string","minLength":1,"maxLength":512}}}},"llmTokensUsed":{"const":0},"trainingEligible":{"const":false}},"allOf":[{"if":{"properties":{"timePrecision":{"const":"EXACT"}}},"then":{"properties":{"targetExamAt":{"type":"string"},"hoursRemaining":{"type":"number"}}},"else":{"properties":{"targetExamAt":{"type":"null"},"hoursRemaining":{"type":"null"}}}},{"if":{"properties":{"timePrecision":{"const":"DATE_ONLY_ESTIMATE"}}},"then":{"properties":{"targetExamDate":{"type":"string"},"windowStatus":{"enum":["DATE_ONLY_ESTIMATE","EXAM_PASSED"]}}}},{"if":{"properties":{"windowStatus":{"const":"ACTIVE_48H_WINDOW"}}},"then":{"properties":{"timePrecision":{"const":"EXACT"},"hoursRemaining":{"type":"number","exclusiveMinimum":0,"maximum":48}}}},{"if":{"properties":{"windowStatus":{"const":"EARLY_PREVIEW_OUTSIDE_48H"}}},"then":{"properties":{"timePrecision":{"const":"EXACT"},"hoursRemaining":{"type":"number","exclusiveMinimum":48}}}},{"if":{"properties":{"windowStatus":{"const":"NO_TARGET_DATE"}}},"then":{"properties":{"timePrecision":{"const":"UNAVAILABLE"},"targetExamDate":{"type":"null"}}}},{"if":{"properties":{"evidenceStatus":{"const":"INSUFFICIENT_EVIDENCE"}}},"then":{"properties":{"activeTraps":{"maxItems":0},"highYieldFormulas":{"maxItems":0}}}}]}
+    ExamCheatSheet: {"$schema":"https://json-schema.org/draft/2020-12/schema","$id":"https://verifiedai.com/schemas/exam/v1/exam-cheat-sheet.schema.json","title":"exam-cheat-sheet","type":"object","additionalProperties":false,"required":["schemaVersion","sessionId","userId","examCode","generatedAt","expiresAt","algorithmVersion","catalogVersion","catalogContentHash","etag","targetExamDate","targetExamAt","timePrecision","windowStatus","hoursRemaining","evidenceStatus","panicInhibitionActive","masteryFloor","excludedLowMasteryTopicCount","activeTraps","highYieldFormulas","genericReferences","llmTokensUsed","trainingEligible"],"properties":{"schemaVersion":{"const":"exam-cheat-sheet-v1"},"sessionId":{"type":"string","format":"uuid"},"userId":{"type":"string","format":"uuid"},"examCode":{"enum":["TR_YKS_TYT_MATH","TR_YKS_AYT_MATH"]},"generatedAt":{"type":"string","format":"date-time"},"expiresAt":{"type":"string","format":"date-time"},"algorithmVersion":{"const":"H15_V1"},"catalogVersion":{"const":"pre-exam-catalog-v1"},"catalogContentHash":{"type":"string","pattern":"^[0-9a-f]{64}$"},"etag":{"type":"string","pattern":"^[0-9a-f]{64}$"},"targetExamDate":{"type":["string","null"],"format":"date"},"targetExamAt":{"type":["string","null"],"format":"date-time"},"timePrecision":{"enum":["EXACT","DATE_ONLY_ESTIMATE","UNAVAILABLE"]},"windowStatus":{"enum":["ACTIVE_48H_WINDOW","EARLY_PREVIEW_OUTSIDE_48H","DATE_ONLY_ESTIMATE","NO_TARGET_DATE","EXAM_PASSED"]},"hoursRemaining":{"type":["number","null"],"minimum":0},"evidenceStatus":{"enum":["SUFFICIENT_EVIDENCE","INSUFFICIENT_EVIDENCE"]},"panicInhibitionActive":{"const":true},"masteryFloor":{"const":0.5},"excludedLowMasteryTopicCount":{"type":"integer","minimum":0},"activeTraps":{"type":"array","maxItems":10,"items":{"type":"object","additionalProperties":false,"required":["catalogId","skillCode","mistakeCode","titleTr","titleEn","ruleLatex","ruleDisplay","domainTr","domainEn","counterExampleLatex","counterExampleDisplay","quickCheckTr","quickCheckEn","answerDisplay"],"properties":{"catalogId":{"type":"string","minLength":1,"maxLength":512},"skillCode":{"type":"string","minLength":1,"maxLength":512},"mistakeCode":{"type":"string","minLength":1,"maxLength":512},"titleTr":{"type":"string","minLength":1,"maxLength":512},"titleEn":{"type":"string","minLength":1,"maxLength":512},"ruleLatex":{"type":"string","minLength":1,"maxLength":512},"ruleDisplay":{"type":"string","minLength":1,"maxLength":512},"domainTr":{"type":"string","minLength":1,"maxLength":512},"domainEn":{"type":"string","minLength":1,"maxLength":512},"counterExampleLatex":{"type":"string","minLength":1,"maxLength":512},"counterExampleDisplay":{"type":"string","minLength":1,"maxLength":512},"quickCheckTr":{"type":"string","minLength":1,"maxLength":512},"quickCheckEn":{"type":"string","minLength":1,"maxLength":512},"answerDisplay":{"type":"string","minLength":1,"maxLength":512}}}},"highYieldFormulas":{"type":"array","maxItems":12,"items":{"type":"object","additionalProperties":false,"required":["catalogId","skillCode","titleTr","titleEn","ruleLatex","ruleDisplay","domainTr","domainEn"],"properties":{"catalogId":{"type":"string","minLength":1,"maxLength":512},"skillCode":{"type":"string","minLength":1,"maxLength":512},"titleTr":{"type":"string","minLength":1,"maxLength":512},"titleEn":{"type":"string","minLength":1,"maxLength":512},"ruleLatex":{"type":"string","minLength":1,"maxLength":512},"ruleDisplay":{"type":"string","minLength":1,"maxLength":512},"domainTr":{"type":"string","minLength":1,"maxLength":512},"domainEn":{"type":"string","minLength":1,"maxLength":512}}}},"genericReferences":{"type":"array","maxItems":5,"items":{"type":"object","additionalProperties":false,"required":["catalogId","skillCode","titleTr","titleEn","ruleLatex","ruleDisplay","domainTr","domainEn"],"properties":{"catalogId":{"type":"string","minLength":1,"maxLength":512},"skillCode":{"type":"string","minLength":1,"maxLength":512},"titleTr":{"type":"string","minLength":1,"maxLength":512},"titleEn":{"type":"string","minLength":1,"maxLength":512},"ruleLatex":{"type":"string","minLength":1,"maxLength":512},"ruleDisplay":{"type":"string","minLength":1,"maxLength":512},"domainTr":{"type":"string","minLength":1,"maxLength":512},"domainEn":{"type":"string","minLength":1,"maxLength":512}}}},"llmTokensUsed":{"const":0},"trainingEligible":{"const":false}},"allOf":[{"if":{"properties":{"timePrecision":{"const":"EXACT"}}},"then":{"properties":{"targetExamAt":{"type":"string"},"hoursRemaining":{"type":"number"}}},"else":{"properties":{"targetExamAt":{"type":"null"},"hoursRemaining":{"type":"null"}}}},{"if":{"properties":{"timePrecision":{"const":"DATE_ONLY_ESTIMATE"}}},"then":{"properties":{"targetExamDate":{"type":"string"},"windowStatus":{"enum":["DATE_ONLY_ESTIMATE","EXAM_PASSED"]}}}},{"if":{"properties":{"windowStatus":{"const":"ACTIVE_48H_WINDOW"}}},"then":{"properties":{"timePrecision":{"const":"EXACT"},"hoursRemaining":{"type":"number","exclusiveMinimum":0,"maximum":48}}}},{"if":{"properties":{"windowStatus":{"const":"EARLY_PREVIEW_OUTSIDE_48H"}}},"then":{"properties":{"timePrecision":{"const":"EXACT"},"hoursRemaining":{"type":"number","exclusiveMinimum":48}}}},{"if":{"properties":{"windowStatus":{"const":"NO_TARGET_DATE"}}},"then":{"properties":{"timePrecision":{"const":"UNAVAILABLE"},"targetExamDate":{"type":"null"}}}},{"if":{"properties":{"evidenceStatus":{"const":"INSUFFICIENT_EVIDENCE"}}},"then":{"properties":{"activeTraps":{"maxItems":0},"highYieldFormulas":{"maxItems":0}}}}]}
     ExamAttributionReport:
       $schema: https://json-schema.org/draft/2020-12/schema
       $id: https://verifiedai.com/schemas/exam/v1/exam-attribution-report.schema.json

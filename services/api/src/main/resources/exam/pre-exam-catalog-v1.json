@@ -1,0 +1,37 @@
+{
+  "catalogVersion": "pre-exam-catalog-v1",
+  "cards": [
+    {
+      "catalogId": "difference-squares",
+      "skillCode": "MATH.ALGEBRA.FACTORING",
+      "mistakeCode": "ALG_SIGN_FLIP_DISTRIBUTE",
+      "titleTr": "İki kare farkı",
+      "titleEn": "Difference of squares",
+      "ruleLatex": "(a-b)(a+b)=a^2-b^2",
+      "ruleDisplay": "(a − b)(a + b) = a² − b²",
+      "domainTr": "a ve b gerçek sayılardır.",
+      "domainEn": "a and b are real numbers.",
+      "counterExampleLatex": "(3 − 2)(3 + 2) = 5 ≠ 13",
+      "counterExampleDisplay": "(3 − 2)(3 + 2) = 5 ≠ 13",
+      "quickCheckTr": "a = 3, b = 2 için sol tarafı hesapla.",
+      "quickCheckEn": "Evaluate the left side for a = 3, b = 2.",
+      "answerDisplay": "5"
+    },
+    {
+      "catalogId": "square-sum",
+      "skillCode": "MATH.ALGEBRA.FACTORING",
+      "mistakeCode": "ALG_FRESHMAN_DREAM_POWER",
+      "titleTr": "Toplamın karesi",
+      "titleEn": "Square of a sum",
+      "ruleLatex": "(a+b)^2=a^2+2ab+b^2",
+      "ruleDisplay": "(a + b)² = a² + 2ab + b²",
+      "domainTr": "a ve b gerçek sayılardır.",
+      "domainEn": "a and b are real numbers.",
+      "counterExampleLatex": "(3 + 2)² = 25 ≠ 13",
+      "counterExampleDisplay": "(3 + 2)² = 25 ≠ 13",
+      "quickCheckTr": "a = 3, b = 2 için sol tarafı hesapla.",
+      "quickCheckEn": "Evaluate the left side for a = 3, b = 2.",
+      "answerDisplay": "25"
+    }
+  ]
+}

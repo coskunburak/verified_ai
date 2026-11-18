@@ -63,6 +63,10 @@ public struct ExamScoreSummaryView: View {
                             .fixedSize(horizontal: false, vertical: true)
                     }
                     .accessibilityIdentifier("examScoreSummary.openAttributionReportButton")
+                if let preExam = viewModel.makePreExamViewModel() {
+                    NavigationLink { PreExamCramView(viewModel: preExam) } label: { Text("exam.preExam.title") }
+                        .accessibilityHint(Text("exam.preExam.openHint"))
+                }
                     topicBreakdownSection(summary.topicBreakdowns)
                     difficultyBreakdownSection(summary.difficultyBreakdowns)
                     itemEvidenceSection(summary)

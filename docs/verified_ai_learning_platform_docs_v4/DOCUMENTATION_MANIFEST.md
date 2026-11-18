@@ -1,9 +1,9 @@
 # Documentation Manifest
 
-Total Markdown files: **430**
+Total Markdown files: **435**
 
 - `00_MASTER_INDEX.md` — 588 lines — 52947 bytes
-- `DOCUMENTATION_MANIFEST.md` — 434 lines — 52821 bytes
+- `DOCUMENTATION_MANIFEST.md` — 444 lines — 53363 bytes
 - `DOCUMENTATION_V3_CHANGELOG.md` — 48 lines — 2266 bytes
 - `DOCUMENTATION_V4_CHANGELOG.md` — 29 lines — 1984 bytes
 - `DOCUMENTATION_V5_CHANGELOG.md` — 28 lines — 1154 bytes
@@ -42,7 +42,7 @@ Total Markdown files: **430**
 - `architecture/14_API_DESIGN_AND_CONTRACTS.md` — 379 lines — 28975 bytes
 - `architecture/51_ERROR_TAXONOMY_AND_RECOVERY_CONTRACT.md` — 155 lines — 6736 bytes
 - `architecture/75_PRODUCTION_ARCHITECTURE_AUDIT_AND_EVIDENCE_LEDGER.md` — 67 lines — 11195 bytes
-- `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md` — 250 lines — 24401 bytes
+- `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md` — 250 lines — 24581 bytes
 - `backend/19_BACKEND_ARCHITECTURE_AND_FILE_HIERARCHY.md` — 157 lines — 5040 bytes
 - `backend/20_BACKEND_MODULE_CONTRACTS.md` — 229 lines — 16121 bytes
 - `backend/21_AUTHORIZATION_RATE_LIMITING_AND_ABUSE.md` — 90 lines — 5392 bytes
@@ -115,7 +115,7 @@ Total Markdown files: **430**
 - `security/35_SECURITY_THREAT_MODEL.md` — 179 lines — 12434 bytes
 - `security/36_PRIVACY_AND_STUDENT_DATA_PROTECTION.md` — 150 lines — 13283 bytes
 - `security/89_STUDENT_COACH_PRIVACY_MINOR_SAFETY_AND_TEACHER_ACCESS.md` — 148 lines — 15773 bytes
-- `sprints/00_SPRINT_MASTER_PLAN.md` — 321 lines — 44608 bytes
+- `sprints/00_SPRINT_MASTER_PLAN.md` — 321 lines — 44682 bytes
 - `sprints/01_SPRINT_EXECUTION_STANDARD.md` — 120 lines — 3391 bytes
 - `sprints/02_FOCUSED_COMMERCIAL_WEDGE_SPRINT_PROGRAM.md` — 611 lines — 58224 bytes
 - `sprints/phase01_product_semantics_and_architecture/PHASE_01_EXECUTION_REPORT.md` — 423 lines — 22130 bytes
@@ -369,7 +369,7 @@ Total Markdown files: **430**
 - `sprints/phase09_exam_and_assessment_platform/SPRINT_9.6_EXECUTION_REPORT.md` — 18 lines — 3923 bytes
 - `sprints/phase09_exam_and_assessment_platform/SPRINT_9.6_FILE_MANIFEST.md` — 73 lines — 6689 bytes
 - `sprints/phase09_exam_and_assessment_platform/SPRINT_9.7_WEAK_AREA_PRIORITIZATION_AFTER_ASSESSMENTS.md` — 426 lines — 21188 bytes
-- `sprints/phase09_exam_and_assessment_platform/SPRINT_9.8_FINAL_REVIEW_AND_PRE_EXAM_STUDY_MODE.md` — 460 lines — 22388 bytes
+- `sprints/phase09_exam_and_assessment_platform/SPRINT_9.8_FINAL_REVIEW_AND_PRE_EXAM_STUDY_MODE.md` — 460 lines — 22663 bytes
 - `sprints/phase09_exam_and_assessment_platform/SPRINT_9.9_EXAM_ANALYTICS_REPORTS_AND_PROGRESS_COMPARISON.md` — 461 lines — 22630 bytes
 - `sprints/phase10_monetization_growth_and_product_operations/PHASE_10_MONETIZATION_GROWTH_AND_PRODUCT_OPERATIONS.md` — 87 lines — 7859 bytes
 - `sprints/phase10_monetization_growth_and_product_operations/SPRINT_10.10_UNIT_ECONOMICS_AI_COST_DASHBOARDS_AND_MARGIN_SAFEGUARDS.md` — 404 lines — 19080 bytes
@@ -432,3 +432,13 @@ Total Markdown files: **430**
 - `sprints/phase14_active_scaffolding_twin_mastery_and_interactive_canvas/SPRINT_14.9_SOLVI_PARITY_BENCHMARK_RETENTION_EXPERIMENTS_AND_FINOPS_GUARDRAILS.md` — 118 lines — 10526 bytes
 - `sprints/phase09_exam_and_assessment_platform/SPRINT_9.7_EXECUTION_REPORT.md` — 87 lines — 8544 bytes
 - `sprints/phase09_exam_and_assessment_platform/SPRINT_9.7_FILE_MANIFEST.md` — 74 lines — 5927 bytes
+
+- `sprints/phase09_exam_and_assessment_platform/SPRINT_9.8_CONTEXT_LEDGER.md` — 43 lines — 4036 bytes
+
+- `sprints/phase09_exam_and_assessment_platform/SPRINT_9.8_CONTRACT_DECISION.md` — 15 lines — 2517 bytes
+
+- `sprints/phase09_exam_and_assessment_platform/SPRINT_9.8_EXECUTION_REPORT.md` — 33 lines — 5626 bytes
+
+- `sprints/phase09_exam_and_assessment_platform/SPRINT_9.8_FILE_MANIFEST.md` — 75 lines — 5883 bytes
+
+- `sprints/phase09_exam_and_assessment_platform/SPRINT_9.8_ACCEPTANCE_MATRIX.md` — 24 lines — 3300 bytes

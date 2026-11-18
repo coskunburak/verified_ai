@@ -20,6 +20,12 @@ public final class ExamReadinessViewModel: ObservableObject {
     private let apiService: ExamAPIServicing
     private let offlineStore: ExamOfflineSQLiteStore?
 
+    func makePreExamViewModel() -> PreExamCramViewModel? {
+        let exam = Self.canonicalExamCode(selectedExamCode)
+        guard ["TR_YKS_TYT_MATH", "TR_YKS_AYT_MATH"].contains(exam), let api = apiService as? any PreExamServicing else { return nil }
+        return PreExamCramViewModel(user: userId, exam: exam, api: api, cache: offlineStore)
+    }
+
     public init(
         userId: UUID = ExamBlueprintAssemblyViewModel.defaultLearnerId,
         selectedExamCode: String = "TR_YKS_TYT_MATH",

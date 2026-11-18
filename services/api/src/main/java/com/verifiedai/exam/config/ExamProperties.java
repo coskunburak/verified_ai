@@ -10,6 +10,11 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "verifiedai.exam")
 public class ExamProperties {
 
+    private boolean preExamModeEnabled = false;
+
+    public boolean isPreExamModeEnabled() { return preExamModeEnabled; }
+    public void setPreExamModeEnabled(boolean enabled) { preExamModeEnabled = enabled; }
+
     private boolean readinessEnabled = false;
 
     public boolean isReadinessEnabled() {

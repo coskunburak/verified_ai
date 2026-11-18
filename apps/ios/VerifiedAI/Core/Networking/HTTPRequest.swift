@@ -1,6 +1,7 @@
 import Foundation
 
 struct HTTPRequest<Response: Decodable> {
+    let ifNoneMatch: String?
     let endpoint: Endpoint
     let body: Data?
     let contentType: String
@@ -16,8 +17,10 @@ struct HTTPRequest<Response: Decodable> {
         idempotencyKey: String? = nil,
         allowsAuthRefreshRetry: Bool? = nil,
         timeout: TimeInterval = 60,
-        decodesISO8601Dates: Bool = false
+        decodesISO8601Dates: Bool = false,
+        ifNoneMatch: String? = nil
     ) {
+        self.ifNoneMatch = ifNoneMatch
         self.timeout = timeout
         self.decodesISO8601Dates = decodesISO8601Dates
         self.endpoint = endpoint

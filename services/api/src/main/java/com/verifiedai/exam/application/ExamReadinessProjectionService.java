@@ -48,6 +48,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class ExamReadinessProjectionService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExamReadinessProjectionService.class);
+    public static String canonicalExamCode(String code) {
+        if (code == null) return null;
+        String normalized = code.trim().toUpperCase(Locale.ROOT);
+        return EXAM_CODE_ALIASES.getOrDefault(normalized, normalized);
+    }
+
     private static final Map<String, String> EXAM_CODE_ALIASES = Map.of(
             "YKS_TYT", "TR_YKS_TYT_MATH",
             "YKS_TYT_MATH", "TR_YKS_TYT_MATH",

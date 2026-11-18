@@ -2501,6 +2501,24 @@ def run_validation():
         "exam.readiness.error.offline_unavailable",
         "exam.readiness.error.feature_disabled",
         "exam.readiness.error.generic",
+        "exam.preExam.title",
+        "exam.preExam.openHint",
+        "exam.preExam.generic",
+        "exam.preExam.offline",
+        "exam.preExam.share",
+        "exam.preExam.shareHint",
+        "exam.preExam.retry",
+        "exam.preExam.error",
+        "exam.preExam.cacheError",
+        "exam.preExam.disabled",
+        "exam.preExam.signIn",
+        "exam.preExam.exportEventError",
+        "exam.preExam.pdfError",
+        "exam.preExam.time.DATE_ONLY_ESTIMATE",
+        "exam.preExam.time.NO_TARGET_DATE",
+        "exam.preExam.time.EXAM_PASSED",
+        "exam.preExam.time.ACTIVE_48H_WINDOW",
+        "exam.preExam.time.EARLY_PREVIEW_OUTSIDE_48H",
     ]
 
     banned_lexicon = re.compile(
@@ -2522,7 +2540,7 @@ def run_validation():
             if key.startswith("studyplan.rebalance.") or key.startswith("micro_lesson.") or key.startswith("study_session."):
                 m = banned_lexicon.search(val)
                 assert not m, f"Stigmatizing lexicon word '{m.group(0)}' in {key}[{lang}]: {val}"
-            elif key.startswith("gamification.") or key.startswith("weekly.") or key.startswith("cold_start.") or key.startswith("exam.candidate.") or key.startswith("exam.syllabus.") or key.startswith("home.candidate_profile.") or key.startswith("exam.assembly.") or key.startswith("exam.session.") or key.startswith("exam.score.") or key.startswith("exam.readiness."):
+            elif key.startswith("gamification.") or key.startswith("weekly.") or key.startswith("cold_start.") or key.startswith("exam.candidate.") or key.startswith("exam.syllabus.") or key.startswith("home.candidate_profile.") or key.startswith("exam.assembly.") or key.startswith("exam.session.") or key.startswith("exam.score.") or key.startswith("exam.readiness.") or key.startswith("exam.preExam."):
                 m = gamification_banned_lexicon.search(val)
                 assert not m, f"Stigmatizing lexicon word '{m.group(0)}' in {key}[{lang}]: {val}"
 
@@ -2533,3 +2551,5 @@ if __name__ == "__main__":
     run_validation()
     from validate_sprint_9_7_contracts import validate
     validate()
+    from validate_sprint_9_8_contracts import validate as validate_9_8
+    validate_9_8()

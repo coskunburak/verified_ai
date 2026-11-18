@@ -25,6 +25,10 @@ public struct ExamReadinessHubView: View {
     public var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
+                if let preExam = viewModel.makePreExamViewModel() {
+                    NavigationLink { PreExamCramView(viewModel: preExam) } label: { Text("exam.preExam.title") }
+                        .accessibilityHint(Text("exam.preExam.openHint"))
+                }
                 examSelectorStrip
 
                 if viewModel.isOfflineFallback {

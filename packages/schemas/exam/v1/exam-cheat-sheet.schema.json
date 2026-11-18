@@ -1,0 +1,481 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/exam/v1/exam-cheat-sheet.schema.json",
+  "title": "exam-cheat-sheet",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "sessionId",
+    "userId",
+    "examCode",
+    "generatedAt",
+    "expiresAt",
+    "algorithmVersion",
+    "catalogVersion",
+    "catalogContentHash",
+    "etag",
+    "targetExamDate",
+    "targetExamAt",
+    "timePrecision",
+    "windowStatus",
+    "hoursRemaining",
+    "evidenceStatus",
+    "panicInhibitionActive",
+    "masteryFloor",
+    "excludedLowMasteryTopicCount",
+    "activeTraps",
+    "highYieldFormulas",
+    "genericReferences",
+    "llmTokensUsed",
+    "trainingEligible"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "exam-cheat-sheet-v1"
+    },
+    "sessionId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "userId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "examCode": {
+      "enum": [
+        "TR_YKS_TYT_MATH",
+        "TR_YKS_AYT_MATH"
+      ]
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "algorithmVersion": {
+      "const": "H15_V1"
+    },
+    "catalogVersion": {
+      "const": "pre-exam-catalog-v1"
+    },
+    "catalogContentHash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "etag": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "targetExamDate": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date"
+    },
+    "targetExamAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "timePrecision": {
+      "enum": [
+        "EXACT",
+        "DATE_ONLY_ESTIMATE",
+        "UNAVAILABLE"
+      ]
+    },
+    "windowStatus": {
+      "enum": [
+        "ACTIVE_48H_WINDOW",
+        "EARLY_PREVIEW_OUTSIDE_48H",
+        "DATE_ONLY_ESTIMATE",
+        "NO_TARGET_DATE",
+        "EXAM_PASSED"
+      ]
+    },
+    "hoursRemaining": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "evidenceStatus": {
+      "enum": [
+        "SUFFICIENT_EVIDENCE",
+        "INSUFFICIENT_EVIDENCE"
+      ]
+    },
+    "panicInhibitionActive": {
+      "const": true
+    },
+    "masteryFloor": {
+      "const": 0.5
+    },
+    "excludedLowMasteryTopicCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "activeTraps": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "catalogId",
+          "skillCode",
+          "mistakeCode",
+          "titleTr",
+          "titleEn",
+          "ruleLatex",
+          "ruleDisplay",
+          "domainTr",
+          "domainEn",
+          "counterExampleLatex",
+          "counterExampleDisplay",
+          "quickCheckTr",
+          "quickCheckEn",
+          "answerDisplay"
+        ],
+        "properties": {
+          "catalogId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "skillCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "mistakeCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "titleTr": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "titleEn": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "ruleLatex": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "ruleDisplay": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "domainTr": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "domainEn": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "counterExampleLatex": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "counterExampleDisplay": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "quickCheckTr": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "quickCheckEn": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "answerDisplay": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          }
+        }
+      }
+    },
+    "highYieldFormulas": {
+      "type": "array",
+      "maxItems": 12,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "catalogId",
+          "skillCode",
+          "titleTr",
+          "titleEn",
+          "ruleLatex",
+          "ruleDisplay",
+          "domainTr",
+          "domainEn"
+        ],
+        "properties": {
+          "catalogId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "skillCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "titleTr": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "titleEn": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "ruleLatex": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "ruleDisplay": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "domainTr": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "domainEn": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          }
+        }
+      }
+    },
+    "genericReferences": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "catalogId",
+          "skillCode",
+          "titleTr",
+          "titleEn",
+          "ruleLatex",
+          "ruleDisplay",
+          "domainTr",
+          "domainEn"
+        ],
+        "properties": {
+          "catalogId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "skillCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "titleTr": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "titleEn": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "ruleLatex": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "ruleDisplay": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "domainTr": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "domainEn": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          }
+        }
+      }
+    },
+    "llmTokensUsed": {
+      "const": 0
+    },
+    "trainingEligible": {
+      "const": false
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "timePrecision": {
+            "const": "EXACT"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "targetExamAt": {
+            "type": "string"
+          },
+          "hoursRemaining": {
+            "type": "number"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "targetExamAt": {
+            "type": "null"
+          },
+          "hoursRemaining": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "timePrecision": {
+            "const": "DATE_ONLY_ESTIMATE"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "targetExamDate": {
+            "type": "string"
+          },
+          "windowStatus": {
+            "enum": [
+              "DATE_ONLY_ESTIMATE",
+              "EXAM_PASSED"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "windowStatus": {
+            "const": "ACTIVE_48H_WINDOW"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "timePrecision": {
+            "const": "EXACT"
+          },
+          "hoursRemaining": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 48
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "windowStatus": {
+            "const": "EARLY_PREVIEW_OUTSIDE_48H"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "timePrecision": {
+            "const": "EXACT"
+          },
+          "hoursRemaining": {
+            "type": "number",
+            "exclusiveMinimum": 48
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "windowStatus": {
+            "const": "NO_TARGET_DATE"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "timePrecision": {
+            "const": "UNAVAILABLE"
+          },
+          "targetExamDate": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "evidenceStatus": {
+            "const": "INSUFFICIENT_EVIDENCE"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "activeTraps": {
+            "maxItems": 0
+          },
+          "highYieldFormulas": {
+            "maxItems": 0
+          }
+        }
+      }
+    }
+  ]
+}

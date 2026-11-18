@@ -2743,3 +2743,18 @@ final class FixtureExamAPIService: ExamAPIServicing, @unchecked Sendable {
     }
 }
 #endif
+
+extension HTTPExamAPIService: PreExamServicing {
+    func preExam(exam: String, sheet: Bool, etag: String?) async throws -> ConditionalHTTPResponse<PreExamSnapshot> {
+        guard ["TR_YKS_TYT_MATH", "TR_YKS_AYT_MATH"].contains(exam) else { throw PreExamError.integrity }
+        let route = sheet ? "cheat-sheet" : "pre-exam-review"
+        return try await apiClient.sendConditional(HTTPRequest<PreExamSnapshot>(
+            endpoint: Endpoint(path: "/v1/exams/\(route)/\(exam)", method: .get),
+            decodesISO8601Dates: true, ifNoneMatch: etag))
+    }
+    func exported(session: UUID, key: String) async throws {
+        try await apiClient.sendNoContent(HTTPRequest<EmptyHTTPBody>(
+            endpoint: Endpoint(path: "/v1/exams/pre-exam-review/sessions/\(session.uuidString)/export-events", method: .post),
+            idempotencyKey: key))
+    }
+}

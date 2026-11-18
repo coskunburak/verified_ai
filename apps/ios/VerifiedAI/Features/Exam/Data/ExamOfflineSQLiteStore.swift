@@ -32,6 +32,7 @@ public actor ExamOfflineSQLiteStore: ExamCacheStoreProtocol {
 
     private let connection: Connection
     private var db: OpaquePointer? { connection.handle }
+    private var preExamGeneration: UInt64 = 0
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
 
@@ -51,6 +52,10 @@ public actor ExamOfflineSQLiteStore: ExamCacheStoreProtocol {
     private static func createTablesIfNotExists(on db: OpaquePointer?) {
         guard let db else { return }
         let sql = """
+        CREATE TABLE IF NOT EXISTS pre_exam_cheat_sheet_cache (
+            user_id TEXT NOT NULL, exam_code TEXT NOT NULL, bundle_json TEXT NOT NULL,
+            PRIMARY KEY(user_id, exam_code)
+        );
         CREATE TABLE IF NOT EXISTS cached_exam_attributions (
             session_id TEXT PRIMARY KEY,
             user_id TEXT NOT NULL,
@@ -502,8 +507,10 @@ public actor ExamOfflineSQLiteStore: ExamCacheStoreProtocol {
     }
 
     public func purgeUserData(userId: String) async {
+        preExamGeneration &+= 1
         guard let db else { return }
         for table in [
+            "pre_exam_cheat_sheet_cache",
             "cached_exam_attributions",
             "student_exam_targets_cache",
             "cached_candidate_profiles",
@@ -526,8 +533,10 @@ public actor ExamOfflineSQLiteStore: ExamCacheStoreProtocol {
     }
 
     public func purgeAll() async {
+        preExamGeneration &+= 1
         guard let db else { return }
         sqlite3_exec(db, """
+            DELETE FROM pre_exam_cheat_sheet_cache;
             DELETE FROM cached_exam_attributions;
             DELETE FROM exam_definitions_cache;
             DELETE FROM student_exam_targets_cache;
@@ -774,5 +783,39 @@ public actor ExamOfflineSQLiteStore: ExamCacheStoreProtocol {
             }
         }
         return nil
+    }
+}
+
+extension ExamOfflineSQLiteStore {
+    func preExamEpoch() -> UInt64 { preExamGeneration }
+    func savePreExam(_ bundle: PreExamBundle, user: UUID, exam: String, epoch: UInt64) throws {
+        guard epoch == preExamGeneration else { throw PreExamError.integrity }
+        try bundle.validate(user: user, exam: exam)
+        guard let db else { throw PreExamError.cache }
+        let text = String(decoding: try encoder.encode(bundle), as: UTF8.self)
+        var stmt: OpaquePointer?
+        let sql = "INSERT INTO pre_exam_cheat_sheet_cache(user_id,exam_code,bundle_json) VALUES (?1,?2,?3) ON CONFLICT(user_id,exam_code) DO UPDATE SET bundle_json=excluded.bundle_json"
+        guard sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK else { throw PreExamError.cache }
+        defer { sqlite3_finalize(stmt) }
+        sqlite3_bind_text(stmt, 1, user.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+        sqlite3_bind_text(stmt, 2, exam, -1, SQLITE_TRANSIENT)
+        sqlite3_bind_text(stmt, 3, text, -1, SQLITE_TRANSIENT)
+        // One SQLite statement atomically stores both resources, their validators and expiry.
+        guard sqlite3_step(stmt) == SQLITE_DONE else { throw PreExamError.cache }
+    }
+    func loadPreExam(user: UUID, exam: String) throws -> PreExamBundle? {
+        guard let db else { throw PreExamError.cache }
+        var stmt: OpaquePointer?
+        guard sqlite3_prepare_v2(db, "SELECT bundle_json FROM pre_exam_cheat_sheet_cache WHERE user_id=?1 AND exam_code=?2", -1, &stmt, nil) == SQLITE_OK else { throw PreExamError.cache }
+        defer { sqlite3_finalize(stmt) }
+        sqlite3_bind_text(stmt, 1, user.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+        sqlite3_bind_text(stmt, 2, exam, -1, SQLITE_TRANSIENT)
+        let result = sqlite3_step(stmt)
+        if result == SQLITE_DONE { return nil }
+        guard result == SQLITE_ROW, let value = sqlite3_column_text(stmt, 0) else { throw PreExamError.cache }
+        let bundle = try decoder.decode(PreExamBundle.self, from: Data(String(cString: value).utf8))
+        guard bundle.review.expiresAt > Date(), bundle.sheet.expiresAt > Date() else { return nil }
+        try bundle.validate(user: user, exam: exam)
+        return bundle
     }
 }

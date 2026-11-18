@@ -22,6 +22,12 @@ public final class ExamScoreSummaryViewModel: ObservableObject {
     private let apiService: ExamAPIServicing
     private let offlineStore: ExamOfflineSQLiteStore?
 
+    func makePreExamViewModel() -> PreExamCramViewModel? {
+        let exam = ExamReadinessViewModel.canonicalExamCode(scoreSummary?.examCode ?? "TR_YKS_TYT_MATH")
+        guard ["TR_YKS_TYT_MATH", "TR_YKS_AYT_MATH"].contains(exam), let api = apiService as? any PreExamServicing else { return nil }
+        return PreExamCramViewModel(user: userId, exam: exam, api: api, cache: offlineStore)
+    }
+
     public init(
         sessionId: UUID,
         userId: UUID,

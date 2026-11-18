@@ -1,6 +1,294 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+  "exam.preExam.title": {
+    "localizations": {
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Sınav öncesi tekrar"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Pre-exam review"
+        }
+      }
+    }
+  },
+  "exam.preExam.openHint": {
+    "localizations": {
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Formül ve hata tuzaklarını gözden geçir."
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Review formulas and mistake traps."
+        }
+      }
+    }
+  },
+  "exam.preExam.generic": {
+    "localizations": {
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Yeterli kişisel kanıt yok. Bunlar genel referanslardır."
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Insufficient personal evidence. These are generic references."
+        }
+      }
+    }
+  },
+  "exam.preExam.offline": {
+    "localizations": {
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Çevrimdışı: süresi dolmamış kayıt gösteriliyor."
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Offline: showing an unexpired saved snapshot."
+        }
+      }
+    }
+  },
+  "exam.preExam.share": {
+    "localizations": {
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Tek sayfa PDF paylaş"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Share one-page PDF"
+        }
+      }
+    }
+  },
+  "exam.preExam.shareHint": {
+    "localizations": {
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "PDF cihazda oluşturulur. Tam liste bu ekrandadır."
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "PDF is created on your device. The complete list is on this screen."
+        }
+      }
+    }
+  },
+  "exam.preExam.retry": {
+    "localizations": {
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Yenile"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Refresh"
+        }
+      }
+    }
+  },
+  "exam.preExam.error": {
+    "localizations": {
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Tekrar yüklenemedi. Yeniden deneyin."
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Review could not be loaded. Try again."
+        }
+      }
+    }
+  },
+  "exam.preExam.cacheError": {
+    "localizations": {
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Önbellek doğrulanamadı."
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Saved data could not be validated."
+        }
+      }
+    }
+  },
+  "exam.preExam.disabled": {
+    "localizations": {
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Bu özellik şu anda kullanılamıyor."
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "This feature is currently unavailable."
+        }
+      }
+    }
+  },
+  "exam.preExam.signIn": {
+    "localizations": {
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Yeniden giriş yapın."
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Please sign in again."
+        }
+      }
+    }
+  },
+  "exam.preExam.exportEventError": {
+    "localizations": {
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Paylaşım bildirimi gönderilemedi."
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "The export notification could not be sent."
+        }
+      }
+    }
+  },
+  "exam.preExam.pdfError": {
+    "localizations": {
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "PDF oluşturulamadı veya temizlenemedi."
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "PDF could not be created or cleaned up."
+        }
+      }
+    }
+  },
+  "exam.preExam.time.DATE_ONLY_ESTIMATE": {
+    "localizations": {
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Sınav saati bilinmiyor; yalnız tarih bilgisi mevcut."
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Exam start time is unknown; only its date is available."
+        }
+      }
+    }
+  },
+  "exam.preExam.time.NO_TARGET_DATE": {
+    "localizations": {
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Hedef sınav tarihi seçilmemiş."
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "No target exam date selected."
+        }
+      }
+    }
+  },
+  "exam.preExam.time.EXAM_PASSED": {
+    "localizations": {
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Hedef sınav tarihi geçmiş."
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "The target exam date has passed."
+        }
+      }
+    }
+  },
+  "exam.preExam.time.ACTIVE_48H_WINDOW": {
+    "localizations": {
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Son 48 saat: tanıdık konulara odaklan."
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Final 48 hours: focus on familiar topics."
+        }
+      }
+    }
+  },
+  "exam.preExam.time.EARLY_PREVIEW_OUTSIDE_48H": {
+    "localizations": {
+      "tr": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Sınav öncesi erken önizleme."
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Early pre-exam preview."
+        }
+      }
+    }
+  },
     " · " : {
 
     },

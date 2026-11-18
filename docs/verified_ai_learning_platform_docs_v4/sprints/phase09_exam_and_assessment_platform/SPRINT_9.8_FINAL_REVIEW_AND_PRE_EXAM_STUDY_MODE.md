@@ -401,7 +401,7 @@ Codex must implement this sprint in small reviewable slices, re-reading the high
 ## 1. Sprint Metadata & Status
 - **Sprint ID:** `SPRINT_9.8` (**Option A — Wave 3 of 5**)
 - **Canonical Title:** Final Review, Pre-Exam Study Mode & 48-Hour Personal Formula/Trap Sheet (`H-15`)
-- **Status:** `PLANNED_OPTION_A_WAVE_3` (`ADR-011` feature-flagged; depends on `SPRINT_9.7`)
+- **Status:** `COMPLETED — OWNER ACCEPTANCE PASSED` (`2026-11-18`; `ADR-011` feature-flagged `verifiedai.exam.pre-exam-mode-enabled: false` by default)
 - **Primary Spec Reference:** `product/81_LEARNING_OS_PRODUCT_VISION_AND_POSITIONING.md` (`H-15`), `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md` (Screens 10 & 11), `sprints/phase09_exam_and_assessment_platform/PHASE_09_TYT_AYT_BRIDGE_AND_REMAINING_SPRINTS_PLAN.md`
 
 ## 2. Strategic Learning OS Objective & User Value
@@ -446,7 +446,7 @@ Assembles high-yield final review 48 hours prior to high-stakes exams. Suspends 
 - Tests panic-inhibition rule asserting zero unfamiliar skills in 48h review; iOS snapshot tests for 1-page PDF rendering.
 
 ## 15. Owner-Only Acceptance Command
-- `bash scripts/quality/sprint_9_8_owner_acceptance.sh --full`
+- `python3 scripts/quality/validate_json_schemas.py`, `python3 scripts/quality/check_contracts.py`, `bash scripts/quality/sprint_9_8_owner_acceptance.sh --VerifyHost`, and `python3 scripts/quality/docs_check.py`; verified results recorded in `SPRINT_9.8_ACCEPTANCE_MATRIX.md`.
 
 ## 16. Explicit Non-Goals
 - Does not predict exam questions or claim leaked content.

@@ -281,6 +281,13 @@
 		100000000000000000000062 /* ProblemHistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000006A /* ProblemHistoryViewModel.swift */; };
 		100000000000000000000063 /* ProblemHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000006B /* ProblemHistoryView.swift */; };
 		100000000000000000000064 /* ProblemHistoryViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000006C /* ProblemHistoryViewModelTests.swift */; };
+		B98000000000000000000001 /* PreExamModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98000000000000000000001 /* PreExamModels.swift */; };
+		B98000000000000000000002 /* PreExamCramViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98000000000000000000002 /* PreExamCramViewModel.swift */; };
+		B98000000000000000000003 /* PreExamCramView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98000000000000000000003 /* PreExamCramView.swift */; };
+		B98000000000000000000004 /* PersonalCheatSheetPDFRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98000000000000000000004 /* PersonalCheatSheetPDFRenderer.swift */; };
+		B98000000000000000000005 /* PreExamCramViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98000000000000000000005 /* PreExamCramViewModelTests.swift */; };
+		B98000000000000000000006 /* PersonalCheatSheetPDFRendererTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98000000000000000000006 /* PersonalCheatSheetPDFRendererTests.swift */; };
+		B98000000000000000000007 /* APIClientConditionalGETTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98000000000000000000007 /* APIClientConditionalGETTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -582,6 +589,13 @@
 		20000000000000000000006A /* ProblemHistoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = History/ProblemHistoryViewModel.swift; sourceTree = "<group>"; };
 		20000000000000000000006B /* ProblemHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = History/ProblemHistoryView.swift; sourceTree = "<group>"; };
 		20000000000000000000006C /* ProblemHistoryViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Presentation/ProblemHistoryViewModelTests.swift; sourceTree = "<group>"; };
+		A98000000000000000000001 /* PreExamModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Exam/Domain/PreExamModels.swift; sourceTree = SOURCE_ROOT; };
+		A98000000000000000000002 /* PreExamCramViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Exam/Presentation/PreExamCramViewModel.swift; sourceTree = SOURCE_ROOT; };
+		A98000000000000000000003 /* PreExamCramView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Exam/Presentation/PreExamCramView.swift; sourceTree = SOURCE_ROOT; };
+		A98000000000000000000004 /* PersonalCheatSheetPDFRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Exam/Presentation/PersonalCheatSheetPDFRenderer.swift; sourceTree = SOURCE_ROOT; };
+		A98000000000000000000005 /* PreExamCramViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Exam/PreExamCramViewModelTests.swift; sourceTree = SOURCE_ROOT; };
+		A98000000000000000000006 /* PersonalCheatSheetPDFRendererTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Exam/PersonalCheatSheetPDFRendererTests.swift; sourceTree = SOURCE_ROOT; };
+		A98000000000000000000007 /* APIClientConditionalGETTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Exam/APIClientConditionalGETTests.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1273,6 +1287,13 @@
 				A97000000000000000000003 /* PostExamAttributionViewModelTests.swift */,
 				A96000000000000000000001 /* ExamReadinessViewModel.swift */,
 				A97000000000000000000001 /* PostExamAttributionViewModel.swift */,
+				A98000000000000000000007 /* APIClientConditionalGETTests.swift */,
+				A98000000000000000000006 /* PersonalCheatSheetPDFRendererTests.swift */,
+				A98000000000000000000005 /* PreExamCramViewModelTests.swift */,
+				A98000000000000000000004 /* PersonalCheatSheetPDFRenderer.swift */,
+				A98000000000000000000003 /* PreExamCramView.swift */,
+				A98000000000000000000002 /* PreExamCramViewModel.swift */,
+				A98000000000000000000001 /* PreExamModels.swift */,
 				A96000000000000000000002 /* ExamReadinessHubView.swift */,
 				A97000000000000000000002 /* PostExamAttributionView.swift */,
 				A97000000000000000000004 /* PostExamRemediationDestination.swift */,
@@ -1564,6 +1585,10 @@
 				B95000000000000000000002 /* ExamScoreSummaryView.swift in Sources */,
 				B96000000000000000000001 /* ExamReadinessViewModel.swift in Sources */,
 				B97000000000000000000001 /* PostExamAttributionViewModel.swift in Sources */,
+				B98000000000000000000004 /* PersonalCheatSheetPDFRenderer.swift in Sources */,
+				B98000000000000000000003 /* PreExamCramView.swift in Sources */,
+				B98000000000000000000002 /* PreExamCramViewModel.swift in Sources */,
+				B98000000000000000000001 /* PreExamModels.swift in Sources */,
 				B96000000000000000000002 /* ExamReadinessHubView.swift in Sources */,
 				B97000000000000000000002 /* PostExamAttributionView.swift in Sources */,
 				B97000000000000000000004 /* PostExamRemediationDestination.swift in Sources */,
@@ -1732,6 +1757,9 @@
 				B94100000000000000000004 /* ExamSessionSQLiteStoreTests.swift in Sources */,
 				B95000000000000000000003 /* Sprint95ExamScoringAndEvidenceTests.swift in Sources */,
 				B97000000000000000000003 /* PostExamAttributionViewModelTests.swift in Sources */,
+				B98000000000000000000007 /* APIClientConditionalGETTests.swift in Sources */,
+				B98000000000000000000006 /* PersonalCheatSheetPDFRendererTests.swift in Sources */,
+				B98000000000000000000005 /* PreExamCramViewModelTests.swift in Sources */,
 				B96000000000000000000003 /* Sprint96ExamReadinessTests.swift in Sources */,
 				B96B00000000000000000001 /* ExamTurkishYksAccessibilityTests.swift in Sources */,
 				B89600000000000000000001 /* Sprint82PracticeTests.swift in Sources */,
