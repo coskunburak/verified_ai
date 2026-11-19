@@ -272,6 +272,18 @@ public final class ExamCatalogAndTargetViewModel: ObservableObject {
             errorMessageKey = "exam.error.version_conflict"
         case .invalidScratchpadAsset:
             errorMessageKey = "exam.syllabus.error.media_unsupported"
+        case .signatureRequired:
+            errorMessageKey = "exam.integrity.error.signature_required"
+        case .integrityFailed:
+            errorMessageKey = "exam.integrity.error.verification_needed"
+        case .clockResyncRequired:
+            errorMessageKey = "exam.integrity.error.clock_resync"
+        case .retryConflict:
+            errorMessageKey = "exam.integrity.error.retry_conflict"
+        case .proofExpired:
+            errorMessageKey = "exam.integrity.error.proof_expired"
+        case .integrityConfigUnavailable:
+            errorMessageKey = "exam.error.unexpected"
         case .unexpected(let message):
             errorMessageKey = "exam.error.unexpected"
             errorDetailsText = message

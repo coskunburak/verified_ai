@@ -27,6 +27,7 @@ public final class ExamSessionViewModel: ObservableObject {
     @Published public private(set) var outboxPendingCount: Int = 0
     @Published public private(set) var localScratchpadDraftCount: Int = 0
     @Published public private(set) var submissionReceipt: ExamSessionSubmitResponseDTO?
+    @Published public private(set) var pendingSubmitIntent: ExamPendingSubmitIntent?
     @Published public var showSubmitConfirmation: Bool = false
     @Published public var showScoreSummary: Bool = false
     @Published public var noHintAlertVisible: Bool = false
@@ -40,19 +41,28 @@ public final class ExamSessionViewModel: ObservableObject {
 
     private let apiService: ExamAPIServicing
     private let offlineStore: ExamOfflineSQLiteStore?
+    private let proofKeyStore: ExamProofKeyStoring
+    private let monotonicNowProvider: @Sendable () -> UInt64
     private let assemblyId: UUID
     private var activeUserId: UUID
     private var clientAutosaveSeq: Int64 = 0
+    private var monotonicAnchorUptimeNs: UInt64?
+    private var anchorRemainingSeconds: Int = 0
+    private var anchorGraceRemainingSeconds: Int = 0
 
     public init(
         apiService: ExamAPIServicing,
         offlineStore: ExamOfflineSQLiteStore?,
         assemblyId: UUID,
         userId: UUID = ExamBlueprintAssemblyViewModel.defaultLearnerId,
-        initialSession: ExamSessionDTO? = nil
+        initialSession: ExamSessionDTO? = nil,
+        proofKeyStore: ExamProofKeyStoring = KeychainExamProofKeyStore(),
+        monotonicNowProvider: @escaping @Sendable () -> UInt64 = { DispatchTime.now().uptimeNanoseconds }
     ) {
         self.apiService = apiService
         self.offlineStore = offlineStore
+        self.proofKeyStore = proofKeyStore
+        self.monotonicNowProvider = monotonicNowProvider
         self.assemblyId = assemblyId
         self.activeUserId = userId
         if let initialSession {
@@ -129,12 +139,15 @@ public final class ExamSessionViewModel: ObservableObject {
             let started = try await apiService.startOrResumeSession(request: request)
             applySessionSnapshot(started)
             await offlineStore?.saveExamSession(started)
+            await prefetchIntegrityProofIfAvailable(for: started)
+            await restorePendingSubmitIntent(for: started.sessionId)
             await reloadLocalPendingCounts(for: started.sessionId)
             await flushOfflineOutbox()
         } catch {
             if let cached = await offlineStore?.loadActiveExamSession(userId: activeUserId, assemblyId: assemblyId) {
                 applySessionSnapshot(cached)
                 isOfflineGraceActive = true
+                await restorePendingSubmitIntent(for: cached.sessionId)
                 await reloadLocalPendingCounts(for: cached.sessionId)
             } else {
                 mapError(error)
@@ -158,11 +171,32 @@ public final class ExamSessionViewModel: ObservableObject {
     }
 
     public func tickCountdown() {
+        reconcileElapsedMonotonicTime()
+    }
+
+    public func reconcileElapsedMonotonicTime(currentUptimeNanoseconds: UInt64? = nil) {
         guard let session, session.status.isActive else { return }
-        if remainingSeconds > 0 {
-            remainingSeconds -= 1
-        } else if isOfflineGraceActive && graceRemainingSeconds > 0 {
-            graceRemainingSeconds -= 1
+        let nowNs = currentUptimeNanoseconds ?? monotonicNowProvider()
+        guard let anchorNs = monotonicAnchorUptimeNs else {
+            monotonicAnchorUptimeNs = nowNs
+            anchorRemainingSeconds = remainingSeconds
+            anchorGraceRemainingSeconds = graceRemainingSeconds
+            return
+        }
+        // Monotonic elapsed seconds never go negative even if wall-clock Date is rolled back
+        let elapsedSeconds = nowNs >= anchorNs ? Int((nowNs - anchorNs) / 1_000_000_000) : 0
+        if elapsedSeconds == 0 {
+            if remainingSeconds > 0 {
+                remainingSeconds -= 1
+            } else if isOfflineGraceActive && graceRemainingSeconds > 0 {
+                graceRemainingSeconds -= 1
+            }
+            return
+        }
+        let nextRemaining = max(0, anchorRemainingSeconds - elapsedSeconds)
+        remainingSeconds = nextRemaining
+        if isOfflineGraceActive || nextRemaining == 0 {
+            graceRemainingSeconds = max(0, anchorGraceRemainingSeconds - elapsedSeconds)
         }
     }
 
@@ -373,8 +407,11 @@ public final class ExamSessionViewModel: ObservableObject {
             } catch let error as ExamServiceError where error == .offline {
                 isOfflineGraceActive = true
                 break
-            } catch {
+            } catch let error as ExamServiceError where error == .sessionAlreadySubmitted || error == .deadlineExpired {
                 await offlineStore.removeAutosaveOutboxEntry(userId: activeUserId, id: entry.id)
+            } catch {
+                // Retain transient failures in durable SQLite outbox for retry rather than dropping student answers
+                break
             }
         }
 
@@ -411,8 +448,11 @@ public final class ExamSessionViewModel: ObservableObject {
             } catch let error as ExamServiceError where error == .offline {
                 isOfflineGraceActive = true
                 break
-            } catch {
+            } catch let error as ExamServiceError where error == .invalidScratchpadAsset || error == .sessionAlreadySubmitted || error == .deadlineExpired {
                 await offlineStore.removeLocalScratchpadDraft(userId: activeUserId, id: draft.id)
+            } catch {
+                // Retain draft on transient 5xx / timeout
+                break
             }
         }
 
@@ -427,20 +467,97 @@ public final class ExamSessionViewModel: ObservableObject {
         errorMessage = nil
         defer { isSubmitting = false }
 
-        await flushOfflineOutbox()
+        // 1. Reconcile any existing durable submit intent first without minting duplicate timestamps/nonces
+        var intent: ExamPendingSubmitIntent? = pendingSubmitIntent
+        if intent == nil {
+            intent = await offlineStore?.loadPendingSubmitIntent(userId: activeUserId, sessionId: currentSession.sessionId)
+        }
+        if let existing = intent, existing.state == .inFlight || existing.state == .pendingReconciliation {
+            if let serverState = try? await apiService.fetchSessionState(
+                sessionId: currentSession.sessionId,
+                clientTimestamp: ExamIntegrityCanonicalizer.formatCanonicalInstant(Date())
+            ), !serverState.status.isActive {
+                await finalizeReceiptFromServerState(serverState, idempotencyKey: existing.originalIdempotencyKey)
+                return
+            }
+        }
 
-        let nowString = ISO8601DateFormatter().string(from: Date())
-        let idempotencyKey = "submit-\(currentSession.sessionId.uuidString.lowercased())-\(reason.rawValue.lowercased())"
+        // 2. Build & persist immutable submit intent before network I/O
+        let activeIntent: ExamPendingSubmitIntent
+        if var reused = intent, reused.state != .rejected && reused.state != .expired && reused.state != .acknowledged {
+            reused.retryCount += 1
+            reused.lastAttemptAt = ExamIntegrityCanonicalizer.formatCanonicalInstant(Date())
+            activeIntent = reused
+        } else {
+            let now = Date()
+            let canonicalTs = ExamIntegrityCanonicalizer.formatCanonicalInstant(now)
+            let idempotencyKey = "submit-\(currentSession.sessionId.uuidString.lowercased())-\(reason.rawValue.lowercased())"
+            let nonce = ExamIntegrityCanonicalizer.generateNonce()
+            let canonicalBody = ExamIntegrityCanonicalizer.buildCanonicalSubmitBody(
+                submissionReason: reason,
+                canonicalTimestamp: canonicalTs
+            )
+            let signingMaterial = await resolveSigningMaterial(
+                session: currentSession,
+                reason: reason,
+                idempotencyKey: idempotencyKey,
+                canonicalTimestamp: canonicalTs,
+                nonce: nonce
+            )
+            activeIntent = ExamPendingSubmitIntent(
+                userId: activeUserId,
+                sessionId: currentSession.sessionId,
+                assemblyId: currentSession.assemblyId,
+                originalIdempotencyKey: idempotencyKey,
+                submissionReason: reason,
+                canonicalPayloadVersion: ExamIntegrityCanonicalizer.protocolV1,
+                immutableCanonicalBody: canonicalBody,
+                canonicalTimestamp: canonicalTs,
+                nonce: nonce,
+                keyId: signingMaterial.keyId,
+                signature: signingMaterial.signature,
+                createdAt: canonicalTs,
+                lastAttemptAt: canonicalTs,
+                retryCount: 0,
+                state: .pendingUpload
+            )
+        }
+        pendingSubmitIntent = activeIntent
+        await offlineStore?.savePendingSubmitIntent(activeIntent)
+
+        // 3. Flush offline outbox; block optimistic completion if unsent answers/scratchpads remain
+        await flushOfflineOutbox()
+        if isOfflineOutboxPending {
+            var deferred = activeIntent
+            deferred.state = .retryableFailure
+            pendingSubmitIntent = deferred
+            await offlineStore?.savePendingSubmitIntent(deferred)
+            isOfflineGraceActive = true
+            errorLocalizationKey = "exam.integrity.status.pending_submit_recovery"
+            return
+        }
+
+        // 4. Transition intent to IN_FLIGHT and transmit the immutable signed request
+        var inFlight = activeIntent
+        inFlight.state = .inFlight
+        inFlight.lastAttemptAt = ExamIntegrityCanonicalizer.formatCanonicalInstant(Date())
+        pendingSubmitIntent = inFlight
+        await offlineStore?.savePendingSubmitIntent(inFlight)
+
         let request = ExamSessionSubmitRequestDTO(
-            submissionReason: reason,
-            clientTimestamp: nowString,
+            submissionReason: inFlight.submissionReason,
+            clientTimestamp: inFlight.canonicalTimestamp,
+            submissionSignature: inFlight.signature,
+            integrityKeyId: inFlight.keyId,
+            submissionNonce: inFlight.nonce,
+            integrityProtocolVersion: inFlight.signature != nil ? inFlight.canonicalPayloadVersion : nil,
             trainingEligible: false
         )
 
         do {
             let receipt = try await apiService.submitSession(
                 sessionId: currentSession.sessionId,
-                idempotencyKey: idempotencyKey,
+                idempotencyKey: inFlight.originalIdempotencyKey,
                 request: request
             )
             submissionReceipt = receipt
@@ -455,7 +572,38 @@ public final class ExamSessionViewModel: ObservableObject {
             currentSession.clockSync = receipt.clockSync
             applySessionSnapshot(currentSession)
             await offlineStore?.saveExamSession(currentSession)
+            await offlineStore?.removePendingSubmitIntent(userId: activeUserId, sessionId: currentSession.sessionId)
+            pendingSubmitIntent = nil
+            try? proofKeyStore.removeProofKey(userId: activeUserId, sessionId: currentSession.sessionId)
+        } catch let error as ExamServiceError where error == .sessionAlreadySubmitted {
+            if let serverState = try? await apiService.fetchSessionState(
+                sessionId: currentSession.sessionId,
+                clientTimestamp: ExamIntegrityCanonicalizer.formatCanonicalInstant(Date())
+            ), !serverState.status.isActive {
+                await finalizeReceiptFromServerState(serverState, idempotencyKey: inFlight.originalIdempotencyKey)
+            } else {
+                var failed = inFlight
+                failed.state = .rejected
+                pendingSubmitIntent = failed
+                await offlineStore?.savePendingSubmitIntent(failed)
+                mapError(error)
+            }
         } catch {
+            var retryable = inFlight
+            if let examError = error as? ExamServiceError {
+                switch examError {
+                case .deadlineExpired:
+                    retryable.state = .expired
+                case .integrityFailed, .retryConflict, .forbidden:
+                    retryable.state = .rejected
+                default:
+                    retryable.state = .retryableFailure
+                }
+            } else {
+                retryable.state = .retryableFailure
+            }
+            pendingSubmitIntent = retryable
+            await offlineStore?.savePendingSubmitIntent(retryable)
             mapError(error)
         }
     }
@@ -485,6 +633,8 @@ public final class ExamSessionViewModel: ObservableObject {
 
     public func purgeUserDataAndReset() async {
         await offlineStore?.clearUserData(userId: activeUserId)
+        try? proofKeyStore.removeAllProofKeys(userId: activeUserId)
+        pendingSubmitIntent = nil
         session = nil
         submissionReceipt = nil
         currentItemPosition = 1
@@ -632,6 +782,9 @@ public final class ExamSessionViewModel: ObservableObject {
         session = snapshot
         remainingSeconds = snapshot.clockSync.remainingSeconds
         graceRemainingSeconds = snapshot.clockSync.graceRemainingSeconds
+        monotonicAnchorUptimeNs = monotonicNowProvider()
+        anchorRemainingSeconds = snapshot.clockSync.remainingSeconds
+        anchorGraceRemainingSeconds = snapshot.clockSync.graceRemainingSeconds
         isOfflineGraceActive = snapshot.clockSync.offlineGraceActive || snapshot.status == .offlineGraceBuffer
         clockSkewAnomaly = snapshot.clockSync.clockSkewAnomaly
         if let current = snapshot.items.first(where: { $0.itemPosition == currentItemPosition }) {
@@ -669,6 +822,93 @@ public final class ExamSessionViewModel: ObservableObject {
         isOfflineOutboxPending = !outbox.isEmpty || !drafts.isEmpty
     }
 
+    private func prefetchIntegrityProofIfAvailable(for session: ExamSessionDTO) async {
+        guard session.status.isActive else { return }
+        if (try? proofKeyStore.proofKeyHex(userId: activeUserId, sessionId: session.sessionId)) != nil {
+            return
+        }
+        guard let proof = try? await apiService.fetchSessionIntegrityProof(sessionId: session.sessionId),
+              proof.integrityGuardEnabled,
+              let keyHex = proof.sessionProofKeyHex else {
+            return
+        }
+        try? proofKeyStore.saveProofKeyHex(keyHex, userId: activeUserId, sessionId: session.sessionId)
+    }
+
+    private func restorePendingSubmitIntent(for sessionId: UUID) async {
+        guard var intent = await offlineStore?.loadPendingSubmitIntent(userId: activeUserId, sessionId: sessionId) else {
+            return
+        }
+        if intent.state == .inFlight {
+            intent.state = .pendingReconciliation
+            await offlineStore?.savePendingSubmitIntent(intent)
+        }
+        pendingSubmitIntent = intent
+    }
+
+    private func resolveSigningMaterial(
+        session: ExamSessionDTO,
+        reason: ExamSessionSubmissionReason,
+        idempotencyKey: String,
+        canonicalTimestamp: String,
+        nonce: String
+    ) async -> (keyId: String?, signature: String?) {
+        var proofKeyHex = try? proofKeyStore.proofKeyHex(userId: activeUserId, sessionId: session.sessionId)
+        var resolvedKeyId = "exam-k1"
+        if proofKeyHex == nil,
+           let proof = try? await apiService.fetchSessionIntegrityProof(sessionId: session.sessionId) {
+            resolvedKeyId = proof.keyId
+            if proof.integrityGuardEnabled, let hex = proof.sessionProofKeyHex {
+                proofKeyHex = hex
+                try? proofKeyStore.saveProofKeyHex(hex, userId: activeUserId, sessionId: session.sessionId)
+            }
+        }
+        guard let hex = proofKeyHex,
+              let canonical = try? ExamIntegrityCanonicalizer.buildCanonicalSigningString(
+                  userId: session.userId,
+                  sessionId: session.sessionId,
+                  submissionReason: reason,
+                  idempotencyKey: idempotencyKey,
+                  canonicalTimestamp: canonicalTimestamp,
+                  integrityKeyId: resolvedKeyId,
+                  submissionNonce: nonce
+              ),
+              let sig = try? ExamIntegrityCanonicalizer.signCanonicalString(canonical, proofKeyHex: hex) else {
+            return (nil, nil)
+        }
+        return (resolvedKeyId, sig)
+    }
+
+    private func finalizeReceiptFromServerState(_ serverState: ExamSessionDTO, idempotencyKey: String) async {
+        if let manifest = serverState.f28VerificationBatchManifest,
+           let submittedAt = serverState.submittedAt {
+            submissionReceipt = ExamSessionSubmitResponseDTO(
+                sessionId: serverState.sessionId,
+                assemblyId: serverState.assemblyId,
+                blueprintId: serverState.blueprintId,
+                examCode: serverState.examCode,
+                status: serverState.status,
+                submissionReason: serverState.submissionReason ?? "USER_INITIATED",
+                submittedAt: submittedAt,
+                submitIdempotencyKey: idempotencyKey,
+                totalItemCount: serverState.totalItemCount,
+                answeredItemCount: serverState.answeredItemCount,
+                flaggedItemCount: serverState.flaggedItemCount,
+                omittedItemCount: serverState.omittedItemCount,
+                scratchpadAttachmentCount: serverState.scratchpadAttachmentCount,
+                f28VerificationBatchManifest: manifest,
+                clockSync: serverState.clockSync,
+                llmTokensUsed: 0,
+                trainingEligible: false
+            )
+        }
+        applySessionSnapshot(serverState)
+        await offlineStore?.saveExamSession(serverState)
+        await offlineStore?.removePendingSubmitIntent(userId: activeUserId, sessionId: serverState.sessionId)
+        pendingSubmitIntent = nil
+        try? proofKeyStore.removeProofKey(userId: activeUserId, sessionId: serverState.sessionId)
+    }
+
     private func mapError(_ error: Error) {
         if let examError = error as? ExamServiceError {
             switch examError {
@@ -679,6 +919,18 @@ public final class ExamSessionViewModel: ObservableObject {
                 errorLocalizationKey = "exam.session.submit.receipt_title"
             case .autosaveVersionConflict:
                 errorLocalizationKey = "exam.error.version_conflict"
+            case .signatureRequired:
+                errorLocalizationKey = "exam.integrity.error.signature_required"
+            case .integrityFailed:
+                errorLocalizationKey = "exam.integrity.error.verification_needed"
+            case .clockResyncRequired:
+                errorLocalizationKey = "exam.integrity.error.clock_resync"
+            case .retryConflict:
+                errorLocalizationKey = "exam.integrity.error.retry_conflict"
+            case .proofExpired:
+                errorLocalizationKey = "exam.integrity.error.proof_expired"
+            case .integrityConfigUnavailable:
+                errorLocalizationKey = "exam.error.unexpected"
             case .invalidScratchpadAsset:
                 errorLocalizationKey = "exam.error.unexpected"
             case .featureDisabled:

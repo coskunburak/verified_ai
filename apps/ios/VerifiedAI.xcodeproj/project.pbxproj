@@ -292,6 +292,9 @@
 		B99000000000000000000002 /* ExamProgressHistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99000000000000000000002 /* ExamProgressHistoryViewModel.swift */; };
 		B99000000000000000000003 /* ExamProgressHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99000000000000000000003 /* ExamProgressHistoryView.swift */; };
 		B99000000000000000000004 /* ExamProgressHistoryViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99000000000000000000004 /* ExamProgressHistoryViewModelTests.swift */; };
+		B9A000000000000000000001 /* ExamIntegrityModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A000000000000000000001 /* ExamIntegrityModels.swift */; };
+		B9A000000000000000000002 /* SpokenMathTurkishAccessibilityFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A000000000000000000002 /* SpokenMathTurkishAccessibilityFormatter.swift */; };
+		B9A000000000000000000003 /* SpokenMathTurkishAccessibilityFormatterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A000000000000000000003 /* SpokenMathTurkishAccessibilityFormatterTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -604,6 +607,9 @@
 		A99000000000000000000002 /* ExamProgressHistoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Exam/Presentation/ExamProgressHistoryViewModel.swift; sourceTree = SOURCE_ROOT; };
 		A99000000000000000000003 /* ExamProgressHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Exam/Presentation/ExamProgressHistoryView.swift; sourceTree = SOURCE_ROOT; };
 		A99000000000000000000004 /* ExamProgressHistoryViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Exam/ExamProgressHistoryViewModelTests.swift; sourceTree = SOURCE_ROOT; };
+		A9A000000000000000000001 /* ExamIntegrityModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Exam/Domain/ExamIntegrityModels.swift; sourceTree = SOURCE_ROOT; };
+		A9A000000000000000000002 /* SpokenMathTurkishAccessibilityFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAI/Features/Exam/Presentation/SpokenMathTurkishAccessibilityFormatter.swift; sourceTree = SOURCE_ROOT; };
+		A9A000000000000000000003 /* SpokenMathTurkishAccessibilityFormatterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAITests/Exam/SpokenMathTurkishAccessibilityFormatterTests.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1297,6 +1303,9 @@
 				A97000000000000000000001 /* PostExamAttributionViewModel.swift */,
 				A98000000000000000000007 /* APIClientConditionalGETTests.swift */,
 				A99000000000000000000004 /* ExamProgressHistoryViewModelTests.swift */,
+				A9A000000000000000000003 /* SpokenMathTurkishAccessibilityFormatterTests.swift */,
+				A9A000000000000000000002 /* SpokenMathTurkishAccessibilityFormatter.swift */,
+				A9A000000000000000000001 /* ExamIntegrityModels.swift */,
 				A99000000000000000000003 /* ExamProgressHistoryView.swift */,
 				A99000000000000000000002 /* ExamProgressHistoryViewModel.swift */,
 				A99000000000000000000001 /* ExamProgressModels.swift */,
@@ -1604,6 +1613,8 @@
 				B99000000000000000000003 /* ExamProgressHistoryView.swift in Sources */,
 				B99000000000000000000002 /* ExamProgressHistoryViewModel.swift in Sources */,
 				B99000000000000000000001 /* ExamProgressModels.swift in Sources */,
+				B9A000000000000000000001 /* ExamIntegrityModels.swift in Sources */,
+				B9A000000000000000000002 /* SpokenMathTurkishAccessibilityFormatter.swift in Sources */,
 				B96000000000000000000002 /* ExamReadinessHubView.swift in Sources */,
 				B97000000000000000000002 /* PostExamAttributionView.swift in Sources */,
 				B97000000000000000000004 /* PostExamRemediationDestination.swift in Sources */,
@@ -1774,6 +1785,7 @@
 				B97000000000000000000003 /* PostExamAttributionViewModelTests.swift in Sources */,
 				B98000000000000000000007 /* APIClientConditionalGETTests.swift in Sources */,
 				B99000000000000000000004 /* ExamProgressHistoryViewModelTests.swift in Sources */,
+				B9A000000000000000000003 /* SpokenMathTurkishAccessibilityFormatterTests.swift in Sources */,
 				B98000000000000000000006 /* PersonalCheatSheetPDFRendererTests.swift in Sources */,
 				B98000000000000000000005 /* PreExamCramViewModelTests.swift in Sources */,
 				B96000000000000000000003 /* Sprint96ExamReadinessTests.swift in Sources */,

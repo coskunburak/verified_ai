@@ -24,6 +24,8 @@ import com.verifiedai.sharedkernel.privacy.AccountDataLifecycleContributor;
 import java.time.Clock;
 import com.verifiedai.exam.infrastructure.persistence.PreExamStudySessionRepository;
 import com.verifiedai.exam.infrastructure.persistence.ExamAnalyticsSnapshotRepository;
+import com.verifiedai.exam.infrastructure.persistence.ExamIntegrityAuditRepository;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -57,6 +59,12 @@ public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleCont
     private ExamAttributionRepository examAttributionRepository;
     private PreExamStudySessionRepository preExamStudySessionRepository;
     private ExamAnalyticsSnapshotRepository examAnalyticsSnapshotRepository;
+    private ExamIntegrityAuditRepository examIntegrityAuditRepository;
+
+    @Autowired(required = false)
+    public void setExamIntegrityAuditRepository(ExamIntegrityAuditRepository repository) {
+        this.examIntegrityAuditRepository = repository;
+    }
 
     @Autowired(required = false)
     public void setExamAnalyticsSnapshotRepository(ExamAnalyticsSnapshotRepository repository) {
@@ -75,6 +83,9 @@ public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleCont
         }
         if (examAnalyticsSnapshotRepository != null) {
             examAnalyticsSnapshotRepository.purgeExpired(Instant.now(clock));
+        }
+        if (examIntegrityAuditRepository != null) {
+            examIntegrityAuditRepository.purgeExpired(Instant.now(clock), Duration.ofDays(30));
         }
     }
 
@@ -335,6 +346,8 @@ public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleCont
                 : preExamStudySessionRepository.exportEventsByUserId(userId));
         exportMap.put("examAnalyticsSnapshots", examAnalyticsSnapshotRepository == null ? List.of()
                 : examAnalyticsSnapshotRepository.exportByUserId(userId));
+        exportMap.put("examIntegrityAuditLogs", examIntegrityAuditRepository == null ? List.of()
+                : examIntegrityAuditRepository.exportByUserId(userId));
         exportMap.put("llmTokensUsed", 0);
         exportMap.put("trainingEligible", false);
         return exportMap;
@@ -342,6 +355,12 @@ public class ExamPrivacyLifecycleContributor implements AccountDataLifecycleCont
 
     @Override
     public void deleteUserData(UUID userId, Instant now) {
+        int deletedIntegrityRows = examIntegrityAuditRepository == null
+                ? 0
+                : examIntegrityAuditRepository.deleteByUserId(userId);
+        if (deletedIntegrityRows > 0) {
+            LOG.info("Privacy purge completed for exam integrity audit/nonce rows: deletedRows={}", deletedIntegrityRows);
+        }
         if (examAnalyticsSnapshotRepository != null) {
             examAnalyticsSnapshotRepository.deleteByUserId(userId);
         }

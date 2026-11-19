@@ -41,11 +41,32 @@ public actor ExamOfflineSQLiteStore: ExamCacheStoreProtocol {
         if inMemory {
             connection = Connection(path: ":memory:")
         } else {
-            let paths = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)
-            let cacheDir = paths[0].appendingPathComponent("VerifiedAI", isDirectory: true)
-            try? FileManager.default.createDirectory(at: cacheDir, withIntermediateDirectories: true)
-            let fileUrl = cacheDir.appendingPathComponent("exam_platform_cache.sqlite")
+            let supportPaths = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
+            let durableDir = supportPaths[0].appendingPathComponent("VerifiedAI", isDirectory: true)
+            try? FileManager.default.createDirectory(
+                at: durableDir,
+                withIntermediateDirectories: true,
+                attributes: [.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication]
+            )
+            var fileUrl = durableDir.appendingPathComponent("exam_platform_durable.sqlite")
+            // Migrate legacy Caches SQLite DB if durable store does not exist yet
+            if !FileManager.default.fileExists(atPath: fileUrl.path) {
+                let cachePaths = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)
+                let legacyUrl = cachePaths[0]
+                    .appendingPathComponent("VerifiedAI", isDirectory: true)
+                    .appendingPathComponent("exam_platform_cache.sqlite")
+                if FileManager.default.fileExists(atPath: legacyUrl.path) {
+                    try? FileManager.default.copyItem(at: legacyUrl, to: fileUrl)
+                }
+            }
             connection = Connection(path: fileUrl.path)
+            var resourceValues = URLResourceValues()
+            resourceValues.isExcludedFromBackup = true
+            try? fileUrl.setResourceValues(resourceValues)
+            try? FileManager.default.setAttributes(
+                [.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication],
+                ofItemAtPath: fileUrl.path
+            )
         }
         Self.createTablesIfNotExists(on: connection.handle)
     }
@@ -147,6 +168,15 @@ public actor ExamOfflineSQLiteStore: ExamCacheStoreProtocol {
             payload_json TEXT NOT NULL,
             updated_at TEXT NOT NULL,
             PRIMARY KEY (user_id, exam_code)
+        );
+        CREATE TABLE IF NOT EXISTS exam_pending_submit_intents (
+            session_id TEXT NOT NULL,
+            user_id TEXT NOT NULL,
+            idempotency_key TEXT NOT NULL,
+            state TEXT NOT NULL,
+            payload_json TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            PRIMARY KEY (session_id, user_id)
         );
         """
         sqlite3_exec(db, sql, nil, nil, nil)
@@ -508,6 +538,69 @@ public actor ExamOfflineSQLiteStore: ExamCacheStoreProtocol {
         }
     }
 
+    public func savePendingSubmitIntent(_ intent: ExamPendingSubmitIntent) async {
+        guard let db,
+              let data = try? encoder.encode(intent),
+              let jsonString = String(data: data, encoding: .utf8) else {
+            return
+        }
+        let sql = """
+        INSERT INTO exam_pending_submit_intents (session_id, user_id, idempotency_key, state, payload_json, updated_at)
+        VALUES (?1, ?2, ?3, ?4, ?5, ?6)
+        ON CONFLICT(session_id, user_id) DO UPDATE SET
+            idempotency_key = excluded.idempotency_key,
+            state = excluded.state,
+            payload_json = excluded.payload_json,
+            updated_at = excluded.updated_at;
+        """
+        var stmt: OpaquePointer?
+        if sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK {
+            defer { sqlite3_finalize(stmt) }
+            sqlite3_bind_text(stmt, 1, intent.sessionId.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+            sqlite3_bind_text(stmt, 2, intent.userId.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+            sqlite3_bind_text(stmt, 3, intent.originalIdempotencyKey, -1, SQLITE_TRANSIENT)
+            sqlite3_bind_text(stmt, 4, intent.state.rawValue, -1, SQLITE_TRANSIENT)
+            sqlite3_bind_text(stmt, 5, jsonString, -1, SQLITE_TRANSIENT)
+            sqlite3_bind_text(stmt, 6, intent.lastAttemptAt, -1, SQLITE_TRANSIENT)
+            sqlite3_step(stmt)
+        }
+    }
+
+    public func loadPendingSubmitIntent(userId: UUID, sessionId: UUID) async -> ExamPendingSubmitIntent? {
+        guard let db else { return nil }
+        let sql = """
+        SELECT payload_json FROM exam_pending_submit_intents
+        WHERE lower(user_id) = lower(?1) AND lower(session_id) = lower(?2)
+        LIMIT 1;
+        """
+        var stmt: OpaquePointer?
+        if sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK {
+            defer { sqlite3_finalize(stmt) }
+            sqlite3_bind_text(stmt, 1, userId.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+            sqlite3_bind_text(stmt, 2, sessionId.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+            if sqlite3_step(stmt) == SQLITE_ROW, let cStr = sqlite3_column_text(stmt, 0) {
+                let jsonString = String(cString: cStr)
+                if let data = jsonString.data(using: .utf8),
+                   let decoded = try? decoder.decode(ExamPendingSubmitIntent.self, from: data) {
+                    return decoded
+                }
+            }
+        }
+        return nil
+    }
+
+    public func removePendingSubmitIntent(userId: UUID, sessionId: UUID) async {
+        guard let db else { return }
+        let sql = "DELETE FROM exam_pending_submit_intents WHERE lower(user_id) = lower(?1) AND lower(session_id) = lower(?2);"
+        var stmt: OpaquePointer?
+        if sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK {
+            defer { sqlite3_finalize(stmt) }
+            sqlite3_bind_text(stmt, 1, userId.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+            sqlite3_bind_text(stmt, 2, sessionId.uuidString.lowercased(), -1, SQLITE_TRANSIENT)
+            sqlite3_step(stmt)
+        }
+    }
+
     public func clearUserData(userId: UUID) async {
         await purgeUserData(userId: userId)
     }
@@ -532,7 +625,8 @@ public actor ExamOfflineSQLiteStore: ExamCacheStoreProtocol {
             "exam_cached_score_summaries",
             "exam_autosave_outbox",
             "exam_scratchpad_attachments_local",
-            "cached_exam_readiness_projections"
+            "cached_exam_readiness_projections",
+            "exam_pending_submit_intents"
         ] {
             let sql = "DELETE FROM \(table) WHERE lower(user_id) = lower(?1);"
             var stmt: OpaquePointer?
@@ -563,6 +657,7 @@ public actor ExamOfflineSQLiteStore: ExamCacheStoreProtocol {
             DELETE FROM exam_autosave_outbox;
             DELETE FROM exam_scratchpad_attachments_local;
             DELETE FROM cached_exam_readiness_projections;
+            DELETE FROM exam_pending_submit_intents;
             """, nil, nil, nil)
     }
 

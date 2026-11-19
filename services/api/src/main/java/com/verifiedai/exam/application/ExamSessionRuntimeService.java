@@ -1,10 +1,12 @@
 package com.verifiedai.exam.application;
 
 import com.verifiedai.exam.application.ActiveExamNoHintGuard.HintGuardResult;
+import com.verifiedai.exam.application.AssessmentIntegrityGuard.ExamIntegrityProof;
 import com.verifiedai.exam.domain.AssembledAssessment;
 import com.verifiedai.exam.domain.AssembledAssessmentItem;
 import com.verifiedai.exam.domain.AssembledAssessmentRepository;
 import com.verifiedai.exam.domain.ExamClockPolicy;
+import com.verifiedai.exam.domain.ExamIntegrityCanonicalizer;
 import com.verifiedai.exam.domain.ExamItemResponseState;
 import com.verifiedai.exam.domain.ExamModels.ExamDefinition;
 import com.verifiedai.exam.domain.ExamModels.NavigationPolicy;
@@ -136,8 +138,19 @@ public class ExamSessionRuntimeService {
     public record SubmitSessionCommand(
             String submissionReason,
             Instant clientTimestamp,
-            Boolean trainingEligible
+            Boolean trainingEligible,
+            String submissionSignature,
+            String integrityKeyId,
+            String submissionNonce,
+            String integrityProtocolVersion
     ) {
+        public SubmitSessionCommand(
+                String submissionReason,
+                Instant clientTimestamp,
+                Boolean trainingEligible
+        ) {
+            this(submissionReason, clientTimestamp, trainingEligible, null, null, null, null);
+        }
     }
 
     public record SubmitSessionResult(
@@ -159,10 +172,16 @@ public class ExamSessionRuntimeService {
     private final JsonMapper jsonMapper;
     private volatile boolean sessionRuntimeEnabled;
     private ExamScoringEngineService examScoringEngineService;
+    private AssessmentIntegrityGuard assessmentIntegrityGuard;
 
     @Autowired(required = false)
     public void setExamScoringEngineService(ExamScoringEngineService examScoringEngineService) {
         this.examScoringEngineService = examScoringEngineService;
+    }
+
+    @Autowired(required = false)
+    public void setAssessmentIntegrityGuard(AssessmentIntegrityGuard assessmentIntegrityGuard) {
+        this.assessmentIntegrityGuard = assessmentIntegrityGuard;
     }
 
     @Autowired
@@ -649,6 +668,28 @@ public class ExamSessionRuntimeService {
         return new ScratchpadAttachResult(false, true, snapshot, savedSession, savedItem, newAsset, clockSync);
     }
 
+    public ExamIntegrityProof obtainIntegrityProof(UUID authenticatedUserId, UUID sessionId) {
+        ensureFeatureEnabled();
+        ExamSession session = loadOwnedSession(authenticatedUserId, sessionId);
+        Instant serverNow = Instant.now(clock);
+        if (assessmentIntegrityGuard == null) {
+            return new ExamIntegrityProof(
+                    "exam-integrity-proof-response-v1",
+                    session.id(),
+                    session.userId(),
+                    ExamIntegrityCanonicalizer.PROTOCOL_V1,
+                    "exam-k1",
+                    null,
+                    serverNow,
+                    session.graceDeadlineAt(),
+                    false,
+                    0,
+                    false
+            );
+        }
+        return assessmentIntegrityGuard.issueSessionProof(authenticatedUserId, session, serverNow);
+    }
+
     @Transactional(noRollbackFor = ApiProblemException.class)
     public SubmitSessionResult submitSession(
             UUID authenticatedUserId,
@@ -663,7 +704,7 @@ public class ExamSessionRuntimeService {
 
         ExamSession session = loadOwnedSession(authenticatedUserId, sessionId);
         String normalizedReason = normalizeSubmissionReason(command.submissionReason());
-        String payloadHash = computeSubmitPayloadHash(normalizedReason);
+        String payloadHash = computeSubmitPayloadHash(normalizedReason, command);
 
         Optional<IdempotencyRecord> existingIdemp =
                 examSessionRepository.findIdempotencyRecord(sessionId, "SESSION_SUBMIT", cleanKey);
@@ -675,7 +716,7 @@ public class ExamSessionRuntimeService {
                         ApiErrorCode.EXAM_SESSION_IDEMPOTENCY_CONFLICT,
                         "Idempotency-Key '" + cleanKey + "' conflicts with an earlier submission request",
                         false,
-                        "Reuse the same submission reason when retrying submit."
+                        "Reuse the same submission reason and canonical intent when retrying submit."
                 );
             }
             Map<String, Object> cached = readMap(record.responseSnapshotJson());
@@ -708,6 +749,19 @@ public class ExamSessionRuntimeService {
         }
 
         Instant serverNow = Instant.now(clock);
+        if (assessmentIntegrityGuard != null) {
+            assessmentIntegrityGuard.verifySubmission(
+                    session,
+                    cleanKey,
+                    normalizedReason,
+                    command.clientTimestamp(),
+                    command.submissionSignature(),
+                    command.integrityKeyId(),
+                    command.submissionNonce(),
+                    command.integrityProtocolVersion(),
+                    serverNow
+            );
+        }
         long skewMs = ExamClockPolicy.computeClientClockSkewMs(serverNow, command.clientTimestamp());
         recordClockSkewIfAnomalous(skewMs);
 
@@ -1072,8 +1126,26 @@ public class ExamSessionRuntimeService {
         return sha256Hex(canonical);
     }
 
-    private String computeSubmitPayloadHash(String submissionReason) {
+    private String computeSubmitPayloadHash(String submissionReason, SubmitSessionCommand cmd) {
+        if (assessmentIntegrityGuard != null && assessmentIntegrityGuard.isIntegrityGuardEnabled()) {
+            String ts = cmd.clientTimestamp() == null
+                    ? ""
+                    : ExamIntegrityCanonicalizer.formatCanonicalInstant(cmd.clientTimestamp());
+            String canonical = String.join("|",
+                    "SUBMIT_SIGNED_V1",
+                    submissionReason,
+                    ts,
+                    safeTrimOrEmpty(cmd.integrityKeyId()),
+                    safeTrimOrEmpty(cmd.submissionNonce()),
+                    safeTrimOrEmpty(cmd.submissionSignature())
+            );
+            return sha256Hex(canonical);
+        }
         return sha256Hex("SUBMIT|" + submissionReason);
+    }
+
+    private static String safeTrimOrEmpty(String s) {
+        return s == null ? "" : s.trim();
     }
 
     private static String sha256Hex(String input) {

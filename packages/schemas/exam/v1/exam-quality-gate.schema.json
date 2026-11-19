@@ -1,0 +1,472 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/exam/v1/exam-quality-gate.schema.json",
+  "title": "exam-quality-gate",
+  "description": "Read-only fail-closed Phase 09 Exit Gate certification contract (INV-EXAM-006 / CNT-LOS-10 / CNT-LOS-11).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "phase",
+    "gateStatus",
+    "phase9ExitAuthorized",
+    "sourceCommitSha",
+    "evidenceRunId",
+    "generatedAt",
+    "checks",
+    "trainingEligible",
+    "llmTokensUsed",
+    "inferenceCostUsd"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "exam-quality-gate-v1"
+    },
+    "phase": {
+      "const": "PHASE_09"
+    },
+    "gateStatus": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "FAIL",
+        "BLOCKED"
+      ]
+    },
+    "phase9ExitAuthorized": {
+      "type": "boolean"
+    },
+    "sourceCommitSha": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{7,40}$"
+    },
+    "evidenceRunId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 4,
+      "maxLength": 128
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "checks": {
+      "$ref": "#/$defs/QualityGateChecks"
+    },
+    "trainingEligible": {
+      "const": false
+    },
+    "llmTokensUsed": {
+      "const": 0
+    },
+    "inferenceCostUsd": {
+      "const": 0
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "gateStatus": {
+            "const": "PASS"
+          }
+        },
+        "required": [
+          "gateStatus"
+        ]
+      },
+      "then": {
+        "properties": {
+          "sourceCommitSha": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{7,40}$"
+          },
+          "evidenceRunId": {
+            "type": "string",
+            "minLength": 4,
+            "maxLength": 128
+          },
+          "checks": {
+            "properties": {
+              "flywayV054ToV064": {
+                "properties": {
+                  "status": {
+                    "const": "PASS"
+                  },
+                  "evidence": {
+                    "const": "VERIFIED"
+                  },
+                  "verifiedMinVersion": {
+                    "const": "054"
+                  },
+                  "verifiedMaxVersion": {
+                    "const": "064"
+                  },
+                  "missingVersions": {
+                    "maxItems": 0
+                  }
+                }
+              },
+              "cntLos10P95": {
+                "properties": {
+                  "status": {
+                    "const": "PASS"
+                  },
+                  "p95Ms": {
+                    "type": "number",
+                    "minimum": 0,
+                    "exclusiveMaximum": 350
+                  },
+                  "sampleCount": {
+                    "type": "integer",
+                    "minimum": 200
+                  },
+                  "measurementSource": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  }
+                }
+              },
+              "cntLos11P95": {
+                "properties": {
+                  "status": {
+                    "const": "PASS"
+                  },
+                  "p95Ms": {
+                    "type": "number",
+                    "minimum": 0,
+                    "exclusiveMaximum": 350
+                  },
+                  "sampleCount": {
+                    "type": "integer",
+                    "minimum": 200
+                  },
+                  "measurementSource": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  }
+                }
+              },
+              "criticalDefects": {
+                "properties": {
+                  "status": {
+                    "const": "PASS"
+                  },
+                  "openP0Count": {
+                    "const": 0
+                  },
+                  "openP1Count": {
+                    "const": 0
+                  },
+                  "ledgerSource": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  }
+                }
+              },
+              "securityAndReplay": {
+                "properties": {
+                  "status": {
+                    "const": "PASS"
+                  },
+                  "evidence": {
+                    "const": "VERIFIED"
+                  }
+                }
+              },
+              "accessibilityTrTR": {
+                "properties": {
+                  "status": {
+                    "const": "PASS"
+                  },
+                  "evidence": {
+                    "const": "VERIFIED"
+                  },
+                  "verifiedFormulaCount": {
+                    "type": "integer",
+                    "minimum": 50
+                  }
+                }
+              },
+              "offlineRecovery": {
+                "properties": {
+                  "status": {
+                    "const": "PASS"
+                  },
+                  "evidence": {
+                    "const": "VERIFIED"
+                  }
+                }
+              },
+              "privacyLifecycle": {
+                "properties": {
+                  "status": {
+                    "const": "PASS"
+                  },
+                  "evidence": {
+                    "const": "VERIFIED"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "phase9ExitAuthorized": {
+            "const": true
+          }
+        },
+        "required": [
+          "phase9ExitAuthorized"
+        ]
+      },
+      "then": {
+        "properties": {
+          "gateStatus": {
+            "const": "PASS"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "QualityGateChecks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "flywayV054ToV064",
+        "cntLos10P95",
+        "cntLos11P95",
+        "criticalDefects",
+        "securityAndReplay",
+        "accessibilityTrTR",
+        "offlineRecovery",
+        "privacyLifecycle"
+      ],
+      "properties": {
+        "flywayV054ToV064": {
+          "$ref": "#/$defs/FlywayChainCheck"
+        },
+        "cntLos10P95": {
+          "$ref": "#/$defs/LatencySlaCheck"
+        },
+        "cntLos11P95": {
+          "$ref": "#/$defs/LatencySlaCheck"
+        },
+        "criticalDefects": {
+          "$ref": "#/$defs/CriticalDefectsCheck"
+        },
+        "securityAndReplay": {
+          "$ref": "#/$defs/EvidenceGateCheck"
+        },
+        "accessibilityTrTR": {
+          "$ref": "#/$defs/EvidenceGateCheck"
+        },
+        "offlineRecovery": {
+          "$ref": "#/$defs/EvidenceGateCheck"
+        },
+        "privacyLifecycle": {
+          "$ref": "#/$defs/EvidenceGateCheck"
+        }
+      }
+    },
+    "FlywayChainCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "evidence",
+        "verifiedMinVersion",
+        "verifiedMaxVersion",
+        "missingVersions"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "PASS",
+            "FAIL",
+            "BLOCKED"
+          ]
+        },
+        "evidence": {
+          "type": "string",
+          "enum": [
+            "VERIFIED",
+            "MISSING",
+            "INCOMPLETE",
+            "FAILED"
+          ]
+        },
+        "verifiedMinVersion": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9]{3}$"
+        },
+        "verifiedMaxVersion": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9]{3}$"
+        },
+        "missingVersions": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "string",
+            "pattern": "^[0-9]{3}$"
+          }
+        }
+      }
+    },
+    "LatencySlaCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "p95Ms",
+        "sampleCount",
+        "thresholdMs",
+        "measurementSource"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "PASS",
+            "FAIL",
+            "BLOCKED"
+          ]
+        },
+        "p95Ms": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 60000
+        },
+        "sampleCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000000
+        },
+        "thresholdMs": {
+          "const": 350.0
+        },
+        "measurementSource": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 128
+        }
+      }
+    },
+    "CriticalDefectsCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "openP0Count",
+        "openP1Count",
+        "ledgerSource"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "PASS",
+            "FAIL",
+            "BLOCKED"
+          ]
+        },
+        "openP0Count": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "openP1Count": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "ledgerSource": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 128
+        }
+      }
+    },
+    "EvidenceGateCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "evidence",
+        "verifiedFormulaCount",
+        "detail"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "PASS",
+            "FAIL",
+            "BLOCKED"
+          ]
+        },
+        "evidence": {
+          "type": "string",
+          "enum": [
+            "VERIFIED",
+            "MISSING",
+            "INCOMPLETE",
+            "FAILED",
+            "STALE_SHA"
+          ]
+        },
+        "verifiedFormulaCount": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "detail": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 256
+        }
+      }
+    }
+  }
+}

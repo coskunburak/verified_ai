@@ -400,22 +400,24 @@ Hardens the entire exam engine against accidental data loss, timer tampering, ne
 - `Sprints 9.1–9.6`, `9.6B (V060)`, `9.7 (V061)`, `9.8 (V062)`, and `9.9 (V063)` accepted (`LOCAL_ACCEPTANCE_PASSED`).
 
 ## 4. Domain Invariants & Integrity Rules
-1. **Cryptographic Submission Integrity (`INV-EXAM-006`):** Final answer packets are signed with `HMAC-SHA256` using the user's ephemeral session token and server timestamp, preventing packet tampering, replay attacks, or intercepted option alterations.
-2. **Universal Spoken Math Accessibility (`ADR-010`):** Every mathematical formula in exam questions (`V060` Turkish TYT/AYT included) must render with native Dynamic Type (`xSmall` to `AX3`) and emit correct semantic VoiceOver speech strings in `tr-TR` (e.g., $\int_0^1 x^2 \, dx$ spoken as *"sıfırdan bire x kare d x integrali"*).
-3. **Phase 9 Exit Gate Certification:** Formally validates that `CNT-LOS-10` (Exam Sessions) and `CNT-LOS-11` (Readiness Projection) execute with $< 350\text{ms}$ SLA, zero P0/P1 defects, and full database migration integrity (`V054`–`V064`).
+1. **Cryptographic Submission Integrity (`INV-EXAM-006`):** Final submission packets are signed with `HMAC-SHA256` (`exam-submit-hmac-v1`) using an HKDF-SHA256 session-scoped proof key tied to authenticated owner, `sessionId`, `startedAt`, UTC millisecond `clientTimestamp`, `Idempotency-Key`, single-use `submissionNonce`, and canonical submit body digest. Trust boundary: symmetric proof keys protect transit/session/replay binding across authenticated endpoints, whereas server-authoritative deadlines (`serverDeadlineAt`, `graceDeadlineAt`) and server autosave persistence remain the authoritative source against client tampering.
+2. **Universal Spoken Math Accessibility (`ADR-010`):** Every mathematical formula in exam stems/options (`V060` Turkish TYT/AYT expressions included) scales with Dynamic Type (`xSmall` to `AX3`) and emits semantic VoiceOver speech strings in `tr-TR` via presentation-side bounded formatting (`SpokenMathTurkishAccessibilityFormatter.swift`, e.g., $\int_0^1 x^2 \, dx$ spoken as *"sıfırdan bire x kare d x integrali"*).
+3. **Phase 9 Exit Gate Certification:** Formally validates that `CNT-LOS-10` (Exam Sessions) and `CNT-LOS-11` (Readiness Projection) execute with `< 350ms` P95 SLA over verified owner staging evidence (`>= 200` warmed samples per endpoint), zero P0/P1 defects, and full PostgreSQL/Flyway migration integrity (`V054`–`V064`).
 
 ## 5. Owning Spring Modulith Backend Modules & Classes
-- `com.verifiedai.exam`: `AssessmentIntegrityGuard.java`, `ExamQualityGateService.java`, `AdminExamQualityGateController.java`.
+- `com.verifiedai.exam`: `ExamIntegrityCanonicalizer.java`, `AssessmentIntegrityGuard.java`, `ExamQualityGateService.java`, `ExamIntegrityAuditRepository.java`, `ExamSessionRuntimeController.java`, `AdminExamQualityGateController.java` (kept inside `com.verifiedai.exam.api` to respect Spring Modulith boundaries).
 
 ## 6. Python Math Verifier Impact
-- Validates that mathematical LaTeX representations render semantic spoken speech tokens without loss.
+- Presentation-side semantic accessibility validation only; `services/math-verifier/` Python code and verification logic remain unchanged. Deterministic Swift formatter + 50 golden LaTeX-to-`tr-TR` fixtures verify lossless spoken speech tokens without runtime AI calls.
 
-## 7. Database Migration & Persistence Contract (`PLANNED V064`)
+## 7. Database Migration & Persistence Contract (`V064`)
 - **Migration File:** `services/api/src/main/resources/db/migration/platform/V064__sprint_9_10_exam_integrity_audit_logs.sql`
-- **Tables:** `exam_integrity_audit_logs` (`id`, `session_id`, `user_id`, `event_type`, `signature_verified`, `client_clock_skew_ms`, `payload_sha256`, `training_eligible = FALSE`, `created_at`).
+- **Tables:** `exam_integrity_audit_logs` (`id`, `session_id`, `user_id`, `event_type`, `signature_verified`, `client_clock_skew_ms`, `payload_sha256`, `nonce_hash`, `integrity_key_id`, `idempotency_key_hash`, `protocol_version`, `reason_code`, `training_eligible = FALSE`, `created_at`) and `exam_integrity_used_nonces` (`session_id`, `user_id`, `nonce_hash`, `idempotency_key_hash`, `payload_sha256`, `integrity_key_id`, `training_eligible = FALSE`, `consumed_at`, `expires_at`).
 
 ## 8. REST API Contracts
-- `GET /v1/admin/exams/quality-gate` (`exam-quality-v1`).
+- `GET /v1/admin/exams/quality-gate` and `/api/v1/admin/exams/quality-gate` (`ROLE_ADMIN`, `Cache-Control: no-store`, canonical schema `exam-quality-gate-v1`).
+- `GET /v1/exams/sessions/{sessionId}/integrity-proof` and `/api/v1/exams/sessions/{sessionId}/integrity-proof` (`Cache-Control: no-store`, `exam-integrity-proof-response-v1`).
+- `POST /v1/exams/sessions/{sessionId}/submit` and `/api/v1/exams/sessions/{sessionId}/submit` extended additively with optional `submissionSignature`, `integrityKeyId`, `submissionNonce`, `integrityProtocolVersion` (`exam-session-submit-request.schema.json`).
 
 ## 9. iOS (`apps/ios/VerifiedAI/`) & Future Android Scope
 - Full VoiceOver accessibility certification and network failure injection tests in `Features/Exam/`.
@@ -436,7 +438,8 @@ Hardens the entire exam engine against accidental data loss, timer tampering, ne
 - Security penetration tests attempting timer rollbacks and replay attacks; VoiceOver snapshot tests for 50 complex formulas.
 
 ## 15. Owner-Only Acceptance Command
-- `bash scripts/quality/sprint_9_10_owner_acceptance.sh --full`
+- `bash scripts/quality/sprint_9_10_owner_acceptance.sh --VerifyHost` (`--verify-host` and `--full` aliases supported).
+- Current implementation tracking: `SOURCE_IMPLEMENTED_PENDING_OWNER_ACCEPTANCE` ([execution report](SPRINT_9.10_EXECUTION_REPORT.md), [acceptance matrix](SPRINT_9.10_ACCEPTANCE_MATRIX.md), [implementation map](SPRINT_9.10_IMPLEMENTATION_MAP.md)).
 
 ## 16. Explicit Non-Goals
 - Does not install invasive proctoring software or webcam-monitoring spyware.

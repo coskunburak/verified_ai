@@ -25,6 +25,10 @@ public struct ExamSessionView: View {
                     graceBufferBanner
                 }
 
+                if viewModel.pendingSubmitIntent != nil {
+                    pendingSubmitBanner
+                }
+
                 if viewModel.clockSkewAnomaly {
                     clockSkewBanner
                 }
@@ -51,6 +55,7 @@ public struct ExamSessionView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .background(ColorTokens.surfaceElevated)
                         .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .accessibilityIdentifier("exam.session.errorBanner")
                 } else if let errorMessage = viewModel.errorMessage {
                     Text(errorMessage)
                         .font(.callout.weight(.medium))
@@ -59,6 +64,7 @@ public struct ExamSessionView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .background(ColorTokens.surfaceElevated)
                         .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .accessibilityIdentifier("exam.session.errorBanner")
                 }
             }
             .padding(16)
@@ -207,6 +213,27 @@ public struct ExamSessionView: View {
         .accessibilityIdentifier("exam.session.graceBufferBanner")
     }
 
+    private var pendingSubmitBanner: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "arrow.triangle.2.circlepath")
+                .foregroundStyle(ColorTokens.action)
+            Text(LocalizedStringKey("exam.integrity.status.pending_submit_recovery"))
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(ColorTokens.textPrimary)
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer()
+        }
+        .padding(12)
+        .background(ColorTokens.actionSoft)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(ColorTokens.action, lineWidth: 1)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("exam.session.pendingSubmitBanner")
+    }
+
     private var clockSkewBanner: some View {
         HStack(spacing: 8) {
             Image(systemName: "deskclock")
@@ -318,6 +345,7 @@ public struct ExamSessionView: View {
                 .multilineTextAlignment(.leading)
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .accessibilityLabel(Text(verbatim: SpokenMathTurkishAccessibilityFormatter.formatMarkdown(item.stemMarkdown)))
                 .accessibilityIdentifier("exam.session.questionStemCard")
 
             if let alt = item.figureAltText, !alt.isEmpty {
@@ -370,6 +398,17 @@ public struct ExamSessionView: View {
                                 .clipShape(RoundedRectangle(cornerRadius: 10))
                             }
                             .buttonStyle(.plain)
+                            .accessibilityLabel(
+                                Text(
+                                    verbatim: SpokenMathTurkishAccessibilityFormatter.formatOption(
+                                        key: option.optionKey,
+                                        contentMarkdown: option.contentMarkdown,
+                                        contentLatex: option.contentLatex,
+                                        isSelected: isSelected,
+                                        isEliminated: isEliminated
+                                    )
+                                )
+                            )
                             .accessibilityIdentifier("exam.session.optionRow.\(option.optionKey)")
 
                             Button {

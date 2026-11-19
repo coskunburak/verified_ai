@@ -255,3 +255,13 @@ revision and first causal step. An uncertain prefix cannot support a later confi
 user corrections, source-review and incomplete work do not grant mathematical certainty, mastery or training
 eligibility. Generic disproof cannot invent a pedagogical category or canonical skill. Replays publish once;
 future policy versions append history. No paid inference is introduced and creation defaults off.
+
+## Sprint 9.10 exam integrity and accessibility invariants (INV-EXAM-006)
+
+- Server-authoritative deadlines (`serverDeadlineAt`, `graceDeadlineAt`) and server-persisted autosave state remain the authoritative source of assessment truth; symmetric session-scoped proof keys bind transport, ownership, `Idempotency-Key`, nonce, canonical submit body, and timestamp without falsely claiming client-side hardware anti-cheat proof.
+- Session-scoped HKDF-SHA256 proof keys derive from a versioned server master key, `keyId`, `userId`, `sessionId`, and `startedAt`; raw master keys and JWT/refresh tokens never serve as direct HMAC signing keys and fail closed (`503`) if `verifiedai.exam.integrity-guard-enabled` is `true` without valid key configuration.
+- Single-use submission nonces (`(session_id, nonce_hash)`) consume atomically only after constant-time HMAC-SHA256 verification and bounded clock skew validation succeed; invalid signatures record privacy-safe `SIGNATURE_REJECTED` audit rows without consuming nonces or terminating active sessions.
+- Failed/interrupted submit retries preserve the exact original `Idempotency-Key`, canonical timestamp, nonce, and signature across reconnects and relaunches, and scratchpad/outbox drafts are never dropped on offline or transient `5xx` responses.
+- Presentation-side mathematical accessibility transforms inline/display LaTeX in exam stems and options into deterministic `tr-TR` VoiceOver spoken strings across Dynamic Type `xSmall`–`AX3` and fails explicitly on malformed/unknown tokens without invoking LLMs or modifying `services/math-verifier/`.
+- All `exam_integrity_audit_logs` and `exam_integrity_used_nonces` rows enforce `training_eligible = FALSE`, exclude raw student answers/signatures, purge child-first on account deletion, and age out on bounded retention TTL.
+- `GET /v1/admin/exams/quality-gate` is read-only, `ROLE_ADMIN`-restricted, `$0.00` LLM cost, and fail-closed `BLOCKED` unless real owner-run Flyway (`V054`–`V064`), staging latency (`< 350ms` P95 on `CNT-LOS-10` and `CNT-LOS-11`), defect (`P0=0`, `P1=0`), VoiceOver, and privacy evidence are present.

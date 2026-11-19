@@ -184,16 +184,16 @@
   - **Cryptographic Submission Integrity (`INV-EXAM-006`):** Deneme gönderim paketleri (`submit`) sunucu zaman damgası, `sessionId` ve kullanıcı oturum anahtarından türetilen **`HMAC-SHA256`** imzası ile doğrulanır; saat geri alma, replay veya ara paket değiştirme girişimleri reddedilir (`409` / `403`, audit log).
   - **Universal `tr-TR` Spoken Math (`ADR-010`):** `V060` içindeki zor AYT ve TYT yeni nesil matematik ifadelerinin tamamı Dynamic Type (`xSmall`–`AX3`) ile ölçeklenir ve semantik `tr-TR` VoiceOver erişilebilirlik metni üretir (ör. $\int_0^1 x^2\,dx$ -> *"sıfırdan bire x kare d x integrali"*).
   - **Phase 9 Çıkış Kapısı Sertifikasyonu:** `CNT-LOS-10` ve `CNT-LOS-11` uç noktalarının $< 350\text{ms}$ P95 SLA, sıfır P0/P1 hata, tam `V054`–`V064` Flyway zinciri ve tam `ExamPrivacyLifecycleContributor` silme sıralaması doğrulaması.
-- **Veritabanı (`V064__sprint_9_10_exam_integrity_audit_logs.sql`):**
-  - `exam_integrity_audit_logs` (`id`, `session_id`, `user_id`, `event_type`, `signature_verified`, `client_clock_skew_ms`, `payload_sha256`, `training_eligible = FALSE`, `created_at`).
-- **API & Kontratlar:**
-  - `ExamSessionRuntimeController` gönderim imza doğrulama başlığı/alanı (`submissionSignature`, geriye uyumlu feature-flag kontrollü).
-  - `GET /v1/admin/exams/quality-gate` (`ROLE_ADMIN`, `exam-quality-gate-v1`).
-  - Feature Flag: `verifiedai.exam.integrity-guard-enabled: ${VERIFIEDAI_EXAM_INTEGRITY_GUARD_ENABLED:false}`
-- **iOS (`Concept B`):**
-  - `SpokenMathTurkishAccessibilityFormatter.swift` (deterministik LaTeX -> `tr-TR` VoiceOver metin dönüştürücü + 50 karmaşık formül snapshot/birim testi).
-  - Ağ kesintisi / timeout hata enjeksiyonlu `ExamSessionRuntime` kurtarma doğrulaması.
-- **Çıkış Kapısı:** `bash scripts/quality/sprint_9_10_owner_acceptance.sh --VerifyHost` -> **Phase 9 Exit Gate PASSED** -> **Phase 10 (`Sprint 10.1` Paywall & Entitlement)** açılır.
+  - **Veritabanı (`V064__sprint_9_10_exam_integrity_audit_logs.sql`):**
+    - `exam_integrity_audit_logs` (`id`, `session_id`, `user_id`, `event_type`, `signature_verified`, `client_clock_skew_ms`, `payload_sha256`, `nonce_hash`, `integrity_key_id`, `idempotency_key_hash`, `protocol_version`, `reason_code`, `training_eligible = FALSE`, `created_at`) ve tekil replay koruması için `exam_integrity_used_nonces`.
+  - **API & Kontratlar:**
+    - `ExamSessionRuntimeController` gönderim imza doğrulama alanları (`submissionSignature`, `integrityKeyId`, `submissionNonce`, `integrityProtocolVersion` — geriye uyumlu feature-flag kontrollü) + `GET /v1/exams/sessions/{sessionId}/integrity-proof` (`Cache-Control: no-store`).
+    - `GET /v1/admin/exams/quality-gate` ve `/api/v1/admin/exams/quality-gate` (`com.verifiedai.exam.api.AdminExamQualityGateController`, `ROLE_ADMIN`, `exam-quality-gate-v1`, salt-okunur fail-closed).
+    - Feature Flag: `verifiedai.exam.integrity-guard-enabled: ${VERIFIEDAI_EXAM_INTEGRITY_GUARD_ENABLED:false}`.
+  - **iOS (`Concept B`):**
+    - `SpokenMathTurkishAccessibilityFormatter.swift` (deterministik bounded LaTeX -> `tr-TR` VoiceOver metin dönüştürücü + 50 karmaşık formül test seti + `ExamSessionView` stem/şık VoiceOver entegrasyonu).
+    - `ExamPendingSubmitIntent` kalıcı gönderim durumu, Keychain proof key izolasyonu (`KeychainExamProofKeyStore`), Application Support kalıcı SQLite depolaması ve ağ/timeout kurtarma doğrulaması.
+  - **Durum ve Çıkış Kapısı:** `SOURCE_IMPLEMENTED_PENDING_OWNER_ACCEPTANCE` (`NOT_RUN_OWNER_REQUIRED`). `bash scripts/quality/sprint_9_10_owner_acceptance.sh --VerifyHost` çıktıları, staging `< 350ms` P95 SLA kanıtı ve gerçek cihaz VoiceOver sertifikası owner tarafından tamamlanana kadar Phase 9 çıkışı `BLOCKED` kalır ve **Phase 10 açılmaz**.
 
 ---
 

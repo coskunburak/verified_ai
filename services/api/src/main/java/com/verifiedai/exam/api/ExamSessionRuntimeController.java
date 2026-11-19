@@ -1,6 +1,7 @@
 package com.verifiedai.exam.api;
 
 import com.verifiedai.exam.application.ActiveExamNoHintGuard.HintGuardResult;
+import com.verifiedai.exam.application.AssessmentIntegrityGuard.ExamIntegrityProof;
 import com.verifiedai.exam.application.ExamSessionRuntimeService;
 import com.verifiedai.exam.application.ExamSessionRuntimeService.AttachScratchpadCommand;
 import com.verifiedai.exam.application.ExamSessionRuntimeService.AutosaveItemCommand;
@@ -34,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -226,7 +228,33 @@ public class ExamSessionRuntimeController {
     public record ExamSessionSubmitRequestDto(
             String submissionReason,
             Instant clientTimestamp,
-            Boolean trainingEligible
+            Boolean trainingEligible,
+            String submissionSignature,
+            String integrityKeyId,
+            String submissionNonce,
+            String integrityProtocolVersion
+    ) {
+        public ExamSessionSubmitRequestDto(
+                String submissionReason,
+                Instant clientTimestamp,
+                Boolean trainingEligible
+        ) {
+            this(submissionReason, clientTimestamp, trainingEligible, null, null, null, null);
+        }
+    }
+
+    public record ExamIntegrityProofResponseDto(
+            String schemaVersion,
+            UUID sessionId,
+            UUID userId,
+            String integrityProtocolVersion,
+            String keyId,
+            String sessionProofKeyHex,
+            Instant issuedAt,
+            Instant expiresAt,
+            boolean integrityGuardEnabled,
+            int llmTokensUsed,
+            boolean trainingEligible
     ) {
     }
 
@@ -368,6 +396,32 @@ public class ExamSessionRuntimeController {
                 .body(toScratchpadUploadResponse(result.session(), result.item(), result.asset(), result.clockSync()));
     }
 
+    @GetMapping("/{sessionId}/integrity-proof")
+    public ResponseEntity<ExamIntegrityProofResponseDto> getSessionIntegrityProof(
+            @PathVariable("sessionId") UUID sessionId,
+            @AuthenticationPrincipal Jwt jwt,
+            Authentication authentication,
+            @RequestHeader(value = "X-User-Id", required = false) String requestedUserIdHeader
+    ) {
+        UUID authenticatedUserId = resolveAuthenticatedUserId(jwt, authentication, requestedUserIdHeader);
+        ExamIntegrityProof proof = runtimeService.obtainIntegrityProof(authenticatedUserId, sessionId);
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.noStore())
+                .body(new ExamIntegrityProofResponseDto(
+                        proof.schemaVersion(),
+                        proof.sessionId(),
+                        proof.userId(),
+                        proof.integrityProtocolVersion(),
+                        proof.keyId(),
+                        proof.sessionProofKeyHex(),
+                        proof.issuedAt(),
+                        proof.expiresAt(),
+                        proof.integrityGuardEnabled(),
+                        proof.llmTokensUsed(),
+                        proof.trainingEligible()
+                ));
+    }
+
     @PostMapping("/{sessionId}/submit")
     public ResponseEntity<Object> submitSession(
             @PathVariable("sessionId") UUID sessionId,
@@ -381,12 +435,24 @@ public class ExamSessionRuntimeController {
         String reason = request != null ? request.submissionReason() : "USER_INITIATED";
         Instant clientTimestamp = request != null ? request.clientTimestamp() : null;
         Boolean trainingEligible = request != null ? request.trainingEligible() : Boolean.FALSE;
+        String submissionSignature = request != null ? request.submissionSignature() : null;
+        String integrityKeyId = request != null ? request.integrityKeyId() : null;
+        String submissionNonce = request != null ? request.submissionNonce() : null;
+        String integrityProtocolVersion = request != null ? request.integrityProtocolVersion() : null;
 
         SubmitSessionResult result = runtimeService.submitSession(
                 authenticatedUserId,
                 sessionId,
                 idempotencyKey,
-                new SubmitSessionCommand(reason, clientTimestamp, trainingEligible)
+                new SubmitSessionCommand(
+                        reason,
+                        clientTimestamp,
+                        trainingEligible,
+                        submissionSignature,
+                        integrityKeyId,
+                        submissionNonce,
+                        integrityProtocolVersion
+                )
         );
         if (result.idempotentReplay() && result.cachedResponse() != null) {
             return ResponseEntity.ok(result.cachedResponse());
@@ -419,7 +485,9 @@ public class ExamSessionRuntimeController {
                 CorrelationIds.current(),
                 ex.details()
         );
-        return ResponseEntity.status(ex.status()).body(body);
+        return ResponseEntity.status(ex.status())
+                .cacheControl(CacheControl.noStore())
+                .body(body);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

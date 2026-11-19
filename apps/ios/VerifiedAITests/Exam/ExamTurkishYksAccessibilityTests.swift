@@ -121,4 +121,103 @@ final class ExamTurkishYksAccessibilityTests: XCTestCase {
         XCTAssertGreaterThan(fittingSize.height, 0)
         XCTAssertLessThanOrEqual(fittingSize.width, 390.5)
     }
+
+    func testExamSessionRendersAt320ptAndDynamicTypeXSmallThroughAX3WithSpokenTurkishMath() async throws {
+        let userA = UUID(uuidString: "96000000-0000-4000-8000-000000000a01")!
+        let assemblyId = UUID(uuidString: "94100000-0000-0000-8000-000000000202")!
+        let sessionId = UUID(uuidString: "95000000-0000-4000-8000-000000000202")!
+        let blueprintId = UUID(uuidString: "94000000-0000-0000-8000-000000000202")!
+        let questionId = UUID(uuidString: "93000000-0000-4000-8000-000000000002")!
+
+        let stemWithIntegral = "Gerçel sayılar kümesinde $\\int_0^1 x^2\\,dx$ değerini bulunuz."
+        let spokenStem = SpokenMathTurkishAccessibilityFormatter.formatMarkdown(stemWithIntegral)
+        XCTAssertTrue(spokenStem.contains("sıfırdan bire x kare d x integrali"))
+        XCTAssertFalse(spokenStem.contains("\\int"))
+
+        let optionSpoken = SpokenMathTurkishAccessibilityFormatter.formatOption(
+            key: "A",
+            contentMarkdown: "$\\frac{1}{3}$",
+            contentLatex: "\\frac{1}{3}",
+            isSelected: true,
+            isEliminated: false
+        )
+        XCTAssertEqual(optionSpoken, "A şıkkı, 1 bölü 3, seçili")
+
+        let item = ExamSessionItemDTO(
+            id: UUID(),
+            itemPosition: 1,
+            questionItemId: questionId,
+            questionCode: "AYT-TR-2026-INT-001",
+            sectionCode: "AYT_MATH",
+            sectionOrder: 1,
+            topicCode: "MATH.CALCULUS.INTEGRAL",
+            itemFormat: "SINGLE_CHOICE_MCQ",
+            difficultyBand: .hard,
+            stemMarkdown: stemWithIntegral,
+            optionsSnapshot: [
+                AssembledQuestionOptionDTO(optionKey: "A", displayOrder: 1, contentMarkdown: "$\\frac{1}{3}$", contentLatex: "\\frac{1}{3}"),
+                AssembledQuestionOptionDTO(optionKey: "B", displayOrder: 2, contentMarkdown: "$\\frac{1}{2}$", contentLatex: "\\frac{1}{2}"),
+                AssembledQuestionOptionDTO(optionKey: "C", displayOrder: 3, contentMarkdown: "$1$", contentLatex: "1"),
+                AssembledQuestionOptionDTO(optionKey: "D", displayOrder: 4, contentMarkdown: "$2$", contentLatex: "2"),
+                AssembledQuestionOptionDTO(optionKey: "E", displayOrder: 5, contentMarkdown: "$3$", contentLatex: "3")
+            ],
+            figureAltText: "Parabol altında kalan sıfır ile bir aralığındaki bölge",
+            maxPoints: 1.0,
+            negativeMarkingWeight: 0.25,
+            responseState: .answered,
+            selectedOptionKey: "A",
+            trainingEligible: false
+        )
+
+        let session = ExamSessionDTO(
+            sessionId: sessionId,
+            userId: userA,
+            assemblyId: assemblyId,
+            blueprintId: blueprintId,
+            examCode: "TR_YKS_AYT_MATH",
+            examVersionNumber: 1,
+            status: .inProgress,
+            navigationPolicy: "FREE_JUMP",
+            noHintPolicyEnforced: true,
+            accommodationsSnapshot: AppliedAccommodationSnapshotDTO(extraTimeMultiplier: 1.0, highContrastMode: true, screenReaderOptimized: true),
+            baseDurationSeconds: 1800,
+            extraTimeMultiplier: 1.0,
+            effectiveDurationSeconds: 1800,
+            offlineGraceBufferSeconds: 120,
+            startedAt: "2026-11-18T10:00:00Z",
+            serverDeadlineAt: "2026-11-18T10:30:00Z",
+            graceDeadlineAt: "2026-11-18T10:32:00Z",
+            lastHeartbeatAt: "2026-11-18T10:00:00Z",
+            totalItemCount: 1,
+            answeredItemCount: 1,
+            flaggedItemCount: 0,
+            omittedItemCount: 0,
+            scratchpadAttachmentCount: 0,
+            clockSync: ExamServerClockSyncDTO(serverNow: "2026-11-18T10:00:00Z", remainingSeconds: 1800, graceRemainingSeconds: 1920),
+            sectionProgress: [],
+            items: [item],
+            llmTokensUsed: 0,
+            trainingEligible: false
+        )
+
+        let vm = ExamSessionViewModel(
+            apiService: FixtureExamAPIService(),
+            offlineStore: ExamOfflineSQLiteStore(inMemory: true),
+            assemblyId: assemblyId,
+            userId: userA,
+            initialSession: session,
+            proofKeyStore: InMemoryExamProofKeyStore()
+        )
+
+        for category in [ContentSizeCategory.extraSmall, .large, .accessibilityExtraExtraExtraLarge] {
+            let narrowView = ExamSessionView(viewModel: vm)
+                .environment(\.sizeCategory, category)
+            let host = UIHostingController(rootView: narrowView)
+            host.view.frame = CGRect(x: 0, y: 0, width: 320, height: 568)
+            host.view.layoutIfNeeded()
+            let fit = host.sizeThatFits(in: CGSize(width: 320, height: CGFloat.greatestFiniteMagnitude))
+            XCTAssertGreaterThan(fit.height, 250)
+            XCTAssertLessThanOrEqual(fit.width, 320.5)
+        }
+    }
 }

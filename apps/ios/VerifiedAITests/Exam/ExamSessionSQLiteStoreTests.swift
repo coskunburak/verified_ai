@@ -118,6 +118,54 @@ final class ExamSessionSQLiteStoreTests: XCTestCase {
         XCTAssertEqual(preservedSessionB?.sessionId, sessionB.sessionId)
         XCTAssertEqual(preservedOutboxB.count, 1)
         XCTAssertEqual(preservedDraftsB.count, 1)
+
+        // Durable PendingSubmitIntent CRUD, multi-user isolation, and purge wipe
+        let intentA = ExamPendingSubmitIntent(
+            userId: userA,
+            sessionId: sessionA.sessionId,
+            assemblyId: assemblyA,
+            originalIdempotencyKey: "submit-a-1",
+            submissionReason: .userInitiated,
+            immutableCanonicalBody: "{\"clientTimestamp\":\"2026-11-18T10:15:00.000Z\",\"submissionReason\":\"USER_INITIATED\",\"trainingEligible\":false}",
+            canonicalTimestamp: "2026-11-18T10:15:00.000Z",
+            nonce: "nonce_sqlite_a_000001",
+            keyId: "exam-k1",
+            signature: String(repeating: "a", count: 64),
+            createdAt: "2026-11-18T10:15:00.000Z",
+            lastAttemptAt: "2026-11-18T10:15:00.000Z",
+            retryCount: 0,
+            state: .inFlight
+        )
+        let intentB = ExamPendingSubmitIntent(
+            userId: userB,
+            sessionId: sessionB.sessionId,
+            assemblyId: assemblyB,
+            originalIdempotencyKey: "submit-b-1",
+            submissionReason: .userInitiated,
+            immutableCanonicalBody: "{\"clientTimestamp\":\"2026-11-18T10:15:00.000Z\",\"submissionReason\":\"USER_INITIATED\",\"trainingEligible\":false}",
+            canonicalTimestamp: "2026-11-18T10:15:00.000Z",
+            nonce: "nonce_sqlite_b_000001",
+            keyId: "exam-k1",
+            signature: String(repeating: "b", count: 64),
+            createdAt: "2026-11-18T10:15:00.000Z",
+            lastAttemptAt: "2026-11-18T10:15:00.000Z",
+            retryCount: 0,
+            state: .retryableFailure
+        )
+        await store.savePendingSubmitIntent(intentA)
+        await store.savePendingSubmitIntent(intentB)
+
+        let loadedIntentA = await store.loadPendingSubmitIntent(userId: userA, sessionId: sessionA.sessionId)
+        XCTAssertEqual(loadedIntentA, intentA)
+        let crossUserIntent = await store.loadPendingSubmitIntent(userId: userB, sessionId: sessionA.sessionId)
+        XCTAssertNil(crossUserIntent)
+
+        // Purge User A clears A's intent without affecting User B
+        await store.purgeUserData(userId: userA)
+        let afterPurgeA = await store.loadPendingSubmitIntent(userId: userA, sessionId: sessionA.sessionId)
+        XCTAssertNil(afterPurgeA)
+        let afterPurgeB = await store.loadPendingSubmitIntent(userId: userB, sessionId: sessionB.sessionId)
+        XCTAssertEqual(afterPurgeB, intentB)
     }
 
     private func makeSampleSession(sessionId: UUID, userId: UUID, assemblyId: UUID) -> ExamSessionDTO {

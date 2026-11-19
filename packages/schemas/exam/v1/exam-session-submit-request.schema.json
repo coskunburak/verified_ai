@@ -23,6 +23,22 @@
       "type": ["string", "null"],
       "format": "date-time"
     },
+    "submissionSignature": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "integrityKeyId": {
+      "type": ["string", "null"],
+      "pattern": "^[A-Za-z0-9._-]{1,64}$"
+    },
+    "submissionNonce": {
+      "type": ["string", "null"],
+      "pattern": "^[A-Za-z0-9_-]{16,128}$"
+    },
+    "integrityProtocolVersion": {
+      "type": ["string", "null"],
+      "enum": ["exam-submit-hmac-v1", null]
+    },
     "trainingEligible": {
       "type": "boolean",
       "const": false

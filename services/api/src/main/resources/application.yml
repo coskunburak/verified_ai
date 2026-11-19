@@ -312,3 +312,5 @@ verifiedai:
     session-runtime-enabled: ${EXAM_SESSION_RUNTIME_ENABLED:false}
     scoring-engine-enabled: ${VERIFIEDAI_EXAM_SCORING_ENGINE_ENABLED:false}
     readiness-enabled: ${VERIFIEDAI_EXAM_READINESS_ENABLED:false}
+    integrity-guard-enabled: ${VERIFIEDAI_EXAM_INTEGRITY_GUARD_ENABLED:false}
+    quality-gate-evidence-path: ${VERIFIEDAI_EXAM_QUALITY_GATE_EVIDENCE_PATH:}

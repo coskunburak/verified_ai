@@ -2553,6 +2553,12 @@ def run_validation():
         "exam.progress.traps.status.INSUFFICIENT_DATA",
         "exam.progress.traps.status.ZERO_VARIANCE",
         "exam.progress.traps.status.NO_HISTORICAL_ACTIVE_TRAP_DATA",
+        "exam.integrity.error.clock_resync",
+        "exam.integrity.error.proof_expired",
+        "exam.integrity.error.retry_conflict",
+        "exam.integrity.error.signature_required",
+        "exam.integrity.error.verification_needed",
+        "exam.integrity.status.pending_submit_recovery",
     ]
 
     banned_lexicon = re.compile(
@@ -2574,7 +2580,7 @@ def run_validation():
             if key.startswith("studyplan.rebalance.") or key.startswith("micro_lesson.") or key.startswith("study_session."):
                 m = banned_lexicon.search(val)
                 assert not m, f"Stigmatizing lexicon word '{m.group(0)}' in {key}[{lang}]: {val}"
-            elif key.startswith("gamification.") or key.startswith("weekly.") or key.startswith("cold_start.") or key.startswith("exam.candidate.") or key.startswith("exam.syllabus.") or key.startswith("home.candidate_profile.") or key.startswith("exam.assembly.") or key.startswith("exam.session.") or key.startswith("exam.score.") or key.startswith("exam.readiness.") or key.startswith("exam.preExam.") or key.startswith("exam.progress."):
+            elif key.startswith("gamification.") or key.startswith("weekly.") or key.startswith("cold_start.") or key.startswith("exam.candidate.") or key.startswith("exam.syllabus.") or key.startswith("home.candidate_profile.") or key.startswith("exam.assembly.") or key.startswith("exam.session.") or key.startswith("exam.score.") or key.startswith("exam.readiness.") or key.startswith("exam.preExam.") or key.startswith("exam.progress.") or key.startswith("exam.integrity."):
                 m = gamification_banned_lexicon.search(val)
                 assert not m, f"Stigmatizing lexicon word '{m.group(0)}' in {key}[{lang}]: {val}"
 
@@ -2589,3 +2595,5 @@ if __name__ == "__main__":
     validate_9_8()
     from validate_sprint_9_9_contracts import validate as validate_9_9
     validate_9_9()
+    from validate_sprint_9_10_contracts import validate as validate_9_10
+    validate_9_10()

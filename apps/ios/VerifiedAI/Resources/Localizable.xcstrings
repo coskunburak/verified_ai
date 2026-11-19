@@ -10188,6 +10188,108 @@
         }
       }
     },
+    "exam.integrity.error.clock_resync" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Device clock differs from server time. Syncing session clock before retry."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cihaz saati sunucu saatiyle uyumlu değil. Tekrar denemeden önce oturum saati eşitleniyor."
+          }
+        }
+      }
+    },
+    "exam.integrity.error.proof_expired" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Session verification key expired. Refreshing session status."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oturum doğrulama anahtarının süresi doldu. Oturum durumu yenileniyor."
+          }
+        }
+      }
+    },
+    "exam.integrity.error.retry_conflict" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Submission attempt already recorded. Loading current session receipt."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu gönderim isteği daha önce işlendi. Güncel oturum özeti yükleniyor."
+          }
+        }
+      }
+    },
+    "exam.integrity.error.signature_required" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Signed session proof is needed before finalizing this exam."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu sınavı tamamlamak için imzalı oturum doğrulaması gerekiyor."
+          }
+        }
+      }
+    },
+    "exam.integrity.error.verification_needed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Could not verify submission signature. Sync session state and try again."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gönderim imzası doğrulanamadı. Oturum durumunu eşitleyip tekrar dene."
+          }
+        }
+      }
+    },
+    "exam.integrity.status.pending_submit_recovery" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your submission is saved safely on this device and will sync automatically when connected."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gönderimin cihazında güvenle saklandı; bağlantı sağlandığında otomatik olarak eşitlenecek."
+          }
+        }
+      }
+    },
     "exam.readiness.error.feature_disabled" : {
       "extractionState" : "manual",
       "localizations" : {

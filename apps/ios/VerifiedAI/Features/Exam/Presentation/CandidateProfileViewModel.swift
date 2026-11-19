@@ -348,6 +348,18 @@ public final class CandidateProfileViewModel: ObservableObject {
                 errorLocalizationKey = "exam.error.version_conflict"
             case .invalidScratchpadAsset:
                 errorLocalizationKey = "exam.syllabus.error.media_unsupported"
+            case .signatureRequired:
+                errorLocalizationKey = "exam.integrity.error.signature_required"
+            case .integrityFailed:
+                errorLocalizationKey = "exam.integrity.error.verification_needed"
+            case .clockResyncRequired:
+                errorLocalizationKey = "exam.integrity.error.clock_resync"
+            case .retryConflict:
+                errorLocalizationKey = "exam.integrity.error.retry_conflict"
+            case .proofExpired:
+                errorLocalizationKey = "exam.integrity.error.proof_expired"
+            case .integrityConfigUnavailable:
+                errorLocalizationKey = "exam.error.unexpected"
             case .unexpected(let msg):
                 errorMessage = msg
             }

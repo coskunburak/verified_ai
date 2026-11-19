@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "exam-quality-gate-v1",
+  "phase": "PHASE_09",
+  "gateStatus": "BLOCKED",
+  "phase9ExitAuthorized": false,
+  "sourceCommitSha": null,
+  "evidenceRunId": null,
+  "generatedAt": "2026-11-18T16:30:00Z",
+  "checks": {
+    "flywayV054ToV064": {
+      "status": "BLOCKED",
+      "evidence": "MISSING",
+      "verifiedMinVersion": null,
+      "verifiedMaxVersion": null,
+      "missingVersions": ["064"]
+    },
+    "cntLos10P95": {
+      "status": "BLOCKED",
+      "p95Ms": null,
+      "sampleCount": 0,
+      "thresholdMs": 350.0,
+      "measurementSource": null
+    },
+    "cntLos11P95": {
+      "status": "BLOCKED",
+      "p95Ms": null,
+      "sampleCount": 0,
+      "thresholdMs": 350.0,
+      "measurementSource": null
+    },
+    "criticalDefects": {
+      "status": "BLOCKED",
+      "openP0Count": null,
+      "openP1Count": null,
+      "ledgerSource": null
+    },
+    "securityAndReplay": {
+      "status": "BLOCKED",
+      "evidence": "MISSING",
+      "verifiedFormulaCount": null,
+      "detail": null
+    },
+    "accessibilityTrTR": {
+      "status": "BLOCKED",
+      "evidence": "MISSING",
+      "verifiedFormulaCount": null,
+      "detail": null
+    },
+    "offlineRecovery": {
+      "status": "BLOCKED",
+      "evidence": "MISSING",
+      "verifiedFormulaCount": null,
+      "detail": null
+    },
+    "privacyLifecycle": {
+      "status": "BLOCKED",
+      "evidence": "MISSING",
+      "verifiedFormulaCount": null,
+      "detail": null
+    }
+  },
+  "trainingEligible": true,
+  "llmTokensUsed": 10,
+  "inferenceCostUsd": 0.05
+}

@@ -22,6 +22,12 @@ public enum ExamServiceError: Error, Equatable, Sendable {
     case regradeInvalidRequest
     case autosaveVersionConflict
     case invalidScratchpadAsset
+    case signatureRequired
+    case integrityFailed
+    case clockResyncRequired
+    case retryConflict
+    case proofExpired
+    case integrityConfigUnavailable
     case unexpected(String)
 }
 
@@ -98,6 +104,7 @@ public protocol ExamAPIServicing: ExamAttributionServicing {
         idempotencyKey: String,
         request: ExamSessionSubmitRequestDTO
     ) async throws -> ExamSessionSubmitResponseDTO
+    func fetchSessionIntegrityProof(sessionId: UUID) async throws -> ExamIntegrityProofResponseDTO
     func checkNoHintGuard(sessionId: UUID, requestedSurface: String) async throws -> ExamNoHintGuardResponseDTO
     func computeOrGetScoreSummary(sessionId: UUID) async throws -> ExamSessionScoreSummaryResponse
     func fetchScoreSummary(sessionId: UUID) async throws -> ExamSessionScoreSummaryResponse
@@ -122,6 +129,10 @@ public extension ExamAPIServicing {
 
     func fetchAssembledAssessment(userId: UUID, assembledAssessmentId: UUID) async throws -> AssembledAssessmentDTO {
         try await fetchAssembledAssessment(userId: userId, assessmentId: assembledAssessmentId)
+    }
+
+    func fetchSessionIntegrityProof(sessionId: UUID) async throws -> ExamIntegrityProofResponseDTO {
+        throw ExamServiceError.featureDisabled
     }
 }
 
@@ -507,6 +518,22 @@ final class HTTPExamAPIService: ExamAPIServicing, @unchecked Sendable {
         }
     }
 
+    func fetchSessionIntegrityProof(sessionId: UUID) async throws -> ExamIntegrityProofResponseDTO {
+        let endpoint = Endpoint(
+            path: "/v1/exams/sessions/\(sessionId.uuidString.lowercased())/integrity-proof",
+            method: .get
+        )
+        let httpRequest = HTTPRequest<ExamIntegrityProofResponseDTO>(
+            endpoint: endpoint,
+            allowsAuthRefreshRetry: true
+        )
+        do {
+            return try await apiClient.send(httpRequest).body
+        } catch let error as NetworkError {
+            throw mapNetworkError(error)
+        }
+    }
+
     func checkNoHintGuard(sessionId: UUID, requestedSurface: String) async throws -> ExamNoHintGuardResponseDTO {
         let payload = ["requestedSurface": requestedSurface]
         let bodyData = try encoder.encode(payload)
@@ -716,6 +743,15 @@ final class HTTPExamAPIService: ExamAPIServicing, @unchecked Sendable {
         switch error {
         case .server(let problem):
             if problem.code == "FEATURE_DISABLED" { return .featureDisabled }
+            if problem.code == "EXAM_INTEGRITY_SIGNATURE_REQUIRED" { return .signatureRequired }
+            if problem.code == "EXAM_INTEGRITY_SIGNATURE_INVALID"
+                || problem.code == "EXAM_INTEGRITY_PAYLOAD_INVALID" {
+                return .integrityFailed
+            }
+            if problem.code == "EXAM_INTEGRITY_CLOCK_SKEW_REJECTED" { return .clockResyncRequired }
+            if problem.code == "EXAM_INTEGRITY_REPLAY_CONFLICT" { return .retryConflict }
+            if problem.code == "EXAM_INTEGRITY_PROOF_EXPIRED" { return .proofExpired }
+            if problem.code == "EXAM_INTEGRITY_CONFIGURATION_UNAVAILABLE" { return .integrityConfigUnavailable }
             if problem.code == "SESSION_NOT_SCORED" { return .sessionNotScorable }
             if problem.code == "EXAM_NO_HINT_MODE_ACTIVE" {
                 return .noHintModeActive
@@ -845,6 +881,9 @@ final class HTTPExamAPIService: ExamAPIServicing, @unchecked Sendable {
 final class FixtureExamAPIService: ExamAPIServicing, @unchecked Sendable {
     var simulateOffline: Bool
     var simulatePreliminaryReadiness: Bool
+    var integrityGuardEnabled: Bool = false
+    var simulatedMasterKeyData: Data?
+    var simulatedIntegrityKeyId: String = "exam-k1"
     private let userId: UUID
     private var storedTargets: [StudentExamTargetModel] = []
     private var storedProfile: CandidateProfileResponse?
@@ -855,6 +894,8 @@ final class FixtureExamAPIService: ExamAPIServicing, @unchecked Sendable {
     private var autosaveIdempotencyCache: [String: ExamSessionItemAutosaveResponseDTO] = [:]
     private var scratchpadIdempotencyCache: [String: ExamScratchpadUploadResponseDTO] = [:]
     private var submitIdempotencyCache: [String: ExamSessionSubmitResponseDTO] = [:]
+    private var submitRequestHashCache: [String: String] = [:]
+    private var consumedSubmissionNonces: Set<String> = []
     private var storedScoreSnapshots: [UUID: ExamSessionScoreSummaryResponse] = [:]
     private var storedRegradeAudits: [UUID: [ExamScoreRegradeAuditItem]] = [:]
     private var storedReadinessProjections: [String: ExamReadinessProjection] = [:]
@@ -2344,6 +2385,47 @@ final class FixtureExamAPIService: ExamAPIServicing, @unchecked Sendable {
         return response
     }
 
+    func fetchSessionIntegrityProof(sessionId: UUID) async throws -> ExamIntegrityProofResponseDTO {
+        if simulateOffline { throw ExamServiceError.offline }
+        guard let session = storedSessions[sessionId] else {
+            throw ExamServiceError.notFound
+        }
+        guard session.status.isActive else {
+            throw ExamServiceError.sessionAlreadySubmitted
+        }
+        let nowStr = ExamIntegrityCanonicalizer.formatCanonicalInstant(Date())
+        if !integrityGuardEnabled {
+            return ExamIntegrityProofResponseDTO(
+                sessionId: session.sessionId,
+                userId: session.userId,
+                keyId: simulatedIntegrityKeyId,
+                sessionProofKeyHex: nil,
+                issuedAt: nowStr,
+                expiresAt: session.graceDeadlineAt,
+                integrityGuardEnabled: false
+            )
+        }
+        guard let masterKey = simulatedMasterKeyData else {
+            throw ExamServiceError.integrityConfigUnavailable
+        }
+        let proofKeyHex = ExamIntegrityCanonicalizer.deriveSessionProofKeyHex(
+            masterKeyData: masterKey,
+            keyId: simulatedIntegrityKeyId,
+            userId: session.userId,
+            sessionId: session.sessionId,
+            startedAtTimestamp: session.startedAt
+        )
+        return ExamIntegrityProofResponseDTO(
+            sessionId: session.sessionId,
+            userId: session.userId,
+            keyId: simulatedIntegrityKeyId,
+            sessionProofKeyHex: proofKeyHex,
+            issuedAt: nowStr,
+            expiresAt: session.graceDeadlineAt,
+            integrityGuardEnabled: true
+        )
+    }
+
     func submitSession(
         sessionId: UUID,
         idempotencyKey: String,
@@ -2351,11 +2433,54 @@ final class FixtureExamAPIService: ExamAPIServicing, @unchecked Sendable {
     ) async throws -> ExamSessionSubmitResponseDTO {
         if simulateOffline { throw ExamServiceError.offline }
         let cacheKey = "\(sessionId.uuidString)::submit::\(idempotencyKey)"
+        let requestFingerprint = "\(request.submissionReason.rawValue)|\(request.clientTimestamp ?? "")|\(request.submissionSignature ?? "")|\(request.integrityKeyId ?? "")|\(request.submissionNonce ?? "")"
         if let cached = submitIdempotencyCache[cacheKey] {
+            if integrityGuardEnabled, let prevFingerprint = submitRequestHashCache[cacheKey], prevFingerprint != requestFingerprint {
+                throw ExamServiceError.retryConflict
+            }
             return cached
         }
         guard var session = storedSessions[sessionId] else {
             throw ExamServiceError.notFound
+        }
+        if integrityGuardEnabled {
+            guard let masterKey = simulatedMasterKeyData else {
+                throw ExamServiceError.integrityConfigUnavailable
+            }
+            guard let sig = request.submissionSignature,
+                  let keyId = request.integrityKeyId,
+                  let nonce = request.submissionNonce,
+                  let ts = request.clientTimestamp else {
+                throw ExamServiceError.signatureRequired
+            }
+            guard keyId == simulatedIntegrityKeyId else {
+                throw ExamServiceError.integrityFailed
+            }
+            let proofKeyHex = ExamIntegrityCanonicalizer.deriveSessionProofKeyHex(
+                masterKeyData: masterKey,
+                keyId: keyId,
+                userId: session.userId,
+                sessionId: session.sessionId,
+                startedAtTimestamp: session.startedAt
+            )
+            let canonical = try ExamIntegrityCanonicalizer.buildCanonicalSigningString(
+                userId: session.userId,
+                sessionId: session.sessionId,
+                submissionReason: request.submissionReason,
+                idempotencyKey: idempotencyKey,
+                canonicalTimestamp: ts,
+                integrityKeyId: keyId,
+                submissionNonce: nonce
+            )
+            let expectedSig = try ExamIntegrityCanonicalizer.signCanonicalString(canonical, proofKeyHex: proofKeyHex)
+            guard expectedSig == sig else {
+                throw ExamServiceError.integrityFailed
+            }
+            let nonceKey = "\(session.sessionId.uuidString.lowercased())::\(nonce)"
+            if consumedSubmissionNonces.contains(nonceKey) {
+                throw ExamServiceError.retryConflict
+            }
+            consumedSubmissionNonces.insert(nonceKey)
         }
         if let existingManifest = session.f28VerificationBatchManifest, !session.status.isActive {
             return ExamSessionSubmitResponseDTO(
@@ -2443,6 +2568,7 @@ final class FixtureExamAPIService: ExamAPIServicing, @unchecked Sendable {
             trainingEligible: false
         )
         submitIdempotencyCache[cacheKey] = response
+        submitRequestHashCache[cacheKey] = requestFingerprint
         return response
     }
 

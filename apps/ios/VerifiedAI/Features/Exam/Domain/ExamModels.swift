@@ -1759,15 +1759,27 @@ public struct ExamScratchpadUploadResponseDTO: Sendable, Codable, Equatable {
 public struct ExamSessionSubmitRequestDTO: Sendable, Codable, Equatable {
     public let submissionReason: ExamSessionSubmissionReason
     public let clientTimestamp: String?
+    public let submissionSignature: String?
+    public let integrityKeyId: String?
+    public let submissionNonce: String?
+    public let integrityProtocolVersion: String?
     public let trainingEligible: Bool
 
     public init(
         submissionReason: ExamSessionSubmissionReason = .userInitiated,
         clientTimestamp: String? = nil,
+        submissionSignature: String? = nil,
+        integrityKeyId: String? = nil,
+        submissionNonce: String? = nil,
+        integrityProtocolVersion: String? = nil,
         trainingEligible: Bool = false
     ) {
         self.submissionReason = submissionReason
         self.clientTimestamp = clientTimestamp
+        self.submissionSignature = submissionSignature
+        self.integrityKeyId = integrityKeyId
+        self.submissionNonce = submissionNonce
+        self.integrityProtocolVersion = integrityProtocolVersion
         self.trainingEligible = trainingEligible
     }
 }

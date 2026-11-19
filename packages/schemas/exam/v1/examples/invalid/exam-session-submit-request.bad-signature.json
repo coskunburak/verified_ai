@@ -1,0 +1,9 @@
+{
+  "submissionReason": "USER_INITIATED",
+  "clientTimestamp": "2026-11-18T10:15:00.123Z",
+  "submissionSignature": "not-valid-hex",
+  "integrityKeyId": "exam-k1",
+  "submissionNonce": "synthetic_nonce_0000000000000001",
+  "integrityProtocolVersion": "exam-submit-hmac-v1",
+  "trainingEligible": false
+}

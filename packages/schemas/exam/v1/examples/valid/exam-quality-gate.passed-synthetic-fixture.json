@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "exam-quality-gate-v1",
+  "phase": "PHASE_09",
+  "gateStatus": "PASS",
+  "phase9ExitAuthorized": false,
+  "sourceCommitSha": "aaa69ab27e2f1d0098bd8e12257348b7c7e79bd1",
+  "evidenceRunId": "SYNTHETIC_SCHEMA_FIXTURE_NOT_LIVE_EVIDENCE",
+  "generatedAt": "2026-11-18T16:30:00Z",
+  "checks": {
+    "flywayV054ToV064": {
+      "status": "PASS",
+      "evidence": "VERIFIED",
+      "verifiedMinVersion": "054",
+      "verifiedMaxVersion": "064",
+      "missingVersions": []
+    },
+    "cntLos10P95": {
+      "status": "PASS",
+      "p95Ms": 218.5,
+      "sampleCount": 250,
+      "thresholdMs": 350.0,
+      "measurementSource": "synthetic-schema-fixture-not-live"
+    },
+    "cntLos11P95": {
+      "status": "PASS",
+      "p95Ms": 184.2,
+      "sampleCount": 250,
+      "thresholdMs": 350.0,
+      "measurementSource": "synthetic-schema-fixture-not-live"
+    },
+    "criticalDefects": {
+      "status": "PASS",
+      "openP0Count": 0,
+      "openP1Count": 0,
+      "ledgerSource": "synthetic-schema-fixture"
+    },
+    "securityAndReplay": {
+      "status": "PASS",
+      "evidence": "VERIFIED",
+      "verifiedFormulaCount": null,
+      "detail": "Synthetic fixture validating PASS schema shape"
+    },
+    "accessibilityTrTR": {
+      "status": "PASS",
+      "evidence": "VERIFIED",
+      "verifiedFormulaCount": 50,
+      "detail": "Synthetic fixture validating 50 formulas"
+    },
+    "offlineRecovery": {
+      "status": "PASS",
+      "evidence": "VERIFIED",
+      "verifiedFormulaCount": null,
+      "detail": "Synthetic fixture validating offline recovery"
+    },
+    "privacyLifecycle": {
+      "status": "PASS",
+      "evidence": "VERIFIED",
+      "verifiedFormulaCount": null,
+      "detail": "Synthetic fixture validating privacy purge"
+    }
+  },
+  "trainingEligible": false,
+  "llmTokensUsed": 0,
+  "inferenceCostUsd": 0
+}

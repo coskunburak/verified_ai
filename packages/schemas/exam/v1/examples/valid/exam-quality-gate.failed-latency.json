@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "exam-quality-gate-v1",
+  "phase": "PHASE_09",
+  "gateStatus": "FAIL",
+  "phase9ExitAuthorized": false,
+  "sourceCommitSha": "aaa69ab27e2f1d0098bd8e12257348b7c7e79bd1",
+  "evidenceRunId": "staging-bench-fail-latency-001",
+  "generatedAt": "2026-11-18T16:15:00Z",
+  "checks": {
+    "flywayV054ToV064": {
+      "status": "PASS",
+      "evidence": "VERIFIED",
+      "verifiedMinVersion": "054",
+      "verifiedMaxVersion": "064",
+      "missingVersions": []
+    },
+    "cntLos10P95": {
+      "status": "FAIL",
+      "p95Ms": 362.4,
+      "sampleCount": 250,
+      "thresholdMs": 350.0,
+      "measurementSource": "staging-eks-eu-central-1"
+    },
+    "cntLos11P95": {
+      "status": "PASS",
+      "p95Ms": 184.2,
+      "sampleCount": 250,
+      "thresholdMs": 350.0,
+      "measurementSource": "staging-eks-eu-central-1"
+    },
+    "criticalDefects": {
+      "status": "PASS",
+      "openP0Count": 0,
+      "openP1Count": 0,
+      "ledgerSource": "owner-release-ledger-2026-11-18"
+    },
+    "securityAndReplay": {
+      "status": "PASS",
+      "evidence": "VERIFIED",
+      "verifiedFormulaCount": null,
+      "detail": "HMAC-SHA256 & replay matrix verified"
+    },
+    "accessibilityTrTR": {
+      "status": "PASS",
+      "evidence": "VERIFIED",
+      "verifiedFormulaCount": 50,
+      "detail": "50 formulas verified in tr-TR"
+    },
+    "offlineRecovery": {
+      "status": "PASS",
+      "evidence": "VERIFIED",
+      "verifiedFormulaCount": null,
+      "detail": "Durable submit intent recovery verified"
+    },
+    "privacyLifecycle": {
+      "status": "PASS",
+      "evidence": "VERIFIED",
+      "verifiedFormulaCount": null,
+      "detail": "V064 child-first purge verified"
+    }
+  },
+  "trainingEligible": false,
+  "llmTokensUsed": 0,
+  "inferenceCostUsd": 0
+}
