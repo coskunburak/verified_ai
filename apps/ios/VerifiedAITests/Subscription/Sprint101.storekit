@@ -1,0 +1,101 @@
+{
+  "identifier": "88B441B5-58E5-4631-9B7D-E62538A60001",
+  "nonRenewingSubscriptions": [],
+  "products": [],
+  "settings": {
+    "_locale": "en_US",
+    "_storefront": "USA",
+    "_failTransactionsEnabled": false
+  },
+  "subscriptionGroups": [
+    {
+      "id": "101",
+      "localizations": [],
+      "name": "Synthetic plans",
+      "subscriptions": [
+        {
+          "adHocOffers": [],
+          "codeOffers": [],
+          "displayPrice": "1.00",
+          "familyShareable": false,
+          "groupNumber": 1,
+          "internalID": "1010000",
+          "introductoryOffer": null,
+          "localizations": [
+            {
+              "description": "Synthetic local subscription",
+              "displayName": "Monthly",
+              "locale": "en_US"
+            },
+            {
+              "description": "Yerel test aboneliği",
+              "displayName": "Monthly",
+              "locale": "tr_TR"
+            }
+          ],
+          "productID": "local_dev_monthly",
+          "recurringSubscriptionPeriod": "P1M",
+          "referenceName": "Synthetic P1M",
+          "subscriptionGroupID": "101",
+          "type": "RecurringSubscription"
+        },
+        {
+          "adHocOffers": [],
+          "codeOffers": [],
+          "displayPrice": "9.00",
+          "familyShareable": false,
+          "groupNumber": 2,
+          "internalID": "1010001",
+          "introductoryOffer": null,
+          "localizations": [
+            {
+              "description": "Synthetic local subscription",
+              "displayName": "Annual",
+              "locale": "en_US"
+            },
+            {
+              "description": "Yerel test aboneliği",
+              "displayName": "Annual",
+              "locale": "tr_TR"
+            }
+          ],
+          "productID": "local_dev_annual",
+          "recurringSubscriptionPeriod": "P1Y",
+          "referenceName": "Synthetic P1Y",
+          "subscriptionGroupID": "101",
+          "type": "RecurringSubscription"
+        },
+        {
+          "adHocOffers": [],
+          "codeOffers": [],
+          "displayPrice": "5.00",
+          "familyShareable": false,
+          "groupNumber": 3,
+          "internalID": "1010002",
+          "introductoryOffer": null,
+          "localizations": [
+            {
+              "description": "Synthetic local subscription",
+              "displayName": "Season",
+              "locale": "en_US"
+            },
+            {
+              "description": "Yerel test aboneliği",
+              "displayName": "Season",
+              "locale": "tr_TR"
+            }
+          ],
+          "productID": "local_dev_season",
+          "recurringSubscriptionPeriod": "P6M",
+          "referenceName": "Synthetic P6M",
+          "subscriptionGroupID": "101",
+          "type": "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version": {
+    "major": 3,
+    "minor": 0
+  }
+}

@@ -5,6 +5,13 @@ public struct ColdStartDiagnosticFlowView: View {
 
     private let budgetChoices = [10, 15, 25, 40]
 
+    @Environment(\.billingTimerCoordinator) private var billingTimers
+
+    private var billingTimer: PaywallTriggerCoordinator.Timer {
+        if case .question = viewModel.flowStage { return .active }
+        return .inactive
+    }
+
     public init(viewModel: ColdStartDiagnosticViewModel) {
         self.viewModel = viewModel
     }
@@ -27,6 +34,8 @@ public struct ColdStartDiagnosticFlowView: View {
             .background(ColorTokens.canvas)
             .navigationTitle(LocalizedStringKey("cold_start.flow.title"))
             .navigationBarTitleDisplayMode(.inline)
+            .onChange(of: billingTimer, initial: true) { _, value in billingTimers?.update(.diagnostic, value) }
+            .onDisappear { billingTimers?.update(.diagnostic, viewModel.isFlowPresented ? billingTimer : .inactive) }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button(LocalizedStringKey("cold_start.flow.button.done")) {

@@ -4,6 +4,12 @@ public struct ProveItSoloTwinView: View {
     @Bindable public var viewModel: TwinChallengeViewModel
     public var onDismiss: (() -> Void)?
 
+    @Environment(\.billingTimerCoordinator) private var billingTimers
+
+    private var billingTimer: PaywallTriggerCoordinator.Timer {
+        viewModel.challenge.map { [.activeLocked, .activeUnlocked].contains($0.status) ? .active : .inactive } ?? .unknown
+    }
+
     public init(
         viewModel: TwinChallengeViewModel,
         onDismiss: (() -> Void)? = nil
@@ -41,6 +47,7 @@ public struct ProveItSoloTwinView: View {
                             problemCard(challenge)
                             timerBanner(challenge)
                             outcomeCard(challenge)
+                            if challenge.status == .verifiedUnassistedSuccess { ContextualPaywallSheetView() }
 
                             if challenge.status == .activeLocked || challenge.status == .activeUnlocked {
                                 inputSection()
@@ -53,6 +60,7 @@ public struct ProveItSoloTwinView: View {
             .background(ColorTokens.canvas)
             .navigationTitle(Text("twin.challenge.title"))
             .accessibilityIdentifier("twin.challenge.root")
+            .onChange(of: billingTimer, initial: true) { _, value in billingTimers?.update(.twin, value) }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Close") {

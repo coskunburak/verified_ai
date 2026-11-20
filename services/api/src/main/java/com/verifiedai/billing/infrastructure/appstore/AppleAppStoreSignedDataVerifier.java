@@ -103,7 +103,8 @@ class AppleAppStoreSignedDataVerifier implements AppStoreSignedDataVerifier {
             instant(payload.getRevocationDate()),
             instant(payload.getSignedDate()),
             stringOrRaw(payload.getRawTransactionReason(), payload.getTransactionReason()),
-            stringOrRaw(payload.getRawInAppOwnershipType(), payload.getInAppOwnershipType())
+            stringOrRaw(payload.getRawInAppOwnershipType(), payload.getInAppOwnershipType()),
+            "FREE_TRIAL".equals(payload.getRawOfferDiscountType())
         );
     }
 

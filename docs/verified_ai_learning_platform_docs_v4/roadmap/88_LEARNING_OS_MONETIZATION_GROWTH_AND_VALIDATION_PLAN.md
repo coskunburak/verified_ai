@@ -204,3 +204,7 @@ All four scenarios model a solo-founder operation starting commercial billing af
 - `roadmap/80_UNIT_ECONOMICS_30_DAY_LAUNCH_CONTRACT_AND_EXECUTION_ROADMAP.md`
 - `roadmap/87_LEARNING_OS_STRATEGIC_PHASE_AND_SPRINT_EXPANSION_PROGRAM.md`
 - `operations/92_LEARNING_OS_ASSUMPTIONS_EXPERIMENTS_AND_EVIDENCE_LEDGER.md`
+
+## Sprint 10.1 delivery gate
+
+Contextual offers remain owner-disabled. Preview requires synthetic catalog and StoreKit fixtures. Enable production only after both 9.10 manual gates, contract and migration evidence, bilingual accessibility review and App Store commercial sign-off. Hard access enforcement and spending quotas remain assigned to subsequent sprints.

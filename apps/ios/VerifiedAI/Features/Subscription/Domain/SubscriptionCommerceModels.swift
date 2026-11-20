@@ -30,6 +30,10 @@ struct StoreProduct: Equatable, Identifiable, Sendable {
     let description: String
     let displayPrice: String
     let subscriptionPeriod: String?
+    var periodCode: String? = nil
+    var copyKey: String? = nil
+    var introductoryTerms: String? = nil
+    var supportedTerms = true
 }
 
 struct StoreTransaction: Equatable, Sendable {
@@ -60,6 +64,8 @@ protocol StoreProductRepository: Sendable {
 }
 
 protocol AppleBillingServicing: Sendable {
+    func offers(locale: String) async throws -> BillingOffers
+    func interaction(_ kind: String) async throws
     func configuration() async throws -> AppleBillingConfiguration
     func submit(transaction: StoreTransaction) async throws -> ApplePurchaseSubmissionResult
 }
@@ -70,4 +76,33 @@ struct ApplePurchaseSubmissionResult: Equatable, Sendable {
     let subscriptionStatus: EntitlementStatus
     let entitlement: Entitlement
     let duplicate: Bool
+}
+
+struct BillingOffers: Decodable, Sendable {
+    struct Offer: Decodable, Sendable {
+        let productId: String
+        let family: String
+        let billingPeriod: String
+        let copyKey: String
+    }
+    let locale: String
+    let enabled: Bool
+    let reason: String
+    let offers: [Offer]
+
+    func valid(for requested: String) -> Bool {
+        enabled && reason == "AVAILABLE" && locale == requested && ["tr-TR", "en-US"].contains(locale)
+            && !offers.isEmpty && Set(offers.map(\.productId)).count == offers.count
+            && offers.allSatisfy {
+                $0.copyKey == "billing.plan." + $0.family.lowercased() && !$0.productId.isEmpty && ($0.family == "YKS_SEASON_PASS" ? $0.billingPeriod == "P6M"
+                    : ["PRO", "COACH_PRO"].contains($0.family) && ["P1M", "P1Y"].contains($0.billingPeriod))
+            }
+    }
+}
+
+extension AppleBillingServicing {
+    func offers(locale: String) async throws -> BillingOffers {
+        BillingOffers(locale: locale, enabled: false, reason: "FEATURE_DISABLED", offers: [])
+    }
+    func interaction(_ kind: String) async throws {}
 }

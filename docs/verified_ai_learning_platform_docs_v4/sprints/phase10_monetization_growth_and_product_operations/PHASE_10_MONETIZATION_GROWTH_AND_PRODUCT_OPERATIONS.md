@@ -85,3 +85,7 @@ All Phase 10 sprints must enforce the V6 server-authoritative unit economics mod
   - Ethical Guardrail (`INV-MON-001`): Never hold a free-quota attempt's First-Error Diagnosis hostage behind a surprise blur paywall; trigger contextual upgrades after the learner experiences the Counterexample Proof Card or unlocks their 1st Independent Mastery Shield (`EXP-MON-01`).
   - Planned migration: **`PLANNED V048__entitlement_quota_ledgers.sql`**.
 <!-- PHASE_PRODUCTION_V7_LEARNING_OS:END -->
+
+## Sprint 10.1 release gate
+
+Sprint 10.1 local acceptance passed on 2026-11-20. The catalog defaults to disabled. Phase 9 staging P95, physical VoiceOver and owner sign-off remain required before enabling contextual offers.

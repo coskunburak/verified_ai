@@ -8,6 +8,17 @@ final class AppleBillingAPI: AppleBillingServicing, @unchecked Sendable {
         self.apiClient = apiClient
     }
 
+    func offers(locale: String) async throws -> BillingOffers {
+        let response: HTTPResponse<BillingOffers> = try await apiClient.send(HTTPRequest(endpoint:
+            Endpoint(path: "/api/v1/billing/offers", queryItems: [URLQueryItem(name: "locale", value: locale)])))
+        return response.body
+    }
+
+    func interaction(_ kind: String) async throws {
+        let _: HTTPResponse<[String: Bool]> = try await apiClient.send(HTTPRequest(endpoint:
+            Endpoint(path: "/api/v1/billing/interactions/" + kind, method: .post)))
+    }
+
     func configuration() async throws -> AppleBillingConfiguration {
         let response: HTTPResponse<AppleBillingConfigurationWireResponse> = try await apiClient.send(
             HTTPRequest(endpoint: Endpoint(path: "/api/v1/me/billing/apple/configuration", method: .get))

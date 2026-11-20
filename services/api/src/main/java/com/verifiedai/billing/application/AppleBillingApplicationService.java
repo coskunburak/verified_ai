@@ -85,11 +85,12 @@ public class AppleBillingApplicationService {
         VerifiedAppStoreTransaction transaction = verifyTransaction(signedTransactionInfo);
         validateConfiguredEnvironment(transaction.environment());
         AppStoreProductMapping product = requireProduct(transaction.productId());
+        validateSeasonTerm(product, transaction);
         validateAppAccountTokenOwnership(userId, transaction, now);
         validateTransactionOwnership(userId, transaction);
 
         AppStoreSubscriptionStatus subscriptionStatus = determineStatus(transaction, null, null, now);
-        billingRepository.upsertTransaction(userId, transaction, payloadDigest, now);
+        storeVerifiedTransaction(userId, product, transaction, payloadDigest, now);
         billingRepository.upsertSubscription(userId, transaction, null, product, subscriptionStatus, now);
         EntitlementResult entitlement = recalculateEntitlement(userId, now);
         billingRepository.upsertBillingEvent(
@@ -215,13 +216,14 @@ public class AppleBillingApplicationService {
         VerifiedAppStoreRenewalInfo renewalInfo = verifyRenewalInfo(subscriptionStatus.signedRenewalInfo());
         validateConfiguredEnvironment(transaction.environment());
         AppStoreProductMapping product = requireProduct(transaction.productId());
+        validateSeasonTerm(product, transaction);
         validateAppAccountTokenOwnership(userId, transaction, now);
         validateTransactionOwnership(userId, transaction);
 
         AppStoreSubscriptionStatus status = subscriptionStatus.appStoreStatus() == null
             ? determineStatus(transaction, renewalInfo, null, now)
             : statusFromAppleRawStatus(subscriptionStatus.appStoreStatus(), transaction, renewalInfo, null, now);
-        billingRepository.upsertTransaction(userId, transaction, payloadDigest, now);
+        storeVerifiedTransaction(userId, product, transaction, payloadDigest, now);
         billingRepository.upsertSubscription(userId, transaction, renewalInfo, product, status, now);
         EntitlementResult entitlement = recalculateEntitlement(userId, now);
         billingRepository.upsertBillingEvent(
@@ -257,6 +259,7 @@ public class AppleBillingApplicationService {
         }
         validateConfiguredEnvironment(transaction.environment());
         AppStoreProductMapping product = requireProduct(transaction.productId());
+        validateSeasonTerm(product, transaction);
         UUID userId = resolveNotificationUser(notification)
             .orElseThrow(() -> problem(
                 HttpStatus.ACCEPTED,
@@ -272,7 +275,7 @@ public class AppleBillingApplicationService {
             notification,
             now
         );
-        billingRepository.upsertTransaction(userId, transaction, payloadDigest, now);
+        storeVerifiedTransaction(userId, product, transaction, payloadDigest, now);
         billingRepository.upsertSubscription(userId, transaction, notification.renewalInfo(), product, subscriptionStatus, now);
         EntitlementResult entitlement = recalculateEntitlement(userId, now);
         billingRepository.upsertBillingEvent(
@@ -302,7 +305,8 @@ public class AppleBillingApplicationService {
         SubscriptionProjection projection = subscription.get();
         AppStoreProductMapping product = productCatalog.findByAppStoreProductId(projection.productId())
             .orElse(null);
-        if (product == null) {
+        if (product == null || ("yks_season".equals(product.internalPlanId())
+            && (projection.expiresAt() == null || !projection.expiresAt().isAfter(now)))) {
             return entitlementApplicationService.applyDefaultFree(userId, now);
         }
         return entitlementApplicationService.applyAppStoreSubscription(
@@ -414,6 +418,30 @@ public class AppleBillingApplicationService {
             );
         }
         return true;
+    }
+
+    private void storeVerifiedTransaction(UUID userId, AppStoreProductMapping product,
+        VerifiedAppStoreTransaction transaction, String payloadDigest, Instant now) {
+        boolean inserted = billingRepository.upsertTransaction(userId, transaction, payloadDigest, now,
+            "yks_season".equals(product.internalPlanId()) ? "YKS_SEASON_PASS" : null);
+        if (inserted && !transaction.revoked() && !transaction.expired(now) && "PURCHASE".equals(transaction.transactionReason())) {
+            metrics.confirmedAfterCommit(transaction.freeTrial());
+        }
+    }
+
+    private void validateSeasonTerm(AppStoreProductMapping product, VerifiedAppStoreTransaction transaction) {
+        if (!"yks_season".equals(product.internalPlanId())) return;
+        Instant start = transaction.purchaseDate();
+        Instant end = transaction.expiresDate();
+        // Store calendar months span different numbers of days. Never manufacture an expiry.
+        boolean production = transaction.environment() == AppStoreEnvironment.PRODUCTION;
+        if (product.entitlementTier() != com.verifiedai.billing.domain.model.EntitlementTier.PRO_PLUS
+            || !"P6M".equals(product.billingPeriod()) || start == null || end == null || !end.isAfter(start)
+            || (production && end.isBefore(start.plus(java.time.Duration.ofDays(180))))
+            || end.isAfter(start.plus(java.time.Duration.ofDays(185)))) {
+            throw problem(HttpStatus.BAD_REQUEST, ApiErrorCode.PURCHASE_EVIDENCE_REJECTED,
+                "Season purchase requires a verified six-month term", "CONTACT_SUPPORT");
+        }
     }
 
     private AppStoreProductMapping requireProduct(String appStoreProductId) {

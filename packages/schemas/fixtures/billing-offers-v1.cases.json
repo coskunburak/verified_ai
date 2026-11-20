@@ -1,0 +1,50 @@
+{
+  "monthly": {
+    "locale": "tr-TR",
+    "enabled": true,
+    "reason": "AVAILABLE",
+    "offers": [
+      {
+        "offerCode": "monthly",
+        "productId": "local_dev_monthly",
+        "family": "PRO",
+        "billingPeriod": "P1M",
+        "copyKey": "billing.plan.pro"
+      }
+    ]
+  },
+  "annual": {
+    "locale": "en-US",
+    "enabled": true,
+    "reason": "AVAILABLE",
+    "offers": [
+      {
+        "offerCode": "annual",
+        "productId": "local_dev_annual",
+        "family": "COACH_PRO",
+        "billingPeriod": "P1Y",
+        "copyKey": "billing.plan.coach_pro"
+      }
+    ]
+  },
+  "season": {
+    "locale": "tr-TR",
+    "enabled": true,
+    "reason": "AVAILABLE",
+    "offers": [
+      {
+        "offerCode": "season",
+        "productId": "local_dev_season",
+        "family": "YKS_SEASON_PASS",
+        "billingPeriod": "P6M",
+        "copyKey": "billing.plan.yks_season_pass"
+      }
+    ]
+  },
+  "disabled": {
+    "locale": "en-US",
+    "enabled": false,
+    "reason": "FEATURE_DISABLED",
+    "offers": []
+  }
+}

@@ -16,11 +16,13 @@ struct RootView: View {
     @StateObject private var candidateProfileViewModel: CandidateProfileViewModel
     @StateObject private var blueprintAssemblyViewModel: ExamBlueprintAssemblyViewModel
     @State private var entitlementViewModel: EntitlementViewModel
+    @State private var contextualPaywallModel: PaywallViewModel
     @State private var paywallViewModel: PaywallViewModel
     @State private var problemCaptureViewModel: ProblemCaptureViewModel
     @State private var problemAssetUploadViewModel: ProblemAssetUploadViewModel
     @State private var problemReviewViewModel: ProblemReviewViewModel
     @State private var problemHistoryViewModel: ProblemHistoryViewModel
+    @State private var billingTimers = PaywallTriggerCoordinator()
     @State private var isPaywallPresented = false
     @State private var isAccountSettingsPresented = false
     @State private var isProblemCapturePresented = false
@@ -65,6 +67,13 @@ struct RootView: View {
             logger: dependencies.logger
         ))
         _paywallViewModel = State(initialValue: PaywallViewModel(
+            billingAPI: dependencies.appleBillingAPI,
+            storeRepository: dependencies.storeProductRepository,
+            entitlementAPI: dependencies.entitlementAPI,
+            networkMonitor: dependencies.networkMonitor,
+            logger: dependencies.logger
+        ))
+        _contextualPaywallModel = State(initialValue: PaywallViewModel(
             billingAPI: dependencies.appleBillingAPI,
             storeRepository: dependencies.storeProductRepository,
             entitlementAPI: dependencies.entitlementAPI,
@@ -221,7 +230,7 @@ struct RootView: View {
                     }
                 },
                 problemHistoryViewModel: problemHistoryViewModel,
-                manageSubscription: { isPaywallPresented = true },
+                manageSubscription: { isPaywallPresented = billingTimers.safeToPresent },
                 manageAccount: { isAccountSettingsPresented = true },
                 signOut: {
                     resetAuthenticatedState()
@@ -270,10 +279,21 @@ struct RootView: View {
                 blueprintAssemblyViewModel: blueprintAssemblyViewModel,
                 weeklyReportViewModel: weeklyProgressReportViewModel
             )
+            .onChange(of: coldStartDiagnosticViewModel.isFlowPresented) { _, visible in
+                if !visible { billingTimers.update(.diagnostic, .inactive) }
+            }
+            .environment(\.billingTimerCoordinator, billingTimers)
+            .environment(\.contextualCommerce, contextualPaywallModel)
+            .onChange(of: contextualPaywallModel.entitlement) { _, result in
+                if result != nil { Task { await entitlementViewModel.bootstrap(force: true) } }
+            }
+            .onChange(of: billingTimers.safeToPresent) { _, safe in
+                if !safe { isPaywallPresented = false }
+            }
             .sheet(isPresented: $isPaywallPresented, onDismiss: {
                 Task { await entitlementViewModel.bootstrap(force: true) }
             }) {
-                PaywallView(viewModel: paywallViewModel)
+                if billingTimers.safeToPresent { PaywallView(viewModel: paywallViewModel, safeToPurchase: { billingTimers.safeToPresent }) }
             }
             .fullScreenCover(isPresented: $isProblemCapturePresented, onDismiss: {
                 Task {
@@ -343,7 +363,10 @@ struct RootView: View {
         Task { await candidateProfileViewModel.purgeUserDataAndReset() }
         Task { await blueprintAssemblyViewModel.purgeUserDataAndReset() }
         entitlementViewModel.reset()
+        isPaywallPresented = false
+        billingTimers = PaywallTriggerCoordinator()
         paywallViewModel.reset()
+        contextualPaywallModel.reset()
         problemAssetUploadViewModel.reset()
         problemReviewViewModel.reset()
         problemHistoryViewModel.reset()

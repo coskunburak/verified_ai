@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AB1010000000000000000003 /* Sprint101.storekit in Resources */ = {isa = PBXBuildFile; fileRef = AB1020000000000000000003 /* Sprint101.storekit */; };
 		B74000000000000000000002 /* attempt-mistake-evaluation-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = A74000000000000000000002 /* attempt-mistake-evaluation-v1.json */; };
 		B75000000000000000000001 /* mistake-dispute-result-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = A75000000000000000000001 /* mistake-dispute-result-v1.json */; };
 		B75000000000000000000002 /* mistake-effective-state-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = A75000000000000000000002 /* mistake-effective-state-v1.json */; };
@@ -241,6 +242,8 @@
 		10000000000000000000003A /* StoreKitTransactionObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000042 /* StoreKitTransactionObserver.swift */; };
 		10000000000000000000003B /* PaywallViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000043 /* PaywallViewModel.swift */; };
 		10000000000000000000003C /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000044 /* PaywallView.swift */; };
+		AB1010000000000000000000 /* PaywallTriggerCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1020000000000000000000 /* PaywallTriggerCoordinator.swift */; };
+		AB1010000000000000000001 /* ContextualPaywallSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1020000000000000000001 /* ContextualPaywallSheetView.swift */; };
 		10000000000000000000003D /* PaywallViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000045 /* PaywallViewModelTests.swift */; };
 		10000000000000000000003E /* AccountPrivacyModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000046 /* AccountPrivacyModels.swift */; };
 		10000000000000000000003F /* AccountPrivacyAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000047 /* AccountPrivacyAPI.swift */; };
@@ -315,6 +318,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		AB1020000000000000000003 /* Sprint101.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Sprint101.storekit; sourceTree = "<group>"; };
 		A74000000000000000000002 /* attempt-mistake-evaluation-v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/attempt-mistake-evaluation-v1.json; sourceTree = SOURCE_ROOT; };
 		A75000000000000000000001 /* mistake-dispute-result-v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/mistake-dispute-result-v1.json; sourceTree = SOURCE_ROOT; };
 		A75000000000000000000002 /* mistake-effective-state-v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/mistake-effective-state-v1.json; sourceTree = SOURCE_ROOT; };
@@ -556,6 +560,8 @@
 		200000000000000000000042 /* StoreKitTransactionObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreKitTransactionObserver.swift; sourceTree = "<group>"; };
 		200000000000000000000043 /* PaywallViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallViewModel.swift; sourceTree = "<group>"; };
 		200000000000000000000044 /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
+		AB1020000000000000000000 /* PaywallTriggerCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallTriggerCoordinator.swift; sourceTree = "<group>"; };
+		AB1020000000000000000001 /* ContextualPaywallSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextualPaywallSheetView.swift; sourceTree = "<group>"; };
 		200000000000000000000045 /* PaywallViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallViewModelTests.swift; sourceTree = "<group>"; };
 		200000000000000000000046 /* AccountPrivacyModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountPrivacyModels.swift; sourceTree = "<group>"; };
 		200000000000000000000047 /* AccountPrivacyAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountPrivacyAPI.swift; sourceTree = "<group>"; };
@@ -1147,6 +1153,8 @@
 				200000000000000000000043 /* PaywallViewModel.swift */,
 				20000000000000000000003D /* CapabilityGate.swift */,
 				200000000000000000000044 /* PaywallView.swift */,
+				AB1020000000000000000000 /* PaywallTriggerCoordinator.swift */,
+				AB1020000000000000000001 /* ContextualPaywallSheetView.swift */,
 			);
 			path = Presentation;
 			sourceTree = "<group>";
@@ -1200,6 +1208,7 @@
 			children = (
 				20000000000000000000003E /* EntitlementViewModelTests.swift */,
 				200000000000000000000045 /* PaywallViewModelTests.swift */,
+		AB1020000000000000000003 /* Sprint101.storekit */,
 			);
 			path = Subscription;
 			sourceTree = "<group>";
@@ -1538,6 +1547,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AB1010000000000000000003 /* Sprint101.storekit in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1729,6 +1739,8 @@
 				10000000000000000000003B /* PaywallViewModel.swift in Sources */,
 				100000000000000000000035 /* CapabilityGate.swift in Sources */,
 				10000000000000000000003C /* PaywallView.swift in Sources */,
+				AB1010000000000000000000 /* PaywallTriggerCoordinator.swift in Sources */,
+				AB1010000000000000000001 /* ContextualPaywallSheetView.swift in Sources */,
 				10000000000000000000003E /* AccountPrivacyModels.swift in Sources */,
 				10000000000000000000003F /* AccountPrivacyAPI.swift in Sources */,
 				100000000000000000000040 /* AccountSettingsViewModel.swift in Sources */,
@@ -1983,6 +1995,8 @@
 				DEVELOPMENT_TEAM = 3SF5MWTSQ5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_BillingPrivacyURL = "$(BILLING_PRIVACY_URL)";
+				INFOPLIST_KEY_BillingTermsURL = "$(BILLING_TERMS_URL)";
 				INFOPLIST_KEY_API_BASE_URL = "$(API_BASE_URL)";
 				INFOPLIST_KEY_APP_ENVIRONMENT = "$(APP_ENVIRONMENT)";
 				INFOPLIST_KEY_CFBundleDisplayName = "Verified AI";
@@ -2014,6 +2028,8 @@
 				DEVELOPMENT_TEAM = 3SF5MWTSQ5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_BillingPrivacyURL = "$(BILLING_PRIVACY_URL)";
+				INFOPLIST_KEY_BillingTermsURL = "$(BILLING_TERMS_URL)";
 				INFOPLIST_KEY_API_BASE_URL = "$(API_BASE_URL)";
 				INFOPLIST_KEY_APP_ENVIRONMENT = "$(APP_ENVIRONMENT)";
 				INFOPLIST_KEY_CFBundleDisplayName = "Verified AI";

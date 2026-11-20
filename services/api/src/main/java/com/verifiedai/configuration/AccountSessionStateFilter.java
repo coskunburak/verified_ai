@@ -53,7 +53,7 @@ class AccountSessionStateFilter extends OncePerRequestFilter {
 
     private static boolean shouldSkip(HttpServletRequest request) {
         String path = request.getRequestURI();
-        return !path.startsWith("/api/v1/")
+        return (!path.startsWith("/api/v1/") && !path.startsWith("/v1/billing/"))
             || ("/api/v1/auth/apple".equals(path) && "POST".equals(request.getMethod()))
             || ("/api/v1/auth/refresh".equals(path) && "POST".equals(request.getMethod()))
             || ("/api/v1/webhooks/apple/app-store".equals(path) && "POST".equals(request.getMethod()))

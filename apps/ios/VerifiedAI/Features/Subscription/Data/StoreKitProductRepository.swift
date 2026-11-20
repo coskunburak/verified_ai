@@ -6,14 +6,17 @@ actor StoreKitProductRepository: StoreProductRepository {
     private var transactionsByIdentifier: [String: Transaction] = [:]
 
     func products(for productIdentifiers: [String]) async throws -> [StoreProduct] {
+        guard Set(productIdentifiers).count == productIdentifiers.count else { return [] }
         let products = try await Product.products(for: productIdentifiers)
         for product in products {
             productsByIdentifier[product.id] = product
         }
         let ordering = Dictionary(uniqueKeysWithValues: productIdentifiers.enumerated().map { ($0.element, $0.offset) })
-        return products
-            .sorted { (ordering[$0.id] ?? Int.max) < (ordering[$1.id] ?? Int.max) }
-            .map(Self.storeProduct(from:))
+        var result: [StoreProduct] = []
+        for product in products.sorted(by: { (ordering[$0.id] ?? .max) < (ordering[$1.id] ?? .max) }) {
+            result.append(await Self.storeProduct(from: product))
+        }
+        return result
     }
 
     func purchase(_ product: StoreProduct, appAccountToken: UUID) async throws -> StorePurchaseOutcome {
@@ -105,32 +108,46 @@ actor StoreKitProductRepository: StoreProductRepository {
         }
     }
 
-    private static func storeProduct(from product: Product) -> StoreProduct {
-        StoreProduct(
-            id: product.id,
-            displayName: product.displayName,
-            description: product.description,
-            displayPrice: product.displayPrice,
-            subscriptionPeriod: product.subscription?.subscriptionPeriod.localizedDescription
-        )
+    private static func storeProduct(from product: Product) async -> StoreProduct {
+        let subscription = product.subscription
+        var terms: String?
+        var supported = subscription != nil
+        if let subscription, let intro = subscription.introductoryOffer, await subscription.isEligibleForIntroOffer {
+            if intro.paymentMode == .freeTrial {
+                terms = String(format: NSLocalizedString("billing.trial", comment: ""),
+                               intro.period.description(multiplier: intro.periodCount), product.displayPrice,
+                               subscription.subscriptionPeriod.description())
+            } else {
+                supported = false
+            }
+        }
+        return StoreProduct(id: product.id, displayName: product.displayName, description: product.description,
+                            displayPrice: product.displayPrice, subscriptionPeriod: subscription?.subscriptionPeriod.description(),
+                            periodCode: subscription?.subscriptionPeriod.code, introductoryTerms: terms, supportedTerms: supported)
     }
 }
 
 private extension Product.SubscriptionPeriod {
-    var localizedDescription: String {
-        let unitText: String
-        switch unit {
-        case .day:
-            unitText = value == 1 ? "day" : "days"
-        case .week:
-            unitText = value == 1 ? "week" : "weeks"
-        case .month:
-            unitText = value == 1 ? "month" : "months"
-        case .year:
-            unitText = value == 1 ? "year" : "years"
-        @unknown default:
-            unitText = "period"
+    var code: String? {
+        switch (unit, value) {
+        case (.month, 1): "P1M"
+        case (.year, 1), (.month, 12): "P1Y"
+        case (.month, 6): "P6M"
+        default: nil
         }
-        return "\(value) \(unitText)"
+    }
+
+    func description(multiplier: Int = 1) -> String {
+        var components = DateComponents()
+        switch unit {
+        case .day: components.day = value * multiplier
+        case .week: components.weekOfMonth = value * multiplier
+        case .month: components.month = value * multiplier
+        case .year: components.year = value * multiplier
+        @unknown default: return ""
+        }
+        let formatter = DateComponentsFormatter()
+        formatter.unitsStyle = .full
+        return formatter.string(from: components) ?? ""
     }
 }

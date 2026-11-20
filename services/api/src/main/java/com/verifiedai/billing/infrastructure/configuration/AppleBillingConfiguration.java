@@ -17,6 +17,16 @@ import org.springframework.core.env.Environment;
 @EnableConfigurationProperties(AppleBillingProperties.class)
 class AppleBillingConfiguration {
 
+    @org.springframework.boot.context.properties.ConfigurationPropertiesBinding
+    @Bean
+    static org.springframework.core.convert.converter.Converter<String, com.verifiedai.billing.domain.model.EntitlementTier> planTierConverter() {
+        return new org.springframework.core.convert.converter.Converter<>() {
+            @Override public com.verifiedai.billing.domain.model.EntitlementTier convert(String source) {
+                return com.verifiedai.billing.application.TierResolutionPolicy.storageTier(source.trim().toUpperCase(java.util.Locale.ROOT));
+            }
+        };
+    }
+
     @Bean
     ApplicationRunner appleBillingConfigurationValidator(AppleBillingProperties properties, Environment environment) {
         return arguments -> {
@@ -37,7 +47,8 @@ class AppleBillingConfiguration {
                 }
             }
             if (properties.purchaseAvailable() && properties.products().isEmpty()) {
-                throw new IllegalStateException("At least one App Store product mapping is required when purchase availability is enabled");
+                org.slf4j.LoggerFactory.getLogger(AppleBillingConfiguration.class)
+                    .warn("app.billing.apple.products empty; purchase catalog disabled");
             }
         };
     }

@@ -1,0 +1,60 @@
+{
+  "free": {
+    "effectiveTier": "FREE",
+    "legacyTier": "FREE",
+    "status": "ACTIVE",
+    "source": "DEFAULT_FREE",
+    "expiresAt": null,
+    "capabilities": [
+      "BASIC_SOLVE"
+    ]
+  },
+  "restored": {
+    "effectiveTier": "COACH_PRO",
+    "legacyTier": "PRO_PLUS",
+    "status": "ACTIVE",
+    "source": "APP_STORE_SUBSCRIPTION",
+    "expiresAt": "2027-01-10T00:00:00Z",
+    "capabilities": [
+      "BASIC_SOLVE",
+      "VERIFIED_SOLVE",
+      "ADVANCED_TUTOR",
+      "MISTAKE_HISTORY",
+      "ADAPTIVE_PLAN",
+      "MOCK_EXAM",
+      "PREMIUM_MODEL_FALLBACK"
+    ]
+  },
+  "canceledUntilExpiry": {
+    "effectiveTier": "COACH_PRO",
+    "legacyTier": "PRO_PLUS",
+    "status": "ACTIVE",
+    "source": "APP_STORE_SUBSCRIPTION",
+    "expiresAt": "2027-01-10T00:00:00Z",
+    "capabilities": [
+      "BASIC_SOLVE",
+      "VERIFIED_SOLVE",
+      "ADVANCED_TUTOR",
+      "MISTAKE_HISTORY",
+      "ADAPTIVE_PLAN",
+      "MOCK_EXAM",
+      "PREMIUM_MODEL_FALLBACK"
+    ]
+  },
+  "expired": {
+    "effectiveTier": "FREE",
+    "legacyTier": "PRO_PLUS",
+    "status": "EXPIRED",
+    "source": "APP_STORE_SUBSCRIPTION",
+    "expiresAt": "2027-01-10T00:00:00Z",
+    "capabilities": []
+  },
+  "revoked": {
+    "effectiveTier": "FREE",
+    "legacyTier": "PRO_PLUS",
+    "status": "REVOKED",
+    "source": "APP_STORE_SUBSCRIPTION",
+    "expiresAt": "2027-01-10T00:00:00Z",
+    "capabilities": []
+  }
+}

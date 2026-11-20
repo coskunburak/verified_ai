@@ -41,7 +41,11 @@ import org.springframework.test.context.TestPropertySource;
     "app.billing.apple.products[0].app-store-product-id=com.verifiedai.pro.monthly",
     "app.billing.apple.products[0].entitlement-tier=PRO",
     "app.billing.apple.products[0].subscription-group-id=verifiedai-main",
-    "app.billing.apple.products[0].billing-period=P1M"
+    "app.billing.apple.products[0].billing-period=P1M",
+    "app.billing.apple.products[1].internal-plan-id=yks_season",
+    "app.billing.apple.products[1].app-store-product-id=local_dev_season",
+    "app.billing.apple.products[1].entitlement-tier=PRO_PLUS",
+    "app.billing.apple.products[1].billing-period=P6M"
 })
 final class AppleBillingApplicationServiceTest extends PostgresIntegrationTestSupport {
     private static final Instant NOW = Instant.parse("2026-08-08T00:00:00Z");
@@ -88,7 +92,7 @@ final class AppleBillingApplicationServiceTest extends PostgresIntegrationTestSu
         assertThat(first.appAccountToken()).isEqualTo(second.appAccountToken());
         assertThat(first.purchaseAvailable()).isTrue();
         assertThat(first.products()).extracting(AppleBillingProductResult::appStoreProductId)
-            .containsExactly("com.verifiedai.pro.monthly");
+            .containsExactly("com.verifiedai.pro.monthly", "local_dev_season");
         assertThat(count("commerce_account_tokens")).isEqualTo(1);
     }
 
@@ -180,6 +184,38 @@ final class AppleBillingApplicationServiceTest extends PostgresIntegrationTestSu
         assertThat(appStoreServerGateway.transactionHistoryRequested()).isFalse();
         assertThat(count("app_store_transactions")).isEqualTo(1);
         assertThat(count("app_store_subscriptions")).isEqualTo(1);
+    }
+
+    @Test void seasonTermComesFromVerifiedTransactionAndCannotBeExtendedOnReplay() {
+        UUID owner = insertUser();
+        UUID token = appleBillingApplicationService.configuration(owner).appAccountToken();
+        Instant end = NOW.plus(java.time.Duration.ofDays(183));
+        String signed = transaction("101005", "101004", token, end, null)
+            .replace("com.verifiedai.pro.monthly", "local_dev_season");
+        var result = appleBillingApplicationService.submitTransaction(owner, signed, "local_dev_season");
+        assertThat(result.entitlement().tier()).isEqualTo(EntitlementTier.PRO_PLUS);
+        assertThat(result.entitlement().expiresAt()).isEqualTo(end);
+        assertThatThrownBy(() -> appleBillingApplicationService.submitTransaction(owner,
+            signed.replace(end.toString(), end.plusSeconds(3600).toString()), "local_dev_changed"))
+            .isInstanceOf(org.springframework.dao.DataIntegrityViolationException.class);
+    }
+
+    @Autowired BillingLifecycleContributor lifecycle;
+
+    @Test
+    void deletionRetainsMinimizedFinancialHistoryAndIsolatesAccounts() {
+        UUID owner = insertUser();
+        UUID other = insertUser();
+        UUID ownerToken = appleBillingApplicationService.configuration(owner).appAccountToken();
+        UUID otherToken = appleBillingApplicationService.configuration(other).appAccountToken();
+        appleBillingApplicationService.submitTransaction(owner, transaction("101001", "101000", ownerToken, FUTURE_EXPIRY, null), "local_dev_order");
+        assertThat(lifecycle.exportUserData(other).toString()).doesNotContain("101001", "101000");
+        lifecycle.deleteUserData(owner, NOW);
+        lifecycle.deleteUserData(owner, NOW.plusSeconds(1));
+        assertThat(lifecycle.exportUserData(owner).toString()).contains("101001").doesNotContain(ownerToken.toString());
+        assertThat(appleBillingApplicationService.configuration(other).appAccountToken()).isEqualTo(otherToken);
+        assertThat(count("app_store_transactions")).isEqualTo(1);
+        assertThat(count("commerce_account_tokens")).isEqualTo(1);
     }
 
     private UUID insertUser() {

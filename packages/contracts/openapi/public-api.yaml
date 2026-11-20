@@ -2307,6 +2307,164 @@ paths:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
 
+  /v1/billing/offers:
+    get:
+      summary: Read offers for the authenticated caller
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: locale
+          schema: {type: string, enum: [en-US, tr-TR], default: en-US}
+      responses:
+        "200":
+          description: Private no-store response
+          headers:
+            Cache-Control:
+              schema: {type: string}
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/BillingOffersV1"}
+        "400":
+          description: Unsupported locale
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/ProblemDetails"}
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/ProblemDetails"}
+  /api/v1/billing/offers:
+    get:
+      summary: Read offers for the authenticated caller
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: locale
+          schema: {type: string, enum: [en-US, tr-TR], default: en-US}
+      responses:
+        "200":
+          description: Private no-store response
+          headers:
+            Cache-Control:
+              schema: {type: string}
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/BillingOffersV1"}
+        "400":
+          description: Unsupported locale
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/ProblemDetails"}
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/ProblemDetails"}
+  /v1/billing/entitlements:
+    get:
+      summary: Read entitlements for the authenticated caller
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Private no-store response
+          headers:
+            Cache-Control:
+              schema: {type: string}
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/EntitlementV2"}
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/ProblemDetails"}
+  /api/v1/billing/entitlements:
+    get:
+      summary: Read entitlements for the authenticated caller
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Private no-store response
+          headers:
+            Cache-Control:
+              schema: {type: string}
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/EntitlementV2"}
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/ProblemDetails"}
+  /api/v1/billing/interactions/{kind}:
+    post:
+      summary: Count an authenticated explicit billing interaction
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: kind
+          required: true
+          schema: {type: string, enum: [paywall_viewed, restore_purchases_tapped]}
+      responses:
+        "200":
+          description: Whether the interaction was recorded
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [recorded]
+                additionalProperties: false
+                properties:
+                  recorded: {type: boolean}
+        "400":
+          description: Unknown interaction
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/ProblemDetails"}
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/ProblemDetails"}
+
+  /v1/billing/interactions/{kind}:
+    post:
+      summary: Count an authenticated explicit billing interaction
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: kind
+          required: true
+          schema: {type: string, enum: [paywall_viewed, restore_purchases_tapped]}
+      responses:
+        "200":
+          description: Whether the interaction was recorded
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [recorded]
+                additionalProperties: false
+                properties:
+                  recorded: {type: boolean}
+        "400":
+          description: Unknown interaction
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/ProblemDetails"}
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/ProblemDetails"}
+
   /api/v1/me/entitlements:
     get:
       summary: Return the backend-authoritative current entitlement
@@ -9768,6 +9926,364 @@ components:
           type: [string, "null"]
           format: date-time
 
+    BillingOffersV1:
+      {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "locale",
+          "enabled",
+          "reason",
+          "offers"
+        ],
+        "properties": {
+          "locale": {
+            "type": "string",
+            "enum": [
+              "en-US",
+              "tr-TR"
+            ]
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "AVAILABLE",
+              "UNAVAILABLE",
+              "FEATURE_DISABLED"
+            ]
+          },
+          "offers": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "offerCode",
+                "productId",
+                "family",
+                "billingPeriod",
+                "copyKey"
+              ],
+              "properties": {
+                "offerCode": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_]{0,47}$"
+                },
+                "productId": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,254}$"
+                },
+                "family": {
+                  "type": "string",
+                  "enum": [
+                    "PRO",
+                    "COACH_PRO",
+                    "YKS_SEASON_PASS"
+                  ]
+                },
+                "billingPeriod": {
+                  "type": "string",
+                  "enum": [
+                    "P1M",
+                    "P1Y",
+                    "P6M"
+                  ]
+                },
+                "copyKey": {
+                  "type": "string",
+                  "enum": [
+                    "billing.plan.pro",
+                    "billing.plan.coach_pro",
+                    "billing.plan.yks_season_pass"
+                  ]
+                }
+              },
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "family": {
+                        "const": "YKS_SEASON_PASS"
+                      }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "billingPeriod": {
+                        "const": "P6M"
+                      }
+                    }
+                  },
+                  "else": {
+                    "properties": {
+                      "billingPeriod": {
+                        "type": "string",
+                        "enum": [
+                          "P1M",
+                          "P1Y"
+                        ]
+                      }
+                    }
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "family": {
+                        "const": "PRO"
+                      }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "copyKey": {
+                        "const": "billing.plan.pro"
+                      }
+                    }
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "family": {
+                        "const": "COACH_PRO"
+                      }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "copyKey": {
+                        "const": "billing.plan.coach_pro"
+                      }
+                    }
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "family": {
+                        "const": "YKS_SEASON_PASS"
+                      }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "copyKey": {
+                        "const": "billing.plan.yks_season_pass"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "enabled": {
+                  "const": true
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "offers": {
+                  "minItems": 1
+                },
+                "reason": {
+                  "const": "AVAILABLE"
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "offers": {
+                  "maxItems": 0
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "FEATURE_DISABLED",
+                    "UNAVAILABLE"
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    EntitlementV2:
+      {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "effectiveTier",
+          "legacyTier",
+          "status",
+          "source",
+          "expiresAt",
+          "capabilities"
+        ],
+        "properties": {
+          "effectiveTier": {
+            "type": "string",
+            "enum": [
+              "FREE",
+              "PRO",
+              "COACH_PRO"
+            ]
+          },
+          "legacyTier": {
+            "type": "string",
+            "enum": [
+              "FREE",
+              "PRO",
+              "PRO_PLUS"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "GRACE_PERIOD",
+              "BILLING_RETRY",
+              "EXPIRED",
+              "REVOKED"
+            ]
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "DEFAULT_FREE",
+              "APP_STORE_SUBSCRIPTION",
+              "PROMOTIONAL",
+              "ADMIN_SUPPORT"
+            ]
+          },
+          "expiresAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "capabilities": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "enum": [
+                "BASIC_SOLVE",
+                "VERIFIED_SOLVE",
+                "ADVANCED_TUTOR",
+                "MISTAKE_HISTORY",
+                "ADAPTIVE_PLAN",
+                "MOCK_EXAM",
+                "PREMIUM_MODEL_FALLBACK"
+              ]
+            }
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "enum": [
+                    "EXPIRED",
+                    "REVOKED"
+                  ]
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "effectiveTier": {
+                  "const": "FREE"
+                },
+                "capabilities": {
+                  "maxItems": 0
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "legacyTier": {
+                  "const": "PRO_PLUS"
+                },
+                "status": {
+                  "enum": [
+                    "ACTIVE",
+                    "GRACE_PERIOD",
+                    "BILLING_RETRY"
+                  ]
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "effectiveTier": {
+                  "const": "COACH_PRO"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "legacyTier": {
+                  "const": "FREE"
+                },
+                "status": {
+                  "enum": [
+                    "ACTIVE",
+                    "GRACE_PERIOD",
+                    "BILLING_RETRY"
+                  ]
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "effectiveTier": {
+                  "const": "FREE"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "legacyTier": {
+                  "const": "PRO"
+                },
+                "status": {
+                  "enum": [
+                    "ACTIVE",
+                    "GRACE_PERIOD",
+                    "BILLING_RETRY"
+                  ]
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "effectiveTier": {
+                  "const": "PRO"
+                }
+              }
+            }
+          }
+        ]
+      }
     EntitlementResponse:
       type: object
       required: [id, userId, tier, source, status, effectiveAt, capabilities]

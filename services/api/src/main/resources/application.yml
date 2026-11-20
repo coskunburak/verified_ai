@@ -264,6 +264,8 @@ logging:
 
 # Deterministic local Socratic policy only; this never enables the AI TUTOR capability.
 verifiedai:
+  billing:
+    contextual-paywall-enabled: false
   mastery:
     decay-reassessment-enabled: ${MASTERY_DECAY_REASSESSMENT_ENABLED:false}
     evidence-stratified-enabled: ${MASTERY_EVIDENCE_STRATIFIED_ENABLED:false}

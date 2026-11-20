@@ -196,13 +196,18 @@ public class AppStoreBillingRepository {
     }
 
     public void upsertTransaction(UUID userId, VerifiedAppStoreTransaction transaction, String payloadDigest, Instant now) {
-        jdbcTemplate.update(
+        upsertTransaction(userId, transaction, payloadDigest, now, null);
+    }
+
+    public boolean upsertTransaction(UUID userId, VerifiedAppStoreTransaction transaction, String payloadDigest, Instant now, String offerFamily) {
+        UUID candidate = UUID.randomUUID();
+        var ids = jdbcTemplate.queryForList(
             """
             insert into app_store_transactions (
                 id, user_id, transaction_id, original_transaction_id, product_id, subscription_group_id,
                 app_account_token, environment, purchase_date, original_purchase_date, expires_date,
-                revocation_date, transaction_reason, ownership_type, signed_date, payload_digest, created_at, updated_at
-            ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                revocation_date, transaction_reason, ownership_type, signed_date, payload_digest, created_at, updated_at, offer_family
+            ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             on conflict (environment, transaction_id) do update set
                 user_id = excluded.user_id,
                 original_transaction_id = excluded.original_transaction_id,
@@ -219,8 +224,10 @@ public class AppStoreBillingRepository {
                 payload_digest = excluded.payload_digest,
                 updated_at = excluded.updated_at
             where app_store_transactions.user_id = excluded.user_id
+            returning id
             """,
-            UUID.randomUUID(),
+            UUID.class,
+            candidate,
             userId,
             transaction.transactionId(),
             transaction.originalTransactionId(),
@@ -237,8 +244,10 @@ public class AppStoreBillingRepository {
             timestamp(transaction.signedDate()),
             payloadDigest,
             timestamp(now),
-            timestamp(now)
+            timestamp(now),
+            offerFamily
         );
+        return ids.contains(candidate);
     }
 
     public void upsertSubscription(

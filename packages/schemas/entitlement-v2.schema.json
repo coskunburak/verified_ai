@@ -1,0 +1,167 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:verifiedai:entitlement-v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "effectiveTier",
+    "legacyTier",
+    "status",
+    "source",
+    "expiresAt",
+    "capabilities"
+  ],
+  "properties": {
+    "effectiveTier": {
+      "type": "string",
+      "enum": [
+        "FREE",
+        "PRO",
+        "COACH_PRO"
+      ]
+    },
+    "legacyTier": {
+      "type": "string",
+      "enum": [
+        "FREE",
+        "PRO",
+        "PRO_PLUS"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "ACTIVE",
+        "GRACE_PERIOD",
+        "BILLING_RETRY",
+        "EXPIRED",
+        "REVOKED"
+      ]
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "DEFAULT_FREE",
+        "APP_STORE_SUBSCRIPTION",
+        "PROMOTIONAL",
+        "ADMIN_SUPPORT"
+      ]
+    },
+    "expiresAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "capabilities": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "BASIC_SOLVE",
+          "VERIFIED_SOLVE",
+          "ADVANCED_TUTOR",
+          "MISTAKE_HISTORY",
+          "ADAPTIVE_PLAN",
+          "MOCK_EXAM",
+          "PREMIUM_MODEL_FALLBACK"
+        ]
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "enum": [
+              "EXPIRED",
+              "REVOKED"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "effectiveTier": {
+            "const": "FREE"
+          },
+          "capabilities": {
+            "maxItems": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "legacyTier": {
+            "const": "PRO_PLUS"
+          },
+          "status": {
+            "enum": [
+              "ACTIVE",
+              "GRACE_PERIOD",
+              "BILLING_RETRY"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "effectiveTier": {
+            "const": "COACH_PRO"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "legacyTier": {
+            "const": "FREE"
+          },
+          "status": {
+            "enum": [
+              "ACTIVE",
+              "GRACE_PERIOD",
+              "BILLING_RETRY"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "effectiveTier": {
+            "const": "FREE"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "legacyTier": {
+            "const": "PRO"
+          },
+          "status": {
+            "enum": [
+              "ACTIVE",
+              "GRACE_PERIOD",
+              "BILLING_RETRY"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "effectiveTier": {
+            "const": "PRO"
+          }
+        }
+      }
+    }
+  ]
+}

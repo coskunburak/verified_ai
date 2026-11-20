@@ -127,6 +127,11 @@ public class EntitlementApplicationService implements CapabilityAccessPolicy {
         lockUserEntitlement(userId);
         EntitlementJpaEntity entitlement = entitlementRepository.findByUserId(userId)
             .orElseGet(() -> EntitlementJpaEntity.defaultFree(userId, now));
+        if (entitlement.tier().equals(EntitlementTier.FREE.name())
+            && entitlement.status().equals(EntitlementStatus.REVOKED.name())
+            && entitlement.source().equals(EntitlementSource.DEFAULT_FREE.name())) {
+            return toResult(entitlement);
+        }
         entitlement.applyAccountDeleted(now);
         EntitlementResult result = toResult(entitlementRepository.saveAndFlush(entitlement));
         metrics.resolution(result.tier(), result.status());

@@ -17,8 +17,12 @@ class AppleProductCatalog {
 
     AppleProductCatalog(AppleBillingProperties properties) {
         this.properties = properties;
+        var multiplicity = properties.products().stream().map(AppleBillingProperties.Product::appStoreProductId)
+            .filter(java.util.Objects::nonNull)
+            .collect(java.util.stream.Collectors.groupingBy(id -> id, java.util.stream.Collectors.counting()));
         this.products = properties.products().stream()
             .filter(product -> product.appStoreProductId() != null && !product.appStoreProductId().isBlank())
+            .filter(product -> multiplicity.get(product.appStoreProductId()) == 1L && product.entitlementTier() != null)
             .map(product -> new AppStoreProductMapping(
                 product.internalPlanId(),
                 product.appStoreProductId(),

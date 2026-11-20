@@ -265,3 +265,7 @@ future policy versions append history. No paid inference is introduced and creat
 - Presentation-side mathematical accessibility transforms inline/display LaTeX in exam stems and options into deterministic `tr-TR` VoiceOver spoken strings across Dynamic Type `xSmall`–`AX3` and fails explicitly on malformed/unknown tokens without invoking LLMs or modifying `services/math-verifier/`.
 - All `exam_integrity_audit_logs` and `exam_integrity_used_nonces` rows enforce `training_eligible = FALSE`, exclude raw student answers/signatures, purge child-first on account deletion, and age out on bounded retention TTL.
 - `GET /v1/admin/exams/quality-gate` is read-only, `ROLE_ADMIN`-restricted, `$0.00` LLM cost, and fail-closed `BLOCKED` unless real owner-run Flyway (`V054`–`V064`), staging latency (`< 350ms` P95 on `CNT-LOS-10` and `CNT-LOS-11`), defect (`P0=0`, `P1=0`), VoiceOver, and privacy evidence are present.
+
+## INV-MON-001 and timer suppression
+
+An accepted free attempt retains full First-Error Diagnosis and Counterexample access after an entitlement or catalog change. A completed unassisted twin can expose a separate dismissible subscription invitation. An active exam, diagnostic or solo twin timer, or unresolved timer state, suppresses presentation including explicit requests.

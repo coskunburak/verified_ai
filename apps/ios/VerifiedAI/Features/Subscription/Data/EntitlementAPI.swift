@@ -2,6 +2,19 @@ import Foundation
 
 protocol EntitlementServicing: Sendable {
     func currentEntitlement() async throws -> Entitlement
+    func currentPresentationTier() async throws -> String
+}
+
+extension EntitlementServicing {
+    func currentPresentationTier() async throws -> String {
+        throw NetworkError.decoding("missing_billing_projection")
+    }
+}
+
+private struct BillingEntitlementProjection: Decodable, Sendable {
+    let effectiveTier: String
+    let legacyTier: EntitlementTier
+    let status: EntitlementStatus
 }
 
 final class EntitlementAPI: EntitlementServicing, @unchecked Sendable {
@@ -9,6 +22,16 @@ final class EntitlementAPI: EntitlementServicing, @unchecked Sendable {
 
     init(apiClient: APIClient) {
         self.apiClient = apiClient
+    }
+
+    func currentPresentationTier() async throws -> String {
+        let response: HTTPResponse<BillingEntitlementProjection> = try await apiClient.send(
+            HTTPRequest(endpoint: Endpoint(path: "/api/v1/billing/entitlements")))
+        let projection = response.body
+        let expected = projection.status.grantsAccess
+            ? (projection.legacyTier == .proPlus ? "COACH_PRO" : projection.legacyTier.rawValue) : "FREE"
+        guard projection.effectiveTier == expected else { throw NetworkError.decoding("inconsistent_billing_projection") }
+        return expected
     }
 
     func currentEntitlement() async throws -> Entitlement {

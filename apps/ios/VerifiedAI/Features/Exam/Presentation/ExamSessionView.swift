@@ -4,6 +4,12 @@ public struct ExamSessionView: View {
     @ObservedObject public var viewModel: ExamSessionViewModel
     @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
 
+    @Environment(\.billingTimerCoordinator) private var billingTimers
+
+    private var billingTimer: PaywallTriggerCoordinator.Timer {
+        viewModel.session.map { $0.status.isActive ? .active : .inactive } ?? .unknown
+    }
+
     public init(viewModel: ExamSessionViewModel) {
         self.viewModel = viewModel
     }
@@ -74,6 +80,7 @@ public struct ExamSessionView: View {
         .navigationBarTitleDisplayMode(.inline)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("exam.session.screen")
+            .onChange(of: billingTimer, initial: true) { _, value in billingTimers?.update(.exam, value) }
         .confirmationDialog(
             LocalizedStringKey("exam.session.submit.confirmation_title"),
             isPresented: $viewModel.showSubmitConfirmation,

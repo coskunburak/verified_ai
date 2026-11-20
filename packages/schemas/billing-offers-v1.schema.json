@@ -1,0 +1,193 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:verifiedai:billing-offers-v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "locale",
+    "enabled",
+    "reason",
+    "offers"
+  ],
+  "properties": {
+    "locale": {
+      "type": "string",
+      "enum": [
+        "en-US",
+        "tr-TR"
+      ]
+    },
+    "enabled": {
+      "type": "boolean"
+    },
+    "reason": {
+      "type": "string",
+      "enum": [
+        "AVAILABLE",
+        "UNAVAILABLE",
+        "FEATURE_DISABLED"
+      ]
+    },
+    "offers": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "offerCode",
+          "productId",
+          "family",
+          "billingPeriod",
+          "copyKey"
+        ],
+        "properties": {
+          "offerCode": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{0,47}$"
+          },
+          "productId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,254}$"
+          },
+          "family": {
+            "type": "string",
+            "enum": [
+              "PRO",
+              "COACH_PRO",
+              "YKS_SEASON_PASS"
+            ]
+          },
+          "billingPeriod": {
+            "type": "string",
+            "enum": [
+              "P1M",
+              "P1Y",
+              "P6M"
+            ]
+          },
+          "copyKey": {
+            "type": "string",
+            "enum": [
+              "billing.plan.pro",
+              "billing.plan.coach_pro",
+              "billing.plan.yks_season_pass"
+            ]
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "family": {
+                  "const": "YKS_SEASON_PASS"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "billingPeriod": {
+                  "const": "P6M"
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "billingPeriod": {
+                  "type": "string",
+                  "enum": [
+                    "P1M",
+                    "P1Y"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "family": {
+                  "const": "PRO"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "copyKey": {
+                  "const": "billing.plan.pro"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "family": {
+                  "const": "COACH_PRO"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "copyKey": {
+                  "const": "billing.plan.coach_pro"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "family": {
+                  "const": "YKS_SEASON_PASS"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "copyKey": {
+                  "const": "billing.plan.yks_season_pass"
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "enabled": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "offers": {
+            "minItems": 1
+          },
+          "reason": {
+            "const": "AVAILABLE"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "offers": {
+            "maxItems": 0
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "FEATURE_DISABLED",
+              "UNAVAILABLE"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

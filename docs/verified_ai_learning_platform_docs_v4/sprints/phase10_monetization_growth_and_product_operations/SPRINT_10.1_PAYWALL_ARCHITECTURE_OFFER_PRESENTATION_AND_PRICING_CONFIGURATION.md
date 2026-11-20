@@ -427,3 +427,7 @@ Delivers the server-configured StoreKit 2 paywall experience (`Screen 12`) suppo
 - `roadmap/88_LEARNING_OS_MONETIZATION_GROWTH_AND_VALIDATION_PLAN.md`
 - `learning/85_PERSONAL_AI_MATHEMATICS_COACH_AND_DAILY_LEARNING_EXPERIENCE.md`
 <!-- LEARNING_OS_PRODUCTION_SPEC_V1:END -->
+
+## Sprint 10.1 implementation record
+
+Use [implementation map](SPRINT_10.1_IMPLEMENTATION_MAP.md), [execution report](SPRINT_10.1_EXECUTION_REPORT.md) and [acceptance matrix](SPRINT_10.1_ACCEPTANCE_MATRIX.md) for the implemented contract. Earlier example prices and SKU targets are planning data. The client uses StoreKit-localized product metadata; V065 contains no prices or production SKU seeds.

@@ -35,6 +35,7 @@ class BillingLifecycleContributor implements AccountDataLifecycleContributor {
     }
 
     @Override
+    @org.springframework.transaction.annotation.Transactional
     public void deleteUserData(UUID userId, Instant now) {
         jdbcTemplate.update("delete from commerce_account_tokens where user_id = ?", userId);
         entitlementApplicationService.applyAccountDeleted(userId, now);

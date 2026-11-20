@@ -2,6 +2,8 @@ import SwiftUI
 
 struct PaywallView: View {
     @Bindable var viewModel: PaywallViewModel
+    var contextual = false
+    var safeToPurchase: @MainActor () -> Bool = { true }
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -14,7 +16,7 @@ struct PaywallView: View {
                         Button {
                             dismiss()
                         } label: {
-                            Image(systemName: "xmark")
+                            Image(systemName: "xmark").frame(minWidth: 44, minHeight: 44)
                         }
                         .accessibilityLabel("Close")
                     }
@@ -22,7 +24,7 @@ struct PaywallView: View {
                         Button {
                             Task { await viewModel.restore() }
                         } label: {
-                            Image(systemName: "arrow.clockwise")
+                            Image(systemName: "arrow.clockwise").frame(minWidth: 44, minHeight: 44)
                         }
                         .accessibilityLabel("Restore Purchases")
                         .disabled(viewModel.state.isBusy)
@@ -30,7 +32,7 @@ struct PaywallView: View {
                 }
         }
         .task {
-            await viewModel.load()
+            if !contextual { await viewModel.load(force: true) }
         }
     }
 
@@ -49,7 +51,7 @@ struct PaywallView: View {
                 ProgressView()
                     .tint(ColorTokens.action)
                 if let message = viewModel.message {
-                    Text(message)
+                    Text(LocalizedStringKey(message))
                         .font(TypographyTokens.caption)
                         .foregroundStyle(ColorTokens.textSecondary)
                 }
@@ -60,17 +62,17 @@ struct PaywallView: View {
             statusView(icon: "hourglass", title: "Purchase pending", actionTitle: "Done") {
                 dismiss()
             }
-        case .completed(let entitlement):
-            statusView(icon: "checkmark.seal", title: "\(entitlement.tier.title) active", actionTitle: "Done") {
+        case .completed:
+            statusView(icon: "checkmark.seal", title: "billing.updated", actionTitle: "Done") {
                 dismiss()
             }
         case .offline:
-            statusView(icon: "wifi.slash", title: viewModel.message ?? "Offline", actionTitle: "Retry") {
-                Task { await viewModel.load(force: true) }
+            statusView(icon: "wifi.slash", title: viewModel.message ?? "Offline", actionTitle: contextual ? "Done" : "Retry") {
+                if contextual { dismiss() } else { Task { await viewModel.load(force: true) } }
             }
         case .empty:
-            statusView(icon: "cart", title: "No subscriptions available", actionTitle: "Retry") {
-                Task { await viewModel.load(force: true) }
+            statusView(icon: "cart", title: contextual ? "billing.priceUnavailable" : "No subscriptions available", actionTitle: contextual ? "Done" : "Retry") {
+                if contextual { dismiss() } else { Task { await viewModel.load(force: true) } }
             }
         }
     }
@@ -78,33 +80,15 @@ struct PaywallView: View {
     private var productList: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: SpacingTokens.lg) {
-                AppSurfaceCard {
-                    HStack(spacing: SpacingTokens.compact) {
-                        Image(systemName: "checkmark.seal.fill")
-                            .font(.title2.weight(.semibold))
-                            .foregroundStyle(ColorTokens.action)
-                            .frame(width: 44, height: 44)
-                            .background(ColorTokens.actionSoft)
-                            .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.medium, style: .continuous))
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Verified AI Pro")
-                                .font(TypographyTokens.sectionTitle)
-                                .foregroundStyle(ColorTokens.textPrimary)
-                            Text("Full formal verification, unlimited tutoring, and exam blueprint drills.")
-                                .font(TypographyTokens.caption)
-                                .foregroundStyle(ColorTokens.textSecondary)
-                        }
-                    }
-                }
-
                 if let message = viewModel.message {
                     AppNoticeBanner(LocalizedStringKey(stringLiteral: message), systemImage: "info.circle", tone: .warning)
                 }
 
                 ForEach(viewModel.products) { product in
                     AppSurfaceCard {
-                        HStack(alignment: .firstTextBaseline) {
+                        VStack(alignment: .leading) {
                             VStack(alignment: .leading, spacing: 2) {
+                                if let copyKey = product.copyKey { Text(LocalizedStringKey(copyKey)) }
                                 Text(product.displayName)
                                     .font(TypographyTokens.sectionTitle)
                                     .foregroundStyle(ColorTokens.textPrimary)
@@ -114,24 +98,32 @@ struct PaywallView: View {
                                         .foregroundStyle(ColorTokens.textSecondary)
                                 }
                             }
-                            Spacer()
+
                             Text(product.displayPrice)
                                 .font(TypographyTokens.metricValue)
                                 .foregroundStyle(ColorTokens.action)
                         }
+
+                        .accessibilityElement(children: .combine)
 
                         Text(product.description)
                             .font(TypographyTokens.caption)
                             .foregroundStyle(ColorTokens.textSecondary)
                             .fixedSize(horizontal: false, vertical: true)
 
+                        if let terms = product.introductoryTerms { Text(terms) }
+                        if product.subscriptionPeriod != nil { Text("billing.renewal") }
+                        if let termsURL { Link("billing.terms", destination: termsURL).frame(minHeight: 44) }
+                        if let privacyURL { Link("billing.privacy", destination: privacyURL).frame(minHeight: 44) }
+                        if contextual && (termsURL == nil || privacyURL == nil) { Text("billing.legalUnavailable") }
                         Button {
-                            Task { await viewModel.purchase(product) }
+                            Task { await viewModel.purchase(product, allowed: safeToPurchase) }
                         } label: {
                             Label("Choose \(product.displayName)", systemImage: "cart.badge.plus")
                         }
                         .buttonStyle(AppPrimaryButtonStyle())
-                        .disabled(viewModel.state.isBusy)
+                        .accessibilityHint(Text("billing.purchaseHint"))
+                        .disabled(viewModel.state.isBusy || !product.supportedTerms || (contextual && (termsURL == nil || privacyURL == nil)))
                     }
                 }
             }
@@ -140,18 +132,27 @@ struct PaywallView: View {
         .background(ColorTokens.canvas.ignoresSafeArea())
     }
 
+    private var termsURL: URL? { legalURL("BillingTermsURL") }
+    private var privacyURL: URL? { legalURL("BillingPrivacyURL") }
+
+    private func legalURL(_ key: String) -> URL? {
+        guard let value = Bundle.main.object(forInfoDictionaryKey: key) as? String,
+              let url = URL(string: value), url.scheme == "https", url.host != nil else { return nil }
+        return url
+    }
+
     private func statusView(icon: String, title: String, actionTitle: String, action: @escaping () -> Void) -> some View {
         VStack(alignment: .leading, spacing: SpacingTokens.md) {
             AppSurfaceCard {
-                Label(title, systemImage: icon)
+                Label(LocalizedStringKey(title), systemImage: icon)
                     .font(TypographyTokens.sectionTitle)
                     .foregroundStyle(ColorTokens.textPrimary)
                 if let message = viewModel.message {
-                    Text(message)
+                    Text(LocalizedStringKey(message))
                         .font(TypographyTokens.caption)
                         .foregroundStyle(ColorTokens.textSecondary)
                 }
-                Button(actionTitle, action: action)
+                Button(LocalizedStringKey(actionTitle), action: action)
                     .buttonStyle(AppPrimaryButtonStyle())
             }
         }

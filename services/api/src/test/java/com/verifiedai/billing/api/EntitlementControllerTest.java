@@ -102,6 +102,73 @@ final class EntitlementControllerTest extends PostgresIntegrationTestSupport {
         assertThat(response.body()).contains("\"code\":\"AUTH_TOKEN_EXPIRED\"");
     }
 
+    @Test
+    void twinsRequireAuthenticationAndReturnIdenticalPrivateDocuments() throws Exception {
+        var session = signIn("billing-offer-reader");
+        for (String resource : new String[]{"offers?locale=tr-TR", "entitlements"}) {
+            String first = null;
+            for (String prefix : new String[]{"/v1", "/api/v1"}) {
+                String path = prefix + "/billing/" + resource;
+                var anonymous = httpClient.send(HttpRequest.newBuilder(uri(path)).GET().build(),
+                    HttpResponse.BodyHandlers.ofString());
+                assertThat(anonymous.statusCode()).isEqualTo(401);
+                var response = httpClient.send(authorized(session, path).GET().build(), HttpResponse.BodyHandlers.ofString());
+                assertThat(response.statusCode()).isEqualTo(200);
+                assertThat(response.headers().firstValue("Cache-Control").orElse("")).contains("no-store");
+                if (first != null) assertThat(response.body()).isEqualTo(first);
+                first = response.body();
+                assertThat(first).contains(resource.startsWith("offers") ? "FEATURE_DISABLED" : "effectiveTier");
+            }
+        }
+    }
+
+    @Test
+    void unsupportedOfferLocaleUsesValidationEnvelope() throws Exception {
+        var response = httpClient.send(authorized(signIn("invalid-locale"), "/v1/billing/offers?locale=xx")
+            .GET().build(), HttpResponse.BodyHandlers.ofString());
+        assertThat(response.statusCode()).isEqualTo(400);
+        assertThat(response.body()).contains("REQUEST_VALIDATION_FAILED");
+    }
+
+    @Test
+    void storageCoachRemainsVisibleToLegacyButOnlyBelongsToItsOwner() throws Exception {
+        var owner = signIn("local_dev_coach");
+        var other = signIn("local_dev_other");
+        httpClient.send(authorized(owner, "/api/v1/me/entitlements").GET().build(), HttpResponse.BodyHandlers.ofString());
+        jdbcTemplate.update("update entitlements set tier='PRO_PLUS' where user_id=?", owner.userId());
+        var legacy = httpClient.send(authorized(owner, "/api/v1/me/entitlements").GET().build(), HttpResponse.BodyHandlers.ofString());
+        assertThat(legacy.body()).contains("\"tier\":\"PRO_PLUS\"").doesNotContain("effectiveTier");
+        var projected = httpClient.send(authorized(owner, "/v1/billing/entitlements").GET().build(), HttpResponse.BodyHandlers.ofString());
+        assertThat(projected.body()).contains("COACH_PRO", "PRO_PLUS", "MOCK_EXAM").doesNotContain("userId");
+        var foreign = httpClient.send(authorized(other, "/v1/billing/entitlements?userId=" + owner.userId())
+            .GET().build(), HttpResponse.BodyHandlers.ofString());
+        assertThat(foreign.body()).contains("FREE").doesNotContain("COACH_PRO", "PRO_PLUS");
+    }
+
+    @Test void bothBillingAliasesRejectRevokedSessions() throws Exception {
+        var session = signIn("local_dev_revoked_billing");
+        identityApplicationService.logout(session.sessionId());
+        for (String prefix : new String[]{"/api/v1/billing/", "/v1/billing/"}) {
+            for (String resource : new String[]{"entitlements", "offers"}) {
+                var response = httpClient.send(authorized(session, prefix + resource).GET().build(),
+                    HttpResponse.BodyHandlers.ofString());
+                assertThat(response.statusCode()).isEqualTo(401);
+            }
+        }
+    }
+
+    @Autowired BillingReadController billingReads;
+
+    @Test void mockMvcDisabledResponseHasNoPriceAndNoImpression() throws Exception {
+        var mvc = org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup(billingReads).build();
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/v1/billing/offers"))
+            .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath("$.offers").isEmpty())
+            .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath("$.enabled").value(false))
+            .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath("$.price").doesNotExist());
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post("/v1/billing/interactions/paywall_viewed"))
+            .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath("$.recorded").value(false));
+    }
+
     private AuthSessionResult signIn(String subject) {
         return identityApplicationService.signInWithApple(new AppleSignInCommand(subject, "unused-code", "nonce"));
     }

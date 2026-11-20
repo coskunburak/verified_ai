@@ -14,6 +14,16 @@ class AppleBillingMetrics {
         this.meterRegistry = meterRegistry;
     }
 
+    void confirmedAfterCommit(boolean trial) {
+        org.springframework.transaction.support.TransactionSynchronizationManager.registerSynchronization(
+            new org.springframework.transaction.support.TransactionSynchronization() {
+                @Override public void afterCommit() {
+                    meterRegistry.counter("billing.subscription_purchased").increment();
+                    if (trial) meterRegistry.counter("billing.trial_started").increment();
+                }
+            });
+    }
+
     void purchaseEvidenceAccepted(AppStoreSubscriptionStatus status, boolean duplicate) {
         Counter.builder("billing.apple.purchase_evidence.accepted.total")
             .tag("subscription_status", status.name())

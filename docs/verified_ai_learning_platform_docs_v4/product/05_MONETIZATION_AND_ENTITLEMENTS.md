@@ -109,3 +109,7 @@ The backend may enforce fair-use and advanced-reasoning quotas. Limits must be t
 
 Pricing experiments require monitoring of AI COGS per paid learner and gross-margin impact. A model-cost optimization cannot silently reduce verification quality for an existing paid promise.
 <!-- HYBRID_AI_STRATEGY_V3:END -->
+
+## Offer display and legacy entitlements
+
+PRO_PLUS subscriptions project to COACH_PRO for display. YKS_SEASON_PASS is a six-month purchase offer with receipt-bounded validity. Accepted free solutions retain their complete diagnosis and counterexample. During active or unresolved timers all contextual purchase invitations are suppressed.

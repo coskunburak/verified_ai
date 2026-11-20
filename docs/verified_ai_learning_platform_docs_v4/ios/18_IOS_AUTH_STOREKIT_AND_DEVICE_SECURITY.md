@@ -67,3 +67,7 @@ Camera/photo permissions are requested just-in-time with clear purpose. Privacy 
 ## Logging
 
 Never log identity tokens, refresh tokens, provider secrets, full transaction signatures or raw student images.
+
+## StoreKit 2 and Screen 12
+
+Screen 12 loads a fresh server whitelist, matches the Apple product and period, displays the localized full charge, and submits verified signed transactions through the existing backend before finishing them. Restore shares this pipeline. The app requires published HTTPS legal URLs for contextual checkout. Client entitlement caches never authorize a new offer.
