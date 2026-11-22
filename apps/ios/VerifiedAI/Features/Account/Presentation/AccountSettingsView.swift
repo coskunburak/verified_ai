@@ -5,6 +5,7 @@ struct AccountSettingsView: View {
     var weeklyReportViewModel: WeeklyProgressReportViewModel? = nil
     var environmentName: String? = nil
     var entitlement: Entitlement? = nil
+    var quotaSummary: QuotaSummary? = nil
     let onAccountDeleted: () -> Void
     var onSignOut: (() -> Void)? = nil
 
@@ -16,6 +17,9 @@ struct AccountSettingsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: SpacingTokens.lg) {
                 accountSection
+                if let quotaSummary {
+                    QuotaUsageCardView(summary: quotaSummary)
+                }
                 appearanceSection
                 if let weeklyReportViewModel {
                     weeklyReportSection(weeklyReportViewModel)

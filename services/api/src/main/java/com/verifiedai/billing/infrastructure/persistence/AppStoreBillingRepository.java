@@ -224,6 +224,9 @@ public class AppStoreBillingRepository {
                 payload_digest = excluded.payload_digest,
                 updated_at = excluded.updated_at
             where app_store_transactions.user_id = excluded.user_id
+              and app_store_transactions.revocation_date is null
+              and (excluded.revocation_date is not null or app_store_transactions.signed_date is null
+                   or excluded.signed_date >= app_store_transactions.signed_date)
             returning id
             """,
             UUID.class,
@@ -256,21 +259,28 @@ public class AppStoreBillingRepository {
         VerifiedAppStoreRenewalInfo renewalInfo,
         AppStoreProductMapping product,
         AppStoreSubscriptionStatus status,
-        Instant now
+        Instant now, Instant stateSignedAt
     ) {
+        if (status == AppStoreSubscriptionStatus.REVOKED) {
+            jdbcTemplate.update("""
+                update app_store_transactions set access_revoked=true
+                where user_id=? and environment=? and transaction_id=?
+                """, userId, transaction.environment().name(), transaction.transactionId());
+        }
         jdbcTemplate.update(
             """
             insert into app_store_subscriptions (
                 id, user_id, original_transaction_id, current_transaction_id, product_id, subscription_group_id,
                 environment, status, auto_renew_status, renewal_product_id, expires_at, grace_period_expires_at,
-                revoked_at, last_transaction_signed_at, last_renewal_signed_at, last_reconciled_at, created_at, updated_at
-            ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                revoked_at, last_transaction_signed_at, last_renewal_signed_at, last_reconciled_at, created_at, updated_at, state_signed_at
+            ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             on conflict (environment, original_transaction_id) do update set
                 user_id = excluded.user_id,
                 current_transaction_id = excluded.current_transaction_id,
                 product_id = excluded.product_id,
                 subscription_group_id = excluded.subscription_group_id,
                 status = excluded.status,
+                state_signed_at = excluded.state_signed_at,
                 auto_renew_status = excluded.auto_renew_status,
                 renewal_product_id = excluded.renewal_product_id,
                 expires_at = excluded.expires_at,
@@ -282,6 +292,25 @@ public class AppStoreBillingRepository {
                 updated_at = excluded.updated_at,
                 version = app_store_subscriptions.version + 1
             where app_store_subscriptions.user_id = excluded.user_id
+              and ((excluded.status='REVOKED' and excluded.current_transaction_id=app_store_subscriptions.current_transaction_id)
+                or ((app_store_subscriptions.status <> 'REVOKED'
+                     or excluded.current_transaction_id <> app_store_subscriptions.current_transaction_id)
+                    and (app_store_subscriptions.state_signed_at is null
+                      or excluded.state_signed_at > app_store_subscriptions.state_signed_at
+                      or (excluded.state_signed_at = app_store_subscriptions.state_signed_at
+                        and (excluded.status = app_store_subscriptions.status or excluded.status <> 'ACTIVE')))
+                    and not exists (select 1 from app_store_transactions old_t
+                        where old_t.environment=app_store_subscriptions.environment
+                          and old_t.transaction_id=app_store_subscriptions.current_transaction_id
+                          and old_t.purchase_date > (select new_t.purchase_date from app_store_transactions new_t
+                              where new_t.environment=excluded.environment and new_t.transaction_id=excluded.current_transaction_id))
+                    and (app_store_subscriptions.last_transaction_signed_at is null
+                      or excluded.last_transaction_signed_at >= app_store_subscriptions.last_transaction_signed_at)
+                    and (app_store_subscriptions.last_renewal_signed_at is null
+                      or excluded.last_renewal_signed_at >= app_store_subscriptions.last_renewal_signed_at
+                      or excluded.last_transaction_signed_at > app_store_subscriptions.last_transaction_signed_at)
+                    and not exists (select 1 from app_store_transactions t where t.environment=excluded.environment
+                      and t.transaction_id=excluded.current_transaction_id and (t.access_revoked or t.revocation_date is not null))))
             """,
             UUID.randomUUID(),
             userId,
@@ -300,31 +329,20 @@ public class AppStoreBillingRepository {
             renewalInfo == null ? null : timestamp(renewalInfo.signedDate()),
             timestamp(now),
             timestamp(now),
-            timestamp(now)
+            timestamp(now), timestamp(stateSignedAt)
         );
     }
 
-    public Optional<SubscriptionProjection> highestAccessibleSubscription(UUID userId) {
-        return jdbcTemplate.query(
-            """
-            select product_id, status, expires_at, original_transaction_id, environment
-            from app_store_subscriptions
-            where user_id = ?
-              and status in ('ACTIVE', 'GRACE_PERIOD', 'BILLING_RETRY')
-            order by
-              case status
-                  when 'ACTIVE' then 0
-                  when 'GRACE_PERIOD' then 1
-                  when 'BILLING_RETRY' then 2
-                  else 3
-              end,
-              expires_at desc nulls last,
-              updated_at desc
-            limit 1
-            """,
-            preparedStatement -> preparedStatement.setObject(1, userId),
-            resultSet -> resultSet.next() ? Optional.of(mapSubscriptionProjection(resultSet)) : Optional.empty()
-        );
+    public java.util.List<SubscriptionProjection> subscriptions(UUID userId) {
+        return jdbcTemplate.query("""
+            select s.product_id, s.environment, s.original_transaction_id, s.expires_at, s.grace_period_expires_at,
+                t.offer_family, t.purchase_date, case when t.access_revoked or t.revocation_date is not null
+                then 'REVOKED' else s.status end as status
+            from app_store_subscriptions s join app_store_transactions t on t.user_id=s.user_id
+                and t.environment=s.environment and t.transaction_id=s.current_transaction_id
+                and t.product_id=s.product_id and t.original_transaction_id=s.original_transaction_id
+            where s.user_id=? order by s.updated_at desc, s.original_transaction_id
+            """, (rs, row) -> mapSubscriptionProjection(rs), userId);
     }
 
     public record BillingEventRecord(String payloadHash, String result) {
@@ -335,7 +353,7 @@ public class AppStoreBillingRepository {
         AppStoreSubscriptionStatus status,
         Instant expiresAt,
         String originalTransactionId,
-        AppStoreEnvironment environment
+        AppStoreEnvironment environment, Instant graceUntil, Instant purchasedAt, boolean season
     ) {
     }
 
@@ -346,7 +364,10 @@ public class AppStoreBillingRepository {
             AppStoreSubscriptionStatus.valueOf(resultSet.getString("status")),
             expiresAt == null ? null : expiresAt.toInstant(),
             resultSet.getString("original_transaction_id"),
-            AppStoreEnvironment.valueOf(resultSet.getString("environment"))
+            AppStoreEnvironment.valueOf(resultSet.getString("environment")),
+            resultSet.getTimestamp("grace_period_expires_at") == null ? null : resultSet.getTimestamp("grace_period_expires_at").toInstant(),
+            resultSet.getTimestamp("purchase_date") == null ? null : resultSet.getTimestamp("purchase_date").toInstant(),
+            "YKS_SEASON_PASS".equals(resultSet.getString("offer_family"))
         );
     }
 

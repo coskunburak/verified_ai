@@ -1,0 +1,102 @@
+{
+  "identifier": "88B441B5-58E5-4631-9B7D-E62538A60002",
+  "nonRenewingSubscriptions": [],
+  "products": [],
+  "settings": {
+    "_billingGracePeriodEnabled": true,
+    "_locale": "en_US",
+    "_storefront": "USA",
+    "_failTransactionsEnabled": false
+  },
+  "subscriptionGroups": [
+    {
+      "id": "102",
+      "localizations": [],
+      "name": "Synthetic Sprint 10.2 plans",
+      "subscriptions": [
+        {
+          "adHocOffers": [],
+          "codeOffers": [],
+          "displayPrice": "1.00",
+          "familyShareable": false,
+          "groupNumber": 1,
+          "internalID": "1020000",
+          "introductoryOffer": null,
+          "localizations": [
+            {
+              "description": "Synthetic local Pro subscription",
+              "displayName": "Pro Monthly",
+              "locale": "en_US"
+            },
+            {
+              "description": "Yerel test Pro aboneliği",
+              "displayName": "Pro Aylık",
+              "locale": "tr_TR"
+            }
+          ],
+          "productID": "local_dev_pro_monthly",
+          "recurringSubscriptionPeriod": "P1M",
+          "referenceName": "Synthetic Pro P1M",
+          "subscriptionGroupID": "102",
+          "type": "RecurringSubscription"
+        },
+        {
+          "adHocOffers": [],
+          "codeOffers": [],
+          "displayPrice": "2.00",
+          "familyShareable": false,
+          "groupNumber": 2,
+          "internalID": "1020001",
+          "introductoryOffer": null,
+          "localizations": [
+            {
+              "description": "Synthetic local Coach Pro subscription",
+              "displayName": "Coach Pro Monthly",
+              "locale": "en_US"
+            },
+            {
+              "description": "Yerel test Koç Pro aboneliği",
+              "displayName": "Koç Pro Aylık",
+              "locale": "tr_TR"
+            }
+          ],
+          "productID": "local_dev_coach_monthly",
+          "recurringSubscriptionPeriod": "P1M",
+          "referenceName": "Synthetic Coach P1M",
+          "subscriptionGroupID": "102",
+          "type": "RecurringSubscription"
+        },
+        {
+          "adHocOffers": [],
+          "codeOffers": [],
+          "displayPrice": "5.00",
+          "familyShareable": false,
+          "groupNumber": 3,
+          "internalID": "1020002",
+          "introductoryOffer": null,
+          "localizations": [
+            {
+              "description": "Synthetic local Season Pass",
+              "displayName": "YKS Season Pass",
+              "locale": "en_US"
+            },
+            {
+              "description": "Yerel test YKS Sezon Paketi",
+              "displayName": "YKS Sezon Paketi",
+              "locale": "tr_TR"
+            }
+          ],
+          "productID": "local_dev_season_6m",
+          "recurringSubscriptionPeriod": "P6M",
+          "referenceName": "Synthetic Season P6M",
+          "subscriptionGroupID": "102",
+          "type": "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version": {
+    "major": 3,
+    "minor": 0
+  }
+}

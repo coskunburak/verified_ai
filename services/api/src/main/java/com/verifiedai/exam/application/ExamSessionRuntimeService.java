@@ -1,5 +1,7 @@
 package com.verifiedai.exam.application;
 
+import com.verifiedai.billing.application.CapabilityAccessPolicy;
+import com.verifiedai.billing.application.LearningOsCapability;
 import com.verifiedai.exam.application.ActiveExamNoHintGuard.HintGuardResult;
 import com.verifiedai.exam.application.AssessmentIntegrityGuard.ExamIntegrityProof;
 import com.verifiedai.exam.domain.AssembledAssessment;
@@ -59,6 +61,27 @@ import tools.jackson.databind.json.JsonMapper;
 
 @Service
 public class ExamSessionRuntimeService {
+    private CapabilityAccessPolicy access;
+    @org.springframework.beans.factory.annotation.Value("${verifiedai.billing.learning-os-tiers-enabled:false}")
+    private String learningOsFlag;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    public void setAccess(CapabilityAccessPolicy access) {
+        this.access = access;
+    }
+
+    private boolean tierGuardsEnabled() {
+        return "true".equalsIgnoreCase(learningOsFlag);
+    }
+
+    private void requireAccess(UUID userId, LearningOsCapability capability) {
+        if (access == null) {
+            throw new ApiProblemException(HttpStatus.SERVICE_UNAVAILABLE, ApiErrorCode.ENTITLEMENT_SYNC_FAILED,
+                "Entitlement verification unavailable", true, "RETRY");
+        }
+        access.require(userId, capability);
+    }
+
 
     private static final Logger LOG = LoggerFactory.getLogger(ExamSessionRuntimeService.class);
     private static final TypeReference<Map<String, Object>> MAP_TYPE = new TypeReference<>() {};
@@ -280,6 +303,7 @@ public class ExamSessionRuntimeService {
                 ));
         enforceBola(authenticatedUserId, assembly.userId());
 
+        if (tierGuardsEnabled() && assembly.blueprintMode() != com.verifiedai.exam.domain.AssessmentBlueprintMode.DIAGNOSTIC_BASELINE) requireAccess(authenticatedUserId, LearningOsCapability.TIMED_MOCK_SESSION);
         ExamDefinitionMetadata metadata = resolveExamMetadata(assembly);
         int graceBufferSeconds = command.offlineGraceBufferSeconds() == null
                 ? ExamClockPolicy.DEFAULT_OFFLINE_GRACE_BUFFER_SECONDS

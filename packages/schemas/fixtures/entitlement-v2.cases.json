@@ -7,7 +7,21 @@
     "expiresAt": null,
     "capabilities": [
       "BASIC_SOLVE"
-    ]
+    ],
+    "featureEnabled": true,
+    "packageCode": "FREE",
+    "gracePeriodExpiresAt": null,
+    "paidAccessActive": false,
+    "learningOsCapabilities": [
+      "ATTEMPT_VERIFY",
+      "DETERMINISTIC_TWIN"
+    ],
+    "historyAccess": {
+      "mistakePassport": "SUMMARY",
+      "skillMastery": "SUMMARY",
+      "priorExams": "SUMMARY"
+    },
+    "accessEvaluatedAt": "2026-11-20T12:00:00Z"
   },
   "restored": {
     "effectiveTier": "COACH_PRO",
@@ -23,7 +37,27 @@
       "ADAPTIVE_PLAN",
       "MOCK_EXAM",
       "PREMIUM_MODEL_FALLBACK"
-    ]
+    ],
+    "featureEnabled": true,
+    "packageCode": "COACH_PRO",
+    "gracePeriodExpiresAt": null,
+    "paidAccessActive": true,
+    "learningOsCapabilities": [
+      "ATTEMPT_VERIFY",
+      "DETERMINISTIC_TWIN",
+      "HYBRID_TWIN",
+      "MISTAKE_PASSPORT_FULL",
+      "DAILY_COACH_MISSION",
+      "MICRO_LESSON",
+      "EXAM_READINESS_SIMULATOR",
+      "TIMED_MOCK_SESSION"
+    ],
+    "historyAccess": {
+      "mistakePassport": "FULL",
+      "skillMastery": "FULL",
+      "priorExams": "SUMMARY"
+    },
+    "accessEvaluatedAt": "2026-11-20T12:00:00Z"
   },
   "canceledUntilExpiry": {
     "effectiveTier": "COACH_PRO",
@@ -39,7 +73,27 @@
       "ADAPTIVE_PLAN",
       "MOCK_EXAM",
       "PREMIUM_MODEL_FALLBACK"
-    ]
+    ],
+    "featureEnabled": true,
+    "packageCode": "COACH_PRO",
+    "gracePeriodExpiresAt": null,
+    "paidAccessActive": true,
+    "learningOsCapabilities": [
+      "ATTEMPT_VERIFY",
+      "DETERMINISTIC_TWIN",
+      "HYBRID_TWIN",
+      "MISTAKE_PASSPORT_FULL",
+      "DAILY_COACH_MISSION",
+      "MICRO_LESSON",
+      "EXAM_READINESS_SIMULATOR",
+      "TIMED_MOCK_SESSION"
+    ],
+    "historyAccess": {
+      "mistakePassport": "FULL",
+      "skillMastery": "FULL",
+      "priorExams": "SUMMARY"
+    },
+    "accessEvaluatedAt": "2026-11-20T12:00:00Z"
   },
   "expired": {
     "effectiveTier": "FREE",
@@ -47,7 +101,23 @@
     "status": "EXPIRED",
     "source": "APP_STORE_SUBSCRIPTION",
     "expiresAt": "2027-01-10T00:00:00Z",
-    "capabilities": []
+    "capabilities": [
+      "BASIC_SOLVE"
+    ],
+    "featureEnabled": true,
+    "packageCode": "FREE",
+    "gracePeriodExpiresAt": null,
+    "paidAccessActive": false,
+    "learningOsCapabilities": [
+      "ATTEMPT_VERIFY",
+      "DETERMINISTIC_TWIN"
+    ],
+    "historyAccess": {
+      "mistakePassport": "SUMMARY",
+      "skillMastery": "SUMMARY",
+      "priorExams": "SUMMARY"
+    },
+    "accessEvaluatedAt": "2026-11-20T12:00:00Z"
   },
   "revoked": {
     "effectiveTier": "FREE",
@@ -55,6 +125,532 @@
     "status": "REVOKED",
     "source": "APP_STORE_SUBSCRIPTION",
     "expiresAt": "2027-01-10T00:00:00Z",
-    "capabilities": []
+    "capabilities": [
+      "BASIC_SOLVE"
+    ],
+    "featureEnabled": true,
+    "packageCode": "FREE",
+    "gracePeriodExpiresAt": null,
+    "paidAccessActive": false,
+    "learningOsCapabilities": [
+      "ATTEMPT_VERIFY",
+      "DETERMINISTIC_TWIN"
+    ],
+    "historyAccess": {
+      "mistakePassport": "SUMMARY",
+      "skillMastery": "SUMMARY",
+      "priorExams": "SUMMARY"
+    },
+    "accessEvaluatedAt": "2026-11-20T12:00:00Z"
+  },
+  "proActive": {
+    "effectiveTier": "PRO",
+    "legacyTier": "PRO",
+    "status": "ACTIVE",
+    "source": "APP_STORE_SUBSCRIPTION",
+    "expiresAt": "2027-01-10T00:00:00Z",
+    "capabilities": [
+      "BASIC_SOLVE",
+      "VERIFIED_SOLVE",
+      "ADVANCED_TUTOR",
+      "MISTAKE_HISTORY",
+      "ADAPTIVE_PLAN"
+    ],
+    "featureEnabled": true,
+    "packageCode": "PRO",
+    "gracePeriodExpiresAt": null,
+    "paidAccessActive": true,
+    "learningOsCapabilities": [
+      "ATTEMPT_VERIFY",
+      "DETERMINISTIC_TWIN",
+      "HYBRID_TWIN",
+      "MISTAKE_PASSPORT_FULL"
+    ],
+    "historyAccess": {
+      "mistakePassport": "FULL",
+      "skillMastery": "FULL",
+      "priorExams": "SUMMARY"
+    },
+    "accessEvaluatedAt": "2026-11-20T12:00:00Z"
+  },
+  "coachActive": {
+    "effectiveTier": "COACH_PRO",
+    "legacyTier": "PRO_PLUS",
+    "status": "ACTIVE",
+    "source": "APP_STORE_SUBSCRIPTION",
+    "expiresAt": "2027-01-10T00:00:00Z",
+    "capabilities": [
+      "BASIC_SOLVE",
+      "VERIFIED_SOLVE",
+      "ADVANCED_TUTOR",
+      "MISTAKE_HISTORY",
+      "ADAPTIVE_PLAN",
+      "MOCK_EXAM",
+      "PREMIUM_MODEL_FALLBACK"
+    ],
+    "featureEnabled": true,
+    "packageCode": "COACH_PRO",
+    "gracePeriodExpiresAt": null,
+    "paidAccessActive": true,
+    "learningOsCapabilities": [
+      "ATTEMPT_VERIFY",
+      "DETERMINISTIC_TWIN",
+      "HYBRID_TWIN",
+      "MISTAKE_PASSPORT_FULL",
+      "DAILY_COACH_MISSION",
+      "MICRO_LESSON",
+      "EXAM_READINESS_SIMULATOR",
+      "TIMED_MOCK_SESSION"
+    ],
+    "historyAccess": {
+      "mistakePassport": "FULL",
+      "skillMastery": "FULL",
+      "priorExams": "SUMMARY"
+    },
+    "accessEvaluatedAt": "2026-11-20T12:00:00Z"
+  },
+  "seasonActive": {
+    "effectiveTier": "COACH_PRO",
+    "legacyTier": "PRO_PLUS",
+    "status": "ACTIVE",
+    "source": "APP_STORE_SUBSCRIPTION",
+    "expiresAt": "2027-01-10T00:00:00Z",
+    "capabilities": [
+      "BASIC_SOLVE",
+      "VERIFIED_SOLVE",
+      "ADVANCED_TUTOR",
+      "MISTAKE_HISTORY",
+      "ADAPTIVE_PLAN",
+      "MOCK_EXAM",
+      "PREMIUM_MODEL_FALLBACK"
+    ],
+    "packageCode": "YKS_SEASON_PASS",
+    "featureEnabled": true,
+    "gracePeriodExpiresAt": null,
+    "paidAccessActive": true,
+    "learningOsCapabilities": [
+      "ATTEMPT_VERIFY",
+      "DETERMINISTIC_TWIN",
+      "HYBRID_TWIN",
+      "MISTAKE_PASSPORT_FULL",
+      "DAILY_COACH_MISSION",
+      "MICRO_LESSON",
+      "EXAM_READINESS_SIMULATOR",
+      "TIMED_MOCK_SESSION"
+    ],
+    "historyAccess": {
+      "mistakePassport": "FULL",
+      "skillMastery": "FULL",
+      "priorExams": "SUMMARY"
+    },
+    "accessEvaluatedAt": "2026-11-20T12:00:00Z"
+  },
+  "graceWithinWindow": {
+    "effectiveTier": "COACH_PRO",
+    "legacyTier": "PRO_PLUS",
+    "status": "GRACE_PERIOD",
+    "source": "APP_STORE_SUBSCRIPTION",
+    "expiresAt": "2026-11-19T00:00:00Z",
+    "capabilities": [
+      "BASIC_SOLVE",
+      "VERIFIED_SOLVE",
+      "ADVANCED_TUTOR",
+      "MISTAKE_HISTORY",
+      "ADAPTIVE_PLAN",
+      "MOCK_EXAM",
+      "PREMIUM_MODEL_FALLBACK"
+    ],
+    "gracePeriodExpiresAt": "2026-11-22T00:00:00Z",
+    "featureEnabled": true,
+    "packageCode": "COACH_PRO",
+    "paidAccessActive": true,
+    "learningOsCapabilities": [
+      "ATTEMPT_VERIFY",
+      "DETERMINISTIC_TWIN",
+      "HYBRID_TWIN",
+      "MISTAKE_PASSPORT_FULL",
+      "DAILY_COACH_MISSION",
+      "MICRO_LESSON",
+      "EXAM_READINESS_SIMULATOR",
+      "TIMED_MOCK_SESSION"
+    ],
+    "historyAccess": {
+      "mistakePassport": "FULL",
+      "skillMastery": "FULL",
+      "priorExams": "SUMMARY"
+    },
+    "accessEvaluatedAt": "2026-11-20T12:00:00Z"
+  },
+  "graceExpired": {
+    "effectiveTier": "FREE",
+    "legacyTier": "PRO_PLUS",
+    "status": "GRACE_PERIOD",
+    "source": "APP_STORE_SUBSCRIPTION",
+    "expiresAt": "2026-11-17T00:00:00Z",
+    "capabilities": [
+      "BASIC_SOLVE"
+    ],
+    "gracePeriodExpiresAt": "2026-11-19T00:00:00Z",
+    "featureEnabled": true,
+    "packageCode": "FREE",
+    "paidAccessActive": false,
+    "learningOsCapabilities": [
+      "ATTEMPT_VERIFY",
+      "DETERMINISTIC_TWIN"
+    ],
+    "historyAccess": {
+      "mistakePassport": "SUMMARY",
+      "skillMastery": "SUMMARY",
+      "priorExams": "SUMMARY"
+    },
+    "accessEvaluatedAt": "2026-11-20T12:00:00Z"
+  },
+  "billingRetryBeforeExpiry": {
+    "effectiveTier": "COACH_PRO",
+    "legacyTier": "PRO_PLUS",
+    "status": "BILLING_RETRY",
+    "source": "APP_STORE_SUBSCRIPTION",
+    "expiresAt": "2027-01-10T00:00:00Z",
+    "capabilities": [
+      "BASIC_SOLVE",
+      "VERIFIED_SOLVE",
+      "ADVANCED_TUTOR",
+      "MISTAKE_HISTORY",
+      "ADAPTIVE_PLAN",
+      "MOCK_EXAM",
+      "PREMIUM_MODEL_FALLBACK"
+    ],
+    "featureEnabled": true,
+    "packageCode": "COACH_PRO",
+    "gracePeriodExpiresAt": null,
+    "paidAccessActive": true,
+    "learningOsCapabilities": [
+      "ATTEMPT_VERIFY",
+      "DETERMINISTIC_TWIN",
+      "HYBRID_TWIN",
+      "MISTAKE_PASSPORT_FULL",
+      "DAILY_COACH_MISSION",
+      "MICRO_LESSON",
+      "EXAM_READINESS_SIMULATOR",
+      "TIMED_MOCK_SESSION"
+    ],
+    "historyAccess": {
+      "mistakePassport": "FULL",
+      "skillMastery": "FULL",
+      "priorExams": "SUMMARY"
+    },
+    "accessEvaluatedAt": "2026-11-20T12:00:00Z"
+  },
+  "billingRetryAfterExpiry": {
+    "effectiveTier": "FREE",
+    "legacyTier": "PRO_PLUS",
+    "status": "BILLING_RETRY",
+    "source": "APP_STORE_SUBSCRIPTION",
+    "expiresAt": "2026-11-19T00:00:00Z",
+    "capabilities": [
+      "BASIC_SOLVE"
+    ],
+    "featureEnabled": true,
+    "packageCode": "FREE",
+    "gracePeriodExpiresAt": null,
+    "paidAccessActive": false,
+    "learningOsCapabilities": [
+      "ATTEMPT_VERIFY",
+      "DETERMINISTIC_TWIN"
+    ],
+    "historyAccess": {
+      "mistakePassport": "SUMMARY",
+      "skillMastery": "SUMMARY",
+      "priorExams": "SUMMARY"
+    },
+    "accessEvaluatedAt": "2026-11-20T12:00:00Z"
+  },
+  "refundImmediate": {
+    "effectiveTier": "FREE",
+    "legacyTier": "PRO_PLUS",
+    "status": "REVOKED",
+    "source": "APP_STORE_SUBSCRIPTION",
+    "expiresAt": "2027-01-10T00:00:00Z",
+    "capabilities": [
+      "BASIC_SOLVE"
+    ],
+    "featureEnabled": true,
+    "packageCode": "FREE",
+    "gracePeriodExpiresAt": null,
+    "paidAccessActive": false,
+    "learningOsCapabilities": [
+      "ATTEMPT_VERIFY",
+      "DETERMINISTIC_TWIN"
+    ],
+    "historyAccess": {
+      "mistakePassport": "SUMMARY",
+      "skillMastery": "SUMMARY",
+      "priorExams": "SUMMARY"
+    },
+    "accessEvaluatedAt": "2026-11-20T12:00:00Z"
+  },
+  "renewedAfterExpiry": {
+    "effectiveTier": "COACH_PRO",
+    "legacyTier": "PRO_PLUS",
+    "status": "ACTIVE",
+    "source": "APP_STORE_SUBSCRIPTION",
+    "expiresAt": "2027-01-10T00:00:00Z",
+    "capabilities": [
+      "BASIC_SOLVE",
+      "VERIFIED_SOLVE",
+      "ADVANCED_TUTOR",
+      "MISTAKE_HISTORY",
+      "ADAPTIVE_PLAN",
+      "MOCK_EXAM",
+      "PREMIUM_MODEL_FALLBACK"
+    ],
+    "featureEnabled": true,
+    "packageCode": "COACH_PRO",
+    "gracePeriodExpiresAt": null,
+    "paidAccessActive": true,
+    "learningOsCapabilities": [
+      "ATTEMPT_VERIFY",
+      "DETERMINISTIC_TWIN",
+      "HYBRID_TWIN",
+      "MISTAKE_PASSPORT_FULL",
+      "DAILY_COACH_MISSION",
+      "MICRO_LESSON",
+      "EXAM_READINESS_SIMULATOR",
+      "TIMED_MOCK_SESSION"
+    ],
+    "historyAccess": {
+      "mistakePassport": "FULL",
+      "skillMastery": "FULL",
+      "priorExams": "SUMMARY"
+    },
+    "accessEvaluatedAt": "2026-11-20T12:00:00Z"
+  },
+  "tutorAddonNotActive": {
+    "effectiveTier": "FREE",
+    "legacyTier": "FREE",
+    "status": "ACTIVE",
+    "source": "DEFAULT_FREE",
+    "expiresAt": null,
+    "capabilities": [
+      "BASIC_SOLVE"
+    ],
+    "featureEnabled": true,
+    "packageCode": "FREE",
+    "gracePeriodExpiresAt": null,
+    "paidAccessActive": false,
+    "learningOsCapabilities": [
+      "ATTEMPT_VERIFY",
+      "DETERMINISTIC_TWIN"
+    ],
+    "historyAccess": {
+      "mistakePassport": "SUMMARY",
+      "skillMastery": "SUMMARY",
+      "priorExams": "SUMMARY"
+    },
+    "accessEvaluatedAt": "2026-11-20T12:00:00Z"
+  },
+  "flagDisabled": {
+    "effectiveTier": "COACH_PRO",
+    "legacyTier": "PRO_PLUS",
+    "status": "ACTIVE",
+    "source": "APP_STORE_SUBSCRIPTION",
+    "expiresAt": "2027-01-10T00:00:00Z",
+    "capabilities": [
+      "BASIC_SOLVE",
+      "VERIFIED_SOLVE",
+      "ADVANCED_TUTOR",
+      "MISTAKE_HISTORY",
+      "ADAPTIVE_PLAN",
+      "MOCK_EXAM",
+      "PREMIUM_MODEL_FALLBACK"
+    ],
+    "featureEnabled": false,
+    "packageCode": "COACH_PRO",
+    "gracePeriodExpiresAt": null,
+    "paidAccessActive": true,
+    "learningOsCapabilities": [
+      "ATTEMPT_VERIFY",
+      "DETERMINISTIC_TWIN"
+    ],
+    "historyAccess": {
+      "mistakePassport": "FULL",
+      "skillMastery": "FULL",
+      "priorExams": "SUMMARY"
+    },
+    "accessEvaluatedAt": "2026-11-20T12:00:00Z"
+  },
+  "freeQuotaRemaining": {
+    "effectiveTier": "FREE",
+    "legacyTier": "FREE",
+    "status": "ACTIVE",
+    "source": "DEFAULT_FREE",
+    "expiresAt": null,
+    "capabilities": [
+      "BASIC_SOLVE"
+    ],
+    "featureEnabled": true,
+    "packageCode": "FREE",
+    "gracePeriodExpiresAt": null,
+    "paidAccessActive": false,
+    "learningOsCapabilities": [
+      "ATTEMPT_VERIFY",
+      "DETERMINISTIC_TWIN"
+    ],
+    "historyAccess": {
+      "mistakePassport": "SUMMARY",
+      "skillMastery": "SUMMARY",
+      "priorExams": "SUMMARY"
+    },
+    "accessEvaluatedAt": "2026-11-22T12:00:00Z",
+    "quotaSummary": {
+      "periodKey": "2026-11-22",
+      "aiVerificationsUsed": 1,
+      "aiVerificationsLimit": 3,
+      "remainingAiChecks": 2,
+      "hybridTwinsUsed": 0,
+      "hybridTwinsLimit": 1,
+      "deterministicTwinsUnlimited": true,
+      "costCircuitBreakerTripped": false,
+      "degradedToDeterministicOnly": false,
+      "resetsAt": "2026-11-23T00:00:00Z"
+    }
+  },
+  "proCostBreakerDegraded": {
+    "effectiveTier": "PRO",
+    "legacyTier": "PRO",
+    "status": "ACTIVE",
+    "source": "APP_STORE_SUBSCRIPTION",
+    "expiresAt": "2027-01-10T00:00:00Z",
+    "capabilities": [
+      "BASIC_SOLVE",
+      "VERIFIED_SOLVE",
+      "ADVANCED_TUTOR",
+      "MISTAKE_HISTORY",
+      "ADAPTIVE_PLAN"
+    ],
+    "featureEnabled": true,
+    "packageCode": "PRO",
+    "gracePeriodExpiresAt": null,
+    "paidAccessActive": true,
+    "learningOsCapabilities": [
+      "ATTEMPT_VERIFY",
+      "DETERMINISTIC_TWIN",
+      "HYBRID_TWIN",
+      "MISTAKE_PASSPORT_FULL"
+    ],
+    "historyAccess": {
+      "mistakePassport": "FULL",
+      "skillMastery": "FULL",
+      "priorExams": "SUMMARY"
+    },
+    "accessEvaluatedAt": "2026-11-22T12:00:00Z",
+    "quotaSummary": {
+      "periodKey": "2026-11",
+      "aiVerificationsUsed": 92,
+      "aiVerificationsLimit": 150,
+      "remainingAiChecks": 0,
+      "hybridTwinsUsed": 18,
+      "hybridTwinsLimit": 150,
+      "deterministicTwinsUnlimited": true,
+      "costCircuitBreakerTripped": true,
+      "degradedToDeterministicOnly": true,
+      "resetsAt": "2026-12-01T00:00:00Z"
+    }
+  },
+  "coachProNormalUsage": {
+    "effectiveTier": "COACH_PRO",
+    "legacyTier": "PRO_PLUS",
+    "status": "ACTIVE",
+    "source": "APP_STORE_SUBSCRIPTION",
+    "expiresAt": "2027-01-10T00:00:00Z",
+    "capabilities": [
+      "BASIC_SOLVE",
+      "VERIFIED_SOLVE",
+      "ADVANCED_TUTOR",
+      "MISTAKE_HISTORY",
+      "ADAPTIVE_PLAN",
+      "MOCK_EXAM",
+      "PREMIUM_MODEL_FALLBACK"
+    ],
+    "featureEnabled": true,
+    "packageCode": "COACH_PRO",
+    "gracePeriodExpiresAt": null,
+    "paidAccessActive": true,
+    "learningOsCapabilities": [
+      "ATTEMPT_VERIFY",
+      "DETERMINISTIC_TWIN",
+      "HYBRID_TWIN",
+      "MISTAKE_PASSPORT_FULL",
+      "DAILY_COACH_MISSION",
+      "MICRO_LESSON",
+      "EXAM_READINESS_SIMULATOR",
+      "TIMED_MOCK_SESSION"
+    ],
+    "historyAccess": {
+      "mistakePassport": "FULL",
+      "skillMastery": "FULL",
+      "priorExams": "SUMMARY"
+    },
+    "accessEvaluatedAt": "2026-11-22T12:00:00Z",
+    "quotaSummary": {
+      "periodKey": "2026-11",
+      "aiVerificationsUsed": 120,
+      "aiVerificationsLimit": 400,
+      "remainingAiChecks": 280,
+      "hybridTwinsUsed": 45,
+      "hybridTwinsLimit": 400,
+      "deterministicTwinsUnlimited": true,
+      "costCircuitBreakerTripped": false,
+      "degradedToDeterministicOnly": false,
+      "resetsAt": "2026-12-01T00:00:00Z"
+    }
+  },
+  "yksSeasonPassQuotaExhausted": {
+    "effectiveTier": "COACH_PRO",
+    "legacyTier": "PRO_PLUS",
+    "status": "ACTIVE",
+    "source": "APP_STORE_SUBSCRIPTION",
+    "expiresAt": "2027-05-10T00:00:00Z",
+    "capabilities": [
+      "BASIC_SOLVE",
+      "VERIFIED_SOLVE",
+      "ADVANCED_TUTOR",
+      "MISTAKE_HISTORY",
+      "ADAPTIVE_PLAN",
+      "MOCK_EXAM",
+      "PREMIUM_MODEL_FALLBACK"
+    ],
+    "featureEnabled": true,
+    "packageCode": "YKS_SEASON_PASS",
+    "gracePeriodExpiresAt": null,
+    "paidAccessActive": true,
+    "learningOsCapabilities": [
+      "ATTEMPT_VERIFY",
+      "DETERMINISTIC_TWIN",
+      "HYBRID_TWIN",
+      "MISTAKE_PASSPORT_FULL",
+      "DAILY_COACH_MISSION",
+      "MICRO_LESSON",
+      "EXAM_READINESS_SIMULATOR",
+      "TIMED_MOCK_SESSION"
+    ],
+    "historyAccess": {
+      "mistakePassport": "FULL",
+      "skillMastery": "FULL",
+      "priorExams": "SUMMARY"
+    },
+    "accessEvaluatedAt": "2026-11-22T12:00:00Z",
+    "quotaSummary": {
+      "periodKey": "2026-11",
+      "aiVerificationsUsed": 400,
+      "aiVerificationsLimit": 400,
+      "remainingAiChecks": 0,
+      "hybridTwinsUsed": 80,
+      "hybridTwinsLimit": 400,
+      "deterministicTwinsUnlimited": true,
+      "costCircuitBreakerTripped": false,
+      "degradedToDeterministicOnly": true,
+      "resetsAt": "2026-12-01T00:00:00Z"
+    }
   }
 }

@@ -635,6 +635,7 @@ public struct ExamReadinessHubView: View {
         .buttonStyle(.plain)
         .disabled(viewModel.isRecomputing)
         .accessibilityIdentifier("exam.readiness.recomputeButton")
+            .modifier(LearningOsActionGate(capability: .examReadinessSimulator))
     }
 
     private func confidenceTone(for tier: ExamReadinessConfidenceTier) -> AppBadgeTone {

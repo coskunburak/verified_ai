@@ -436,5 +436,15 @@ Extends `com.verifiedai.billing.CapabilityAccessPolicy` and `EntitlementApplicat
 
 ## 18. Canonical Cross-References
 - `roadmap/88_LEARNING_OS_MONETIZATION_GROWTH_AND_VALIDATION_PLAN.md`
-- `architecture/90_LEARNING_OS_DOMAIN_CONTRACTS_AND_PLATFORM_INTEGRATION.md`
+- `docs/verified_ai_learning_platform_docs_v4/sprints/phase10_monetization_growth_and_product_operations/SPRINT_10.2_EXECUTION_REPORT.md`
+- `docs/verified_ai_learning_platform_docs_v4/sprints/phase10_monetization_growth_and_product_operations/SPRINT_10.2_IMPLEMENTATION_MAP.md`
 <!-- LEARNING_OS_PRODUCTION_SPEC_V1:END -->
+
+## Sprint 10.2 implementation record
+
+Status: `IMPLEMENTED_NOT_RUN`. See [implementation map](SPRINT_10.2_IMPLEMENTATION_MAP.md), [execution report](SPRINT_10.2_EXECUTION_REPORT.md), and [acceptance matrix](SPRINT_10.2_ACCEPTANCE_MATRIX.md). Reconciles the planning note above (`V048` / quota ledger) with actual code delivery:
+
+- **Database migration (`V066__sprint_10_2_entitlement_state_and_transition_audit.sql`):** Adds nullable CHECK-guarded `package_code` and `grace_period_expires_at` on `entitlements` (preserving `PRO_PLUS` in `entitlements.tier` and backfilling `YKS_SEASON_PASS` from `app_store_transactions.offer_family`), `billing_entitlement_transition_audit` (`training_eligible = false`), `app_store_transactions.access_revoked`, and `app_store_subscriptions.state_signed_at`.
+- **Single server policy & finite states:** `LearningOsTierCapabilityPolicy` evaluates the 8 `LearningOsCapability` gates across `FREE` (`ATTEMPT_VERIFY`, `DETERMINISTIC_TWIN` + legacy `BASIC_SOLVE`), `PRO` (+ `HYBRID_TWIN`, `MISTAKE_PASSPORT_FULL`), `COACH_PRO`, and `YKS_SEASON_PASS` (`effectiveTier = COACH_PRO`, package `YKS_SEASON_PASS`), while `TUTOR_COPILOT_PACK` stays non-purchasable (`NOT_AVAILABLE`). `GRACE_PERIOD` (`gracePeriodExpiresAt > now`), `BILLING_RETRY`, `EXPIRED`, `REFUND`, and `REVOKED` resolve deterministically via injected `Clock`.
+- **Modulith SPI & non-punitive downgrade:** `CapabilityAccessPolicy` (in `@NamedInterface("application")`) enforces capability checks across `attempt`, `mistake`, `mastery`, `studyplan`, `exam`, and `tutoring` behind `verifiedai.billing.learning-os-tiers-enabled: false`. Downgrade and transient `503` outages retain read-only Mistake Passport summaries, Mistake DNA top-2 profiles, persisted readiness snapshots, active `TIMED_MOCK` resume, `DIAGNOSTIC_BASELINE` starts, and previously completed micro-lessons.
+- **Sprint 10.3 separation:** Quota ledgers (`entitlement_quota_ledgers`), daily/monthly counters, and AI spend wallets remain deferred to Sprint 10.3.

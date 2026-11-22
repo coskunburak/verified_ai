@@ -1,6 +1,7 @@
 import SwiftUI
 
 public struct ExamBlueprintAssemblyView: View {
+    @Environment(\.learningOsAccess) private var access
     @ObservedObject public var viewModel: ExamBlueprintAssemblyViewModel
     @FocusState private var isSeedFieldFocused: Bool
     @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
@@ -407,7 +408,8 @@ public struct ExamBlueprintAssemblyView: View {
             } label: {
                 HStack {
                     Image(systemName: "timer")
-                    Text(LocalizedStringKey("exam.assembly.startTimedSessionButton"))
+                    Text(assembled.blueprintMode == .diagnostic || access?.decision(.timedMockSession) == .allowed
+                         ? LocalizedStringKey("exam.assembly.startTimedSessionButton") : LocalizedStringKey("billing.resumeExam"))
                         .font(.headline)
                 }
                 .frame(maxWidth: .infinity, minHeight: 48)

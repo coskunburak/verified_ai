@@ -27,9 +27,15 @@ class BillingLifecycleContributor implements AccountDataLifecycleContributor {
     @Override
     public Map<String, Object> exportUserData(UUID userId) {
         Map<String, Object> export = new LinkedHashMap<>();
+        export.put("transitions", jdbcTemplate.queryForList("""
+            select from_package,to_package,from_status,to_status,reason,occurred_at
+            from billing_entitlement_transition_audit where user_id=? order by occurred_at
+            """, userId));
         export.put("entitlement", entitlement(userId));
         export.put("appStoreSubscriptions", appStoreSubscriptions(userId));
         export.put("appStoreTransactions", appStoreTransactions(userId));
+        export.put("quotaLedgers", quotaLedgers(userId));
+        export.put("quotaConsumptions", quotaConsumptions(userId));
         export.put("retentionNote", "Raw App Store JWS and payment credentials are excluded; minimized transaction references are retained for audit/refund/fraud handling.");
         return export;
     }
@@ -37,6 +43,10 @@ class BillingLifecycleContributor implements AccountDataLifecycleContributor {
     @Override
     @org.springframework.transaction.annotation.Transactional
     public void deleteUserData(UUID userId, Instant now) {
+        entitlementApplicationService.lockUserEntitlement(userId);
+        jdbcTemplate.update("delete from entitlement_quota_consumptions where user_id = ?", userId);
+        jdbcTemplate.update("delete from entitlement_quota_ledgers where user_id = ?", userId);
+        jdbcTemplate.update("delete from billing_entitlement_transition_audit where user_id=?", userId);
         jdbcTemplate.update("delete from commerce_account_tokens where user_id = ?", userId);
         entitlementApplicationService.applyAccountDeleted(userId, now);
         jdbcTemplate.update(
@@ -56,7 +66,7 @@ class BillingLifecycleContributor implements AccountDataLifecycleContributor {
     private Map<String, Object> entitlement(UUID userId) {
         return jdbcTemplate.query(
             """
-            select tier, source, status, effective_at, expires_at, original_transaction_id, environment, last_verified_at
+            select tier, source, status, effective_at, expires_at, grace_period_expires_at, package_code, original_transaction_id, environment, last_verified_at
             from entitlements
             where user_id = ?
             """,
@@ -68,10 +78,12 @@ class BillingLifecycleContributor implements AccountDataLifecycleContributor {
                 Map<String, Object> row = new LinkedHashMap<>();
                 row.put("exists", true);
                 row.put("tier", resultSet.getString("tier"));
+                row.put("packageCode", resultSet.getString("package_code"));
                 row.put("source", resultSet.getString("source"));
                 row.put("status", resultSet.getString("status"));
                 row.put("effectiveAt", instantString(resultSet.getTimestamp("effective_at")));
                 row.put("expiresAt", instantString(resultSet.getTimestamp("expires_at")));
+                row.put("gracePeriodExpiresAt", instantString(resultSet.getTimestamp("grace_period_expires_at")));
                 row.put("originalTransactionId", resultSet.getString("original_transaction_id"));
                 row.put("environment", resultSet.getString("environment"));
                 row.put("lastVerifiedAt", instantString(resultSet.getTimestamp("last_verified_at")));
@@ -122,6 +134,60 @@ class BillingLifecycleContributor implements AccountDataLifecycleContributor {
                 row.put("purchaseDate", instantString(resultSet.getTimestamp("purchase_date")));
                 row.put("expiresDate", instantString(resultSet.getTimestamp("expires_date")));
                 row.put("revocationDate", instantString(resultSet.getTimestamp("revocation_date")));
+                return row;
+            },
+            userId
+        );
+    }
+
+    private List<Map<String, Object>> quotaLedgers(UUID userId) {
+        return jdbcTemplate.query(
+            """
+            select period_key, tier_code, ai_verifications_used, ai_verifications_limit,
+                   hybrid_twins_used, hybrid_twins_limit, accumulated_ai_cost_micros,
+                   ai_cost_cap_micros, cost_circuit_breaker_tripped, resets_at, created_at, updated_at
+            from entitlement_quota_ledgers
+            where user_id = ?
+            order by period_key desc
+            """,
+            (resultSet, rowNum) -> {
+                Map<String, Object> row = new LinkedHashMap<>();
+                row.put("periodKey", resultSet.getString("period_key"));
+                row.put("tierCode", resultSet.getString("tier_code"));
+                row.put("aiVerificationsUsed", resultSet.getInt("ai_verifications_used"));
+                row.put("aiVerificationsLimit", resultSet.getInt("ai_verifications_limit"));
+                row.put("hybridTwinsUsed", resultSet.getInt("hybrid_twins_used"));
+                row.put("hybridTwinsLimit", resultSet.getInt("hybrid_twins_limit"));
+                row.put("accumulatedAiCostMicros", resultSet.getLong("accumulated_ai_cost_micros"));
+                row.put("aiCostCapMicros", resultSet.getLong("ai_cost_cap_micros"));
+                row.put("costCircuitBreakerTripped", resultSet.getBoolean("cost_circuit_breaker_tripped"));
+                row.put("resetsAt", instantString(resultSet.getTimestamp("resets_at")));
+                row.put("createdAt", instantString(resultSet.getTimestamp("created_at")));
+                row.put("updatedAt", instantString(resultSet.getTimestamp("updated_at")));
+                return row;
+            },
+            userId
+        );
+    }
+
+    private List<Map<String, Object>> quotaConsumptions(UUID userId) {
+        return jdbcTemplate.query(
+            """
+            select idempotency_key, quota_type, units_consumed, cost_micros, status, created_at, updated_at
+            from entitlement_quota_consumptions
+            where user_id = ?
+            order by created_at desc
+            limit 100
+            """,
+            (resultSet, rowNum) -> {
+                Map<String, Object> row = new LinkedHashMap<>();
+                row.put("idempotencyKey", resultSet.getString("idempotency_key"));
+                row.put("quotaType", resultSet.getString("quota_type"));
+                row.put("unitsConsumed", resultSet.getInt("units_consumed"));
+                row.put("costMicros", resultSet.getLong("cost_micros"));
+                row.put("status", resultSet.getString("status"));
+                row.put("createdAt", instantString(resultSet.getTimestamp("created_at")));
+                row.put("updatedAt", instantString(resultSet.getTimestamp("updated_at")));
                 return row;
             },
             userId

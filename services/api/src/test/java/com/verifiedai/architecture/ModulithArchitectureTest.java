@@ -1,5 +1,10 @@
 package com.verifiedai.architecture;
 
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
+
+import com.tngtech.archunit.core.domain.JavaClasses;
+import com.tngtech.archunit.core.importer.ClassFileImporter;
+import com.tngtech.archunit.core.importer.ImportOption;
 import com.verifiedai.VerifiedAiApplication;
 import org.junit.jupiter.api.Test;
 import org.springframework.modulith.core.ApplicationModules;
@@ -9,5 +14,46 @@ class ModulithArchitectureTest {
     @Test
     void verifiesSpringModulithBoundaries() {
         ApplicationModules.of(VerifiedAiApplication.class).verify();
+    }
+
+    @Test
+    void downstreamModulesOnlyUseBillingApplicationPublicSpi() {
+        JavaClasses classes = new ClassFileImporter()
+            .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
+            .importPackages("com.verifiedai");
+
+        noClasses()
+            .that()
+            .resideInAnyPackage(
+                "com.verifiedai.attempt..",
+                "com.verifiedai.mistake..",
+                "com.verifiedai.mastery..",
+                "com.verifiedai.studyplan..",
+                "com.verifiedai.exam..",
+                "com.verifiedai.tutoring.."
+            )
+            .should()
+            .dependOnClassesThat()
+            .resideInAnyPackage(
+                "com.verifiedai.billing.infrastructure..",
+                "com.verifiedai.billing.domain..",
+                "com.verifiedai.billing.api.."
+            )
+            .check(classes);
+
+        noClasses()
+            .that()
+            .resideInAnyPackage("com.verifiedai.billing..")
+            .should()
+            .dependOnClassesThat()
+            .resideInAnyPackage(
+                "com.verifiedai.attempt..",
+                "com.verifiedai.mistake..",
+                "com.verifiedai.mastery..",
+                "com.verifiedai.studyplan..",
+                "com.verifiedai.exam..",
+                "com.verifiedai.tutoring.."
+            )
+            .check(classes);
     }
 }

@@ -34,6 +34,13 @@ public class EntitlementJpaEntity {
     private Instant effectiveAt;
 
     private Instant expiresAt;
+    private Instant gracePeriodExpiresAt;
+    private String packageCode;
+
+    public void setPackageProjection(String code, Instant graceUntil) {
+        this.packageCode = code;
+        this.gracePeriodExpiresAt = graceUntil != null && graceUntil.isAfter(effectiveAt) ? graceUntil : null;
+    }
 
     private String originalTransactionId;
 
@@ -56,6 +63,8 @@ public class EntitlementJpaEntity {
     private EntitlementJpaEntity(UUID userId, Instant now) {
         this.id = UUID.randomUUID();
         this.userId = userId;
+        this.packageCode = "FREE";
+        this.gracePeriodExpiresAt = null;
         this.tier = EntitlementTier.FREE.name();
         this.source = EntitlementSource.DEFAULT_FREE.name();
         this.status = EntitlementStatus.ACTIVE.name();
@@ -89,6 +98,8 @@ public class EntitlementJpaEntity {
     }
 
     public void applyDefaultFree(Instant now) {
+        this.packageCode = "FREE";
+        this.gracePeriodExpiresAt = null;
         this.tier = EntitlementTier.FREE.name();
         this.source = EntitlementSource.DEFAULT_FREE.name();
         this.status = EntitlementStatus.ACTIVE.name();
@@ -103,6 +114,8 @@ public class EntitlementJpaEntity {
     }
 
     public void applyAccountDeleted(Instant now) {
+        this.packageCode = "FREE";
+        this.gracePeriodExpiresAt = null;
         this.tier = EntitlementTier.FREE.name();
         this.source = EntitlementSource.DEFAULT_FREE.name();
         this.status = EntitlementStatus.REVOKED.name();
@@ -140,6 +153,14 @@ public class EntitlementJpaEntity {
 
     public Instant expiresAt() {
         return expiresAt;
+    }
+
+    public Instant gracePeriodExpiresAt() {
+        return gracePeriodExpiresAt;
+    }
+
+    public String packageCode() {
+        return packageCode;
     }
 
     public String originalTransactionId() {

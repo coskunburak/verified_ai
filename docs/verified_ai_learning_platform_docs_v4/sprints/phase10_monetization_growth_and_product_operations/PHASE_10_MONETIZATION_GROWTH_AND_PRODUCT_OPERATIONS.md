@@ -89,3 +89,7 @@ All Phase 10 sprints must enforce the V6 server-authoritative unit economics mod
 ## Sprint 10.1 release gate
 
 Sprint 10.1 local acceptance passed on 2026-11-20. The catalog defaults to disabled. Phase 9 staging P95, physical VoiceOver and owner sign-off remain required before enabling contextual offers.
+
+## Sprint 10.2 implementation status
+
+Sprint 10.2 feature guards, V066 state/audit persistence, additive `entitlement-v2` contracts, iOS `CapabilityGate`, non-punitive summary retention, and A–F test sources are `IMPLEMENTED_NOT_RUN` (`verifiedai.billing.learning-os-tiers-enabled: false` by default). Quota ledgers and per-user daily/monthly counters remain scoped to Sprint 10.3. Owner execution (`bash scripts/quality/sprint_10_2_owner_acceptance.sh --full && bash scripts/quality/sprint_10_2_swift_check.sh`) plus staging P95, physical VoiceOver, commercial metadata, and release sign-off remain required (`NOT_RUN_OWNER_REQUIRED` / `PENDING_MANUAL`).

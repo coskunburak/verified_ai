@@ -8,6 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		AB1010000000000000000003 /* Sprint101.storekit in Resources */ = {isa = PBXBuildFile; fileRef = AB1020000000000000000003 /* Sprint101.storekit */; };
+		AB1021000000000000000001 /* LearningOsEntitlementV2DecoderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1022000000000000000001 /* LearningOsEntitlementV2DecoderTests.swift */; };
+		AB1021000000000000000002 /* LearningOsCapabilityGateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1022000000000000000002 /* LearningOsCapabilityGateTests.swift */; };
+		AB1021000000000000000003 /* LearningOsEntitlementRefreshTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1022000000000000000003 /* LearningOsEntitlementRefreshTests.swift */; };
+		AB1021000000000000000004 /* LearningOsDowngradePresentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1022000000000000000004 /* LearningOsDowngradePresentationTests.swift */; };
+		AB1021000000000000000005 /* Sprint102.storekit in Resources */ = {isa = PBXBuildFile; fileRef = AB1022000000000000000005 /* Sprint102.storekit */; };
+		AB1031000000000000000001 /* LearningOsQuotaSummaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1032000000000000000001 /* LearningOsQuotaSummaryTests.swift */; };
 		B74000000000000000000002 /* attempt-mistake-evaluation-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = A74000000000000000000002 /* attempt-mistake-evaluation-v1.json */; };
 		B75000000000000000000001 /* mistake-dispute-result-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = A75000000000000000000001 /* mistake-dispute-result-v1.json */; };
 		B75000000000000000000002 /* mistake-effective-state-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = A75000000000000000000002 /* mistake-effective-state-v1.json */; };
@@ -319,6 +325,12 @@
 
 /* Begin PBXFileReference section */
 		AB1020000000000000000003 /* Sprint101.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Sprint101.storekit; sourceTree = "<group>"; };
+		AB1022000000000000000001 /* LearningOsEntitlementV2DecoderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearningOsEntitlementV2DecoderTests.swift; sourceTree = "<group>"; };
+		AB1022000000000000000002 /* LearningOsCapabilityGateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearningOsCapabilityGateTests.swift; sourceTree = "<group>"; };
+		AB1022000000000000000003 /* LearningOsEntitlementRefreshTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearningOsEntitlementRefreshTests.swift; sourceTree = "<group>"; };
+		AB1022000000000000000004 /* LearningOsDowngradePresentationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearningOsDowngradePresentationTests.swift; sourceTree = "<group>"; };
+		AB1022000000000000000005 /* Sprint102.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Sprint102.storekit; sourceTree = "<group>"; };
+		AB1032000000000000000001 /* LearningOsQuotaSummaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearningOsQuotaSummaryTests.swift; sourceTree = "<group>"; };
 		A74000000000000000000002 /* attempt-mistake-evaluation-v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/attempt-mistake-evaluation-v1.json; sourceTree = SOURCE_ROOT; };
 		A75000000000000000000001 /* mistake-dispute-result-v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/mistake-dispute-result-v1.json; sourceTree = SOURCE_ROOT; };
 		A75000000000000000000002 /* mistake-effective-state-v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/mistake-effective-state-v1.json; sourceTree = SOURCE_ROOT; };
@@ -1208,7 +1220,13 @@
 			children = (
 				20000000000000000000003E /* EntitlementViewModelTests.swift */,
 				200000000000000000000045 /* PaywallViewModelTests.swift */,
-		AB1020000000000000000003 /* Sprint101.storekit */,
+				AB1020000000000000000003 /* Sprint101.storekit */,
+				AB1022000000000000000001 /* LearningOsEntitlementV2DecoderTests.swift */,
+				AB1022000000000000000002 /* LearningOsCapabilityGateTests.swift */,
+				AB1022000000000000000003 /* LearningOsEntitlementRefreshTests.swift */,
+				AB1022000000000000000004 /* LearningOsDowngradePresentationTests.swift */,
+				AB1022000000000000000005 /* Sprint102.storekit */,
+				AB1032000000000000000001 /* LearningOsQuotaSummaryTests.swift */,
 			);
 			path = Subscription;
 			sourceTree = "<group>";
@@ -1548,6 +1566,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AB1010000000000000000003 /* Sprint101.storekit in Resources */,
+				AB1021000000000000000005 /* Sprint102.storekit in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1824,6 +1843,11 @@
 				100000000000000000000030 /* OnboardingViewModelTests.swift in Sources */,
 				100000000000000000000036 /* EntitlementViewModelTests.swift in Sources */,
 				10000000000000000000003D /* PaywallViewModelTests.swift in Sources */,
+				AB1021000000000000000001 /* LearningOsEntitlementV2DecoderTests.swift in Sources */,
+				AB1021000000000000000002 /* LearningOsCapabilityGateTests.swift in Sources */,
+				AB1021000000000000000003 /* LearningOsEntitlementRefreshTests.swift in Sources */,
+				AB1021000000000000000004 /* LearningOsDowngradePresentationTests.swift in Sources */,
+				AB1031000000000000000001 /* LearningOsQuotaSummaryTests.swift in Sources */,
 				100000000000000000000042 /* AccountSettingsViewModelTests.swift in Sources */,
 				10000000000000000000004A /* ProblemCaptureViewModelTests.swift in Sources */,
 				10000000000000000000004B /* CaptureQualityAnalyzerTests.swift in Sources */,

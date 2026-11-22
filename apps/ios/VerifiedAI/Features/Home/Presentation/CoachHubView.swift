@@ -65,6 +65,11 @@ public struct CoachHubView: View {
                     }
                 )
 
+                .modifier(LearningOsActionGate(capability: .dailyCoachMission))
+
+                if viewModel.summary == nil, let coldStartViewModel, !coldStartViewModel.isFeatureDisabled {
+                    ColdStartDiagnosticCardView(viewModel: coldStartViewModel)
+                }
                 if let summary = viewModel.summary {
                     if let coldStartViewModel,
                        !coldStartViewModel.isFeatureDisabled,
@@ -304,6 +309,7 @@ public struct CoachHubView: View {
             }
             .buttonStyle(AppPrimaryButtonStyle())
             .accessibilityIdentifier("coach.hub.startMission")
+            .modifier(LearningOsActionGate(capability: .dailyCoachMission))
         }
     }
 

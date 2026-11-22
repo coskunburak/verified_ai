@@ -1,5 +1,7 @@
 package com.verifiedai.tutoring.application;
 
+import com.verifiedai.billing.application.CapabilityAccessPolicy;
+import com.verifiedai.billing.application.LearningOsCapability;
 import com.verifiedai.mistake.MistakeTaxonomy;
 import com.verifiedai.sharedkernel.error.ApiErrorCode;
 import com.verifiedai.sharedkernel.error.ApiProblemException;
@@ -31,6 +33,27 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class MicroLessonApplicationService {
+    private CapabilityAccessPolicy access;
+    @org.springframework.beans.factory.annotation.Value("${verifiedai.billing.learning-os-tiers-enabled:false}")
+    private String learningOsFlag;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    public void setAccess(CapabilityAccessPolicy access) {
+        this.access = access;
+    }
+
+    private boolean tierGuardsEnabled() {
+        return "true".equalsIgnoreCase(learningOsFlag);
+    }
+
+    private void requireAccess(UUID userId, LearningOsCapability capability) {
+        if (access == null) {
+            throw new ApiProblemException(HttpStatus.SERVICE_UNAVAILABLE, ApiErrorCode.ENTITLEMENT_SYNC_FAILED,
+                "Entitlement verification unavailable", true, "RETRY");
+        }
+        access.require(userId, capability);
+    }
+
 
     private static final Logger log = LoggerFactory.getLogger(MicroLessonApplicationService.class);
     private static final Pattern IDEMPOTENCY_PATTERN = Pattern.compile("^[A-Za-z0-9_.:-]{8,128}$");
@@ -140,6 +163,13 @@ public class MicroLessonApplicationService {
             );
         }
 
+        if (tierGuardsEnabled()) {
+            boolean previouslyEarned = repository.findCompletionsByUserId(userId).stream()
+                    .anyMatch(c -> mistakeCode.equals(c.mistakeCode()));
+            if (!previouslyEarned) {
+                requireAccess(userId, LearningOsCapability.MICRO_LESSON);
+            }
+        }
         MicroLessonCard card = loadAndVerifyCard(mistakeCode, locale);
         increment(servedCounter);
         log.info("micro_lesson.served mistakeCode={} locale={} triggerSource={} cardId={}",
@@ -191,6 +221,7 @@ public class MicroLessonApplicationService {
             return buildReplayResult(existingOpt.get(), mistakeCode, locale);
         }
 
+        if (tierGuardsEnabled()) requireAccess(userId, LearningOsCapability.MICRO_LESSON);
         MicroLessonCard card = loadAndVerifyCard(mistakeCode, locale);
         boolean optionExists = card.interactiveQuickCheck().options().stream()
                 .anyMatch(opt -> selectedOptionId.equals(opt.optionId()));

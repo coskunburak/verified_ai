@@ -1,5 +1,7 @@
 package com.verifiedai.attempt.application;
 
+import com.verifiedai.billing.application.CapabilityAccessPolicy;
+import com.verifiedai.billing.application.LearningOsCapability;
 import com.verifiedai.attempt.domain.*;
 import com.verifiedai.attempt.infrastructure.persistence.*;
 import com.verifiedai.problem.application.attempt.*;
@@ -22,6 +24,27 @@ import org.springframework.transaction.support.TransactionTemplate;
 /** Capture and syntax only. Owner/source locks cover the entire deterministic transaction. */
 @Service
 public class AttemptWorkService {
+    private CapabilityAccessPolicy access;
+    @org.springframework.beans.factory.annotation.Value("${verifiedai.billing.learning-os-tiers-enabled:false}")
+    private String learningOsFlag;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    public void setAccess(CapabilityAccessPolicy access) {
+        this.access = access;
+    }
+
+    private boolean tierGuardsEnabled() {
+        return "true".equalsIgnoreCase(learningOsFlag);
+    }
+
+    private void requireAccess(UUID userId, LearningOsCapability capability) {
+        if (access == null) {
+            throw new ApiProblemException(HttpStatus.SERVICE_UNAVAILABLE, ApiErrorCode.ENTITLEMENT_SYNC_FAILED,
+                "Entitlement verification unavailable", true, "RETRY");
+        }
+        access.require(userId, capability);
+    }
+
     private final com.verifiedai.mistake.LearnerMistakeDnaService dna;
     private final SolveSourceAccess sources;
     private final StudentAttemptRepository attempts;
@@ -58,6 +81,7 @@ public class AttemptWorkService {
         }));
     }
     public AttemptStructuredWork submit(UUID owner,UUID problem,String key,AttemptWorkInput input) {
+        if (tierGuardsEnabled()) requireAccess(owner, LearningOsCapability.ATTEMPT_VERIFY);
         return operation(owner,()->{
             AttemptAnalysisPolicy.submission(key,input.steps().stream().map(AttemptWorkInput.Step::text).toList());
             String encoded=codec.encode(input);

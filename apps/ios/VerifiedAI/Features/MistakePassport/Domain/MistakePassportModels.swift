@@ -173,6 +173,8 @@ public struct MistakePassportResponseDto: Codable, Sendable, Equatable {
     public let schemaVersion: String
     public let learnerId: UUID
     public let generatedAt: Date
+    public var summaryTrapTitleKeys: [String]?
+    public var earnedProofs: [CounterexampleProofSnapshot]?
     public let summaryMetrics: PassportSummaryMetrics
     public let conceptualTraps: [ExamTrapItemDto]
     public let arithmeticSlips: [ExamTrapItemDto]

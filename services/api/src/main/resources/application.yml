@@ -266,6 +266,25 @@ logging:
 verifiedai:
   billing:
     contextual-paywall-enabled: false
+    learning-os-tiers-enabled: false
+    quota-ledger-enabled: ${VERIFIEDAI_BILLING_QUOTA_LEDGER_ENABLED:false}
+    quotas:
+      free:
+        daily-ai-verifications-limit: 3
+        daily-handwriting-diagnostics-limit: 1
+        monthly-ai-cost-cap-micros: 80000
+      pro:
+        monthly-ai-verifications-limit: 150
+        monthly-hybrid-twins-limit: 150
+        monthly-ai-cost-cap-micros: 2500000
+      coach-pro:
+        monthly-ai-verifications-limit: 400
+        monthly-hybrid-twins-limit: 400
+        monthly-ai-cost-cap-micros: 4200000
+      yks-season-pass:
+        monthly-ai-verifications-limit: 400
+        monthly-hybrid-twins-limit: 400
+        monthly-ai-cost-cap-micros: 4200000
   mastery:
     decay-reassessment-enabled: ${MASTERY_DECAY_REASSESSMENT_ENABLED:false}
     evidence-stratified-enabled: ${MASTERY_EVIDENCE_STRATIFIED_ENABLED:false}

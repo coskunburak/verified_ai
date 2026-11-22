@@ -69,6 +69,11 @@ Because **Tier-1 Deterministic Twins (`attempt_learning.py`)**, **Symbolic Step 
 | **Hybrid LLM Twin & Socratic/Micro-Lesson Calls** | 2 turns (`~$0.008`) | 25 turns (`~$0.105`) | 60 turns (`~$0.252`) | Schema-constrained Tier-1 mini models (`gpt-4o-mini` / `claude-3-5-haiku` / `gemini-2.5-flash`) |
 | **Total Monthly Variable AI Inference Cost** | **`~$0.077 / mo`** | **`~$0.628 / mo`** | **`~$1.298 / mo`** | Hard per-user monthly circuit breaker at `$2.50` (`PRO`) and `$4.20` (`COACH_PRO`) |
 
+### 4.3 Sprint 10.2 Runtime Tier Projection and Quota Separation
+
+- Persisted `entitlements.tier` keeps `FREE`, `PRO`, and `PRO_PLUS`; runtime projection (`GET /v1/billing/entitlements`, `entitlement-v2`) maps `PRO_PLUS` to `effectiveTier: COACH_PRO` and `packageCode` `COACH_PRO` or `YKS_SEASON_PASS` (when verified transaction `offer_family = YKS_SEASON_PASS`).
+- Sprint 10.2 enforces binary server-authoritative capability access across the 8 `LearningOsCapability` actions (`FREE`: `ATTEMPT_VERIFY`, `DETERMINISTIC_TWIN`; `PRO`: + `HYBRID_TWIN`, `MISTAKE_PASSPORT_FULL`; `COACH_PRO` / `YKS_SEASON_PASS`: + `DAILY_COACH_MISSION`, `MICRO_LESSON`, `EXAM_READINESS_SIMULATOR`, `TIMED_MOCK_SESSION`), keeps `TUTOR_COPILOT_PACK` inactive (`NOT_AVAILABLE`), and defers quantitative daily/monthly quota counters (`3` solves/day, `150`/`400` checks/month, `entitlement_quota_ledgers`) to Sprint 10.3.
+
 ---
 
 ## 5. 24-Month Four-Scenario Financial Model (`FINANCIAL_MODEL_ASSUMPTION`)

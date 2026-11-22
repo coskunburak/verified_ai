@@ -5,7 +5,13 @@ import com.verifiedai.billing.domain.model.EntitlementTier;
 public final class TierResolutionPolicy {
     private TierResolutionPolicy() {}
     public static EntitlementTier storageTier(String presentation) {
-        return "COACH_PRO".equals(presentation) ? EntitlementTier.PRO_PLUS : EntitlementTier.valueOf(presentation);
+        if (presentation == null) throw new IllegalArgumentException("Missing tier");
+        return switch (presentation) {
+            case "FREE" -> EntitlementTier.FREE;
+            case "PRO" -> EntitlementTier.PRO;
+            case "COACH_PRO", "PRO_PLUS" -> EntitlementTier.PRO_PLUS;
+            default -> throw new IllegalArgumentException("Unsupported consumer tier");
+        };
     }
 
     public static String presentation(EntitlementTier tier) {

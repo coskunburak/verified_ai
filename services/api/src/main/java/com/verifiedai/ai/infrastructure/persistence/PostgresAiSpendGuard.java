@@ -2,11 +2,18 @@ package com.verifiedai.ai.infrastructure.persistence;
 
 import com.verifiedai.ai.application.*;
 import com.verifiedai.ai.infrastructure.configuration.AiBudgetProperties;
+import com.verifiedai.billing.application.EffectiveEntitlementAccess;
+import com.verifiedai.billing.application.EntitlementApplicationService;
+import com.verifiedai.billing.application.FairUsePolicy;
+import com.verifiedai.billing.application.QuotaConsumptionDecision;
+import com.verifiedai.billing.application.QuotaLedgerService;
+import com.verifiedai.billing.application.QuotaOperationType;
 import java.sql.Timestamp;
 import java.time.Clock;
 import java.time.ZoneOffset;
 import java.util.Map;
 import java.util.TreeMap;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -19,6 +26,8 @@ public class PostgresAiSpendGuard implements AiSpendGuard {
     private final AiBudgetProperties limits;
     private final AiEntitlementResolver entitlements;
     private final Clock clock;
+    private QuotaLedgerService quotaLedgerService;
+    private EntitlementApplicationService entitlementApplicationService;
 
     public PostgresAiSpendGuard(JdbcTemplate jdbc, AiBudgetProperties limits,
         AiEntitlementResolver entitlements, Clock clock) {
@@ -26,6 +35,16 @@ public class PostgresAiSpendGuard implements AiSpendGuard {
         this.limits = limits;
         this.entitlements = entitlements;
         this.clock = clock;
+    }
+
+    @Autowired(required = false)
+    public void setQuotaLedgerService(QuotaLedgerService quotaLedgerService) {
+        this.quotaLedgerService = quotaLedgerService;
+    }
+
+    @Autowired(required = false)
+    public void setEntitlementApplicationService(EntitlementApplicationService entitlementApplicationService) {
+        this.entitlementApplicationService = entitlementApplicationService;
     }
 
     @Override
@@ -68,29 +87,58 @@ public class PostgresAiSpendGuard implements AiSpendGuard {
             // Secondary has its own operation ledger, while also consuming the original primary operation quota.
             accounts.put("OPERATION:"+parent,caps.getFirst());
         }
-        // The FK and unique key bind budget attempts to the existing operation ledger.
-        jdbc.update("""
-            INSERT INTO ai_spend_attempts(operation_id, attempt_number, provider, model, pricing_version,
-                budget_policy_version, reserved_micros, state, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, 'RESERVED', ?)
-            """, context.operationId(), attempt, target.provider(), target.model(), plan.pricingVersion(),
-            limits.policyVersion(), ceiling, Timestamp.from(now));
-        for (var account : accounts.entrySet()) {
-            boolean personal = !account.getKey().startsWith("GLOBAL_") && !account.getKey().startsWith("PROVIDER_");
-            jdbc.update("INSERT INTO ai_spend_accounts(account_key, user_id) VALUES (?, ?) ON CONFLICT DO NOTHING",
-                account.getKey(), personal ? context.userId() : null);
-            long used = jdbc.queryForObject("SELECT committed_micros FROM ai_spend_accounts WHERE account_key = ? FOR UPDATE",
-                Long.class, account.getKey());
-            long cap=account.getValue();
-            if(account.getKey().startsWith("OPERATION:")) {
-                jdbc.update("UPDATE ai_spend_accounts SET operation_limit_micros=least(coalesce(operation_limit_micros,?),?) WHERE account_key=?",
-                    cap,cap,account.getKey());
-                cap=jdbc.queryForObject("SELECT operation_limit_micros FROM ai_spend_accounts WHERE account_key=?",Long.class,account.getKey());
+        String quotaKey = "ai-op:" + context.operationId();
+        boolean freshQuotaReserved = false;
+        if (quotaLedgerService != null && quotaLedgerService.isEnabled()) {
+            EffectiveEntitlementAccess access = entitlementApplicationService != null
+                ? entitlementApplicationService.resolveAccess(context.userId())
+                : FairUsePolicy.syntheticAccessForTier(tier, now);
+            QuotaConsumptionDecision decision = quotaLedgerService.reserveAndConsume(
+                context.userId(),
+                access,
+                quotaOperation(command.capability()),
+                quotaKey,
+                ceiling
+            );
+            if (!decision.allowed()) {
+                throw blocked();
             }
-            if (used > cap || ceiling > cap - used) throw blocked();
-            jdbc.update("UPDATE ai_spend_accounts SET committed_micros = committed_micros + ? WHERE account_key = ?",
-                ceiling, account.getKey());
-            jdbc.update("INSERT INTO ai_spend_allocations VALUES (?, ?, ?)", context.operationId(), attempt, account.getKey());
+            freshQuotaReserved = !decision.idempotentReplay() && !decision.deterministicExempt();
+        }
+        try {
+            // The FK and unique key bind budget attempts to the existing operation ledger.
+            jdbc.update("""
+                INSERT INTO ai_spend_attempts(operation_id, attempt_number, provider, model, pricing_version,
+                    budget_policy_version, reserved_micros, state, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, 'RESERVED', ?)
+                """, context.operationId(), attempt, target.provider(), target.model(), plan.pricingVersion(),
+                limits.policyVersion(), ceiling, Timestamp.from(now));
+            for (var account : accounts.entrySet()) {
+                boolean personal = !account.getKey().startsWith("GLOBAL_") && !account.getKey().startsWith("PROVIDER_");
+                jdbc.update("INSERT INTO ai_spend_accounts(account_key, user_id) VALUES (?, ?) ON CONFLICT DO NOTHING",
+                    account.getKey(), personal ? context.userId() : null);
+                long used = jdbc.queryForObject("SELECT committed_micros FROM ai_spend_accounts WHERE account_key = ? FOR UPDATE",
+                    Long.class, account.getKey());
+                long cap=account.getValue();
+                if(account.getKey().startsWith("OPERATION:")) {
+                    jdbc.update("UPDATE ai_spend_accounts SET operation_limit_micros=least(coalesce(operation_limit_micros,?),?) WHERE account_key=?",
+                        cap,cap,account.getKey());
+                    cap=jdbc.queryForObject("SELECT operation_limit_micros FROM ai_spend_accounts WHERE account_key=?",Long.class,account.getKey());
+                }
+                if (used > cap || ceiling > cap - used) throw blocked();
+                jdbc.update("UPDATE ai_spend_accounts SET committed_micros = committed_micros + ? WHERE account_key = ?",
+                    ceiling, account.getKey());
+                jdbc.update("INSERT INTO ai_spend_allocations VALUES (?, ?, ?)", context.operationId(), attempt, account.getKey());
+            }
+        } catch (RuntimeException ex) {
+            if (freshQuotaReserved) {
+                try {
+                    quotaLedgerService.releaseReservation(context.userId(), quotaKey);
+                } catch (RuntimeException suppressed) {
+                    ex.addSuppressed(suppressed);
+                }
+            }
+            throw ex;
         }
     }
 
@@ -112,6 +160,25 @@ public class PostgresAiSpendGuard implements AiSpendGuard {
             compatible ? usage.imageUnits() : null, compatible ? usage.requestUnits() : null,
             compatible ? "REPORTED_ESTIMATE" : "UNKNOWN", failure == null ? null : failure.name(),
             Timestamp.from(clock.instant()), command.executionContext().operationId(), attempt);
+        if (quotaLedgerService != null && quotaLedgerService.isEnabled()
+            && command.executionContext().userId() != null
+            && usage != null && "USD".equals(usage.currency())) {
+            quotaLedgerService.reconcileActualCost(
+                command.executionContext().userId(),
+                "ai-op:" + command.executionContext().operationId(),
+                usage.estimatedCostMicros()
+            );
+        }
+    }
+
+    private static QuotaOperationType quotaOperation(AiCapability capability) {
+        if (capability == AiCapability.VISION_PARSE) {
+            return QuotaOperationType.HANDWRITING_DIAGNOSTIC;
+        }
+        if (capability == AiCapability.PRACTICE_GENERATE) {
+            return QuotaOperationType.HYBRID_TWIN;
+        }
+        return QuotaOperationType.AI_VERIFICATION;
     }
 
     private static AiProviderException blocked() {

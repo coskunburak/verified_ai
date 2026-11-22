@@ -1,8 +1,13 @@
 package com.verifiedai.mistake.passport.service;
 
+import com.verifiedai.billing.application.CapabilityAccessPolicy;
+import com.verifiedai.billing.application.LearningOsCapability;
 import com.verifiedai.mistake.passport.dto.MistakePassportResponseDto;
 import com.verifiedai.mistake.passport.dto.MistakePassportResponseDto.*;
 import com.verifiedai.mistake.passport.repository.MistakePassportProjectionRepository;
+import com.verifiedai.sharedkernel.error.ApiErrorCode;
+import com.verifiedai.sharedkernel.error.ApiProblemException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +23,33 @@ import java.util.stream.Collectors;
 
 @Service
 public class MistakePassportReadModelService {
+    private CapabilityAccessPolicy access;
+    @org.springframework.beans.factory.annotation.Value("${verifiedai.billing.learning-os-tiers-enabled:false}")
+    private String learningOsFlag;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    public void setAccess(CapabilityAccessPolicy access) {
+        this.access = access;
+    }
+
+    private boolean tierGuardsEnabled() {
+        return "true".equalsIgnoreCase(learningOsFlag);
+    }
+
+    private boolean hasFullPassportAccess(UUID learnerId) {
+        if (access == null) {
+            return false;
+        }
+        try {
+            return access.check(learnerId, LearningOsCapability.MISTAKE_PASSPORT_FULL);
+        } catch (ApiProblemException ex) {
+            if (ex.code() == ApiErrorCode.ENTITLEMENT_SYNC_FAILED) {
+                return false;
+            }
+            throw ex;
+        }
+    }
+
 
     private static final String ARITHMETIC_SLIP_CODE = "ARITH_BASIC_COMPUTATION";
 
@@ -27,7 +59,7 @@ public class MistakePassportReadModelService {
         this.projectionRepository = projectionRepository;
     }
 
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, noRollbackFor = ApiProblemException.class)
     public MistakePassportResponseDto getLearnerMistakePassport(
             UUID authenticatedLearnerId,
             TrapLifecycleStatus statusFilter
@@ -74,6 +106,15 @@ public class MistakePassportReadModelService {
             ? allItems
             : allItems.stream().filter(i -> i.lifecycleStatus() == statusFilter).toList();
 
+        if (tierGuardsEnabled() && !hasFullPassportAccess(authenticatedLearnerId)) {
+            var titles = allConceptual.stream().filter(i -> i.lifecycleStatus() == TrapLifecycleStatus.RECURRING_PATTERN
+                || i.lifecycleStatus() == TrapLifecycleStatus.IN_REMEDIATION)
+                .sorted(java.util.Comparator.comparingInt(ExamTrapItemDto::occurrenceCount).reversed())
+                .limit(2).map(ExamTrapItemDto::localizedTrapTitleKey).toList();
+            var proofs = allItems.stream().map(ExamTrapItemDto::latestCounterexample).filter(Objects::nonNull).distinct().toList();
+            return new MistakePassportResponseDto("mistake-passport.v1", authenticatedLearnerId, Instant.now(), summary,
+                List.of(), List.of(), titles, proofs);
+        }
         Map<Boolean, List<ExamTrapItemDto>> partitioned = filteredItems.stream()
             .collect(Collectors.partitioningBy(i -> ARITHMETIC_SLIP_CODE.equals(i.mistakeCode())));
 

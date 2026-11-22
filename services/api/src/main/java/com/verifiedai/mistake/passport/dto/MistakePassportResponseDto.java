@@ -1,5 +1,6 @@
 package com.verifiedai.mistake.passport.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
@@ -11,8 +12,15 @@ public record MistakePassportResponseDto(
     Instant generatedAt,
     PassportSummaryMetrics summaryMetrics,
     List<ExamTrapItemDto> conceptualTraps,      // Primary tab: Conceptual & Structural Traps
-    List<ExamTrapItemDto> arithmeticSlips       // Secondary tab: ARITH_BASIC_COMPUTATION only
+    List<ExamTrapItemDto> arithmeticSlips,
+    @JsonInclude(JsonInclude.Include.NON_EMPTY) List<String> summaryTrapTitleKeys,
+    @JsonInclude(JsonInclude.Include.NON_EMPTY) List<CounterexampleProofSnapshot> earnedProofs
 ) {
+    public MistakePassportResponseDto(String schemaVersion, UUID learnerId, Instant generatedAt,
+        PassportSummaryMetrics metrics, List<ExamTrapItemDto> traps, List<ExamTrapItemDto> slips) {
+        this(schemaVersion, learnerId, generatedAt, metrics, traps, slips, List.of(), List.of());
+    }
+
     public record PassportSummaryMetrics(
         int conqueredExamTrapsCount,            // K: STABLE_RESOLVED count
         int activeExamTrapsCount,               // RECURRING_PATTERN + IN_REMEDIATION

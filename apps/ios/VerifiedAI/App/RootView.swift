@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct RootView: View {
+    @Environment(\.scenePhase) private var scenePhase
     let environment: AppEnvironment
     let dependencies: AppDependencies
 
@@ -151,7 +152,9 @@ struct RootView: View {
                         .navigationTitle("Verified AI")
                 }
             default:
-                entitledHomeContent(userId: session.userId, authSessionId: session.sessionId)
+                if entitlementViewModel.scope == .init(user: session.userId, session: session.sessionId) {
+                    entitledHomeContent(userId: session.userId, authSessionId: session.sessionId)
+                } else { ProgressView() }
             }
         }
         .id(session.sessionId)
@@ -162,6 +165,7 @@ struct RootView: View {
                     weeklyReportViewModel: weeklyProgressReportViewModel,
                     environmentName: environment.displayName,
                     entitlement: entitlementViewModel.entitlement,
+                    quotaSummary: entitlementViewModel.quotaSummary,
                     onAccountDeleted: handleAccountDeleted,
                     onSignOut: {
                         isAccountSettingsPresented = false
@@ -178,7 +182,15 @@ struct RootView: View {
                 }
             }
         }
+        .environment(\.learningOsAccess, entitlementViewModel)
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { Task { await entitlementViewModel.bootstrap(force: true) } }
+        }
         .task(id: session.sessionId) {
+            entitlementViewModel.bind(.init(user: session.userId, session: session.sessionId))
+            let entitlementModel = entitlementViewModel
+            paywallViewModel.onServerEntitlementVerified = { await entitlementModel.refresh(force: true) }
+            contextualPaywallModel.onServerEntitlementVerified = { await entitlementModel.refresh(force: true) }
             accountSettingsViewModel.reset()
             weeklyProgressReportViewModel.reset()
             coldStartDiagnosticViewModel.updateLearnerId(session.userId)
@@ -293,7 +305,7 @@ struct RootView: View {
             .sheet(isPresented: $isPaywallPresented, onDismiss: {
                 Task { await entitlementViewModel.bootstrap(force: true) }
             }) {
-                if billingTimers.safeToPresent { PaywallView(viewModel: paywallViewModel, safeToPurchase: { billingTimers.safeToPresent }) }
+                if billingTimers.safeToPresent { PaywallView(viewModel: paywallViewModel, quotaSummary: entitlementViewModel.quotaSummary, safeToPurchase: { billingTimers.safeToPresent }) }
             }
             .fullScreenCover(isPresented: $isProblemCapturePresented, onDismiss: {
                 Task {
@@ -365,6 +377,8 @@ struct RootView: View {
         entitlementViewModel.reset()
         isPaywallPresented = false
         billingTimers = PaywallTriggerCoordinator()
+        paywallViewModel.onServerEntitlementVerified = nil
+        contextualPaywallModel.onServerEntitlementVerified = nil
         paywallViewModel.reset()
         contextualPaywallModel.reset()
         problemAssetUploadViewModel.reset()

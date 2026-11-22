@@ -1,0 +1,21 @@
+# Sprint 10.2 acceptance matrix
+
+Implementation status: `IMPLEMENTED_NOT_RUN`. Zero automated tests, builds, linters, or validators were executed during implementation. Owner runs `bash scripts/quality/sprint_10_2_owner_acceptance.sh --full && bash scripts/quality/sprint_10_2_swift_check.sh`.
+
+| Group | Scope and source suites | Owner command or evidence path | Expected result | Status |
+|---|---|---|---|---|
+| A | `LearningOsCapabilityPolicyTest`, `TierResolutionPolicyTest`, `EntitlementEffectiveAccessTest`, `EntitlementApplicationServiceTest`, `BillingOfferCatalogTest`, `ModulithArchitectureTest` | `sprint_10_2_owner_acceptance.sh --full` -> `.generated/sprint-10-2-owner/<run-id>/` | 8-capability matrix across tiers/flags, finite Clock expiry, fail-closed `503` metric tags, `billing::application` Modulith boundaries intact | `NOT_RUN_OWNER_REQUIRED` |
+| B | `BillingOfferUpgradeTest`, `Sprint102EntitlementMigrationTest`, `AppleBillingApplicationServiceTest`, `AppleBillingEntitlementTransitionTest`, `EntitlementDowngradeLifecycleTest` | `sprint_10_2_owner_acceptance.sh --full` -> PostgreSQL 16 Testcontainers + Surefire XML | Clean `V065` -> `V066` backfill & CHECK/cascade constraints; PRO/Coach/Season/Grace/Retry clock edges; terminal Refund/Revoke replay immunity; two-user GDPR export/delete isolation & preserved `learner_mistake_dna_profiles` / `learner_skill_mastery` | `NOT_RUN_OWNER_REQUIRED` |
+| C | `EntitlementControllerTest`, `LearningOsEntitlementControllerTest`, `LearningOsFeatureGuardMockMvcTest`, `LearningOsNonPunitiveDowngradeTest` | `sprint_10_2_owner_acceptance.sh --full` -> HTTP / Standalone MockMvc + `ApiExceptionHandler` | `/v1/billing/entitlements` == `/api/v1/billing/entitlements` `200 private, no-store`, legacy `/api/v1/me/entitlements` unchanged, `401`/`403`/`503` ProblemDetails, zero downstream writes when denied, non-punitive downgrade & BOLA-before-gate | `NOT_RUN_OWNER_REQUIRED` |
+| D | `EntitlementViewModelTests`, `PaywallViewModelTests`, `LearningOsEntitlementV2DecoderTests`, `LearningOsCapabilityGateTests`, `LearningOsEntitlementRefreshTests` | `sprint_10_2_swift_check.sh` -> `.generated/sprint-10-2-ios/<run-id>/Sprint102Subscription.xcresult` | 16 fixtures decode; `SKTestSession` (`Sprint102.storekit`) local buy never unlocks server gate; subject+session cache isolation & stale response immunity; `SWIFT_STRICT_CONCURRENCY=complete` clean | `NOT_RUN_OWNER_REQUIRED` |
+| E | `LearningOsDowngradePresentationTests` + Consumer Views (`MistakePassportView`, `CoachHubView`, `SpacedReviewView`, `ExamReadinessHubView`, `ProveItSoloTwinView`, `MicroLessonDrawerView`, `PaywallTriggerCoordinator`) | `sprint_10_2_swift_check.sh` -> `UIHostingController` 320x640 (`xSmall`/`AX3`, `en-US`/`tr-TR`, `light`/`dark`) | Flat Concept B banners & action gates fit compact layout; cross-account summary suppression; active exam/diagnostic/twin timer suppresses paywall | `NOT_RUN_OWNER_REQUIRED` |
+| F | `validate_json_schemas.py`, `validate_sprint_10_2_contracts.py`, `check_contracts.py`, `docs_check.py`, `plutil -lint`, owner scripts | `sprint_10_2_owner_acceptance.sh --full` + `sprint_10_2_swift_check.sh` | `entitlement-v2` schema, 16 fixtures, negative mutations, mirrored OpenAPI YAML parity, EN/TR `Localizable.xcstrings`, `project.pbxproj`, and docs manifest (`Total Markdown files: 446`) valid | `NOT_RUN_OWNER_REQUIRED` |
+
+## Manual release evidence
+
+| Gate | Owner evidence required | Status |
+|---|---|---|
+| Staging SLA and defect ledger | Warmed staging P95 latency (`< 150ms` billing entitlements, `< 350ms` exam/readiness) and `P0=0` / `P1=0` sign-off | `PENDING_MANUAL` |
+| Physical iOS device accessibility & localization | Real iPhone in `en-US` and `tr-TR`, `320pt` width, `xSmall` through `AX3`, dark/light, Bold Text, Reduce Motion, VoiceOver over `LearningOsActionGate`, `LearningOsStatusBannerView`, and downgraded `MistakePassportView` | `PENDING_MANUAL` |
+| App Store Connect & legal links | Approved production SKUs mapped to `COACH_PRO`, `PRO`, and `YKS_SEASON_PASS`, sandbox/StoreKit accelerated renewal & refund verification, and owner-published HTTPS Terms & Privacy links | `PENDING_MANUAL` |
+| Production flag activation sign-off | Explicit owner approval before toggling `verifiedai.billing.learning-os-tiers-enabled` from `false` to `true` | `PENDING_MANUAL` |

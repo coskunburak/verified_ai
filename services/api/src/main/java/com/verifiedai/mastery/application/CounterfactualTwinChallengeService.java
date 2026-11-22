@@ -1,9 +1,14 @@
 package com.verifiedai.mastery.application;
 
+import com.verifiedai.billing.application.CapabilityAccessPolicy;
+import com.verifiedai.billing.application.LearningOsCapability;
 import com.verifiedai.mastery.AttemptQueryPort;
 import com.verifiedai.mastery.VerifiedAttemptSnapshot;
 import com.verifiedai.mastery.api.dto.VerifiedTwinChallengeResponse;
 import com.verifiedai.mastery.domain.*;
+import com.verifiedai.sharedkernel.error.ApiErrorCode;
+import com.verifiedai.sharedkernel.error.ApiProblemException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +23,27 @@ import java.util.UUID;
 
 @Service
 public class CounterfactualTwinChallengeService {
+    private CapabilityAccessPolicy access;
+    @org.springframework.beans.factory.annotation.Value("${verifiedai.billing.learning-os-tiers-enabled:false}")
+    private String learningOsFlag;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    public void setAccess(CapabilityAccessPolicy access) {
+        this.access = access;
+    }
+
+    private boolean tierGuardsEnabled() {
+        return "true".equalsIgnoreCase(learningOsFlag);
+    }
+
+    private void requireAccess(UUID userId, LearningOsCapability capability) {
+        if (access == null) {
+            throw new ApiProblemException(HttpStatus.SERVICE_UNAVAILABLE, ApiErrorCode.ENTITLEMENT_SYNC_FAILED,
+                "Entitlement verification unavailable", true, "RETRY");
+        }
+        access.require(userId, capability);
+    }
+
 
     private static final BigDecimal UNASSISTED_REMEDIATION_DELTA = new BigDecimal("0.1500");
     private static final BigDecimal REMEDIATION_EXIT_FLOOR = new BigDecimal("0.5500");
@@ -71,6 +97,10 @@ public class CounterfactualTwinChallengeService {
                 );
             }
 
+            if (tierGuardsEnabled()) {
+                requireAccess(userId, mathVerifierTwinPort.requiresHybridAccess()
+                    ? LearningOsCapability.HYBRID_TWIN : LearningOsCapability.DETERMINISTIC_TWIN);
+            }
             GeneratedTwinSpec spec = mathVerifierTwinPort.synthesizeIsomorphicTwin(
                     attempt.curriculumCode(),
                     attempt.targetSkillCode(),

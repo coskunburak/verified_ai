@@ -4,6 +4,8 @@ import XCTest
 
 @MainActor
 final class EntitlementViewModelTests: XCTestCase {
+    private let scope = EntitlementDisplayCache.Scope(user: Entitlement.free().userId, session: UUID())
+
     func testBootstrapLoadsServerEntitlementAndCachesDisplayState() async throws {
         let storage = InMemorySecureStorage()
         let cache = EntitlementDisplayCache(secureStorage: storage)
@@ -14,7 +16,7 @@ final class EntitlementViewModelTests: XCTestCase {
 
         XCTAssertEqual(viewModel.state, .ready(.free()))
         XCTAssertEqual(viewModel.entitlement, .free())
-        let cached = try await cache.load()
+        let cached = try await cache.load(scope: scope)
         XCTAssertEqual(cached, .free())
         let requestCount = await service.requestCount
         XCTAssertEqual(requestCount, 1)
@@ -30,7 +32,7 @@ final class EntitlementViewModelTests: XCTestCase {
 
     func testOfflineBootstrapUsesCachedPresentationState() async throws {
         let cache = EntitlementDisplayCache(secureStorage: InMemorySecureStorage())
-        try await cache.save(.pro())
+        try await cache.save(.pro(), scope: scope)
         let network = StubNetworkMonitor(isReachable: false)
         let viewModel = makeViewModel(
             service: StubEntitlementService(entitlement: .free()),
@@ -57,7 +59,7 @@ final class EntitlementViewModelTests: XCTestCase {
 
     func testServerRefreshOverridesTamperedCachedPresentationState() async throws {
         let cache = EntitlementDisplayCache(secureStorage: InMemorySecureStorage())
-        try await cache.save(.proPlus())
+        try await cache.save(.proPlus(), scope: scope)
         let network = StubNetworkMonitor(isReachable: false)
         let service = StubEntitlementService(entitlement: .free())
         let viewModel = makeViewModel(service: service, cache: cache, networkMonitor: network)
@@ -78,12 +80,14 @@ final class EntitlementViewModelTests: XCTestCase {
         cache: EntitlementDisplayCache = EntitlementDisplayCache(secureStorage: InMemorySecureStorage()),
         networkMonitor: StubNetworkMonitor = StubNetworkMonitor()
     ) -> EntitlementViewModel {
-        EntitlementViewModel(
+        let model = EntitlementViewModel(
             entitlementAPI: service,
             displayCache: cache,
             networkMonitor: networkMonitor,
             logger: AppLogger(subsystem: "com.verifiedai.learning.tests", category: "entitlement")
         )
+        model.bind(scope)
+        return model
     }
 }
 

@@ -17,7 +17,17 @@ public class MistakeDnaController {
     @GetMapping("/dna")
     public LearnerMistakeDnaService.View read(@AuthenticationPrincipal Jwt jwt) {
         UUID owner=AuthenticatedUser.from(jwt).userId();
-        return service.read(owner,!"FREE".equals(entitlements.currentAiTier(owner)));
+        boolean full = false;
+        try {
+            full = !"FREE".equals(entitlements.currentAiTier(owner));
+        } catch (com.verifiedai.sharedkernel.error.ApiProblemException ex) {
+            if (ex.code() != com.verifiedai.sharedkernel.error.ApiErrorCode.ENTITLEMENT_SYNC_FAILED) {
+                throw ex;
+            }
+        } catch (org.springframework.dao.DataAccessException ex) {
+            // Preserve owner's read-only top-2 Mistake DNA summary during billing verification outage.
+        }
+        return service.read(owner,full);
     }
     @GetMapping("/{eventId}/effective-state")
     public LearnerMistakeDnaService.DiagnosisView effective(@AuthenticationPrincipal Jwt jwt,@PathVariable UUID eventId) {

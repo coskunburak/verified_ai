@@ -3,6 +3,7 @@ import SwiftUI
 struct PaywallView: View {
     @Bindable var viewModel: PaywallViewModel
     var contextual = false
+    var quotaSummary: QuotaSummary? = nil
     var safeToPurchase: @MainActor () -> Bool = { true }
     @Environment(\.dismiss) private var dismiss
 
@@ -82,6 +83,10 @@ struct PaywallView: View {
             VStack(alignment: .leading, spacing: SpacingTokens.lg) {
                 if let message = viewModel.message {
                     AppNoticeBanner(LocalizedStringKey(stringLiteral: message), systemImage: "info.circle", tone: .warning)
+                }
+
+                if let quotaSummary {
+                    QuotaUsageCardView(summary: quotaSummary)
                 }
 
                 ForEach(viewModel.products) { product in

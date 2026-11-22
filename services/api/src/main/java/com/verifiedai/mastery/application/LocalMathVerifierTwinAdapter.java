@@ -11,6 +11,7 @@ import java.util.Map;
 
 @Component
 public class LocalMathVerifierTwinAdapter implements MathVerifierTwinPort {
+    @Override public boolean requiresHybridAccess() { return false; }
 
     private static final byte[] DOMAIN_KEY = "VERIFIED_AI_SPRINT_7_8_TWIN_SYNTHESIS_KEY_V1".getBytes(StandardCharsets.UTF_8);
 

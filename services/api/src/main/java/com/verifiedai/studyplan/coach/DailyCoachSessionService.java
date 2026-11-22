@@ -1,5 +1,7 @@
 package com.verifiedai.studyplan.coach;
 
+import com.verifiedai.billing.application.CapabilityAccessPolicy;
+import com.verifiedai.billing.application.LearningOsCapability;
 import com.verifiedai.sharedkernel.error.ApiErrorCode;
 import com.verifiedai.sharedkernel.error.ApiProblemException;
 import com.verifiedai.studyplan.coach.dto.*;
@@ -20,6 +22,27 @@ import java.util.*;
 
 @Service
 public class DailyCoachSessionService {
+    private CapabilityAccessPolicy access;
+    @org.springframework.beans.factory.annotation.Value("${verifiedai.billing.learning-os-tiers-enabled:false}")
+    private String learningOsFlag;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    public void setAccess(CapabilityAccessPolicy access) {
+        this.access = access;
+    }
+
+    private boolean tierGuardsEnabled() {
+        return "true".equalsIgnoreCase(learningOsFlag);
+    }
+
+    private void requireAccess(UUID userId, LearningOsCapability capability) {
+        if (access == null) {
+            throw new ApiProblemException(HttpStatus.SERVICE_UNAVAILABLE, ApiErrorCode.ENTITLEMENT_SYNC_FAILED,
+                "Entitlement verification unavailable", true, "RETRY");
+        }
+        access.require(userId, capability);
+    }
+
 
     private static final Set<Integer> ALLOWED_BUDGET_MINUTES = Set.of(5, 10, 15, 20, 25);
 
@@ -70,6 +93,7 @@ public class DailyCoachSessionService {
             return toSummaryResponse(session, tasks, traps);
         }
 
+        if (tierGuardsEnabled()) requireAccess(userId, LearningOsCapability.DAILY_COACH_MISSION);
         return createDeterministicMission(userId, effectiveDate);
     }
 
@@ -77,6 +101,7 @@ public class DailyCoachSessionService {
     public DailyCoachSummaryResponse updatePreferences(UUID userId, DailyCoachPreferencesRequest request) {
         Objects.requireNonNull(userId, "userId cannot be null");
         Objects.requireNonNull(request, "request cannot be null");
+        if (tierGuardsEnabled()) requireAccess(userId, LearningOsCapability.DAILY_COACH_MISSION);
         Objects.requireNonNull(request.preferredMode(), "preferredMode cannot be null");
         Objects.requireNonNull(request.budgetMinutes(), "budgetMinutes cannot be null");
 
@@ -130,6 +155,7 @@ public class DailyCoachSessionService {
                 .orElseThrow(() -> new DailyCoachSessionNotFoundException(sessionId));
 
         List<DailyCoachTaskEntity> tasks = taskRepository.findAllBySessionIdOrderByTaskOrderAsc(sessionId);
+        if (tierGuardsEnabled()) requireAccess(userId, LearningOsCapability.DAILY_COACH_MISSION);
         DailyCoachTaskEntity target = tasks.stream()
                 .filter(t -> t.getId().equals(request.taskId()))
                 .findFirst()
@@ -175,6 +201,8 @@ public class DailyCoachSessionService {
 
         DailyCoachSessionEntity session = sessionRepository.findByIdAndUserId(sessionId, userId)
                 .orElseThrow(() -> new DailyCoachSessionNotFoundException(sessionId));
+
+        if (tierGuardsEnabled()) requireAccess(userId, LearningOsCapability.DAILY_COACH_MISSION);
 
         List<DailyCoachTaskEntity> tasks = taskRepository.findAllBySessionIdOrderByTaskOrderAsc(sessionId);
         Instant now = clock.instant();

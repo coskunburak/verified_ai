@@ -4,6 +4,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 import com.verifiedai.ai.application.*;
 import com.verifiedai.billing.application.CapabilityAccessPolicy;
+import com.verifiedai.billing.application.EffectiveEntitlementAccess;
+import com.verifiedai.billing.application.EntitlementApplicationService;
+import com.verifiedai.billing.application.FairUsePolicy;
+import com.verifiedai.billing.application.QuotaConsumptionDecision;
+import com.verifiedai.billing.application.QuotaLedgerService;
+import com.verifiedai.billing.application.QuotaOperationType;
+import com.verifiedai.billing.application.QuotaSummary;
 import com.verifiedai.problem.application.solving.*;
 import com.verifiedai.sharedkernel.error.*;
 import com.verifiedai.solving.application.*;
@@ -42,6 +49,24 @@ public class SecondarySolveService {
     private final long maxCost;
     private final int concurrency;
     private final Locale locale;
+    private QuotaLedgerService quotaLedgerService;
+    private EntitlementApplicationService entitlementApplicationService;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    public void setQuotaLedgerService(QuotaLedgerService quotaLedgerService) {
+        this.quotaLedgerService = quotaLedgerService;
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    public void setEntitlementApplicationService(EntitlementApplicationService entitlementApplicationService) {
+        this.entitlementApplicationService = entitlementApplicationService;
+    }
+
+    private EffectiveEntitlementAccess resolveAccess(UUID userId) {
+        return entitlementApplicationService != null
+            ? entitlementApplicationService.resolveAccess(userId)
+            : FairUsePolicy.syntheticAccessForTier("FREE", clock.instant());
+    }
     public SecondarySolveService(SolveSourceAccess sources,SolveStore primary,SecondarySolveStore store,
         CapabilityAccessPolicy access,AiRoutePlanner routes,AiModelGateway gateway,SolutionCandidateValidator validator,
         BlindSecondaryRequestBuilder blind,BlindAgreementAnalyzer analyzer,TransactionTemplate tx,JsonMapper mapper,
@@ -118,6 +143,26 @@ public class SecondarySolveService {
                 decision=new SecondaryEscalationPolicy.Decision(policy.version(),SecondaryEscalationPolicy.Outcome.BLOCKED,"ENTITLEMENT_BLOCKED");
             else if("BUDGET_EXCEEDED".equals(routeFailure))
                 decision=new SecondaryEscalationPolicy.Decision(policy.version(),SecondaryEscalationPolicy.Outcome.BLOCKED,"SECONDARY_BUDGET_UNAVAILABLE");
+            else if (decision.outcome() == SecondaryEscalationPolicy.Outcome.ESCALATE
+                && plan != null
+                && !"LOCAL_FIXTURE".equals(plan.primary().provider())
+                && quotaLedgerService != null
+                && quotaLedgerService.isEnabled()) {
+                QuotaSummary summary = quotaLedgerService.getOrInitializeSummary(user, resolveAccess(user));
+                if (summary.costCircuitBreakerTripped()) {
+                    decision = new SecondaryEscalationPolicy.Decision(
+                        policy.version(),
+                        SecondaryEscalationPolicy.Outcome.BLOCKED,
+                        "AI_COST_CIRCUIT_BREAKER_TRIPPED"
+                    );
+                } else if (summary.degradedToDeterministicOnly()) {
+                    decision = new SecondaryEscalationPolicy.Decision(
+                        policy.version(),
+                        SecondaryEscalationPolicy.Outcome.BLOCKED,
+                        "QUOTA_EXHAUSTED"
+                    );
+                }
+            }
             if(decision.outcome()==SecondaryEscalationPolicy.Outcome.ESCALATE && store.previouslyScheduled(primaryId))
                 decision=new SecondaryEscalationPolicy.Decision(policy.version(),SecondaryEscalationPolicy.Outcome.BLOCKED,"SECONDARY_ALREADY_SCHEDULED");
             SecondaryState state=switch(decision.outcome()) {
@@ -166,12 +211,49 @@ public class SecondarySolveService {
         SolveJob parent=primary.get(job.primaryJobId()).orElse(null);
         if(parent==null) return; // Account/source deletion already cascaded the job.
         long ceiling=Math.min(maxCost,plan.maxCostMicros());
+        String quotaKey = "ai-op:" + job.operationId();
+        boolean quotaReserved = false;
+        if (ceiling > 0 && !"LOCAL_FIXTURE".equals(plan.primary().provider())
+            && quotaLedgerService != null && quotaLedgerService.isEnabled()) {
+            QuotaConsumptionDecision decision = quotaLedgerService.reserveAndConsume(
+                job.userId(),
+                resolveAccess(job.userId()),
+                QuotaOperationType.AI_VERIFICATION,
+                quotaKey,
+                ceiling
+            );
+            if (!decision.allowed()) {
+                String quotaFailure = decision.costCircuitBreakerTripped()
+                    ? "AI_COST_CIRCUIT_BREAKER_TRIPPED"
+                    : "QUOTA_EXHAUSTED";
+                tx.executeWithoutResult(s -> {
+                    sources.lockOwner(job.userId(), job.sessionId());
+                    store.finish(id, SecondaryState.POLICY_BLOCKED, quotaFailure, null, clock.instant());
+                });
+                return;
+            }
+            quotaReserved = !decision.idempotentReplay() && !decision.deterministicExempt();
+        }
         var command=new AiExecutionCommand(AiCapability.SOLVE,blind.build(source),
             new AiExecutionContext(job.operationId(),job.userId(),job.sessionId(),id.toString(),null,id.toString(),job.deadline(),
                 Map.of("logicalPrimaryOperationId",parent.operationId().toString(),"routeRole","SECONDARY_SOLVER")),
             context(source),"application/json","canonical-problem-v1",plan.promptId(),plan.promptVersion(),plan.schemaVersion(),ceiling);
         // Gateway independently repeats route checks, durable reservation, deadlines and provider-health guards.
         AiExecutionResult result=gateway.execute(command);
+        if (quotaReserved) {
+            if (result.succeeded() && result.usage() != null) {
+                quotaLedgerService.reconcileActualCost(
+                    job.userId(),
+                    quotaKey,
+                    result.usage().estimatedCostMicros()
+                );
+            } else if (result.attemptCount() == 0
+                && (result.status() == AiExecutionStatus.DISABLED
+                    || result.status() == AiExecutionStatus.BLOCKED_POLICY
+                    || result.status() == AiExecutionStatus.BLOCKED_BUDGET)) {
+                quotaLedgerService.releaseReservation(job.userId(), quotaKey);
+            }
+        }
         SolutionCandidate candidate=null;
         BlindAgreementAnalyzer.Evidence agreement=null;
         SecondaryState proposed;String failure=null;

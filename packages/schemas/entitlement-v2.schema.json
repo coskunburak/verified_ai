@@ -69,11 +69,148 @@
           "PREMIUM_MODEL_FALLBACK"
         ]
       }
+    },
+    "packageCode": {
+      "type": "string",
+      "enum": [
+        "FREE",
+        "PRO",
+        "COACH_PRO",
+        "YKS_SEASON_PASS"
+      ]
+    },
+    "gracePeriodExpiresAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "featureEnabled": {
+      "type": "boolean"
+    },
+    "paidAccessActive": {
+      "type": "boolean"
+    },
+    "learningOsCapabilities": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "ATTEMPT_VERIFY",
+          "DETERMINISTIC_TWIN",
+          "HYBRID_TWIN",
+          "MISTAKE_PASSPORT_FULL",
+          "DAILY_COACH_MISSION",
+          "MICRO_LESSON",
+          "EXAM_READINESS_SIMULATOR",
+          "TIMED_MOCK_SESSION"
+        ]
+      }
+    },
+    "accessEvaluatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "historyAccess": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "mistakePassport": {
+          "type": "string",
+          "enum": [
+            "FULL",
+            "SUMMARY",
+            "NONE"
+          ]
+        },
+        "skillMastery": {
+          "type": "string",
+          "enum": [
+            "FULL",
+            "SUMMARY",
+            "NONE"
+          ]
+        },
+        "priorExams": {
+          "type": "string",
+          "enum": [
+            "FULL",
+            "SUMMARY",
+            "NONE"
+          ]
+        }
+      },
+      "required": [
+        "mistakePassport",
+        "skillMastery",
+        "priorExams"
+      ]
+    },
+    "quotaSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "periodKey",
+        "aiVerificationsUsed",
+        "aiVerificationsLimit",
+        "remainingAiChecks",
+        "hybridTwinsUsed",
+        "hybridTwinsLimit",
+        "deterministicTwinsUnlimited",
+        "costCircuitBreakerTripped",
+        "degradedToDeterministicOnly",
+        "resetsAt"
+      ],
+      "properties": {
+        "periodKey": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}(-\\d{2})?$"
+        },
+        "aiVerificationsUsed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "aiVerificationsLimit": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "remainingAiChecks": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "hybridTwinsUsed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "hybridTwinsLimit": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "deterministicTwinsUnlimited": {
+          "type": "boolean",
+          "const": true
+        },
+        "costCircuitBreakerTripped": {
+          "type": "boolean"
+        },
+        "degradedToDeterministicOnly": {
+          "type": "boolean"
+        },
+        "resetsAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
     }
   },
   "allOf": [
     {
       "if": {
+        "required": [
+          "status"
+        ],
         "properties": {
           "status": {
             "enum": [
@@ -87,48 +224,162 @@
         "properties": {
           "effectiveTier": {
             "const": "FREE"
-          },
-          "capabilities": {
-            "maxItems": 0
           }
         }
       }
     },
     {
       "if": {
+        "required": [
+          "effectiveTier"
+        ],
         "properties": {
-          "legacyTier": {
-            "const": "PRO_PLUS"
-          },
-          "status": {
-            "enum": [
-              "ACTIVE",
-              "GRACE_PERIOD",
-              "BILLING_RETRY"
-            ]
+          "effectiveTier": {
+            "const": "FREE"
           }
         }
       },
       "then": {
+        "properties": {
+          "packageCode": {
+            "enum": [
+              "FREE"
+            ]
+          },
+          "paidAccessActive": {
+            "const": false
+          },
+          "learningOsCapabilities": {
+            "items": {
+              "enum": [
+                "ATTEMPT_VERIFY",
+                "DETERMINISTIC_TWIN"
+              ]
+            }
+          },
+          "capabilities": {
+            "items": {
+              "const": "BASIC_SOLVE"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "effectiveTier"
+        ],
+        "properties": {
+          "effectiveTier": {
+            "const": "PRO"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "packageCode": {
+            "enum": [
+              "PRO"
+            ]
+          },
+          "paidAccessActive": {
+            "const": true
+          },
+          "learningOsCapabilities": {
+            "items": {
+              "enum": [
+                "ATTEMPT_VERIFY",
+                "DETERMINISTIC_TWIN",
+                "HYBRID_TWIN",
+                "MISTAKE_PASSPORT_FULL"
+              ]
+            }
+          },
+          "legacyTier": {
+            "const": "PRO"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "effectiveTier"
+        ],
         "properties": {
           "effectiveTier": {
             "const": "COACH_PRO"
           }
         }
+      },
+      "then": {
+        "properties": {
+          "packageCode": {
+            "enum": [
+              "COACH_PRO",
+              "YKS_SEASON_PASS"
+            ]
+          },
+          "paidAccessActive": {
+            "const": true
+          },
+          "learningOsCapabilities": {
+            "items": {
+              "enum": [
+                "ATTEMPT_VERIFY",
+                "DETERMINISTIC_TWIN",
+                "HYBRID_TWIN",
+                "MISTAKE_PASSPORT_FULL",
+                "DAILY_COACH_MISSION",
+                "MICRO_LESSON",
+                "EXAM_READINESS_SIMULATOR",
+                "TIMED_MOCK_SESSION"
+              ]
+            }
+          },
+          "legacyTier": {
+            "const": "PRO_PLUS"
+          }
+        }
       }
     },
     {
       "if": {
+        "required": [
+          "featureEnabled"
+        ],
         "properties": {
-          "legacyTier": {
-            "const": "FREE"
-          },
+          "featureEnabled": {
+            "const": false
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "learningOsCapabilities": {
+            "items": {
+              "enum": [
+                "ATTEMPT_VERIFY",
+                "DETERMINISTIC_TWIN"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "status",
+          "gracePeriodExpiresAt"
+        ],
+        "properties": {
           "status": {
-            "enum": [
-              "ACTIVE",
-              "GRACE_PERIOD",
-              "BILLING_RETRY"
-            ]
+            "const": "GRACE_PERIOD"
+          },
+          "gracePeriodExpiresAt": {
+            "type": "null"
           }
         }
       },
@@ -136,29 +387,9 @@
         "properties": {
           "effectiveTier": {
             "const": "FREE"
-          }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "legacyTier": {
-            "const": "PRO"
           },
-          "status": {
-            "enum": [
-              "ACTIVE",
-              "GRACE_PERIOD",
-              "BILLING_RETRY"
-            ]
-          }
-        }
-      },
-      "then": {
-        "properties": {
-          "effectiveTier": {
-            "const": "PRO"
+          "paidAccessActive": {
+            "const": false
           }
         }
       }

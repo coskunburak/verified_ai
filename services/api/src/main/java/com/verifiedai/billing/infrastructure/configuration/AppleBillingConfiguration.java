@@ -1,5 +1,6 @@
 package com.verifiedai.billing.infrastructure.configuration;
 
+import com.verifiedai.billing.application.BillingQuotaProperties;
 import com.verifiedai.billing.domain.port.AppStoreGatewayUnavailableException;
 import com.verifiedai.billing.domain.port.AppStoreServerGateway;
 import com.verifiedai.billing.domain.port.AppStoreSignedDataVerifier;
@@ -14,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
 @Configuration
-@EnableConfigurationProperties(AppleBillingProperties.class)
+@EnableConfigurationProperties({AppleBillingProperties.class, BillingQuotaProperties.class})
 class AppleBillingConfiguration {
 
     @org.springframework.boot.context.properties.ConfigurationPropertiesBinding

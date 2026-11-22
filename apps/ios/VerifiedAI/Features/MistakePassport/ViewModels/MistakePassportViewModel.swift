@@ -67,11 +67,10 @@ public final class MistakePassportViewModel {
             guard !Task.isCancelled, generation == requestGeneration else { return }
 
             await cacheStore.savePassportSnapshot(response, statusFilter: statusFilter)
-            let displayedList = activeItems(from: response)
-            if displayedList.isEmpty {
-                state = .empty(statusFilter)
-            } else {
+            if hasVisibleContent(in: response) {
                 state = .loaded(response, isOfflineStale: false)
+            } else {
+                state = .empty(statusFilter)
             }
         } catch {
             guard !Task.isCancelled, generation == requestGeneration else { return }
@@ -87,9 +86,16 @@ public final class MistakePassportViewModel {
     public func switchCategoryTab(_ tab: TrapCategoryTab) {
         selectedCategoryTab = tab
         if case let .loaded(response, isOfflineStale) = state {
-            let items = activeItems(from: response)
-            state = items.isEmpty ? .empty(selectedStatusFilter) : .loaded(response, isOfflineStale: isOfflineStale)
+            state = hasVisibleContent(in: response) ? .loaded(response, isOfflineStale: isOfflineStale) : .empty(selectedStatusFilter)
         }
+    }
+
+    private func hasVisibleContent(in response: MistakePassportResponseDto) -> Bool {
+        !activeItems(from: response).isEmpty
+            || response.summaryMetrics.conqueredExamTrapsCount > 0
+            || response.summaryMetrics.activeExamTrapsCount > 0
+            || !(response.summaryTrapTitleKeys ?? []).isEmpty
+            || !(response.earnedProofs ?? []).isEmpty
     }
 
     public func handleUserLogoutPurge() async {

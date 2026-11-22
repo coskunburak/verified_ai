@@ -269,3 +269,11 @@ future policy versions append history. No paid inference is introduced and creat
 ## INV-MON-001 and timer suppression
 
 An accepted free attempt retains full First-Error Diagnosis and Counterexample access after an entitlement or catalog change. A completed unassisted twin can expose a separate dismissible subscription invitation. An active exam, diagnostic or solo twin timer, or unresolved timer state, suppresses presentation including explicit requests.
+
+## Sprint 10.2 entitlement enforcement and non-punitive downgrade invariants
+
+- Server-authoritative capability policy (`billing::application.CapabilityAccessPolicy`) is the single source of access truth across `FREE`, `PRO`, `COACH_PRO`, and `YKS_SEASON_PASS` (`effectiveTier = COACH_PRO`); local StoreKit 2 transactions or unverified client caches never unlock paid mutations without verified backend state, and `EntitlementDisplayCache` is isolated by `(user, session)` and cleared on account switch or logout.
+- Finite renewal boundaries are enforced by server `Clock`: `GRACE_PERIOD` grants paid access only while `gracePeriodExpiresAt > now`; `BILLING_RETRY` grants paid access only within verified expiry/grace windows; `EXPIRED`, `REFUND`, and `REVOKED` downgrade immediately to `FREE` (`capabilities = [BASIC_SOLVE]`, `learningOsCapabilities = [ATTEMPT_VERIFY, DETERMINISTIC_TWIN]`), and revoked transactions cannot be resurrected by stale replays.
+- Non-punitive downgrade: expiration, cancellation, or billing sync outage never deletes `learner_mistake_dna_profiles` or `learner_skill_mastery` rows; owners retain read-only Mistake Passport summaries (conquered counts, top-2 active traps, earned counterexamples), Mistake DNA top-2 profiles, persisted readiness snapshots, active `IN_PROGRESS` timed mock resume, `DIAGNOSTIC_BASELINE` starts, previously earned micro-lessons, and previously `SERVED` spaced queue views without DB writes.
+- Privacy and audit: `billing_entitlement_transition_audit` enforces `training_eligible = false`, stores SHA-256 `event_key_hash` keys with zero raw JWS or PII, and cascades on account deletion alongside `commerce_account_tokens`.
+

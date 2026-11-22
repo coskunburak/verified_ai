@@ -324,6 +324,7 @@ public struct MicroLessonDrawerView: View {
             }
             .buttonStyle(AppPrimaryButtonStyle())
             .disabled(viewModel.selectedOptionId == nil || viewModel.isSubmitting)
+            .modifier(LearningOsActionGate(capability: .microLesson))
             .accessibilityIdentifier("micro_lesson.quick_check.submit")
 
             if viewModel.hasSubmittedQuickCheck {

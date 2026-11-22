@@ -1,5 +1,7 @@
 package com.verifiedai.attempt.application;
 
+import com.verifiedai.billing.application.CapabilityAccessPolicy;
+import com.verifiedai.billing.application.LearningOsCapability;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.verifiedai.attempt.domain.*;
 import com.verifiedai.attempt.infrastructure.persistence.*;
@@ -20,6 +22,27 @@ import io.micrometer.core.instrument.MeterRegistry;
 
 @Service
 public class AttemptLearningService {
+    private CapabilityAccessPolicy access;
+    @org.springframework.beans.factory.annotation.Value("${verifiedai.billing.learning-os-tiers-enabled:false}")
+    private String learningOsFlag;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    public void setAccess(CapabilityAccessPolicy access) {
+        this.access = access;
+    }
+
+    private boolean tierGuardsEnabled() {
+        return "true".equalsIgnoreCase(learningOsFlag);
+    }
+
+    private void requireAccess(UUID userId, LearningOsCapability capability) {
+        if (access == null) {
+            throw new ApiProblemException(HttpStatus.SERVICE_UNAVAILABLE, ApiErrorCode.ENTITLEMENT_SYNC_FAILED,
+                "Entitlement verification unavailable", true, "RETRY");
+        }
+        access.require(userId, capability);
+    }
+
     private static final org.slf4j.Logger LOG=org.slf4j.LoggerFactory.getLogger(AttemptLearningService.class);
     private final StudentAttemptRepository attempts;
     private final AttemptLearningRepository store;
@@ -48,6 +71,7 @@ public class AttemptLearningService {
         return operation(owner,()-> {
             var prior=tx.execute(t->{ owned(owner,problem,attempt,false); return store.drill(owner,attempt); });
             if(prior.isPresent()) return expose(prior.get());
+            if (tierGuardsEnabled()) requireAccess(owner, LearningOsCapability.DETERMINISTIC_TWIN);
             var evidence=generate(owner,problem,attempt,"TWIN");
             return tx.execute(t->{
                 var current=owned(owner,problem,attempt,true);
@@ -198,6 +222,7 @@ public class AttemptLearningService {
     }
     private static ApiProblemException stale() { return AttemptAnalysisPolicy.error(ApiErrorCode.ATTEMPT_STALE_SOURCE,HttpStatus.CONFLICT); }
     public Map<String,Object> passport(UUID owner,UUID problem) {
+        if (tierGuardsEnabled()) requireAccess(owner, LearningOsCapability.MISTAKE_PASSPORT_FULL);
         return operation(owner,()->tx.execute(t->{ sources.lockOwner(owner,problem); return store.passport(owner); }));
     }
     private AttemptLearningEvidence generate(UUID owner,UUID problem,UUID attempt,String action) {

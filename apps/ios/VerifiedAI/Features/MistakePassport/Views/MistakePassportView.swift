@@ -2,6 +2,7 @@
 import SwiftUI
 
 public struct MistakePassportView: View {
+    @Environment(\.learningOsAccess) private var access
     @Bindable public var viewModel: MistakePassportViewModel
     public var onLaunchTwinChallenge: ((UUID) -> Void)?
 
@@ -37,6 +38,7 @@ public struct MistakePassportView: View {
                     emptyStateView(status: status)
 
                 case .loaded(let response, let isOfflineStale):
+                    if access?.scope == nil || response.learnerId == access?.scope?.user {
                     ScrollView {
                         VStack(spacing: SpacingTokens.md) {
                             if isOfflineStale {
@@ -48,21 +50,41 @@ public struct MistakePassportView: View {
                             heroSummaryCard(response.summaryMetrics)
                                 .padding(.horizontal, SpacingTokens.lg)
 
-                            categoryPicker
-                                .padding(.horizontal, SpacingTokens.lg)
+                            if access?.decision(.mistakePassportFull) == .allowed && !isOfflineStale {
+                                categoryPicker
+                                    .padding(.horizontal, SpacingTokens.lg)
 
-                            statusFilterScrollView
+                                statusFilterScrollView
 
-                            let items = viewModel.activeItems(from: response)
-                            if items.isEmpty {
-                                emptyStateView(status: viewModel.selectedStatusFilter)
+                                let items = viewModel.activeItems(from: response)
+                                if items.isEmpty {
+                                    emptyStateView(status: viewModel.selectedStatusFilter)
+                                } else {
+                                    LazyVStack(spacing: SpacingTokens.compact) {
+                                        ForEach(items) { trap in
+                                            ExamTrapRadarCardView(trap: trap, onLaunchTwin: onLaunchTwinChallenge)
+                                        }
+                                    }
+                                    .padding(.horizontal, SpacingTokens.lg)
+                                }
                             } else {
-                                LazyVStack(spacing: SpacingTokens.compact) {
-                                    ForEach(items) { trap in
-                                        ExamTrapRadarCardView(trap: trap, onLaunchTwin: onLaunchTwinChallenge)
+                                AppSurfaceCard {
+                                    Text(LocalizedStringKey("billing.historyRetained"))
+                                        .font(TypographyTokens.caption)
+                                        .foregroundStyle(ColorTokens.textSecondary)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                    ForEach(Array((response.summaryTrapTitleKeys ?? []).enumerated()), id: \.offset) { _, title in
+                                        Text(LocalizedStringKey(title))
+                                            .font(TypographyTokens.bodyMedium)
+                                            .foregroundStyle(ColorTokens.textPrimary)
+                                            .fixedSize(horizontal: false, vertical: true)
+                                    }
+                                    ForEach(Array((response.earnedProofs ?? []).enumerated()), id: \.offset) { _, proof in
+                                        CounterexampleProofCardView(snapshot: proof)
                                     }
                                 }
                                 .padding(.horizontal, SpacingTokens.lg)
+                                .accessibilityIdentifier("mistake.passport.readOnlySummary")
                             }
                         }
                         .padding(.vertical, SpacingTokens.lg)
@@ -71,6 +93,7 @@ public struct MistakePassportView: View {
                         viewModel.loadPassport(statusFilter: viewModel.selectedStatusFilter)
                     }
 
+                    }
                 case .idle:
                     Color.clear
                         .onAppear {

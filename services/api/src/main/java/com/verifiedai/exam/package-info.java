@@ -1,6 +1,6 @@
 @ApplicationModule(
         displayName = "Exam",
-        allowedDependencies = {
+        allowedDependencies = {"billing::application", 
                 "curriculum::application",
                 "mastery",
                 "mistake",

@@ -115,8 +115,9 @@ final class EntitlementControllerTest extends PostgresIntegrationTestSupport {
                 var response = httpClient.send(authorized(session, path).GET().build(), HttpResponse.BodyHandlers.ofString());
                 assertThat(response.statusCode()).isEqualTo(200);
                 assertThat(response.headers().firstValue("Cache-Control").orElse("")).contains("no-store");
-                if (first != null) assertThat(response.body()).isEqualTo(first);
-                first = response.body();
+                String comparable = response.body().replaceAll("\"accessEvaluatedAt\":\"[^\"]+\"", "\"accessEvaluatedAt\":\"instant\"");
+                if (first != null) assertThat(comparable).isEqualTo(first);
+                first = comparable;
                 assertThat(first).contains(resource.startsWith("offers") ? "FEATURE_DISABLED" : "effectiveTier");
             }
         }
@@ -135,7 +136,7 @@ final class EntitlementControllerTest extends PostgresIntegrationTestSupport {
         var owner = signIn("local_dev_coach");
         var other = signIn("local_dev_other");
         httpClient.send(authorized(owner, "/api/v1/me/entitlements").GET().build(), HttpResponse.BodyHandlers.ofString());
-        jdbcTemplate.update("update entitlements set tier='PRO_PLUS' where user_id=?", owner.userId());
+        jdbcTemplate.update("update entitlements set tier='PRO_PLUS', source='PROMOTIONAL', expires_at=now()+interval '1 day' where user_id=?", owner.userId());
         var legacy = httpClient.send(authorized(owner, "/api/v1/me/entitlements").GET().build(), HttpResponse.BodyHandlers.ofString());
         assertThat(legacy.body()).contains("\"tier\":\"PRO_PLUS\"").doesNotContain("effectiveTier");
         var projected = httpClient.send(authorized(owner, "/v1/billing/entitlements").GET().build(), HttpResponse.BodyHandlers.ofString());

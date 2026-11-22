@@ -15,6 +15,36 @@ class EntitlementMetrics {
         this.meterRegistry = meterRegistry;
     }
 
+    void checked(LearningOsCapability capability, String tier, boolean allowed, String denyReason) {
+        meterRegistry.counter("entitlement_checked",
+            "capability", capability.name(),
+            "effective_tier", tier,
+            "outcome", allowed ? "ALLOW" : "DENY",
+            "deny_reason", denyReason
+        ).increment();
+    }
+
+    private int rank(String value) {
+        return switch (value) { case "FREE" -> 0; case "PRO" -> 1; default -> 2; };
+    }
+
+    void transition(String before, String after, String reason) {
+        int direction = Integer.compare(rank(after), rank(before));
+        if (direction == 0) return;
+        Runnable emit = () -> meterRegistry.counter(
+            direction > 0 ? "entitlement_upgraded" : "entitlement_downgraded",
+            "transition_reason", reason
+        ).increment();
+        if (org.springframework.transaction.support.TransactionSynchronizationManager.isSynchronizationActive()) {
+            org.springframework.transaction.support.TransactionSynchronizationManager.registerSynchronization(
+                new org.springframework.transaction.support.TransactionSynchronization() {
+                    @Override public void afterCommit() { emit.run(); }
+                });
+        } else {
+            emit.run();
+        }
+    }
+
     void resolution(EntitlementTier tier, EntitlementStatus status) {
         Counter.builder("entitlement.resolution.total")
             .tag("tier", tier.name())

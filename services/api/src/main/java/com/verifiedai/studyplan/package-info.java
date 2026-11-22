@@ -1,6 +1,6 @@
 @ApplicationModule(
         displayName = "Study Plan",
-        allowedDependencies = {
+        allowedDependencies = {"billing::application", 
                 "curriculum::api",
                 "exam::events",
                 "security",

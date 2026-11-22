@@ -4,6 +4,8 @@ import java.util.Map;
 
 public interface MathVerifierTwinPort {
 
+    default boolean requiresHybridAccess() { return true; }
+
     GeneratedTwinSpec synthesizeIsomorphicTwin(
             String curriculumCode,
             String targetSkillCode,

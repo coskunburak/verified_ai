@@ -87,12 +87,13 @@ public class AppleBillingApplicationService {
         AppStoreProductMapping product = requireProduct(transaction.productId());
         validateSeasonTerm(product, transaction);
         validateAppAccountTokenOwnership(userId, transaction, now);
+        entitlementApplicationService.lockUserEntitlement(userId);
         validateTransactionOwnership(userId, transaction);
 
         AppStoreSubscriptionStatus subscriptionStatus = determineStatus(transaction, null, null, now);
         storeVerifiedTransaction(userId, product, transaction, payloadDigest, now);
-        billingRepository.upsertSubscription(userId, transaction, null, product, subscriptionStatus, now);
-        EntitlementResult entitlement = recalculateEntitlement(userId, now);
+        billingRepository.upsertSubscription(userId, transaction, null, product, subscriptionStatus, now, transaction.signedDate());
+        EntitlementResult entitlement = recalculateEntitlement(userId, now, payloadDigest, "PURCHASE");
         billingRepository.upsertBillingEvent(
             externalEventId,
             userId,
@@ -214,18 +215,20 @@ public class AppleBillingApplicationService {
         String payloadDigest = digest(signedTransactionInfo);
         VerifiedAppStoreTransaction transaction = verifyTransaction(signedTransactionInfo);
         VerifiedAppStoreRenewalInfo renewalInfo = verifyRenewalInfo(subscriptionStatus.signedRenewalInfo());
+        validateRenewalOwner(transaction, renewalInfo);
         validateConfiguredEnvironment(transaction.environment());
         AppStoreProductMapping product = requireProduct(transaction.productId());
         validateSeasonTerm(product, transaction);
         validateAppAccountTokenOwnership(userId, transaction, now);
+        entitlementApplicationService.lockUserEntitlement(userId);
         validateTransactionOwnership(userId, transaction);
 
         AppStoreSubscriptionStatus status = subscriptionStatus.appStoreStatus() == null
             ? determineStatus(transaction, renewalInfo, null, now)
             : statusFromAppleRawStatus(subscriptionStatus.appStoreStatus(), transaction, renewalInfo, null, now);
         storeVerifiedTransaction(userId, product, transaction, payloadDigest, now);
-        billingRepository.upsertSubscription(userId, transaction, renewalInfo, product, status, now);
-        EntitlementResult entitlement = recalculateEntitlement(userId, now);
+        billingRepository.upsertSubscription(userId, transaction, renewalInfo, product, status, now, renewalInfo != null && renewalInfo.signedDate() != null ? renewalInfo.signedDate() : transaction.signedDate());
+        EntitlementResult entitlement = recalculateEntitlement(userId, now, payloadDigest, "RECONCILE");
         billingRepository.upsertBillingEvent(
             "reconcile-status:" + userId + ":" + transaction.originalTransactionId() + ":" + payloadDigest,
             userId,
@@ -260,6 +263,7 @@ public class AppleBillingApplicationService {
         validateConfiguredEnvironment(transaction.environment());
         AppStoreProductMapping product = requireProduct(transaction.productId());
         validateSeasonTerm(product, transaction);
+        validateRenewalOwner(transaction, notification.renewalInfo());
         UUID userId = resolveNotificationUser(notification)
             .orElseThrow(() -> problem(
                 HttpStatus.ACCEPTED,
@@ -267,6 +271,7 @@ public class AppleBillingApplicationService {
                 "Apple notification does not match a known platform account",
                 "CONTACT_SUPPORT"
             ));
+        entitlementApplicationService.lockUserEntitlement(userId);
         validateTransactionOwnership(userId, transaction);
 
         AppStoreSubscriptionStatus subscriptionStatus = determineStatus(
@@ -276,8 +281,8 @@ public class AppleBillingApplicationService {
             now
         );
         storeVerifiedTransaction(userId, product, transaction, payloadDigest, now);
-        billingRepository.upsertSubscription(userId, transaction, notification.renewalInfo(), product, subscriptionStatus, now);
-        EntitlementResult entitlement = recalculateEntitlement(userId, now);
+        billingRepository.upsertSubscription(userId, transaction, notification.renewalInfo(), product, subscriptionStatus, now, notification.signedDate());
+        EntitlementResult entitlement = recalculateEntitlement(userId, now, notification.notificationUuid(), transitionCause(notification.notificationType()));
         billingRepository.upsertBillingEvent(
             "notification:" + notification.notificationUuid(),
             userId,
@@ -294,31 +299,42 @@ public class AppleBillingApplicationService {
         );
     }
 
-    private EntitlementResult recalculateEntitlement(UUID userId, Instant now) {
+    private EntitlementResult recalculateEntitlement(UUID userId, Instant now, String event, String reason) {
         if (!billingRepository.userActive(userId)) {
             return entitlementApplicationService.applyAccountDeleted(userId, now);
         }
-        Optional<SubscriptionProjection> subscription = billingRepository.highestAccessibleSubscription(userId);
-        if (subscription.isEmpty()) {
+        var selected = entitlementApplicationService.bestSubscription(userId, now);
+        var next = selected.map(EntitlementApplicationService.Selection::access).orElse(null);
+        var prior = entitlementApplicationService.getCurrent(userId);
+        if (next != null) entitlementApplicationService.recordTransition(userId, prior, next, event, reason, now);
+        if (selected.isEmpty() || !selected.get().access().paidAccessActive()) {
             return entitlementApplicationService.applyDefaultFree(userId, now);
         }
-        SubscriptionProjection projection = subscription.get();
-        AppStoreProductMapping product = productCatalog.findByAppStoreProductId(projection.productId())
-            .orElse(null);
-        if (product == null || ("yks_season".equals(product.internalPlanId())
-            && (projection.expiresAt() == null || !projection.expiresAt().isAfter(now)))) {
-            return entitlementApplicationService.applyDefaultFree(userId, now);
-        }
+        var projection = selected.get().subscription();
+        var product = selected.get().product();
+        Instant effectiveAt = projection.purchasedAt() != null ? projection.purchasedAt() : now;
         return entitlementApplicationService.applyAppStoreSubscription(
             userId,
             product.entitlementTier(),
             EntitlementStatus.valueOf(projection.status().name()),
-            now,
+            effectiveAt,
             projection.expiresAt(),
             projection.originalTransactionId(),
             projection.environment(),
-            now
+            now, selected.get().access().packageCode(), projection.graceUntil()
         );
+    }
+
+    private static String transitionCause(String notificationType) {
+        if (notificationType == null) return "RECONCILE";
+        return switch (notificationType) {
+            case "SUBSCRIBED" -> "PURCHASE";
+            case "DID_RENEW" -> "RENEWAL";
+            case "REFUND" -> "REFUND";
+            case "REVOKE" -> "REVOKE";
+            case "EXPIRED" -> "EXPIRY";
+            default -> "RECONCILE";
+        };
     }
 
     private void requireActiveAccount(UUID userId) {
@@ -429,6 +445,13 @@ public class AppleBillingApplicationService {
         }
     }
 
+    private void validateRenewalOwner(VerifiedAppStoreTransaction transaction, VerifiedAppStoreRenewalInfo renewal) {
+        if (renewal != null && !transaction.originalTransactionId().equals(renewal.originalTransactionId())) {
+            throw problem(HttpStatus.BAD_REQUEST, ApiErrorCode.PURCHASE_VERIFICATION_FAILED,
+                "Renewal does not match transaction", "RETRY");
+        }
+    }
+
     private void validateSeasonTerm(AppStoreProductMapping product, VerifiedAppStoreTransaction transaction) {
         if (!"yks_season".equals(product.internalPlanId())) return;
         Instant start = transaction.purchaseDate();
@@ -498,6 +521,9 @@ public class AppleBillingApplicationService {
         String notificationType,
         Instant now
     ) {
+        if (transaction.revoked() || "REFUND".equals(notificationType) || "REVOKE".equals(notificationType)) {
+            return AppStoreSubscriptionStatus.REVOKED;
+        }
         return switch (appStoreStatus) {
             case 1 -> AppStoreSubscriptionStatus.ACTIVE;
             case 2 -> AppStoreSubscriptionStatus.EXPIRED;

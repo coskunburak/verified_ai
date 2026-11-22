@@ -1,5 +1,7 @@
 package com.verifiedai.exam.application;
 
+import com.verifiedai.billing.application.CapabilityAccessPolicy;
+import com.verifiedai.billing.application.LearningOsCapability;
 import com.verifiedai.exam.config.ExamProperties;
 import com.verifiedai.exam.domain.CandidateProfileModels.CandidateProfileRecord;
 import com.verifiedai.exam.domain.ExamModels.ExamDefinition;
@@ -46,6 +48,27 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class ExamReadinessProjectionService {
+    private CapabilityAccessPolicy access;
+    @org.springframework.beans.factory.annotation.Value("${verifiedai.billing.learning-os-tiers-enabled:false}")
+    private String learningOsFlag;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    public void setAccess(CapabilityAccessPolicy access) {
+        this.access = access;
+    }
+
+    private boolean tierGuardsEnabled() {
+        return "true".equalsIgnoreCase(learningOsFlag);
+    }
+
+    private void requireAccess(UUID userId, LearningOsCapability capability) {
+        if (access == null) {
+            throw new ApiProblemException(HttpStatus.SERVICE_UNAVAILABLE, ApiErrorCode.ENTITLEMENT_SYNC_FAILED,
+                "Entitlement verification unavailable", true, "RETRY");
+        }
+        access.require(userId, capability);
+    }
+
 
     private static final Logger LOG = LoggerFactory.getLogger(ExamReadinessProjectionService.class);
     public static String canonicalExamCode(String code) {
@@ -190,6 +213,7 @@ public class ExamReadinessProjectionService {
             }
         }
 
+        if (tierGuardsEnabled()) requireAccess(authenticatedUserId, LearningOsCapability.EXAM_READINESS_SIMULATOR);
         Timer.Sample sample = Timer.start(meterRegistry);
         TargetSelection targetSelection = resolveTargetSelection(authenticatedUserId, definition.examCode());
         List<MockScoreSignal> recentMockScores = loadRecentMockScores(authenticatedUserId, definition);

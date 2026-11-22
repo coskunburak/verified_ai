@@ -15,7 +15,9 @@ final class PaywallViewModel {
     private(set) var state: PaywallState = .idle
     private(set) var products: [StoreProduct] = []
     private(set) var entitlement: Entitlement?
+    private(set) var refreshedLearningAccess: LearningOsEntitlementV2?
     private(set) var message: String?
+    var onServerEntitlementVerified: (@MainActor () async -> Void)?
 
     init(
         billingAPI: AppleBillingServicing,
@@ -188,6 +190,8 @@ final class PaywallViewModel {
             if transactions.isEmpty {
                 state = .refreshingEntitlement
                 entitlement = try await entitlementAPI.currentEntitlement()
+                refreshedLearningAccess = try? await entitlementAPI.learningAccess()
+                await onServerEntitlementVerified?()
                 state = .ready
                 message = "billing.noRestorable"
                 return
@@ -208,6 +212,7 @@ final class PaywallViewModel {
         configuration = nil
         products = []
         entitlement = nil
+        refreshedLearningAccess = nil
         message = nil
         state = .idle
     }
@@ -225,6 +230,9 @@ final class PaywallViewModel {
         state = .submittingToBackend
         let submission = try await billingAPI.submit(transaction: transaction)
         await storeRepository.finish(transaction)
+        state = .refreshingEntitlement
+        refreshedLearningAccess = try? await entitlementAPI.learningAccess()
+        await onServerEntitlementVerified?()
         entitlement = submission.entitlement
         state = .completed(submission.entitlement)
         message = "Access updated."

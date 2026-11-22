@@ -1,5 +1,7 @@
 package com.verifiedai.mistake;
 
+import com.verifiedai.billing.application.CapabilityAccessPolicy;
+import com.verifiedai.billing.application.LearningOsCapability;
 import com.verifiedai.mistake.infrastructure.MistakeDnaRepository;
 import com.verifiedai.sharedkernel.error.*;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -13,6 +15,33 @@ import org.springframework.transaction.support.*;
 
 @Service
 public class LearnerMistakeDnaService implements com.verifiedai.mastery.SkillReassessmentTriggerService.PendingChecks {
+    private CapabilityAccessPolicy access;
+    @org.springframework.beans.factory.annotation.Value("${verifiedai.billing.learning-os-tiers-enabled:false}")
+    private String learningOsFlag;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    public void setAccess(CapabilityAccessPolicy access) {
+        this.access = access;
+    }
+
+    private boolean tierGuardsEnabled() {
+        return "true".equalsIgnoreCase(learningOsFlag);
+    }
+
+    private boolean hasFullDnaAccess(UUID owner) {
+        if (access == null) {
+            return false;
+        }
+        try {
+            return access.check(owner, LearningOsCapability.MISTAKE_PASSPORT_FULL);
+        } catch (ApiProblemException ex) {
+            if (ex.code() == ApiErrorCode.ENTITLEMENT_SYNC_FAILED) {
+                return false;
+            }
+            throw ex;
+        }
+    }
+
     public record Entry(UUID eventId,UUID attemptId,UUID evaluationId,UUID executionId,UUID skillEvidenceId,int workRevision,String mistakeCode,
         String skillId,String effectiveStatus,Instant observedAt) { }
     public record View(String schemaVersion,boolean enabled,String policyVersion,Instant asOf,
@@ -50,8 +79,9 @@ public class LearnerMistakeDnaService implements com.verifiedai.mastery.SkillRea
         this.limiter=limiter; this.store=store; this.source=source; this.clock=clock; this.metrics=metrics; this.enabled=enabled && attemptsEnabled;
     }
     public boolean enabled() { return enabled; }
-    @Transactional(timeout=5)
+    @Transactional(timeout=5, noRollbackFor=ApiProblemException.class)
     public View read(UUID owner,boolean full) {
+        if (tierGuardsEnabled()) full = hasFullDnaAccess(owner);
         limit(owner); store.lock(owner); var now=clock.instant().truncatedTo(java.time.temporal.ChronoUnit.MICROS);
         if(!enabled || !store.available()) return new View("mistake-dna-view-v1",false,EmpiricalBayesMistakeRateCalculator.POLICY,now,List.of(),List.of(),!full,false);
         var evidence=source.evidence(owner); var excluded=store.excluded(owner);

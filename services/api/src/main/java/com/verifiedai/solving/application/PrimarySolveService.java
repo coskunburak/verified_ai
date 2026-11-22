@@ -2,6 +2,13 @@ package com.verifiedai.solving.application;
 
 import com.verifiedai.ai.application.*;
 import com.verifiedai.billing.application.CapabilityAccessPolicy;
+import com.verifiedai.billing.application.EffectiveEntitlementAccess;
+import com.verifiedai.billing.application.EntitlementApplicationService;
+import com.verifiedai.billing.application.FairUsePolicy;
+import com.verifiedai.billing.application.QuotaConsumptionDecision;
+import com.verifiedai.billing.application.QuotaLedgerService;
+import com.verifiedai.billing.application.QuotaOperationType;
+import com.verifiedai.billing.application.QuotaSummary;
 import com.verifiedai.problem.application.solving.SolveSource;
 import com.verifiedai.problem.application.solving.SolveSourceAccess;
 import com.verifiedai.sharedkernel.error.ApiErrorCode;
@@ -49,12 +56,31 @@ public class PrimarySolveService {
     }
 
     private boolean calculusFixtureEnabled;
+    private QuotaLedgerService quotaLedgerService;
+    private EntitlementApplicationService entitlementApplicationService;
+
     @org.springframework.beans.factory.annotation.Autowired
     void configureCalculusFixture(@Value("${app.solving.calculus-fixture-enabled:false}") boolean enabled,
         @Value("${app.environment:local}") String environment) {
         if (enabled && !java.util.Set.of("local","test").contains(environment))
             throw new IllegalStateException("Calculus fixture is local/test only");
         calculusFixtureEnabled=enabled;
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    public void setQuotaLedgerService(QuotaLedgerService quotaLedgerService) {
+        this.quotaLedgerService = quotaLedgerService;
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    public void setEntitlementApplicationService(EntitlementApplicationService entitlementApplicationService) {
+        this.entitlementApplicationService = entitlementApplicationService;
+    }
+
+    private EffectiveEntitlementAccess resolveAccess(UUID userId) {
+        return entitlementApplicationService != null
+            ? entitlementApplicationService.resolveAccess(userId)
+            : FairUsePolicy.syntheticAccessForTier("FREE", clock.instant());
     }
 
     /** Explicit offline fixture admission; no model invocation or fabricated inference provenance. */
@@ -105,6 +131,33 @@ public class PrimarySolveService {
                 return job.id();
             }
             if(!enabled || !routes.enabled(AiCapability.SOLVE)) throw conflict(ApiErrorCode.SOLVE_DISABLED);
+            if (quotaLedgerService != null && quotaLedgerService.isEnabled()) {
+                var routePolicy = routes.policies().get(AiCapability.SOLVE);
+                boolean paidRoute = routePolicy != null && routePolicy.routePlan() != null
+                    && !"LOCAL_FIXTURE".equals(routePolicy.routePlan().primary().provider());
+                if (paidRoute) {
+                    QuotaSummary summary = quotaLedgerService.getOrInitializeSummary(
+                        command.userId(), resolveAccess(command.userId()));
+                    if (summary.costCircuitBreakerTripped()) {
+                        throw new ApiProblemException(
+                            HttpStatus.TOO_MANY_REQUESTS,
+                            ApiErrorCode.AI_COST_CIRCUIT_BREAKER_TRIPPED,
+                            "Monthly AI budget limit reached; deterministic verification and twin drills remain unlimited",
+                            true,
+                            "DETERMINISTIC_FALLBACK_OR_UPGRADE"
+                        );
+                    }
+                    if (summary.degradedToDeterministicOnly()) {
+                        throw new ApiProblemException(
+                            HttpStatus.TOO_MANY_REQUESTS,
+                            ApiErrorCode.QUOTA_EXHAUSTED,
+                            "AI verification quota reached; deterministic verification and twin drills remain unlimited",
+                            true,
+                            "UPGRADE_OR_WAIT_RESET"
+                        );
+                    }
+                }
+            }
             try { validator.sourceDocument(source); }
             catch(CandidateRejected e) { throw conflict(ApiErrorCode.PROBLEM_UNSUPPORTED); }
             var latest=store.latest(source.canonicalProblemId());
@@ -178,6 +231,28 @@ public class PrimarySolveService {
         var configured=routes.policies().get(AiCapability.SOLVE).routePlan();
         long ceiling="LOCAL_FIXTURE".equals(configured.primary().provider()) ? 0
             : Math.min(maxCostMicros,configured.maxCostMicros());
+        String quotaKey = "ai-op:" + snapshot.operationId();
+        boolean quotaReserved = false;
+        if (ceiling > 0 && quotaLedgerService != null && quotaLedgerService.isEnabled()) {
+            QuotaConsumptionDecision decision = quotaLedgerService.reserveAndConsume(
+                snapshot.userId(),
+                resolveAccess(snapshot.userId()),
+                QuotaOperationType.AI_VERIFICATION,
+                quotaKey,
+                ceiling
+            );
+            if (!decision.allowed()) {
+                String quotaFailure = decision.costCircuitBreakerTripped()
+                    ? "AI_COST_CIRCUIT_BREAKER_TRIPPED"
+                    : "QUOTA_EXHAUSTED";
+                tx.executeWithoutResult(status -> {
+                    sources.lockOwner(snapshot.userId(), snapshot.sessionId());
+                    store.finish(id, SolveState.POLICY_BLOCKED, quotaFailure, null, clock.instant());
+                });
+                return;
+            }
+            quotaReserved = !decision.idempotentReplay() && !decision.deterministicExempt();
+        }
         var context=new AiRouteContext(AiCapability.SOLVE,source.problemType(),source.taskType(),null,null,false,
             "LOW",false,null,locale,Duration.ofSeconds(30),ceiling,null,Map.of(),null,null,
             "NO_TRAINING_BY_DEFAULT",AiRouteContext.RouteRole.PRIMARY_SOLVER);
@@ -187,6 +262,20 @@ public class PrimarySolveService {
                 snapshot.idempotencyKey(),snapshot.deadline(),Map.of()),context,"application/json","canonical-problem-v1",
             configured.promptId(),configured.promptVersion(),"solution-candidate-v1",ceiling);
         AiExecutionResult result=gateway.execute(command); // No surrounding database transaction.
+        if (quotaReserved) {
+            if (result.succeeded() && result.usage() != null) {
+                quotaLedgerService.reconcileActualCost(
+                    snapshot.userId(),
+                    quotaKey,
+                    result.usage().estimatedCostMicros()
+                );
+            } else if (result.attemptCount() == 0
+                && (result.status() == AiExecutionStatus.DISABLED
+                    || result.status() == AiExecutionStatus.BLOCKED_POLICY
+                    || result.status() == AiExecutionStatus.BLOCKED_BUDGET)) {
+                quotaLedgerService.releaseReservation(snapshot.userId(), quotaKey);
+            }
+        }
         SolutionCandidate candidate=null;
         SolveState state; String code=null;
         if(result.succeeded()) {

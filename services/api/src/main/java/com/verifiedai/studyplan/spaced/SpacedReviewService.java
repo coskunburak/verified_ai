@@ -1,5 +1,7 @@
 package com.verifiedai.studyplan.spaced;
 
+import com.verifiedai.billing.application.CapabilityAccessPolicy;
+import com.verifiedai.billing.application.LearningOsCapability;
 import com.verifiedai.sharedkernel.error.ApiErrorCode;
 import com.verifiedai.sharedkernel.error.ApiProblemException;
 import com.verifiedai.studyplan.spaced.dto.*;
@@ -16,6 +18,35 @@ import java.util.*;
 
 @Service
 public class SpacedReviewService {
+    private CapabilityAccessPolicy access;
+    @org.springframework.beans.factory.annotation.Value("${verifiedai.billing.learning-os-tiers-enabled:false}")
+    private String learningOsFlag;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    public void setAccess(CapabilityAccessPolicy access) {
+        this.access = access;
+    }
+
+    private boolean tierGuardsEnabled() {
+        return "true".equalsIgnoreCase(learningOsFlag);
+    }
+
+    private void requireAccess(UUID userId, LearningOsCapability capability) {
+        if (access == null) {
+            throw new ApiProblemException(HttpStatus.SERVICE_UNAVAILABLE, ApiErrorCode.ENTITLEMENT_SYNC_FAILED,
+                "Entitlement verification unavailable", true, "RETRY");
+        }
+        access.require(userId, capability);
+    }
+
+    private boolean hasAccess(UUID userId, LearningOsCapability capability) {
+        if (access == null) {
+            throw new ApiProblemException(HttpStatus.SERVICE_UNAVAILABLE, ApiErrorCode.ENTITLEMENT_SYNC_FAILED,
+                "Entitlement verification unavailable", true, "RETRY");
+        }
+        return access.check(userId, capability);
+    }
+
 
     private final SpacedReviewQueueRepository repository;
     private final SpacedRepetitionScheduler scheduler;
@@ -31,10 +62,38 @@ public class SpacedReviewService {
         this.jdbcClient = Objects.requireNonNull(jdbcClient, "jdbcClient cannot be null");
     }
 
-    @Transactional
+    @Transactional(noRollbackFor = ApiProblemException.class)
     public SpacedQueueResponse getDailySpacedQueue(UUID userId, Instant now) {
         Objects.requireNonNull(userId, "userId cannot be null");
         Instant evaluationTime = now != null ? now : Instant.now();
+
+        if (tierGuardsEnabled()) {
+            ApiProblemException syncError = null;
+            boolean allowed;
+            try {
+                allowed = hasAccess(userId, LearningOsCapability.DAILY_COACH_MISSION);
+            } catch (ApiProblemException ex) {
+                if (ex.code() == ApiErrorCode.ENTITLEMENT_SYNC_FAILED) {
+                    allowed = false;
+                    syncError = ex;
+                } else {
+                    throw ex;
+                }
+            }
+            if (!allowed) {
+                List<SpacedReviewQueueEntity> servedEntities = repository.findByUserIdAndStatusIn(
+                        userId,
+                        List.of(SpacedQueueStatus.SERVED)
+                );
+                if (servedEntities.isEmpty()) {
+                    if (syncError != null) {
+                        throw syncError;
+                    }
+                    requireAccess(userId, LearningOsCapability.DAILY_COACH_MISSION);
+                }
+                return selectAndBuildQueueResponse(userId, servedEntities, evaluationTime, false);
+            }
+        }
 
         // 1. Sync / populate pending queue from persistence or discovered items
         syncEligibleQueueItems(userId, evaluationTime);
@@ -45,9 +104,18 @@ public class SpacedReviewService {
                 List.of(SpacedQueueStatus.PENDING, SpacedQueueStatus.SERVED)
         );
 
+        return selectAndBuildQueueResponse(userId, activeEntities, evaluationTime, true);
+    }
+
+    private SpacedQueueResponse selectAndBuildQueueResponse(
+            UUID userId,
+            List<SpacedReviewQueueEntity> entities,
+            Instant evaluationTime,
+            boolean mutateState
+    ) {
         // 3. Convert to candidates and recalculate current retention
         List<SpacedReviewCandidate> candidates = new ArrayList<>();
-        for (SpacedReviewQueueEntity entity : activeEntities) {
+        for (SpacedReviewQueueEntity entity : entities) {
             BigDecimal currentRetention = entity.getEstimatedRetention();
             if (entity.getTriggerType() == SpacedTriggerType.RETENTION_DECAY) {
                 currentRetention = scheduler.computeCurrentRetention(
@@ -56,7 +124,9 @@ public class SpacedReviewService {
                         entity.getCreatedAt(),
                         evaluationTime
                 );
-                entity.setEstimatedRetention(currentRetention);
+                if (mutateState) {
+                    entity.setEstimatedRetention(currentRetention);
+                }
             }
 
             candidates.add(new SpacedReviewCandidate(
@@ -82,19 +152,21 @@ public class SpacedReviewService {
                 evaluationTime
         );
 
-        // 5. Mark selected items as SERVED if currently PENDING
+        // 5. Mark selected items as SERVED if currently PENDING (only when mutating/allowed)
         List<SpacedQueueItemDto> items = new ArrayList<>();
         Set<String> distinctSkills = new HashSet<>();
 
         for (SpacedReviewCandidate candidate : selectedCandidates) {
             distinctSkills.add(candidate.canonicalSkillCode());
-            repository.findById(candidate.itemId()).ifPresent(e -> {
-                if (e.getStatus() == SpacedQueueStatus.PENDING) {
-                    e.setStatus(SpacedQueueStatus.SERVED);
-                    e.setUpdatedAt(evaluationTime);
-                    repository.save(e);
-                }
-            });
+            if (mutateState) {
+                repository.findById(candidate.itemId()).ifPresent(e -> {
+                    if (e.getStatus() == SpacedQueueStatus.PENDING) {
+                        e.setStatus(SpacedQueueStatus.SERVED);
+                        e.setUpdatedAt(evaluationTime);
+                        repository.save(e);
+                    }
+                });
+            }
 
             items.add(new SpacedQueueItemDto(
                     candidate.itemId(),
@@ -107,7 +179,7 @@ public class SpacedReviewService {
                     candidate.dueAt(),
                     candidate.assignedTwinId(),
                     candidate.promptPreviewLatex(),
-                    candidate.status() == SpacedQueueStatus.PENDING ? SpacedQueueStatus.SERVED : candidate.status(),
+                    mutateState && candidate.status() == SpacedQueueStatus.PENDING ? SpacedQueueStatus.SERVED : candidate.status(),
                     candidate.pedagogicalBadgeKey()
             ));
         }
@@ -141,6 +213,8 @@ public class SpacedReviewService {
         // INV-SR-006 BOLA: Query scoped by (itemId, userId). Throws 404 on tenant mismatch.
         SpacedReviewQueueEntity item = repository.findByIdAndUserId(itemId, userId)
                 .orElseThrow(() -> new SpacedQueueItemNotFoundException(itemId));
+
+        if (tierGuardsEnabled()) requireAccess(userId, LearningOsCapability.DAILY_COACH_MISSION);
 
         // Validation: Must be active item
         if (item.getStatus() != SpacedQueueStatus.PENDING && item.getStatus() != SpacedQueueStatus.SERVED) {
@@ -228,6 +302,7 @@ public class SpacedReviewService {
         SpacedReviewQueueEntity item = repository.findByIdAndUserId(itemId, userId)
                 .orElseThrow(() -> new SpacedQueueItemNotFoundException(itemId));
 
+        if (tierGuardsEnabled()) requireAccess(userId, LearningOsCapability.DAILY_COACH_MISSION);
         item.setStatus(SpacedQueueStatus.DISMISSED);
         item.setUpdatedAt(dismissalTime);
         SpacedReviewQueueEntity saved = repository.save(item);
