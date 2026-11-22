@@ -26,6 +26,7 @@ final class Sprint103QuotaMigrationTest {
             var upgrade = Flyway.configure()
                 .dataSource(db.getJdbcUrl(), db.getUsername(), db.getPassword())
                 .locations("classpath:db/migration/platform")
+                .target("67")
                 .load();
             assertThat(upgrade.migrate().migrationsExecuted).isEqualTo(1);
             assertThat(upgrade.migrate().migrationsExecuted).isZero();

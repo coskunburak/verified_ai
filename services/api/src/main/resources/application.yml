@@ -335,3 +335,15 @@ verifiedai:
     readiness-enabled: ${VERIFIEDAI_EXAM_READINESS_ENABLED:false}
     integrity-guard-enabled: ${VERIFIEDAI_EXAM_INTEGRITY_GUARD_ENABLED:false}
     quality-gate-evidence-path: ${VERIFIEDAI_EXAM_QUALITY_GATE_EVIDENCE_PATH:}
+  notification:
+    enabled: ${VERIFIEDAI_NOTIFICATION_ENABLED:false}
+    dispatch-worker-enabled: ${VERIFIEDAI_NOTIFICATION_DISPATCH_WORKER_ENABLED:false}
+    apns-live-delivery-enabled: ${VERIFIEDAI_NOTIFICATION_APNS_LIVE_DELIVERY_ENABLED:false}
+    dispatch-batch-size: ${VERIFIEDAI_NOTIFICATION_DISPATCH_BATCH_SIZE:50}
+    dispatch-poll-interval-ms: ${VERIFIEDAI_NOTIFICATION_DISPATCH_POLL_INTERVAL_MS:15000}
+    dispatch-lock-ttl-seconds: ${VERIFIEDAI_NOTIFICATION_DISPATCH_LOCK_TTL_SECONDS:60}
+    default-daily-cap: 2
+    max-daily-cap: 5
+    max-delivery-attempts: 3
+    retry-base-delay-seconds: 60
+    max-active-devices-per-user: 10

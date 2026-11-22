@@ -1,0 +1,9 @@
+{
+  "platform": "IOS_APNS",
+  "environment": "SANDBOX",
+  "deviceToken": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+  "osPermissionStatus": "AUTHORIZED",
+  "appVersion": "1.0.0",
+  "locale": "tr",
+  "trainingEligible": false
+}

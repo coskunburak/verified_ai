@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "notification-device-v1",
+  "deviceId": "00000000-0000-4000-8000-000000000201",
+  "platform": "IOS_APNS",
+  "environment": "SANDBOX",
+  "tokenLast4": "cdef",
+  "osPermissionStatus": "AUTHORIZED",
+  "appVersion": "1.0.0",
+  "locale": "tr",
+  "active": true,
+  "version": 0,
+  "trainingEligible": false,
+  "lastSeenAt": "2026-11-22T10:05:00Z",
+  "revokedAt": null,
+  "updatedAt": "2026-11-22T10:05:00Z"
+}

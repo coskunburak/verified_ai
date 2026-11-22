@@ -240,3 +240,15 @@ evaluations and classifications. Account deletion explicitly purges profiles and
 cascade. Session/source deletion invalidates profiles. Backup expiry and restore deletion reconciliation remain unchanged.
 OCR corrections reuse V034 storage; no duplicate raw text is stored in V037. Protected, backup-excluded iOS correction
 retry files live in the existing AttemptPending directory and are removed by its account lifecycle purge.
+
+## Sprint 10.4 notification preferences and delivery lifecycle
+
+`notification_preferences`, `notification_devices`, `notification_deliveries`, and `notification_delivery_events` (`V068`)
+all enforce `training_eligible = FALSE` (`CHECK (NOT training_eligible)`) and `ON DELETE CASCADE` on `users(id)`.
+`NotificationLifecycleContributor` (`category() = "notifications"`) exports preference snapshots, masked device metadata
+(`tokenLast4`, platform, environment, OS permission status, locale, timestamps), and recent delivery metadata while
+strictly excluding raw `device_token` and `token_sha256` from export payloads, logs, and Micrometer metrics. On account
+deletion, `deleteUserData` explicitly deletes rows across all four notification tables scoped by `user_id` alongside
+database `ON DELETE CASCADE`, and cross-user device token registration atomically revokes active ownership from any prior
+account. Rollback disables `verifiedai.notification.enabled` and `verifiedai.notification.dispatch-worker-enabled` without
+dropping `V068` tables.

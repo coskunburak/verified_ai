@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "notification-preferences-v1",
+  "userId": "00000000-0000-4000-8000-000000000101",
+  "pushEnabled": false,
+  "studyPlanEnabled": false,
+  "spacedReviewEnabled": false,
+  "examDeadlineEnabled": false,
+  "billingTrialReminderEnabled": false,
+  "accountSecurityEnabled": true,
+  "quietHoursEnabled": true,
+  "quietHoursStartLocal": "22:00",
+  "quietHoursEndLocal": "08:00",
+  "timezone": "UTC",
+  "dailyCap": 2,
+  "version": 0,
+  "trainingEligible": false,
+  "updatedAt": "2026-11-22T10:00:00Z"
+}

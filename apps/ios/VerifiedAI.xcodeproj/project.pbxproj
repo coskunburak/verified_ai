@@ -14,6 +14,14 @@
 		AB1021000000000000000004 /* LearningOsDowngradePresentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1022000000000000000004 /* LearningOsDowngradePresentationTests.swift */; };
 		AB1021000000000000000005 /* Sprint102.storekit in Resources */ = {isa = PBXBuildFile; fileRef = AB1022000000000000000005 /* Sprint102.storekit */; };
 		AB1031000000000000000001 /* LearningOsQuotaSummaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1032000000000000000001 /* LearningOsQuotaSummaryTests.swift */; };
+		AB1041000000000000000001 /* NotificationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1042000000000000000001 /* NotificationModels.swift */; };
+		AB1041000000000000000002 /* NotificationServicing.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1042000000000000000002 /* NotificationServicing.swift */; };
+		AB1041000000000000000003 /* NotificationAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1042000000000000000003 /* NotificationAPI.swift */; };
+		AB1041000000000000000004 /* PushPermissionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1042000000000000000004 /* PushPermissionManager.swift */; };
+		AB1041000000000000000005 /* FixtureNotificationAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1042000000000000000005 /* FixtureNotificationAPI.swift */; };
+		AB1041000000000000000006 /* NotificationPreferencesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1042000000000000000006 /* NotificationPreferencesViewModel.swift */; };
+		AB1041000000000000000007 /* NotificationPreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1042000000000000000007 /* NotificationPreferencesView.swift */; };
+		AB1041000000000000000008 /* NotificationPreferencesViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1042000000000000000008 /* NotificationPreferencesViewModelTests.swift */; };
 		B74000000000000000000002 /* attempt-mistake-evaluation-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = A74000000000000000000002 /* attempt-mistake-evaluation-v1.json */; };
 		B75000000000000000000001 /* mistake-dispute-result-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = A75000000000000000000001 /* mistake-dispute-result-v1.json */; };
 		B75000000000000000000002 /* mistake-effective-state-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = A75000000000000000000002 /* mistake-effective-state-v1.json */; };
@@ -331,6 +339,14 @@
 		AB1022000000000000000004 /* LearningOsDowngradePresentationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearningOsDowngradePresentationTests.swift; sourceTree = "<group>"; };
 		AB1022000000000000000005 /* Sprint102.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Sprint102.storekit; sourceTree = "<group>"; };
 		AB1032000000000000000001 /* LearningOsQuotaSummaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearningOsQuotaSummaryTests.swift; sourceTree = "<group>"; };
+		AB1042000000000000000001 /* NotificationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationModels.swift; sourceTree = "<group>"; };
+		AB1042000000000000000002 /* NotificationServicing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationServicing.swift; sourceTree = "<group>"; };
+		AB1042000000000000000003 /* NotificationAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationAPI.swift; sourceTree = "<group>"; };
+		AB1042000000000000000004 /* PushPermissionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushPermissionManager.swift; sourceTree = "<group>"; };
+		AB1042000000000000000005 /* FixtureNotificationAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixtureNotificationAPI.swift; sourceTree = "<group>"; };
+		AB1042000000000000000006 /* NotificationPreferencesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPreferencesViewModel.swift; sourceTree = "<group>"; };
+		AB1042000000000000000007 /* NotificationPreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPreferencesView.swift; sourceTree = "<group>"; };
+		AB1042000000000000000008 /* NotificationPreferencesViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPreferencesViewModelTests.swift; sourceTree = "<group>"; };
 		A74000000000000000000002 /* attempt-mistake-evaluation-v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/attempt-mistake-evaluation-v1.json; sourceTree = SOURCE_ROOT; };
 		A75000000000000000000001 /* mistake-dispute-result-v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/mistake-dispute-result-v1.json; sourceTree = SOURCE_ROOT; };
 		A75000000000000000000002 /* mistake-effective-state-v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/mistake-effective-state-v1.json; sourceTree = SOURCE_ROOT; };
@@ -706,6 +722,7 @@
 			children = (
 				C54000000000000000000002 /* ProblemSolving */,
 				710000000000000000000025 /* Account */,
+				AB1043000000000000000005 /* Notifications */,
 				710000000000000000000026 /* Authentication */,
 				710000000000000000000027 /* Onboarding */,
 				710000000000000000000028 /* ProblemCapture */,
@@ -766,6 +783,7 @@
 			children = (
 				C54000000000000000000001 /* ProblemSolving */,
 				71000000000000000000000F /* Account */,
+				AB1043000000000000000001 /* Notifications */,
 				710000000000000000000013 /* Authentication */,
 				710000000000000000000017 /* Home */,
 				710000000000000000000019 /* Onboarding */,
@@ -915,6 +933,44 @@
 			children = (
 				200000000000000000000048 /* AccountSettingsViewModel.swift */,
 				200000000000000000000049 /* AccountSettingsView.swift */,
+			);
+			path = Presentation;
+			sourceTree = "<group>";
+		};
+		AB1043000000000000000001 /* Notifications */ = {
+			isa = PBXGroup;
+			children = (
+				AB1043000000000000000002 /* Domain */,
+				AB1043000000000000000003 /* Data */,
+				AB1043000000000000000004 /* Presentation */,
+			);
+			path = Notifications;
+			sourceTree = "<group>";
+		};
+		AB1043000000000000000002 /* Domain */ = {
+			isa = PBXGroup;
+			children = (
+				AB1042000000000000000001 /* NotificationModels.swift */,
+				AB1042000000000000000002 /* NotificationServicing.swift */,
+			);
+			path = Domain;
+			sourceTree = "<group>";
+		};
+		AB1043000000000000000003 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				AB1042000000000000000003 /* NotificationAPI.swift */,
+				AB1042000000000000000004 /* PushPermissionManager.swift */,
+				AB1042000000000000000005 /* FixtureNotificationAPI.swift */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		AB1043000000000000000004 /* Presentation */ = {
+			isa = PBXGroup;
+			children = (
+				AB1042000000000000000006 /* NotificationPreferencesViewModel.swift */,
+				AB1042000000000000000007 /* NotificationPreferencesView.swift */,
 			);
 			path = Presentation;
 			sourceTree = "<group>";
@@ -1177,6 +1233,14 @@
 				20000000000000000000004A /* AccountSettingsViewModelTests.swift */,
 			);
 			path = Account;
+			sourceTree = "<group>";
+		};
+		AB1043000000000000000005 /* Notifications */ = {
+			isa = PBXGroup;
+			children = (
+				AB1042000000000000000008 /* NotificationPreferencesViewModelTests.swift */,
+			);
+			path = Notifications;
 			sourceTree = "<group>";
 		};
 		710000000000000000000026 /* Authentication */ = {
@@ -1792,6 +1856,13 @@
 				100000000000000000000061 /* SwiftDataProblemSessionCache.swift in Sources */,
 				100000000000000000000062 /* ProblemHistoryViewModel.swift in Sources */,
 				100000000000000000000063 /* ProblemHistoryView.swift in Sources */,
+				AB1041000000000000000001 /* NotificationModels.swift in Sources */,
+				AB1041000000000000000002 /* NotificationServicing.swift in Sources */,
+				AB1041000000000000000003 /* NotificationAPI.swift in Sources */,
+				AB1041000000000000000004 /* PushPermissionManager.swift in Sources */,
+				AB1041000000000000000005 /* FixtureNotificationAPI.swift in Sources */,
+				AB1041000000000000000006 /* NotificationPreferencesViewModel.swift in Sources */,
+				AB1041000000000000000007 /* NotificationPreferencesView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1848,6 +1919,7 @@
 				AB1021000000000000000003 /* LearningOsEntitlementRefreshTests.swift in Sources */,
 				AB1021000000000000000004 /* LearningOsDowngradePresentationTests.swift in Sources */,
 				AB1031000000000000000001 /* LearningOsQuotaSummaryTests.swift in Sources */,
+				AB1041000000000000000008 /* NotificationPreferencesViewModelTests.swift in Sources */,
 				100000000000000000000042 /* AccountSettingsViewModelTests.swift in Sources */,
 				10000000000000000000004A /* ProblemCaptureViewModelTests.swift in Sources */,
 				10000000000000000000004B /* CaptureQualityAnalyzerTests.swift in Sources */,

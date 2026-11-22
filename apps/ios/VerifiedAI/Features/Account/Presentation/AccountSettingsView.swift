@@ -3,6 +3,7 @@ import SwiftUI
 struct AccountSettingsView: View {
     @Bindable var viewModel: AccountSettingsViewModel
     var weeklyReportViewModel: WeeklyProgressReportViewModel? = nil
+    var notificationPreferencesViewModel: NotificationPreferencesViewModel? = nil
     var environmentName: String? = nil
     var entitlement: Entitlement? = nil
     var quotaSummary: QuotaSummary? = nil
@@ -21,6 +22,9 @@ struct AccountSettingsView: View {
                     QuotaUsageCardView(summary: quotaSummary)
                 }
                 appearanceSection
+                if let notificationPreferencesViewModel {
+                    notificationsSection(notificationPreferencesViewModel)
+                }
                 if let weeklyReportViewModel {
                     weeklyReportSection(weeklyReportViewModel)
                 }
@@ -108,6 +112,23 @@ struct AccountSettingsView: View {
                     .font(TypographyTokens.caption)
                     .foregroundStyle(ColorTokens.textSecondary)
             }
+        }
+    }
+
+    private func notificationsSection(_ preferencesViewModel: NotificationPreferencesViewModel) -> some View {
+        AppSurfaceCard {
+            AppSectionHeader(
+                LocalizedStringKey("notification.preferences.entry.section"),
+                subtitle: LocalizedStringKey("notification.preferences.entry.subtitle")
+            )
+
+            NavigationLink {
+                NotificationPreferencesView(viewModel: preferencesViewModel)
+            } label: {
+                Label(LocalizedStringKey("notification.preferences.entry.title"), systemImage: "bell.badge")
+            }
+            .buttonStyle(AppSecondaryButtonStyle())
+            .accessibilityIdentifier("account.notificationPreferencesLink")
         }
     }
 

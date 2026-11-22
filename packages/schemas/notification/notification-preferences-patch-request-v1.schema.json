@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:verifiedai:notification-preferences-patch-request-v1",
+  "title": "NotificationPreferencesPatchRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "expectedVersion"
+  ],
+  "properties": {
+    "pushEnabled": {
+      "type": "boolean"
+    },
+    "studyPlanEnabled": {
+      "type": "boolean"
+    },
+    "spacedReviewEnabled": {
+      "type": "boolean"
+    },
+    "examDeadlineEnabled": {
+      "type": "boolean"
+    },
+    "billingTrialReminderEnabled": {
+      "type": "boolean"
+    },
+    "accountSecurityEnabled": {
+      "type": "boolean",
+      "const": true
+    },
+    "quietHoursEnabled": {
+      "type": "boolean"
+    },
+    "quietHoursStartLocal": {
+      "type": "string",
+      "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+    },
+    "quietHoursEndLocal": {
+      "type": "string",
+      "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "dailyCap": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 5
+    },
+    "expectedVersion": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    }
+  }
+}

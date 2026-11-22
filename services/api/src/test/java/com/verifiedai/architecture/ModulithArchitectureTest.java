@@ -56,4 +56,47 @@ class ModulithArchitectureTest {
             )
             .check(classes);
     }
+
+    @Test
+    void downstreamModulesOnlyUseNotificationApplicationPublicSpi() {
+        JavaClasses classes = new ClassFileImporter()
+            .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
+            .importPackages("com.verifiedai");
+
+        noClasses()
+            .that()
+            .resideInAnyPackage(
+                "com.verifiedai.billing..",
+                "com.verifiedai.attempt..",
+                "com.verifiedai.mistake..",
+                "com.verifiedai.mastery..",
+                "com.verifiedai.studyplan..",
+                "com.verifiedai.exam..",
+                "com.verifiedai.tutoring.."
+            )
+            .should()
+            .dependOnClassesThat()
+            .resideInAnyPackage(
+                "com.verifiedai.notification.infrastructure..",
+                "com.verifiedai.notification.domain..",
+                "com.verifiedai.notification.api.."
+            )
+            .check(classes);
+
+        noClasses()
+            .that()
+            .resideInAnyPackage("com.verifiedai.notification..")
+            .should()
+            .dependOnClassesThat()
+            .resideInAnyPackage(
+                "com.verifiedai.billing..",
+                "com.verifiedai.attempt..",
+                "com.verifiedai.mistake..",
+                "com.verifiedai.mastery..",
+                "com.verifiedai.studyplan..",
+                "com.verifiedai.exam..",
+                "com.verifiedai.tutoring.."
+            )
+            .check(classes);
+    }
 }

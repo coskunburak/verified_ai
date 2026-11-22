@@ -1,0 +1,15 @@
+{
+  "pushEnabled": true,
+  "studyPlanEnabled": true,
+  "spacedReviewEnabled": true,
+  "examDeadlineEnabled": false,
+  "billingTrialReminderEnabled": true,
+  "accountSecurityEnabled": true,
+  "quietHoursEnabled": true,
+  "quietHoursStartLocal": "22:30",
+  "quietHoursEndLocal": "07:30",
+  "timezone": "Europe/Istanbul",
+  "dailyCap": 2,
+  "expectedVersion": 0,
+  "trainingEligible": false
+}

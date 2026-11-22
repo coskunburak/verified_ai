@@ -4,6 +4,7 @@ import Observation
 enum AppRoute: Equatable {
     case home
     case platformHealth
+    case notificationPreferences
 }
 
 @MainActor

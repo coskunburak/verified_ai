@@ -11,6 +11,7 @@ struct RootView: View {
     @State private var signInViewModel: SignInViewModel
     @State private var onboardingViewModel: OnboardingViewModel
     @State private var accountSettingsViewModel: AccountSettingsViewModel
+    @State private var notificationPreferencesViewModel: NotificationPreferencesViewModel
     @StateObject private var weeklyProgressReportViewModel: WeeklyProgressReportViewModel
     @StateObject private var coldStartDiagnosticViewModel: ColdStartDiagnosticViewModel
     @StateObject private var examCatalogViewModel: ExamCatalogAndTargetViewModel
@@ -46,6 +47,12 @@ struct RootView: View {
         _accountSettingsViewModel = State(initialValue: AccountSettingsViewModel(
             accountPrivacyAPI: dependencies.accountPrivacyAPI,
             sessionStore: dependencies.authenticationSessionStore,
+            networkMonitor: dependencies.networkMonitor,
+            logger: dependencies.logger
+        ))
+        _notificationPreferencesViewModel = State(initialValue: NotificationPreferencesViewModel(
+            service: dependencies.notificationAPI,
+            permissionManager: dependencies.pushPermissionManager,
             networkMonitor: dependencies.networkMonitor,
             logger: dependencies.logger
         ))
@@ -163,6 +170,7 @@ struct RootView: View {
                 AccountSettingsView(
                     viewModel: accountSettingsViewModel,
                     weeklyReportViewModel: weeklyProgressReportViewModel,
+                    notificationPreferencesViewModel: notificationPreferencesViewModel,
                     environmentName: environment.displayName,
                     entitlement: entitlementViewModel.entitlement,
                     quotaSummary: entitlementViewModel.quotaSummary,
@@ -192,6 +200,7 @@ struct RootView: View {
             paywallViewModel.onServerEntitlementVerified = { await entitlementModel.refresh(force: true) }
             contextualPaywallModel.onServerEntitlementVerified = { await entitlementModel.refresh(force: true) }
             accountSettingsViewModel.reset()
+            notificationPreferencesViewModel.reset()
             weeklyProgressReportViewModel.reset()
             coldStartDiagnosticViewModel.updateLearnerId(session.userId)
             examCatalogViewModel.updateLearnerId(session.userId)
@@ -369,6 +378,7 @@ struct RootView: View {
         isProblemCapturePresented = false
         onboardingViewModel.reset()
         accountSettingsViewModel.reset()
+        notificationPreferencesViewModel.reset()
         weeklyProgressReportViewModel.reset()
         Task { await coldStartDiagnosticViewModel.purgeCurrentLearnerAndReset() }
         Task { await examCatalogViewModel.purgeUserDataAndReset() }

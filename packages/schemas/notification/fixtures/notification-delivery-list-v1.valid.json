@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "notification-delivery-list-v1",
+  "items": [
+    {
+      "deliveryId": "00000000-0000-4000-8000-000000000301",
+      "category": "BILLING_TRIAL_REMINDER",
+      "intentType": "TRIAL_ENDING_48H_REMINDER",
+      "channel": "PUSH",
+      "locale": "tr",
+      "templateKey": "billing.trial.ending.48h",
+      "deepLinkPath": "verified-ai://subscription/manage",
+      "status": "SENT",
+      "suppressionReason": null,
+      "scheduledFor": "2026-11-22T09:00:00Z",
+      "effectiveSendAt": "2026-11-22T09:00:00Z",
+      "expiresAt": "2026-11-22T15:00:00Z",
+      "sentAt": "2026-11-22T09:00:05Z",
+      "attemptCount": 1,
+      "createdAt": "2026-11-22T08:59:55Z"
+    },
+    {
+      "deliveryId": "00000000-0000-4000-8000-000000000302",
+      "category": "STUDY_PLAN",
+      "intentType": "STUDY_PLAN_DAILY_MISSION",
+      "channel": "PUSH",
+      "locale": "en",
+      "templateKey": "studyplan.daily.mission",
+      "deepLinkPath": "verified-ai://study-plan/today",
+      "status": "DEFERRED_QUIET_HOURS",
+      "suppressionReason": null,
+      "scheduledFor": "2026-11-22T23:30:00Z",
+      "effectiveSendAt": "2026-11-23T08:00:00Z",
+      "expiresAt": "2026-11-23T12:00:00Z",
+      "sentAt": null,
+      "attemptCount": 0,
+      "createdAt": "2026-11-22T23:30:00Z"
+    }
+  ],
+  "trainingEligible": false
+}

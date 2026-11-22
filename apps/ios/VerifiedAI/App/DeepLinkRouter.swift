@@ -13,6 +13,8 @@ struct DeepLinkRouter: DeepLinkRouting {
             return .home
         case "platform-health":
             return .platformHealth
+        case "notifications", "notification-preferences":
+            return .notificationPreferences
         default:
             return nil
         }

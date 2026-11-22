@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:verifiedai:notification-delivery-list-v1",
+  "title": "NotificationDeliveryListResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "items",
+    "trainingEligible"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "notification-delivery-list-v1"
+    },
+    "items": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "$ref": "#/$defs/NotificationDeliveryItem"
+      }
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    }
+  },
+  "$defs": {
+    "NotificationDeliveryItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "deliveryId",
+        "category",
+        "intentType",
+        "channel",
+        "locale",
+        "templateKey",
+        "deepLinkPath",
+        "status",
+        "suppressionReason",
+        "scheduledFor",
+        "effectiveSendAt",
+        "expiresAt",
+        "sentAt",
+        "attemptCount",
+        "createdAt"
+      ],
+      "properties": {
+        "deliveryId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "STUDY_PLAN",
+            "SPACED_REVIEW",
+            "EXAM_DEADLINE",
+            "BILLING_TRIAL_REMINDER",
+            "ACCOUNT_SECURITY"
+          ]
+        },
+        "intentType": {
+          "type": "string",
+          "enum": [
+            "STUDY_PLAN_DAILY_MISSION",
+            "SPACED_REVIEW_DUE",
+            "EXAM_DEADLINE_COUNTDOWN",
+            "TRIAL_ENDING_48H_REMINDER",
+            "ACCOUNT_SECURITY_ALERT"
+          ]
+        },
+        "channel": {
+          "type": "string",
+          "enum": [
+            "PUSH"
+          ]
+        },
+        "locale": {
+          "type": "string",
+          "enum": [
+            "en",
+            "tr"
+          ]
+        },
+        "templateKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "deepLinkPath": {
+          "type": "string",
+          "pattern": "^verified-ai://[a-z0-9/_-]{1,100}$"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "SCHEDULED",
+            "DEFERRED_QUIET_HOURS",
+            "DISPATCHING",
+            "SENT",
+            "RETRY_SCHEDULED",
+            "SUPPRESSED",
+            "FAILED_PERMANENT",
+            "CANCELLED"
+          ]
+        },
+        "suppressionReason": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "USER_OPTED_OUT",
+            "PUSH_GLOBALLY_DISABLED",
+            "DAILY_CAP_REACHED",
+            "NO_ACTIVE_DEVICE",
+            "FEATURE_DISABLED",
+            "ACCOUNT_NOT_ACTIVE",
+            "INTENT_EXPIRED",
+            null
+          ]
+        },
+        "scheduledFor": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "effectiveSendAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "sentAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "attemptCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

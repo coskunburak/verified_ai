@@ -8,6 +8,8 @@ struct AppDependencies {
     let authenticationAPI: AuthenticationAPI
     let accountPrivacyAPI: AccountPrivacyAPI
     let learningProfileAPI: LearningProfileServicing
+    let notificationAPI: NotificationServicing
+    let pushPermissionManager: PushPermissionManaging
     let entitlementAPI: EntitlementAPI
     let appleBillingAPI: AppleBillingAPI
     let storeProductRepository: StoreProductRepository
@@ -177,6 +179,8 @@ struct AppDependencies {
         let authenticationAPI = AuthenticationAPI(apiClient: apiClient)
         let accountPrivacyAPI = AccountPrivacyAPI(apiClient: apiClient)
         var learningProfileAPI: LearningProfileServicing = LearningProfileAPI(apiClient: apiClient)
+        var notificationAPI: NotificationServicing = NotificationAPI(apiClient: apiClient)
+        var pushPermissionManager: PushPermissionManaging = PushPermissionManager()
         let entitlementAPI = EntitlementAPI(apiClient: apiClient)
         let appleBillingAPI = AppleBillingAPI(apiClient: apiClient)
         let storeProductRepository = StoreKitProductRepository()
@@ -204,6 +208,8 @@ struct AppDependencies {
         solveEnabled = environment == .development
         if solveFixture {
             learningProfileAPI = FixtureLearningProfileAPI(failsSave: arguments.contains("--profile-save-failure"))
+            notificationAPI = FixtureNotificationAPI()
+            pushPermissionManager = StubPushPermissionManager(initialStatus: .authorized, nextAuthorizationStatus: .authorized)
             if let scopeArgument = arguments.first(where: { $0.hasPrefix("--solve-fixture-scope=") }),
                let scope = UUID(uuidString: String(scopeArgument.dropFirst("--solve-fixture-scope=".count))) {
                 solveFixtureScope += "-" + scope.uuidString
@@ -273,6 +279,8 @@ struct AppDependencies {
             authenticationAPI: authenticationAPI,
             accountPrivacyAPI: accountPrivacyAPI,
             learningProfileAPI: learningProfileAPI,
+            notificationAPI: notificationAPI,
+            pushPermissionManager: pushPermissionManager,
             entitlementAPI: entitlementAPI,
             appleBillingAPI: appleBillingAPI,
             storeProductRepository: storeProductRepository,

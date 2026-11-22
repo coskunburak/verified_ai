@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:verifiedai:notification-device-register-request-v1",
+  "title": "NotificationDeviceRegisterRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "platform",
+    "environment",
+    "deviceToken",
+    "osPermissionStatus",
+    "appVersion",
+    "locale"
+  ],
+  "properties": {
+    "platform": {
+      "type": "string",
+      "enum": [
+        "IOS_APNS"
+      ]
+    },
+    "environment": {
+      "type": "string",
+      "enum": [
+        "SANDBOX",
+        "PRODUCTION"
+      ]
+    },
+    "deviceToken": {
+      "type": "string",
+      "minLength": 32,
+      "maxLength": 512,
+      "pattern": "^\\S+$"
+    },
+    "osPermissionStatus": {
+      "type": "string",
+      "enum": [
+        "NOT_DETERMINED",
+        "DENIED",
+        "AUTHORIZED",
+        "PROVISIONAL",
+        "EPHEMERAL"
+      ]
+    },
+    "appVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32
+    },
+    "locale": {
+      "type": "string",
+      "enum": [
+        "en",
+        "tr"
+      ]
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    }
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:verifiedai:notification-device-v1",
+  "title": "NotificationDeviceResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "deviceId",
+    "platform",
+    "environment",
+    "tokenLast4",
+    "osPermissionStatus",
+    "appVersion",
+    "locale",
+    "active",
+    "version",
+    "trainingEligible",
+    "lastSeenAt",
+    "revokedAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "notification-device-v1"
+    },
+    "deviceId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "IOS_APNS"
+      ]
+    },
+    "environment": {
+      "type": "string",
+      "enum": [
+        "SANDBOX",
+        "PRODUCTION"
+      ]
+    },
+    "tokenLast4": {
+      "type": "string",
+      "minLength": 4,
+      "maxLength": 4
+    },
+    "osPermissionStatus": {
+      "type": "string",
+      "enum": [
+        "NOT_DETERMINED",
+        "DENIED",
+        "AUTHORIZED",
+        "PROVISIONAL",
+        "EPHEMERAL"
+      ]
+    },
+    "appVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32
+    },
+    "locale": {
+      "type": "string",
+      "enum": [
+        "en",
+        "tr"
+      ]
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    },
+    "lastSeenAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "revokedAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}
