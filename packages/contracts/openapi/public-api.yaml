@@ -7276,6 +7276,406 @@ paths:
         '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
         '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
 
+  /v1/config/remote:
+    get:
+      summary: Fetch client-safe feature flags, experiments, and active kill switches with strong ETag support
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: If-None-Match
+          required: false
+          schema: {type: string}
+      responses:
+        '200':
+          description: Client-safe remote configuration snapshot
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+            ETag:
+              schema: {type: string}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RemoteConfigResponse'}
+        '304':
+          description: Remote configuration unchanged for matching ETag
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+            ETag:
+              schema: {type: string}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /api/v1/config/remote:
+    get:
+      summary: Fetch client-safe feature flags, experiments, and active kill switches with strong ETag support
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: If-None-Match
+          required: false
+          schema: {type: string}
+      responses:
+        '200':
+          description: Client-safe remote configuration snapshot
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+            ETag:
+              schema: {type: string}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RemoteConfigResponse'}
+        '304':
+          description: Remote configuration unchanged for matching ETag
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+            ETag:
+              schema: {type: string}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /v1/admin/feature-flags:
+    get:
+      summary: List all feature flag and experiment definitions (ROLE_ADMIN)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Administrative listing of all feature flags and experiments
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/FeatureFlagListResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /api/v1/admin/feature-flags:
+    get:
+      summary: List all feature flag and experiment definitions (ROLE_ADMIN)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Administrative listing of all feature flags and experiments
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/FeatureFlagListResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /v1/admin/feature-flags/{flagKey}:
+    patch:
+      summary: Update feature flag rollout, enabled state, or value with optimistic locking and Idempotency-Key (ROLE_ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: flagKey
+          required: true
+          schema: {type: string, pattern: '^[a-z][a-z0-9_.-]{2,79}$'}
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: {type: string, pattern: '^[A-Za-z0-9:._-]{8,128}$'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/FeatureFlagUpdateRequest'}
+      responses:
+        '200':
+          description: Updated feature flag governance listing
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/FeatureFlagListResponse'}
+        '400': {$ref: '#/components/responses/ProblemBadRequest'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '409': {$ref: '#/components/responses/ProblemConflict'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /api/v1/admin/feature-flags/{flagKey}:
+    patch:
+      summary: Update feature flag rollout, enabled state, or value with optimistic locking and Idempotency-Key (ROLE_ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: flagKey
+          required: true
+          schema: {type: string, pattern: '^[a-z][a-z0-9_.-]{2,79}$'}
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: {type: string, pattern: '^[A-Za-z0-9:._-]{8,128}$'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/FeatureFlagUpdateRequest'}
+      responses:
+        '200':
+          description: Updated feature flag governance listing
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/FeatureFlagListResponse'}
+        '400': {$ref: '#/components/responses/ProblemBadRequest'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '409': {$ref: '#/components/responses/ProblemConflict'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /v1/admin/feature-flags/{flagKey}/kill-switch:
+    post:
+      summary: Activate or deactivate an emergency operational kill switch immediately (ROLE_ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: flagKey
+          required: true
+          schema: {type: string, pattern: '^[a-z][a-z0-9_.-]{2,79}$'}
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: {type: string, pattern: '^[A-Za-z0-9:._-]{8,128}$'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/FeatureFlagKillSwitchRequest'}
+      responses:
+        '200':
+          description: Updated feature flag governance listing after kill-switch toggle
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/FeatureFlagListResponse'}
+        '400': {$ref: '#/components/responses/ProblemBadRequest'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '409': {$ref: '#/components/responses/ProblemConflict'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /api/v1/admin/feature-flags/{flagKey}/kill-switch:
+    post:
+      summary: Activate or deactivate an emergency operational kill switch immediately (ROLE_ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: flagKey
+          required: true
+          schema: {type: string, pattern: '^[a-z][a-z0-9_.-]{2,79}$'}
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: {type: string, pattern: '^[A-Za-z0-9:._-]{8,128}$'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/FeatureFlagKillSwitchRequest'}
+      responses:
+        '200':
+          description: Updated feature flag governance listing after kill-switch toggle
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/FeatureFlagListResponse'}
+        '400': {$ref: '#/components/responses/ProblemBadRequest'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '409': {$ref: '#/components/responses/ProblemConflict'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /v1/admin/feature-flags/experiments:
+    get:
+      summary: List all A/B experiment definitions and flags (ROLE_ADMIN)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Administrative listing of experiments and feature flags
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/FeatureFlagListResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /api/v1/admin/feature-flags/experiments:
+    get:
+      summary: List all A/B experiment definitions and flags (ROLE_ADMIN)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Administrative listing of experiments and feature flags
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/FeatureFlagListResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /v1/admin/feature-flags/experiments/{experimentKey}:
+    patch:
+      summary: Transition A/B experiment status or rollout traffic with optimistic locking and Idempotency-Key (ROLE_ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: experimentKey
+          required: true
+          schema: {type: string, pattern: '^[A-Za-z][A-Za-z0-9_.-]{2,63}$'}
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: {type: string, pattern: '^[A-Za-z0-9:._-]{8,128}$'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ExperimentUpdateRequest'}
+      responses:
+        '200':
+          description: Updated experiment and feature flag governance listing
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/FeatureFlagListResponse'}
+        '400': {$ref: '#/components/responses/ProblemBadRequest'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '409': {$ref: '#/components/responses/ProblemConflict'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /api/v1/admin/feature-flags/experiments/{experimentKey}:
+    patch:
+      summary: Transition A/B experiment status or rollout traffic with optimistic locking and Idempotency-Key (ROLE_ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: experimentKey
+          required: true
+          schema: {type: string, pattern: '^[A-Za-z][A-Za-z0-9_.-]{2,63}$'}
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: {type: string, pattern: '^[A-Za-z0-9:._-]{8,128}$'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ExperimentUpdateRequest'}
+      responses:
+        '200':
+          description: Updated experiment and feature flag governance listing
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/FeatureFlagListResponse'}
+        '400': {$ref: '#/components/responses/ProblemBadRequest'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '409': {$ref: '#/components/responses/ProblemConflict'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /v1/admin/feature-flags/audit:
+    get:
+      summary: Query immutable feature-flag and experiment audit history (ROLE_ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: limit
+          required: false
+          schema: {type: integer, minimum: 1, maximum: 200, default: 50}
+      responses:
+        '200':
+          description: Immutable feature flag audit history entries ordered newest first
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/FeatureFlagAuditListResponse'}
+        '400': {$ref: '#/components/responses/ProblemBadRequest'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /api/v1/admin/feature-flags/audit:
+    get:
+      summary: Query immutable feature-flag and experiment audit history (ROLE_ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: limit
+          required: false
+          schema: {type: integer, minimum: 1, maximum: 200, default: 50}
+      responses:
+        '200':
+          description: Immutable feature flag audit history entries ordered newest first
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/FeatureFlagAuditListResponse'}
+        '400': {$ref: '#/components/responses/ProblemBadRequest'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
 components:
   securitySchemes:
     bearerAuth:
@@ -14274,3 +14674,586 @@ components:
               type: array
               items:
                 $ref: '#/$defs/TierUnitEconomics'
+
+    RemoteConfigResponse:
+      title: RemoteConfigResponse
+      description: Authenticated learner remote configuration response containing strictly
+        client-safe flags, experiments, and active kill switches (INV-FF-001, INV-FF-002,
+        ADR-006).
+      type: object
+      additionalProperties: false
+      required:
+      - schemaVersion
+      - etag
+      - maxAgeSeconds
+      - flags
+      - experiments
+      - killSwitches
+      - evaluatedAt
+      - llmTokensUsed
+      - trainingEligible
+      properties:
+        schemaVersion:
+          type: string
+          const: remote-config-v1
+        etag:
+          type: string
+          minLength: 3
+          maxLength: 128
+        maxAgeSeconds:
+          type: integer
+          minimum: 0
+          maximum: 3600
+        flags:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/$defs/RemoteFlagEntry'
+        experiments:
+          type: array
+          maxItems: 50
+          items:
+            $ref: '#/$defs/RemoteExperimentEntry'
+        killSwitches:
+          type: array
+          maxItems: 50
+          items:
+            type: string
+            enum:
+            - pdf_upload_enabled
+        evaluatedAt:
+          type: string
+          format: date-time
+        llmTokensUsed:
+          type: integer
+          const: 0
+        trainingEligible:
+          type: boolean
+          const: false
+      $defs:
+        RemoteFlagEntry:
+          type: object
+          additionalProperties: false
+          required:
+          - flagKey
+          - category
+          - valueType
+          - enabled
+          - killSwitchActive
+          - reason
+          properties:
+            flagKey:
+              type: string
+              enum:
+              - pdf_upload_enabled
+              - client_platform_health_screen
+              - client_mistake_moment_paywall_ui
+            category:
+              type: string
+              enum:
+              - RELEASE_FLAG
+              - EXPERIMENT_FLAG
+              - KILL_SWITCH
+              - REMOTE_CONFIG
+            valueType:
+              type: string
+              enum:
+              - BOOLEAN
+              - INTEGER
+              - DECIMAL
+              - STRING
+            enabled:
+              type: boolean
+            killSwitchActive:
+              type: boolean
+            reason:
+              type: string
+              enum:
+              - BUCKET_MATCH
+              - FLAG_DISABLED
+              - ROLLOUT_EXCLUDED
+              - KILL_SWITCH_ACTIVE
+              - VALUE_FALSE
+              - FEATURE_FLAG_SYSTEM_DISABLED
+        RemoteExperimentEntry:
+          type: object
+          additionalProperties: false
+          required:
+          - experimentKey
+          - experimentVersion
+          - variantKey
+          - status
+          - bucketValue
+          - reason
+          properties:
+            experimentKey:
+              type: string
+              enum:
+              - EXP-LOS-01
+              - EXP-LOS-08
+              - EXP-LOS-09
+            experimentVersion:
+              type: integer
+              minimum: 1
+            variantKey:
+              type: string
+              pattern: ^[A-Za-z0-9_.-]{2,48}$
+            status:
+              type: string
+              enum:
+              - DRAFT
+              - RUNNING
+              - PAUSED
+              - KILLED
+              - CONCLUDED
+            bucketValue:
+              type: integer
+              minimum: 0
+              maximum: 9999
+            reason:
+              type: string
+              enum:
+              - BUCKET_MATCH
+              - FALLBACK_CONTROL
+              - KILL_SWITCH_ACTIVE
+
+    FeatureFlagListResponse:
+      title: FeatureFlagListResponse
+      description: ROLE_ADMIN governance view of all server and client feature flags and
+        A/B experiments.
+      type: object
+      additionalProperties: false
+      required:
+      - schemaVersion
+      - flagCount
+      - experimentCount
+      - flags
+      - experiments
+      - generatedAt
+      - llmTokensUsed
+      - trainingEligible
+      properties:
+        schemaVersion:
+          type: string
+          const: feature-flag-list-v1
+        flagCount:
+          type: integer
+          minimum: 0
+          maximum: 200
+        experimentCount:
+          type: integer
+          minimum: 0
+          maximum: 200
+        flags:
+          type: array
+          maxItems: 200
+          items:
+            $ref: '#/$defs/FeatureFlagDefinition'
+        experiments:
+          type: array
+          maxItems: 200
+          items:
+            $ref: '#/$defs/ExperimentDefinition'
+        generatedAt:
+          type: string
+          format: date-time
+        llmTokensUsed:
+          type: integer
+          const: 0
+        trainingEligible:
+          type: boolean
+          const: false
+      $defs:
+        FeatureFlagDefinition:
+          type: object
+          additionalProperties: false
+          required:
+          - flagKey
+          - category
+          - valueType
+          - clientSafe
+          - enabled
+          - killSwitchActive
+          - rolloutBasisPoints
+          - bucketingSalt
+          - defaultValueJson
+          - currentValueJson
+          - owner
+          - purpose
+          - plannedRemovalAt
+          - version
+          - trainingEligible
+          - createdAt
+          - updatedAt
+          properties:
+            flagKey:
+              type: string
+              pattern: ^[a-z][a-z0-9_.-]{2,79}$
+            category:
+              type: string
+              enum:
+              - RELEASE_FLAG
+              - EXPERIMENT_FLAG
+              - KILL_SWITCH
+              - REMOTE_CONFIG
+            valueType:
+              type: string
+              enum:
+              - BOOLEAN
+              - INTEGER
+              - DECIMAL
+              - STRING
+            clientSafe:
+              type: boolean
+            enabled:
+              type: boolean
+            killSwitchActive:
+              type: boolean
+            rolloutBasisPoints:
+              type: integer
+              minimum: 0
+              maximum: 10000
+            bucketingSalt:
+              type: string
+              minLength: 2
+              maxLength: 64
+            defaultValueJson:
+              type: string
+              minLength: 1
+              maxLength: 512
+            currentValueJson:
+              type: string
+              minLength: 1
+              maxLength: 512
+            owner:
+              type: string
+              minLength: 2
+              maxLength: 64
+            purpose:
+              type: string
+              minLength: 5
+              maxLength: 240
+            plannedRemovalAt:
+              type:
+              - string
+              - 'null'
+              format: date-time
+            version:
+              type: integer
+              minimum: 0
+            trainingEligible:
+              type: boolean
+              const: false
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+        ExperimentVariant:
+          type: object
+          additionalProperties: false
+          required:
+          - key
+          - weightBasisPoints
+          properties:
+            key:
+              type: string
+              pattern: ^[A-Za-z0-9_.-]{2,48}$
+            weightBasisPoints:
+              type: integer
+              minimum: 1
+              maximum: 10000
+        ExperimentDefinition:
+          type: object
+          additionalProperties: false
+          required:
+          - experimentKey
+          - linkedFlagKey
+          - status
+          - clientSafe
+          - rolloutBasisPoints
+          - bucketingSalt
+          - controlVariant
+          - variants
+          - owner
+          - purpose
+          - plannedRemovalAt
+          - experimentVersion
+          - version
+          - trainingEligible
+          - createdAt
+          - updatedAt
+          properties:
+            experimentKey:
+              type: string
+              pattern: ^[A-Za-z][A-Za-z0-9_.-]{2,63}$
+            linkedFlagKey:
+              type:
+              - string
+              - 'null'
+              pattern: ^[a-z][a-z0-9_.-]{2,79}$
+            status:
+              type: string
+              enum:
+              - DRAFT
+              - RUNNING
+              - PAUSED
+              - KILLED
+              - CONCLUDED
+            clientSafe:
+              type: boolean
+            rolloutBasisPoints:
+              type: integer
+              minimum: 0
+              maximum: 10000
+            bucketingSalt:
+              type: string
+              minLength: 2
+              maxLength: 64
+            controlVariant:
+              type: string
+              pattern: ^[A-Za-z0-9_.-]{2,48}$
+            variants:
+              type: array
+              minItems: 2
+              maxItems: 5
+              items:
+                $ref: '#/$defs/ExperimentVariant'
+            owner:
+              type: string
+              minLength: 2
+              maxLength: 64
+            purpose:
+              type: string
+              minLength: 5
+              maxLength: 240
+            plannedRemovalAt:
+              type:
+              - string
+              - 'null'
+              format: date-time
+            experimentVersion:
+              type: integer
+              minimum: 1
+            version:
+              type: integer
+              minimum: 0
+            trainingEligible:
+              type: boolean
+              const: false
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    FeatureFlagUpdateRequest:
+      title: FeatureFlagUpdateRequest
+      description: ROLE_ADMIN request to update feature flag enablement, rollout basis
+        points, value JSON, or planned removal date with optimistic concurrency.
+      type: object
+      additionalProperties: false
+      required:
+      - enabled
+      - rolloutBasisPoints
+      - currentValueJson
+      - reason
+      - expectedVersion
+      - trainingEligible
+      properties:
+        enabled:
+          type: boolean
+        rolloutBasisPoints:
+          type: integer
+          minimum: 0
+          maximum: 10000
+        currentValueJson:
+          type: string
+          minLength: 1
+          maxLength: 512
+        plannedRemovalAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 240
+        expectedVersion:
+          type: integer
+          minimum: 0
+        trainingEligible:
+          type: boolean
+          const: false
+
+    FeatureFlagKillSwitchRequest:
+      title: FeatureFlagKillSwitchRequest
+      description: ROLE_ADMIN request to activate or deactivate an emergency operational
+        kill switch immediately.
+      type: object
+      additionalProperties: false
+      required:
+      - active
+      - reason
+      - expectedVersion
+      - trainingEligible
+      properties:
+        active:
+          type: boolean
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 240
+        expectedVersion:
+          type: integer
+          minimum: 0
+        trainingEligible:
+          type: boolean
+          const: false
+
+    ExperimentUpdateRequest:
+      title: ExperimentUpdateRequest
+      description: ROLE_ADMIN request to transition an A/B experiment state or update
+        traffic rollout basis points.
+      type: object
+      additionalProperties: false
+      required:
+      - status
+      - rolloutBasisPoints
+      - reason
+      - expectedVersion
+      - trainingEligible
+      properties:
+        status:
+          type: string
+          enum:
+          - DRAFT
+          - RUNNING
+          - PAUSED
+          - KILLED
+          - CONCLUDED
+        rolloutBasisPoints:
+          type: integer
+          minimum: 0
+          maximum: 10000
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 240
+        expectedVersion:
+          type: integer
+          minimum: 0
+        trainingEligible:
+          type: boolean
+          const: false
+
+    FeatureFlagAuditListResponse:
+      title: FeatureFlagAuditListResponse
+      description: ROLE_ADMIN immutable audit log listing for feature flag, kill-switch,
+        and experiment state mutations.
+      type: object
+      additionalProperties: false
+      required:
+      - schemaVersion
+      - entryCount
+      - entries
+      - generatedAt
+      - llmTokensUsed
+      - trainingEligible
+      properties:
+        schemaVersion:
+          type: string
+          const: feature-flag-audit-list-v1
+        entryCount:
+          type: integer
+          minimum: 0
+          maximum: 200
+        entries:
+          type: array
+          maxItems: 200
+          items:
+            $ref: '#/$defs/FeatureFlagAuditEntry'
+        generatedAt:
+          type: string
+          format: date-time
+        llmTokensUsed:
+          type: integer
+          const: 0
+        trainingEligible:
+          type: boolean
+          const: false
+      $defs:
+        FeatureFlagAuditEntry:
+          type: object
+          additionalProperties: false
+          required:
+          - auditId
+          - targetType
+          - targetKey
+          - action
+          - actorUserId
+          - actorRole
+          - idempotencyKey
+          - reason
+          - beforeStateJson
+          - afterStateJson
+          - correlationId
+          - trainingEligible
+          - occurredAt
+          properties:
+            auditId:
+              type: string
+              format: uuid
+            targetType:
+              type: string
+              enum:
+              - FLAG
+              - EXPERIMENT
+            targetKey:
+              type: string
+              minLength: 3
+              maxLength: 80
+            action:
+              type: string
+              enum:
+              - CREATED
+              - UPDATED
+              - ROLLOUT_CHANGED
+              - KILL_SWITCH_ENABLED
+              - KILL_SWITCH_DISABLED
+              - EXPERIMENT_STATE_CHANGED
+            actorUserId:
+              type: string
+              format: uuid
+            actorRole:
+              type: string
+              minLength: 2
+              maxLength: 32
+            idempotencyKey:
+              type: string
+              pattern: ^[A-Za-z0-9:._-]{8,128}$
+            reason:
+              type: string
+              minLength: 5
+              maxLength: 240
+            beforeStateJson:
+              type: string
+              minLength: 2
+              maxLength: 2048
+            afterStateJson:
+              type: string
+              minLength: 2
+              maxLength: 2048
+            correlationId:
+              type: string
+              minLength: 1
+              maxLength: 64
+            trainingEligible:
+              type: boolean
+              const: false
+            occurredAt:
+              type: string
+              format: date-time

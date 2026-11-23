@@ -84,6 +84,21 @@ class SecurityConfiguration {
                         ));
                         return;
                     }
+                    if (uri != null && (
+                        uri.equals("/v1/admin/feature-flags")
+                            || uri.startsWith("/v1/admin/feature-flags/")
+                            || uri.equals("/api/v1/admin/feature-flags")
+                            || uri.startsWith("/api/v1/admin/feature-flags/")
+                    )) {
+                        response.setStatus(HttpStatus.FORBIDDEN.value());
+                        response.setContentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE);
+                        response.getWriter().write("""
+                            {"type":"https://errors.verified-ai-learning.example/feature-flag-admin-forbidden","title":"Administrative role is required for feature flag and experiment governance","status":403,"code":"%s","traceId":"%s","details":{"recoverable":false,"userAction":"USE_ADMIN_ACCOUNT"}}""".formatted(
+                            ApiErrorCode.FEATURE_FLAG_ADMIN_FORBIDDEN.name(),
+                            CorrelationIds.current()
+                        ));
+                        return;
+                    }
                     new org.springframework.security.web.access.AccessDeniedHandlerImpl().handle(request, response, exception);
                 })
             )

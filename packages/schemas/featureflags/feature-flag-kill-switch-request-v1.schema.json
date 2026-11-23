@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/featureflags/feature-flag-kill-switch-request-v1.schema.json",
+  "title": "FeatureFlagKillSwitchRequest",
+  "description": "ROLE_ADMIN request to activate or deactivate an emergency operational kill switch immediately.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "active",
+    "reason",
+    "expectedVersion",
+    "trainingEligible"
+  ],
+  "properties": {
+    "active": {
+      "type": "boolean"
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 240
+    },
+    "expectedVersion": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    }
+  }
+}

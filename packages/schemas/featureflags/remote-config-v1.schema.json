@@ -1,0 +1,183 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/featureflags/remote-config-v1.schema.json",
+  "title": "RemoteConfigResponse",
+  "description": "Authenticated learner remote configuration response containing strictly client-safe flags, experiments, and active kill switches (INV-FF-001, INV-FF-002, ADR-006).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "etag",
+    "maxAgeSeconds",
+    "flags",
+    "experiments",
+    "killSwitches",
+    "evaluatedAt",
+    "llmTokensUsed",
+    "trainingEligible"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "remote-config-v1"
+    },
+    "etag": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 128
+    },
+    "maxAgeSeconds": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3600
+    },
+    "flags": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "$ref": "#/$defs/RemoteFlagEntry"
+      }
+    },
+    "experiments": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "$ref": "#/$defs/RemoteExperimentEntry"
+      }
+    },
+    "killSwitches": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "string",
+        "enum": [
+          "pdf_upload_enabled"
+        ]
+      }
+    },
+    "evaluatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "llmTokensUsed": {
+      "type": "integer",
+      "const": 0
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    }
+  },
+  "$defs": {
+    "RemoteFlagEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "flagKey",
+        "category",
+        "valueType",
+        "enabled",
+        "killSwitchActive",
+        "reason"
+      ],
+      "properties": {
+        "flagKey": {
+          "type": "string",
+          "enum": [
+            "pdf_upload_enabled",
+            "client_platform_health_screen",
+            "client_mistake_moment_paywall_ui"
+          ]
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "RELEASE_FLAG",
+            "EXPERIMENT_FLAG",
+            "KILL_SWITCH",
+            "REMOTE_CONFIG"
+          ]
+        },
+        "valueType": {
+          "type": "string",
+          "enum": [
+            "BOOLEAN",
+            "INTEGER",
+            "DECIMAL",
+            "STRING"
+          ]
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "killSwitchActive": {
+          "type": "boolean"
+        },
+        "reason": {
+          "type": "string",
+          "enum": [
+            "BUCKET_MATCH",
+            "FLAG_DISABLED",
+            "ROLLOUT_EXCLUDED",
+            "KILL_SWITCH_ACTIVE",
+            "VALUE_FALSE",
+            "FEATURE_FLAG_SYSTEM_DISABLED"
+          ]
+        }
+      }
+    },
+    "RemoteExperimentEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "experimentKey",
+        "experimentVersion",
+        "variantKey",
+        "status",
+        "bucketValue",
+        "reason"
+      ],
+      "properties": {
+        "experimentKey": {
+          "type": "string",
+          "enum": [
+            "EXP-LOS-01",
+            "EXP-LOS-08",
+            "EXP-LOS-09"
+          ]
+        },
+        "experimentVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "variantKey": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_.-]{2,48}$"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "DRAFT",
+            "RUNNING",
+            "PAUSED",
+            "KILLED",
+            "CONCLUDED"
+          ]
+        },
+        "bucketValue": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9999
+        },
+        "reason": {
+          "type": "string",
+          "enum": [
+            "BUCKET_MATCH",
+            "FALLBACK_CONTROL",
+            "KILL_SWITCH_ACTIVE"
+          ]
+        }
+      }
+    }
+  }
+}

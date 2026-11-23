@@ -362,3 +362,10 @@ verifiedai:
     spaced-review-cooldown-hours: 24
     exam-deadline-cooldown-hours: 24
     trial-reminder-lead-hours: 48
+  featureflags:
+    enabled: ${VERIFIEDAI_FEATURE_FLAGS_ENABLED:false}
+    client-config-enabled: ${VERIFIEDAI_FEATURE_FLAGS_CLIENT_CONFIG_ENABLED:false}
+    admin-mutations-enabled: ${VERIFIEDAI_FEATURE_FLAGS_ADMIN_MUTATIONS_ENABLED:false}
+    max-client-flags: ${VERIFIEDAI_FEATURE_FLAGS_MAX_CLIENT_FLAGS:50}
+    audit-history-limit: ${VERIFIEDAI_FEATURE_FLAGS_AUDIT_HISTORY_LIMIT:50}
+    client-etag-max-age-seconds: 300

@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "feature-flag-audit-list-v1",
+  "entryCount": 1,
+  "entries": [
+    {
+      "auditId": "00000000-0000-4000-8000-000000000711",
+      "targetType": "FLAG",
+      "targetKey": "pdf_upload_enabled",
+      "action": "KILL_SWITCH_ENABLED",
+      "actorUserId": "00000000-0000-4000-8000-000000000701",
+      "actorRole": "ROLE_ADMIN",
+      "idempotencyKey": "ff-kill-pdf-20261123-001",
+      "reason": "Emergency kill switch activation during PDF parser incident triage",
+      "beforeStateJson": "{\"enabled\":true,\"killSwitchActive\":false,\"rolloutBasisPoints\":10000,\"currentValueJson\":\"true\",\"plannedRemovalAt\":null,\"version\":0}",
+      "afterStateJson": "{\"enabled\":true,\"killSwitchActive\":true,\"rolloutBasisPoints\":10000,\"currentValueJson\":\"true\",\"plannedRemovalAt\":null,\"version\":1}",
+      "correlationId": "corr-ff-audit-001",
+      "trainingEligible": false,
+      "occurredAt": "2026-11-23T12:00:00Z"
+    }
+  ],
+  "generatedAt": "2026-11-23T12:00:05Z",
+  "llmTokensUsed": 0,
+  "trainingEligible": false
+}

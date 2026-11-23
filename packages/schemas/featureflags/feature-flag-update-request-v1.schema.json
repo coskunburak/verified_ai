@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/featureflags/feature-flag-update-request-v1.schema.json",
+  "title": "FeatureFlagUpdateRequest",
+  "description": "ROLE_ADMIN request to update feature flag enablement, rollout basis points, value JSON, or planned removal date with optimistic concurrency.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "enabled",
+    "rolloutBasisPoints",
+    "currentValueJson",
+    "reason",
+    "expectedVersion",
+    "trainingEligible"
+  ],
+  "properties": {
+    "enabled": {
+      "type": "boolean"
+    },
+    "rolloutBasisPoints": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "currentValueJson": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "plannedRemovalAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 240
+    },
+    "expectedVersion": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    }
+  }
+}

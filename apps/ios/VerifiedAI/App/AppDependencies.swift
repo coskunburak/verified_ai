@@ -12,6 +12,8 @@ struct AppDependencies {
     let pushPermissionManager: PushPermissionManaging
     let analyticsClient: AnalyticsClient
     let analyticsTracker: AnalyticsTracking
+    let remoteFeatureFlagStore: RemoteFeatureFlagStore
+    let featureFlagClient: any FeatureFlagClient
     let entitlementAPI: EntitlementAPI
     let appleBillingAPI: AppleBillingAPI
     let storeProductRepository: StoreProductRepository
@@ -284,6 +286,34 @@ struct AppDependencies {
         examAPI = HTTPExamAPIService(apiClient: apiClient)
         #endif
 
+        let remoteConfigAPI: any RemoteConfigServicing
+        #if DEBUG
+        if solveFixture || arguments.contains("--ui-testing") || arguments.contains("--feature-flag-fixture") {
+            remoteConfigAPI = FixtureRemoteConfigAPI(
+                killPdfUpload: arguments.contains("--kill-switch-pdf")
+            )
+        } else {
+            remoteConfigAPI = HTTPRemoteConfigAPI(apiClient: apiClient)
+        }
+        #else
+        remoteConfigAPI = HTTPRemoteConfigAPI(apiClient: apiClient)
+        #endif
+        let remoteFeatureFlagStore = RemoteFeatureFlagStore(
+            service: remoteConfigAPI,
+            cacheStore: RemoteFeatureFlagCacheStore(),
+            isOnline: { await MainActor.run { networkMonitor.isReachable } }
+        )
+        let featureFlagClient: any FeatureFlagClient
+        #if DEBUG
+        if solveFixture || arguments.contains("--ui-testing") || arguments.contains("--feature-flag-fixture") {
+            featureFlagClient = FixtureFeatureFlagClient(arguments: arguments)
+        } else {
+            featureFlagClient = remoteFeatureFlagStore
+        }
+        #else
+        featureFlagClient = remoteFeatureFlagStore
+        #endif
+
         return AppDependencies(
             apiClient: apiClient,
             secureStorage: secureStorage,
@@ -295,6 +325,8 @@ struct AppDependencies {
             pushPermissionManager: pushPermissionManager,
             analyticsClient: analyticsClient,
             analyticsTracker: analyticsTracker,
+            remoteFeatureFlagStore: remoteFeatureFlagStore,
+            featureFlagClient: featureFlagClient,
             entitlementAPI: entitlementAPI,
             appleBillingAPI: appleBillingAPI,
             storeProductRepository: storeProductRepository,

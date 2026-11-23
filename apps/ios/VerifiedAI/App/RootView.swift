@@ -219,6 +219,7 @@ struct RootView: View {
             if phase == .active {
                 Task {
                     await entitlementViewModel.bootstrap(force: true)
+                    await dependencies.remoteFeatureFlagStore.refresh()
                     await dependencies.analyticsClient.flush()
                 }
             } else if phase == .background {
@@ -229,6 +230,8 @@ struct RootView: View {
         }
         .task(id: session.sessionId) {
             await dependencies.analyticsClient.bind(userId: session.userId, sessionId: session.sessionId)
+            await dependencies.remoteFeatureFlagStore.bind(userId: session.userId, sessionId: session.sessionId)
+            await dependencies.remoteFeatureFlagStore.refresh()
             entitlementViewModel.bind(.init(user: session.userId, session: session.sessionId))
             let entitlementModel = entitlementViewModel
             paywallViewModel.onServerEntitlementVerified = { await entitlementModel.refresh(force: true) }
@@ -379,7 +382,8 @@ struct RootView: View {
                             await problemHistoryViewModel.refresh()
                             await problemHistoryViewModel.reconnect(problemSessionId: sessionId)
                         }
-                    }
+                    },
+                    featureFlagClient: dependencies.featureFlagClient
                 )
             }
         case .loading, .idle:
@@ -443,6 +447,7 @@ struct RootView: View {
         problemHistoryViewModel.reset()
         Task { await problemCaptureViewModel.cancel() }
         Task { await dependencies.analyticsClient.reset(purgeAll: true) }
+        Task { await dependencies.remoteFeatureFlagStore.reset(purgeAll: true) }
     }
 
     private func handleAccountDeleted() {

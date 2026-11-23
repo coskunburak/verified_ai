@@ -1,0 +1,7 @@
+{
+  "status": "RUNNING",
+  "rolloutBasisPoints": 2500,
+  "reason": "Start 25 percent controlled rollout for EXP-LOS-01 counterexample card",
+  "expectedVersion": 0,
+  "trainingEligible": false
+}

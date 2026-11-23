@@ -23230,6 +23230,38 @@
     },
     "Your local capture is still available for retry." : {
 
+    },
+    "feature_flags.kill_switch.pdf_disabled" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PDF uploads are paused temporarily while we protect file processing. You can still scan with the camera or choose a photo."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dosya işleme koruması nedeniyle PDF yükleme geçici olarak durduruldu. Kamera ile tarayabilir veya fotoğraf seçebilirsiniz."
+          }
+        }
+      }
+    },
+    "feature_flags.remote_config.degraded_notice" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Using saved remote settings while the connection refreshes."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bağlantı yenilenirken kayıtlı uzak ayarlar kullanılıyor."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

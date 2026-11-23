@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "remote-config-v1",
+  "etag": "\"9f86d081884c7d659a2feaa0c55ad015\"",
+  "maxAgeSeconds": 300,
+  "flags": [
+    {
+      "flagKey": "client_mistake_moment_paywall_ui",
+      "category": "EXPERIMENT_FLAG",
+      "valueType": "BOOLEAN",
+      "enabled": false,
+      "killSwitchActive": false,
+      "reason": "FLAG_DISABLED"
+    },
+    {
+      "flagKey": "client_platform_health_screen",
+      "category": "RELEASE_FLAG",
+      "valueType": "BOOLEAN",
+      "enabled": false,
+      "killSwitchActive": false,
+      "reason": "FLAG_DISABLED"
+    },
+    {
+      "flagKey": "pdf_upload_enabled",
+      "category": "KILL_SWITCH",
+      "valueType": "BOOLEAN",
+      "enabled": true,
+      "killSwitchActive": false,
+      "reason": "BUCKET_MATCH"
+    }
+  ],
+  "experiments": [
+    {
+      "experimentKey": "EXP-LOS-01",
+      "experimentVersion": 1,
+      "variantKey": "control",
+      "status": "DRAFT",
+      "bucketValue": 0,
+      "reason": "FALLBACK_CONTROL"
+    },
+    {
+      "experimentKey": "EXP-LOS-08",
+      "experimentVersion": 1,
+      "variantKey": "control_quota_wall",
+      "status": "DRAFT",
+      "bucketValue": 0,
+      "reason": "FALLBACK_CONTROL"
+    },
+    {
+      "experimentKey": "EXP-LOS-09",
+      "experimentVersion": 1,
+      "variantKey": "control_two_plan",
+      "status": "DRAFT",
+      "bucketValue": 0,
+      "reason": "FALLBACK_CONTROL"
+    }
+  ],
+  "killSwitches": [],
+  "evaluatedAt": "2026-11-23T12:00:00Z",
+  "llmTokensUsed": 0,
+  "trainingEligible": false
+}

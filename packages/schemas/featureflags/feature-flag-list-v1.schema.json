@@ -1,0 +1,297 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/featureflags/feature-flag-list-v1.schema.json",
+  "title": "FeatureFlagListResponse",
+  "description": "ROLE_ADMIN governance view of all server and client feature flags and A/B experiments.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "flagCount",
+    "experimentCount",
+    "flags",
+    "experiments",
+    "generatedAt",
+    "llmTokensUsed",
+    "trainingEligible"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "feature-flag-list-v1"
+    },
+    "flagCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 200
+    },
+    "experimentCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 200
+    },
+    "flags": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "$ref": "#/$defs/FeatureFlagDefinition"
+      }
+    },
+    "experiments": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "$ref": "#/$defs/ExperimentDefinition"
+      }
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "llmTokensUsed": {
+      "type": "integer",
+      "const": 0
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    }
+  },
+  "$defs": {
+    "FeatureFlagDefinition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "flagKey",
+        "category",
+        "valueType",
+        "clientSafe",
+        "enabled",
+        "killSwitchActive",
+        "rolloutBasisPoints",
+        "bucketingSalt",
+        "defaultValueJson",
+        "currentValueJson",
+        "owner",
+        "purpose",
+        "plannedRemovalAt",
+        "version",
+        "trainingEligible",
+        "createdAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "flagKey": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_.-]{2,79}$"
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "RELEASE_FLAG",
+            "EXPERIMENT_FLAG",
+            "KILL_SWITCH",
+            "REMOTE_CONFIG"
+          ]
+        },
+        "valueType": {
+          "type": "string",
+          "enum": [
+            "BOOLEAN",
+            "INTEGER",
+            "DECIMAL",
+            "STRING"
+          ]
+        },
+        "clientSafe": {
+          "type": "boolean"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "killSwitchActive": {
+          "type": "boolean"
+        },
+        "rolloutBasisPoints": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "bucketingSalt": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 64
+        },
+        "defaultValueJson": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "currentValueJson": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "owner": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 64
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 240
+        },
+        "plannedRemovalAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "trainingEligible": {
+          "type": "boolean",
+          "const": false
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "ExperimentVariant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "weightBasisPoints"
+      ],
+      "properties": {
+        "key": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_.-]{2,48}$"
+        },
+        "weightBasisPoints": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        }
+      }
+    },
+    "ExperimentDefinition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "experimentKey",
+        "linkedFlagKey",
+        "status",
+        "clientSafe",
+        "rolloutBasisPoints",
+        "bucketingSalt",
+        "controlVariant",
+        "variants",
+        "owner",
+        "purpose",
+        "plannedRemovalAt",
+        "experimentVersion",
+        "version",
+        "trainingEligible",
+        "createdAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "experimentKey": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{2,63}$"
+        },
+        "linkedFlagKey": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-z][a-z0-9_.-]{2,79}$"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "DRAFT",
+            "RUNNING",
+            "PAUSED",
+            "KILLED",
+            "CONCLUDED"
+          ]
+        },
+        "clientSafe": {
+          "type": "boolean"
+        },
+        "rolloutBasisPoints": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "bucketingSalt": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 64
+        },
+        "controlVariant": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_.-]{2,48}$"
+        },
+        "variants": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 5,
+          "items": {
+            "$ref": "#/$defs/ExperimentVariant"
+          }
+        },
+        "owner": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 64
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 240
+        },
+        "plannedRemovalAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "experimentVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "trainingEligible": {
+          "type": "boolean",
+          "const": false
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

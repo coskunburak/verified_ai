@@ -1,0 +1,6 @@
+{
+  "active": true,
+  "reason": "Emergency kill switch activation during PDF parser incident triage",
+  "expectedVersion": 0,
+  "trainingEligible": false
+}

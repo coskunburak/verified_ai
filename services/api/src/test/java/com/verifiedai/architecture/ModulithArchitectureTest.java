@@ -148,4 +148,61 @@ class ModulithArchitectureTest {
             )
             .check(classes);
     }
+
+    @Test
+    void downstreamModulesOnlyUseFeatureFlagsApplicationPublicSpi() {
+        JavaClasses classes = new ClassFileImporter()
+            .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
+            .importPackages("com.verifiedai");
+
+        noClasses()
+            .that()
+            .resideInAnyPackage(
+                "com.verifiedai.billing..",
+                "com.verifiedai.attempt..",
+                "com.verifiedai.mistake..",
+                "com.verifiedai.mastery..",
+                "com.verifiedai.studyplan..",
+                "com.verifiedai.exam..",
+                "com.verifiedai.tutoring..",
+                "com.verifiedai.notification..",
+                "com.verifiedai.identity..",
+                "com.verifiedai.analytics..",
+                "com.verifiedai.ai..",
+                "com.verifiedai.solving..",
+                "com.verifiedai.verification..",
+                "com.verifiedai.problem.."
+            )
+            .should()
+            .dependOnClassesThat()
+            .resideInAnyPackage(
+                "com.verifiedai.featureflags.domain..",
+                "com.verifiedai.featureflags.infrastructure..",
+                "com.verifiedai.featureflags.api.."
+            )
+            .check(classes);
+
+        noClasses()
+            .that()
+            .resideInAnyPackage("com.verifiedai.featureflags..")
+            .should()
+            .dependOnClassesThat()
+            .resideInAnyPackage(
+                "com.verifiedai.billing..",
+                "com.verifiedai.attempt..",
+                "com.verifiedai.mistake..",
+                "com.verifiedai.mastery..",
+                "com.verifiedai.studyplan..",
+                "com.verifiedai.exam..",
+                "com.verifiedai.tutoring..",
+                "com.verifiedai.notification..",
+                "com.verifiedai.identity..",
+                "com.verifiedai.analytics..",
+                "com.verifiedai.ai..",
+                "com.verifiedai.solving..",
+                "com.verifiedai.verification..",
+                "com.verifiedai.problem.."
+            )
+            .check(classes);
+    }
 }

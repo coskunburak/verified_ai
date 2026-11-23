@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/featureflags/feature-flag-audit-list-v1.schema.json",
+  "title": "FeatureFlagAuditListResponse",
+  "description": "ROLE_ADMIN immutable audit log listing for feature flag, kill-switch, and experiment state mutations.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "entryCount",
+    "entries",
+    "generatedAt",
+    "llmTokensUsed",
+    "trainingEligible"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "feature-flag-audit-list-v1"
+    },
+    "entryCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 200
+    },
+    "entries": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "$ref": "#/$defs/FeatureFlagAuditEntry"
+      }
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "llmTokensUsed": {
+      "type": "integer",
+      "const": 0
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    }
+  },
+  "$defs": {
+    "FeatureFlagAuditEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "auditId",
+        "targetType",
+        "targetKey",
+        "action",
+        "actorUserId",
+        "actorRole",
+        "idempotencyKey",
+        "reason",
+        "beforeStateJson",
+        "afterStateJson",
+        "correlationId",
+        "trainingEligible",
+        "occurredAt"
+      ],
+      "properties": {
+        "auditId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "targetType": {
+          "type": "string",
+          "enum": [
+            "FLAG",
+            "EXPERIMENT"
+          ]
+        },
+        "targetKey": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 80
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "CREATED",
+            "UPDATED",
+            "ROLLOUT_CHANGED",
+            "KILL_SWITCH_ENABLED",
+            "KILL_SWITCH_DISABLED",
+            "EXPERIMENT_STATE_CHANGED"
+          ]
+        },
+        "actorUserId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "actorRole": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 32
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9:._-]{8,128}$"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 240
+        },
+        "beforeStateJson": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 2048
+        },
+        "afterStateJson": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 2048
+        },
+        "correlationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "trainingEligible": {
+          "type": "boolean",
+          "const": false
+        },
+        "occurredAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

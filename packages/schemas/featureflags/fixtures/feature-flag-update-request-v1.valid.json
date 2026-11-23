@@ -1,0 +1,9 @@
+{
+  "enabled": true,
+  "rolloutBasisPoints": 500,
+  "currentValueJson": "true",
+  "plannedRemovalAt": "2027-06-01T00:00:00Z",
+  "reason": "Enable 5 percent canary rollout for client platform health screen",
+  "expectedVersion": 0,
+  "trainingEligible": false
+}

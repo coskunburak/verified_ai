@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "feature-flag-list-v1",
+  "flagCount": 2,
+  "experimentCount": 1,
+  "flags": [
+    {
+      "flagKey": "pdf_upload_enabled",
+      "category": "KILL_SWITCH",
+      "valueType": "BOOLEAN",
+      "clientSafe": true,
+      "enabled": true,
+      "killSwitchActive": false,
+      "rolloutBasisPoints": 10000,
+      "bucketingSalt": "v1",
+      "defaultValueJson": "true",
+      "currentValueJson": "true",
+      "owner": "platform-security",
+      "purpose": "Operational kill switch to disable PDF uploads immediately during security incidents",
+      "plannedRemovalAt": null,
+      "version": 0,
+      "trainingEligible": false,
+      "createdAt": "2026-11-23T10:00:00Z",
+      "updatedAt": "2026-11-23T10:00:00Z"
+    },
+    {
+      "flagKey": "strong_model_pct",
+      "category": "REMOTE_CONFIG",
+      "valueType": "INTEGER",
+      "clientSafe": false,
+      "enabled": true,
+      "killSwitchActive": false,
+      "rolloutBasisPoints": 10000,
+      "bucketingSalt": "v1",
+      "defaultValueJson": "0",
+      "currentValueJson": "0",
+      "owner": "platform-ai",
+      "purpose": "Server-authoritative strong-model routing percentage ceiling (0-100)",
+      "plannedRemovalAt": null,
+      "version": 0,
+      "trainingEligible": false,
+      "createdAt": "2026-11-23T10:00:00Z",
+      "updatedAt": "2026-11-23T10:00:00Z"
+    }
+  ],
+  "experiments": [
+    {
+      "experimentKey": "EXP-LOS-01",
+      "linkedFlagKey": null,
+      "status": "DRAFT",
+      "clientSafe": true,
+      "rolloutBasisPoints": 0,
+      "bucketingSalt": "v1",
+      "controlVariant": "control",
+      "variants": [
+        {
+          "key": "control",
+          "weightBasisPoints": 5000
+        },
+        {
+          "key": "treatment",
+          "weightBasisPoints": 5000
+        }
+      ],
+      "owner": "platform-learning",
+      "purpose": "Evaluate concrete Counterexample Proof Card layout lift on Verified Twin start rate",
+      "plannedRemovalAt": "2027-06-01T00:00:00Z",
+      "experimentVersion": 1,
+      "version": 0,
+      "trainingEligible": false,
+      "createdAt": "2026-11-23T10:00:00Z",
+      "updatedAt": "2026-11-23T10:00:00Z"
+    }
+  ],
+  "generatedAt": "2026-11-23T12:00:00Z",
+  "llmTokensUsed": 0,
+  "trainingEligible": false
+}

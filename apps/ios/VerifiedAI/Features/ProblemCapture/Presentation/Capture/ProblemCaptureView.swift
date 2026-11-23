@@ -13,6 +13,11 @@ struct ProblemCaptureView: View {
     var onRecognizedWork: ((RecognizedProblemReference) async -> Void)? = nil
     var onLocalAcceptance: ((AcceptedCapturedAsset) async -> Void)? = nil
     var onContinueToSession: ((UUID) -> Void)? = nil
+    var featureFlagClient: any FeatureFlagClient = StaticFeatureFlagClient(enabledFlags: [.pdfUploadEnabled])
+
+    private var isPdfUploadEnabled: Bool {
+        featureFlagClient.isEnabled(.pdfUploadEnabled) && !featureFlagClient.isKillSwitchActive(.pdfUploadEnabled)
+    }
 
     @Environment(\.openURL) private var openURL
     @Environment(\.scenePhase) private var scenePhase
@@ -70,7 +75,7 @@ struct ProblemCaptureView: View {
         }
         .fileImporter(
             isPresented: $isFileImporterPresented,
-            allowedContentTypes: [.pdf, .jpeg, .png, UTType.heic],
+            allowedContentTypes: isPdfUploadEnabled ? [.pdf, .jpeg, .png, UTType.heic] : [.jpeg, .png, UTType.heic],
             allowsMultipleSelection: false
         ) { result in
             Task {
@@ -141,6 +146,15 @@ struct ProblemCaptureView: View {
                     .font(TypographyTokens.body)
                     .foregroundStyle(ColorTokens.textSecondary)
 
+                if !isPdfUploadEnabled {
+                    AppNoticeBanner(
+                        "feature_flags.kill_switch.pdf_disabled",
+                        systemImage: "exclamationmark.shield",
+                        tone: .warning
+                    )
+                    .accessibilityIdentifier("capture.pdfKillSwitchBanner")
+                }
+
                 VStack(spacing: SpacingTokens.md) {
                     Button {
                         Task { await viewModel.chooseCamera() }
@@ -175,6 +189,8 @@ struct ProblemCaptureView: View {
                         )
                     }
                     .buttonStyle(.plain)
+                    .disabled(!isPdfUploadEnabled)
+                    .opacity(isPdfUploadEnabled ? 1.0 : 0.55)
                     .accessibilityIdentifier("problemCapture.source.file")
                 }
             }

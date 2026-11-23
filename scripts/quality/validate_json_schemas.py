@@ -2609,3 +2609,5 @@ if __name__ == "__main__":
     validate_10_5()
     from validate_sprint_10_6_contracts import validate as validate_10_6
     validate_10_6()
+    from validate_sprint_10_7_contracts import validate as validate_10_7
+    validate_10_7()
