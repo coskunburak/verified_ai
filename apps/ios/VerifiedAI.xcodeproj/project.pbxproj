@@ -22,6 +22,15 @@
 		AB1041000000000000000006 /* NotificationPreferencesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1042000000000000000006 /* NotificationPreferencesViewModel.swift */; };
 		AB1041000000000000000007 /* NotificationPreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1042000000000000000007 /* NotificationPreferencesView.swift */; };
 		AB1041000000000000000008 /* NotificationPreferencesViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1042000000000000000008 /* NotificationPreferencesViewModelTests.swift */; };
+		AB1051000000000000000001 /* TrialEndReminderOptInCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1052000000000000000001 /* TrialEndReminderOptInCard.swift */; };
+		AB1051000000000000000002 /* LifecycleDeepLinkAndOptInTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1052000000000000000002 /* LifecycleDeepLinkAndOptInTests.swift */; };
+		AB1061000000000000000001 /* AnalyticsEventCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1062000000000000000001 /* AnalyticsEventCatalog.swift */; };
+		AB1061000000000000000002 /* AnalyticsPrivacySanitizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1062000000000000000002 /* AnalyticsPrivacySanitizer.swift */; };
+		AB1061000000000000000003 /* AnalyticsServicing.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1062000000000000000003 /* AnalyticsServicing.swift */; };
+		AB1061000000000000000004 /* AnalyticsOfflineQueueStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1062000000000000000004 /* AnalyticsOfflineQueueStore.swift */; };
+		AB1061000000000000000005 /* AnalyticsClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1062000000000000000005 /* AnalyticsClient.swift */; };
+		AB1061000000000000000006 /* AnalyticsEventCatalogAndSanitizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1062000000000000000006 /* AnalyticsEventCatalogAndSanitizerTests.swift */; };
+		AB1061000000000000000007 /* AnalyticsClientOfflineQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1062000000000000000007 /* AnalyticsClientOfflineQueueTests.swift */; };
 		B74000000000000000000002 /* attempt-mistake-evaluation-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = A74000000000000000000002 /* attempt-mistake-evaluation-v1.json */; };
 		B75000000000000000000001 /* mistake-dispute-result-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = A75000000000000000000001 /* mistake-dispute-result-v1.json */; };
 		B75000000000000000000002 /* mistake-effective-state-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = A75000000000000000000002 /* mistake-effective-state-v1.json */; };
@@ -347,6 +356,15 @@
 		AB1042000000000000000006 /* NotificationPreferencesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPreferencesViewModel.swift; sourceTree = "<group>"; };
 		AB1042000000000000000007 /* NotificationPreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPreferencesView.swift; sourceTree = "<group>"; };
 		AB1042000000000000000008 /* NotificationPreferencesViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPreferencesViewModelTests.swift; sourceTree = "<group>"; };
+		AB1052000000000000000001 /* TrialEndReminderOptInCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrialEndReminderOptInCard.swift; sourceTree = "<group>"; };
+		AB1052000000000000000002 /* LifecycleDeepLinkAndOptInTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifecycleDeepLinkAndOptInTests.swift; sourceTree = "<group>"; };
+		AB1062000000000000000001 /* AnalyticsEventCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsEventCatalog.swift; sourceTree = "<group>"; };
+		AB1062000000000000000002 /* AnalyticsPrivacySanitizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsPrivacySanitizer.swift; sourceTree = "<group>"; };
+		AB1062000000000000000003 /* AnalyticsServicing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsServicing.swift; sourceTree = "<group>"; };
+		AB1062000000000000000004 /* AnalyticsOfflineQueueStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsOfflineQueueStore.swift; sourceTree = "<group>"; };
+		AB1062000000000000000005 /* AnalyticsClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsClient.swift; sourceTree = "<group>"; };
+		AB1062000000000000000006 /* AnalyticsEventCatalogAndSanitizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsEventCatalogAndSanitizerTests.swift; sourceTree = "<group>"; };
+		AB1062000000000000000007 /* AnalyticsClientOfflineQueueTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsClientOfflineQueueTests.swift; sourceTree = "<group>"; };
 		A74000000000000000000002 /* attempt-mistake-evaluation-v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/attempt-mistake-evaluation-v1.json; sourceTree = SOURCE_ROOT; };
 		A75000000000000000000001 /* mistake-dispute-result-v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/mistake-dispute-result-v1.json; sourceTree = SOURCE_ROOT; };
 		A75000000000000000000002 /* mistake-effective-state-v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/mistake-effective-state-v1.json; sourceTree = SOURCE_ROOT; };
@@ -723,6 +741,7 @@
 				C54000000000000000000002 /* ProblemSolving */,
 				710000000000000000000025 /* Account */,
 				AB1043000000000000000005 /* Notifications */,
+				AB1063000000000000000002 /* Analytics */,
 				710000000000000000000026 /* Authentication */,
 				710000000000000000000027 /* Onboarding */,
 				710000000000000000000028 /* ProblemCapture */,
@@ -769,6 +788,7 @@
 		710000000000000000000002 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				AB1063000000000000000001 /* Analytics */,
 				710000000000000000000006 /* DesignSystem */,
 				710000000000000000000007 /* FeatureFlags */,
 				710000000000000000000008 /* Networking */,
@@ -865,6 +885,27 @@
 				200000000000000000000014 /* KeychainStore.swift */,
 			);
 			path = Security;
+			sourceTree = "<group>";
+		};
+		AB1063000000000000000001 /* Analytics */ = {
+			isa = PBXGroup;
+			children = (
+				AB1062000000000000000001 /* AnalyticsEventCatalog.swift */,
+				AB1062000000000000000002 /* AnalyticsPrivacySanitizer.swift */,
+				AB1062000000000000000003 /* AnalyticsServicing.swift */,
+				AB1062000000000000000004 /* AnalyticsOfflineQueueStore.swift */,
+				AB1062000000000000000005 /* AnalyticsClient.swift */,
+			);
+			path = Analytics;
+			sourceTree = "<group>";
+		};
+		AB1063000000000000000002 /* Analytics */ = {
+			isa = PBXGroup;
+			children = (
+				AB1062000000000000000006 /* AnalyticsEventCatalogAndSanitizerTests.swift */,
+				AB1062000000000000000007 /* AnalyticsClientOfflineQueueTests.swift */,
+			);
+			path = Analytics;
 			sourceTree = "<group>";
 		};
 		71000000000000000000000B /* Components */ = {
@@ -971,6 +1012,7 @@
 			children = (
 				AB1042000000000000000006 /* NotificationPreferencesViewModel.swift */,
 				AB1042000000000000000007 /* NotificationPreferencesView.swift */,
+				AB1052000000000000000001 /* TrialEndReminderOptInCard.swift */,
 			);
 			path = Presentation;
 			sourceTree = "<group>";
@@ -1239,6 +1281,7 @@
 			isa = PBXGroup;
 			children = (
 				AB1042000000000000000008 /* NotificationPreferencesViewModelTests.swift */,
+				AB1052000000000000000002 /* LifecycleDeepLinkAndOptInTests.swift */,
 			);
 			path = Notifications;
 			sourceTree = "<group>";
@@ -1863,6 +1906,12 @@
 				AB1041000000000000000005 /* FixtureNotificationAPI.swift in Sources */,
 				AB1041000000000000000006 /* NotificationPreferencesViewModel.swift in Sources */,
 				AB1041000000000000000007 /* NotificationPreferencesView.swift in Sources */,
+				AB1051000000000000000001 /* TrialEndReminderOptInCard.swift in Sources */,
+				AB1061000000000000000001 /* AnalyticsEventCatalog.swift in Sources */,
+				AB1061000000000000000002 /* AnalyticsPrivacySanitizer.swift in Sources */,
+				AB1061000000000000000003 /* AnalyticsServicing.swift in Sources */,
+				AB1061000000000000000004 /* AnalyticsOfflineQueueStore.swift in Sources */,
+				AB1061000000000000000005 /* AnalyticsClient.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1920,6 +1969,9 @@
 				AB1021000000000000000004 /* LearningOsDowngradePresentationTests.swift in Sources */,
 				AB1031000000000000000001 /* LearningOsQuotaSummaryTests.swift in Sources */,
 				AB1041000000000000000008 /* NotificationPreferencesViewModelTests.swift in Sources */,
+				AB1051000000000000000002 /* LifecycleDeepLinkAndOptInTests.swift in Sources */,
+				AB1061000000000000000006 /* AnalyticsEventCatalogAndSanitizerTests.swift in Sources */,
+				AB1061000000000000000007 /* AnalyticsClientOfflineQueueTests.swift in Sources */,
 				100000000000000000000042 /* AccountSettingsViewModelTests.swift in Sources */,
 				10000000000000000000004A /* ProblemCaptureViewModelTests.swift in Sources */,
 				10000000000000000000004B /* CaptureQualityAnalyzerTests.swift in Sources */,

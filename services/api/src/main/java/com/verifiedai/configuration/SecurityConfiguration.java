@@ -72,6 +72,20 @@ class SecurityConfiguration {
                         CorrelationIds.current()
                     ));
                 })
+                .accessDeniedHandler((request, response, exception) -> {
+                    String uri = request.getRequestURI();
+                    if (uri != null && (uri.startsWith("/v1/admin/analytics/") || uri.startsWith("/api/v1/admin/analytics/"))) {
+                        response.setStatus(HttpStatus.FORBIDDEN.value());
+                        response.setContentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE);
+                        response.getWriter().write("""
+                            {"type":"https://errors.verified-ai-learning.example/analytics-admin-forbidden","title":"Administrative role is required for analytics product metrics","status":403,"code":"%s","traceId":"%s","details":{"recoverable":false,"userAction":"USE_ADMIN_ACCOUNT"}}""".formatted(
+                            ApiErrorCode.ANALYTICS_ADMIN_FORBIDDEN.name(),
+                            CorrelationIds.current()
+                        ));
+                        return;
+                    }
+                    new org.springframework.security.web.access.AccessDeniedHandlerImpl().handle(request, response, exception);
+                })
             )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(

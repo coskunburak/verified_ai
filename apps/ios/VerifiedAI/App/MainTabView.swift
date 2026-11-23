@@ -28,8 +28,7 @@ struct MainTabView: View {
     let candidateProfileViewModel: CandidateProfileViewModel
     let blueprintAssemblyViewModel: ExamBlueprintAssemblyViewModel
     let weeklyReportViewModel: WeeklyProgressReportViewModel
-
-    @State private var selectedTab: MainTab = .solve
+    @Binding var selectedTab: MainTab
 
     var body: some View {
         TabView(selection: $selectedTab) {

@@ -18,6 +18,7 @@ struct NotificationPreferencesView: View {
                     loadingCard
                 } else {
                     masterPushCard
+                    TrialEndReminderOptInCard(viewModel: viewModel)
                     categoriesCard
                     quietHoursCard
                     dailyCapCard

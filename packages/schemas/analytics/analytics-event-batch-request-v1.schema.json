@@ -1,0 +1,166 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/analytics/analytics-event-batch-request-v1.schema.json",
+  "title": "AnalyticsEventBatchRequest",
+  "description": "Bounded batch analytics event ingestion request (1..50 events) enforcing closed client allowlist and ADR-006 training_eligible=false.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "events",
+    "trainingEligible"
+  ],
+  "properties": {
+    "events": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50,
+      "items": {
+        "$ref": "#/$defs/AnalyticsEventIngestItem"
+      }
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    }
+  },
+  "$defs": {
+    "AnalyticsEventPropertyScalar": {
+      "type": ["string", "number", "boolean"],
+      "maxLength": 80,
+      "not": {
+        "type": "string",
+        "pattern": "(@|https?://|eyJ|\\\\frac|\\\\int|\\\\sqrt|\\\\sum|\\$\\$)"
+      }
+    },
+    "AnalyticsEventProperties": {
+      "type": "object",
+      "additionalProperties": false,
+      "maxProperties": 16,
+      "properties": {
+        "authMethod": { "$ref": "#/$defs/AnalyticsEventPropertyScalar" },
+        "locale": { "$ref": "#/$defs/AnalyticsEventPropertyScalar" },
+        "educationLevel": { "$ref": "#/$defs/AnalyticsEventPropertyScalar" },
+        "dailyBudgetMinutes": { "$ref": "#/$defs/AnalyticsEventPropertyScalar" },
+        "latencyBucket": { "$ref": "#/$defs/AnalyticsEventPropertyScalar" },
+        "captureSource": { "$ref": "#/$defs/AnalyticsEventPropertyScalar" },
+        "assetKind": { "$ref": "#/$defs/AnalyticsEventPropertyScalar" },
+        "qualityWarningCode": { "$ref": "#/$defs/AnalyticsEventPropertyScalar" },
+        "problemType": { "$ref": "#/$defs/AnalyticsEventPropertyScalar" },
+        "primarySkillCode": { "$ref": "#/$defs/AnalyticsEventPropertyScalar" },
+        "difficultyBand": { "$ref": "#/$defs/AnalyticsEventPropertyScalar" },
+        "verificationStatus": { "$ref": "#/$defs/AnalyticsEventPropertyScalar" },
+        "entitlementTier": { "$ref": "#/$defs/AnalyticsEventPropertyScalar" },
+        "hintLevel": { "$ref": "#/$defs/AnalyticsEventPropertyScalar" },
+        "pedagogicalPhase": { "$ref": "#/$defs/AnalyticsEventPropertyScalar" },
+        "turnCountBucket": { "$ref": "#/$defs/AnalyticsEventPropertyScalar" },
+        "canonicalSkillCode": { "$ref": "#/$defs/AnalyticsEventPropertyScalar" },
+        "mistakeCode": { "$ref": "#/$defs/AnalyticsEventPropertyScalar" },
+        "fromBand": { "$ref": "#/$defs/AnalyticsEventPropertyScalar" },
+        "toBand": { "$ref": "#/$defs/AnalyticsEventPropertyScalar" },
+        "evidenceClass": { "$ref": "#/$defs/AnalyticsEventPropertyScalar" },
+        "slotRole": { "$ref": "#/$defs/AnalyticsEventPropertyScalar" },
+        "durationBucket": { "$ref": "#/$defs/AnalyticsEventPropertyScalar" },
+        "examCode": { "$ref": "#/$defs/AnalyticsEventPropertyScalar" },
+        "jurisdiction": { "$ref": "#/$defs/AnalyticsEventPropertyScalar" },
+        "confidenceTier": { "$ref": "#/$defs/AnalyticsEventPropertyScalar" },
+        "mode": { "$ref": "#/$defs/AnalyticsEventPropertyScalar" },
+        "placement": { "$ref": "#/$defs/AnalyticsEventPropertyScalar" },
+        "packageCode": { "$ref": "#/$defs/AnalyticsEventPropertyScalar" },
+        "tierCode": { "$ref": "#/$defs/AnalyticsEventPropertyScalar" },
+        "storefront": { "$ref": "#/$defs/AnalyticsEventPropertyScalar" },
+        "failureReason": { "$ref": "#/$defs/AnalyticsEventPropertyScalar" },
+        "category": { "$ref": "#/$defs/AnalyticsEventPropertyScalar" },
+        "intentType": { "$ref": "#/$defs/AnalyticsEventPropertyScalar" },
+        "weekIso": { "$ref": "#/$defs/AnalyticsEventPropertyScalar" }
+      }
+    },
+    "AnalyticsEventIngestItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "clientEventId",
+        "eventName",
+        "emittedBy",
+        "occurredAt",
+        "trainingEligible"
+      ],
+      "properties": {
+        "clientEventId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9:._-]{8,128}$"
+        },
+        "eventName": {
+          "type": "string",
+          "enum": [
+            "onboarding_started",
+            "onboarding_completed",
+            "sign_in_completed",
+            "problem_capture_started",
+            "problem_capture_source_selected",
+            "problem_capture_quality_warning",
+            "problem_capture_accepted",
+            "first_verified_solution_viewed",
+            "verification_details_viewed",
+            "solution_alternative_viewed",
+            "tutor_session_started",
+            "tutor_turn_submitted",
+            "hint_requested",
+            "answer_revealed",
+            "tutor_session_completed",
+            "mistake_reviewed",
+            "practice_session_started",
+            "exam_readiness_viewed",
+            "paywall_viewed",
+            "purchase_started",
+            "purchase_failed",
+            "restore_completed",
+            "paywall.mistake_moment_shown",
+            "paywall.twin_success_shown",
+            "lifecycle_notification_opened",
+            "weekly_digest_viewed"
+          ]
+        },
+        "emittedBy": {
+          "type": "string",
+          "const": "CLIENT"
+        },
+        "sourceModule": {
+          "type": "string",
+          "const": "ios_client"
+        },
+        "entitlementTier": {
+          "type": "string",
+          "enum": ["FREE", "PRO", "COACH_PRO", "YKS_SEASON_PASS", "UNKNOWN"]
+        },
+        "locale": {
+          "type": "string",
+          "enum": ["en", "tr"]
+        },
+        "appVersion": {
+          "type": ["string", "null"],
+          "pattern": "^[A-Za-z0-9._-]{1,32}$"
+        },
+        "sessionRefHash": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "latencyMs": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "maximum": 600000
+        },
+        "properties": {
+          "$ref": "#/$defs/AnalyticsEventProperties"
+        },
+        "occurredAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "trainingEligible": {
+          "type": "boolean",
+          "const": false
+        }
+      }
+    }
+  }
+}

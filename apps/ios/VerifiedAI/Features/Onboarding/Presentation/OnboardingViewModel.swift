@@ -7,6 +7,7 @@ final class OnboardingViewModel {
     private let learningProfileAPI: LearningProfileServicing
     private let networkMonitor: NetworkMonitoring
     private let logger: AppLogger
+    private let analytics: AnalyticsTracking
 
     private(set) var state: OnboardingState = .idle
     var draft = LearningProfileDraft()
@@ -32,11 +33,13 @@ final class OnboardingViewModel {
     init(
         learningProfileAPI: LearningProfileServicing,
         networkMonitor: NetworkMonitoring,
-        logger: AppLogger
+        logger: AppLogger,
+        analytics: AnalyticsTracking = NoOpAnalyticsTracker()
     ) {
         self.learningProfileAPI = learningProfileAPI
         self.networkMonitor = networkMonitor
         self.logger = logger
+        self.analytics = analytics
     }
 
     func bootstrap(userId: UUID? = nil) async {
@@ -163,6 +166,14 @@ final class OnboardingViewModel {
             accountId = profile.userId
             apply(profile)
             logger.info("onboarding.completed")
+            if profile.isOnboardingComplete {
+                let locale = AnalyticsLocale.from(profile.preferredLanguage)
+                let eduLevel = profile.educationLevel?.rawValue
+                let budget = profile.dailyStudyMinutes
+                Task { [analytics] in
+                    await analytics.track(.onboardingCompleted(locale: locale, educationLevel: eduLevel, dailyBudgetMinutes: budget))
+                }
+            }
             return profile.isOnboardingComplete
         } catch NetworkError.server(let problem) where problem.code == "OPTIMISTIC_CONFLICT" {
             guard token == generation, !Task.isCancelled else { return false }
@@ -342,6 +353,12 @@ final class OnboardingViewModel {
             currentStep = profile.resumeStep
             state = .needsOnboarding
             message = nil
+            let locale = AnalyticsLocale.from(profile.preferredLanguage)
+            let eduLevel = profile.educationLevel?.rawValue
+            let budget = profile.dailyStudyMinutes
+            Task { [analytics] in
+                await analytics.track(.onboardingStarted(locale: locale, educationLevel: eduLevel, dailyBudgetMinutes: budget))
+            }
         }
     }
 

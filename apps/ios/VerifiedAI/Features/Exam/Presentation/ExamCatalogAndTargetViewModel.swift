@@ -20,6 +20,7 @@ public final class ExamCatalogAndTargetViewModel: ObservableObject {
     public private(set) var currentUserId: UUID?
     private let service: ExamAPIServicing
     private let cacheStore: ExamCacheStoreProtocol
+    private var readinessViewModel: ExamReadinessViewModel?
 
     private static let isoDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -41,17 +42,23 @@ public final class ExamCatalogAndTargetViewModel: ObservableObject {
     }
 
     public func makeReadinessViewModel() -> ExamReadinessViewModel {
-        ExamReadinessViewModel(
+        if let existing = readinessViewModel {
+            return existing
+        }
+        let vm = ExamReadinessViewModel(
             userId: currentUserId ?? ExamBlueprintAssemblyViewModel.defaultLearnerId,
             selectedExamCode: primaryActiveTarget?.examCode ?? selectedDetail?.examCode ?? "TR_YKS_TYT_MATH",
             apiService: service,
             offlineStore: cacheStore as? ExamOfflineSQLiteStore
         )
+        readinessViewModel = vm
+        return vm
     }
 
     public func updateLearnerId(_ userId: UUID?) {
         guard currentUserId != userId else { return }
         currentUserId = userId
+        readinessViewModel = nil
         targets = []
         statusMessageKey = nil
         errorMessageKey = nil
@@ -188,6 +195,7 @@ public final class ExamCatalogAndTargetViewModel: ObservableObject {
             await cacheStore.purgeUserData(userId: userId)
         }
         currentUserId = nil
+        readinessViewModel = nil
         targets = []
         selectedDetail = nil
         definitions = []

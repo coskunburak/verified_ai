@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "notification-template-catalog-v1",
+  "templates": [
+    {
+      "category": "STUDY_PLAN",
+      "intentType": "STUDY_PLAN_DAILY_MISSION",
+      "sourceModule": "studyplan",
+      "templateKey": "notification.template.study_plan.daily_mission",
+      "allowedParams": [
+        "budgetMinutes",
+        "remainingTasks"
+      ],
+      "deepLinkPath": "verified-ai://study-plan/today",
+      "cooldownHours": 20,
+      "cooldownExempt": false
+    },
+    {
+      "category": "SPACED_REVIEW",
+      "intentType": "SPACED_REVIEW_DUE",
+      "sourceModule": "studyplan",
+      "templateKey": "notification.template.spaced_review.due",
+      "allowedParams": [
+        "dueCount",
+        "triggerKind"
+      ],
+      "deepLinkPath": "verified-ai://spaced-review",
+      "cooldownHours": 24,
+      "cooldownExempt": false
+    },
+    {
+      "category": "EXAM_DEADLINE",
+      "intentType": "EXAM_DEADLINE_COUNTDOWN",
+      "sourceModule": "exam",
+      "templateKey": "notification.template.exam_deadline.countdown",
+      "allowedParams": [
+        "examCode",
+        "daysRemaining"
+      ],
+      "deepLinkPath": "verified-ai://exam-readiness",
+      "cooldownHours": 24,
+      "cooldownExempt": false
+    },
+    {
+      "category": "BILLING_TRIAL_REMINDER",
+      "intentType": "TRIAL_ENDING_48H_REMINDER",
+      "sourceModule": "billing",
+      "templateKey": "notification.template.billing.trial_ending_48h",
+      "allowedParams": [
+        "hoursRemaining",
+        "planCode"
+      ],
+      "deepLinkPath": "verified-ai://subscription/manage",
+      "cooldownHours": 0,
+      "cooldownExempt": false
+    },
+    {
+      "category": "ACCOUNT_SECURITY",
+      "intentType": "ACCOUNT_SECURITY_ALERT",
+      "sourceModule": "identity",
+      "templateKey": "notification.template.account.security_alert",
+      "allowedParams": [
+        "eventType"
+      ],
+      "deepLinkPath": "verified-ai://account/security",
+      "cooldownHours": 0,
+      "cooldownExempt": true
+    }
+  ],
+  "llmTokensUsed": 0,
+  "trainingEligible": false
+}

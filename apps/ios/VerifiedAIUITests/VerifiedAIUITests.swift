@@ -7,7 +7,7 @@ final class VerifiedAIUITests: XCTestCase {
         app.launchArguments = ["--ui-testing"]
         app.launch()
 
-        XCTAssertTrue(app.staticTexts["Verified AI"].exists)
+        XCTAssertTrue(app.staticTexts["Verified AI"].waitForExistence(timeout: 5))
     }
 
     func testProblemCaptureEntryShowsSourceChoices() {

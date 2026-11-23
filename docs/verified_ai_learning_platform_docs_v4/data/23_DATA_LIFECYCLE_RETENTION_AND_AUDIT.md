@@ -252,3 +252,18 @@ deletion, `deleteUserData` explicitly deletes rows across all four notification 
 database `ON DELETE CASCADE`, and cross-user device token registration atomically revokes active ownership from any prior
 account. Rollback disables `verifiedai.notification.enabled` and `verifiedai.notification.dispatch-worker-enabled` without
 dropping `V068` tables.
+
+## Sprint 10.5 lifecycle messaging cooldown and evaluation ledger
+
+`lifecycle_messaging_cooldowns` and `lifecycle_messaging_evaluations` (`V069`) extend the notification ledger with
+strict `training_eligible = FALSE` (`CHECK (NOT training_eligible)`), `ON DELETE CASCADE` on `users(id)`, and
+`ON DELETE SET NULL` on `notification_deliveries(id)`. `NotificationLifecycleContributor` (`category() = "notifications"`)
+exports PII-free `lifecycleCooldowns` and the latest 50 `lifecycleEvaluations` entries without exposing raw tokens,
+and `deleteUserData` explicitly purges `lifecycle_messaging_evaluations` and `lifecycle_messaging_cooldowns` alongside the
+`V068` tables. Rollback disables `verifiedai.notification.lifecycle-campaigns-enabled` and
+`verifiedai.notification.lifecycle-scheduler-enabled` without dropping `V069` tables or altering `V001`–`V068`.
+
+## Sprint 10.6 analytics event and product metrics lifecycle
+
+`analytics_events` and `analytics_daily_metric_rollups` (`V070`) store exclusively low-cardinality product telemetry and anonymized daily aggregates with strict `training_eligible = FALSE` (`CHECK (NOT training_eligible)`). `analytics_events` references `users(id)` with `ON DELETE CASCADE`, enforces `(user_id, client_event_id)` uniqueness with 64-hex SHA-256 `payload_hash` integrity, and rejects raw problem text, LaTeX, OCR output, URLs, JWTs, or PII (`422 ANALYTICS_PII_OR_RAW_CONTENT_REJECTED`). `AnalyticsPrivacyLifecycleContributor` (`category() = "analytics"`) exports bounded latest `200` PII-free `analyticsEvents` rows (strictly omitting operational `payload_hash`, `session_ref_hash`, and `correlation_id`) and explicitly deletes all `analytics_events` rows scoped by `user_id` during `deleteUserData` alongside database `ON DELETE CASCADE`, while `analytics_daily_metric_rollups` stores zero `user_id` or PII. On iOS, `AnalyticsOfflineQueueStore` bounds local storage to `200` events per `userId` with `.completeFileProtection` and `isExcludedFromBackup = true` and purges on logout or account deletion. Rollback sets `verifiedai.analytics.event-catalog-enabled=false` and `verifiedai.analytics.product-metrics-enabled=false` without dropping `V070` tables or altering `V001`–`V069`.
+

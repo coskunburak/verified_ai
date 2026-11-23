@@ -1,0 +1,212 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:verifiedai:lifecycle-summary-v1",
+  "title": "LifecycleSummaryResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "userId",
+    "lifecycleCampaignsEnabled",
+    "activeCooldowns",
+    "recentEvaluations",
+    "llmTokensUsed",
+    "trainingEligible",
+    "generatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "lifecycle-summary-v1"
+    },
+    "userId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "lifecycleCampaignsEnabled": {
+      "type": "boolean"
+    },
+    "activeCooldowns": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "$ref": "#/$defs/LifecycleCooldownItem"
+      }
+    },
+    "recentEvaluations": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "$ref": "#/$defs/LifecycleEvaluationItem"
+      }
+    },
+    "llmTokensUsed": {
+      "type": "integer",
+      "const": 0
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "$defs": {
+    "LifecycleCooldownItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "category",
+        "intentType",
+        "lastIdempotencyKey",
+        "lastDeliveryId",
+        "lastTriggeredAt",
+        "cooldownUntil",
+        "active"
+      ],
+      "properties": {
+        "category": {
+          "type": "string",
+          "enum": [
+            "STUDY_PLAN",
+            "SPACED_REVIEW",
+            "EXAM_DEADLINE",
+            "BILLING_TRIAL_REMINDER",
+            "ACCOUNT_SECURITY"
+          ]
+        },
+        "intentType": {
+          "type": "string",
+          "enum": [
+            "STUDY_PLAN_DAILY_MISSION",
+            "SPACED_REVIEW_DUE",
+            "EXAM_DEADLINE_COUNTDOWN",
+            "TRIAL_ENDING_48H_REMINDER",
+            "ACCOUNT_SECURITY_ALERT"
+          ]
+        },
+        "lastIdempotencyKey": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9:._-]{8,128}$"
+        },
+        "lastDeliveryId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uuid"
+        },
+        "lastTriggeredAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cooldownUntil": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "active": {
+          "type": "boolean"
+        }
+      }
+    },
+    "LifecycleEvaluationItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evaluationId",
+        "sourceModule",
+        "category",
+        "intentType",
+        "idempotencyKey",
+        "templateKey",
+        "decision",
+        "reasonCode",
+        "deliveryId",
+        "evaluatedAt"
+      ],
+      "properties": {
+        "evaluationId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "sourceModule": {
+          "type": "string",
+          "enum": [
+            "notification",
+            "billing",
+            "studyplan",
+            "exam",
+            "identity"
+          ]
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "STUDY_PLAN",
+            "SPACED_REVIEW",
+            "EXAM_DEADLINE",
+            "BILLING_TRIAL_REMINDER",
+            "ACCOUNT_SECURITY"
+          ]
+        },
+        "intentType": {
+          "type": "string",
+          "enum": [
+            "STUDY_PLAN_DAILY_MISSION",
+            "SPACED_REVIEW_DUE",
+            "EXAM_DEADLINE_COUNTDOWN",
+            "TRIAL_ENDING_48H_REMINDER",
+            "ACCOUNT_SECURITY_ALERT"
+          ]
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9:._-]{8,128}$"
+        },
+        "templateKey": {
+          "type": "string",
+          "enum": [
+            "notification.template.study_plan.daily_mission",
+            "notification.template.spaced_review.due",
+            "notification.template.exam_deadline.countdown",
+            "notification.template.billing.trial_ending_48h",
+            "notification.template.account.security_alert"
+          ]
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "SCHEDULED",
+            "DEFERRED_QUIET_HOURS",
+            "SUPPRESSED",
+            "REPLAYED",
+            "SKIPPED_ALREADY_COMPLETED",
+            "SKIPPED_COOLDOWN_ACTIVE",
+            "SKIPPED_OPTED_OUT",
+            "SKIPPED_NOT_ELIGIBLE",
+            "SKIPPED_FEATURE_DISABLED",
+            "CANCELLED_OBSOLETE"
+          ]
+        },
+        "reasonCode": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "deliveryId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uuid"
+        },
+        "evaluatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

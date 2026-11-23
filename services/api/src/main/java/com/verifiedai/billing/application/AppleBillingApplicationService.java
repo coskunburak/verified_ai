@@ -39,6 +39,7 @@ public class AppleBillingApplicationService {
     private final EntitlementApplicationService entitlementApplicationService;
     private final Clock clock;
     private final AppleBillingMetrics metrics;
+    private TrialReminderLifecycleService trialReminderLifecycleService;
 
     AppleBillingApplicationService(
         AppleProductCatalog productCatalog,
@@ -56,6 +57,11 @@ public class AppleBillingApplicationService {
         this.entitlementApplicationService = entitlementApplicationService;
         this.clock = clock;
         this.metrics = metrics;
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    public void setTrialReminderLifecycleService(TrialReminderLifecycleService trialReminderLifecycleService) {
+        this.trialReminderLifecycleService = trialReminderLifecycleService;
     }
 
     @Transactional
@@ -100,6 +106,16 @@ public class AppleBillingApplicationService {
             "PURCHASE_TRANSACTION",
             payloadDigest,
             subscriptionStatus.name(),
+            now
+        );
+        notifyTrialReminderLifecycle(
+            userId,
+            transaction.originalTransactionId(),
+            product.internalPlanId(),
+            transaction.freeTrial(),
+            subscriptionStatus,
+            transaction.expiresDate(),
+            null,
             now
         );
         metrics.purchaseEvidenceAccepted(subscriptionStatus, duplicate);
@@ -237,6 +253,16 @@ public class AppleBillingApplicationService {
             status.name(),
             now
         );
+        notifyTrialReminderLifecycle(
+            userId,
+            transaction.originalTransactionId(),
+            product.internalPlanId(),
+            transaction.freeTrial(),
+            status,
+            transaction.expiresDate(),
+            renewalInfo == null ? null : renewalInfo.autoRenewStatus(),
+            now
+        );
         return new ApplePurchaseEvidenceResult(
             transaction.transactionId(),
             transaction.originalTransactionId(),
@@ -291,12 +317,51 @@ public class AppleBillingApplicationService {
             subscriptionStatus.name(),
             now
         );
+        boolean effectiveFreeTrial = transaction.freeTrial() && !"DID_RENEW".equals(notification.notificationType());
+        notifyTrialReminderLifecycle(
+            userId,
+            transaction.originalTransactionId(),
+            product.internalPlanId(),
+            effectiveFreeTrial,
+            subscriptionStatus,
+            transaction.expiresDate(),
+            notification.renewalInfo() == null ? null : notification.renewalInfo().autoRenewStatus(),
+            now
+        );
         return new AppleNotificationIngestionResult(
             notification.notificationUuid(),
             AppStoreNotificationProcessingStatus.PROCESSED.name(),
             subscriptionStatus,
             entitlement
         );
+    }
+
+    private void notifyTrialReminderLifecycle(
+        UUID userId,
+        String originalTransactionId,
+        String planCode,
+        boolean freeTrial,
+        AppStoreSubscriptionStatus status,
+        Instant expiresAt,
+        Boolean autoRenewStatus,
+        Instant now
+    ) {
+        if (trialReminderLifecycleService == null) {
+            return;
+        }
+        try {
+            trialReminderLifecycleService.onSubscriptionStateSynced(
+                userId,
+                originalTransactionId,
+                planCode,
+                freeTrial,
+                status,
+                expiresAt,
+                autoRenewStatus,
+                now
+            );
+        } catch (RuntimeException ignored) {
+        }
     }
 
     private EntitlementResult recalculateEntitlement(UUID userId, Instant now, String event, String reason) {

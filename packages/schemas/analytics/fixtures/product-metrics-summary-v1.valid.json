@@ -1,0 +1,180 @@
+{
+  "schemaVersion": "product-metrics-summary-v1",
+  "fromDate": "2026-11-16",
+  "toDate": "2026-11-23",
+  "tierFilter": "ALL",
+  "activationFunnel": {
+    "onboardingStartedUsers": 100,
+    "onboardingCompletedUsers": 85,
+    "firstProblemCapturedUsers": 72,
+    "firstSolutionCompletedUsers": 64,
+    "verificationDetailsViewedUsers": 48,
+    "secondSessionUsers": 40,
+    "subscribedUsers": 12,
+    "onboardingCompletionRate": 0.85,
+    "activationToFirstSolveRate": 0.7529,
+    "trialOrPaidConversionRate": 0.12
+  },
+  "northStar": {
+    "weeklyVerifiedLearningSessions": 140,
+    "activeLearners": 80,
+    "skillsImprovedCount": 60,
+    "skillsImprovedPerActiveLearner": 0.75
+  },
+  "learningOsKpis": {
+    "vitrr": {
+      "numerator": 18,
+      "denominator": 24,
+      "rate": 0.75,
+      "insufficientData": false
+    },
+    "drpr48h": {
+      "numerator": 14,
+      "denominator": 20,
+      "rate": 0.7,
+      "insufficientData": false
+    },
+    "drpr7d": {
+      "numerator": 9,
+      "denominator": 15,
+      "rate": 0.6,
+      "insufficientData": false
+    },
+    "mrrr14d": {
+      "numerator": 12,
+      "denominator": 30,
+      "rate": 0.6,
+      "insufficientData": false
+    },
+    "transferGainIndex": {
+      "variantAPassed": 16,
+      "variantATotal": 20,
+      "variantAAccuracy": 0.8,
+      "variantBCPassed": 17,
+      "variantBCTotal": 20,
+      "variantBCAccuracy": 0.85,
+      "transferGainIndex": 0.05,
+      "insufficientData": false
+    }
+  },
+  "retention": {
+    "d1Retention": {
+      "numerator": 45,
+      "denominator": 80,
+      "rate": 0.5625,
+      "insufficientData": false
+    },
+    "d7Retention": {
+      "numerator": 24,
+      "denominator": 60,
+      "rate": 0.4,
+      "insufficientData": false
+    },
+    "d30Retention": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null,
+      "insufficientData": true
+    },
+    "repeatMistakeReviewLearners": 22,
+    "studyPlanItemsCompleted": 95
+  },
+  "qualityAndLatency": {
+    "parseCorrectionRate": {
+      "numerator": 4,
+      "denominator": 80,
+      "rate": 0.05,
+      "insufficientData": false
+    },
+    "solveFailureRate": {
+      "numerator": 3,
+      "denominator": 100,
+      "rate": 0.03,
+      "insufficientData": false
+    },
+    "solveLatencyP50Ms": 1420,
+    "solveLatencyP95Ms": 3650,
+    "latencySampleCount": 97,
+    "insufficientLatencyData": false
+  },
+  "conversionAndUnitEconomics": {
+    "paywallToPurchaseRate": {
+      "numerator": 12,
+      "denominator": 40,
+      "rate": 0.3,
+      "insufficientData": false
+    },
+    "totalCompletedSolves": 97,
+    "totalVerifiedLearningSessions": 140,
+    "payingActiveLearners": 30,
+    "totalAiCostUsd": 2.91,
+    "aiCostPerCompletedSolveUsd": 0.03,
+    "aiCostPerPayingActiveLearnerUsd": 0.097,
+    "aiCostPerVerifiedLearningSessionUsd": 0.020786,
+    "byTier": [
+      {
+        "tier": "FREE",
+        "activeLearners": 50,
+        "completedSolves": 47,
+        "verifiedLearningSessions": 60,
+        "totalAiCostUsd": 0.94,
+        "aiCostPerCompletedSolveUsd": 0.02,
+        "aiCostPerActiveLearnerUsd": 0.0188,
+        "aiCostPerVerifiedSessionUsd": 0.015667,
+        "grossMarginPercentProxy": null,
+        "insufficientData": false
+      },
+      {
+        "tier": "PRO",
+        "activeLearners": 25,
+        "completedSolves": 40,
+        "verifiedLearningSessions": 65,
+        "totalAiCostUsd": 1.6,
+        "aiCostPerCompletedSolveUsd": 0.04,
+        "aiCostPerActiveLearnerUsd": 0.064,
+        "aiCostPerVerifiedSessionUsd": 0.024615,
+        "grossMarginPercentProxy": 99.36,
+        "insufficientData": false
+      },
+      {
+        "tier": "COACH_PRO",
+        "activeLearners": 5,
+        "completedSolves": 10,
+        "verifiedLearningSessions": 15,
+        "totalAiCostUsd": 0.37,
+        "aiCostPerCompletedSolveUsd": 0.037,
+        "aiCostPerActiveLearnerUsd": 0.074,
+        "aiCostPerVerifiedSessionUsd": 0.024667,
+        "grossMarginPercentProxy": 99.63,
+        "insufficientData": false
+      },
+      {
+        "tier": "YKS_SEASON_PASS",
+        "activeLearners": 0,
+        "completedSolves": 0,
+        "verifiedLearningSessions": 0,
+        "totalAiCostUsd": 0.0,
+        "aiCostPerCompletedSolveUsd": null,
+        "aiCostPerActiveLearnerUsd": null,
+        "aiCostPerVerifiedSessionUsd": null,
+        "grossMarginPercentProxy": null,
+        "insufficientData": true
+      },
+      {
+        "tier": "UNKNOWN",
+        "activeLearners": 0,
+        "completedSolves": 0,
+        "verifiedLearningSessions": 0,
+        "totalAiCostUsd": 0.0,
+        "aiCostPerCompletedSolveUsd": null,
+        "aiCostPerActiveLearnerUsd": null,
+        "aiCostPerVerifiedSessionUsd": null,
+        "grossMarginPercentProxy": null,
+        "insufficientData": true
+      }
+    ]
+  },
+  "llmTokensUsed": 0,
+  "trainingEligible": false,
+  "generatedAt": "2026-11-23T09:15:01Z"
+}

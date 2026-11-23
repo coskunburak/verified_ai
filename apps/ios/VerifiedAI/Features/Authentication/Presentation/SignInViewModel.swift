@@ -11,6 +11,7 @@ final class SignInViewModel {
     private let sessionStore: AuthenticationSessionStore
     private let networkMonitor: NetworkMonitoring
     private let logger: AppLogger
+    private let analytics: AnalyticsTracking
     private var currentNonce: String?
 
     private(set) var state: AuthenticationState = .unknown
@@ -31,12 +32,14 @@ final class SignInViewModel {
         authenticationAPI: AuthenticationServicing,
         sessionStore: AuthenticationSessionStore,
         networkMonitor: NetworkMonitoring,
-        logger: AppLogger
+        logger: AppLogger,
+        analytics: AnalyticsTracking = NoOpAnalyticsTracker()
     ) {
         self.authenticationAPI = authenticationAPI
         self.sessionStore = sessionStore
         self.networkMonitor = networkMonitor
         self.logger = logger
+        self.analytics = analytics
     }
 
     func restore() async {
@@ -50,6 +53,11 @@ final class SignInViewModel {
                 refreshToken: "ui-testing-refresh-token",
                 refreshTokenExpiresAt: Date().addingTimeInterval(86_400)
             ))
+            message = nil
+            return
+        }
+        if ProcessInfo.processInfo.arguments.contains("--ui-testing") {
+            state = .unauthenticated
             message = nil
             return
         }
@@ -159,6 +167,9 @@ final class SignInViewModel {
             clearCredentials()
             state = .authenticated(session)
             logger.info(mode == .signIn ? "auth.email.sign_in.success" : "auth.email.sign_up.success")
+            Task { [analytics] in
+                await analytics.track(.signInCompleted(authMethod: .email))
+            }
         } catch NetworkError.server(let problem) {
             logger.warning("auth.email.server_failed")
             state = .failed(.server(problem.code))
@@ -188,6 +199,9 @@ final class SignInViewModel {
             clearCredentials()
             state = .authenticated(session)
             logger.info("auth.guest.success")
+            Task { [analytics] in
+                await analytics.track(.signInCompleted(authMethod: .guest))
+            }
         } catch NetworkError.server(let problem) {
             logger.warning("auth.guest.server_failed")
             state = .failed(.server(problem.code))
@@ -240,6 +254,9 @@ final class SignInViewModel {
                 logger.info("auth.apple.exchange_success")
                 state = .authenticated(session)
                 message = nil
+                Task { [analytics] in
+                    await analytics.track(.signInCompleted(authMethod: .apple))
+                }
             } catch NetworkError.server(let problem) {
                 logger.warning("auth.apple.exchange_failure")
                 state = .failed(.server(problem.code))

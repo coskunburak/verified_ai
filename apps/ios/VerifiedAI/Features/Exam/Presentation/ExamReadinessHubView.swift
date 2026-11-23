@@ -80,9 +80,18 @@ public struct ExamReadinessHubView: View {
         .accessibilityIdentifier("exam.readiness.screen")
         .navigationTitle(Text(LocalizedStringKey("exam.readiness.title")))
         .navigationBarTitleDisplayMode(.inline)
-        .task {
-            if viewModel.projection == nil {
+        .task(id: ObjectIdentifier(viewModel)) {
+            if viewModel.projection == nil && !viewModel.isLoading {
                 await viewModel.loadReadiness(forceRecompute: false)
+            }
+        }
+        .onAppear {
+            if viewModel.projection == nil && !viewModel.isLoading {
+                Task {
+                    if viewModel.projection == nil && !viewModel.isLoading {
+                        await viewModel.loadReadiness(forceRecompute: false)
+                    }
+                }
             }
         }
     }

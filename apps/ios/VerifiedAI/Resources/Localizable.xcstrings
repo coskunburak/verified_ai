@@ -15178,6 +15178,312 @@
         }
       }
     },
+    "notification.template.account.security_alert.body" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "We detected a security-sensitive update on your account. Review your active sessions anytime."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hesabınızda güvenlikle ilgili bir değişiklik algılandı. Etkin oturumlarınızı istediğiniz zaman gözden geçirebilirsiniz."
+          }
+        }
+      }
+    },
+    "notification.template.account.security_alert.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Account security notice"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hesap güvenlik bildirimi"
+          }
+        }
+      }
+    },
+    "notification.template.billing.trial_ending_48h.body" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your free trial wraps up in about %@ hours. Review or manage your plan before renewal."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ücretsiz deneme sürenizin bitmesine yaklaşık %@ saat kaldı. Yenileme öncesinde planınızı gözden geçirebilirsiniz."
+          }
+        }
+      }
+    },
+    "notification.template.billing.trial_ending_48h.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "48-hour trial reminder"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "48 saatlik deneme hatırlatıcısı"
+          }
+        }
+      }
+    },
+    "notification.template.exam_deadline.countdown.body" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your %1$@ target date is %2$@ days away. Open your readiness summary to pace your next session calmly."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ hedef tarihinize %2$@ gün kaldı. Bir sonraki çalışma temponuzu sakin şekilde planlamak için hazırlık özetinizi açın."
+          }
+        }
+      }
+    },
+    "notification.template.exam_deadline.countdown.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exam horizon check-in"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sınav takvimi kontrolü"
+          }
+        }
+      }
+    },
+    "notification.template.spaced_review.due.body" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You have %@ spaced-review checks ready today to keep key reasoning steps fresh."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bugün temel çözüm adımlarını taze tutmak için %@ aralıklı tekrar sorunuz hazır."
+          }
+        }
+      }
+    },
+    "notification.template.spaced_review.due.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spaced review ready"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aralıklı tekrar hazır"
+          }
+        }
+      }
+    },
+    "notification.template.study_plan.daily_mission.body" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your %1$@-minute daily mission has %2$@ focused step(s) remaining when you are ready."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ dakikalık günlük hedefinizde hazır olduğunuzda tamamlayabileceğiniz %2$@ odaklı adım bekliyor."
+          }
+        }
+      }
+    },
+    "notification.template.study_plan.daily_mission.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Today's study plan"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bugünkü çalışma planınız"
+          }
+        }
+      }
+    },
+    "notification.trial_optin.action.enable" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enable 48-Hour Trial Reminder"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "48 Saatlik Deneme Hatırlatıcısını Aç"
+          }
+        }
+      }
+    },
+    "notification.trial_optin.action.enabled" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "48-Hour Trial Reminder Active"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "48 Saatlik Deneme Hatırlatıcısı Açık"
+          }
+        }
+      }
+    },
+    "notification.trial_optin.badge.active" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Active"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Etkin"
+          }
+        }
+      }
+    },
+    "notification.trial_optin.badge.optional" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Optional"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İsteğe Bağlı"
+          }
+        }
+      }
+    },
+    "notification.trial_optin.enabled_banner" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your 48-hour trial reminder is turned on."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "48 saatlik deneme hatırlatıcınız etkinleştirildi."
+          }
+        }
+      }
+    },
+    "notification.trial_optin.hint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Turns on push permission if needed and enables your 48-hour trial-end reminder."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gerekirse bildirim izni ister ve 48 saatlik deneme bitiş hatırlatıcısını etkinleştirir."
+          }
+        }
+      }
+    },
+    "notification.trial_optin.subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Receive one calm notice 48 hours before any free trial converts to a paid plan."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ücretsiz deneme ücretli plana geçmeden 48 saat önce tek bir sakin hatırlatma alın."
+          }
+        }
+      }
+    },
+    "notification.trial_optin.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1-Tap Trial-End Reminder"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tek Dokunuşla Deneme Bitiş Hatırlatıcısı"
+          }
+        }
+      }
+    },
     "Notice how checking x = 3 and x = -3 confirms both roots satisfy the original equation." : {
 
     },

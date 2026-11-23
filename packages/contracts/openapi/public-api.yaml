@@ -7000,6 +7000,282 @@ paths:
         '409': {$ref: '#/components/responses/ProblemConflict'}
         '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
 
+  /v1/notifications/lifecycle-summary:
+    get:
+      summary: Retrieve active lifecycle messaging cooldowns and recent trigger evaluations for the authenticated caller
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: limit
+          required: false
+          schema: {type: integer, minimum: 1, maximum: 50, default: 20}
+      responses:
+        '200':
+          description: Private no-store lifecycle messaging cooldowns and trigger evaluation audit summary
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/LifecycleSummaryResponse'}
+        '400': {$ref: '#/components/responses/ProblemBadRequest'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /api/v1/notifications/lifecycle-summary:
+    get:
+      summary: Retrieve active lifecycle messaging cooldowns and recent trigger evaluations for the authenticated caller
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: limit
+          required: false
+          schema: {type: integer, minimum: 1, maximum: 50, default: 20}
+      responses:
+        '200':
+          description: Private no-store lifecycle messaging cooldowns and trigger evaluation audit summary
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/LifecycleSummaryResponse'}
+        '400': {$ref: '#/components/responses/ProblemBadRequest'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /v1/analytics/catalog:
+    get:
+      summary: Retrieve the closed canonical Sprint 10.6 analytics event catalog and property allowlists
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Closed analytics event catalog
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AnalyticsEventCatalogResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /api/v1/analytics/catalog:
+    get:
+      summary: Retrieve the closed canonical Sprint 10.6 analytics event catalog and property allowlists
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Closed analytics event catalog
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AnalyticsEventCatalogResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /v1/analytics/events:
+    post:
+      summary: Ingest a single privacy-safe client analytics event idempotently
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/AnalyticsEventIngestRequest'}
+      responses:
+        '200':
+          description: Idempotent replay of previously ingested analytics event
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AnalyticsEventIngestResponse'}
+        '202':
+          description: Analytics event accepted and persisted
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AnalyticsEventIngestResponse'}
+        '400': {$ref: '#/components/responses/ProblemBadRequest'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '409': {$ref: '#/components/responses/ProblemConflict'}
+        '413': {$ref: '#/components/responses/ProblemPayloadTooLarge'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /api/v1/analytics/events:
+    post:
+      summary: Ingest a single privacy-safe client analytics event idempotently
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/AnalyticsEventIngestRequest'}
+      responses:
+        '200':
+          description: Idempotent replay of previously ingested analytics event
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AnalyticsEventIngestResponse'}
+        '202':
+          description: Analytics event accepted and persisted
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AnalyticsEventIngestResponse'}
+        '400': {$ref: '#/components/responses/ProblemBadRequest'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '409': {$ref: '#/components/responses/ProblemConflict'}
+        '413': {$ref: '#/components/responses/ProblemPayloadTooLarge'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /v1/analytics/events/batch:
+    post:
+      summary: Ingest a bounded batch (1..50) of privacy-safe client analytics events
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/AnalyticsEventBatchRequest'}
+      responses:
+        '200':
+          description: Per-item batch analytics ingestion outcome summary
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AnalyticsEventIngestResponse'}
+        '400': {$ref: '#/components/responses/ProblemBadRequest'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '413': {$ref: '#/components/responses/ProblemPayloadTooLarge'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /api/v1/analytics/events/batch:
+    post:
+      summary: Ingest a bounded batch (1..50) of privacy-safe client analytics events
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/AnalyticsEventBatchRequest'}
+      responses:
+        '200':
+          description: Per-item batch analytics ingestion outcome summary
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AnalyticsEventIngestResponse'}
+        '400': {$ref: '#/components/responses/ProblemBadRequest'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '413': {$ref: '#/components/responses/ProblemPayloadTooLarge'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /v1/admin/analytics/product-metrics:
+    get:
+      summary: Query server-authoritative product metrics, Learning OS KPIs, and tier AI unit economics (ROLE_ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: from
+          required: false
+          schema: {type: string, format: date}
+        - in: query
+          name: to
+          required: false
+          schema: {type: string, format: date}
+        - in: query
+          name: tier
+          required: false
+          schema:
+            type: string
+            enum: [ALL, FREE, PRO, COACH_PRO, YKS_SEASON_PASS, UNKNOWN]
+            default: ALL
+      responses:
+        '200':
+          description: Server-authoritative product metrics and AI unit economics summary
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ProductMetricsSummaryResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /api/v1/admin/analytics/product-metrics:
+    get:
+      summary: Query server-authoritative product metrics, Learning OS KPIs, and tier AI unit economics (ROLE_ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: from
+          required: false
+          schema: {type: string, format: date}
+        - in: query
+          name: to
+          required: false
+          schema: {type: string, format: date}
+        - in: query
+          name: tier
+          required: false
+          schema:
+            type: string
+            enum: [ALL, FREE, PRO, COACH_PRO, YKS_SEASON_PASS, UNKNOWN]
+            default: ALL
+      responses:
+        '200':
+          description: Server-authoritative product metrics and AI unit economics summary
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ProductMetricsSummaryResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
 components:
   securitySchemes:
     bearerAuth:
@@ -13044,3 +13320,957 @@ components:
         trainingEligible:
           type: boolean
           const: false
+
+    LifecycleSummaryResponse:
+      title: LifecycleSummaryResponse
+      type: object
+      additionalProperties: false
+      required:
+        - schemaVersion
+        - userId
+        - lifecycleCampaignsEnabled
+        - activeCooldowns
+        - recentEvaluations
+        - llmTokensUsed
+        - trainingEligible
+        - generatedAt
+      properties:
+        schemaVersion:
+          type: string
+          const: lifecycle-summary-v1
+        userId:
+          type: string
+          format: uuid
+        lifecycleCampaignsEnabled:
+          type: boolean
+        activeCooldowns:
+          type: array
+          maxItems: 10
+          items:
+            $ref: '#/$defs/LifecycleCooldownItem'
+        recentEvaluations:
+          type: array
+          maxItems: 50
+          items:
+            $ref: '#/$defs/LifecycleEvaluationItem'
+        llmTokensUsed:
+          type: integer
+          const: 0
+        trainingEligible:
+          type: boolean
+          const: false
+        generatedAt:
+          type: string
+          format: date-time
+      $defs:
+        LifecycleCooldownItem:
+          type: object
+          additionalProperties: false
+          required:
+            - category
+            - intentType
+            - lastIdempotencyKey
+            - lastDeliveryId
+            - lastTriggeredAt
+            - cooldownUntil
+            - active
+          properties:
+            category:
+              type: string
+              enum:
+                - STUDY_PLAN
+                - SPACED_REVIEW
+                - EXAM_DEADLINE
+                - BILLING_TRIAL_REMINDER
+                - ACCOUNT_SECURITY
+            intentType:
+              type: string
+              enum:
+                - STUDY_PLAN_DAILY_MISSION
+                - SPACED_REVIEW_DUE
+                - EXAM_DEADLINE_COUNTDOWN
+                - TRIAL_ENDING_48H_REMINDER
+                - ACCOUNT_SECURITY_ALERT
+            lastIdempotencyKey:
+              type: string
+              pattern: '^[A-Za-z0-9:._-]{8,128}$'
+            lastDeliveryId:
+              type:
+                - string
+                - 'null'
+              format: uuid
+            lastTriggeredAt:
+              type: string
+              format: date-time
+            cooldownUntil:
+              type: string
+              format: date-time
+            active:
+              type: boolean
+        LifecycleEvaluationItem:
+          type: object
+          additionalProperties: false
+          required:
+            - evaluationId
+            - sourceModule
+            - category
+            - intentType
+            - idempotencyKey
+            - templateKey
+            - decision
+            - reasonCode
+            - deliveryId
+            - evaluatedAt
+          properties:
+            evaluationId:
+              type: string
+              format: uuid
+            sourceModule:
+              type: string
+              enum:
+                - notification
+                - billing
+                - studyplan
+                - exam
+                - identity
+            category:
+              type: string
+              enum:
+                - STUDY_PLAN
+                - SPACED_REVIEW
+                - EXAM_DEADLINE
+                - BILLING_TRIAL_REMINDER
+                - ACCOUNT_SECURITY
+            intentType:
+              type: string
+              enum:
+                - STUDY_PLAN_DAILY_MISSION
+                - SPACED_REVIEW_DUE
+                - EXAM_DEADLINE_COUNTDOWN
+                - TRIAL_ENDING_48H_REMINDER
+                - ACCOUNT_SECURITY_ALERT
+            idempotencyKey:
+              type: string
+              pattern: '^[A-Za-z0-9:._-]{8,128}$'
+            templateKey:
+              type: string
+              enum:
+                - notification.template.study_plan.daily_mission
+                - notification.template.spaced_review.due
+                - notification.template.exam_deadline.countdown
+                - notification.template.billing.trial_ending_48h
+                - notification.template.account.security_alert
+            decision:
+              type: string
+              enum:
+                - SCHEDULED
+                - DEFERRED_QUIET_HOURS
+                - SUPPRESSED
+                - REPLAYED
+                - SKIPPED_ALREADY_COMPLETED
+                - SKIPPED_COOLDOWN_ACTIVE
+                - SKIPPED_OPTED_OUT
+                - SKIPPED_NOT_ELIGIBLE
+                - SKIPPED_FEATURE_DISABLED
+                - CANCELLED_OBSOLETE
+            reasonCode:
+              type: string
+              minLength: 1
+              maxLength: 64
+            deliveryId:
+              type:
+                - string
+                - 'null'
+              format: uuid
+            evaluatedAt:
+              type: string
+              format: date-time
+
+    AnalyticsEventIngestRequest:
+      title: AnalyticsEventIngestRequest
+      description: Single client-emitted analytics event ingestion request enforcing closed event allowlist, CLIENT authority, low-cardinality properties, and ADR-006 training_eligible=false.
+      type: object
+      additionalProperties: false
+      required:
+        - clientEventId
+        - eventName
+        - emittedBy
+        - occurredAt
+        - trainingEligible
+      properties:
+        clientEventId:
+          type: string
+          pattern: '^[A-Za-z0-9:._-]{8,128}$'
+        eventName:
+          type: string
+          enum:
+            - onboarding_started
+            - onboarding_completed
+            - sign_in_completed
+            - problem_capture_started
+            - problem_capture_source_selected
+            - problem_capture_quality_warning
+            - problem_capture_accepted
+            - first_verified_solution_viewed
+            - verification_details_viewed
+            - solution_alternative_viewed
+            - tutor_session_started
+            - tutor_turn_submitted
+            - hint_requested
+            - answer_revealed
+            - tutor_session_completed
+            - mistake_reviewed
+            - practice_session_started
+            - exam_readiness_viewed
+            - paywall_viewed
+            - purchase_started
+            - purchase_failed
+            - restore_completed
+            - paywall.mistake_moment_shown
+            - paywall.twin_success_shown
+            - lifecycle_notification_opened
+            - weekly_digest_viewed
+        emittedBy:
+          type: string
+          const: CLIENT
+        sourceModule:
+          type: string
+          const: ios_client
+        entitlementTier:
+          type: string
+          enum: [FREE, PRO, COACH_PRO, YKS_SEASON_PASS, UNKNOWN]
+        locale:
+          type: string
+          enum: [en, tr]
+        appVersion:
+          type:
+            - string
+            - 'null'
+          pattern: '^[A-Za-z0-9._-]{1,32}$'
+        sessionRefHash:
+          type:
+            - string
+            - 'null'
+          pattern: '^[0-9a-f]{64}$'
+        latencyMs:
+          type:
+            - integer
+            - 'null'
+          minimum: 0
+          maximum: 600000
+        properties:
+          $ref: '#/$defs/AnalyticsEventProperties'
+        occurredAt:
+          type: string
+          format: date-time
+        trainingEligible:
+          type: boolean
+          const: false
+      $defs:
+        AnalyticsEventPropertyScalar:
+          type:
+            - string
+            - number
+            - boolean
+          maxLength: 80
+          not:
+            type: string
+            pattern: '(@|https?://|eyJ|\\frac|\\int|\\sqrt|\\sum|\$\$)'
+        AnalyticsEventProperties:
+          type: object
+          additionalProperties: false
+          maxProperties: 16
+          properties:
+            authMethod: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            locale: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            educationLevel: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            dailyBudgetMinutes: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            latencyBucket: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            captureSource: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            assetKind: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            qualityWarningCode: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            problemType: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            primarySkillCode: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            difficultyBand: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            verificationStatus: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            entitlementTier: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            hintLevel: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            pedagogicalPhase: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            turnCountBucket: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            canonicalSkillCode: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            mistakeCode: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            fromBand: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            toBand: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            evidenceClass: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            slotRole: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            durationBucket: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            examCode: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            jurisdiction: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            confidenceTier: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            mode: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            placement: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            packageCode: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            tierCode: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            storefront: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            failureReason: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            category: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            intentType: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            weekIso: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+
+    AnalyticsEventBatchRequest:
+      title: AnalyticsEventBatchRequest
+      description: Bounded batch analytics event ingestion request (1..50 events) enforcing closed client allowlist and ADR-006 training_eligible=false.
+      type: object
+      additionalProperties: false
+      required:
+        - events
+        - trainingEligible
+      properties:
+        events:
+          type: array
+          minItems: 1
+          maxItems: 50
+          items:
+            $ref: '#/$defs/AnalyticsEventIngestItem'
+        trainingEligible:
+          type: boolean
+          const: false
+      $defs:
+        AnalyticsEventPropertyScalar:
+          type:
+            - string
+            - number
+            - boolean
+          maxLength: 80
+          not:
+            type: string
+            pattern: '(@|https?://|eyJ|\\frac|\\int|\\sqrt|\\sum|\$\$)'
+        AnalyticsEventProperties:
+          type: object
+          additionalProperties: false
+          maxProperties: 16
+          properties:
+            authMethod: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            locale: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            educationLevel: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            dailyBudgetMinutes: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            latencyBucket: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            captureSource: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            assetKind: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            qualityWarningCode: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            problemType: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            primarySkillCode: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            difficultyBand: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            verificationStatus: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            entitlementTier: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            hintLevel: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            pedagogicalPhase: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            turnCountBucket: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            canonicalSkillCode: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            mistakeCode: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            fromBand: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            toBand: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            evidenceClass: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            slotRole: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            durationBucket: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            examCode: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            jurisdiction: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            confidenceTier: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            mode: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            placement: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            packageCode: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            tierCode: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            storefront: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            failureReason: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            category: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            intentType: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+            weekIso: {$ref: '#/$defs/AnalyticsEventPropertyScalar'}
+        AnalyticsEventIngestItem:
+          type: object
+          additionalProperties: false
+          required:
+            - clientEventId
+            - eventName
+            - emittedBy
+            - occurredAt
+            - trainingEligible
+          properties:
+            clientEventId:
+              type: string
+              pattern: '^[A-Za-z0-9:._-]{8,128}$'
+            eventName:
+              type: string
+              enum:
+                - onboarding_started
+                - onboarding_completed
+                - sign_in_completed
+                - problem_capture_started
+                - problem_capture_source_selected
+                - problem_capture_quality_warning
+                - problem_capture_accepted
+                - first_verified_solution_viewed
+                - verification_details_viewed
+                - solution_alternative_viewed
+                - tutor_session_started
+                - tutor_turn_submitted
+                - hint_requested
+                - answer_revealed
+                - tutor_session_completed
+                - mistake_reviewed
+                - practice_session_started
+                - exam_readiness_viewed
+                - paywall_viewed
+                - purchase_started
+                - purchase_failed
+                - restore_completed
+                - paywall.mistake_moment_shown
+                - paywall.twin_success_shown
+                - lifecycle_notification_opened
+                - weekly_digest_viewed
+            emittedBy:
+              type: string
+              const: CLIENT
+            sourceModule:
+              type: string
+              const: ios_client
+            entitlementTier:
+              type: string
+              enum: [FREE, PRO, COACH_PRO, YKS_SEASON_PASS, UNKNOWN]
+            locale:
+              type: string
+              enum: [en, tr]
+            appVersion:
+              type:
+                - string
+                - 'null'
+              pattern: '^[A-Za-z0-9._-]{1,32}$'
+            sessionRefHash:
+              type:
+                - string
+                - 'null'
+              pattern: '^[0-9a-f]{64}$'
+            latencyMs:
+              type:
+                - integer
+                - 'null'
+              minimum: 0
+              maximum: 600000
+            properties:
+              $ref: '#/$defs/AnalyticsEventProperties'
+            occurredAt:
+              type: string
+              format: date-time
+            trainingEligible:
+              type: boolean
+              const: false
+
+    AnalyticsEventIngestResponse:
+      title: AnalyticsEventIngestResponse
+      description: Response returned by single and batch analytics ingestion endpoints with zero LLM tokens and ADR-006 trainingEligible=false.
+      type: object
+      additionalProperties: false
+      required:
+        - schemaVersion
+        - acceptedCount
+        - replayedCount
+        - rejectedCount
+        - results
+        - llmTokensUsed
+        - trainingEligible
+        - processedAt
+      properties:
+        schemaVersion:
+          type: string
+          const: analytics-event-ingest-response-v1
+        acceptedCount:
+          type: integer
+          minimum: 0
+          maximum: 50
+        replayedCount:
+          type: integer
+          minimum: 0
+          maximum: 50
+        rejectedCount:
+          type: integer
+          minimum: 0
+          maximum: 50
+        results:
+          type: array
+          minItems: 1
+          maxItems: 50
+          items:
+            $ref: '#/$defs/AnalyticsEventIngestResultItem'
+        llmTokensUsed:
+          type: integer
+          const: 0
+        trainingEligible:
+          type: boolean
+          const: false
+        processedAt:
+          type: string
+          format: date-time
+      $defs:
+        AnalyticsEventIngestResultItem:
+          type: object
+          additionalProperties: false
+          required:
+            - clientEventId
+            - eventName
+            - status
+            - eventId
+            - errorCode
+            - processedAt
+          properties:
+            clientEventId:
+              type:
+                - string
+                - 'null'
+              maxLength: 128
+            eventName:
+              type:
+                - string
+                - 'null'
+              maxLength: 64
+            status:
+              type: string
+              enum: [ACCEPTED, REPLAYED, REJECTED]
+            eventId:
+              type:
+                - string
+                - 'null'
+              format: uuid
+            errorCode:
+              type:
+                - string
+                - 'null'
+              maxLength: 64
+            processedAt:
+              type: string
+              format: date-time
+
+    AnalyticsEventCatalogResponse:
+      title: AnalyticsEventCatalogResponse
+      description: Closed canonical analytics event catalog response exposing allowed domains, sources, and low-cardinality property keys.
+      type: object
+      additionalProperties: false
+      required:
+        - schemaVersion
+        - catalogVersion
+        - eventCount
+        - events
+        - llmTokensUsed
+        - trainingEligible
+        - generatedAt
+      properties:
+        schemaVersion:
+          type: string
+          const: analytics-event-catalog-v1
+        catalogVersion:
+          type: string
+          const: '1.0.0'
+        eventCount:
+          type: integer
+          minimum: 1
+          maximum: 200
+        events:
+          type: array
+          minItems: 1
+          maxItems: 200
+          items:
+            $ref: '#/$defs/AnalyticsEventCatalogEntry'
+        llmTokensUsed:
+          type: integer
+          const: 0
+        trainingEligible:
+          type: boolean
+          const: false
+        generatedAt:
+          type: string
+          format: date-time
+      $defs:
+        AnalyticsEventCatalogEntry:
+          type: object
+          additionalProperties: false
+          required:
+            - eventName
+            - eventDomain
+            - clientAllowed
+            - serverAllowed
+            - allowedPropertyKeys
+          properties:
+            eventName:
+              type: string
+              minLength: 1
+              maxLength: 64
+            eventDomain:
+              type: string
+              enum:
+                - ACQUISITION_ACTIVATION
+                - SOLVING
+                - TUTOR
+                - LEARNING_MASTERY
+                - EXAM
+                - BILLING_MONETIZATION
+                - LIFECYCLE_RETENTION
+            clientAllowed:
+              type: boolean
+            serverAllowed:
+              type: boolean
+            allowedPropertyKeys:
+              type: array
+              items:
+                type: string
+                minLength: 1
+                maxLength: 48
+
+    ProductMetricsSummaryResponse:
+      title: ProductMetricsSummaryResponse
+      description: Server-authoritative admin product metrics, V7 Learning OS KPIs, latency percentiles, and tier AI unit economics summary.
+      type: object
+      additionalProperties: false
+      required:
+        - schemaVersion
+        - fromDate
+        - toDate
+        - tierFilter
+        - activationFunnel
+        - northStar
+        - learningOsKpis
+        - retention
+        - qualityAndLatency
+        - conversionAndUnitEconomics
+        - llmTokensUsed
+        - trainingEligible
+        - generatedAt
+      properties:
+        schemaVersion:
+          type: string
+          const: product-metrics-summary-v1
+        fromDate:
+          type: string
+          format: date
+        toDate:
+          type: string
+          format: date
+        tierFilter:
+          type: string
+          enum: [ALL, FREE, PRO, COACH_PRO, YKS_SEASON_PASS, UNKNOWN]
+        activationFunnel:
+          $ref: '#/$defs/ActivationFunnel'
+        northStar:
+          $ref: '#/$defs/NorthStar'
+        learningOsKpis:
+          $ref: '#/$defs/LearningOsKpis'
+        retention:
+          $ref: '#/$defs/Retention'
+        qualityAndLatency:
+          $ref: '#/$defs/QualityAndLatency'
+        conversionAndUnitEconomics:
+          $ref: '#/$defs/ConversionAndUnitEconomics'
+        llmTokensUsed:
+          type: integer
+          const: 0
+        trainingEligible:
+          type: boolean
+          const: false
+        generatedAt:
+          type: string
+          format: date-time
+      $defs:
+        RateMetric:
+          type: object
+          additionalProperties: false
+          required: [numerator, denominator, rate, insufficientData]
+          properties:
+            numerator:
+              type: integer
+              minimum: 0
+            denominator:
+              type: integer
+              minimum: 0
+            rate:
+              type:
+                - number
+                - 'null'
+              minimum: -1.0
+              maximum: 1.0
+            insufficientData:
+              type: boolean
+        TransferGainMetric:
+          type: object
+          additionalProperties: false
+          required:
+            - variantAPassed
+            - variantATotal
+            - variantAAccuracy
+            - variantBCPassed
+            - variantBCTotal
+            - variantBCAccuracy
+            - transferGainIndex
+            - insufficientData
+          properties:
+            variantAPassed:
+              type: integer
+              minimum: 0
+            variantATotal:
+              type: integer
+              minimum: 0
+            variantAAccuracy:
+              type:
+                - number
+                - 'null'
+              minimum: 0.0
+              maximum: 1.0
+            variantBCPassed:
+              type: integer
+              minimum: 0
+            variantBCTotal:
+              type: integer
+              minimum: 0
+            variantBCAccuracy:
+              type:
+                - number
+                - 'null'
+              minimum: 0.0
+              maximum: 1.0
+            transferGainIndex:
+              type:
+                - number
+                - 'null'
+              minimum: -1.0
+              maximum: 1.0
+            insufficientData:
+              type: boolean
+        ActivationFunnel:
+          type: object
+          additionalProperties: false
+          required:
+            - onboardingStartedUsers
+            - onboardingCompletedUsers
+            - firstProblemCapturedUsers
+            - firstSolutionCompletedUsers
+            - verificationDetailsViewedUsers
+            - secondSessionUsers
+            - subscribedUsers
+            - onboardingCompletionRate
+            - activationToFirstSolveRate
+            - trialOrPaidConversionRate
+          properties:
+            onboardingStartedUsers:
+              type: integer
+              minimum: 0
+            onboardingCompletedUsers:
+              type: integer
+              minimum: 0
+            firstProblemCapturedUsers:
+              type: integer
+              minimum: 0
+            firstSolutionCompletedUsers:
+              type: integer
+              minimum: 0
+            verificationDetailsViewedUsers:
+              type: integer
+              minimum: 0
+            secondSessionUsers:
+              type: integer
+              minimum: 0
+            subscribedUsers:
+              type: integer
+              minimum: 0
+            onboardingCompletionRate:
+              type:
+                - number
+                - 'null'
+              minimum: 0.0
+              maximum: 1.0
+            activationToFirstSolveRate:
+              type:
+                - number
+                - 'null'
+              minimum: 0.0
+              maximum: 1.0
+            trialOrPaidConversionRate:
+              type:
+                - number
+                - 'null'
+              minimum: 0.0
+              maximum: 1.0
+        NorthStar:
+          type: object
+          additionalProperties: false
+          required:
+            - weeklyVerifiedLearningSessions
+            - activeLearners
+            - skillsImprovedCount
+            - skillsImprovedPerActiveLearner
+          properties:
+            weeklyVerifiedLearningSessions:
+              type: integer
+              minimum: 0
+            activeLearners:
+              type: integer
+              minimum: 0
+            skillsImprovedCount:
+              type: integer
+              minimum: 0
+            skillsImprovedPerActiveLearner:
+              type:
+                - number
+                - 'null'
+              minimum: 0.0
+        LearningOsKpis:
+          type: object
+          additionalProperties: false
+          required: [vitrr, drpr48h, drpr7d, mrrr14d, transferGainIndex]
+          properties:
+            vitrr: {$ref: '#/$defs/RateMetric'}
+            drpr48h: {$ref: '#/$defs/RateMetric'}
+            drpr7d: {$ref: '#/$defs/RateMetric'}
+            mrrr14d: {$ref: '#/$defs/RateMetric'}
+            transferGainIndex: {$ref: '#/$defs/TransferGainMetric'}
+        Retention:
+          type: object
+          additionalProperties: false
+          required:
+            - d1Retention
+            - d7Retention
+            - d30Retention
+            - repeatMistakeReviewLearners
+            - studyPlanItemsCompleted
+          properties:
+            d1Retention: {$ref: '#/$defs/RateMetric'}
+            d7Retention: {$ref: '#/$defs/RateMetric'}
+            d30Retention: {$ref: '#/$defs/RateMetric'}
+            repeatMistakeReviewLearners:
+              type: integer
+              minimum: 0
+            studyPlanItemsCompleted:
+              type: integer
+              minimum: 0
+        QualityAndLatency:
+          type: object
+          additionalProperties: false
+          required:
+            - parseCorrectionRate
+            - solveFailureRate
+            - solveLatencyP50Ms
+            - solveLatencyP95Ms
+            - latencySampleCount
+            - insufficientLatencyData
+          properties:
+            parseCorrectionRate: {$ref: '#/$defs/RateMetric'}
+            solveFailureRate: {$ref: '#/$defs/RateMetric'}
+            solveLatencyP50Ms:
+              type:
+                - integer
+                - 'null'
+              minimum: 0
+              maximum: 600000
+            solveLatencyP95Ms:
+              type:
+                - integer
+                - 'null'
+              minimum: 0
+              maximum: 600000
+            latencySampleCount:
+              type: integer
+              minimum: 0
+            insufficientLatencyData:
+              type: boolean
+        TierUnitEconomics:
+          type: object
+          additionalProperties: false
+          required:
+            - tier
+            - activeLearners
+            - completedSolves
+            - verifiedLearningSessions
+            - totalAiCostUsd
+            - aiCostPerCompletedSolveUsd
+            - aiCostPerActiveLearnerUsd
+            - aiCostPerVerifiedSessionUsd
+            - grossMarginPercentProxy
+            - insufficientData
+          properties:
+            tier:
+              type: string
+              enum: [FREE, PRO, COACH_PRO, YKS_SEASON_PASS, UNKNOWN]
+            activeLearners:
+              type: integer
+              minimum: 0
+            completedSolves:
+              type: integer
+              minimum: 0
+            verifiedLearningSessions:
+              type: integer
+              minimum: 0
+            totalAiCostUsd:
+              type: number
+              minimum: 0.0
+            aiCostPerCompletedSolveUsd:
+              type:
+                - number
+                - 'null'
+              minimum: 0.0
+            aiCostPerActiveLearnerUsd:
+              type:
+                - number
+                - 'null'
+              minimum: 0.0
+            aiCostPerVerifiedSessionUsd:
+              type:
+                - number
+                - 'null'
+              minimum: 0.0
+            grossMarginPercentProxy:
+              type:
+                - number
+                - 'null'
+            insufficientData:
+              type: boolean
+        ConversionAndUnitEconomics:
+          type: object
+          additionalProperties: false
+          required:
+            - paywallToPurchaseRate
+            - totalCompletedSolves
+            - totalVerifiedLearningSessions
+            - payingActiveLearners
+            - totalAiCostUsd
+            - aiCostPerCompletedSolveUsd
+            - aiCostPerPayingActiveLearnerUsd
+            - aiCostPerVerifiedLearningSessionUsd
+            - byTier
+          properties:
+            paywallToPurchaseRate: {$ref: '#/$defs/RateMetric'}
+            totalCompletedSolves:
+              type: integer
+              minimum: 0
+            totalVerifiedLearningSessions:
+              type: integer
+              minimum: 0
+            payingActiveLearners:
+              type: integer
+              minimum: 0
+            totalAiCostUsd:
+              type: number
+              minimum: 0.0
+            aiCostPerCompletedSolveUsd:
+              type:
+                - number
+                - 'null'
+              minimum: 0.0
+            aiCostPerPayingActiveLearnerUsd:
+              type:
+                - number
+                - 'null'
+              minimum: 0.0
+            aiCostPerVerifiedLearningSessionUsd:
+              type:
+                - number
+                - 'null'
+              minimum: 0.0
+            byTier:
+              type: array
+              items:
+                $ref: '#/$defs/TierUnitEconomics'

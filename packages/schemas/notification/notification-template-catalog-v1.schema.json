@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:verifiedai:notification-template-catalog-v1",
+  "title": "NotificationTemplateCatalog",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "templates",
+    "llmTokensUsed",
+    "trainingEligible"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "notification-template-catalog-v1"
+    },
+    "templates": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {
+        "$ref": "#/$defs/NotificationTemplateEntry"
+      }
+    },
+    "llmTokensUsed": {
+      "type": "integer",
+      "const": 0
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    }
+  },
+  "$defs": {
+    "NotificationTemplateEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "category",
+        "intentType",
+        "sourceModule",
+        "templateKey",
+        "allowedParams",
+        "deepLinkPath",
+        "cooldownHours",
+        "cooldownExempt"
+      ],
+      "properties": {
+        "category": {
+          "type": "string",
+          "enum": [
+            "STUDY_PLAN",
+            "SPACED_REVIEW",
+            "EXAM_DEADLINE",
+            "BILLING_TRIAL_REMINDER",
+            "ACCOUNT_SECURITY"
+          ]
+        },
+        "intentType": {
+          "type": "string",
+          "enum": [
+            "STUDY_PLAN_DAILY_MISSION",
+            "SPACED_REVIEW_DUE",
+            "EXAM_DEADLINE_COUNTDOWN",
+            "TRIAL_ENDING_48H_REMINDER",
+            "ACCOUNT_SECURITY_ALERT"
+          ]
+        },
+        "sourceModule": {
+          "type": "string",
+          "enum": [
+            "studyplan",
+            "exam",
+            "billing",
+            "identity"
+          ]
+        },
+        "templateKey": {
+          "type": "string",
+          "enum": [
+            "notification.template.study_plan.daily_mission",
+            "notification.template.spaced_review.due",
+            "notification.template.exam_deadline.countdown",
+            "notification.template.billing.trial_ending_48h",
+            "notification.template.account.security_alert"
+          ]
+        },
+        "allowedParams": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "budgetMinutes",
+              "remainingTasks",
+              "dueCount",
+              "triggerKind",
+              "examCode",
+              "daysRemaining",
+              "hoursRemaining",
+              "planCode",
+              "eventType"
+            ]
+          }
+        },
+        "deepLinkPath": {
+          "type": "string",
+          "pattern": "^verified-ai://[a-z0-9/_-]{1,100}$"
+        },
+        "cooldownHours": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 168
+        },
+        "cooldownExempt": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

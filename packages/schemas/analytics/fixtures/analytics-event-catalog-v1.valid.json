@@ -1,0 +1,402 @@
+{
+  "schemaVersion": "analytics-event-catalog-v1",
+  "catalogVersion": "1.0.0",
+  "eventCount": 56,
+  "events": [
+    {
+      "eventName": "onboarding_started",
+      "eventDomain": "ACQUISITION_ACTIVATION",
+      "clientAllowed": true,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["authMethod", "dailyBudgetMinutes", "educationLevel", "latencyBucket", "locale"]
+    },
+    {
+      "eventName": "onboarding_completed",
+      "eventDomain": "ACQUISITION_ACTIVATION",
+      "clientAllowed": true,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["authMethod", "dailyBudgetMinutes", "educationLevel", "latencyBucket", "locale"]
+    },
+    {
+      "eventName": "sign_in_completed",
+      "eventDomain": "ACQUISITION_ACTIVATION",
+      "clientAllowed": true,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["authMethod", "dailyBudgetMinutes", "educationLevel", "latencyBucket", "locale"]
+    },
+    {
+      "eventName": "problem_capture_started",
+      "eventDomain": "ACQUISITION_ACTIVATION",
+      "clientAllowed": true,
+      "serverAllowed": false,
+      "allowedPropertyKeys": ["assetKind", "captureSource", "latencyBucket", "qualityWarningCode"]
+    },
+    {
+      "eventName": "problem_capture_source_selected",
+      "eventDomain": "ACQUISITION_ACTIVATION",
+      "clientAllowed": true,
+      "serverAllowed": false,
+      "allowedPropertyKeys": ["assetKind", "captureSource", "latencyBucket", "qualityWarningCode"]
+    },
+    {
+      "eventName": "problem_capture_quality_warning",
+      "eventDomain": "ACQUISITION_ACTIVATION",
+      "clientAllowed": true,
+      "serverAllowed": false,
+      "allowedPropertyKeys": ["assetKind", "captureSource", "latencyBucket", "qualityWarningCode"]
+    },
+    {
+      "eventName": "problem_capture_accepted",
+      "eventDomain": "ACQUISITION_ACTIVATION",
+      "clientAllowed": true,
+      "serverAllowed": false,
+      "allowedPropertyKeys": ["assetKind", "captureSource", "latencyBucket", "qualityWarningCode"]
+    },
+    {
+      "eventName": "problem_asset_uploaded",
+      "eventDomain": "ACQUISITION_ACTIVATION",
+      "clientAllowed": false,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["assetKind", "captureSource", "costBucket", "latencyBucket", "providerFamily", "retryClass", "reviewRequired", "routeFamily", "schemaVersion", "status", "supportStatus", "unsupportedReason"]
+    },
+    {
+      "eventName": "problem_recognition_completed",
+      "eventDomain": "ACQUISITION_ACTIVATION",
+      "clientAllowed": false,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["assetKind", "captureSource", "costBucket", "latencyBucket", "providerFamily", "retryClass", "reviewRequired", "routeFamily", "schemaVersion", "status", "supportStatus", "unsupportedReason"]
+    },
+    {
+      "eventName": "problem_parse_completed",
+      "eventDomain": "ACQUISITION_ACTIVATION",
+      "clientAllowed": false,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["assetKind", "captureSource", "costBucket", "latencyBucket", "providerFamily", "retryClass", "reviewRequired", "routeFamily", "schemaVersion", "status", "supportStatus", "unsupportedReason"]
+    },
+    {
+      "eventName": "problem_parse_review_required",
+      "eventDomain": "ACQUISITION_ACTIVATION",
+      "clientAllowed": false,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["assetKind", "captureSource", "costBucket", "latencyBucket", "providerFamily", "retryClass", "reviewRequired", "routeFamily", "schemaVersion", "status", "supportStatus", "unsupportedReason"]
+    },
+    {
+      "eventName": "problem_parse_unsupported",
+      "eventDomain": "ACQUISITION_ACTIVATION",
+      "clientAllowed": false,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["assetKind", "captureSource", "costBucket", "latencyBucket", "providerFamily", "retryClass", "reviewRequired", "routeFamily", "schemaVersion", "status", "supportStatus", "unsupportedReason"]
+    },
+    {
+      "eventName": "first_solution_completed",
+      "eventDomain": "ACQUISITION_ACTIVATION",
+      "clientAllowed": false,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["difficultyBand", "entitlementTier", "latencyBucket", "primarySkillCode", "problemType", "verificationStatus"]
+    },
+    {
+      "eventName": "first_verified_solution_viewed",
+      "eventDomain": "ACQUISITION_ACTIVATION",
+      "clientAllowed": true,
+      "serverAllowed": false,
+      "allowedPropertyKeys": ["difficultyBand", "entitlementTier", "latencyBucket", "primarySkillCode", "problemType", "verificationStatus"]
+    },
+    {
+      "eventName": "solve_requested",
+      "eventDomain": "SOLVING",
+      "clientAllowed": false,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["costBucket", "difficultyBand", "entitlementTier", "failureClass", "latencyBucket", "primarySkillCode", "problemType", "verificationStatus"]
+    },
+    {
+      "eventName": "solve_completed",
+      "eventDomain": "SOLVING",
+      "clientAllowed": false,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["costBucket", "difficultyBand", "entitlementTier", "failureClass", "latencyBucket", "primarySkillCode", "problemType", "verificationStatus"]
+    },
+    {
+      "eventName": "solve_failed",
+      "eventDomain": "SOLVING",
+      "clientAllowed": false,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["costBucket", "difficultyBand", "entitlementTier", "failureClass", "latencyBucket", "primarySkillCode", "problemType", "verificationStatus"]
+    },
+    {
+      "eventName": "parse_corrected",
+      "eventDomain": "SOLVING",
+      "clientAllowed": false,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["costBucket", "difficultyBand", "entitlementTier", "failureClass", "latencyBucket", "primarySkillCode", "problemType", "verificationStatus"]
+    },
+    {
+      "eventName": "verification_details_viewed",
+      "eventDomain": "SOLVING",
+      "clientAllowed": true,
+      "serverAllowed": false,
+      "allowedPropertyKeys": ["difficultyBand", "entitlementTier", "primarySkillCode", "problemType", "verificationStatus"]
+    },
+    {
+      "eventName": "solution_alternative_viewed",
+      "eventDomain": "SOLVING",
+      "clientAllowed": true,
+      "serverAllowed": false,
+      "allowedPropertyKeys": ["difficultyBand", "entitlementTier", "primarySkillCode", "problemType", "verificationStatus"]
+    },
+    {
+      "eventName": "tutor_session_started",
+      "eventDomain": "TUTOR",
+      "clientAllowed": true,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["entitlementTier", "hintLevel", "latencyBucket", "pedagogicalPhase", "turnCountBucket"]
+    },
+    {
+      "eventName": "tutor_turn_submitted",
+      "eventDomain": "TUTOR",
+      "clientAllowed": true,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["entitlementTier", "hintLevel", "latencyBucket", "pedagogicalPhase", "turnCountBucket"]
+    },
+    {
+      "eventName": "hint_requested",
+      "eventDomain": "TUTOR",
+      "clientAllowed": true,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["entitlementTier", "hintLevel", "latencyBucket", "pedagogicalPhase", "turnCountBucket"]
+    },
+    {
+      "eventName": "answer_revealed",
+      "eventDomain": "TUTOR",
+      "clientAllowed": true,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["entitlementTier", "hintLevel", "latencyBucket", "pedagogicalPhase", "turnCountBucket"]
+    },
+    {
+      "eventName": "tutor_session_completed",
+      "eventDomain": "TUTOR",
+      "clientAllowed": true,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["entitlementTier", "hintLevel", "latencyBucket", "pedagogicalPhase", "turnCountBucket"]
+    },
+    {
+      "eventName": "attempt_submitted",
+      "eventDomain": "LEARNING_MASTERY",
+      "clientAllowed": false,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["canonicalSkillCode", "durationBucket", "entitlementTier", "evidenceClass", "fromBand", "mistakeCode", "slotRole", "toBand"]
+    },
+    {
+      "eventName": "mistake_detected",
+      "eventDomain": "LEARNING_MASTERY",
+      "clientAllowed": false,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["canonicalSkillCode", "durationBucket", "entitlementTier", "evidenceClass", "fromBand", "mistakeCode", "slotRole", "toBand"]
+    },
+    {
+      "eventName": "mistake_reviewed",
+      "eventDomain": "LEARNING_MASTERY",
+      "clientAllowed": true,
+      "serverAllowed": false,
+      "allowedPropertyKeys": ["canonicalSkillCode", "durationBucket", "entitlementTier", "evidenceClass", "fromBand", "mistakeCode", "slotRole", "toBand"]
+    },
+    {
+      "eventName": "practice_session_started",
+      "eventDomain": "LEARNING_MASTERY",
+      "clientAllowed": true,
+      "serverAllowed": false,
+      "allowedPropertyKeys": ["canonicalSkillCode", "durationBucket", "entitlementTier", "evidenceClass", "fromBand", "mistakeCode", "slotRole", "toBand"]
+    },
+    {
+      "eventName": "practice_session_completed",
+      "eventDomain": "LEARNING_MASTERY",
+      "clientAllowed": false,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["canonicalSkillCode", "durationBucket", "entitlementTier", "evidenceClass", "fromBand", "mistakeCode", "slotRole", "toBand"]
+    },
+    {
+      "eventName": "mastery_band_changed",
+      "eventDomain": "LEARNING_MASTERY",
+      "clientAllowed": false,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["canonicalSkillCode", "durationBucket", "entitlementTier", "evidenceClass", "fromBand", "mistakeCode", "slotRole", "toBand"]
+    },
+    {
+      "eventName": "study_plan_item_completed",
+      "eventDomain": "LEARNING_MASTERY",
+      "clientAllowed": false,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["canonicalSkillCode", "durationBucket", "entitlementTier", "evidenceClass", "fromBand", "mistakeCode", "slotRole", "toBand"]
+    },
+    {
+      "eventName": "mistake_passport.item_created",
+      "eventDomain": "LEARNING_MASTERY",
+      "clientAllowed": false,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["budgetMinutes", "canonicalSkillCode", "durationMs", "errorCode", "evidenceClass", "fromState", "passed", "passedIndependent", "stage", "toState", "triggerType", "variant"]
+    },
+    {
+      "eventName": "mistake_passport.state_transitioned",
+      "eventDomain": "LEARNING_MASTERY",
+      "clientAllowed": false,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["budgetMinutes", "canonicalSkillCode", "durationMs", "errorCode", "evidenceClass", "fromState", "passed", "passedIndependent", "stage", "toState", "triggerType", "variant"]
+    },
+    {
+      "eventName": "twin_drill.issued",
+      "eventDomain": "LEARNING_MASTERY",
+      "clientAllowed": false,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["budgetMinutes", "canonicalSkillCode", "durationMs", "errorCode", "evidenceClass", "fromState", "passed", "passedIndependent", "stage", "toState", "triggerType", "variant"]
+    },
+    {
+      "eventName": "twin_drill.completed",
+      "eventDomain": "LEARNING_MASTERY",
+      "clientAllowed": false,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["budgetMinutes", "canonicalSkillCode", "durationMs", "errorCode", "evidenceClass", "fromState", "passed", "passedIndependent", "stage", "toState", "triggerType", "variant"]
+    },
+    {
+      "eventName": "retrieval_check.scheduled",
+      "eventDomain": "LEARNING_MASTERY",
+      "clientAllowed": false,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["budgetMinutes", "canonicalSkillCode", "durationMs", "errorCode", "evidenceClass", "fromState", "passed", "passedIndependent", "stage", "toState", "triggerType", "variant"]
+    },
+    {
+      "eventName": "retrieval_check.completed",
+      "eventDomain": "LEARNING_MASTERY",
+      "clientAllowed": false,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["budgetMinutes", "canonicalSkillCode", "durationMs", "errorCode", "evidenceClass", "fromState", "passed", "passedIndependent", "stage", "toState", "triggerType", "variant"]
+    },
+    {
+      "eventName": "daily_coach.plan_generated",
+      "eventDomain": "LEARNING_MASTERY",
+      "clientAllowed": false,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["budgetMinutes", "canonicalSkillCode", "durationMs", "errorCode", "evidenceClass", "fromState", "passed", "passedIndependent", "stage", "toState", "triggerType", "variant"]
+    },
+    {
+      "eventName": "daily_coach.item_completed",
+      "eventDomain": "LEARNING_MASTERY",
+      "clientAllowed": false,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["budgetMinutes", "canonicalSkillCode", "durationMs", "errorCode", "evidenceClass", "fromState", "passed", "passedIndependent", "stage", "toState", "triggerType", "variant"]
+    },
+    {
+      "eventName": "daily_coach.plan_rebalanced",
+      "eventDomain": "LEARNING_MASTERY",
+      "clientAllowed": false,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["budgetMinutes", "canonicalSkillCode", "durationMs", "errorCode", "evidenceClass", "fromState", "passed", "passedIndependent", "stage", "toState", "triggerType", "variant"]
+    },
+    {
+      "eventName": "exam_target_configured",
+      "eventDomain": "EXAM",
+      "clientAllowed": false,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["confidenceTier", "durationBucket", "entitlementTier", "examCode", "jurisdiction", "mode"]
+    },
+    {
+      "eventName": "exam_mock_started",
+      "eventDomain": "EXAM",
+      "clientAllowed": false,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["confidenceTier", "durationBucket", "entitlementTier", "examCode", "jurisdiction", "mode"]
+    },
+    {
+      "eventName": "exam_mock_submitted",
+      "eventDomain": "EXAM",
+      "clientAllowed": false,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["confidenceTier", "durationBucket", "entitlementTier", "examCode", "jurisdiction", "mode"]
+    },
+    {
+      "eventName": "exam_readiness_viewed",
+      "eventDomain": "EXAM",
+      "clientAllowed": true,
+      "serverAllowed": false,
+      "allowedPropertyKeys": ["confidenceTier", "durationBucket", "entitlementTier", "examCode", "jurisdiction", "mode"]
+    },
+    {
+      "eventName": "paywall_viewed",
+      "eventDomain": "BILLING_MONETIZATION",
+      "clientAllowed": true,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["entitlementTier", "failureReason", "packageCode", "placement", "storefront", "tierCode"]
+    },
+    {
+      "eventName": "purchase_started",
+      "eventDomain": "BILLING_MONETIZATION",
+      "clientAllowed": true,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["entitlementTier", "failureReason", "packageCode", "placement", "storefront", "tierCode"]
+    },
+    {
+      "eventName": "purchase_failed",
+      "eventDomain": "BILLING_MONETIZATION",
+      "clientAllowed": true,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["entitlementTier", "failureReason", "packageCode", "placement", "storefront", "tierCode"]
+    },
+    {
+      "eventName": "restore_completed",
+      "eventDomain": "BILLING_MONETIZATION",
+      "clientAllowed": true,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["entitlementTier", "failureReason", "packageCode", "placement", "storefront", "tierCode"]
+    },
+    {
+      "eventName": "paywall.mistake_moment_shown",
+      "eventDomain": "BILLING_MONETIZATION",
+      "clientAllowed": true,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["entitlementTier", "failureReason", "packageCode", "placement", "storefront", "tierCode"]
+    },
+    {
+      "eventName": "paywall.twin_success_shown",
+      "eventDomain": "BILLING_MONETIZATION",
+      "clientAllowed": true,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["entitlementTier", "failureReason", "packageCode", "placement", "storefront", "tierCode"]
+    },
+    {
+      "eventName": "purchase_completed",
+      "eventDomain": "BILLING_MONETIZATION",
+      "clientAllowed": false,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["entitlementTier", "fromTier", "isFreeTrial", "packageCode", "reason", "toTier"]
+    },
+    {
+      "eventName": "entitlement_changed",
+      "eventDomain": "BILLING_MONETIZATION",
+      "clientAllowed": false,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["entitlementTier", "fromTier", "isFreeTrial", "packageCode", "reason", "toTier"]
+    },
+    {
+      "eventName": "paywall.trial_started",
+      "eventDomain": "BILLING_MONETIZATION",
+      "clientAllowed": false,
+      "serverAllowed": true,
+      "allowedPropertyKeys": ["entitlementTier", "fromTier", "isFreeTrial", "packageCode", "reason", "toTier"]
+    },
+    {
+      "eventName": "lifecycle_notification_opened",
+      "eventDomain": "LIFECYCLE_RETENTION",
+      "clientAllowed": true,
+      "serverAllowed": false,
+      "allowedPropertyKeys": ["category", "entitlementTier", "intentType", "locale", "weekIso"]
+    },
+    {
+      "eventName": "weekly_digest_viewed",
+      "eventDomain": "LIFECYCLE_RETENTION",
+      "clientAllowed": true,
+      "serverAllowed": false,
+      "allowedPropertyKeys": ["category", "entitlementTier", "intentType", "locale", "weekIso"]
+    }
+  ],
+  "llmTokensUsed": 0,
+  "trainingEligible": false,
+  "generatedAt": "2026-11-23T09:15:01Z"
+}

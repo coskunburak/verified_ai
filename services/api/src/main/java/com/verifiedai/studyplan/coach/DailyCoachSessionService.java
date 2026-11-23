@@ -5,6 +5,7 @@ import com.verifiedai.billing.application.LearningOsCapability;
 import com.verifiedai.sharedkernel.error.ApiErrorCode;
 import com.verifiedai.sharedkernel.error.ApiProblemException;
 import com.verifiedai.studyplan.coach.dto.*;
+import com.verifiedai.studyplan.lifecycle.StudyPlanLifecycleMessagingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,13 @@ public class DailyCoachSessionService {
     @org.springframework.beans.factory.annotation.Autowired(required = false)
     public void setAccess(CapabilityAccessPolicy access) {
         this.access = access;
+    }
+
+    private StudyPlanLifecycleMessagingService lifecycleMessagingService;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    public void setLifecycleMessagingService(StudyPlanLifecycleMessagingService lifecycleMessagingService) {
+        this.lifecycleMessagingService = lifecycleMessagingService;
     }
 
     private boolean tierGuardsEnabled() {
@@ -190,6 +198,7 @@ public class DailyCoachSessionService {
         ));
 
         DailyCoachSessionEntity saved = sessionRepository.save(session);
+        cancelDailyReminderIfCompleted(userId, saved);
         List<MistakeSignal> traps = queryActiveTraps(userId);
         return toSummaryResponse(saved, tasks, traps);
     }
@@ -243,8 +252,18 @@ public class DailyCoachSessionService {
         ));
 
         DailyCoachSessionEntity saved = sessionRepository.save(session);
+        cancelDailyReminderIfCompleted(userId, saved);
         List<MistakeSignal> traps = queryActiveTraps(userId);
         return toSummaryResponse(saved, tasks, traps);
+    }
+
+    private void cancelDailyReminderIfCompleted(UUID userId, DailyCoachSessionEntity saved) {
+        if (saved.getStatus() == DailyCoachSessionStatus.COMPLETED && lifecycleMessagingService != null) {
+            try {
+                lifecycleMessagingService.cancelDailyMissionReminderIfCompleted(userId, saved.getLocalDate());
+            } catch (RuntimeException ignored) {
+            }
+        }
     }
 
     private DailyCoachSummaryResponse createDeterministicMission(UUID userId, LocalDate effectiveDate) {

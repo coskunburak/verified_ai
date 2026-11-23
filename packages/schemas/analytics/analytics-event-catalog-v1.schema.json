@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/analytics/analytics-event-catalog-v1.schema.json",
+  "title": "AnalyticsEventCatalogResponse",
+  "description": "Closed canonical analytics event catalog response exposing allowed domains, sources, and low-cardinality property keys.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "catalogVersion",
+    "eventCount",
+    "events",
+    "llmTokensUsed",
+    "trainingEligible",
+    "generatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "analytics-event-catalog-v1"
+    },
+    "catalogVersion": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "eventCount": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 200
+    },
+    "events": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 200,
+      "items": {
+        "$ref": "#/$defs/AnalyticsEventCatalogEntry"
+      }
+    },
+    "llmTokensUsed": {
+      "type": "integer",
+      "const": 0
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "$defs": {
+    "AnalyticsEventCatalogEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventName",
+        "eventDomain",
+        "clientAllowed",
+        "serverAllowed",
+        "allowedPropertyKeys"
+      ],
+      "properties": {
+        "eventName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "eventDomain": {
+          "type": "string",
+          "enum": [
+            "ACQUISITION_ACTIVATION",
+            "SOLVING",
+            "TUTOR",
+            "LEARNING_MASTERY",
+            "EXAM",
+            "BILLING_MONETIZATION",
+            "LIFECYCLE_RETENTION"
+          ]
+        },
+        "clientAllowed": {
+          "type": "boolean"
+        },
+        "serverAllowed": {
+          "type": "boolean"
+        },
+        "allowedPropertyKeys": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 48
+          }
+        }
+      }
+    }
+  }
+}

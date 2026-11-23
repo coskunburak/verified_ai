@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/analytics/analytics-event-ingest-response-v1.schema.json",
+  "title": "AnalyticsEventIngestResponse",
+  "description": "Response returned by single and batch analytics ingestion endpoints with zero LLM tokens and ADR-006 trainingEligible=false.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "acceptedCount",
+    "replayedCount",
+    "rejectedCount",
+    "results",
+    "llmTokensUsed",
+    "trainingEligible",
+    "processedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "analytics-event-ingest-response-v1"
+    },
+    "acceptedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 50
+    },
+    "replayedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 50
+    },
+    "rejectedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 50
+    },
+    "results": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50,
+      "items": {
+        "$ref": "#/$defs/AnalyticsEventIngestResultItem"
+      }
+    },
+    "llmTokensUsed": {
+      "type": "integer",
+      "const": 0
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    },
+    "processedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "$defs": {
+    "AnalyticsEventIngestResultItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "clientEventId",
+        "eventName",
+        "status",
+        "eventId",
+        "errorCode",
+        "processedAt"
+      ],
+      "properties": {
+        "clientEventId": {
+          "type": ["string", "null"],
+          "maxLength": 128
+        },
+        "eventName": {
+          "type": ["string", "null"],
+          "maxLength": 64
+        },
+        "status": {
+          "type": "string",
+          "enum": ["ACCEPTED", "REPLAYED", "REJECTED"]
+        },
+        "eventId": {
+          "type": ["string", "null"],
+          "format": "uuid"
+        },
+        "errorCode": {
+          "type": ["string", "null"],
+          "maxLength": 64
+        },
+        "processedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

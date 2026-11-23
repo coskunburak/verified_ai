@@ -11,6 +11,7 @@ final class ProblemCaptureViewModel {
     private let assetStore: CapturedAssetStoring
     private let qualityAnalyzer: CaptureQualityAnalyzing
     private let logger: AppLogger
+    private let analytics: AnalyticsTracking
 
     private var activeRequestID: UUID?
     private var cameraSuspendedByScene = false
@@ -22,12 +23,14 @@ final class ProblemCaptureViewModel {
         cameraClient: ProblemCameraClient,
         assetStore: CapturedAssetStoring,
         qualityAnalyzer: CaptureQualityAnalyzing,
-        logger: AppLogger
+        logger: AppLogger,
+        analytics: AnalyticsTracking = NoOpAnalyticsTracker()
     ) {
         self.cameraClient = cameraClient
         self.assetStore = assetStore
         self.qualityAnalyzer = qualityAnalyzer
         self.logger = logger
+        self.analytics = analytics
 
         Task {
             await assetStore.cleanUpExpiredAssets()
@@ -51,11 +54,17 @@ final class ProblemCaptureViewModel {
         logger.info("problem_capture.opened")
         message = nil
         state = .selectingSource
+        Task { [analytics] in
+            await analytics.track(.problemCaptureStarted())
+        }
     }
 
     func chooseCamera() async {
         logger.info("problem_capture.source_selected camera")
         message = nil
+        Task { [analytics] in
+            await analytics.track(.problemCaptureSourceSelected(source: .camera, assetKind: .image))
+        }
 
         switch cameraClient.permissionStatus {
         case .authorized:
@@ -78,6 +87,9 @@ final class ProblemCaptureViewModel {
         cameraClient.stop()
         message = nil
         state = .importing(.photoLibrary)
+        Task { [analytics] in
+            await analytics.track(.problemCaptureSourceSelected(source: .photoLibrary, assetKind: .image))
+        }
     }
 
     func beginDocumentImport() {
@@ -85,6 +97,9 @@ final class ProblemCaptureViewModel {
         cameraClient.stop()
         message = nil
         state = .importing(.file)
+        Task { [analytics] in
+            await analytics.track(.problemCaptureSourceSelected(source: .file, assetKind: .pdf))
+        }
     }
 
     func capturePhoto() async {
@@ -265,6 +280,11 @@ final class ProblemCaptureViewModel {
         activeRequestID = nil
         cameraClient.stop()
         logger.info("problem_capture.accepted")
+        let source = Self.analyticsSource(asset.source)
+        let kind: AnalyticsAssetKind = asset.kind == .pdf ? .pdf : .image
+        Task { [analytics] in
+            await analytics.track(.problemCaptureAccepted(source: source, assetKind: kind))
+        }
         state = .readyForHandoff(AcceptedCapturedAsset(asset: asset))
         message = "Captured asset is ready for the next step."
     }
@@ -374,6 +394,11 @@ final class ProblemCaptureViewModel {
             logger.info(successEvent)
             if !analyzedAsset.qualityAssessment.issues.isEmpty {
                 logger.info("problem_capture.quality_warning")
+                let source = Self.analyticsSource(analyzedAsset.source)
+                let warningCode = Self.analyticsWarningCode(analyzedAsset.qualityAssessment.issues)
+                Task { [analytics] in
+                    await analytics.track(.problemCaptureQualityWarning(source: source, warningCode: warningCode))
+                }
             }
             state = .reviewing(analyzedAsset)
             message = nil
@@ -444,6 +469,26 @@ final class ProblemCaptureViewModel {
             "The image could not be checked for capture quality. Choose another file or try again."
         case .tempStorageFailed:
             "The capture could not be stored locally. Try again."
+        }
+    }
+
+    private static func analyticsSource(_ source: CaptureSource) -> AnalyticsCaptureSource {
+        switch source {
+        case .camera: .camera
+        case .photoLibrary: .photoLibrary
+        case .file: .file
+        case .pdf: .pdf
+        }
+    }
+
+    private static func analyticsWarningCode(_ issues: [CaptureQualityIssue]) -> AnalyticsQualityWarningCode {
+        if issues.count > 1 {
+            return .multiple
+        }
+        switch issues.first?.kind {
+        case .blur: return .blur
+        case .glare: return .glare
+        case .framing, nil: return .framing
         }
     }
 }

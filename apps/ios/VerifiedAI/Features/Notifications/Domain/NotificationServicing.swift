@@ -8,6 +8,7 @@ protocol NotificationServicing: Sendable {
     func revokeDevice(deviceId: UUID) async throws -> RegisteredNotificationDevice
     func listDeliveries(limit: Int) async throws -> [NotificationDeliveryItem]
     func cancelDelivery(deliveryId: UUID) async throws -> NotificationDeliveryCancelResponse
+    func fetchLifecycleSummary(limit: Int) async throws -> LifecycleSummaryResponse
 }
 
 protocol PushPermissionManaging: Sendable {

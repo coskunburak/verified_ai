@@ -1,0 +1,42 @@
+{
+  "events": [
+    {
+      "clientEventId": "anl-evt-batch-0001",
+      "eventName": "onboarding_started",
+      "emittedBy": "CLIENT",
+      "sourceModule": "ios_client",
+      "entitlementTier": "FREE",
+      "locale": "tr",
+      "appVersion": "1.6.0",
+      "sessionRefHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "latencyMs": 45,
+      "properties": {
+        "authMethod": "APPLE",
+        "locale": "tr",
+        "educationLevel": "HIGH_SCHOOL"
+      },
+      "occurredAt": "2026-11-23T09:10:00Z",
+      "trainingEligible": false
+    },
+    {
+      "clientEventId": "anl-evt-batch-0002",
+      "eventName": "paywall_viewed",
+      "emittedBy": "CLIENT",
+      "sourceModule": "ios_client",
+      "entitlementTier": "FREE",
+      "locale": "tr",
+      "appVersion": "1.6.0",
+      "sessionRefHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "latencyMs": null,
+      "properties": {
+        "placement": "SETTINGS",
+        "tierCode": "PRO",
+        "storefront": "TR",
+        "entitlementTier": "FREE"
+      },
+      "occurredAt": "2026-11-23T09:12:00Z",
+      "trainingEligible": false
+    }
+  ],
+  "trainingEligible": false
+}

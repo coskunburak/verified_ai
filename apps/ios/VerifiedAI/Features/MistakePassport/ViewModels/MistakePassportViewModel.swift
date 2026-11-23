@@ -34,15 +34,18 @@ public final class MistakePassportViewModel {
 
     private let apiClient: MistakePassportAPIClientProtocol
     private let cacheStore: MistakePassportCacheStoreProtocol
+    private let analytics: AnalyticsTracking
     private var activeFetchTask: Task<Void, Never>?
     private var requestGeneration: UInt64 = 0
 
     public init(
         apiClient: MistakePassportAPIClientProtocol,
-        cacheStore: MistakePassportCacheStoreProtocol
+        cacheStore: MistakePassportCacheStoreProtocol,
+        analytics: AnalyticsTracking = NoOpAnalyticsTracker()
     ) {
         self.apiClient = apiClient
         self.cacheStore = cacheStore
+        self.analytics = analytics
     }
 
     public func loadPassport(statusFilter: TrapLifecycleStatus? = nil) {
@@ -69,6 +72,8 @@ public final class MistakePassportViewModel {
             await cacheStore.savePassportSnapshot(response, statusFilter: statusFilter)
             if hasVisibleContent(in: response) {
                 state = .loaded(response, isOfflineStale: false)
+                let firstItem = activeItems(from: response).first
+                recordMistakeReviewed(canonicalSkillCode: firstItem?.skillNodeId, mistakeCode: firstItem?.mistakeCode)
             } else {
                 state = .empty(statusFilter)
             }
@@ -92,8 +97,6 @@ public final class MistakePassportViewModel {
 
     private func hasVisibleContent(in response: MistakePassportResponseDto) -> Bool {
         !activeItems(from: response).isEmpty
-            || response.summaryMetrics.conqueredExamTrapsCount > 0
-            || response.summaryMetrics.activeExamTrapsCount > 0
             || !(response.summaryTrapTitleKeys ?? []).isEmpty
             || !(response.earnedProofs ?? []).isEmpty
     }
@@ -111,6 +114,12 @@ public final class MistakePassportViewModel {
             return response.conceptualTraps
         case .arithmeticSlips:
             return response.arithmeticSlips
+        }
+    }
+
+    public func recordMistakeReviewed(canonicalSkillCode: String?, mistakeCode: String?) {
+        Task { [analytics] in
+            await analytics.track(.mistakeReviewed(canonicalSkillCode: canonicalSkillCode, mistakeCode: mistakeCode))
         }
     }
 

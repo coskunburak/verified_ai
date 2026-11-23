@@ -313,6 +313,13 @@ verifiedai:
     session-max-active-duration-seconds: 14400
   analytics:
     weekly-digest-enabled: ${VERIFIEDAI_ANALYTICS_WEEKLY_DIGEST_ENABLED:true}
+    event-catalog-enabled: ${VERIFIEDAI_ANALYTICS_EVENT_CATALOG_ENABLED:false}
+    product-metrics-enabled: ${VERIFIEDAI_ANALYTICS_PRODUCT_METRICS_ENABLED:false}
+    max-batch-size: ${VERIFIEDAI_ANALYTICS_MAX_BATCH_SIZE:50}
+    max-properties-bytes: ${VERIFIEDAI_ANALYTICS_MAX_PROPERTIES_BYTES:2048}
+    max-property-count: ${VERIFIEDAI_ANALYTICS_MAX_PROPERTY_COUNT:16}
+    max-metrics-window-days: 90
+    retention-days: ${VERIFIEDAI_ANALYTICS_RETENTION_DAYS:365}
   exam:
     analytics-enabled: ${VERIFIEDAI_EXAM_ANALYTICS_ENABLED:false}
     pre-exam-mode-enabled: ${VERIFIEDAI_EXAM_PRE_EXAM_MODE_ENABLED:false}
@@ -347,3 +354,11 @@ verifiedai:
     max-delivery-attempts: 3
     retry-base-delay-seconds: 60
     max-active-devices-per-user: 10
+    lifecycle-campaigns-enabled: ${VERIFIEDAI_NOTIFICATION_LIFECYCLE_CAMPAIGNS_ENABLED:false}
+    lifecycle-scheduler-enabled: ${VERIFIEDAI_NOTIFICATION_LIFECYCLE_SCHEDULER_ENABLED:false}
+    lifecycle-scan-batch-size: ${VERIFIEDAI_NOTIFICATION_LIFECYCLE_SCAN_BATCH_SIZE:100}
+    lifecycle-scan-interval-ms: ${VERIFIEDAI_NOTIFICATION_LIFECYCLE_SCAN_INTERVAL_MS:300000}
+    study-plan-cooldown-hours: 20
+    spaced-review-cooldown-hours: 24
+    exam-deadline-cooldown-hours: 24
+    trial-reminder-lead-hours: 48

@@ -19,6 +19,7 @@ public final class ExamReadinessViewModel: ObservableObject {
     public let highContrastMode: Bool
     private let apiService: ExamAPIServicing
     private let offlineStore: ExamOfflineSQLiteStore?
+    private let analytics: AnalyticsTracking
 
     func makePreExamViewModel() -> PreExamCramViewModel? {
         let exam = Self.canonicalExamCode(selectedExamCode)
@@ -39,13 +40,15 @@ public final class ExamReadinessViewModel: ObservableObject {
         selectedExamCode: String = "TR_YKS_TYT_MATH",
         highContrastMode: Bool = false,
         apiService: ExamAPIServicing,
-        offlineStore: ExamOfflineSQLiteStore? = nil
+        offlineStore: ExamOfflineSQLiteStore? = nil,
+        analytics: AnalyticsTracking = NoOpAnalyticsTracker()
     ) {
         self.userId = userId
         self.selectedExamCode = Self.canonicalExamCode(selectedExamCode)
         self.highContrastMode = highContrastMode
         self.apiService = apiService
         self.offlineStore = offlineStore
+        self.analytics = analytics
     }
 
     public func loadReadiness(forceRecompute: Bool = false) async {
@@ -68,6 +71,10 @@ public final class ExamReadinessViewModel: ObservableObject {
             projection = fetched
             isOfflineFallback = false
             await offlineStore?.saveReadinessProjection(fetched, userId: userId.uuidString)
+            let confidence = fetched.confidenceTier.rawValue
+            Task { [analytics] in
+                await analytics.track(.examReadinessViewed(examCode: targetCode, jurisdiction: "TR", confidenceTier: confidence))
+            }
         } catch let error as ExamServiceError {
             await handleServiceError(error, examCode: targetCode, allowOfflineCache: !forceRecompute)
         } catch {

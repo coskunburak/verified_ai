@@ -1,0 +1,20 @@
+{
+  "clientEventId": "anl-evt-single-0001",
+  "eventName": "verification_details_viewed",
+  "emittedBy": "CLIENT",
+  "sourceModule": "ios_client",
+  "entitlementTier": "PRO",
+  "locale": "en",
+  "appVersion": "1.6.0",
+  "sessionRefHash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+  "latencyMs": 140,
+  "properties": {
+    "problemType": "LINEAR_EQUATION",
+    "primarySkillCode": "MATH.ALG.LINEAR_EQ",
+    "difficultyBand": "MEDIUM",
+    "verificationStatus": "VERIFIED",
+    "entitlementTier": "PRO"
+  },
+  "occurredAt": "2026-11-23T09:15:00Z",
+  "trainingEligible": false
+}

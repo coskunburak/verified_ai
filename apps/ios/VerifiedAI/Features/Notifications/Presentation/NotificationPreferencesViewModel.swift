@@ -68,6 +68,7 @@ final class NotificationPreferencesViewModel {
     private(set) var osPermissionStatus: OsNotificationPermissionStatus = .notDetermined
     private(set) var activeDevices: [RegisteredNotificationDevice] = []
     private(set) var recentDeliveries: [NotificationDeliveryItem] = []
+    private(set) var lifecycleSummary: LifecycleSummaryResponse?
     private(set) var showPrePromptBanner: Bool = false
     private(set) var hasPendingConflictRecovery: Bool = false
     private(set) var noticeKey: String?
@@ -90,6 +91,10 @@ final class NotificationPreferencesViewModel {
         return draft != NotificationPreferencesDraft.from(preferences)
     }
 
+    var isTrialEndReminderActive: Bool {
+        draft.pushEnabled && draft.billingTrialReminderEnabled && osPermissionStatus.isDeliverable
+    }
+
     func load() async {
         osPermissionStatus = await permissionManager.authorizationStatus()
 
@@ -110,6 +115,7 @@ final class NotificationPreferencesViewModel {
             draft = NotificationPreferencesDraft.from(loaded)
             activeDevices = (try? await service.listActiveDevices()) ?? []
             recentDeliveries = (try? await service.listDeliveries(limit: 10)) ?? []
+            lifecycleSummary = try? await service.fetchLifecycleSummary(limit: 20)
             state = .ready
             if osPermissionStatus == .denied {
                 noticeKey = "notification.preferences.permission.denied_banner"
@@ -270,6 +276,129 @@ final class NotificationPreferencesViewModel {
         }
     }
 
+    func enableTrialEndReminderOneTap() async {
+        guard networkMonitor.isReachable else {
+            state = .offline
+            errorKey = "notification.preferences.error.offline"
+            return
+        }
+
+        errorKey = nil
+        noticeKey = nil
+        hasPendingConflictRecovery = false
+        showPrePromptBanner = false
+
+        var currentStatus = await permissionManager.authorizationStatus()
+        if currentStatus == .notDetermined {
+            do {
+                currentStatus = try await permissionManager.requestAuthorization()
+            } catch {
+                currentStatus = await permissionManager.authorizationStatus()
+                logger.warning("notifications.trial_optin.permission_error")
+            }
+        }
+        osPermissionStatus = currentStatus
+
+        guard currentStatus.isDeliverable else {
+            draft.pushEnabled = false
+            noticeKey = "notification.preferences.permission.denied_banner"
+            return
+        }
+
+        state = .saving
+        let baseline: NotificationPreferences
+        do {
+            if let existing = preferences {
+                baseline = existing
+            } else {
+                let loaded = try await service.fetchPreferences()
+                preferences = loaded
+                draft = NotificationPreferencesDraft.from(loaded)
+                baseline = loaded
+            }
+        } catch NetworkError.server(let problem) where problem.code == "NOTIFICATION_FEATURE_DISABLED" {
+            state = .featureDisabled
+            noticeKey = "notification.preferences.notice.feature_disabled"
+            return
+        } catch {
+            state = .error
+            errorKey = "notification.preferences.error.load"
+            return
+        }
+
+        let initialPatch = makeTrialEndOptInPatch(expectedVersion: baseline.version)
+        do {
+            let saved = try await service.updatePreferences(initialPatch)
+            preferences = saved
+            draft = NotificationPreferencesDraft.from(saved)
+            state = .ready
+            noticeKey = "notification.trial_optin.enabled_banner"
+            logger.info("notifications.trial_optin.enabled")
+        } catch NetworkError.server(let problem) where problem.code == "OPTIMISTIC_CONFLICT" {
+            logger.warning("notifications.trial_optin.optimistic_conflict")
+            do {
+                let latest = try await service.fetchPreferences()
+                preferences = latest
+                draft = NotificationPreferencesDraft.from(latest)
+                hasPendingConflictRecovery = true
+
+                let retryPatch = makeTrialEndOptInPatch(expectedVersion: latest.version)
+                do {
+                    let retried = try await service.updatePreferences(retryPatch)
+                    preferences = retried
+                    draft = NotificationPreferencesDraft.from(retried)
+                    hasPendingConflictRecovery = false
+                    state = .ready
+                    noticeKey = "notification.trial_optin.enabled_banner"
+                    logger.info("notifications.trial_optin.conflict_recovered")
+                } catch NetworkError.server(let retryProblem) where retryProblem.code == "OPTIMISTIC_CONFLICT" {
+                    if let refreshed = try? await service.fetchPreferences() {
+                        preferences = refreshed
+                        draft = NotificationPreferencesDraft.from(refreshed)
+                    }
+                    state = .ready
+                    noticeKey = "notification.preferences.error.conflict_reloaded"
+                } catch NetworkError.server(let retryProblem) where retryProblem.code == "NOTIFICATION_FEATURE_DISABLED" {
+                    hasPendingConflictRecovery = false
+                    state = .featureDisabled
+                    noticeKey = "notification.preferences.notice.feature_disabled"
+                } catch {
+                    hasPendingConflictRecovery = false
+                    state = .error
+                    errorKey = "notification.preferences.error.save"
+                }
+            } catch {
+                state = .error
+                errorKey = "notification.preferences.error.load"
+            }
+        } catch NetworkError.server(let problem) where problem.code == "NOTIFICATION_FEATURE_DISABLED" {
+            state = .featureDisabled
+            noticeKey = "notification.preferences.notice.feature_disabled"
+        } catch {
+            state = .error
+            errorKey = "notification.preferences.error.save"
+            logger.warning("notifications.trial_optin.save_error")
+        }
+    }
+
+    private func makeTrialEndOptInPatch(expectedVersion: Int64) -> NotificationPreferencePatch {
+        NotificationPreferencePatch(
+            pushEnabled: true,
+            studyPlanEnabled: nil,
+            spacedReviewEnabled: nil,
+            examDeadlineEnabled: nil,
+            billingTrialReminderEnabled: true,
+            accountSecurityEnabled: true,
+            quietHoursEnabled: nil,
+            quietHoursStartLocal: nil,
+            quietHoursEndLocal: nil,
+            timezone: nil,
+            dailyCap: nil,
+            expectedVersion: expectedVersion,
+            trainingEligible: false
+        )
+    }
+
     func reset() {
         state = .idle
         preferences = nil
@@ -277,6 +406,7 @@ final class NotificationPreferencesViewModel {
         osPermissionStatus = .notDetermined
         activeDevices = []
         recentDeliveries = []
+        lifecycleSummary = nil
         showPrePromptBanner = false
         hasPendingConflictRecovery = false
         noticeKey = nil

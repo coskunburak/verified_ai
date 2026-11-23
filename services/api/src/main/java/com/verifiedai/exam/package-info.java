@@ -4,6 +4,7 @@
                 "curriculum::application",
                 "mastery",
                 "mistake",
+                "notification::application",
                 "security",
                 "sharedkernel::privacy",
                 "sharedkernel::error",

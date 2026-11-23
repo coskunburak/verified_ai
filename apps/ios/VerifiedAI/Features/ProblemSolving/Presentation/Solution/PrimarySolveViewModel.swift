@@ -22,6 +22,7 @@ final class PrimarySolveViewModel {
     private let recovery: SolveRecoveryStoring
     private let network: NetworkMonitoring
     private let logger: AppLogger
+    private let analytics: AnalyticsTracking
     private let profileModel: OnboardingViewModel?
     private let explanationOwner = UUID()
     private let sleep: @Sendable (UInt64) async throws -> Void
@@ -42,7 +43,8 @@ final class PrimarySolveViewModel {
     init(userId: UUID, sessionId: UUID, service: PrimarySolveServicing, recovery: SolveRecoveryStoring,
          network: NetworkMonitoring, visualizationModel: MathVisualizationViewModel? = nil, attemptModel: AnalyzeMyWorkViewModel? = nil, tutorModel: TutorViewModel? = nil, isFixture: Bool = false, profileModel: OnboardingViewModel? = nil,
          logger: AppLogger = AppLogger(subsystem: "com.verifiedai.learning", category: "solving"),
-         sleep: @escaping @Sendable (UInt64) async throws -> Void = { try await Task.sleep(nanoseconds: $0) }) {
+         sleep: @escaping @Sendable (UInt64) async throws -> Void = { try await Task.sleep(nanoseconds: $0) },
+         analytics: AnalyticsTracking = NoOpAnalyticsTracker()) {
         self.visualizationModel = visualizationModel
         self.attemptModel = attemptModel
         self.tutorModel = tutorModel
@@ -50,6 +52,7 @@ final class PrimarySolveViewModel {
         self.recovery = recovery; self.network = network; self.isFixture = isFixture
         self.logger = logger; self.sleep = sleep
         self.profileModel = profileModel
+        self.analytics = analytics
     }
 
     private var explanationProfile: OnboardingViewModel? {
@@ -66,6 +69,14 @@ final class PrimarySolveViewModel {
     func selectExplanationDepth(_ depth: ExplanationDepth) {
         guard active else { return }
         profileModel?.selectExplanationDepth(depth, owner: explanationOwner)
+        recordSolutionAlternativeViewed()
+    }
+
+    func recordSolutionAlternativeViewed() {
+        let status = Self.analyticsVerificationStatus(verification?.status)
+        Task { [analytics] in
+            await analytics.track(.solutionAlternativeViewed(verificationStatus: status))
+        }
     }
     func reloadExplanationPreference() { profileModel?.reloadExplanationPreference(owner: explanationOwner) }
     func saveExplanationPreference() { profileModel?.saveExplanationPreference(owner: explanationOwner) }
@@ -222,6 +233,13 @@ final class PrimarySolveViewModel {
             verificationContractInvalid = false
             if let decision = verification {
                 logger.info("solve.verification.loaded status=\(decision.status.rawValue) scope=\(decision.scope.rawValue)")
+                let status = Self.analyticsVerificationStatus(decision.status)
+                Task { [analytics] in
+                    await analytics.track(.verificationDetailsViewed(verificationStatus: status))
+                    if decision.status == .verified {
+                        await analytics.track(.firstVerifiedSolutionViewed(verificationStatus: status))
+                    }
+                }
             }
         } catch {
             if token == generation && active && !Task.isCancelled {
@@ -344,5 +362,14 @@ final class PrimarySolveViewModel {
         }
         if case NetworkError.decoding = error { return "solve.error.contract" }
         return "solve.error.connection"
+    }
+
+    private static func analyticsVerificationStatus(_ status: VerificationDecisionSnapshot.Status?) -> AnalyticsVerificationStatus {
+        switch status {
+        case .verified: .verified
+        case .partiallyVerified: .partiallyVerified
+        case .unverified: .unverified
+        case nil: .unavailable
+        }
     }
 }

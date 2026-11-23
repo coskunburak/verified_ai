@@ -140,5 +140,19 @@ actor FixtureNotificationAPI: NotificationServicing {
             trainingEligible: false
         )
     }
+
+    func fetchLifecycleSummary(limit: Int) async throws -> LifecycleSummaryResponse {
+        let now = Date()
+        return LifecycleSummaryResponse(
+            schemaVersion: "lifecycle-summary-v1",
+            userId: preferences.userId,
+            lifecycleCampaignsEnabled: false,
+            activeCooldowns: [],
+            recentEvaluations: [],
+            llmTokensUsed: 0,
+            trainingEligible: false,
+            generatedAt: now
+        )
+    }
 }
 #endif

@@ -36,6 +36,7 @@ public class AccountPrivacyApplicationService {
     private final ObjectMapper objectMapper = JsonMapper.builder().findAndAddModules().build();
     private final Clock clock;
     private final AccountPrivacyMetrics metrics;
+    private IdentitySecurityNotificationService securityNotificationService;
 
     AccountPrivacyApplicationService(
         UserJpaRepository userRepository,
@@ -53,6 +54,11 @@ public class AccountPrivacyApplicationService {
         this.jdbcTemplate = jdbcTemplate;
         this.clock = clock;
         this.metrics = metrics;
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    public void setSecurityNotificationService(IdentitySecurityNotificationService securityNotificationService) {
+        this.securityNotificationService = securityNotificationService;
     }
 
     @Transactional(readOnly = true)
@@ -132,6 +138,17 @@ public class AccountPrivacyApplicationService {
         UserJpaEntity user = requireUserForUpdate(userId);
         user.requestDeletion(now);
         recordPrivacyEvent(userId, "ACCOUNT_DELETION_REQUESTED", "USER_REQUEST");
+        if (securityNotificationService != null) {
+            try {
+                securityNotificationService.notifySecurityEvent(
+                    userId,
+                    "ACCOUNT_DELETION_REQUESTED",
+                    "del-" + now.toEpochMilli(),
+                    now
+                );
+            } catch (RuntimeException ignored) {
+            }
+        }
         metrics.deletionRequested();
         return new DeletionRequestResult(user.id(), user.status(), user.deletionRequestedAt(), user.deletedAt());
     }

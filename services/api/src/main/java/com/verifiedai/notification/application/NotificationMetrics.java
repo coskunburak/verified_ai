@@ -63,4 +63,31 @@ public class NotificationMetrics {
             .register(meterRegistry)
             .increment();
     }
+
+    public void recordLifecycleEvaluated(String category, String decision) {
+        Counter.builder("verifiedai.notification.lifecycle.evaluated.total")
+            .tag("category", category)
+            .tag("decision", decision)
+            .register(meterRegistry)
+            .increment();
+    }
+
+    public void recordLifecycleCancelled(String category, String reason) {
+        Counter.builder("verifiedai.notification.lifecycle.cancelled.total")
+            .tag("category", category)
+            .tag("reason", reason)
+            .register(meterRegistry)
+            .increment();
+    }
+
+    public void recordLifecycleScanDuration(String module, Duration duration) {
+        String boundedModule = switch (module) {
+            case "studyplan", "exam", "billing" -> module;
+            default -> "unknown";
+        };
+        Timer.builder("verifiedai.notification.lifecycle.scan.duration")
+            .tag("module", boundedModule)
+            .register(meterRegistry)
+            .record(duration);
+    }
 }

@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "lifecycle-summary-v1",
+  "userId": "00000000-0000-4000-8000-000000000101",
+  "lifecycleCampaignsEnabled": true,
+  "activeCooldowns": [
+    {
+      "category": "STUDY_PLAN",
+      "intentType": "STUDY_PLAN_DAILY_MISSION",
+      "lastIdempotencyKey": "studyplan:daily:00000000-0000-4000-8000-000000000101:2026-11-22",
+      "lastDeliveryId": "00000000-0000-4000-8000-000000000401",
+      "lastTriggeredAt": "2026-11-22T09:00:00Z",
+      "cooldownUntil": "2026-11-23T05:00:00Z",
+      "active": true
+    }
+  ],
+  "recentEvaluations": [
+    {
+      "evaluationId": "00000000-0000-4000-8000-000000000501",
+      "sourceModule": "studyplan",
+      "category": "STUDY_PLAN",
+      "intentType": "STUDY_PLAN_DAILY_MISSION",
+      "idempotencyKey": "studyplan:daily:00000000-0000-4000-8000-000000000101:2026-11-22",
+      "templateKey": "notification.template.study_plan.daily_mission",
+      "decision": "SCHEDULED",
+      "reasonCode": "SCHEDULED",
+      "deliveryId": "00000000-0000-4000-8000-000000000401",
+      "evaluatedAt": "2026-11-22T09:00:00Z"
+    },
+    {
+      "evaluationId": "00000000-0000-4000-8000-000000000502",
+      "sourceModule": "studyplan",
+      "category": "STUDY_PLAN",
+      "intentType": "STUDY_PLAN_DAILY_MISSION",
+      "idempotencyKey": "studyplan:daily:00000000-0000-4000-8000-000000000101:2026-11-22",
+      "templateKey": "notification.template.study_plan.daily_mission",
+      "decision": "CANCELLED_OBSOLETE",
+      "reasonCode": "DAILY_MISSION_COMPLETED",
+      "deliveryId": "00000000-0000-4000-8000-000000000401",
+      "evaluatedAt": "2026-11-22T10:15:00Z"
+    },
+    {
+      "evaluationId": "00000000-0000-4000-8000-000000000503",
+      "sourceModule": "studyplan",
+      "category": "STUDY_PLAN",
+      "intentType": "STUDY_PLAN_DAILY_MISSION",
+      "idempotencyKey": "studyplan:daily:00000000-0000-4000-8000-000000000101:2026-11-22",
+      "templateKey": "notification.template.study_plan.daily_mission",
+      "decision": "SKIPPED_ALREADY_COMPLETED",
+      "reasonCode": "DAILY_MISSION_ALREADY_COMPLETED",
+      "deliveryId": null,
+      "evaluatedAt": "2026-11-22T12:00:00Z"
+    },
+    {
+      "evaluationId": "00000000-0000-4000-8000-000000000504",
+      "sourceModule": "exam",
+      "category": "EXAM_DEADLINE",
+      "intentType": "EXAM_DEADLINE_COUNTDOWN",
+      "idempotencyKey": "exam:countdown:00000000-0000-4000-8000-000000000101:TR_YKS_TYT_MATH:2026-11-29:7d",
+      "templateKey": "notification.template.exam_deadline.countdown",
+      "decision": "SKIPPED_COOLDOWN_ACTIVE",
+      "reasonCode": "COOLDOWN_WINDOW_ACTIVE",
+      "deliveryId": "00000000-0000-4000-8000-000000000402",
+      "evaluatedAt": "2026-11-22T13:00:00Z"
+    }
+  ],
+  "llmTokensUsed": 0,
+  "trainingEligible": false,
+  "generatedAt": "2026-11-22T13:05:00Z"
+}

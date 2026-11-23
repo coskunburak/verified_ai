@@ -1,0 +1,262 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/analytics/product-metrics-summary-v1.schema.json",
+  "title": "ProductMetricsSummaryResponse",
+  "description": "Server-authoritative admin product metrics, V7 Learning OS KPIs, latency percentiles, and tier AI unit economics summary.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "fromDate",
+    "toDate",
+    "tierFilter",
+    "activationFunnel",
+    "northStar",
+    "learningOsKpis",
+    "retention",
+    "qualityAndLatency",
+    "conversionAndUnitEconomics",
+    "llmTokensUsed",
+    "trainingEligible",
+    "generatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "product-metrics-summary-v1"
+    },
+    "fromDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "toDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "tierFilter": {
+      "type": "string",
+      "enum": ["ALL", "FREE", "PRO", "COACH_PRO", "YKS_SEASON_PASS", "UNKNOWN"]
+    },
+    "activationFunnel": {
+      "$ref": "#/$defs/ActivationFunnel"
+    },
+    "northStar": {
+      "$ref": "#/$defs/NorthStar"
+    },
+    "learningOsKpis": {
+      "$ref": "#/$defs/LearningOsKpis"
+    },
+    "retention": {
+      "$ref": "#/$defs/Retention"
+    },
+    "qualityAndLatency": {
+      "$ref": "#/$defs/QualityAndLatency"
+    },
+    "conversionAndUnitEconomics": {
+      "$ref": "#/$defs/ConversionAndUnitEconomics"
+    },
+    "llmTokensUsed": {
+      "type": "integer",
+      "const": 0
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "$defs": {
+    "RateMetric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["numerator", "denominator", "rate", "insufficientData"],
+      "properties": {
+        "numerator": { "type": "integer", "minimum": 0 },
+        "denominator": { "type": "integer", "minimum": 0 },
+        "rate": { "type": ["number", "null"], "minimum": -1.0, "maximum": 1.0 },
+        "insufficientData": { "type": "boolean" }
+      }
+    },
+    "TransferGainMetric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "variantAPassed",
+        "variantATotal",
+        "variantAAccuracy",
+        "variantBCPassed",
+        "variantBCTotal",
+        "variantBCAccuracy",
+        "transferGainIndex",
+        "insufficientData"
+      ],
+      "properties": {
+        "variantAPassed": { "type": "integer", "minimum": 0 },
+        "variantATotal": { "type": "integer", "minimum": 0 },
+        "variantAAccuracy": { "type": ["number", "null"], "minimum": 0.0, "maximum": 1.0 },
+        "variantBCPassed": { "type": "integer", "minimum": 0 },
+        "variantBCTotal": { "type": "integer", "minimum": 0 },
+        "variantBCAccuracy": { "type": ["number", "null"], "minimum": 0.0, "maximum": 1.0 },
+        "transferGainIndex": { "type": ["number", "null"], "minimum": -1.0, "maximum": 1.0 },
+        "insufficientData": { "type": "boolean" }
+      }
+    },
+    "ActivationFunnel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "onboardingStartedUsers",
+        "onboardingCompletedUsers",
+        "firstProblemCapturedUsers",
+        "firstSolutionCompletedUsers",
+        "verificationDetailsViewedUsers",
+        "secondSessionUsers",
+        "subscribedUsers",
+        "onboardingCompletionRate",
+        "activationToFirstSolveRate",
+        "trialOrPaidConversionRate"
+      ],
+      "properties": {
+        "onboardingStartedUsers": { "type": "integer", "minimum": 0 },
+        "onboardingCompletedUsers": { "type": "integer", "minimum": 0 },
+        "firstProblemCapturedUsers": { "type": "integer", "minimum": 0 },
+        "firstSolutionCompletedUsers": { "type": "integer", "minimum": 0 },
+        "verificationDetailsViewedUsers": { "type": "integer", "minimum": 0 },
+        "secondSessionUsers": { "type": "integer", "minimum": 0 },
+        "subscribedUsers": { "type": "integer", "minimum": 0 },
+        "onboardingCompletionRate": { "type": ["number", "null"], "minimum": 0.0, "maximum": 1.0 },
+        "activationToFirstSolveRate": { "type": ["number", "null"], "minimum": 0.0, "maximum": 1.0 },
+        "trialOrPaidConversionRate": { "type": ["number", "null"], "minimum": 0.0, "maximum": 1.0 }
+      }
+    },
+    "NorthStar": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "weeklyVerifiedLearningSessions",
+        "activeLearners",
+        "skillsImprovedCount",
+        "skillsImprovedPerActiveLearner"
+      ],
+      "properties": {
+        "weeklyVerifiedLearningSessions": { "type": "integer", "minimum": 0 },
+        "activeLearners": { "type": "integer", "minimum": 0 },
+        "skillsImprovedCount": { "type": "integer", "minimum": 0 },
+        "skillsImprovedPerActiveLearner": { "type": ["number", "null"], "minimum": 0.0 }
+      }
+    },
+    "LearningOsKpis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["vitrr", "drpr48h", "drpr7d", "mrrr14d", "transferGainIndex"],
+      "properties": {
+        "vitrr": { "$ref": "#/$defs/RateMetric" },
+        "drpr48h": { "$ref": "#/$defs/RateMetric" },
+        "drpr7d": { "$ref": "#/$defs/RateMetric" },
+        "mrrr14d": { "$ref": "#/$defs/RateMetric" },
+        "transferGainIndex": { "$ref": "#/$defs/TransferGainMetric" }
+      }
+    },
+    "Retention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "d1Retention",
+        "d7Retention",
+        "d30Retention",
+        "repeatMistakeReviewLearners",
+        "studyPlanItemsCompleted"
+      ],
+      "properties": {
+        "d1Retention": { "$ref": "#/$defs/RateMetric" },
+        "d7Retention": { "$ref": "#/$defs/RateMetric" },
+        "d30Retention": { "$ref": "#/$defs/RateMetric" },
+        "repeatMistakeReviewLearners": { "type": "integer", "minimum": 0 },
+        "studyPlanItemsCompleted": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "QualityAndLatency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "parseCorrectionRate",
+        "solveFailureRate",
+        "solveLatencyP50Ms",
+        "solveLatencyP95Ms",
+        "latencySampleCount",
+        "insufficientLatencyData"
+      ],
+      "properties": {
+        "parseCorrectionRate": { "$ref": "#/$defs/RateMetric" },
+        "solveFailureRate": { "$ref": "#/$defs/RateMetric" },
+        "solveLatencyP50Ms": { "type": ["integer", "null"], "minimum": 0, "maximum": 600000 },
+        "solveLatencyP95Ms": { "type": ["integer", "null"], "minimum": 0, "maximum": 600000 },
+        "latencySampleCount": { "type": "integer", "minimum": 0 },
+        "insufficientLatencyData": { "type": "boolean" }
+      }
+    },
+    "TierUnitEconomics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tier",
+        "activeLearners",
+        "completedSolves",
+        "verifiedLearningSessions",
+        "totalAiCostUsd",
+        "aiCostPerCompletedSolveUsd",
+        "aiCostPerActiveLearnerUsd",
+        "aiCostPerVerifiedSessionUsd",
+        "grossMarginPercentProxy",
+        "insufficientData"
+      ],
+      "properties": {
+        "tier": {
+          "type": "string",
+          "enum": ["FREE", "PRO", "COACH_PRO", "YKS_SEASON_PASS", "UNKNOWN"]
+        },
+        "activeLearners": { "type": "integer", "minimum": 0 },
+        "completedSolves": { "type": "integer", "minimum": 0 },
+        "verifiedLearningSessions": { "type": "integer", "minimum": 0 },
+        "totalAiCostUsd": { "type": "number", "minimum": 0.0 },
+        "aiCostPerCompletedSolveUsd": { "type": ["number", "null"], "minimum": 0.0 },
+        "aiCostPerActiveLearnerUsd": { "type": ["number", "null"], "minimum": 0.0 },
+        "aiCostPerVerifiedSessionUsd": { "type": ["number", "null"], "minimum": 0.0 },
+        "grossMarginPercentProxy": { "type": ["number", "null"] },
+        "insufficientData": { "type": "boolean" }
+      }
+    },
+    "ConversionAndUnitEconomics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "paywallToPurchaseRate",
+        "totalCompletedSolves",
+        "totalVerifiedLearningSessions",
+        "payingActiveLearners",
+        "totalAiCostUsd",
+        "aiCostPerCompletedSolveUsd",
+        "aiCostPerPayingActiveLearnerUsd",
+        "aiCostPerVerifiedLearningSessionUsd",
+        "byTier"
+      ],
+      "properties": {
+        "paywallToPurchaseRate": { "$ref": "#/$defs/RateMetric" },
+        "totalCompletedSolves": { "type": "integer", "minimum": 0 },
+        "totalVerifiedLearningSessions": { "type": "integer", "minimum": 0 },
+        "payingActiveLearners": { "type": "integer", "minimum": 0 },
+        "totalAiCostUsd": { "type": "number", "minimum": 0.0 },
+        "aiCostPerCompletedSolveUsd": { "type": ["number", "null"], "minimum": 0.0 },
+        "aiCostPerPayingActiveLearnerUsd": { "type": ["number", "null"], "minimum": 0.0 },
+        "aiCostPerVerifiedLearningSessionUsd": { "type": ["number", "null"], "minimum": 0.0 },
+        "byTier": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/TierUnitEconomics" }
+        }
+      }
+    }
+  }
+}

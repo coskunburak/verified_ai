@@ -27,7 +27,10 @@ struct RootView: View {
     @State private var billingTimers = PaywallTriggerCoordinator()
     @State private var isPaywallPresented = false
     @State private var isAccountSettingsPresented = false
+    @State private var isNotificationPreferencesPresented = false
     @State private var isProblemCapturePresented = false
+    @State private var selectedMainTab: MainTab = .solve
+    @State private var pendingDeepLinkRoute: AppRoute?
     @AppStorage("verifiedai.theme_preference") private var themePreferenceRaw: String = AppThemePreference.light.rawValue
 
     init(environment: AppEnvironment, dependencies: AppDependencies) {
@@ -37,12 +40,14 @@ struct RootView: View {
             authenticationAPI: dependencies.authenticationAPI,
             sessionStore: dependencies.authenticationSessionStore,
             networkMonitor: dependencies.networkMonitor,
-            logger: dependencies.logger
+            logger: dependencies.logger,
+            analytics: dependencies.analyticsTracker
         ))
         _onboardingViewModel = State(initialValue: OnboardingViewModel(
             learningProfileAPI: dependencies.learningProfileAPI,
             networkMonitor: dependencies.solveFlowNetworkMonitor,
-            logger: dependencies.logger
+            logger: dependencies.logger,
+            analytics: dependencies.analyticsTracker
         ))
         _accountSettingsViewModel = State(initialValue: AccountSettingsViewModel(
             accountPrivacyAPI: dependencies.accountPrivacyAPI,
@@ -57,7 +62,8 @@ struct RootView: View {
             logger: dependencies.logger
         ))
         _weeklyProgressReportViewModel = StateObject(wrappedValue: WeeklyProgressReportViewModel(
-            service: dependencies.weeklyReportAPI
+            service: dependencies.weeklyReportAPI,
+            analytics: dependencies.analyticsTracker
         ))
         _coldStartDiagnosticViewModel = StateObject(wrappedValue: ColdStartDiagnosticViewModel(
             service: dependencies.coldStartDiagnosticAPI
@@ -79,20 +85,23 @@ struct RootView: View {
             storeRepository: dependencies.storeProductRepository,
             entitlementAPI: dependencies.entitlementAPI,
             networkMonitor: dependencies.networkMonitor,
-            logger: dependencies.logger
+            logger: dependencies.logger,
+            analytics: dependencies.analyticsTracker
         ))
         _contextualPaywallModel = State(initialValue: PaywallViewModel(
             billingAPI: dependencies.appleBillingAPI,
             storeRepository: dependencies.storeProductRepository,
             entitlementAPI: dependencies.entitlementAPI,
             networkMonitor: dependencies.networkMonitor,
-            logger: dependencies.logger
+            logger: dependencies.logger,
+            analytics: dependencies.analyticsTracker
         ))
         _problemCaptureViewModel = State(initialValue: ProblemCaptureViewModel(
             cameraClient: dependencies.problemCameraClient,
             assetStore: dependencies.capturedAssetStore,
             qualityAnalyzer: dependencies.captureQualityAnalyzer,
-            logger: dependencies.logger
+            logger: dependencies.logger,
+            analytics: dependencies.analyticsTracker
         ))
         _problemAssetUploadViewModel = State(initialValue: ProblemAssetUploadViewModel(
             uploadAPI: dependencies.problemAssetUploadAPI,
@@ -133,6 +142,9 @@ struct RootView: View {
         .preferredColorScheme((AppThemePreference(rawValue: themePreferenceRaw) ?? .light).colorScheme)
         .task {
             await restoreSessionOnce()
+        }
+        .onOpenURL { url in
+            handleIncomingDeepLink(url)
         }
         .onChange(of: signInViewModel.state) { old, new in
             if case .authenticated(let previous) = old {
@@ -190,11 +202,33 @@ struct RootView: View {
                 }
             }
         }
+        .sheet(isPresented: $isNotificationPreferencesPresented) {
+            NavigationStack {
+                NotificationPreferencesView(viewModel: notificationPreferencesViewModel)
+                    .toolbar {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button("Done") {
+                                isNotificationPreferencesPresented = false
+                            }
+                        }
+                    }
+            }
+        }
         .environment(\.learningOsAccess, entitlementViewModel)
         .onChange(of: scenePhase) { _, phase in
-            if phase == .active { Task { await entitlementViewModel.bootstrap(force: true) } }
+            if phase == .active {
+                Task {
+                    await entitlementViewModel.bootstrap(force: true)
+                    await dependencies.analyticsClient.flush()
+                }
+            } else if phase == .background {
+                Task {
+                    await dependencies.analyticsClient.flush()
+                }
+            }
         }
         .task(id: session.sessionId) {
+            await dependencies.analyticsClient.bind(userId: session.userId, sessionId: session.sessionId)
             entitlementViewModel.bind(.init(user: session.userId, session: session.sessionId))
             let entitlementModel = entitlementViewModel
             paywallViewModel.onServerEntitlementVerified = { await entitlementModel.refresh(force: true) }
@@ -290,16 +324,25 @@ struct RootView: View {
                                 await TutorAccountAuthorization.owns(owner: userId, sessionId: authSessionId,
                                     service: tutorService, store: dependencies.authenticationSessionStore,
                                     presentation: { signInViewModel.state })
-                            }),
-                        isFixture: dependencies.solveFixture, profileModel: onboardingViewModel, logger: dependencies.logger)
+                            },
+                            analytics: dependencies.analyticsTracker),
+                        isFixture: dependencies.solveFixture, profileModel: onboardingViewModel, logger: dependencies.logger,
+                        analytics: dependencies.analyticsTracker)
                 } : nil,
                 reviewViewModel: dependencies.solveFixture ? nil : problemReviewViewModel,
                 coldStartViewModel: coldStartDiagnosticViewModel,
                 examViewModel: examCatalogViewModel,
                 candidateProfileViewModel: candidateProfileViewModel,
                 blueprintAssemblyViewModel: blueprintAssemblyViewModel,
-                weeklyReportViewModel: weeklyProgressReportViewModel
+                weeklyReportViewModel: weeklyProgressReportViewModel,
+                selectedTab: $selectedMainTab
             )
+            .task(id: pendingDeepLinkRoute) {
+                if let route = pendingDeepLinkRoute {
+                    pendingDeepLinkRoute = nil
+                    applyDeepLinkRoute(route)
+                }
+            }
             .onChange(of: coldStartDiagnosticViewModel.isFlowPresented) { _, visible in
                 if !visible { billingTimers.update(.diagnostic, .inactive) }
             }
@@ -386,6 +429,10 @@ struct RootView: View {
         Task { await blueprintAssemblyViewModel.purgeUserDataAndReset() }
         entitlementViewModel.reset()
         isPaywallPresented = false
+        isAccountSettingsPresented = false
+        isNotificationPreferencesPresented = false
+        selectedMainTab = .solve
+        pendingDeepLinkRoute = nil
         billingTimers = PaywallTriggerCoordinator()
         paywallViewModel.onServerEntitlementVerified = nil
         contextualPaywallModel.onServerEntitlementVerified = nil
@@ -395,12 +442,63 @@ struct RootView: View {
         problemReviewViewModel.reset()
         problemHistoryViewModel.reset()
         Task { await problemCaptureViewModel.cancel() }
+        Task { await dependencies.analyticsClient.reset(purgeAll: true) }
     }
 
     private func handleAccountDeleted() {
         isAccountSettingsPresented = false
+        isNotificationPreferencesPresented = false
         resetAuthenticatedState()
         signInViewModel.discardLocalSession()
+    }
+
+    private var isEntitlementReadyForNavigation: Bool {
+        switch entitlementViewModel.state {
+        case .ready, .offline:
+            return true
+        case .idle, .loading, .failed:
+            return false
+        }
+    }
+
+    private func handleIncomingDeepLink(_ url: URL) {
+        guard let route = dependencies.deepLinkRouter.route(for: url) else {
+            return
+        }
+        dependencies.router.navigate(to: route)
+        if case .authenticated = signInViewModel.state, isEntitlementReadyForNavigation {
+            applyDeepLinkRoute(route)
+        } else {
+            pendingDeepLinkRoute = route
+        }
+    }
+
+    private func applyDeepLinkRoute(_ route: AppRoute) {
+        switch route {
+        case .home:
+            selectedMainTab = .solve
+        case .studyPlanToday:
+            selectedMainTab = .plan
+            Task { await dependencies.analyticsTracker.track(.lifecycleNotificationOpened(category: .studyPlan, intentType: "STUDY_PLAN_DAILY_MISSION")) }
+        case .spacedReview:
+            selectedMainTab = .plan
+            Task { await dependencies.analyticsTracker.track(.lifecycleNotificationOpened(category: .spacedReview, intentType: "SPACED_REVIEW_DUE")) }
+        case .examReadiness:
+            selectedMainTab = .exams
+            Task { await dependencies.analyticsTracker.track(.lifecycleNotificationOpened(category: .examDeadline, intentType: "EXAM_DEADLINE_COUNTDOWN")) }
+        case .notificationPreferences:
+            isNotificationPreferencesPresented = true
+        case .subscriptionManage:
+            if billingTimers.safeToPresent {
+                isPaywallPresented = true
+            }
+            Task { await dependencies.analyticsTracker.track(.lifecycleNotificationOpened(category: .billingTrialReminder, intentType: "TRIAL_ENDING_48H_REMINDER")) }
+        case .accountSecurity:
+            isAccountSettingsPresented = true
+            Task { await dependencies.analyticsTracker.track(.lifecycleNotificationOpened(category: .accountSecurity, intentType: "ACCOUNT_SECURITY_ALERT")) }
+        case .platformHealth:
+            isAccountSettingsPresented = true
+        }
     }
 
     private func restoreSessionOnce() async {

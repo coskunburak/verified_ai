@@ -9,6 +9,7 @@ final class TutorViewModel {
     private let store: TutorPendingStore
     private let network: NetworkMonitoring
     private let ownsAccount: @MainActor () async -> Bool
+    private let analytics: AnalyticsTracking
     @ObservationIgnored private var task: Task<Void, Never>?
     private var generation = 0
     private var active = false
@@ -26,9 +27,10 @@ final class TutorViewModel {
     var phase: TutorPhase { hintHistory?.progress.phase ?? turns.last?.progress.phase ?? .clarifyGoal }
     var draft = ""
     init(owner: UUID, problem: UUID, service: TutorServicing, store: TutorPendingStore,
-         network: NetworkMonitoring, ownsAccount: @escaping @MainActor () async -> Bool) {
+         network: NetworkMonitoring, ownsAccount: @escaping @MainActor () async -> Bool,
+         analytics: AnalyticsTracking = NoOpAnalyticsTracker()) {
         self.owner = owner; self.problem = problem; self.service = service; self.store = store
-        self.network = network; self.ownsAccount = ownsAccount
+        self.network = network; self.ownsAccount = ownsAccount; self.analytics = analytics
     }
     var canSend: Bool { active && loaded && !phase.terminal && !busy && !blocked && pending == nil && errorKey == nil && session?.status == .active && session?.sourceCurrent == true && !draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && draft.unicodeScalars.count <= 2000 && draft.utf8.count <= 8000 }
     func resume() {
@@ -135,6 +137,19 @@ final class TutorViewModel {
         if operation.kind != .hint && operation.kind != .reveal { draft = ""; selectedIntent = .unknown }
         try await reload(id)
         loaded = true
+        let currentPhase = phase.rawValue
+        Task { [analytics] in
+            if operation.kind == .hint, let level = operation.level {
+                let hint = AnalyticsHintLevel(rawValue: level.rawValue) ?? .h1
+                await analytics.track(.hintRequested(hintLevel: hint, pedagogicalPhase: currentPhase))
+            } else if operation.kind == .reveal {
+                await analytics.track(.answerRevealed(pedagogicalPhase: currentPhase))
+            } else if operation.session != nil && operation.content != nil {
+                await analytics.track(.tutorTurnSubmitted(pedagogicalPhase: currentPhase))
+            } else {
+                await analytics.track(.tutorSessionStarted(pedagogicalPhase: currentPhase))
+            }
+        }
     }
     private func reload(_ id: UUID) async throws {
         let snapshot = try await service.read(problem: problem, session: id)

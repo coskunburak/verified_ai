@@ -85,4 +85,19 @@ final class NotificationAPI: NotificationServicing, @unchecked Sendable {
         )
         return response.body
     }
+
+    func fetchLifecycleSummary(limit: Int) async throws -> LifecycleSummaryResponse {
+        let clampedLimit = max(1, min(limit, 50))
+        let response: HTTPResponse<LifecycleSummaryResponse> = try await apiClient.send(
+            HTTPRequest(
+                endpoint: Endpoint(
+                    path: "/api/v1/notifications/lifecycle-summary",
+                    method: .get,
+                    queryItems: [URLQueryItem(name: "limit", value: String(clampedLimit))]
+                ),
+                decodesISO8601Dates: true
+            )
+        )
+        return response.body
+    }
 }

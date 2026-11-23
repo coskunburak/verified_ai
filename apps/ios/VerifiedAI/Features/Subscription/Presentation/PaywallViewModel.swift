@@ -9,6 +9,7 @@ final class PaywallViewModel {
     private let entitlementAPI: EntitlementServicing
     private let networkMonitor: NetworkMonitoring
     private let logger: AppLogger
+    private let analytics: AnalyticsTracking
 
     private var configuration: AppleBillingConfiguration?
 
@@ -24,13 +25,15 @@ final class PaywallViewModel {
         storeRepository: StoreProductRepository,
         entitlementAPI: EntitlementServicing,
         networkMonitor: NetworkMonitoring,
-        logger: AppLogger
+        logger: AppLogger,
+        analytics: AnalyticsTracking = NoOpAnalyticsTracker()
     ) {
         self.billingAPI = billingAPI
         self.storeRepository = storeRepository
         self.entitlementAPI = entitlementAPI
         self.networkMonitor = networkMonitor
         self.logger = logger
+        self.analytics = analytics
     }
 
     private var contextualLocale: String?
@@ -88,6 +91,26 @@ final class PaywallViewModel {
 
     func recordInteraction(_ kind: String) async {
         try? await billingAPI.interaction(kind)
+        if kind == "paywall_viewed" {
+            await analytics.track(.paywallViewed(placement: contextualLocale == nil ? .settings : .contextual))
+        } else if kind == "mistake_moment_shown" {
+            await analytics.track(.paywallMistakeMomentShown())
+        } else if kind == "twin_success_shown" {
+            await analytics.track(.paywallTwinSuccessShown())
+        }
+    }
+
+    func recordContextualPlacement(_ placement: AnalyticsPaywallPlacement, tierCode: String? = nil) {
+        Task { [analytics] in
+            switch placement {
+            case .mistakeMoment:
+                await analytics.track(.paywallMistakeMomentShown(placement: .mistakeMoment, tierCode: tierCode))
+            case .twinSuccess:
+                await analytics.track(.paywallTwinSuccessShown(placement: .twinSuccess, tierCode: tierCode))
+            default:
+                await analytics.track(.paywallViewed(placement: placement, tierCode: tierCode))
+            }
+        }
     }
 
     func load(force: Bool = false) async {
@@ -119,6 +142,12 @@ final class PaywallViewModel {
             products = storeProducts
             state = storeProducts.isEmpty ? .empty : .ready
             logger.info("paywall.products.ready")
+            if !storeProducts.isEmpty {
+                let firstTier = storeProducts.first?.periodCode
+                Task { [analytics] in
+                    await analytics.track(.paywallViewed(placement: .settings, tierCode: firstTier))
+                }
+            }
         } catch {
             state = .failed("Subscriptions could not be loaded.")
             message = "Subscriptions could not be loaded."
@@ -139,6 +168,12 @@ final class PaywallViewModel {
         }
         guard allowed(), products.contains(product) else { return }
         state = .purchasing(product.id)
+        let placement: AnalyticsPaywallPlacement = contextualLocale == nil ? .settings : .contextual
+        let packageCode = product.id
+        let tierCode = product.periodCode
+        Task { [analytics] in
+            await analytics.track(.purchaseStarted(placement: placement, packageCode: packageCode, tierCode: tierCode))
+        }
         do {
             if let locale = contextualLocale {
                 let offers = try await eligibleOffers(locale: locale)
@@ -160,17 +195,26 @@ final class PaywallViewModel {
                 message = nil
             }
         } catch {
+            let failureReason: String
             if case StoreCommerceError.unverifiedTransaction = error {
                 message = "billing.unverified"
+                failureReason = "UNVERIFIED_TRANSACTION"
             } else if !networkMonitor.isReachable {
                 state = .offline
                 message = "Purchases are unavailable while offline."
+                Task { [analytics] in
+                    await analytics.track(.purchaseFailed(placement: placement, packageCode: packageCode, failureReason: "OFFLINE"))
+                }
                 return
             } else {
                 message = "Purchase could not be completed."
+                failureReason = "PURCHASE_ERROR"
             }
             state = .failed(message ?? "Purchase could not be completed.")
             logger.warning("paywall.purchase.failed")
+            Task { [analytics] in
+                await analytics.track(.purchaseFailed(placement: placement, packageCode: packageCode, failureReason: failureReason))
+            }
         }
     }
 
@@ -194,11 +238,19 @@ final class PaywallViewModel {
                 await onServerEntitlementVerified?()
                 state = .ready
                 message = "billing.noRestorable"
+                let placement: AnalyticsPaywallPlacement = contextualLocale == nil ? .settings : .contextual
+                Task { [analytics] in
+                    await analytics.track(.restoreCompleted(placement: placement))
+                }
                 return
             }
 
             for transaction in transactions {
                 try await submitVerifiedTransaction(transaction)
+            }
+            let placement: AnalyticsPaywallPlacement = contextualLocale == nil ? .settings : .contextual
+            Task { [analytics] in
+                await analytics.track(.restoreCompleted(placement: placement))
             }
         } catch {
             state = .failed("Purchases could not be restored.")

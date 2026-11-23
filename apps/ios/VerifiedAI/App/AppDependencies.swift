@@ -10,6 +10,8 @@ struct AppDependencies {
     let learningProfileAPI: LearningProfileServicing
     let notificationAPI: NotificationServicing
     let pushPermissionManager: PushPermissionManaging
+    let analyticsClient: AnalyticsClient
+    let analyticsTracker: AnalyticsTracking
     let entitlementAPI: EntitlementAPI
     let appleBillingAPI: AppleBillingAPI
     let storeProductRepository: StoreProductRepository
@@ -86,7 +88,8 @@ struct AppDependencies {
             userId: userId,
             selectedExamCode: examCode,
             apiService: examAPI,
-            offlineStore: examCacheStore
+            offlineStore: examCacheStore,
+            analytics: analyticsTracker
         )
     }
 
@@ -181,6 +184,12 @@ struct AppDependencies {
         var learningProfileAPI: LearningProfileServicing = LearningProfileAPI(apiClient: apiClient)
         var notificationAPI: NotificationServicing = NotificationAPI(apiClient: apiClient)
         var pushPermissionManager: PushPermissionManaging = PushPermissionManager()
+        let analyticsClient = AnalyticsClient(
+            transport: HTTPAnalyticsAPI(apiClient: apiClient),
+            store: AnalyticsOfflineQueueStore(),
+            isOnline: { await MainActor.run { networkMonitor.isReachable } }
+        )
+        var analyticsTracker: AnalyticsTracking = analyticsClient
         let entitlementAPI = EntitlementAPI(apiClient: apiClient)
         let appleBillingAPI = AppleBillingAPI(apiClient: apiClient)
         let storeProductRepository = StoreKitProductRepository()
@@ -257,6 +266,9 @@ struct AppDependencies {
         let examCacheStore = ExamOfflineSQLiteStore()
         let examAPI: ExamAPIServicing
         #if DEBUG
+        if solveFixture || arguments.contains("--ui-testing") {
+            analyticsTracker = FixtureAnalyticsTracker()
+        }
         if arguments.contains("--exam-fixture"),
            solveFixture || (environment == .development && arguments.contains("--ui-testing-authenticated") && (arguments.contains("--ui-testing-candidate-profile") || arguments.contains("-ui-testing-candidate-profile"))) {
             let simulateOffline = arguments.contains("--exam-offline")
@@ -281,6 +293,8 @@ struct AppDependencies {
             learningProfileAPI: learningProfileAPI,
             notificationAPI: notificationAPI,
             pushPermissionManager: pushPermissionManager,
+            analyticsClient: analyticsClient,
+            analyticsTracker: analyticsTracker,
             entitlementAPI: entitlementAPI,
             appleBillingAPI: appleBillingAPI,
             storeProductRepository: storeProductRepository,

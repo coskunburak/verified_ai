@@ -156,3 +156,54 @@ struct NotificationDeliveryCancelResponse: Codable, Sendable, Equatable {
     let cancelledAt: Date
     let trainingEligible: Bool
 }
+
+enum LifecycleEvaluationDecision: String, Codable, Sendable, Equatable, CaseIterable {
+    case scheduled = "SCHEDULED"
+    case deferredQuietHours = "DEFERRED_QUIET_HOURS"
+    case suppressed = "SUPPRESSED"
+    case replayed = "REPLAYED"
+    case skippedAlreadyCompleted = "SKIPPED_ALREADY_COMPLETED"
+    case skippedCooldownActive = "SKIPPED_COOLDOWN_ACTIVE"
+    case skippedOptedOut = "SKIPPED_OPTED_OUT"
+    case skippedNotEligible = "SKIPPED_NOT_ELIGIBLE"
+    case skippedFeatureDisabled = "SKIPPED_FEATURE_DISABLED"
+    case cancelledObsolete = "CANCELLED_OBSOLETE"
+}
+
+struct LifecycleCooldownItem: Codable, Sendable, Equatable, Identifiable {
+    let category: NotificationCategory
+    let intentType: NotificationIntentType
+    let lastIdempotencyKey: String
+    let lastDeliveryId: UUID?
+    let lastTriggeredAt: Date
+    let cooldownUntil: Date
+    let active: Bool
+
+    var id: String { "\(category.rawValue):\(intentType.rawValue)" }
+}
+
+struct LifecycleEvaluationItem: Codable, Sendable, Equatable, Identifiable {
+    let evaluationId: UUID
+    let sourceModule: String
+    let category: NotificationCategory
+    let intentType: NotificationIntentType
+    let idempotencyKey: String
+    let templateKey: String
+    let decision: LifecycleEvaluationDecision
+    let reasonCode: String
+    let deliveryId: UUID?
+    let evaluatedAt: Date
+
+    var id: UUID { evaluationId }
+}
+
+struct LifecycleSummaryResponse: Codable, Sendable, Equatable {
+    let schemaVersion: String
+    let userId: UUID
+    let lifecycleCampaignsEnabled: Bool
+    let activeCooldowns: [LifecycleCooldownItem]
+    let recentEvaluations: [LifecycleEvaluationItem]
+    let llmTokensUsed: Int
+    let trainingEligible: Bool
+    let generatedAt: Date
+}

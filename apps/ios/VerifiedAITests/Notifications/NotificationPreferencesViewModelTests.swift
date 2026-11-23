@@ -419,6 +419,19 @@ private actor MockNotificationService: NotificationServicing {
             trainingEligible: false
         )
     }
+
+    func fetchLifecycleSummary(limit: Int) async throws -> LifecycleSummaryResponse {
+        LifecycleSummaryResponse(
+            schemaVersion: "lifecycle-summary-v1",
+            userId: current.userId,
+            lifecycleCampaignsEnabled: true,
+            activeCooldowns: [],
+            recentEvaluations: [],
+            llmTokensUsed: 0,
+            trainingEligible: false,
+            generatedAt: Date()
+        )
+    }
 }
 
 @MainActor

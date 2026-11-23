@@ -3,6 +3,7 @@
         allowedDependencies = {"billing::application", 
                 "curriculum::api",
                 "exam::events",
+                "notification::application",
                 "security",
                 "sharedkernel::privacy",
                 "sharedkernel::error",

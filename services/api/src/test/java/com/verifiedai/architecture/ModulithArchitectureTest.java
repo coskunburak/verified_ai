@@ -72,7 +72,8 @@ class ModulithArchitectureTest {
                 "com.verifiedai.mastery..",
                 "com.verifiedai.studyplan..",
                 "com.verifiedai.exam..",
-                "com.verifiedai.tutoring.."
+                "com.verifiedai.tutoring..",
+                "com.verifiedai.identity.."
             )
             .should()
             .dependOnClassesThat()
@@ -95,7 +96,55 @@ class ModulithArchitectureTest {
                 "com.verifiedai.mastery..",
                 "com.verifiedai.studyplan..",
                 "com.verifiedai.exam..",
-                "com.verifiedai.tutoring.."
+                "com.verifiedai.tutoring..",
+                "com.verifiedai.identity.."
+            )
+            .check(classes);
+    }
+
+    @Test
+    void downstreamModulesOnlyUseAnalyticsApplicationPublicSpi() {
+        JavaClasses classes = new ClassFileImporter()
+            .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
+            .importPackages("com.verifiedai");
+
+        noClasses()
+            .that()
+            .resideInAnyPackage(
+                "com.verifiedai.billing..",
+                "com.verifiedai.attempt..",
+                "com.verifiedai.mistake..",
+                "com.verifiedai.mastery..",
+                "com.verifiedai.studyplan..",
+                "com.verifiedai.exam..",
+                "com.verifiedai.tutoring..",
+                "com.verifiedai.notification..",
+                "com.verifiedai.identity.."
+            )
+            .should()
+            .dependOnClassesThat()
+            .resideInAnyPackage(
+                "com.verifiedai.analytics.domain..",
+                "com.verifiedai.analytics.infrastructure..",
+                "com.verifiedai.analytics.api.."
+            )
+            .check(classes);
+
+        noClasses()
+            .that()
+            .resideInAnyPackage("com.verifiedai.analytics..")
+            .should()
+            .dependOnClassesThat()
+            .resideInAnyPackage(
+                "com.verifiedai.billing..",
+                "com.verifiedai.attempt..",
+                "com.verifiedai.mistake..",
+                "com.verifiedai.mastery..",
+                "com.verifiedai.studyplan..",
+                "com.verifiedai.exam..",
+                "com.verifiedai.tutoring..",
+                "com.verifiedai.notification..",
+                "com.verifiedai.identity.."
             )
             .check(classes);
     }

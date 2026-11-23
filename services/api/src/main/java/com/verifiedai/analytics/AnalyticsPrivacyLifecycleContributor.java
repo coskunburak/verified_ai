@@ -1,5 +1,6 @@
 package com.verifiedai.analytics;
 
+import com.verifiedai.analytics.infrastructure.AnalyticsEventJdbcRepository;
 import com.verifiedai.sharedkernel.privacy.AccountDataLifecycleContributor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
@@ -13,11 +14,14 @@ import java.util.*;
 @Order(31)
 public class AnalyticsPrivacyLifecycleContributor implements AccountDataLifecycleContributor {
 
+    private static final int EXPORT_ANALYTICS_EVENT_LIMIT = 200;
+
     private final LearnerMasteryCalibrationRepository repository;
     private final WeeklyLearnerDigestRepository weeklyDigestRepository;
+    private AnalyticsEventJdbcRepository analyticsEventRepository;
 
     public AnalyticsPrivacyLifecycleContributor(LearnerMasteryCalibrationRepository repository) {
-        this(repository, null);
+        this(repository, null, null);
     }
 
     @Autowired
@@ -25,8 +29,22 @@ public class AnalyticsPrivacyLifecycleContributor implements AccountDataLifecycl
         LearnerMasteryCalibrationRepository repository,
         WeeklyLearnerDigestRepository weeklyDigestRepository
     ) {
+        this(repository, weeklyDigestRepository, null);
+    }
+
+    public AnalyticsPrivacyLifecycleContributor(
+        LearnerMasteryCalibrationRepository repository,
+        WeeklyLearnerDigestRepository weeklyDigestRepository,
+        AnalyticsEventJdbcRepository analyticsEventRepository
+    ) {
         this.repository = Objects.requireNonNull(repository, "repository cannot be null");
         this.weeklyDigestRepository = weeklyDigestRepository;
+        this.analyticsEventRepository = analyticsEventRepository;
+    }
+
+    @Autowired(required = false)
+    public void setAnalyticsEventRepository(AnalyticsEventJdbcRepository analyticsEventRepository) {
+        this.analyticsEventRepository = analyticsEventRepository;
     }
 
     @Override
@@ -77,12 +95,18 @@ public class AnalyticsPrivacyLifecycleContributor implements AccountDataLifecycl
             })
             .toList();
 
+        List<Map<String, Object>> exportEvents = analyticsEventRepository != null
+            ? analyticsEventRepository.findRecentByUserIdForExport(userId, EXPORT_ANALYTICS_EVENT_LIMIT)
+            : List.of();
+
         Map<String, Object> payload = new LinkedHashMap<>();
         payload.put("category", category());
         payload.put("recordCount", exportRecords.size());
         payload.put("records", exportRecords);
         payload.put("weeklyLearnerDigestCount", exportDigests.size());
         payload.put("weeklyLearnerDigests", exportDigests);
+        payload.put("analyticsEventCount", exportEvents.size());
+        payload.put("analyticsEvents", exportEvents);
         return Collections.unmodifiableMap(payload);
     }
 
@@ -93,6 +117,9 @@ public class AnalyticsPrivacyLifecycleContributor implements AccountDataLifecycl
         repository.deleteAllByUserId(userId);
         if (weeklyDigestRepository != null) {
             weeklyDigestRepository.deleteByUserId(userId);
+        }
+        if (analyticsEventRepository != null) {
+            analyticsEventRepository.deleteByUserId(userId);
         }
     }
 }

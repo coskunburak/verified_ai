@@ -34,4 +34,8 @@ public class AuthSecurityEventJpaEntity {
         this.reason = reason;
         this.createdAt = now;
     }
+
+    public UUID id() {
+        return id;
+    }
 }

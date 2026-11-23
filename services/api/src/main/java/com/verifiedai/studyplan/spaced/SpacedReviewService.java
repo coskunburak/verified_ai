@@ -4,6 +4,7 @@ import com.verifiedai.billing.application.CapabilityAccessPolicy;
 import com.verifiedai.billing.application.LearningOsCapability;
 import com.verifiedai.sharedkernel.error.ApiErrorCode;
 import com.verifiedai.sharedkernel.error.ApiProblemException;
+import com.verifiedai.studyplan.lifecycle.StudyPlanLifecycleMessagingService;
 import com.verifiedai.studyplan.spaced.dto.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -25,6 +26,13 @@ public class SpacedReviewService {
     @org.springframework.beans.factory.annotation.Autowired(required = false)
     public void setAccess(CapabilityAccessPolicy access) {
         this.access = access;
+    }
+
+    private StudyPlanLifecycleMessagingService lifecycleMessagingService;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    public void setLifecycleMessagingService(StudyPlanLifecycleMessagingService lifecycleMessagingService) {
+        this.lifecycleMessagingService = lifecycleMessagingService;
     }
 
     private boolean tierGuardsEnabled() {
@@ -276,6 +284,12 @@ public class SpacedReviewService {
         item.setEstimatedRetention(updatedRetention);
 
         repository.save(item);
+        if (lifecycleMessagingService != null) {
+            try {
+                lifecycleMessagingService.cancelSpacedReviewReminderIfQueueCleared(userId, completionTime, itemId);
+            } catch (RuntimeException ignored) {
+            }
+        }
 
         return new SpacedItemCompletionResponse(
                 itemId,
@@ -306,6 +320,12 @@ public class SpacedReviewService {
         item.setStatus(SpacedQueueStatus.DISMISSED);
         item.setUpdatedAt(dismissalTime);
         SpacedReviewQueueEntity saved = repository.save(item);
+        if (lifecycleMessagingService != null) {
+            try {
+                lifecycleMessagingService.cancelSpacedReviewReminderIfQueueCleared(userId, dismissalTime, itemId);
+            } catch (RuntimeException ignored) {
+            }
+        }
 
         return new SpacedQueueItemDto(
                 saved.getId(),

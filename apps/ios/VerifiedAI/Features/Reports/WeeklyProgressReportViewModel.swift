@@ -36,17 +36,20 @@ final class WeeklyProgressReportViewModel: ObservableObject {
     private let service: WeeklyReportServicing
     private let pdfRenderer: TutorSharePacketPDFRendering
     private let nowProvider: () -> Date
+    private let analytics: AnalyticsTracking
 
     init(
         service: WeeklyReportServicing,
         pdfRenderer: TutorSharePacketPDFRendering = TutorSharePacketPDFRenderer(),
         initialWeekIso: String? = nil,
         locale: String = "en",
-        nowProvider: @escaping () -> Date = Date.init
+        nowProvider: @escaping () -> Date = Date.init,
+        analytics: AnalyticsTracking = NoOpAnalyticsTracker()
     ) {
         self.service = service
         self.pdfRenderer = pdfRenderer
         self.nowProvider = nowProvider
+        self.analytics = analytics
         self.selectedWeekIso = initialWeekIso ?? ISOWeekCalendarHelper.currentWeekIso(for: nowProvider())
         self.locale = locale.lowercased().hasPrefix("tr") ? "tr" : "en"
     }
@@ -73,6 +76,11 @@ final class WeeklyProgressReportViewModel: ObservableObject {
                 forceRefresh: forceRefresh
             )
             state = .loaded(digest)
+            let weekIso = selectedWeekIso
+            let analyticsLocale = AnalyticsLocale.from(locale)
+            Task { [analytics] in
+                await analytics.track(.weeklyDigestViewed(weekIso: weekIso, locale: analyticsLocale))
+            }
         } catch let networkError as NetworkError {
             handleNetworkFailure(networkError, cachedDigest: previousDigest)
         } catch {

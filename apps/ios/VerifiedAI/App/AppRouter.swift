@@ -1,10 +1,15 @@
 import Foundation
 import Observation
 
-enum AppRoute: Equatable {
+enum AppRoute: Equatable, Sendable {
     case home
     case platformHealth
     case notificationPreferences
+    case studyPlanToday
+    case spacedReview
+    case examReadiness
+    case subscriptionManage
+    case accountSecurity
 }
 
 @MainActor
@@ -25,4 +30,3 @@ final class AppRouter {
         path = route == .home ? [] : [route]
     }
 }
-
