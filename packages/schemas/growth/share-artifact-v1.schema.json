@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/growth/share-artifact-v1.schema.json",
+  "title": "ShareableArtifactResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "shareId",
+    "shareToken",
+    "artifactType",
+    "locale",
+    "summaryPayload",
+    "deepLinkUrl",
+    "status",
+    "rawContentRedacted",
+    "openCount",
+    "correlationId",
+    "trainingEligible",
+    "llmTokensUsed",
+    "expiresAt",
+    "createdAt",
+    "replayed"
+  ],
+  "properties": {
+    "shareId": { "type": "string", "format": "uuid" },
+    "shareToken": { "type": "string", "pattern": "^[A-Za-z0-9_-]{16,48}$" },
+    "artifactType": {
+      "type": "string",
+      "enum": [
+        "WEEKLY_PROGRESS_SUMMARY",
+        "MASTERY_MILESTONE",
+        "COUNTERFACTUAL_CHALLENGE_CARD",
+        "EXAM_READINESS_MILESTONE"
+      ]
+    },
+    "locale": { "type": "string", "enum": ["en", "tr"] },
+    "displayAlias": { "type": ["string", "null"], "maxLength": 24 },
+    "referralCode": { "type": ["string", "null"], "pattern": "^[A-Z2-9]{6,16}$" },
+    "summaryPayload": {
+      "type": "object",
+      "additionalProperties": { "type": ["string", "integer", "boolean"] }
+    },
+    "deepLinkUrl": { "type": "string", "pattern": "^verified-ai://share/[A-Za-z0-9_-]{16,48}$" },
+    "status": { "type": "string", "enum": ["ACTIVE", "REVOKED", "EXPIRED"] },
+    "rawContentRedacted": { "type": "boolean", "const": true },
+    "openCount": { "type": "integer", "minimum": 0 },
+    "correlationId": { "type": "string", "minLength": 1, "maxLength": 64 },
+    "trainingEligible": { "type": "boolean", "const": false },
+    "llmTokensUsed": { "type": "integer", "const": 0 },
+    "expiresAt": { "type": "string", "format": "date-time" },
+    "revokedAt": { "type": ["string", "null"], "format": "date-time" },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "replayed": { "type": "boolean" }
+  }
+}

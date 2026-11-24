@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/admin/wrong-answer-report-queue-v1.schema.json",
+  "title": "WrongAnswerReportQueueResponse",
+  "description": "ROLE_ADMIN queue listing wrong-answer reports with version snapshots and resolution status.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "reportCount",
+    "reports",
+    "generatedAt",
+    "llmTokensUsed",
+    "trainingEligible"
+  ],
+  "properties": {
+    "schemaVersion": { "type": "string", "const": "wrong-answer-report-queue-v1" },
+    "reportCount": { "type": "integer", "minimum": 0, "maximum": 200 },
+    "reports": {
+      "type": "array",
+      "maxItems": 200,
+      "items": { "$ref": "#/$defs/WrongAnswerReport" }
+    },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "llmTokensUsed": { "type": "integer", "const": 0 },
+    "trainingEligible": { "type": "boolean", "const": false }
+  },
+  "$defs": {
+    "WrongAnswerReport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reportId",
+        "userId",
+        "problemSessionId",
+        "reportReason",
+        "userNote",
+        "verificationStatusSnapshot",
+        "policyVersionSnapshot",
+        "modelVersionSnapshot",
+        "problemTypeSnapshot",
+        "status",
+        "reviewerUserId",
+        "resolutionCode",
+        "resolutionNote",
+        "linkedRemediationAuditId",
+        "correlationId",
+        "version",
+        "trainingEligible",
+        "createdAt",
+        "updatedAt",
+        "resolvedAt",
+        "replayed"
+      ],
+      "properties": {
+        "reportId": { "type": "string", "format": "uuid" },
+        "userId": { "type": "string", "format": "uuid" },
+        "problemSessionId": { "type": "string", "format": "uuid" },
+        "reportReason": {
+          "type": "string",
+          "enum": [
+            "WRONG_FINAL_ANSWER",
+            "WRONG_STEP_EXPLANATION",
+            "PARSE_MISMATCH",
+            "FALSE_VERIFICATION",
+            "MISTAKE_DIAGNOSIS_DISPUTE",
+            "OTHER"
+          ]
+        },
+        "userNote": { "type": ["string", "null"], "maxLength": 400 },
+        "verificationStatusSnapshot": { "type": "string", "maxLength": 32 },
+        "policyVersionSnapshot": { "type": ["string", "null"], "maxLength": 64 },
+        "modelVersionSnapshot": { "type": ["string", "null"], "maxLength": 128 },
+        "problemTypeSnapshot": { "type": ["string", "null"], "maxLength": 64 },
+        "status": {
+          "type": "string",
+          "enum": [
+            "OPEN",
+            "IN_REVIEW",
+            "RESOLVED_CONFIRMED_DEFECT",
+            "RESOLVED_NOT_A_DEFECT",
+            "RESOLVED_DUPLICATE",
+            "DISMISSED"
+          ]
+        },
+        "reviewerUserId": { "type": ["string", "null"], "format": "uuid" },
+        "resolutionCode": {
+          "type": ["string", "null"],
+          "enum": [
+            "CONFIRMED_PARSER_DEFECT",
+            "CONFIRMED_SOLVER_DEFECT",
+            "CONFIRMED_VERIFIER_DEFECT",
+            "CONFIRMED_MISTAKE_DEFECT",
+            "VERIFIED_CORRECT_NO_DEFECT",
+            "DUPLICATE_REPORT",
+            "INSUFFICIENT_EVIDENCE",
+            "USER_INPUT_AMBIGUOUS",
+            null
+          ]
+        },
+        "resolutionNote": { "type": ["string", "null"], "maxLength": 400 },
+        "linkedRemediationAuditId": { "type": ["string", "null"], "format": "uuid" },
+        "correlationId": { "type": "string", "maxLength": 64 },
+        "version": { "type": "integer", "minimum": 0 },
+        "trainingEligible": { "type": "boolean", "const": false },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "resolvedAt": { "type": ["string", "null"], "format": "date-time" },
+        "replayed": { "type": "boolean" }
+      }
+    }
+  }
+}

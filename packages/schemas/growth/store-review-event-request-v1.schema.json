@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/growth/store-review-event-request-v1.schema.json",
+  "title": "StoreReviewEventRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["triggerMoment", "outcome", "appVersion", "locale", "trainingEligible"],
+  "properties": {
+    "triggerMoment": {
+      "type": "string",
+      "enum": [
+        "INDEPENDENT_TWIN_MASTERED",
+        "MASTERY_MILESTONE_UNLOCKED",
+        "WEEKLY_PROGRESS_WIN",
+        "MOCK_EXAM_COMPLETED"
+      ]
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "PROMPT_SHOWN",
+        "PROMPT_DISMISSED",
+        "PROMPT_DEFERRED",
+        "PROMPT_DECLINED_PERMANENTLY"
+      ]
+    },
+    "appVersion": { "type": "string", "minLength": 1, "maxLength": 32 },
+    "locale": { "type": "string", "enum": ["en", "tr"] },
+    "trainingEligible": { "type": "boolean", "const": false }
+  }
+}

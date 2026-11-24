@@ -7676,6 +7676,1344 @@ paths:
         '403': {$ref: '#/components/responses/ProblemForbidden'}
         '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
 
+  /v1/admin/support/users/lookup:
+    get:
+      summary: Lookup learner account, recent sessions, entitlement, and quota metadata (ROLE_ADMIN, redacted)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: type
+          required: true
+          schema: {type: string, enum: [USER_ID, SESSION_ID, PROBLEM_SESSION_ID, ORIGINAL_TRANSACTION_ID]}
+        - in: query
+          name: value
+          required: true
+          schema: {type: string, minLength: 1, maxLength: 128}
+      responses:
+        '200':
+          description: Redacted user lookup snapshot
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AdminUserLookupResponse'}
+        '400': {$ref: '#/components/responses/ProblemBadRequest'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /api/v1/admin/support/users/lookup:
+    get:
+      summary: Lookup learner account, recent sessions, entitlement, and quota metadata (ROLE_ADMIN, redacted)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: type
+          required: true
+          schema: {type: string, enum: [USER_ID, SESSION_ID, PROBLEM_SESSION_ID, ORIGINAL_TRANSACTION_ID]}
+        - in: query
+          name: value
+          required: true
+          schema: {type: string, minLength: 1, maxLength: 128}
+      responses:
+        '200':
+          description: Redacted user lookup snapshot
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AdminUserLookupResponse'}
+        '400': {$ref: '#/components/responses/ProblemBadRequest'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /v1/admin/support/users/{userId}/billing:
+    get:
+      summary: Inspect authoritative entitlement, subscriptions, transactions, quota ledgers, and transition audit (ROLE_ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: Authoritative billing support view excluding raw JWS payloads
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AdminBillingSupportResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /api/v1/admin/support/users/{userId}/billing:
+    get:
+      summary: Inspect authoritative entitlement, subscriptions, transactions, quota ledgers, and transition audit (ROLE_ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: Authoritative billing support view excluding raw JWS payloads
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AdminBillingSupportResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /v1/admin/support/problems/trace:
+    get:
+      summary: Inspect redacted problem session, asset metadata, parse revisions, AI provenance, and verification runs (ROLE_ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: problemSessionId
+          required: false
+          schema: {type: string, format: uuid}
+        - in: query
+          name: traceId
+          required: false
+          schema: {type: string, maxLength: 64}
+        - in: query
+          name: correlationId
+          required: false
+          schema: {type: string, maxLength: 64}
+      responses:
+        '200':
+          description: Redacted problem trace view (rawContentRedacted=true)
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AdminProblemTraceResponse'}
+        '400': {$ref: '#/components/responses/ProblemBadRequest'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /api/v1/admin/support/problems/trace:
+    get:
+      summary: Inspect redacted problem session, asset metadata, parse revisions, AI provenance, and verification runs (ROLE_ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: problemSessionId
+          required: false
+          schema: {type: string, format: uuid}
+        - in: query
+          name: traceId
+          required: false
+          schema: {type: string, maxLength: 64}
+        - in: query
+          name: correlationId
+          required: false
+          schema: {type: string, maxLength: 64}
+      responses:
+        '200':
+          description: Redacted problem trace view (rawContentRedacted=true)
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AdminProblemTraceResponse'}
+        '400': {$ref: '#/components/responses/ProblemBadRequest'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /v1/admin/support/problems/{problemSessionId}/raw-content-access:
+    post:
+      summary: Issue time-bounded audited raw content access grant (ROLE_ADMIN + ADMIN_RAW_CONTENT_READ/ROLE_ADMIN_ENGINEERING)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: problemSessionId
+          required: true
+          schema: {type: string, format: uuid}
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: {type: string, pattern: '^[A-Za-z0-9:._-]{8,128}$'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/RawContentGrantRequest'}
+      responses:
+        '200':
+          description: Replayed raw content access grant
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AdminRawContentGrantResponse'}
+        '201':
+          description: Created raw content access grant
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AdminRawContentGrantResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '409': {$ref: '#/components/responses/ProblemConflict'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /api/v1/admin/support/problems/{problemSessionId}/raw-content-access:
+    post:
+      summary: Issue time-bounded audited raw content access grant (ROLE_ADMIN + ADMIN_RAW_CONTENT_READ/ROLE_ADMIN_ENGINEERING)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: problemSessionId
+          required: true
+          schema: {type: string, format: uuid}
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: {type: string, pattern: '^[A-Za-z0-9:._-]{8,128}$'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/RawContentGrantRequest'}
+      responses:
+        '200':
+          description: Replayed raw content access grant
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AdminRawContentGrantResponse'}
+        '201':
+          description: Created raw content access grant
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AdminRawContentGrantResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '409': {$ref: '#/components/responses/ProblemConflict'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /v1/admin/support/problems/{problemSessionId}/raw-content:
+    get:
+      summary: Inspect raw problem assets and parse payloads using valid unexpired grant (ROLE_ADMIN + elevated authority)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: problemSessionId
+          required: true
+          schema: {type: string, format: uuid}
+        - in: query
+          name: grantId
+          required: true
+          schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: Audited raw problem content artifacts
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AdminRawContentInspectionResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '409': {$ref: '#/components/responses/ProblemConflict'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /api/v1/admin/support/problems/{problemSessionId}/raw-content:
+    get:
+      summary: Inspect raw problem assets and parse payloads using valid unexpired grant (ROLE_ADMIN + elevated authority)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: problemSessionId
+          required: true
+          schema: {type: string, format: uuid}
+        - in: query
+          name: grantId
+          required: true
+          schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: Audited raw problem content artifacts
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AdminRawContentInspectionResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '409': {$ref: '#/components/responses/ProblemConflict'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /v1/support/wrong-answer-reports:
+    post:
+      summary: Learner submits wrong-answer report for an owned problem session (BOLA-protected)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: {type: string, pattern: '^[A-Za-z0-9:._-]{8,128}$'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/WrongAnswerReportCreateRequest'}
+      responses:
+        '200':
+          description: Replayed wrong-answer report
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/WrongAnswerReportResponse'}
+        '201':
+          description: Created wrong-answer report
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/WrongAnswerReportResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '409': {$ref: '#/components/responses/ProblemConflict'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /api/v1/support/wrong-answer-reports:
+    post:
+      summary: Learner submits wrong-answer report for an owned problem session (BOLA-protected)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: {type: string, pattern: '^[A-Za-z0-9:._-]{8,128}$'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/WrongAnswerReportCreateRequest'}
+      responses:
+        '200':
+          description: Replayed wrong-answer report
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/WrongAnswerReportResponse'}
+        '201':
+          description: Created wrong-answer report
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/WrongAnswerReportResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '409': {$ref: '#/components/responses/ProblemConflict'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /v1/admin/support/wrong-answer-reports:
+    get:
+      summary: Query wrong-answer reports review queue (ROLE_ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: status
+          required: false
+          schema: {type: string}
+        - in: query
+          name: limit
+          required: false
+          schema: {type: integer, minimum: 1, maximum: 200, default: 50}
+      responses:
+        '200':
+          description: Bounded wrong-answer report queue
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/WrongAnswerReportQueueResponse'}
+        '400': {$ref: '#/components/responses/ProblemBadRequest'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /api/v1/admin/support/wrong-answer-reports:
+    get:
+      summary: Query wrong-answer reports review queue (ROLE_ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: status
+          required: false
+          schema: {type: string}
+        - in: query
+          name: limit
+          required: false
+          schema: {type: integer, minimum: 1, maximum: 200, default: 50}
+      responses:
+        '200':
+          description: Bounded wrong-answer report queue
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/WrongAnswerReportQueueResponse'}
+        '400': {$ref: '#/components/responses/ProblemBadRequest'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /v1/admin/support/wrong-answer-reports/{reportId}:
+    patch:
+      summary: Review or resolve a wrong-answer report with optimistic locking (ROLE_ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: reportId
+          required: true
+          schema: {type: string, format: uuid}
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: {type: string, pattern: '^[A-Za-z0-9:._-]{8,128}$'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/WrongAnswerReportReviewRequest'}
+      responses:
+        '200':
+          description: Updated wrong-answer report
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/WrongAnswerReportResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '409': {$ref: '#/components/responses/ProblemConflict'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /api/v1/admin/support/wrong-answer-reports/{reportId}:
+    patch:
+      summary: Review or resolve a wrong-answer report with optimistic locking (ROLE_ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: reportId
+          required: true
+          schema: {type: string, format: uuid}
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: {type: string, pattern: '^[A-Za-z0-9:._-]{8,128}$'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/WrongAnswerReportReviewRequest'}
+      responses:
+        '200':
+          description: Updated wrong-answer report
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/WrongAnswerReportResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '409': {$ref: '#/components/responses/ProblemConflict'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /v1/admin/support/remediations/billing-reconcile:
+    post:
+      summary: Safe domain-command billing reconciliation via AppleBillingApplicationService (ROLE_ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: {type: string, pattern: '^[A-Za-z0-9:._-]{8,128}$'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/BillingReconcileRemediationRequest'}
+      responses:
+        '200':
+          description: Audited billing reconciliation result
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AdminRemediationResultResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '409': {$ref: '#/components/responses/ProblemConflict'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /api/v1/admin/support/remediations/billing-reconcile:
+    post:
+      summary: Safe domain-command billing reconciliation via AppleBillingApplicationService (ROLE_ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: {type: string, pattern: '^[A-Za-z0-9:._-]{8,128}$'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/BillingReconcileRemediationRequest'}
+      responses:
+        '200':
+          description: Audited billing reconciliation result
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AdminRemediationResultResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '409': {$ref: '#/components/responses/ProblemConflict'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /v1/admin/support/remediations/quota-sync:
+    post:
+      summary: Safe domain-command quota ledger sync via EntitlementApplicationService and QuotaLedgerService (ROLE_ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: {type: string, pattern: '^[A-Za-z0-9:._-]{8,128}$'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/QuotaSyncRemediationRequest'}
+      responses:
+        '200':
+          description: Audited quota sync result
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AdminRemediationResultResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '409': {$ref: '#/components/responses/ProblemConflict'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /api/v1/admin/support/remediations/quota-sync:
+    post:
+      summary: Safe domain-command quota ledger sync via EntitlementApplicationService and QuotaLedgerService (ROLE_ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: {type: string, pattern: '^[A-Za-z0-9:._-]{8,128}$'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/QuotaSyncRemediationRequest'}
+      responses:
+        '200':
+          description: Audited quota sync result
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AdminRemediationResultResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '409': {$ref: '#/components/responses/ProblemConflict'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /v1/admin/support/remediations/kill-switch:
+    post:
+      summary: Safe domain-command kill-switch toggle via FeatureFlagGovernanceService (ROLE_ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: {type: string, pattern: '^[A-Za-z0-9:._-]{8,128}$'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/KillSwitchRemediationRequest'}
+      responses:
+        '200':
+          description: Audited kill-switch linkage result
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AdminRemediationResultResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '409': {$ref: '#/components/responses/ProblemConflict'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /api/v1/admin/support/remediations/kill-switch:
+    post:
+      summary: Safe domain-command kill-switch toggle via FeatureFlagGovernanceService (ROLE_ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: {type: string, pattern: '^[A-Za-z0-9:._-]{8,128}$'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/KillSwitchRemediationRequest'}
+      responses:
+        '200':
+          description: Audited kill-switch linkage result
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AdminRemediationResultResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '409': {$ref: '#/components/responses/ProblemConflict'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /v1/admin/ai-ops/overview:
+    get:
+      summary: AI operations health, active route/prompt/model versions, cost totals, failure samples, and kill-switch states (ROLE_ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: from
+          required: false
+          schema: {type: string, format: date}
+        - in: query
+          name: to
+          required: false
+          schema: {type: string, format: date}
+      responses:
+        '200':
+          description: Redacted AI operations overview
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AdminAiOpsOverviewResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /api/v1/admin/ai-ops/overview:
+    get:
+      summary: AI operations health, active route/prompt/model versions, cost totals, failure samples, and kill-switch states (ROLE_ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: from
+          required: false
+          schema: {type: string, format: date}
+        - in: query
+          name: to
+          required: false
+          schema: {type: string, format: date}
+      responses:
+        '200':
+          description: Redacted AI operations overview
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AdminAiOpsOverviewResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /v1/admin/support/audit:
+    get:
+      summary: Query immutable admin and support audit ledger ordered newest first (ROLE_ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: limit
+          required: false
+          schema: {type: integer, minimum: 1, maximum: 200, default: 50}
+      responses:
+        '200':
+          description: Immutable admin support audit history
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AdminSupportAuditListResponse'}
+        '400': {$ref: '#/components/responses/ProblemBadRequest'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /api/v1/admin/support/audit:
+    get:
+      summary: Query immutable admin and support audit ledger ordered newest first (ROLE_ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: limit
+          required: false
+          schema: {type: integer, minimum: 1, maximum: 200, default: 50}
+      responses:
+        '200':
+          description: Immutable admin support audit history
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AdminSupportAuditListResponse'}
+        '400': {$ref: '#/components/responses/ProblemBadRequest'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /v1/growth/shares:
+    post:
+      summary: Create a PII-free revocable shareable learning artifact
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: {type: string, pattern: '^[A-Za-z0-9:._-]{8,128}$'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CreateShareArtifactRequest'}
+      responses:
+        '201':
+          description: Shareable artifact created
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ShareableArtifactResponse'}
+        '200':
+          description: Idempotent replay of shareable artifact
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ShareableArtifactResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '409': {$ref: '#/components/responses/ProblemConflict'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+    get:
+      summary: List shareable learning artifacts owned by the authenticated learner
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: limit
+          required: false
+          schema: {type: integer, minimum: 1, maximum: 50, default: 20}
+      responses:
+        '200':
+          description: Owned shareable artifacts list
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ShareableArtifactListResponse'}
+        '400': {$ref: '#/components/responses/ProblemBadRequest'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /api/v1/growth/shares:
+    post:
+      summary: Create a PII-free revocable shareable learning artifact
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: {type: string, pattern: '^[A-Za-z0-9:._-]{8,128}$'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CreateShareArtifactRequest'}
+      responses:
+        '201':
+          description: Shareable artifact created
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ShareableArtifactResponse'}
+        '200':
+          description: Idempotent replay of shareable artifact
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ShareableArtifactResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '409': {$ref: '#/components/responses/ProblemConflict'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+    get:
+      summary: List shareable learning artifacts owned by the authenticated learner
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: limit
+          required: false
+          schema: {type: integer, minimum: 1, maximum: 50, default: 20}
+      responses:
+        '200':
+          description: Owned shareable artifacts list
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ShareableArtifactListResponse'}
+        '400': {$ref: '#/components/responses/ProblemBadRequest'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /v1/growth/shares/{shareId}/revoke:
+    post:
+      summary: Revoke an owned shareable learning artifact (BOLA-enforced)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: shareId
+          required: true
+          schema: {type: string, format: uuid}
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: {type: string, pattern: '^[A-Za-z0-9:._-]{8,128}$'}
+      responses:
+        '200':
+          description: Shareable artifact revoked
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ShareableArtifactResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '409': {$ref: '#/components/responses/ProblemConflict'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /api/v1/growth/shares/{shareId}/revoke:
+    post:
+      summary: Revoke an owned shareable learning artifact (BOLA-enforced)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: shareId
+          required: true
+          schema: {type: string, format: uuid}
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: {type: string, pattern: '^[A-Za-z0-9:._-]{8,128}$'}
+      responses:
+        '200':
+          description: Shareable artifact revoked
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ShareableArtifactResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '409': {$ref: '#/components/responses/ProblemConflict'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /v1/growth/shares/public/{shareToken}:
+    get:
+      summary: Resolve a public, PII-free redacted shareable learning card by token
+      security: []
+      parameters:
+        - in: path
+          name: shareToken
+          required: true
+          schema: {type: string, pattern: '^[A-Za-z0-9_-]{16,48}$'}
+      responses:
+        '200':
+          description: Redacted public shareable artifact
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PublicShareArtifactResponse'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '410': {$ref: '#/components/responses/ProblemGone'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /api/v1/growth/shares/public/{shareToken}:
+    get:
+      summary: Resolve a public, PII-free redacted shareable learning card by token
+      security: []
+      parameters:
+        - in: path
+          name: shareToken
+          required: true
+          schema: {type: string, pattern: '^[A-Za-z0-9_-]{16,48}$'}
+      responses:
+        '200':
+          description: Redacted public shareable artifact
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PublicShareArtifactResponse'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '410': {$ref: '#/components/responses/ProblemGone'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /v1/growth/referrals/me:
+    get:
+      summary: Get or lazily mint the authenticated learner's referral summary
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Learner referral summary
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ReferralSummaryResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /api/v1/growth/referrals/me:
+    get:
+      summary: Get or lazily mint the authenticated learner's referral summary
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Learner referral summary
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ReferralSummaryResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /v1/growth/referrals/attribute:
+    post:
+      summary: Attribute a referral code to the authenticated learner with anti-abuse enforcement
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: {type: string, pattern: '^[A-Za-z0-9:._-]{8,128}$'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ReferralAttributeRequest'}
+      responses:
+        '201':
+          description: Referral attributed
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ReferralAttributionResultResponse'}
+        '200':
+          description: Idempotent replay of referral attribution
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ReferralAttributionResultResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '409': {$ref: '#/components/responses/ProblemConflict'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /api/v1/growth/referrals/attribute:
+    post:
+      summary: Attribute a referral code to the authenticated learner with anti-abuse enforcement
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: {type: string, pattern: '^[A-Za-z0-9:._-]{8,128}$'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ReferralAttributeRequest'}
+      responses:
+        '201':
+          description: Referral attributed
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ReferralAttributionResultResponse'}
+        '200':
+          description: Idempotent replay of referral attribution
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ReferralAttributionResultResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '409': {$ref: '#/components/responses/ProblemConflict'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /v1/growth/referrals/qualify:
+    post:
+      summary: Evaluate server-verified learning milestone to qualify referral and record capped reward intent
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: {type: string, pattern: '^[A-Za-z0-9:._-]{8,128}$'}
+      responses:
+        '200':
+          description: Referral qualification state
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ReferralAttributionResultResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '409': {$ref: '#/components/responses/ProblemConflict'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /api/v1/growth/referrals/qualify:
+    post:
+      summary: Evaluate server-verified learning milestone to qualify referral and record capped reward intent
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: {type: string, pattern: '^[A-Za-z0-9:._-]{8,128}$'}
+      responses:
+        '200':
+          description: Referral qualification state
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ReferralAttributionResultResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '404': {$ref: '#/components/responses/ProblemNotFound'}
+        '409': {$ref: '#/components/responses/ProblemConflict'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /v1/growth/review-prompts/eligibility:
+    get:
+      summary: Evaluate server-authoritative non-spammy store review prompt eligibility
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: triggerMoment
+          required: true
+          schema:
+            type: string
+            enum: [INDEPENDENT_TWIN_MASTERED, MASTERY_MILESTONE_UNLOCKED, WEEKLY_PROGRESS_WIN, MOCK_EXAM_COMPLETED]
+        - in: query
+          name: activeTimerRunning
+          required: false
+          schema: {type: boolean, default: false}
+      responses:
+        '200':
+          description: Deterministic store review eligibility evaluation
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/StoreReviewEligibilityResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /api/v1/growth/review-prompts/eligibility:
+    get:
+      summary: Evaluate server-authoritative non-spammy store review prompt eligibility
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: triggerMoment
+          required: true
+          schema:
+            type: string
+            enum: [INDEPENDENT_TWIN_MASTERED, MASTERY_MILESTONE_UNLOCKED, WEEKLY_PROGRESS_WIN, MOCK_EXAM_COMPLETED]
+        - in: query
+          name: activeTimerRunning
+          required: false
+          schema: {type: boolean, default: false}
+      responses:
+        '200':
+          description: Deterministic store review eligibility evaluation
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/StoreReviewEligibilityResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /v1/growth/review-prompts/events:
+    post:
+      summary: Record store review prompt outcome idempotently
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: {type: string, pattern: '^[A-Za-z0-9:._-]{8,128}$'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/StoreReviewEventRequest'}
+      responses:
+        '201':
+          description: Store review event recorded
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/StoreReviewEventResponse'}
+        '200':
+          description: Idempotent replay of store review event
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/StoreReviewEventResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '409': {$ref: '#/components/responses/ProblemConflict'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
+  /api/v1/growth/review-prompts/events:
+    post:
+      summary: Record store review prompt outcome idempotently
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: {type: string, pattern: '^[A-Za-z0-9:._-]{8,128}$'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/StoreReviewEventRequest'}
+      responses:
+        '201':
+          description: Store review event recorded
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/StoreReviewEventResponse'}
+        '200':
+          description: Idempotent replay of store review event
+          headers:
+            Cache-Control:
+              schema: {type: string, enum: ['no-store, private']}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/StoreReviewEventResponse'}
+        '401': {$ref: '#/components/responses/ProblemUnauthorized'}
+        '403': {$ref: '#/components/responses/ProblemForbidden'}
+        '409': {$ref: '#/components/responses/ProblemConflict'}
+        '422': {$ref: '#/components/responses/ProblemUnprocessableEntity'}
+        '503': {$ref: '#/components/responses/ProblemServiceUnavailable'}
+
 components:
   securitySchemes:
     bearerAuth:
@@ -7716,6 +9054,11 @@ components:
           schema: {$ref: '#/components/schemas/ProblemDetails'}
     ProblemServiceUnavailable:
       description: Service feature disabled or temporarily unavailable
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/ProblemDetails'}
+    ProblemGone:
+      description: Requested shareable resource has been revoked or expired
       content:
         application/problem+json:
           schema: {$ref: '#/components/schemas/ProblemDetails'}
@@ -15257,3 +16600,572 @@ components:
             occurredAt:
               type: string
               format: date-time
+    AdminUserLookupResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - schemaVersion
+        - lookupType
+        - userId
+        - accountStatus
+        - accountCreatedAt
+        - accountUpdatedAt
+        - deletionRequestedAt
+        - deletedAt
+        - recentSessions
+        - entitlement
+        - activeQuotaLedger
+        - wrongAnswerReportCount
+        - rawContentRedacted
+        - auditId
+        - generatedAt
+        - llmTokensUsed
+        - trainingEligible
+      properties:
+        schemaVersion: {type: string, const: admin-user-lookup-v1}
+        lookupType: {type: string, enum: [USER_ID, SESSION_ID, PROBLEM_SESSION_ID, ORIGINAL_TRANSACTION_ID]}
+        userId: {type: string, format: uuid}
+        accountStatus: {type: string}
+        accountCreatedAt: {type: string, format: date-time}
+        accountUpdatedAt: {type: string, format: date-time}
+        deletionRequestedAt: {type: [string, 'null'], format: date-time}
+        deletedAt: {type: [string, 'null'], format: date-time}
+        recentSessions:
+          type: array
+          items: {type: object}
+        entitlement: {type: [object, 'null']}
+        activeQuotaLedger: {type: [object, 'null']}
+        wrongAnswerReportCount: {type: integer, minimum: 0}
+        rawContentRedacted: {type: boolean, const: true}
+        auditId: {type: string, format: uuid}
+        generatedAt: {type: string, format: date-time}
+        llmTokensUsed: {type: integer, const: 0}
+        trainingEligible: {type: boolean, const: false}
+    AdminProblemTraceResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - schemaVersion
+        - problemSessionId
+        - userId
+        - sessionStatus
+        - inputMode
+        - currentParseId
+        - problemId
+        - solveJobId
+        - sessionCreatedAt
+        - sessionUpdatedAt
+        - sessionCompletedAt
+        - rawContentRedacted
+        - assets
+        - parseRevisions
+        - aiUsageRecords
+        - verificationRuns
+        - mistakeDisputes
+        - auditId
+        - generatedAt
+        - llmTokensUsed
+        - trainingEligible
+      properties:
+        schemaVersion: {type: string, const: admin-problem-trace-v1}
+        problemSessionId: {type: string, format: uuid}
+        userId: {type: string, format: uuid}
+        sessionStatus: {type: string}
+        inputMode: {type: string}
+        currentParseId: {type: [string, 'null'], format: uuid}
+        problemId: {type: [string, 'null'], format: uuid}
+        solveJobId: {type: [string, 'null'], format: uuid}
+        sessionCreatedAt: {type: string, format: date-time}
+        sessionUpdatedAt: {type: string, format: date-time}
+        sessionCompletedAt: {type: [string, 'null'], format: date-time}
+        rawContentRedacted: {type: boolean, const: true}
+        assets: {type: array, items: {type: object}}
+        parseRevisions: {type: array, items: {type: object}}
+        aiUsageRecords: {type: array, items: {type: object}}
+        verificationRuns: {type: array, items: {type: object}}
+        mistakeDisputes: {type: array, items: {type: object}}
+        auditId: {type: string, format: uuid}
+        generatedAt: {type: string, format: date-time}
+        llmTokensUsed: {type: integer, const: 0}
+        trainingEligible: {type: boolean, const: false}
+    RawContentGrantRequest:
+      type: object
+      additionalProperties: false
+      required: [ticketReference, reason, ttlMinutes, trainingEligible]
+      properties:
+        ticketReference: {type: string, pattern: '^[A-Za-z0-9._-]{3,64}$'}
+        reason: {type: string, minLength: 10, maxLength: 240}
+        ttlMinutes: {type: integer, minimum: 5, maximum: 60}
+        trainingEligible: {type: boolean, const: false}
+    AdminRawContentGrantResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - schemaVersion
+        - grantId
+        - actorUserId
+        - targetUserId
+        - problemSessionId
+        - ticketReference
+        - reason
+        - auditId
+        - grantedAt
+        - expiresAt
+        - replayed
+        - llmTokensUsed
+        - trainingEligible
+      properties:
+        schemaVersion: {type: string, const: admin-raw-content-grant-v1}
+        grantId: {type: string, format: uuid}
+        actorUserId: {type: string, format: uuid}
+        targetUserId: {type: string, format: uuid}
+        problemSessionId: {type: string, format: uuid}
+        ticketReference: {type: string}
+        reason: {type: string}
+        auditId: {type: string, format: uuid}
+        grantedAt: {type: string, format: date-time}
+        expiresAt: {type: string, format: date-time}
+        replayed: {type: boolean}
+        llmTokensUsed: {type: integer, const: 0}
+        trainingEligible: {type: boolean, const: false}
+    AdminRawContentInspectionResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - schemaVersion
+        - grantId
+        - problemSessionId
+        - targetUserId
+        - ticketReference
+        - expiresAt
+        - auditId
+        - assets
+        - parses
+        - inspectedAt
+        - llmTokensUsed
+        - trainingEligible
+      properties:
+        schemaVersion: {type: string, const: admin-raw-content-inspection-v1}
+        grantId: {type: string, format: uuid}
+        problemSessionId: {type: string, format: uuid}
+        targetUserId: {type: string, format: uuid}
+        ticketReference: {type: string}
+        expiresAt: {type: string, format: date-time}
+        auditId: {type: string, format: uuid}
+        assets: {type: array, items: {type: object}}
+        parses: {type: array, items: {type: object}}
+        inspectedAt: {type: string, format: date-time}
+        llmTokensUsed: {type: integer, const: 0}
+        trainingEligible: {type: boolean, const: false}
+    AdminBillingSupportResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - schemaVersion
+        - userId
+        - accountStatus
+        - entitlement
+        - subscriptions
+        - transactions
+        - quotaLedgers
+        - transitionAudit
+        - rawContentRedacted
+        - auditId
+        - generatedAt
+        - llmTokensUsed
+        - trainingEligible
+      properties:
+        schemaVersion: {type: string, const: admin-billing-support-v1}
+        userId: {type: string, format: uuid}
+        accountStatus: {type: string}
+        entitlement: {type: [object, 'null']}
+        subscriptions: {type: array, items: {type: object}}
+        transactions: {type: array, items: {type: object}}
+        quotaLedgers: {type: array, items: {type: object}}
+        transitionAudit: {type: array, items: {type: object}}
+        rawContentRedacted: {type: boolean, const: true}
+        auditId: {type: string, format: uuid}
+        generatedAt: {type: string, format: date-time}
+        llmTokensUsed: {type: integer, const: 0}
+        trainingEligible: {type: boolean, const: false}
+    AdminAiOpsOverviewResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - schemaVersion
+        - fromDate
+        - toDate
+        - totalCalls
+        - totalFailures
+        - totalCostMicros
+        - totalCostUsd
+        - recentFlagAuditCount
+        - providerHealth
+        - activeRoutes
+        - failureSamples
+        - killSwitchFlags
+        - rawContentRedacted
+        - auditId
+        - generatedAt
+        - llmTokensUsed
+        - trainingEligible
+      properties:
+        schemaVersion: {type: string, const: admin-ai-ops-overview-v1}
+        fromDate: {type: string, format: date}
+        toDate: {type: string, format: date}
+        totalCalls: {type: integer, minimum: 0}
+        totalFailures: {type: integer, minimum: 0}
+        totalCostMicros: {type: integer, minimum: 0}
+        totalCostUsd: {type: number, minimum: 0}
+        recentFlagAuditCount: {type: integer, minimum: 0}
+        providerHealth: {type: array, items: {type: object}}
+        activeRoutes: {type: array, items: {type: object}}
+        failureSamples: {type: array, items: {type: object}}
+        killSwitchFlags: {type: array, items: {type: object}}
+        rawContentRedacted: {type: boolean, const: true}
+        auditId: {type: string, format: uuid}
+        generatedAt: {type: string, format: date-time}
+        llmTokensUsed: {type: integer, const: 0}
+        trainingEligible: {type: boolean, const: false}
+    WrongAnswerReportCreateRequest:
+      type: object
+      additionalProperties: false
+      required: [problemSessionId, reportReason, trainingEligible]
+      properties:
+        problemSessionId: {type: string, format: uuid}
+        reportReason:
+          type: string
+          enum:
+            - WRONG_FINAL_ANSWER
+            - WRONG_STEP_EXPLANATION
+            - PARSE_MISMATCH
+            - FALSE_VERIFICATION
+            - MISTAKE_DIAGNOSIS_DISPUTE
+            - OTHER
+        userNote: {type: [string, 'null'], maxLength: 400}
+        trainingEligible: {type: boolean, const: false}
+    WrongAnswerReportReviewRequest:
+      type: object
+      additionalProperties: false
+      required: [status, reason, expectedVersion, trainingEligible]
+      properties:
+        status:
+          type: string
+          enum:
+            - IN_REVIEW
+            - RESOLVED_CONFIRMED_DEFECT
+            - RESOLVED_NOT_A_DEFECT
+            - RESOLVED_DUPLICATE
+            - DISMISSED
+        resolutionCode:
+          type: [string, 'null']
+          enum:
+            - CONFIRMED_PARSER_DEFECT
+            - CONFIRMED_SOLVER_DEFECT
+            - CONFIRMED_VERIFIER_DEFECT
+            - CONFIRMED_MISTAKE_DEFECT
+            - VERIFIED_CORRECT_NO_DEFECT
+            - DUPLICATE_REPORT
+            - INSUFFICIENT_EVIDENCE
+            - USER_INPUT_AMBIGUOUS
+            - null
+        resolutionNote: {type: [string, 'null'], minLength: 5, maxLength: 400}
+        reason: {type: string, minLength: 5, maxLength: 240}
+        linkedRemediationAuditId: {type: [string, 'null'], format: uuid}
+        expectedVersion: {type: integer, minimum: 0}
+        trainingEligible: {type: boolean, const: false}
+    WrongAnswerReportResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - reportId
+        - userId
+        - problemSessionId
+        - reportReason
+        - userNote
+        - verificationStatusSnapshot
+        - policyVersionSnapshot
+        - modelVersionSnapshot
+        - problemTypeSnapshot
+        - status
+        - reviewerUserId
+        - resolutionCode
+        - resolutionNote
+        - linkedRemediationAuditId
+        - correlationId
+        - version
+        - trainingEligible
+        - createdAt
+        - updatedAt
+        - resolvedAt
+        - replayed
+      properties:
+        reportId: {type: string, format: uuid}
+        userId: {type: string, format: uuid}
+        problemSessionId: {type: string, format: uuid}
+        reportReason: {type: string}
+        userNote: {type: [string, 'null']}
+        verificationStatusSnapshot: {type: string}
+        policyVersionSnapshot: {type: [string, 'null']}
+        modelVersionSnapshot: {type: [string, 'null']}
+        problemTypeSnapshot: {type: [string, 'null']}
+        status: {type: string}
+        reviewerUserId: {type: [string, 'null'], format: uuid}
+        resolutionCode: {type: [string, 'null']}
+        resolutionNote: {type: [string, 'null']}
+        linkedRemediationAuditId: {type: [string, 'null'], format: uuid}
+        correlationId: {type: string}
+        version: {type: integer, minimum: 0}
+        trainingEligible: {type: boolean, const: false}
+        createdAt: {type: string, format: date-time}
+        updatedAt: {type: string, format: date-time}
+        resolvedAt: {type: [string, 'null'], format: date-time}
+        replayed: {type: boolean}
+    WrongAnswerReportQueueResponse:
+      type: object
+      additionalProperties: false
+      required: [schemaVersion, reportCount, reports, generatedAt, llmTokensUsed, trainingEligible]
+      properties:
+        schemaVersion: {type: string, const: wrong-answer-report-queue-v1}
+        reportCount: {type: integer, minimum: 0, maximum: 200}
+        reports:
+          type: array
+          items: {$ref: '#/components/schemas/WrongAnswerReportResponse'}
+        generatedAt: {type: string, format: date-time}
+        llmTokensUsed: {type: integer, const: 0}
+        trainingEligible: {type: boolean, const: false}
+    BillingReconcileRemediationRequest:
+      type: object
+      additionalProperties: false
+      required: [userId, transactionId, reason, trainingEligible]
+      properties:
+        userId: {type: string, format: uuid}
+        transactionId: {type: string, minLength: 1, maxLength: 128}
+        reason: {type: string, minLength: 5, maxLength: 240}
+        trainingEligible: {type: boolean, const: false}
+    QuotaSyncRemediationRequest:
+      type: object
+      additionalProperties: false
+      required: [userId, reason, trainingEligible]
+      properties:
+        userId: {type: string, format: uuid}
+        reason: {type: string, minLength: 5, maxLength: 240}
+        trainingEligible: {type: boolean, const: false}
+    KillSwitchRemediationRequest:
+      type: object
+      additionalProperties: false
+      required: [flagKey, active, reason, expectedVersion, trainingEligible]
+      properties:
+        flagKey: {type: string, pattern: '^[a-z][a-z0-9_.-]{2,79}$'}
+        active: {type: boolean}
+        reason: {type: string, minLength: 5, maxLength: 240}
+        expectedVersion: {type: integer, minimum: 0}
+        trainingEligible: {type: boolean, const: false}
+    AdminRemediationResultResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - schemaVersion
+        - auditId
+        - action
+        - targetType
+        - targetId
+        - replayed
+        - outcome
+        - details
+        - executedAt
+        - llmTokensUsed
+        - trainingEligible
+      properties:
+        schemaVersion: {type: string, const: admin-remediation-result-v1}
+        auditId: {type: string, format: uuid}
+        action: {type: string, enum: [BILLING_RECONCILE_EXECUTED, QUOTA_SYNC_EXECUTED, KILL_SWITCH_LINKED_EXECUTED]}
+        targetType: {type: string, enum: [USER, BILLING, FEATURE_FLAG]}
+        targetId: {type: string}
+        replayed: {type: boolean}
+        outcome: {type: string, enum: [APPLIED, REPLAYED]}
+        details: {type: object}
+        executedAt: {type: string, format: date-time}
+        llmTokensUsed: {type: integer, const: 0}
+        trainingEligible: {type: boolean, const: false}
+    AdminSupportAuditListResponse:
+      type: object
+      additionalProperties: false
+      required: [schemaVersion, entryCount, entries, generatedAt, llmTokensUsed, trainingEligible]
+      properties:
+        schemaVersion: {type: string, const: admin-support-audit-list-v1}
+        entryCount: {type: integer, minimum: 0, maximum: 200}
+        entries:
+          type: array
+          items: {type: object}
+        generatedAt: {type: string, format: date-time}
+        llmTokensUsed: {type: integer, const: 0}
+        trainingEligible: {type: boolean, const: false}
+    CreateShareArtifactRequest:
+      type: object
+      additionalProperties: false
+      required: [artifactType, summaryPayload, trainingEligible]
+      properties:
+        artifactType:
+          type: string
+          enum: [WEEKLY_PROGRESS_SUMMARY, MASTERY_MILESTONE, COUNTERFACTUAL_CHALLENGE_CARD, EXAM_READINESS_MILESTONE]
+        locale: {type: string, enum: [en, tr]}
+        displayAlias: {type: string, nullable: true, pattern: '^[A-Za-z0-9ÇĞİÖŞÜçğıöşü ._''-]{2,24}$'}
+        referralCode: {type: string, nullable: true, pattern: '^[A-Z2-9]{6,16}$'}
+        summaryPayload:
+          type: object
+          additionalProperties: true
+        ttlDays: {type: integer, nullable: true, minimum: 1, maximum: 90}
+        trainingEligible: {type: boolean, const: false}
+    ShareableArtifactResponse:
+      type: object
+      additionalProperties: false
+      required: [shareId, shareToken, artifactType, locale, summaryPayload, deepLinkUrl, status, rawContentRedacted, openCount, correlationId, trainingEligible, llmTokensUsed, expiresAt, createdAt, replayed]
+      properties:
+        shareId: {type: string, format: uuid}
+        shareToken: {type: string, pattern: '^[A-Za-z0-9_-]{16,48}$'}
+        artifactType:
+          type: string
+          enum: [WEEKLY_PROGRESS_SUMMARY, MASTERY_MILESTONE, COUNTERFACTUAL_CHALLENGE_CARD, EXAM_READINESS_MILESTONE]
+        locale: {type: string, enum: [en, tr]}
+        displayAlias: {type: string, nullable: true, maxLength: 24}
+        referralCode: {type: string, nullable: true, pattern: '^[A-Z2-9]{6,16}$'}
+        summaryPayload:
+          type: object
+          additionalProperties: true
+        deepLinkUrl: {type: string, pattern: '^verified-ai://share/[A-Za-z0-9_-]{16,48}$'}
+        status: {type: string, enum: [ACTIVE, REVOKED, EXPIRED]}
+        rawContentRedacted: {type: boolean, const: true}
+        openCount: {type: integer, minimum: 0}
+        correlationId: {type: string}
+        trainingEligible: {type: boolean, const: false}
+        llmTokensUsed: {type: integer, const: 0}
+        expiresAt: {type: string, format: date-time}
+        revokedAt: {type: string, format: date-time, nullable: true}
+        createdAt: {type: string, format: date-time}
+        replayed: {type: boolean}
+    ShareableArtifactListResponse:
+      type: object
+      additionalProperties: false
+      required: [items, totalCount, trainingEligible, llmTokensUsed]
+      properties:
+        items:
+          type: array
+          items: {$ref: '#/components/schemas/ShareableArtifactResponse'}
+        totalCount: {type: integer, minimum: 0}
+        trainingEligible: {type: boolean, const: false}
+        llmTokensUsed: {type: integer, const: 0}
+    PublicShareArtifactResponse:
+      type: object
+      additionalProperties: false
+      required: [shareToken, artifactType, locale, summaryPayload, deepLinkUrl, rawContentRedacted, trainingEligible, llmTokensUsed, expiresAt, createdAt]
+      properties:
+        shareToken: {type: string, pattern: '^[A-Za-z0-9_-]{16,48}$'}
+        artifactType:
+          type: string
+          enum: [WEEKLY_PROGRESS_SUMMARY, MASTERY_MILESTONE, COUNTERFACTUAL_CHALLENGE_CARD, EXAM_READINESS_MILESTONE]
+        locale: {type: string, enum: [en, tr]}
+        displayAlias: {type: string, nullable: true, maxLength: 24}
+        referralCode: {type: string, nullable: true, pattern: '^[A-Z2-9]{6,16}$'}
+        summaryPayload:
+          type: object
+          additionalProperties: true
+        deepLinkUrl: {type: string, pattern: '^verified-ai://share/[A-Za-z0-9_-]{16,48}$'}
+        rawContentRedacted: {type: boolean, const: true}
+        trainingEligible: {type: boolean, const: false}
+        llmTokensUsed: {type: integer, const: 0}
+        expiresAt: {type: string, format: date-time}
+        createdAt: {type: string, format: date-time}
+    ReferralSummaryResponse:
+      type: object
+      additionalProperties: false
+      required: [referralCode, deepLinkUrl, active, totalAttributions, qualifiedCount, rewardedCount, totalRewardCredits, monthlyAttributionsRemaining, annualRewardsRemaining, trainingEligible, llmTokensUsed, createdAt]
+      properties:
+        referralCode: {type: string, pattern: '^[A-Z2-9]{6,16}$'}
+        deepLinkUrl: {type: string, pattern: '^verified-ai://referral/[A-Z2-9]{6,16}$'}
+        active: {type: boolean}
+        totalAttributions: {type: integer, minimum: 0}
+        qualifiedCount: {type: integer, minimum: 0}
+        rewardedCount: {type: integer, minimum: 0}
+        totalRewardCredits: {type: integer, minimum: 0}
+        monthlyAttributionsRemaining: {type: integer, minimum: 0}
+        annualRewardsRemaining: {type: integer, minimum: 0}
+        trainingEligible: {type: boolean, const: false}
+        llmTokensUsed: {type: integer, const: 0}
+        createdAt: {type: string, format: date-time}
+    ReferralAttributeRequest:
+      type: object
+      additionalProperties: false
+      required: [referralCode, attributionSource, trainingEligible]
+      properties:
+        referralCode: {type: string, pattern: '^[A-Z2-9]{6,16}$'}
+        attributionSource: {type: string, enum: [DEEP_LINK, SHARE_CARD, MANUAL_CODE, WEEKLY_PDF_QR]}
+        deviceFingerprintHash: {type: string, nullable: true, pattern: '^[0-9a-f]{64}$'}
+        trainingEligible: {type: boolean, const: false}
+    ReferralAttributionResultResponse:
+      type: object
+      additionalProperties: false
+      required: [attributionId, referralCode, attributionSource, status, rewardUnits, correlationId, trainingEligible, llmTokensUsed, attributedAt, replayed]
+      properties:
+        attributionId: {type: string, format: uuid}
+        referralCode: {type: string, pattern: '^[A-Z2-9]{6,16}$'}
+        attributionSource: {type: string, enum: [DEEP_LINK, SHARE_CARD, MANUAL_CODE, WEEKLY_PDF_QR]}
+        status: {type: string, enum: [ATTRIBUTED, QUALIFIED, REWARD_GRANTED, REJECTED_ABUSE, EXPIRED]}
+        rewardType: {type: string, nullable: true}
+        rewardUnits: {type: integer, minimum: 0, maximum: 20}
+        correlationId: {type: string}
+        trainingEligible: {type: boolean, const: false}
+        llmTokensUsed: {type: integer, const: 0}
+        attributedAt: {type: string, format: date-time}
+        qualifiedAt: {type: string, format: date-time, nullable: true}
+        rewardGrantedAt: {type: string, format: date-time, nullable: true}
+        replayed: {type: boolean}
+    StoreReviewEligibilityResponse:
+      type: object
+      additionalProperties: false
+      required: [eligible, reasonCode, triggerMoment, promptsShownLast365Days, trainingEligible, llmTokensUsed]
+      properties:
+        eligible: {type: boolean}
+        reasonCode:
+          type: string
+          enum: [ELIGIBLE, INELIGIBLE_ACTIVE_TIMER, INELIGIBLE_USER_DECLINED, INELIGIBLE_RECENT_FRICTION, INELIGIBLE_INSUFFICIENT_ENGAGEMENT, INELIGIBLE_ANNUAL_CAP_REACHED, INELIGIBLE_COOLDOWN_ACTIVE]
+        nextEligibleAt: {type: string, format: date-time, nullable: true}
+        triggerMoment:
+          type: string
+          enum: [INDEPENDENT_TWIN_MASTERED, MASTERY_MILESTONE_UNLOCKED, WEEKLY_PROGRESS_WIN, MOCK_EXAM_COMPLETED]
+        promptsShownLast365Days: {type: integer, minimum: 0, maximum: 3}
+        trainingEligible: {type: boolean, const: false}
+        llmTokensUsed: {type: integer, const: 0}
+    StoreReviewEventRequest:
+      type: object
+      additionalProperties: false
+      required: [triggerMoment, outcome, appVersion, locale, trainingEligible]
+      properties:
+        triggerMoment:
+          type: string
+          enum: [INDEPENDENT_TWIN_MASTERED, MASTERY_MILESTONE_UNLOCKED, WEEKLY_PROGRESS_WIN, MOCK_EXAM_COMPLETED]
+        outcome:
+          type: string
+          enum: [PROMPT_SHOWN, PROMPT_DISMISSED, PROMPT_DEFERRED, PROMPT_DECLINED_PERMANENTLY]
+        appVersion: {type: string, minLength: 1, maxLength: 32}
+        locale: {type: string, enum: [en, tr]}
+        trainingEligible: {type: boolean, const: false}
+    StoreReviewEventResponse:
+      type: object
+      additionalProperties: false
+      required: [eventId, triggerMoment, outcome, appVersion, locale, correlationId, trainingEligible, llmTokensUsed, occurredAt, replayed]
+      properties:
+        eventId: {type: string, format: uuid}
+        triggerMoment:
+          type: string
+          enum: [INDEPENDENT_TWIN_MASTERED, MASTERY_MILESTONE_UNLOCKED, WEEKLY_PROGRESS_WIN, MOCK_EXAM_COMPLETED]
+        outcome:
+          type: string
+          enum: [PROMPT_SHOWN, PROMPT_DISMISSED, PROMPT_DEFERRED, PROMPT_DECLINED_PERMANENTLY]
+        appVersion: {type: string}
+        locale: {type: string, enum: [en, tr]}
+        correlationId: {type: string}
+        trainingEligible: {type: boolean, const: false}
+        llmTokensUsed: {type: integer, const: 0}
+        occurredAt: {type: string, format: date-time}
+        replayed: {type: boolean}

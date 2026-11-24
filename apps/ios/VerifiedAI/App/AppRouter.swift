@@ -10,6 +10,8 @@ enum AppRoute: Equatable, Sendable {
     case examReadiness
     case subscriptionManage
     case accountSecurity
+    case sharedArtifact(token: String)
+    case referralInvite(code: String)
 }
 
 @MainActor

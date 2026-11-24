@@ -1,0 +1,15 @@
+{
+  "artifactType": "COUNTERFACTUAL_CHALLENGE_CARD",
+  "locale": "en",
+  "displayAlias": "Deniz K.",
+  "referralCode": "VERIFIED8",
+  "summaryPayload": {
+    "mistakeCode": "SIGN_FLIP_LINEAR",
+    "skillCode": "MATH.ALG.LINEAR_EQ",
+    "challengeSummaryKey": "challenge.sign_flip.v1",
+    "locale": "en",
+    "difficultyBand": "FOUNDATION"
+  },
+  "ttlDays": 30,
+  "trainingEligible": false
+}

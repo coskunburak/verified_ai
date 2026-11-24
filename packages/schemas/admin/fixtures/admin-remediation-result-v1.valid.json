@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "admin-remediation-result-v1",
+  "auditId": "33333333-4444-5555-6666-777777777781",
+  "action": "QUOTA_SYNC_EXECUTED",
+  "targetType": "USER",
+  "targetId": "11111111-2222-3333-4444-555555555555",
+  "replayed": false,
+  "outcome": "APPLIED",
+  "details": {
+    "effectiveTier": "PRO",
+    "periodKey": "2026-11",
+    "aiVerificationsLimit": 150
+  },
+  "executedAt": "2026-11-23T12:12:00Z",
+  "llmTokensUsed": 0,
+  "trainingEligible": false
+}

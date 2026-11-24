@@ -1,0 +1,166 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/admin/admin-ai-ops-overview-v1.schema.json",
+  "title": "AdminAiOpsOverviewResponse",
+  "description": "AI operations health, route/prompt/model provenance, cost aggregation, redacted failure samples, and kill-switch state.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "fromDate",
+    "toDate",
+    "totalCalls",
+    "totalFailures",
+    "totalCostMicros",
+    "totalCostUsd",
+    "recentFlagAuditCount",
+    "providerHealth",
+    "activeRoutes",
+    "failureSamples",
+    "killSwitchFlags",
+    "rawContentRedacted",
+    "auditId",
+    "generatedAt",
+    "llmTokensUsed",
+    "trainingEligible"
+  ],
+  "properties": {
+    "schemaVersion": { "type": "string", "const": "admin-ai-ops-overview-v1" },
+    "fromDate": { "type": "string", "format": "date" },
+    "toDate": { "type": "string", "format": "date" },
+    "totalCalls": { "type": "integer", "minimum": 0 },
+    "totalFailures": { "type": "integer", "minimum": 0 },
+    "totalCostMicros": { "type": "integer", "minimum": 0 },
+    "totalCostUsd": { "type": "number", "minimum": 0 },
+    "recentFlagAuditCount": { "type": "integer", "minimum": 0 },
+    "providerHealth": {
+      "type": "array",
+      "maxItems": 100,
+      "items": { "$ref": "#/$defs/ProviderHealth" }
+    },
+    "activeRoutes": {
+      "type": "array",
+      "maxItems": 100,
+      "items": { "$ref": "#/$defs/ActiveRoute" }
+    },
+    "failureSamples": {
+      "type": "array",
+      "maxItems": 100,
+      "items": { "$ref": "#/$defs/RedactedFailureSample" }
+    },
+    "killSwitchFlags": {
+      "type": "array",
+      "maxItems": 100,
+      "items": { "$ref": "#/$defs/KillSwitchFlag" }
+    },
+    "rawContentRedacted": { "type": "boolean", "const": true },
+    "auditId": { "type": "string", "format": "uuid" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "llmTokensUsed": { "type": "integer", "const": 0 },
+    "trainingEligible": { "type": "boolean", "const": false }
+  },
+  "$defs": {
+    "ProviderHealth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "model",
+        "totalCalls",
+        "successCalls",
+        "failureCalls",
+        "totalCostMicros",
+        "totalCostUsd",
+        "avgLatencyMs"
+      ],
+      "properties": {
+        "provider": { "type": "string", "maxLength": 64 },
+        "model": { "type": "string", "maxLength": 128 },
+        "totalCalls": { "type": "integer", "minimum": 0 },
+        "successCalls": { "type": "integer", "minimum": 0 },
+        "failureCalls": { "type": "integer", "minimum": 0 },
+        "totalCostMicros": { "type": "integer", "minimum": 0 },
+        "totalCostUsd": { "type": "number", "minimum": 0 },
+        "avgLatencyMs": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "ActiveRoute": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "capability",
+        "routePolicyVersion",
+        "routeId",
+        "provider",
+        "model",
+        "promptId",
+        "promptVersion",
+        "schemaVersion"
+      ],
+      "properties": {
+        "capability": { "type": "string", "maxLength": 64 },
+        "routePolicyVersion": { "type": ["string", "null"], "maxLength": 64 },
+        "routeId": { "type": ["string", "null"], "maxLength": 64 },
+        "provider": { "type": ["string", "null"], "maxLength": 64 },
+        "model": { "type": ["string", "null"], "maxLength": 128 },
+        "promptId": { "type": ["string", "null"], "maxLength": 64 },
+        "promptVersion": { "type": ["string", "null"], "maxLength": 64 },
+        "schemaVersion": { "type": ["string", "null"], "maxLength": 64 }
+      }
+    },
+    "RedactedFailureSample": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "usageRecordId",
+        "capability",
+        "provider",
+        "model",
+        "status",
+        "failureClass",
+        "retryable",
+        "fallbackUsed",
+        "correlationId",
+        "traceId",
+        "createdAt"
+      ],
+      "properties": {
+        "usageRecordId": { "type": "string", "format": "uuid" },
+        "capability": { "type": "string", "maxLength": 64 },
+        "provider": { "type": ["string", "null"], "maxLength": 64 },
+        "model": { "type": ["string", "null"], "maxLength": 128 },
+        "status": { "type": "string", "maxLength": 48 },
+        "failureClass": { "type": ["string", "null"], "maxLength": 128 },
+        "retryable": { "type": ["boolean", "null"] },
+        "fallbackUsed": { "type": ["boolean", "null"] },
+        "correlationId": { "type": ["string", "null"], "maxLength": 64 },
+        "traceId": { "type": ["string", "null"], "maxLength": 64 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "KillSwitchFlag": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "flagKey",
+        "category",
+        "enabled",
+        "killSwitchActive",
+        "rolloutBasisPoints",
+        "currentValueJson",
+        "version",
+        "updatedAt"
+      ],
+      "properties": {
+        "flagKey": { "type": "string", "pattern": "^[a-z][a-z0-9_.-]{2,79}$" },
+        "category": { "type": "string", "maxLength": 32 },
+        "enabled": { "type": "boolean" },
+        "killSwitchActive": { "type": "boolean" },
+        "rolloutBasisPoints": { "type": "integer", "minimum": 0, "maximum": 10000 },
+        "currentValueJson": { "type": "string", "maxLength": 512 },
+        "version": { "type": "integer", "minimum": 0 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

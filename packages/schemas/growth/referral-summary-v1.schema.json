@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/growth/referral-summary-v1.schema.json",
+  "title": "ReferralSummaryResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "referralCode",
+    "deepLinkUrl",
+    "active",
+    "totalAttributions",
+    "qualifiedCount",
+    "rewardedCount",
+    "totalRewardCredits",
+    "monthlyAttributionsRemaining",
+    "annualRewardsRemaining",
+    "trainingEligible",
+    "llmTokensUsed",
+    "createdAt"
+  ],
+  "properties": {
+    "referralCode": { "type": "string", "pattern": "^[A-Z2-9]{6,16}$" },
+    "deepLinkUrl": { "type": "string", "pattern": "^verified-ai://referral/[A-Z2-9]{6,16}$" },
+    "active": { "type": "boolean" },
+    "totalAttributions": { "type": "integer", "minimum": 0 },
+    "qualifiedCount": { "type": "integer", "minimum": 0 },
+    "rewardedCount": { "type": "integer", "minimum": 0 },
+    "totalRewardCredits": { "type": "integer", "minimum": 0 },
+    "monthlyAttributionsRemaining": { "type": "integer", "minimum": 0 },
+    "annualRewardsRemaining": { "type": "integer", "minimum": 0 },
+    "trainingEligible": { "type": "boolean", "const": false },
+    "llmTokensUsed": { "type": "integer", "const": 0 },
+    "createdAt": { "type": "string", "format": "date-time" }
+  }
+}

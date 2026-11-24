@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/growth/referral-attribute-request-v1.schema.json",
+  "title": "ReferralAttributeRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["referralCode", "attributionSource", "trainingEligible"],
+  "properties": {
+    "referralCode": { "type": "string", "pattern": "^[A-Z2-9]{6,16}$" },
+    "attributionSource": {
+      "type": "string",
+      "enum": ["DEEP_LINK", "SHARE_CARD", "MANUAL_CODE", "WEEKLY_PDF_QR"]
+    },
+    "deviceFingerprintHash": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "trainingEligible": { "type": "boolean", "const": false }
+  }
+}

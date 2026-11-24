@@ -4,6 +4,7 @@ struct AccountSettingsView: View {
     @Bindable var viewModel: AccountSettingsViewModel
     var weeklyReportViewModel: WeeklyProgressReportViewModel? = nil
     var notificationPreferencesViewModel: NotificationPreferencesViewModel? = nil
+    var growthSharingViewModel: GrowthSharingViewModel? = nil
     var environmentName: String? = nil
     var entitlement: Entitlement? = nil
     var quotaSummary: QuotaSummary? = nil
@@ -27,6 +28,9 @@ struct AccountSettingsView: View {
                 }
                 if let weeklyReportViewModel {
                     weeklyReportSection(weeklyReportViewModel)
+                }
+                if let growthSharingViewModel {
+                    growthSection(growthSharingViewModel)
                 }
                 exportSection
                 deletionSection
@@ -146,6 +150,23 @@ struct AccountSettingsView: View {
             }
             .buttonStyle(AppSecondaryButtonStyle())
             .accessibilityIdentifier("account.weeklyReportLink")
+        }
+    }
+
+    private func growthSection(_ growthViewModel: GrowthSharingViewModel) -> some View {
+        AppSurfaceCard {
+            AppSectionHeader(
+                LocalizedStringKey("growth.entry.section"),
+                subtitle: LocalizedStringKey("growth.entry.subtitle")
+            )
+
+            NavigationLink {
+                GrowthShareAndReferralView(viewModel: growthViewModel)
+            } label: {
+                Label(LocalizedStringKey("growth.entry.title"), systemImage: "person.2.wave.2")
+            }
+            .buttonStyle(AppSecondaryButtonStyle())
+            .accessibilityIdentifier("account.growthShareAndReferralLink")
         }
     }
 

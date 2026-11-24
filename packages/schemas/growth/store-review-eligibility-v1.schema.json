@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/growth/store-review-eligibility-v1.schema.json",
+  "title": "StoreReviewEligibilityResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eligible",
+    "reasonCode",
+    "triggerMoment",
+    "promptsShownLast365Days",
+    "trainingEligible",
+    "llmTokensUsed"
+  ],
+  "properties": {
+    "eligible": { "type": "boolean" },
+    "reasonCode": {
+      "type": "string",
+      "enum": [
+        "ELIGIBLE",
+        "INELIGIBLE_ACTIVE_TIMER",
+        "INELIGIBLE_USER_DECLINED",
+        "INELIGIBLE_RECENT_FRICTION",
+        "INELIGIBLE_INSUFFICIENT_ENGAGEMENT",
+        "INELIGIBLE_ANNUAL_CAP_REACHED",
+        "INELIGIBLE_COOLDOWN_ACTIVE"
+      ]
+    },
+    "nextEligibleAt": { "type": ["string", "null"], "format": "date-time" },
+    "triggerMoment": {
+      "type": "string",
+      "enum": [
+        "INDEPENDENT_TWIN_MASTERED",
+        "MASTERY_MILESTONE_UNLOCKED",
+        "WEEKLY_PROGRESS_WIN",
+        "MOCK_EXAM_COMPLETED"
+      ]
+    },
+    "promptsShownLast365Days": { "type": "integer", "minimum": 0, "maximum": 3 },
+    "trainingEligible": { "type": "boolean", "const": false },
+    "llmTokensUsed": { "type": "integer", "const": 0 }
+  }
+}

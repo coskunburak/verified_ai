@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "admin-billing-support-v1",
+  "userId": "11111111-2222-3333-4444-555555555555",
+  "accountStatus": "ACTIVE",
+  "entitlement": {
+    "entitlementId": "22222222-3333-4444-5555-666666666666",
+    "tier": "PRO",
+    "packageCode": "PRO",
+    "source": "APP_STORE_SUBSCRIPTION",
+    "status": "ACTIVE",
+    "effectiveAt": "2026-11-01T00:00:00Z",
+    "expiresAt": "2026-12-01T00:00:00Z",
+    "gracePeriodExpiresAt": null,
+    "originalTransactionId": "orig-tx-1001",
+    "environment": "PRODUCTION",
+    "lastVerifiedAt": "2026-11-23T11:00:00Z",
+    "updatedAt": "2026-11-23T11:00:00Z",
+    "version": 3
+  },
+  "subscriptions": [
+    {
+      "subscriptionId": "dddddddd-1111-2222-3333-eeeeeeeeeeee",
+      "originalTransactionId": "orig-tx-1001",
+      "currentTransactionId": "tx-1002",
+      "productId": "com.verifiedai.pro.monthly",
+      "environment": "PRODUCTION",
+      "status": "ACTIVE",
+      "autoRenewStatus": true,
+      "expiresAt": "2026-12-01T00:00:00Z",
+      "gracePeriodExpiresAt": null,
+      "revokedAt": null,
+      "lastReconciledAt": "2026-11-23T11:00:00Z",
+      "updatedAt": "2026-11-23T11:00:00Z"
+    }
+  ],
+  "transactions": [
+    {
+      "id": "eeeeeeee-1111-2222-3333-ffffffffffff",
+      "transactionId": "tx-1002",
+      "originalTransactionId": "orig-tx-1001",
+      "productId": "com.verifiedai.pro.monthly",
+      "environment": "PRODUCTION",
+      "purchaseDate": "2026-11-01T00:00:00Z",
+      "expiresDate": "2026-12-01T00:00:00Z",
+      "revocationDate": null,
+      "transactionReason": "RENEWAL",
+      "ownershipType": "PURCHASED",
+      "accessRevoked": false,
+      "offerFamily": null,
+      "createdAt": "2026-11-01T00:00:01Z"
+    }
+  ],
+  "quotaLedgers": [
+    {
+      "periodKey": "2026-11",
+      "tierCode": "PRO",
+      "aiVerificationsUsed": 14,
+      "aiVerificationsLimit": 150,
+      "hybridTwinsUsed": 6,
+      "hybridTwinsLimit": 150,
+      "accumulatedAiCostMicros": 145000,
+      "accumulatedAiCostUsd": 0.145,
+      "aiCostCapMicros": 2500000,
+      "costCircuitBreakerTripped": false,
+      "resetsAt": "2026-12-01T00:00:00Z",
+      "updatedAt": "2026-11-23T12:00:00Z"
+    }
+  ],
+  "transitionAudit": [
+    {
+      "id": "ffffffff-1111-2222-3333-000000000001",
+      "fromPackage": "FREE",
+      "toPackage": "PRO",
+      "fromStatus": "ACTIVE",
+      "toStatus": "ACTIVE",
+      "reason": "PURCHASE",
+      "occurredAt": "2026-11-01T00:00:00Z",
+      "recordedAt": "2026-11-01T00:00:01Z"
+    }
+  ],
+  "rawContentRedacted": true,
+  "auditId": "33333333-4444-5555-6666-777777777779",
+  "generatedAt": "2026-11-23T12:07:00Z",
+  "llmTokensUsed": 0,
+  "trainingEligible": false
+}

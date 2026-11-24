@@ -1,0 +1,6 @@
+{
+  "ticketReference": "SUP-2026-1081",
+  "reason": "Inspecting parse mismatch reported by learner in ticket SUP-2026-1081",
+  "ttlMinutes": 15,
+  "trainingEligible": false
+}

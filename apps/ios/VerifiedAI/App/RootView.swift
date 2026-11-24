@@ -12,6 +12,7 @@ struct RootView: View {
     @State private var onboardingViewModel: OnboardingViewModel
     @State private var accountSettingsViewModel: AccountSettingsViewModel
     @State private var notificationPreferencesViewModel: NotificationPreferencesViewModel
+    @State private var growthSharingViewModel: GrowthSharingViewModel
     @StateObject private var weeklyProgressReportViewModel: WeeklyProgressReportViewModel
     @StateObject private var coldStartDiagnosticViewModel: ColdStartDiagnosticViewModel
     @StateObject private var examCatalogViewModel: ExamCatalogAndTargetViewModel
@@ -60,6 +61,11 @@ struct RootView: View {
             permissionManager: dependencies.pushPermissionManager,
             networkMonitor: dependencies.networkMonitor,
             logger: dependencies.logger
+        ))
+        _growthSharingViewModel = State(initialValue: GrowthSharingViewModel(
+            service: dependencies.growthAPI,
+            reviewPrompter: dependencies.storeReviewPrompter,
+            safeToPrompt: { false }
         ))
         _weeklyProgressReportViewModel = StateObject(wrappedValue: WeeklyProgressReportViewModel(
             service: dependencies.weeklyReportAPI,
@@ -146,6 +152,13 @@ struct RootView: View {
         .onOpenURL { url in
             handleIncomingDeepLink(url)
         }
+        .sheet(isPresented: $growthSharingViewModel.isPublicPreviewPresented) {
+            SharedArtifactPreviewSheet(
+                viewModel: growthSharingViewModel,
+                isAuthenticated: isAuthenticatedSession,
+                onDismiss: { growthSharingViewModel.dismissPublicPreview() }
+            )
+        }
         .onChange(of: signInViewModel.state) { old, new in
             if case .authenticated(let previous) = old {
                 switch new {
@@ -183,6 +196,7 @@ struct RootView: View {
                     viewModel: accountSettingsViewModel,
                     weeklyReportViewModel: weeklyProgressReportViewModel,
                     notificationPreferencesViewModel: notificationPreferencesViewModel,
+                    growthSharingViewModel: growthSharingViewModel,
                     environmentName: environment.displayName,
                     entitlement: entitlementViewModel.entitlement,
                     quotaSummary: entitlementViewModel.quotaSummary,
@@ -238,6 +252,9 @@ struct RootView: View {
             contextualPaywallModel.onServerEntitlementVerified = { await entitlementModel.refresh(force: true) }
             accountSettingsViewModel.reset()
             notificationPreferencesViewModel.reset()
+            growthSharingViewModel.reset()
+            let currentTimers = billingTimers
+            growthSharingViewModel.updateSafeToPrompt { currentTimers.safeToPresent }
             weeklyProgressReportViewModel.reset()
             coldStartDiagnosticViewModel.updateLearnerId(session.userId)
             examCatalogViewModel.updateLearnerId(session.userId)
@@ -426,6 +443,7 @@ struct RootView: View {
         onboardingViewModel.reset()
         accountSettingsViewModel.reset()
         notificationPreferencesViewModel.reset()
+        growthSharingViewModel.reset()
         weeklyProgressReportViewModel.reset()
         Task { await coldStartDiagnosticViewModel.purgeCurrentLearnerAndReset() }
         Task { await examCatalogViewModel.purgeUserDataAndReset() }
@@ -438,6 +456,8 @@ struct RootView: View {
         selectedMainTab = .solve
         pendingDeepLinkRoute = nil
         billingTimers = PaywallTriggerCoordinator()
+        let freshTimers = billingTimers
+        growthSharingViewModel.updateSafeToPrompt { freshTimers.safeToPresent }
         paywallViewModel.onServerEntitlementVerified = nil
         contextualPaywallModel.onServerEntitlementVerified = nil
         paywallViewModel.reset()
@@ -457,6 +477,13 @@ struct RootView: View {
         signInViewModel.discardLocalSession()
     }
 
+    private var isAuthenticatedSession: Bool {
+        if case .authenticated = signInViewModel.state {
+            return true
+        }
+        return false
+    }
+
     private var isEntitlementReadyForNavigation: Bool {
         switch entitlementViewModel.state {
         case .ready, .offline:
@@ -471,6 +498,10 @@ struct RootView: View {
             return
         }
         dependencies.router.navigate(to: route)
+        if case .sharedArtifact(let token) = route {
+            Task { await growthSharingViewModel.openPublicShare(token: token) }
+            return
+        }
         if case .authenticated = signInViewModel.state, isEntitlementReadyForNavigation {
             applyDeepLinkRoute(route)
         } else {
@@ -503,6 +534,10 @@ struct RootView: View {
             Task { await dependencies.analyticsTracker.track(.lifecycleNotificationOpened(category: .accountSecurity, intentType: "ACCOUNT_SECURITY_ALERT")) }
         case .platformHealth:
             isAccountSettingsPresented = true
+        case .sharedArtifact(let token):
+            Task { await growthSharingViewModel.openPublicShare(token: token) }
+        case .referralInvite(let code):
+            Task { await growthSharingViewModel.attributeReferral(code: code, source: .deepLink) }
         }
     }
 

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/growth/referral-attribution-result-v1.schema.json",
+  "title": "ReferralAttributionResultResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "attributionId",
+    "referralCode",
+    "attributionSource",
+    "status",
+    "rewardUnits",
+    "correlationId",
+    "trainingEligible",
+    "llmTokensUsed",
+    "attributedAt",
+    "replayed"
+  ],
+  "properties": {
+    "attributionId": { "type": "string", "format": "uuid" },
+    "referralCode": { "type": "string", "pattern": "^[A-Z2-9]{6,16}$" },
+    "attributionSource": {
+      "type": "string",
+      "enum": ["DEEP_LINK", "SHARE_CARD", "MANUAL_CODE", "WEEKLY_PDF_QR"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["ATTRIBUTED", "QUALIFIED", "REWARD_GRANTED", "REJECTED_ABUSE", "EXPIRED"]
+    },
+    "rewardType": { "type": ["string", "null"], "maxLength": 40 },
+    "rewardUnits": { "type": "integer", "minimum": 0, "maximum": 20 },
+    "correlationId": { "type": "string", "minLength": 1, "maxLength": 64 },
+    "trainingEligible": { "type": "boolean", "const": false },
+    "llmTokensUsed": { "type": "integer", "const": 0 },
+    "attributedAt": { "type": "string", "format": "date-time" },
+    "qualifiedAt": { "type": ["string", "null"], "format": "date-time" },
+    "rewardGrantedAt": { "type": ["string", "null"], "format": "date-time" },
+    "replayed": { "type": "boolean" }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "status": "RESOLVED_CONFIRMED_DEFECT",
+  "resolutionCode": "CONFIRMED_SOLVER_DEFECT",
+  "resolutionNote": "Confirmed sign drop in final simplification step against verifier counterexample",
+  "reason": "Reviewed verification evidence and confirmed solver defect",
+  "linkedRemediationAuditId": null,
+  "expectedVersion": 0,
+  "trainingEligible": false
+}

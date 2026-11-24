@@ -1,0 +1,15 @@
+{
+  "attributionId": "22222222-3333-4444-5555-666666666666",
+  "referralCode": "VERIFIED8",
+  "attributionSource": "DEEP_LINK",
+  "status": "REWARD_GRANTED",
+  "rewardType": "BONUS_VERIFIED_SOLVES_CREDIT",
+  "rewardUnits": 5,
+  "correlationId": "corr-grw-ref-1",
+  "trainingEligible": false,
+  "llmTokensUsed": 0,
+  "attributedAt": "2026-11-24T12:00:00Z",
+  "qualifiedAt": "2026-11-24T12:15:00Z",
+  "rewardGrantedAt": "2026-11-24T12:15:00Z",
+  "replayed": false
+}

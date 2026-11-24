@@ -34,8 +34,33 @@ struct DeepLinkRouter: DeepLinkRouting {
             return .subscriptionManage
         case ("account", "/security"):
             return .accountSecurity
+        case ("share", let path):
+            guard path.hasPrefix("/") else { return nil }
+            let token = String(path.dropFirst())
+            guard !token.isEmpty,
+                  !token.contains("/"),
+                  Self.matchesRegex(token, pattern: "^[A-Za-z0-9_-]{16,48}$") else {
+                return nil
+            }
+            return .sharedArtifact(token: token)
+        case ("referral", let path):
+            guard path.hasPrefix("/") else { return nil }
+            let code = String(path.dropFirst())
+            guard !code.isEmpty,
+                  !code.contains("/"),
+                  Self.matchesRegex(code, pattern: "^[A-Z2-9]{6,16}$") else {
+                return nil
+            }
+            return .referralInvite(code: code)
         default:
             return nil
         }
+    }
+
+    private static func matchesRegex(_ value: String, pattern: String) -> Bool {
+        guard let range = value.range(of: pattern, options: .regularExpression) else {
+            return false
+        }
+        return range.lowerBound == value.startIndex && range.upperBound == value.endIndex
     }
 }

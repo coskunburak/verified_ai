@@ -99,6 +99,25 @@ class SecurityConfiguration {
                         ));
                         return;
                     }
+                    if (uri != null && (
+                        uri.equals("/v1/admin/support")
+                            || uri.startsWith("/v1/admin/support/")
+                            || uri.equals("/api/v1/admin/support")
+                            || uri.startsWith("/api/v1/admin/support/")
+                            || uri.equals("/v1/admin/ai-ops")
+                            || uri.startsWith("/v1/admin/ai-ops/")
+                            || uri.equals("/api/v1/admin/ai-ops")
+                            || uri.startsWith("/api/v1/admin/ai-ops/")
+                    )) {
+                        response.setStatus(HttpStatus.FORBIDDEN.value());
+                        response.setContentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE);
+                        response.getWriter().write("""
+                            {"type":"https://errors.verified-ai-learning.example/admin-support-forbidden","title":"Administrative role is required for admin and support console operations","status":403,"code":"%s","traceId":"%s","details":{"recoverable":false,"userAction":"USE_ADMIN_ACCOUNT"}}""".formatted(
+                            ApiErrorCode.ADMIN_SUPPORT_FORBIDDEN.name(),
+                            CorrelationIds.current()
+                        ));
+                        return;
+                    }
                     new org.springframework.security.web.access.AccessDeniedHandlerImpl().handle(request, response, exception);
                 })
             )
@@ -112,6 +131,7 @@ class SecurityConfiguration {
                     "/api/v1/auth/refresh"
                 ).permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/webhooks/apple/app-store").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/growth/shares/public/*", "/v1/growth/shares/public/*").permitAll()
                 .requestMatchers(
                     "/api/v1/platform/health",
                     "/api/v1/platform/readiness",

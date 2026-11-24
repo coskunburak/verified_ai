@@ -1,0 +1,9 @@
+{
+  "eligible": true,
+  "reasonCode": "ELIGIBLE",
+  "nextEligibleAt": null,
+  "triggerMoment": "INDEPENDENT_TWIN_MASTERED",
+  "promptsShownLast365Days": 0,
+  "trainingEligible": false,
+  "llmTokensUsed": 0
+}

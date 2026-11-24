@@ -10,6 +10,8 @@ struct AppDependencies {
     let learningProfileAPI: LearningProfileServicing
     let notificationAPI: NotificationServicing
     let pushPermissionManager: PushPermissionManaging
+    let growthAPI: GrowthServicing
+    let storeReviewPrompter: StoreReviewPrompting
     let analyticsClient: AnalyticsClient
     let analyticsTracker: AnalyticsTracking
     let remoteFeatureFlagStore: RemoteFeatureFlagStore
@@ -314,6 +316,21 @@ struct AppDependencies {
         featureFlagClient = remoteFeatureFlagStore
         #endif
 
+        let growthAPI: GrowthServicing
+        let storeReviewPrompter: StoreReviewPrompting
+        #if DEBUG
+        if solveFixture || arguments.contains("--ui-testing") {
+            growthAPI = FixtureGrowthAPI()
+            storeReviewPrompter = StubStoreReviewPrompter()
+        } else {
+            growthAPI = GrowthAPI(apiClient: apiClient)
+            storeReviewPrompter = StoreKitReviewPrompter()
+        }
+        #else
+        growthAPI = GrowthAPI(apiClient: apiClient)
+        storeReviewPrompter = StoreKitReviewPrompter()
+        #endif
+
         return AppDependencies(
             apiClient: apiClient,
             secureStorage: secureStorage,
@@ -323,6 +340,8 @@ struct AppDependencies {
             learningProfileAPI: learningProfileAPI,
             notificationAPI: notificationAPI,
             pushPermissionManager: pushPermissionManager,
+            growthAPI: growthAPI,
+            storeReviewPrompter: storeReviewPrompter,
             analyticsClient: analyticsClient,
             analyticsTracker: analyticsTracker,
             remoteFeatureFlagStore: remoteFeatureFlagStore,

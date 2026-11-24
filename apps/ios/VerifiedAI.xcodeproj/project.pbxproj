@@ -36,6 +36,15 @@
 		AB1071000000000000000003 /* RemoteFeatureFlagCacheStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1072000000000000000003 /* RemoteFeatureFlagCacheStore.swift */; };
 		AB1071000000000000000004 /* RemoteFeatureFlagClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1072000000000000000004 /* RemoteFeatureFlagClient.swift */; };
 		AB1071000000000000000005 /* RemoteFeatureFlagClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1072000000000000000005 /* RemoteFeatureFlagClientTests.swift */; };
+		AB1091000000000000000001 /* GrowthModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1092000000000000000001 /* GrowthModels.swift */; };
+		AB1091000000000000000002 /* GrowthServicing.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1092000000000000000002 /* GrowthServicing.swift */; };
+		AB1091000000000000000003 /* GrowthAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1092000000000000000003 /* GrowthAPI.swift */; };
+		AB1091000000000000000004 /* StoreKitReviewPrompter.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1092000000000000000004 /* StoreKitReviewPrompter.swift */; };
+		AB1091000000000000000005 /* FixtureGrowthAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1092000000000000000005 /* FixtureGrowthAPI.swift */; };
+		AB1091000000000000000006 /* GrowthSharingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1092000000000000000006 /* GrowthSharingViewModel.swift */; };
+		AB1091000000000000000007 /* GrowthShareAndReferralView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1092000000000000000007 /* GrowthShareAndReferralView.swift */; };
+		AB1091000000000000000008 /* SharedArtifactPreviewSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1092000000000000000008 /* SharedArtifactPreviewSheet.swift */; };
+		AB1091000000000000000009 /* GrowthLoopsAndDeepLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1092000000000000000009 /* GrowthLoopsAndDeepLinkTests.swift */; };
 		B74000000000000000000002 /* attempt-mistake-evaluation-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = A74000000000000000000002 /* attempt-mistake-evaluation-v1.json */; };
 		B75000000000000000000001 /* mistake-dispute-result-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = A75000000000000000000001 /* mistake-dispute-result-v1.json */; };
 		B75000000000000000000002 /* mistake-effective-state-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = A75000000000000000000002 /* mistake-effective-state-v1.json */; };
@@ -375,6 +384,15 @@
 		AB1072000000000000000003 /* RemoteFeatureFlagCacheStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteFeatureFlagCacheStore.swift; sourceTree = "<group>"; };
 		AB1072000000000000000004 /* RemoteFeatureFlagClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteFeatureFlagClient.swift; sourceTree = "<group>"; };
 		AB1072000000000000000005 /* RemoteFeatureFlagClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteFeatureFlagClientTests.swift; sourceTree = "<group>"; };
+		AB1092000000000000000001 /* GrowthModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrowthModels.swift; sourceTree = "<group>"; };
+		AB1092000000000000000002 /* GrowthServicing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrowthServicing.swift; sourceTree = "<group>"; };
+		AB1092000000000000000003 /* GrowthAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrowthAPI.swift; sourceTree = "<group>"; };
+		AB1092000000000000000004 /* StoreKitReviewPrompter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreKitReviewPrompter.swift; sourceTree = "<group>"; };
+		AB1092000000000000000005 /* FixtureGrowthAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixtureGrowthAPI.swift; sourceTree = "<group>"; };
+		AB1092000000000000000006 /* GrowthSharingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrowthSharingViewModel.swift; sourceTree = "<group>"; };
+		AB1092000000000000000007 /* GrowthShareAndReferralView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrowthShareAndReferralView.swift; sourceTree = "<group>"; };
+		AB1092000000000000000008 /* SharedArtifactPreviewSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedArtifactPreviewSheet.swift; sourceTree = "<group>"; };
+		AB1092000000000000000009 /* GrowthLoopsAndDeepLinkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrowthLoopsAndDeepLinkTests.swift; sourceTree = "<group>"; };
 		A74000000000000000000002 /* attempt-mistake-evaluation-v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/attempt-mistake-evaluation-v1.json; sourceTree = SOURCE_ROOT; };
 		A75000000000000000000001 /* mistake-dispute-result-v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/mistake-dispute-result-v1.json; sourceTree = SOURCE_ROOT; };
 		A75000000000000000000002 /* mistake-effective-state-v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../packages/schemas/fixtures/mistake-effective-state-v1.json; sourceTree = SOURCE_ROOT; };
@@ -753,6 +771,7 @@
 				AB1043000000000000000005 /* Notifications */,
 				AB1063000000000000000002 /* Analytics */,
 				AB1073000000000000000001 /* FeatureFlags */,
+				AB1093000000000000000005 /* Growth */,
 				710000000000000000000026 /* Authentication */,
 				710000000000000000000027 /* Onboarding */,
 				710000000000000000000028 /* ProblemCapture */,
@@ -815,6 +834,7 @@
 				C54000000000000000000001 /* ProblemSolving */,
 				71000000000000000000000F /* Account */,
 				AB1043000000000000000001 /* Notifications */,
+				AB1093000000000000000001 /* Growth */,
 				710000000000000000000013 /* Authentication */,
 				710000000000000000000017 /* Home */,
 				710000000000000000000019 /* Onboarding */,
@@ -929,6 +949,53 @@
 				AB1072000000000000000005 /* RemoteFeatureFlagClientTests.swift */,
 			);
 			path = FeatureFlags;
+			sourceTree = "<group>";
+		};
+		AB1093000000000000000001 /* Growth */ = {
+			isa = PBXGroup;
+			children = (
+				AB1093000000000000000002 /* Domain */,
+				AB1093000000000000000003 /* Data */,
+				AB1093000000000000000004 /* Presentation */,
+			);
+			path = Growth;
+			sourceTree = "<group>";
+		};
+		AB1093000000000000000002 /* Domain */ = {
+			isa = PBXGroup;
+			children = (
+				AB1092000000000000000001 /* GrowthModels.swift */,
+				AB1092000000000000000002 /* GrowthServicing.swift */,
+			);
+			path = Domain;
+			sourceTree = "<group>";
+		};
+		AB1093000000000000000003 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				AB1092000000000000000003 /* GrowthAPI.swift */,
+				AB1092000000000000000004 /* StoreKitReviewPrompter.swift */,
+				AB1092000000000000000005 /* FixtureGrowthAPI.swift */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		AB1093000000000000000004 /* Presentation */ = {
+			isa = PBXGroup;
+			children = (
+				AB1092000000000000000006 /* GrowthSharingViewModel.swift */,
+				AB1092000000000000000007 /* GrowthShareAndReferralView.swift */,
+				AB1092000000000000000008 /* SharedArtifactPreviewSheet.swift */,
+			);
+			path = Presentation;
+			sourceTree = "<group>";
+		};
+		AB1093000000000000000005 /* Growth */ = {
+			isa = PBXGroup;
+			children = (
+				AB1092000000000000000009 /* GrowthLoopsAndDeepLinkTests.swift */,
+			);
+			path = Growth;
 			sourceTree = "<group>";
 		};
 		71000000000000000000000B /* Components */ = {
@@ -1939,6 +2006,14 @@
 				AB1071000000000000000002 /* RemoteFeatureFlagAPI.swift in Sources */,
 				AB1071000000000000000003 /* RemoteFeatureFlagCacheStore.swift in Sources */,
 				AB1071000000000000000004 /* RemoteFeatureFlagClient.swift in Sources */,
+				AB1091000000000000000001 /* GrowthModels.swift in Sources */,
+				AB1091000000000000000002 /* GrowthServicing.swift in Sources */,
+				AB1091000000000000000003 /* GrowthAPI.swift in Sources */,
+				AB1091000000000000000004 /* StoreKitReviewPrompter.swift in Sources */,
+				AB1091000000000000000005 /* FixtureGrowthAPI.swift in Sources */,
+				AB1091000000000000000006 /* GrowthSharingViewModel.swift in Sources */,
+				AB1091000000000000000007 /* GrowthShareAndReferralView.swift in Sources */,
+				AB1091000000000000000008 /* SharedArtifactPreviewSheet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2000,6 +2075,7 @@
 				AB1061000000000000000006 /* AnalyticsEventCatalogAndSanitizerTests.swift in Sources */,
 				AB1061000000000000000007 /* AnalyticsClientOfflineQueueTests.swift in Sources */,
 				AB1071000000000000000005 /* RemoteFeatureFlagClientTests.swift in Sources */,
+				AB1091000000000000000009 /* GrowthLoopsAndDeepLinkTests.swift in Sources */,
 				100000000000000000000042 /* AccountSettingsViewModelTests.swift in Sources */,
 				10000000000000000000004A /* ProblemCaptureViewModelTests.swift in Sources */,
 				10000000000000000000004B /* CaptureQualityAnalyzerTests.swift in Sources */,

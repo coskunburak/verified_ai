@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/growth/share-artifact-create-request-v1.schema.json",
+  "title": "CreateShareArtifactRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifactType", "summaryPayload", "trainingEligible"],
+  "properties": {
+    "artifactType": {
+      "type": "string",
+      "enum": [
+        "WEEKLY_PROGRESS_SUMMARY",
+        "MASTERY_MILESTONE",
+        "COUNTERFACTUAL_CHALLENGE_CARD",
+        "EXAM_READINESS_MILESTONE"
+      ]
+    },
+    "locale": {
+      "type": "string",
+      "enum": ["en", "tr"]
+    },
+    "displayAlias": {
+      "type": ["string", "null"],
+      "pattern": "^[A-Za-z0-9ÇĞİÖŞÜçğıöşü ._'-]{2,24}$"
+    },
+    "referralCode": {
+      "type": ["string", "null"],
+      "pattern": "^[A-Z2-9]{6,16}$"
+    },
+    "summaryPayload": {
+      "type": "object",
+      "minProperties": 1,
+      "maxProperties": 12,
+      "additionalProperties": {
+        "type": ["string", "integer", "boolean"]
+      },
+      "propertyNames": {
+        "not": {
+          "enum": ["userId", "email", "rawProblemText", "ocrText", "objectKey", "solutionSteps", "sessionId", "idempotencyKey"]
+        }
+      }
+    },
+    "ttlDays": {
+      "type": ["integer", "null"],
+      "minimum": 1,
+      "maximum": 90
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    }
+  }
+}

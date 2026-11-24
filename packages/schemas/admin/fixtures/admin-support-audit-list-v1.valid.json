@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "admin-support-audit-list-v1",
+  "entryCount": 1,
+  "entries": [
+    {
+      "id": "33333333-4444-5555-6666-777777777781",
+      "action": "QUOTA_SYNC_EXECUTED",
+      "targetType": "USER",
+      "targetId": "11111111-2222-3333-4444-555555555555",
+      "actorUserId": "99999999-1111-2222-3333-444444444444",
+      "actorRole": "ROLE_ADMIN",
+      "idempotencyKey": "adm-quota-sync-20261123-01",
+      "reason": "Synced learner quota ledger after App Store renewal confirmation",
+      "beforeStateJson": "{\"ledgerPresent\":false}",
+      "afterStateJson": "{\"effectiveTier\":\"PRO\",\"periodKey\":\"2026-11\"}",
+      "correlationId": "corr-adm-108",
+      "trainingEligible": false,
+      "occurredAt": "2026-11-23T12:12:00Z"
+    }
+  ],
+  "generatedAt": "2026-11-23T12:15:00Z",
+  "llmTokensUsed": 0,
+  "trainingEligible": false
+}

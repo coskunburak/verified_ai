@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/admin/wrong-answer-report-review-request-v1.schema.json",
+  "title": "WrongAnswerReportReviewRequest",
+  "description": "ROLE_ADMIN request payload to review or resolve a wrong-answer report with optimistic locking.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "status",
+    "reason",
+    "expectedVersion",
+    "trainingEligible"
+  ],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "IN_REVIEW",
+        "RESOLVED_CONFIRMED_DEFECT",
+        "RESOLVED_NOT_A_DEFECT",
+        "RESOLVED_DUPLICATE",
+        "DISMISSED"
+      ]
+    },
+    "resolutionCode": {
+      "type": ["string", "null"],
+      "enum": [
+        "CONFIRMED_PARSER_DEFECT",
+        "CONFIRMED_SOLVER_DEFECT",
+        "CONFIRMED_VERIFIER_DEFECT",
+        "CONFIRMED_MISTAKE_DEFECT",
+        "VERIFIED_CORRECT_NO_DEFECT",
+        "DUPLICATE_REPORT",
+        "INSUFFICIENT_EVIDENCE",
+        "USER_INPUT_AMBIGUOUS",
+        null
+      ]
+    },
+    "resolutionNote": {
+      "type": ["string", "null"],
+      "minLength": 5,
+      "maxLength": 400
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 240
+    },
+    "linkedRemediationAuditId": {
+      "type": ["string", "null"],
+      "format": "uuid"
+    },
+    "expectedVersion": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    }
+  }
+}

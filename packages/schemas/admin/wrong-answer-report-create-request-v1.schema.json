@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/admin/wrong-answer-report-create-request-v1.schema.json",
+  "title": "WrongAnswerReportCreateRequest",
+  "description": "Learner request payload to report a suspected wrong answer or verification mismatch on an owned problem session.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "problemSessionId",
+    "reportReason",
+    "trainingEligible"
+  ],
+  "properties": {
+    "problemSessionId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "reportReason": {
+      "type": "string",
+      "enum": [
+        "WRONG_FINAL_ANSWER",
+        "WRONG_STEP_EXPLANATION",
+        "PARSE_MISMATCH",
+        "FALSE_VERIFICATION",
+        "MISTAKE_DIAGNOSIS_DISPUTE",
+        "OTHER"
+      ]
+    },
+    "userNote": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 400
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    }
+  }
+}

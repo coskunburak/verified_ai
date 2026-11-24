@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "wrong-answer-report-queue-v1",
+  "reportCount": 1,
+  "reports": [
+    {
+      "reportId": "abababab-1111-2222-3333-cdcdcdcdcdcd",
+      "userId": "11111111-2222-3333-4444-555555555555",
+      "problemSessionId": "44444444-5555-6666-7777-888888888888",
+      "reportReason": "WRONG_FINAL_ANSWER",
+      "userNote": "Final simplified fraction sign does not match step 2",
+      "verificationStatusSnapshot": "VERIFIED",
+      "policyVersionSnapshot": "verification-policy-v1",
+      "modelVersionSnapshot": "gemini:gemini-2.5-flash",
+      "problemTypeSnapshot": "CAMERA_PHOTO",
+      "status": "OPEN",
+      "reviewerUserId": null,
+      "resolutionCode": null,
+      "resolutionNote": null,
+      "linkedRemediationAuditId": null,
+      "correlationId": "corr-war-1",
+      "version": 0,
+      "trainingEligible": false,
+      "createdAt": "2026-11-23T11:50:00Z",
+      "updatedAt": "2026-11-23T11:50:00Z",
+      "resolvedAt": null,
+      "replayed": false
+    }
+  ],
+  "generatedAt": "2026-11-23T12:10:00Z",
+  "llmTokensUsed": 0,
+  "trainingEligible": false
+}

@@ -1,0 +1,217 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/admin/admin-billing-support-v1.schema.json",
+  "title": "AdminBillingSupportResponse",
+  "description": "Authoritative billing support snapshot excluding raw Apple JWS payloads.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "userId",
+    "accountStatus",
+    "entitlement",
+    "subscriptions",
+    "transactions",
+    "quotaLedgers",
+    "transitionAudit",
+    "rawContentRedacted",
+    "auditId",
+    "generatedAt",
+    "llmTokensUsed",
+    "trainingEligible"
+  ],
+  "properties": {
+    "schemaVersion": { "type": "string", "const": "admin-billing-support-v1" },
+    "userId": { "type": "string", "format": "uuid" },
+    "accountStatus": { "type": "string", "minLength": 2, "maxLength": 32 },
+    "entitlement": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/EntitlementSummary" }
+      ]
+    },
+    "subscriptions": {
+      "type": "array",
+      "maxItems": 100,
+      "items": { "$ref": "#/$defs/SubscriptionSummary" }
+    },
+    "transactions": {
+      "type": "array",
+      "maxItems": 100,
+      "items": { "$ref": "#/$defs/TransactionSummary" }
+    },
+    "quotaLedgers": {
+      "type": "array",
+      "maxItems": 100,
+      "items": { "$ref": "#/$defs/QuotaSummary" }
+    },
+    "transitionAudit": {
+      "type": "array",
+      "maxItems": 100,
+      "items": { "$ref": "#/$defs/BillingTransition" }
+    },
+    "rawContentRedacted": { "type": "boolean", "const": true },
+    "auditId": { "type": "string", "format": "uuid" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "llmTokensUsed": { "type": "integer", "const": 0 },
+    "trainingEligible": { "type": "boolean", "const": false }
+  },
+  "$defs": {
+    "EntitlementSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entitlementId",
+        "tier",
+        "packageCode",
+        "source",
+        "status",
+        "effectiveAt",
+        "expiresAt",
+        "gracePeriodExpiresAt",
+        "originalTransactionId",
+        "environment",
+        "lastVerifiedAt",
+        "updatedAt",
+        "version"
+      ],
+      "properties": {
+        "entitlementId": { "type": "string", "format": "uuid" },
+        "tier": { "type": "string", "maxLength": 32 },
+        "packageCode": { "type": ["string", "null"], "maxLength": 32 },
+        "source": { "type": "string", "maxLength": 48 },
+        "status": { "type": "string", "maxLength": 32 },
+        "effectiveAt": { "type": "string", "format": "date-time" },
+        "expiresAt": { "type": ["string", "null"], "format": "date-time" },
+        "gracePeriodExpiresAt": { "type": ["string", "null"], "format": "date-time" },
+        "originalTransactionId": { "type": ["string", "null"], "maxLength": 128 },
+        "environment": { "type": ["string", "null"], "maxLength": 24 },
+        "lastVerifiedAt": { "type": ["string", "null"], "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "version": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "SubscriptionSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "subscriptionId",
+        "originalTransactionId",
+        "currentTransactionId",
+        "productId",
+        "environment",
+        "status",
+        "autoRenewStatus",
+        "expiresAt",
+        "gracePeriodExpiresAt",
+        "revokedAt",
+        "lastReconciledAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "subscriptionId": { "type": "string", "format": "uuid" },
+        "originalTransactionId": { "type": "string", "maxLength": 128 },
+        "currentTransactionId": { "type": "string", "maxLength": 128 },
+        "productId": { "type": "string", "maxLength": 255 },
+        "environment": { "type": "string", "maxLength": 24 },
+        "status": { "type": "string", "maxLength": 32 },
+        "autoRenewStatus": { "type": ["boolean", "null"] },
+        "expiresAt": { "type": ["string", "null"], "format": "date-time" },
+        "gracePeriodExpiresAt": { "type": ["string", "null"], "format": "date-time" },
+        "revokedAt": { "type": ["string", "null"], "format": "date-time" },
+        "lastReconciledAt": { "type": ["string", "null"], "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "TransactionSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "transactionId",
+        "originalTransactionId",
+        "productId",
+        "environment",
+        "purchaseDate",
+        "expiresDate",
+        "revocationDate",
+        "transactionReason",
+        "ownershipType",
+        "accessRevoked",
+        "offerFamily",
+        "createdAt"
+      ],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "transactionId": { "type": "string", "maxLength": 128 },
+        "originalTransactionId": { "type": "string", "maxLength": 128 },
+        "productId": { "type": "string", "maxLength": 255 },
+        "environment": { "type": "string", "maxLength": 24 },
+        "purchaseDate": { "type": ["string", "null"], "format": "date-time" },
+        "expiresDate": { "type": ["string", "null"], "format": "date-time" },
+        "revocationDate": { "type": ["string", "null"], "format": "date-time" },
+        "transactionReason": { "type": ["string", "null"], "maxLength": 64 },
+        "ownershipType": { "type": ["string", "null"], "maxLength": 64 },
+        "accessRevoked": { "type": "boolean" },
+        "offerFamily": { "type": ["string", "null"], "maxLength": 24 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "QuotaSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "periodKey",
+        "tierCode",
+        "aiVerificationsUsed",
+        "aiVerificationsLimit",
+        "hybridTwinsUsed",
+        "hybridTwinsLimit",
+        "accumulatedAiCostMicros",
+        "accumulatedAiCostUsd",
+        "aiCostCapMicros",
+        "costCircuitBreakerTripped",
+        "resetsAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "periodKey": { "type": "string", "maxLength": 16 },
+        "tierCode": { "type": "string", "maxLength": 32 },
+        "aiVerificationsUsed": { "type": "integer", "minimum": 0 },
+        "aiVerificationsLimit": { "type": "integer", "minimum": 0 },
+        "hybridTwinsUsed": { "type": "integer", "minimum": 0 },
+        "hybridTwinsLimit": { "type": "integer", "minimum": 0 },
+        "accumulatedAiCostMicros": { "type": "integer", "minimum": 0 },
+        "accumulatedAiCostUsd": { "type": "number", "minimum": 0 },
+        "aiCostCapMicros": { "type": "integer", "minimum": 0 },
+        "costCircuitBreakerTripped": { "type": "boolean" },
+        "resetsAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "BillingTransition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "fromPackage",
+        "toPackage",
+        "fromStatus",
+        "toStatus",
+        "reason",
+        "occurredAt",
+        "recordedAt"
+      ],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "fromPackage": { "type": "string", "maxLength": 24 },
+        "toPackage": { "type": "string", "maxLength": 24 },
+        "fromStatus": { "type": "string", "maxLength": 24 },
+        "toStatus": { "type": "string", "maxLength": 24 },
+        "reason": { "type": "string", "maxLength": 16 },
+        "occurredAt": { "type": "string", "format": "date-time" },
+        "recordedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

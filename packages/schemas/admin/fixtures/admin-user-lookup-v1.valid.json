@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "admin-user-lookup-v1",
+  "lookupType": "USER_ID",
+  "userId": "11111111-2222-3333-4444-555555555555",
+  "accountStatus": "ACTIVE",
+  "accountCreatedAt": "2026-10-01T10:00:00Z",
+  "accountUpdatedAt": "2026-11-23T12:00:00Z",
+  "deletionRequestedAt": null,
+  "deletedAt": null,
+  "recentSessions": [
+    {
+      "sessionId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+      "status": "ACTIVE",
+      "createdAt": "2026-11-23T11:30:00Z",
+      "lastSeenAt": "2026-11-23T12:00:00Z",
+      "expiresAt": "2026-12-23T11:30:00Z",
+      "revokedAt": null,
+      "revocationReason": null
+    }
+  ],
+  "entitlement": {
+    "entitlementId": "22222222-3333-4444-5555-666666666666",
+    "tier": "PRO",
+    "packageCode": "PRO",
+    "source": "APP_STORE_SUBSCRIPTION",
+    "status": "ACTIVE",
+    "effectiveAt": "2026-11-01T00:00:00Z",
+    "expiresAt": "2026-12-01T00:00:00Z",
+    "gracePeriodExpiresAt": null,
+    "originalTransactionId": "orig-tx-1001",
+    "environment": "PRODUCTION",
+    "lastVerifiedAt": "2026-11-23T11:00:00Z",
+    "updatedAt": "2026-11-23T11:00:00Z",
+    "version": 3
+  },
+  "activeQuotaLedger": {
+    "periodKey": "2026-11",
+    "tierCode": "PRO",
+    "aiVerificationsUsed": 14,
+    "aiVerificationsLimit": 150,
+    "hybridTwinsUsed": 6,
+    "hybridTwinsLimit": 150,
+    "accumulatedAiCostMicros": 145000,
+    "accumulatedAiCostUsd": 0.145,
+    "aiCostCapMicros": 2500000,
+    "costCircuitBreakerTripped": false,
+    "resetsAt": "2026-12-01T00:00:00Z",
+    "updatedAt": "2026-11-23T12:00:00Z"
+  },
+  "wrongAnswerReportCount": 1,
+  "rawContentRedacted": true,
+  "auditId": "33333333-4444-5555-6666-777777777777",
+  "generatedAt": "2026-11-23T12:05:00Z",
+  "llmTokensUsed": 0,
+  "trainingEligible": false
+}

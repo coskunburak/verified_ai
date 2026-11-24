@@ -1,0 +1,14 @@
+{
+  "referralCode": "VERIFIED8",
+  "deepLinkUrl": "verified-ai://referral/VERIFIED8",
+  "active": true,
+  "totalAttributions": 2,
+  "qualifiedCount": 1,
+  "rewardedCount": 1,
+  "totalRewardCredits": 5,
+  "monthlyAttributionsRemaining": 8,
+  "annualRewardsRemaining": 11,
+  "trainingEligible": false,
+  "llmTokensUsed": 0,
+  "createdAt": "2026-11-24T12:00:00Z"
+}

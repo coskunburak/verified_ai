@@ -1,0 +1,26 @@
+{
+  "shareId": "11111111-2222-3333-4444-555555555555",
+  "shareToken": "AbCdEfGhIjKlMnOpQrStUvWx",
+  "artifactType": "COUNTERFACTUAL_CHALLENGE_CARD",
+  "locale": "en",
+  "displayAlias": "Deniz K.",
+  "referralCode": "VERIFIED8",
+  "summaryPayload": {
+    "mistakeCode": "SIGN_FLIP_LINEAR",
+    "skillCode": "MATH.ALG.LINEAR_EQ",
+    "challengeSummaryKey": "challenge.sign_flip.v1",
+    "locale": "en",
+    "difficultyBand": "FOUNDATION"
+  },
+  "deepLinkUrl": "verified-ai://share/AbCdEfGhIjKlMnOpQrStUvWx",
+  "status": "ACTIVE",
+  "rawContentRedacted": true,
+  "openCount": 3,
+  "correlationId": "corr-grw-share-1",
+  "trainingEligible": false,
+  "llmTokensUsed": 0,
+  "expiresAt": "2026-12-24T12:00:00Z",
+  "revokedAt": null,
+  "createdAt": "2026-11-24T12:00:00Z",
+  "replayed": false
+}

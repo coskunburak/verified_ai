@@ -1,0 +1,74 @@
+groups:
+  - name: verifiedai_admin_support_console
+    rules:
+      - alert: AdminSupportRawContentAccessElevatedBurst
+        expr: sum(increase(verifiedai_admin_raw_content_total{service="verified-ai-api",action=~"grant_created|inspected"}[15m])) > 10
+        for: 1m
+        labels:
+          severity: warning
+          team: security-ops
+          sprint: "10.8"
+        annotations:
+          summary: "High volume of elevated raw student content accesses on verified-ai-api"
+          description: "More than 10 raw student content grants or inspections occurred in 15m. Audit admin_support_audit_logs and ticket references."
+          runbook: "docs/verified_ai_learning_platform_docs_v4/operations/39_RUNBOOKS_AND_FAILURE_MODES.md"
+
+      - alert: AdminSupportRawContentForbiddenAttempt
+        expr: sum(increase(verifiedai_admin_raw_content_total{service="verified-ai-api",action="inspect_forbidden"}[5m])) > 0
+        for: 0m
+        labels:
+          severity: critical
+          team: security-ops
+          sprint: "10.8"
+        annotations:
+          summary: "Forbidden raw-content inspection attempt detected"
+          description: "An admin actor attempted to inspect a raw-content grant belonging to another actor or session (403 ADMIN_RAW_CONTENT_FORBIDDEN)."
+          runbook: "docs/verified_ai_learning_platform_docs_v4/operations/39_RUNBOOKS_AND_FAILURE_MODES.md"
+
+      - alert: AdminSupportRbacForbiddenSpike
+        expr: sum(rate(http_server_requests_seconds_count{service="verified-ai-api",uri=~"/api/v1/admin/support.*|/v1/admin/support.*|/api/v1/admin/ai-ops.*|/v1/admin/ai-ops.*",status="403"}[5m])) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+          team: security-ops
+          sprint: "10.8"
+        annotations:
+          summary: "Elevated 403 ADMIN_SUPPORT_FORBIDDEN rate on admin/support console"
+          description: "Non-admin tokens or unprovisioned operators are hitting /admin/support or /admin/ai-ops endpoints."
+          runbook: "docs/verified_ai_learning_platform_docs_v4/operations/39_RUNBOOKS_AND_FAILURE_MODES.md"
+
+      - alert: AdminSupportConsole5xxErrors
+        expr: sum(rate(http_server_requests_seconds_count{service="verified-ai-api",uri=~"/api/v1/admin/support.*|/v1/admin/support.*|/api/v1/admin/ai-ops.*|/v1/admin/ai-ops.*",status=~"5.."}[5m])) > 0
+        for: 2m
+        labels:
+          severity: warning
+          team: platform-ops
+          sprint: "10.8"
+        annotations:
+          summary: "5xx errors on admin/support console endpoints"
+          description: "Admin or support console requests are returning 5xx responses; verify DB/service health and fail-closed flag state."
+          runbook: "docs/verified_ai_learning_platform_docs_v4/operations/39_RUNBOOKS_AND_FAILURE_MODES.md"
+
+      - alert: AdminSupportRemediationConflictSpike
+        expr: sum(increase(verifiedai_admin_remediation_total{service="verified-ai-api",outcome="idempotency_conflict"}[15m])) >= 3
+        for: 1m
+        labels:
+          severity: warning
+          team: platform-ops
+          sprint: "10.8"
+        annotations:
+          summary: "Repeated Idempotency-Key conflicts on admin remediations"
+          description: "Operators or automation triggered >= 3 conflicting Idempotency-Key remediation attempts within 15m."
+          runbook: "docs/verified_ai_learning_platform_docs_v4/operations/39_RUNBOOKS_AND_FAILURE_MODES.md"
+
+      - alert: AdminWrongAnswerReportSurge
+        expr: sum(increase(verifiedai_admin_wrong_answer_total{service="verified-ai-api",status="OPEN"}[1h])) > 25
+        for: 5m
+        labels:
+          severity: critical
+          team: verification-quality
+          sprint: "10.8"
+        annotations:
+          summary: "Surge in learner wrong-answer reports (>25/hour)"
+          description: "More than 25 OPEN wrong-answer reports arrived in the last hour. Investigate parser/solver/verifier quality regression and consider kill-switch mitigation."
+          runbook: "docs/verified_ai_learning_platform_docs_v4/operations/39_RUNBOOKS_AND_FAILURE_MODES.md"

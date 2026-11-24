@@ -104,3 +104,19 @@ Maintain runbooks for:
 - future self-hosted inference saturation/outage;
 - emergency route rollback.
 <!-- HYBRID_AI_STRATEGY_V3:END -->
+
+## Sprint 10.8 admin console RBAC, operator JWT provisioning, and audit alert runbook
+
+### Operator JWT provisioning contract
+`SecurityConfiguration.jwtAuthenticationConverter()` and `AccountSessionStateFilter` enforce both RS256 JWT claim verification and an `ACTIVE` backend user/session binding:
+- Standard support operator JWT claims: `sub` (operator user UUID), `sid` (active session UUID), `typ: "access"`, `roles: ["ADMIN"]`. Grants access to redacted lookup, problem trace, billing support, AI ops, wrong-answer review, safe remediations, and audit history (`ROLE_ADMIN`).
+- Elevated engineering JWT claims (raw student content elevation): add `"ADMIN_RAW_CONTENT_READ"` in `authorities` or `"ADMIN_ENGINEERING"` in `roles` (mapped to `ROLE_ADMIN_ENGINEERING`). Never issue admin claims through learner self-service sign-in/sign-up endpoints.
+
+### Staging / pre-enablement verification
+1. Load `infra/monitoring/alerts/admin_support_alerts.yaml` into Prometheus/Alertmanager and import `infra/monitoring/dashboards/admin_support_console.json` into Grafana.
+2. Verify fail-closed defaults (`503`) before enabling flags, then run `scripts/quality/sprint_10_8_staging_smoke.sh` against the target environment with operator-supplied tokens (`TARGET_BASE_URL`, `LEARNER_JWT`, `ADMIN_JWT`, and optional `ELEVATED_ADMIN_JWT` / `PROBLEM_SESSION_ID`).
+
+### Emergency incident response & rollback
+- **Unexpected raw-content spike or `AdminSupportRawContentForbiddenAttempt`:** Immediately set `VERIFIEDAI_ADMIN_RAW_CONTENT_ACCESS_ENABLED=false`, revoke affected operator sessions in `sessions`, and inspect `admin_support_audit_logs` + `admin_raw_content_access_grants` by `actor_user_id` and `ticket_reference`.
+- **Console outage or remediation anomaly:** Set `VERIFIEDAI_ADMIN_REMEDIATION_ENABLED=false` and `VERIFIEDAI_ADMIN_CONSOLE_ENABLED=false` (fail-closed `503` without dropping `V072` tables).
+- **`AdminWrongAnswerReportSurge`:** Inspect `GET /api/v1/admin/support/wrong-answer-reports?status=OPEN`, cross-reference `policy_version_snapshot` / `model_version_snapshot`, and activate the corresponding feature-flag kill switch via `POST /api/v1/admin/support/remediations/kill-switch` if a solver/verifier defect is confirmed.

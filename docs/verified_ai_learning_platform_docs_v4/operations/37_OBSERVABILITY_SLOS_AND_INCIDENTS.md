@@ -156,3 +156,14 @@ Add first-class metrics for total AI spend, cost per verified solution, secondar
 
 Route/model changes require correlation between quality, latency and cost. See `operations/63_AI_CAPACITY_FINOPS_AND_PROVIDER_BUDGET_OPERATIONS.md`.
 <!-- HYBRID_AI_STRATEGY_V3:END -->
+
+## Sprint 10.8 admin and support console metrics and alerts
+
+`AdminSupportMetrics` emits low-cardinality Micrometer counters scraped via `/actuator/prometheus` (`service="verified-ai-api"`):
+
+- `verifiedai.admin.query.total{kind}` (`user_lookup`, `billing_support`, `problem_trace`, `ai_ops_overview`, `audit_list`)
+- `verifiedai.admin.remediation.total{action,outcome}` (`billing_reconcile`, `quota_sync`, `kill_switch` x `applied`, `replayed`, `idempotency_conflict`)
+- `verifiedai.admin.raw_content.total{action}` (`grant_created`, `grant_replayed`, `grant_conflict`, `inspected`, `inspect_forbidden`, `inspect_expired`)
+- `verifiedai.admin.wrong_answer.total{status}` (`OPEN`, `IN_REVIEW`, `RESOLVED_*`, `DISMISSED`, `replayed`, `idempotency_conflict`, `optimistic_conflict`)
+
+Alert rules and dashboard definitions live in `infra/monitoring/alerts/admin_support_alerts.yaml` (`AdminSupportRawContentAccessElevatedBurst`, `AdminSupportRawContentForbiddenAttempt`, `AdminSupportRbacForbiddenSpike`, `AdminSupportConsole5xxErrors`, `AdminSupportRemediationConflictSpike`, `AdminWrongAnswerReportSurge`) and `infra/monitoring/dashboards/admin_support_console.json`.

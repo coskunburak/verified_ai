@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/growth/public-share-artifact-v1.schema.json",
+  "title": "PublicShareArtifactResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "shareToken",
+    "artifactType",
+    "locale",
+    "summaryPayload",
+    "deepLinkUrl",
+    "rawContentRedacted",
+    "trainingEligible",
+    "llmTokensUsed",
+    "expiresAt",
+    "createdAt"
+  ],
+  "properties": {
+    "shareToken": { "type": "string", "pattern": "^[A-Za-z0-9_-]{16,48}$" },
+    "artifactType": {
+      "type": "string",
+      "enum": [
+        "WEEKLY_PROGRESS_SUMMARY",
+        "MASTERY_MILESTONE",
+        "COUNTERFACTUAL_CHALLENGE_CARD",
+        "EXAM_READINESS_MILESTONE"
+      ]
+    },
+    "locale": { "type": "string", "enum": ["en", "tr"] },
+    "displayAlias": { "type": ["string", "null"], "maxLength": 24 },
+    "referralCode": { "type": ["string", "null"], "pattern": "^[A-Z2-9]{6,16}$" },
+    "summaryPayload": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "type": ["string", "integer", "boolean"] },
+      "propertyNames": {
+        "not": {
+          "enum": ["userId", "email", "rawProblemText", "ocrText", "objectKey", "solutionSteps", "sessionId", "idempotencyKey"]
+        }
+      }
+    },
+    "deepLinkUrl": { "type": "string", "pattern": "^verified-ai://share/[A-Za-z0-9_-]{16,48}$" },
+    "rawContentRedacted": { "type": "boolean", "const": true },
+    "trainingEligible": { "type": "boolean", "const": false },
+    "llmTokensUsed": { "type": "integer", "const": 0 },
+    "expiresAt": { "type": "string", "format": "date-time" },
+    "createdAt": { "type": "string", "format": "date-time" }
+  }
+}

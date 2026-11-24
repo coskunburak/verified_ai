@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/admin/admin-raw-content-grant-request-v1.schema.json",
+  "title": "RawContentGrantRequest",
+  "description": "Elevated admin request to issue a short-lived, audited raw student content access grant.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "ticketReference",
+    "reason",
+    "ttlMinutes",
+    "trainingEligible"
+  ],
+  "properties": {
+    "ticketReference": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._-]{3,64}$"
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 240
+    },
+    "ttlMinutes": {
+      "type": "integer",
+      "minimum": 5,
+      "maximum": 60
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    }
+  }
+}

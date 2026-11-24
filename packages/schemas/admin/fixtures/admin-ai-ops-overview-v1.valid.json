@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "admin-ai-ops-overview-v1",
+  "fromDate": "2026-11-16",
+  "toDate": "2026-11-23",
+  "totalCalls": 120,
+  "totalFailures": 2,
+  "totalCostMicros": 240000,
+  "totalCostUsd": 0.24,
+  "recentFlagAuditCount": 3,
+  "providerHealth": [
+    {
+      "provider": "gemini",
+      "model": "gemini-2.5-flash",
+      "totalCalls": 120,
+      "successCalls": 118,
+      "failureCalls": 2,
+      "totalCostMicros": 240000,
+      "totalCostUsd": 0.24,
+      "avgLatencyMs": 520
+    }
+  ],
+  "activeRoutes": [
+    {
+      "capability": "PRIMARY_SOLVE",
+      "routePolicyVersion": "route-v2",
+      "routeId": "economy-primary",
+      "provider": "gemini",
+      "model": "gemini-2.5-flash",
+      "promptId": "primary_solve",
+      "promptVersion": "v2",
+      "schemaVersion": "solution-candidate-v1"
+    }
+  ],
+  "failureSamples": [
+    {
+      "usageRecordId": "12121212-3434-5656-7878-909090909090",
+      "capability": "PRIMARY_SOLVE",
+      "provider": "gemini",
+      "model": "gemini-2.5-flash",
+      "status": "FAILED",
+      "failureClass": "SCHEMA_VALIDATION_ERROR",
+      "retryable": true,
+      "fallbackUsed": false,
+      "correlationId": "corr-fail-1",
+      "traceId": "trace-fail-1",
+      "createdAt": "2026-11-23T10:15:00Z"
+    }
+  ],
+  "killSwitchFlags": [
+    {
+      "flagKey": "pdf_upload_enabled",
+      "category": "KILL_SWITCH",
+      "enabled": true,
+      "killSwitchActive": false,
+      "rolloutBasisPoints": 10000,
+      "currentValueJson": "true",
+      "version": 0,
+      "updatedAt": "2026-11-23T09:00:00Z"
+    }
+  ],
+  "rawContentRedacted": true,
+  "auditId": "33333333-4444-5555-6666-777777777780",
+  "generatedAt": "2026-11-23T12:08:00Z",
+  "llmTokensUsed": 0,
+  "trainingEligible": false
+}

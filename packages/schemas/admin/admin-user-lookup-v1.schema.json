@@ -1,0 +1,200 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/admin/admin-user-lookup-v1.schema.json",
+  "title": "AdminUserLookupResponse",
+  "description": "Redacted ROLE_ADMIN user lookup projection without raw student content or token hashes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "lookupType",
+    "userId",
+    "accountStatus",
+    "accountCreatedAt",
+    "accountUpdatedAt",
+    "deletionRequestedAt",
+    "deletedAt",
+    "recentSessions",
+    "entitlement",
+    "activeQuotaLedger",
+    "wrongAnswerReportCount",
+    "rawContentRedacted",
+    "auditId",
+    "generatedAt",
+    "llmTokensUsed",
+    "trainingEligible"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "admin-user-lookup-v1"
+    },
+    "lookupType": {
+      "type": "string",
+      "enum": [
+        "USER_ID",
+        "SESSION_ID",
+        "PROBLEM_SESSION_ID",
+        "ORIGINAL_TRANSACTION_ID"
+      ]
+    },
+    "userId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "accountStatus": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 32
+    },
+    "accountCreatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "accountUpdatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "deletionRequestedAt": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "deletedAt": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "recentSessions": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "$ref": "#/$defs/SessionSummary"
+      }
+    },
+    "entitlement": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/EntitlementSummary" }
+      ]
+    },
+    "activeQuotaLedger": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/QuotaSummary" }
+      ]
+    },
+    "wrongAnswerReportCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "rawContentRedacted": {
+      "type": "boolean",
+      "const": true
+    },
+    "auditId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "llmTokensUsed": {
+      "type": "integer",
+      "const": 0
+    },
+    "trainingEligible": {
+      "type": "boolean",
+      "const": false
+    }
+  },
+  "$defs": {
+    "SessionSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sessionId",
+        "status",
+        "createdAt",
+        "lastSeenAt",
+        "expiresAt",
+        "revokedAt",
+        "revocationReason"
+      ],
+      "properties": {
+        "sessionId": { "type": "string", "format": "uuid" },
+        "status": { "type": "string", "minLength": 2, "maxLength": 32 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "lastSeenAt": { "type": ["string", "null"], "format": "date-time" },
+        "expiresAt": { "type": ["string", "null"], "format": "date-time" },
+        "revokedAt": { "type": ["string", "null"], "format": "date-time" },
+        "revocationReason": { "type": ["string", "null"], "maxLength": 128 }
+      }
+    },
+    "EntitlementSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entitlementId",
+        "tier",
+        "packageCode",
+        "source",
+        "status",
+        "effectiveAt",
+        "expiresAt",
+        "gracePeriodExpiresAt",
+        "originalTransactionId",
+        "environment",
+        "lastVerifiedAt",
+        "updatedAt",
+        "version"
+      ],
+      "properties": {
+        "entitlementId": { "type": "string", "format": "uuid" },
+        "tier": { "type": "string", "minLength": 2, "maxLength": 32 },
+        "packageCode": { "type": ["string", "null"], "maxLength": 32 },
+        "source": { "type": "string", "minLength": 2, "maxLength": 48 },
+        "status": { "type": "string", "minLength": 2, "maxLength": 32 },
+        "effectiveAt": { "type": "string", "format": "date-time" },
+        "expiresAt": { "type": ["string", "null"], "format": "date-time" },
+        "gracePeriodExpiresAt": { "type": ["string", "null"], "format": "date-time" },
+        "originalTransactionId": { "type": ["string", "null"], "maxLength": 128 },
+        "environment": { "type": ["string", "null"], "maxLength": 24 },
+        "lastVerifiedAt": { "type": ["string", "null"], "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "version": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "QuotaSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "periodKey",
+        "tierCode",
+        "aiVerificationsUsed",
+        "aiVerificationsLimit",
+        "hybridTwinsUsed",
+        "hybridTwinsLimit",
+        "accumulatedAiCostMicros",
+        "accumulatedAiCostUsd",
+        "aiCostCapMicros",
+        "costCircuitBreakerTripped",
+        "resetsAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "periodKey": { "type": "string", "minLength": 4, "maxLength": 16 },
+        "tierCode": { "type": "string", "minLength": 2, "maxLength": 32 },
+        "aiVerificationsUsed": { "type": "integer", "minimum": 0 },
+        "aiVerificationsLimit": { "type": "integer", "minimum": 0 },
+        "hybridTwinsUsed": { "type": "integer", "minimum": 0 },
+        "hybridTwinsLimit": { "type": "integer", "minimum": 0 },
+        "accumulatedAiCostMicros": { "type": "integer", "minimum": 0 },
+        "accumulatedAiCostUsd": { "type": "number", "minimum": 0 },
+        "aiCostCapMicros": { "type": "integer", "minimum": 0 },
+        "costCircuitBreakerTripped": { "type": "boolean" },
+        "resetsAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

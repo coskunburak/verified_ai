@@ -369,3 +369,27 @@ verifiedai:
     max-client-flags: ${VERIFIEDAI_FEATURE_FLAGS_MAX_CLIENT_FLAGS:50}
     audit-history-limit: ${VERIFIEDAI_FEATURE_FLAGS_AUDIT_HISTORY_LIMIT:50}
     client-etag-max-age-seconds: 300
+  admin:
+    console-enabled: ${VERIFIEDAI_ADMIN_CONSOLE_ENABLED:false}
+    remediation-enabled: ${VERIFIEDAI_ADMIN_REMEDIATION_ENABLED:false}
+    raw-content-access-enabled: ${VERIFIEDAI_ADMIN_RAW_CONTENT_ACCESS_ENABLED:false}
+    max-lookup-limit: ${VERIFIEDAI_ADMIN_MAX_LOOKUP_LIMIT:50}
+    max-trace-records: ${VERIFIEDAI_ADMIN_MAX_TRACE_RECORDS:50}
+    raw-content-grant-ttl-minutes: ${VERIFIEDAI_ADMIN_RAW_CONTENT_GRANT_TTL_MINUTES:15}
+    audit-history-limit: ${VERIFIEDAI_ADMIN_AUDIT_HISTORY_LIMIT:50}
+  growth:
+    sharing-enabled: ${VERIFIEDAI_GROWTH_SHARING_ENABLED:false}
+    referral-enabled: ${VERIFIEDAI_GROWTH_REFERRAL_ENABLED:false}
+    store-review-enabled: ${VERIFIEDAI_GROWTH_STORE_REVIEW_ENABLED:false}
+    share-default-ttl-days: 30
+    share-max-ttl-days: 90
+    max-active-shares-per-user: 25
+    max-referrals-per-month: 10
+    max-rewards-per-year: 12
+    max-attributions-per-device: 2
+    referral-reward-solve-credits: 5
+    review-cooldown-days: 60
+    review-max-prompts-per-year: 3
+    review-min-account-age-days: 3
+    review-min-verified-actions: 3
+    review-friction-lookback-days: 7

@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/admin/admin-remediation-result-v1.schema.json",
+  "title": "AdminRemediationResultResponse",
+  "description": "Audited result of a safe domain-command admin remediation action.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "auditId",
+    "action",
+    "targetType",
+    "targetId",
+    "replayed",
+    "outcome",
+    "details",
+    "executedAt",
+    "llmTokensUsed",
+    "trainingEligible"
+  ],
+  "properties": {
+    "schemaVersion": { "type": "string", "const": "admin-remediation-result-v1" },
+    "auditId": { "type": "string", "format": "uuid" },
+    "action": {
+      "type": "string",
+      "enum": [
+        "BILLING_RECONCILE_EXECUTED",
+        "QUOTA_SYNC_EXECUTED",
+        "KILL_SWITCH_LINKED_EXECUTED"
+      ]
+    },
+    "targetType": {
+      "type": "string",
+      "enum": ["USER", "BILLING", "FEATURE_FLAG"]
+    },
+    "targetId": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "replayed": { "type": "boolean" },
+    "outcome": { "type": "string", "enum": ["APPLIED", "REPLAYED"] },
+    "details": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "executedAt": { "type": "string", "format": "date-time" },
+    "llmTokensUsed": { "type": "integer", "const": 0 },
+    "trainingEligible": { "type": "boolean", "const": false }
+  }
+}

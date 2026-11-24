@@ -1,0 +1,76 @@
+{
+  "title": "Verified AI — Sprint 10.8 Admin & Support Console",
+  "uid": "verifiedai-admin-support-10-8",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "tags": ["verified-ai", "admin", "support", "sprint-10-8"],
+  "panels": [
+    {
+      "id": 1,
+      "title": "Admin Support Queries by Kind",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum by (kind) (rate(verifiedai_admin_query_total{service=\"verified-ai-api\"}[5m]))",
+          "legendFormat": "{{kind}}"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Safe Remediations by Action & Outcome",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum by (action, outcome) (rate(verifiedai_admin_remediation_total{service=\"verified-ai-api\"}[5m]))",
+          "legendFormat": "{{action}} ({{outcome}})"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Elevated Raw Content Access & Denials",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum by (action) (increase(verifiedai_admin_raw_content_total{service=\"verified-ai-api\"}[15m]))",
+          "legendFormat": "{{action}}"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Wrong-Answer Reports by Status",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum by (status) (increase(verifiedai_admin_wrong_answer_total{service=\"verified-ai-api\"}[15m]))",
+          "legendFormat": "{{status}}"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Admin Console HTTP Status Rate",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum by (status) (rate(http_server_requests_seconds_count{service=\"verified-ai-api\",uri=~\"/api/v1/admin/support.*|/v1/admin/support.*|/api/v1/admin/ai-ops.*|/v1/admin/ai-ops.*\"}[5m]))",
+          "legendFormat": "HTTP {{status}}"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Admin Console P95 Latency (s)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{service=\"verified-ai-api\",uri=~\"/api/v1/admin/support.*|/v1/admin/support.*|/api/v1/admin/ai-ops.*|/v1/admin/ai-ops.*\"}[5m])))",
+          "legendFormat": "p95"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiedai.com/schemas/admin/admin-support-audit-list-v1.schema.json",
+  "title": "AdminSupportAuditListResponse",
+  "description": "Immutable ROLE_ADMIN support audit ledger history ordered newest first.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "entryCount",
+    "entries",
+    "generatedAt",
+    "llmTokensUsed",
+    "trainingEligible"
+  ],
+  "properties": {
+    "schemaVersion": { "type": "string", "const": "admin-support-audit-list-v1" },
+    "entryCount": { "type": "integer", "minimum": 0, "maximum": 200 },
+    "entries": {
+      "type": "array",
+      "maxItems": 200,
+      "items": { "$ref": "#/$defs/AdminAuditEntry" }
+    },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "llmTokensUsed": { "type": "integer", "const": 0 },
+    "trainingEligible": { "type": "boolean", "const": false }
+  },
+  "$defs": {
+    "AdminAuditEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "action",
+        "targetType",
+        "targetId",
+        "actorUserId",
+        "actorRole",
+        "idempotencyKey",
+        "reason",
+        "beforeStateJson",
+        "afterStateJson",
+        "correlationId",
+        "trainingEligible",
+        "occurredAt"
+      ],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "action": {
+          "type": "string",
+          "enum": [
+            "USER_LOOKUP_READ",
+            "PROBLEM_TRACE_READ",
+            "BILLING_SUPPORT_READ",
+            "AI_OPS_OVERVIEW_READ",
+            "RAW_CONTENT_GRANT_CREATED",
+            "RAW_CONTENT_INSPECTED",
+            "WRONG_ANSWER_REPORT_REVIEWED",
+            "BILLING_RECONCILE_EXECUTED",
+            "QUOTA_SYNC_EXECUTED",
+            "KILL_SWITCH_LINKED_EXECUTED"
+          ]
+        },
+        "targetType": {
+          "type": "string",
+          "enum": [
+            "USER",
+            "PROBLEM_SESSION",
+            "WRONG_ANSWER_REPORT",
+            "BILLING",
+            "FEATURE_FLAG",
+            "AI_OPS"
+          ]
+        },
+        "targetId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "actorUserId": { "type": "string", "format": "uuid" },
+        "actorRole": { "type": "string", "minLength": 2, "maxLength": 48 },
+        "idempotencyKey": {
+          "type": ["string", "null"],
+          "pattern": "^[A-Za-z0-9:._-]{8,128}$"
+        },
+        "reason": { "type": "string", "minLength": 5, "maxLength": 240 },
+        "beforeStateJson": { "type": "string", "minLength": 2, "maxLength": 4096 },
+        "afterStateJson": { "type": "string", "minLength": 2, "maxLength": 4096 },
+        "correlationId": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "trainingEligible": { "type": "boolean", "const": false },
+        "occurredAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

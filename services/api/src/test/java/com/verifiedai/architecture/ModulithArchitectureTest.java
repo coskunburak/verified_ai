@@ -205,4 +205,128 @@ class ModulithArchitectureTest {
             )
             .check(classes);
     }
+
+    @Test
+    void adminModuleMaintainsAcyclicPublicSpiBoundaries() {
+        JavaClasses classes = new ClassFileImporter()
+            .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
+            .importPackages("com.verifiedai");
+
+        noClasses()
+            .that()
+            .resideInAnyPackage("com.verifiedai.admin..")
+            .should()
+            .dependOnClassesThat()
+            .resideInAnyPackage(
+                "com.verifiedai.billing.domain..",
+                "com.verifiedai.billing.infrastructure..",
+                "com.verifiedai.billing.api..",
+                "com.verifiedai.featureflags.domain..",
+                "com.verifiedai.featureflags.infrastructure..",
+                "com.verifiedai.featureflags.api..",
+                "com.verifiedai.attempt..",
+                "com.verifiedai.mistake..",
+                "com.verifiedai.mastery..",
+                "com.verifiedai.studyplan..",
+                "com.verifiedai.exam..",
+                "com.verifiedai.tutoring..",
+                "com.verifiedai.notification..",
+                "com.verifiedai.identity..",
+                "com.verifiedai.analytics..",
+                "com.verifiedai.ai..",
+                "com.verifiedai.solving..",
+                "com.verifiedai.verification..",
+                "com.verifiedai.problem.."
+            )
+            .check(classes);
+
+        noClasses()
+            .that()
+            .resideInAnyPackage(
+                "com.verifiedai.billing..",
+                "com.verifiedai.featureflags..",
+                "com.verifiedai.attempt..",
+                "com.verifiedai.mistake..",
+                "com.verifiedai.mastery..",
+                "com.verifiedai.studyplan..",
+                "com.verifiedai.exam..",
+                "com.verifiedai.tutoring..",
+                "com.verifiedai.notification..",
+                "com.verifiedai.identity..",
+                "com.verifiedai.analytics..",
+                "com.verifiedai.ai..",
+                "com.verifiedai.solving..",
+                "com.verifiedai.verification..",
+                "com.verifiedai.problem.."
+            )
+            .should()
+            .dependOnClassesThat()
+            .resideInAnyPackage("com.verifiedai.admin..")
+            .check(classes);
+    }
+
+    @Test
+    void growthModuleMaintainsAcyclicPublicSpiBoundaries() {
+        JavaClasses classes = new ClassFileImporter()
+            .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
+            .importPackages("com.verifiedai");
+
+        noClasses()
+            .that()
+            .resideInAnyPackage("com.verifiedai.growth..")
+            .should()
+            .dependOnClassesThat()
+            .resideInAnyPackage(
+                "com.verifiedai.billing.domain..",
+                "com.verifiedai.billing.infrastructure..",
+                "com.verifiedai.billing.api..",
+                "com.verifiedai.featureflags.domain..",
+                "com.verifiedai.featureflags.infrastructure..",
+                "com.verifiedai.featureflags.api..",
+                "com.verifiedai.attempt..",
+                "com.verifiedai.mistake..",
+                "com.verifiedai.mastery..",
+                "com.verifiedai.studyplan..",
+                "com.verifiedai.exam..",
+                "com.verifiedai.tutoring..",
+                "com.verifiedai.notification..",
+                "com.verifiedai.identity..",
+                "com.verifiedai.analytics..",
+                "com.verifiedai.admin..",
+                "com.verifiedai.ai..",
+                "com.verifiedai.solving..",
+                "com.verifiedai.verification..",
+                "com.verifiedai.problem.."
+            )
+            .check(classes);
+
+        noClasses()
+            .that()
+            .resideInAnyPackage(
+                "com.verifiedai.billing..",
+                "com.verifiedai.featureflags..",
+                "com.verifiedai.attempt..",
+                "com.verifiedai.mistake..",
+                "com.verifiedai.mastery..",
+                "com.verifiedai.studyplan..",
+                "com.verifiedai.exam..",
+                "com.verifiedai.tutoring..",
+                "com.verifiedai.notification..",
+                "com.verifiedai.identity..",
+                "com.verifiedai.analytics..",
+                "com.verifiedai.admin..",
+                "com.verifiedai.ai..",
+                "com.verifiedai.solving..",
+                "com.verifiedai.verification..",
+                "com.verifiedai.problem.."
+            )
+            .should()
+            .dependOnClassesThat()
+            .resideInAnyPackage(
+                "com.verifiedai.growth.domain..",
+                "com.verifiedai.growth.infrastructure..",
+                "com.verifiedai.growth.api.."
+            )
+            .check(classes);
+    }
 }
